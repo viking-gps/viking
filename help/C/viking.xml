@@ -523,7 +523,9 @@ Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Append File...</gu
 </para>
 <para>
 Selecting a <emphasis>Viking</emphasis> file from this method will join the file contents to the current window (instead of creating a new one).
-GPX and KML files may also be appended, but this is exactly the same as the normal file open method.
+</para>
+<para>
+GPX and KML files may also be appended, whereby the file contents are added to the currently selected TrackWaypoint layer. Otherwise they are loaded in the normal file open method when no layer is selected.
 </para>
 </section>
 
@@ -1012,19 +1014,12 @@ Tracks, Routes or Waypoints that are invisible will not be transferred.
 <section id="osm_upload" xreflabel="Upload To OSM" ><title>Upload To OSM</title>
 <para>
 This opens a dialog to upload all tracks and waypoints to <ulink url="http://openstreetmap.org/">OpenStreetMap</ulink> traces.
-Useful if you are an OpenStreetMap contributor (you will need an OpenStreetMap account), these details can be stored in &appname; <xref linkend="prefs_osm"/>
+Useful if you are an OpenStreetMap contributor, access details are stored in &appname; <xref linkend="prefs_osm"/>
 </para>
 <para>
  &appname; allows you to edit a track, e.g. remove duplicate points, perhaps remove track points leading to your home and then upload it to OpenStreetMap.
 </para>
-<warning>
-<para>
-The password is transferred <emphasis role="bold">unencrypted</emphasis> in every request sent to the OpenStreetMap server. This is due to the use of OpenStreetMap's basic authentication method.
-</para>
-<para>Currently &appname; does not support the <ulink url="http://oauth.net/">OAuth</ulink> mechanism.</para>
-</warning>
 </section>
-
 </section>
 
 <section><title>Delete</title>
@@ -1046,6 +1041,16 @@ The password is transferred <emphasis role="bold">unencrypted</emphasis> in ever
 </section>
 <section id="delete_selection_waypoints"><title>Delete Waypoints from Selection</title>
 <para>Opens a dialog with list of all the waypoints from this layer to choose the ones to delete.</para>
+</section>
+<section id="delete_duplicate_waypoints"><title>Delete Duplicate Waypoints</title>
+<para>
+  Deletes duplicate waypoints in this layer.
+  Waypoints are considered duplicate if they have the same location and symbol.
+  <note>
+    <para>If other properties are different such as name, comment, altitude, etc... they will still be considered a duplicate.
+    </para>
+  </note>
+</para>
 </section>
 </section>
 
@@ -1112,19 +1117,43 @@ Opens a new dialog with the list. As described in the Aggregrate layer <xref lin
 
 <section><title>Track and Route Sublayer Options</title>
 <para>Repeats options available at the TrackWaypoint level, but only those for tracks and routes:</para>
-<itemizedlist>
-<listitem><para>Finish Track or Route. Same as the layer <link linkend="finish_track">Finish Track or Route</link></para></listitem>
-<listitem><para>New Track or Route. Same as the layer <link linkend="new_track">New Track</link> or <link linkend="new_route">New Route</link></para></listitem>
-<listitem><para>View All Tracks or Routes. Same as the layer <link linkend="track_view_all">View All Tracks</link> or <link linkend="route_view_all">View All Routes</link></para></listitem>
-<listitem><para>Delete All Tracks or Routes. Same as the layer <link linkend="delete_all_tracks">Delete All Tracks</link> or <link linkend="delete_all_routes">Delete All Routes</link></para></listitem>
-<listitem><para>Delete Tracks or Routes from Selection. Same as the layer <link linkend="delete_selection_tracks">Delete Tracks from Selection</link> or <link linkend="delete_selection_routes">Delete Routes from Selection</link></para></listitem>
-<listitem><para>List Tracks or Routes. Opens a new dialog with the list. As described in the Aggregrate layer <xref linkend="track_list"/></para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term><guilabel>Finish Track or Route</guilabel></term>
+<listitem><para>Same as the layer <link linkend="finish_track">Finish Track or Route</link></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>New Track or Route</guilabel></term>
+<listitem><para>Same as the layer <link linkend="new_track">New Track</link> or <link linkend="new_route">New Route</link></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>View All Tracks or Routes</guilabel></term>
+<listitem><para>Same as the layer <link linkend="track_view_all">View All Tracks</link> or <link linkend="route_view_all">View All Routes</link></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Delete All Tracks or Routes</guilabel></term>
+<listitem><para>Same as the layer <link linkend="delete_all_tracks">Delete All Tracks</link> or <link linkend="delete_all_routes">Delete All Routes</link></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Delete Tracks or Routes from Selection</guilabel></term>
+<listitem><para>Same as the layer <link linkend="delete_selection_tracks">Delete Tracks from Selection</link> or <link linkend="delete_selection_routes">Delete Routes from Selection</link></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>List Tracks or Routes</guilabel></term>
+<listitem><para>Opens a new dialog with the list. As described in the Aggregrate layer <xref linkend="track_list"/></para></listitem>
+</varlistentry>
+</variablelist>
 <para>Also gives other options for handling multiple items:</para>
-<itemizedlist>
-<listitem><para>Sort. Gives the ability to sort the items in the treeview alphabetically or by date.</para></listitem>
-<listitem><para>Visibility. Offers options to quickly control the visibility of all items within the sublayer, as per <xref linkend="vis_options"/></para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term><guilabel>Sort</guilabel></term>
+<listitem><para>Gives the ability to sort the items in the treeview alphabetically or by date.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Visibility</guilabel></term>
+<listitem><para>Offers options to quickly control the visibility of all items within the sublayer, as per <xref linkend="vis_options"/></para></listitem>
+</varlistentry>
+</variablelist>
 </section>
 
 <section xreflabel="Track and Route Properties"><title>Track and Route Properties</title>
@@ -1530,19 +1559,47 @@ The record of the Google route is stored in the track's comment, so if the comme
 
 <section><title>Waypoint Sublayer Options</title>
 <para>Repeats options available at the TrackWaypoint level, but only those for waypoints:</para>
-<itemizedlist>
-<listitem><para>New Waypoint. Same as the layer <link linkend="new_wp">New Waypoint</link></para></listitem>
-<listitem><para>View All Waypoints. Same as the layer <link linkend="wp_view_all">View All Waypoints</link></para></listitem>
-<listitem><para>Goto Waypoint. Same as the layer <link linkend="wp_goto">Goto Waypoint</link></para></listitem>
-<listitem><para>Delete All Waypoints. Same as the layer <link linkend="delete_all_waypoints">Delete All Waypoints</link></para></listitem>
-<listitem><para>Delete Waypoints from Selection. Same as the layer <link linkend="delete_selection_waypoints">Delete Waypoints from Selection</link></para></listitem>
-<listitem><para>List Waypoints. Opens a new dialog with the list. As described in the Aggregrate layer <xref linkend="waypoint_list"/></para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term><guilabel>New Waypoint</guilabel></term>
+<listitem><para>Same as the layer <link linkend="new_wp">New Waypoint</link></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>View All Waypoints</guilabel></term>
+<listitem><para>Same as the layer <link linkend="wp_view_all">View All Waypoints</link></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Goto Waypoint</guilabel></term>
+<listitem><para>Same as the layer <link linkend="wp_goto">Goto Waypoint</link></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Delete All Waypoints</guilabel></term>
+<listitem><para>Same as the layer <link linkend="delete_all_waypoints">Delete All Waypoints</link></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Delete Waypoints from Selection</guilabel></term>
+<listitem><para>Same as the layer <link linkend="delete_selection_waypoints">Delete Waypoints from Selection</link></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Delete Duplicate Waypoints</guilabel></term>
+<listitem><para>Same as the layer <link linkend="delete_duplicate_waypoints">Delete Duplicate Waypoints</link></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>List Waypoints</guilabel></term>
+<listitem><para>Opens a new dialog with the list. As described in the Aggregrate layer <xref linkend="waypoint_list"/></para></listitem>
+</varlistentry>
+</variablelist>
 <para>Also gives other options for handling multiple items:</para>
-<itemizedlist>
-<listitem><para>Sort. Gives the ability to sort the items in the treeview alphabetically or by date.</para></listitem>
-<listitem><para>Visibility. Offers options to quickly control the visibility of all items within the sublayer, as per <xref linkend="vis_options"/></para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term><guilabel>Sort</guilabel></term>
+<listitem><para>Gives the ability to sort the items in the treeview alphabetically or by date.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Visibility</guilabel></term>
+<listitem><para>Offers options to quickly control the visibility of all items within the sublayer, as per <xref linkend="vis_options"/></para></listitem>
+</varlistentry>
+</variablelist>
 </section>
 
 <section><title>Waypoint Properties</title>
@@ -1749,25 +1806,49 @@ Of course you need to have acquired or generated these tilesets yourself.
 <para>
 Configurable properties:
 </para>
-<itemizedlist>
+<variablelist>
+<varlistentry>
+<term><guilabel>Map Type</guilabel></term>
 <listitem>
-	<para>Map Type. The kind of map this layer displays.</para>
+	<para>The kind of map this layer displays.</para>
 	<note><para>Map types are dependent on the current <xref linkend="projection"/> mode.</para></note>
 </listitem>
-<listitem><para>Maps Directory. Not applicable for MBTiles Map type since it is a single file.</para></listitem>
-<listitem><para>Cache Layout. Viking or OSM. See <xref linkend="mapcache"/>. Only applies to maps from online tile providers.</para></listitem>
-<listitem><para>Map File. Ony applicable for MBTiles Map type since it is a single file.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Maps Directory</guilabel></term>
+<listitem><para>Not applicable for MBTiles Map type since it is a single file.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Cache Layout</guilabel></term>
+<listitem><para>Viking or OSM. See <xref linkend="mapcache"/>. Only applies to maps from online tile providers.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Map File</guilabel></term>
+<listitem><para>Ony applicable for MBTiles Map type since it is a single file.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Alpha</guilabel></term>
 <listitem>
-	<para>Alpha. Control the Alpha value for transparency effect using a value between 0 and 255 with the default being 255 for a fully solid image.</para>
+	<para>Control the Alpha value for transparency effect using a value between 0 and 255 with the default being 255 for a fully solid image.</para>
 	<para>Zero is fully transparent. A value of around 160 can be useful for blending views of multiple map layers (when applied to the upper most map layer).</para>
 </listitem>
-<listitem><para>Autodownload Maps. This can be useful to turn off when you are not online to avoid pointless download requests or may be keep a map in a 'historical' state.
+</varlistentry>
+<varlistentry>
+<term><guilabel>Autodownload Maps</guilabel></term>
+<listitem><para>This can be useful to turn off when you are not online to avoid pointless download requests or may be keep a map in a 'historical' state.
 e.g. perhaps in case a current map rendering is broken.</para></listitem>
-<listitem><para>Autodownload Only Gets Missing Maps. Using this option avoids attempting to update already acquired tiles.
+</varlistentry>
+<varlistentry>
+<term><guilabel>Autodownload Only Gets Missing Maps</guilabel></term>
+<listitem><para>Using this option avoids attempting to update already acquired tiles.
 This can be useful if you want to restrict the network usage, without having to resort to manual control. Only applies when <emphasis>Autodownload Maps</emphasis> is on.</para></listitem>
-<listitem><para>Zoom Level. Determines the method of displaying map tiles for the current zoom level.
+</varlistentry>
+<varlistentry>
+<term><guilabel>Zoom Level</guilabel></term>
+<listitem><para>Determines the method of displaying map tiles for the current zoom level.
 <emphasis>Viking Zoom Level</emphasis> uses the best matching level, otherwise setting a fixed value will always use map tiles of the specified value regardless of the actual zoom level.</para></listitem>
-</itemizedlist>
+</varlistentry>
+</variablelist>
 </section><!-- Map Prop END -->
 
 
@@ -1875,12 +1956,24 @@ You can also rearrange the columns via dragging the column header to the new loc
 </para>
 <para>
 This table may be invoked from a variety of different layer levels and will then list only the relevant tracks (and/or routes).
-<itemizedlist>
-<listitem><para>Aggregate Layer: Lists Tracks and Routes and the TrackWaypoint Layer they are in</para></listitem>
-<listitem><para>TrackWaypoint Layer: Lists Tracks and Routes</para></listitem>
-<listitem><para>TrackWaypoint Track sublayer: Lists Tracks only</para></listitem>
-<listitem><para>TrackWaypoint Route sublayer: Lists Routes only</para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term>Aggregate Layer</term>
+<listitem><para>Lists Tracks and Routes and the TrackWaypoint Layer they are in</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>TrackWaypoint Layer</term>
+<listitem><para>Lists Tracks and Routes</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>TrackWaypoint Track sublayer</term>
+<listitem><para>Lists Tracks only</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>TrackWaypoint Route sublayer</term>
+<listitem><para>Lists Routes only</para></listitem>
+</varlistentry>
+</variablelist>
 </para>
 <para>
 <figure>
@@ -1901,11 +1994,20 @@ Hovering the mouse over an entry will show a tooltip of the comment or descripti
 </para>
 <para>
 Each entry in the track list can be selected and on mouse right click offers these options:
-<itemizedlist>
-<listitem><para>View. Move the viewport to the area of the item and highlight it.</para></listitem>
-<listitem><para>Statistics. Opens the Properties dialog on the <xref linkend="track_statistics"/> tab. Note this will close the track list dialog.</para></listitem>
-<listitem><para>Copy Data. Copy the data fields as text.</para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term><guilabel>View</guilabel></term>
+<listitem><para>Move the viewport to the area of the item and highlight it.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Statistics</guilabel></term>
+<listitem><para>Opens the Properties dialog on the <xref linkend="track_statistics"/> tab. Note this will close the track list dialog.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Copy Data</guilabel></term>
+<listitem><para>Copy the data fields as text.</para></listitem>
+</varlistentry>
+</variablelist>
 </para>
 <para>
 If multiple entries are selected the only right click option is <emphasis>Copy Data</emphasis>.
@@ -1922,11 +2024,20 @@ You can also rearrange the columns via dragging the column header to the new loc
 </para>
 <para>
 This table may be invoked from a variety of different layer levels and will then list only the relevant waypoints.
-<itemizedlist>
-<listitem><para>Aggregate Layer: Lists Waypoints and the TrackWaypoint Layer they are in</para></listitem>
-<listitem><para>TrackWaypoint Layer: : Lists Waypoints</para></listitem>
-<listitem><para>TrackWaypoint Waypoint sublayer: Lists Waypoints</para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term>Aggregate Layer</term>
+<listitem><para>Lists Waypoints and the TrackWaypoint Layer they are in</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>TrackWaypoint Layer</term>
+<listitem><para>Lists Waypoints</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>TrackWaypoint Waypoint sublayer</term>
+<listitem><para>Lists Waypoints</para></listitem>
+</varlistentry>
+</variablelist>
 </para>
 <para>
 <figure>
@@ -1946,12 +2057,24 @@ Hovering the mouse over an entry will show a tooltip of the description if it is
 </para>
 <para>
 Each entry in the list can be selected and on mouse right click offers these options:
-<itemizedlist>
-<listitem><para>View. Move the viewport to the area of the item and highlight it.</para></listitem>
-<listitem><para>Properties. This will open the properties dialog. Note this will close the waypoint list dialog.</para></listitem>
-<listitem><para>Show Picture. If enabled, this will open the associated image in an external Image Viewer program.</para></listitem>
-<listitem><para>Copy Data. Copy the data fields as text.</para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term><guilabel>View</guilabel></term>
+<listitem><para>Move the viewport to the area of the item and highlight it.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Properties</guilabel></term>
+<listitem><para>This will open the properties dialog. Note this will close the waypoint list dialog.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Show Picture</guilabel></term>
+<listitem><para>If enabled, this will open the associated image in an external Image Viewer program.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Copy Data</guilabel></term>
+<listitem><para>Copy the data fields as text.</para></listitem>
+</varlistentry>
+</variablelist>
 </para>
 <para>
 If multiple entries are selected the only right click option is <emphasis>Copy Data</emphasis>.
@@ -1963,11 +2086,20 @@ Note that the order of the fields copied is the default column ordering (irrespe
 <section id="vis_options" xreflabel="Visibility Options"><title>Visibility Options</title>
 <para>
 This offers a quick way to set all the visibilities of each item within the containing layer, rather than having to change each one individually.
-<itemizedlist>
-<listitem><para>Show All. Ensures all items are set to be visible.</para></listitem>
-<listitem><para>Hide All. Ensures all items are set to be invisible. This is useful for then turning on single items afterwards so the display is not cluttered.</para></listitem>
-<listitem><para>Toggle. Inverts the visibility status of each item.</para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term><guilabel>Show All</guilabel></term>
+<listitem><para>Ensures all items are set to be visible.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Hide All</guilabel></term>
+<listitem><para>Ensures all items are set to be invisible. This is useful for then turning on single items afterwards so the display is not cluttered.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Toggle</guilabel></term>
+<listitem><para>Inverts the visibility status of each item.</para></listitem>
+</varlistentry>
+</variablelist>
 </para>
 </section>
 
@@ -2287,11 +2419,20 @@ Right-click to redownload tiles via the selected method. Right-click and drag to
 The possible methods to redownload one or more tiles are:
 </para>
 <para>
-<itemizedlist>
-<listitem><para>Bad - Only if the tile is corrupt in some way or missing, then this will download a new copy</para></listitem>
-<listitem><para>New - Refresh the tile according to the local map cache and if server has a newer version</para></listitem>
-<listitem><para>All - Redownload the tile</para></listitem>
-</itemizedlist>
+<variablelist>
+<varlistentry>
+<term>Bad</term>
+<listitem><para>Only if the tile is corrupt in some way or missing, then this will download a new copy</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>New</term>
+<listitem><para>Refresh the tile according to the local map cache and if server has a newer version</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>All</term>
+<listitem><para>Redownload the tile</para></listitem>
+</varlistentry>
+</variablelist>
 </para>
 <formalpara><title>Map Tile Information</title>
 <para>
@@ -2483,15 +2624,45 @@ Hopefully a simplified track will be more useful to follow to your destination w
 	The number of recent files shown in the <menuchoice><guimenu>File</guimenu><guisubmenu>Open Recent File</guisubmenu></menuchoice> menu.
 	A value of -1 means all files. The new value applies to New Windows only (or on application restart).
 </para>
+<section><title>Open files in selected layer</title>
+<para>A setting to control whether non Viking format files (i.e. typically GPX or KML files) will open in the selected TrackWaypoint Layer.
+When no TrackWaypoint Layer is selected (or the layer is invisibile) then the file will be open in the default manner: at the top level.
+</para>
+</section>
 </section>
 </section>
 
 <section id="prefs_osm" xreflabel="OpenStreetMap Traces Preferences"><title>OpenStreetMap Traces</title>
-<section><title>OSM Username + Password</title>
+<section><title>OAuth Method</title>
+<para>
+  Using the <ulink url="https://en.wikipedia.org/wiki/OAuth">OAuth</ulink> method means that your OSM account details are no longer needed to be known by &appname;.
+  Instead specific tokens are generated for use only by &appname; which are associated with your OSM account.
+</para>
+<para><emphasis role="bold"><guibutton>Get New OSM Access Tokens</guibutton></emphasis>
+  Use this button to generate a new OSM Access Token Key and Secret.
+  You will be redirected to the OSM website to confirm allowing &appname; to access the GPX Traces features.
+  The tokens returned by the OSM website will be stored in the Access Token Key + Access Token Secret preferences.
+</para>
+<para><emphasis role="bold">Access Token Key + Access Token Secret</emphasis>:
+These are the values used, however one typically does not need to manually change them.</para>
+</section>
+<section><title>HTTP Basic Authentication (Discouraged)</title>
+<para><emphasis role="bold">OSM Username + Password</emphasis></para>
 <para>Store your OSM details here, so that you don't need to enter it in every time in the <xref linkend="osm_upload"/> procedure.</para>
+<para>This is not recommended and one should use the <ulink url="https://en.wikipedia.org/wiki/OAuth">OAuth</ulink> method using access tokens described above.</para>
 <warning>
 <para>
 Your OSM password will be stored in plain text.
+</para>
+</warning>
+<warning>
+<para>
+This password is transferred <emphasis role="bold">unencrypted</emphasis> in every request sent to the OpenStreetMap server. This is due to the use of OpenStreetMap's basic authentication method.
+</para>
+</warning>
+<warning>
+<para>
+When OAuth capability is built into &appname; (the default), use of HTTP Basic Authentication can only be used if the <xref linkend="misc_settings"/> <emphasis>osm_basic_auth</emphasis> is enabled.
 </para>
 </warning>
 </section>
@@ -2548,16 +2719,28 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 </section>
 <section><title>Startup Method</title>
 <para>Enables selection of how the startup position should be determined.</para>
-<itemizedlist>
-<listitem><para>Home Location (default) - Position as set by the <guilabel>Set the Default Location</guilabel></para></listitem>
-<listitem><para>Last Location - Uses the last position viewed on the viewport</para></listitem>
-<listitem><para>Specified File - Load the file as specified below</para></listitem>
+<variablelist>
+<varlistentry>
+<term>Home Location (default)</term>
+<listitem><para>Position as set by the <guilabel>Set the Default Location</guilabel></para></listitem>
+</varlistentry>
+<varlistentry>
+<term>Last Location</term>
+<listitem><para>Uses the last position viewed on the viewport</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>Specified File</term>
+<listitem><para>Load the file as specified below</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>Auto Location</term>
 <listitem>
-	<para>Auto Location - Uses the <ulink url="https://www.freedesktop.org/wiki/Software/GeoClue">GeoClue</ulink> service if available
+	<para>Uses the <ulink url="https://www.freedesktop.org/wiki/Software/GeoClue">GeoClue</ulink> service if available
 	or otherwise the web service <ulink url="http://www.hostip.info">hostip.info</ulink> to attempt to determine your location via IP lookup
 	</para>
 </listitem>
-</itemizedlist>
+</varlistentry>
+</variablelist>
 </section>
 <section><title>Startup File</title>
 <para>Loads this specified file when the Startup method is set to <guilabel>Specified File</guilabel></para>
@@ -2572,10 +2755,10 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 <para>Allows setting the toolbar on the same vertical space as the menu, thus increasing vertical space for the map.</para>
 </section>
 <section><title>Icon Size</title>
-<para>Allows configuration of the icon size, including overiding the system's default preference to the setting desired just for &appname;</para>
+<para>Allows configuration of the icon size, including overiding the system's default preference to the setting desired just for &appname;.</para>
 </section>
 <section><title>Icon Style</title>
-<para>Allows configuration of the icon style, including overiding the system's default preference to the setting desired just for &appname;</para>
+<para>Allows configuration of the icon style, including overiding the system's default preference to the setting desired just for &appname;.</para>
 </section>
 <section id="prefs_toolbar_customize" xreflabel="Customize Toolbar"><title>Customize</title>
 <para>Opens the Customize Toolbar dialog.</para>
@@ -2864,8 +3047,11 @@ Do not forget to save your configuration (as discussed above).
 <section><title>OpenStreetMap project</title>
 <para>
 <ulink url="http://openstreetmap.org/">OpenStreetMap (OSM)</ulink> is a collaborative project to create a free editable map of the world.
-One of sources of data for this project is GPS tracks.
+One of the sources of data for this project is GPS tracks.
 &appname; supports this project via the GPS Traces methods, both uploading and downloading such data.
+</para>
+<para>
+  Authentication/authorization is required to use these services. See <xref linkend="prefs_osm"/>.
 </para>
 <para>
 Also see <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for further detail.
@@ -2891,13 +3077,10 @@ Then select <guimenuitem>Upload to OSM</guimenuitem>.
 <formalpara>
 <title>Fill in the form</title>
 <para>
-In both cases, &appname; will retain some information.
-The email field is the email you used to subscribed into OpenStreetMap.
-The password field is the password you used with this account.
 The filename is the name you want your upload has on the server. This information is displayed by the osm server.
 The description is some descriptive information.
-The tags field is a white separated list of tags.
-</para> 
+The tags field is a white space separated list of tags.
+</para>
 </formalpara>
 </section>
 
@@ -2925,8 +3108,7 @@ Increasing the page number parameter allows one to request the subsequent sets o
 It is possible to download any of <emphasis>your personal</emphasis> GPS traces previously uploaded to OpenStreetMap into &appname;.
 </para>
 <para>
-You will need to provide your OSM username and password to get the list of your OSM Traces.
-From this list you can select which traces to retrieve.
+Initially this will return the list of your OSM Traces, from which you can select which specific traces to retrieve.
 This list can be sorted on each column so that it easier to find an individual trace or select a group of traces by similar properties.
 </para>
 </section>
@@ -3245,6 +3427,15 @@ Accept: */*
               <term>tilesize-y (optional)</term>
               <listitem><para>The tile y size. The default is 256 pixels if not specified.</para></listitem>
             </varlistentry>
+            <varlistentry>
+              <term>scale (optional)</term>
+              <listitem>
+		<para>The tile scale. The scale is 1 if not specified.</para>
+                <note><para>Use a value of 2 to represent high res tiles.
+		Don't change the tilesize as the internal display size is still based on 256 pixels.
+		</para></note>
+              </listitem>
+            </varlistentry>
           </variablelist>
         </para>
         <para>The <classname>VikTmsMapSource</classname> allows to declare any TMS service. It supports the following properties (as per VikSlippyMapSource above):
@@ -3524,7 +3715,7 @@ Accept: */*
       </section>
 
 
-      <section id="misc_settings" xreflabel="viking.ini file settings">
+      <section id="misc_settings" xreflabel="Miscellaneous Settings">
         <title>Miscellaneous Settings</title>
         <para>Various individual values are automatically saved between &app; sessions in the <filename>~/.viking/viking.ini</filename> file.</para>
         <para>This file is not intended to be manually edited, but since it is a plain text file it can be changed if desired.</para>
@@ -3585,6 +3776,10 @@ Accept: */*
 	    <para>mapnik_buffer_size=128 (in pixels)</para>
 	  </listitem>
 	  <listitem>
+	    <para>osm_basic_auth=false</para>
+	    <para>Set to true to force the use of HTTP Basic Authenication even when OAuth is available</para>
+	  </listitem>
+	  <listitem>
 	    <para>background_max_threads=10</para>
 	  </listitem>
 	  <listitem>
@@ -3626,6 +3821,12 @@ Accept: */*
 	    <para>
 	      Go Back or Go Forward requests over this range from the last history location will move back to that position.
 	      If within this range it will skip over this location and move on to the next saved history location.
+	    </para>
+	  </listitem>
+	  <listitem>
+	    <para>viewport_scale=1</para>
+	    <para>
+	      If Viking doesn't automatically detect a high resolution display, you can force the setting here - typically by setting this to 2.
 	    </para>
 	  </listitem>
 	  <listitem>

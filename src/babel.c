@@ -430,6 +430,13 @@ gboolean a_babel_convert_from_url_filter ( VikTrwLayer *vt, const char *url, con
           g_free ( dirpath );
           fclose(f);
         }
+        // Try to avoid adding the description if URL is OAuth signed
+        if ( !g_ascii_strncasecmp(url, "?oauth_consumer_key=", 20) ) {
+          VikTRWMetadata *meta = vik_trw_layer_get_metadata(vt);
+          if ( meta && !meta->description ) {
+            meta->description = g_strdup ( url );
+          }
+        }
       }
     }
     (void)util_remove(name_src);

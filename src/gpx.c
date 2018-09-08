@@ -524,11 +524,10 @@ static void gpx_end(UserDataT *ud, const char *el)
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
-     case tt_wpt_sym: {
+     case tt_wpt_sym:
        vik_waypoint_set_symbol ( c_wp, c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
        break;
-       }
 
      case tt_trk_desc:
        vik_track_set_description ( c_tr, c_cdata->str );

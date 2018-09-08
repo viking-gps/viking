@@ -155,9 +155,8 @@ gboolean a_preferences_save_to_file()
   gchar *fn = g_build_filename(a_get_viking_dir(), VIKING_PREFS_FILE, NULL);
 
   FILE *f = g_fopen(fn, "w");
-  /* Since preferences files saves OSM login credentials,
-   * it'll be better to store it in secret.
-   */
+  // Since preferences file may contain sensitive information,
+  //  it'll be better to store it so it can only be read by the user
   if ( g_chmod(fn, 0600) != 0 )
     g_warning ( "%s: Failed to set permissions on %s", __FUNCTION__, fn );
   g_free ( fn );
@@ -255,4 +254,67 @@ VikLayerParamData *a_preferences_get(const gchar *key)
     loaded = TRUE;
   }
   return g_hash_table_lookup ( values, key );
+}
+
+/**
+ * a_preferences_get_param:
+ * @key: The name of a preference
+ *
+ * Returns the #VikLayerParam of the specified preference.
+ * This may be NULL if the preference doesn't exist.
+ */
+VikLayerParam *a_preferences_get_param(const gchar *key)
+{
+  if ( ! loaded ) {
+    g_debug ( "%s: First time: %s\n", __FUNCTION__, key );
+    preferences_load_from_file();
+    loaded = TRUE;
+  }
+  // Search GPtrArray *params for the name
+  for ( int ii = 0; ii < params->len; ii++ ) {
+    VikLayerParam *param = (VikLayerParam*)g_ptr_array_index ( params,ii );
+    if ( g_strcmp0 (key, param->name) == 0 )
+      return param;
+  }
+  return NULL;
+}
+
+/**
+ * a_preferences_lookup:
+ * @key: The name of a preference
+ *
+ * See if a key exists in the preferences file
+ *  (without actually processing the file into preferences)
+ */
+gboolean a_preferences_lookup(const gchar *key)
+{
+  gchar *fn = g_build_filename(a_get_viking_dir(), VIKING_PREFS_FILE, NULL);
+  FILE *f = g_fopen(fn, "r");
+  g_free ( fn );
+
+  gboolean ans = FALSE;
+
+  if ( f ) {
+    gchar buf[4096];
+    gchar *fkey = NULL;
+    gchar *val = NULL;
+    gboolean exit_now = FALSE;
+
+    while ( ! feof (f) ) {
+      if (fgets(buf,sizeof(buf),f) == NULL)
+        break;
+      if ( split_string_from_file_on_equals ( buf, &fkey, &val ) ) {
+        if ( g_strcmp0 (key, fkey) == 0 ) {
+          ans = TRUE;
+          exit_now = TRUE;
+        }
+        g_free(fkey);
+        g_free(val);
+        if ( exit_now )
+          break;
+      }
+    }
+    fclose(f);
+  }
+  return ans;
 }

@@ -23,6 +23,7 @@
 #endif
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <time.h>
@@ -38,13 +39,22 @@
 #include "viktrwlayer.h"
 #include "osm-traces.h"
 #include "gpx.h"
+#include "ui_util.h"
 #include "background.h"
 #include "preferences.h"
+#include "curl_download.h"
+#ifdef HAVE_OAUTH_H
+#include <oauth.h>
+#endif
 
-/* params will be osm_traces.username, osm_traces.password */
-/* we have to make sure these don't collide. */
 #define VIKING_OSM_TRACES_PARAMS_GROUP_KEY "osm_traces"
 #define VIKING_OSM_TRACES_PARAMS_NAMESPACE "osm_traces."
+
+#define OSM_USERNAME VIKING_OSM_TRACES_PARAMS_NAMESPACE"username"
+#define OSM_PASSWORD VIKING_OSM_TRACES_PARAMS_NAMESPACE"password"
+#define OSM_ACCESS_BUTTON VIKING_OSM_TRACES_PARAMS_NAMESPACE"NOTSAVEDaccessbutton"
+#define OSM_ACCESS_TOKEN_KEY VIKING_OSM_TRACES_PARAMS_NAMESPACE"access_token_key"
+#define OSM_ACCESS_TOKEN_SECRET VIKING_OSM_TRACES_PARAMS_NAMESPACE"access_token_secret"
 
 #define VIK_SETTINGS_OSM_TRACE_VIS "osm_trace_visibility"
 #define VIK_SETTINGS_OSM_TRACE_URL "osm_trace_url"
@@ -95,8 +105,11 @@ typedef struct _OsmTracesInfo {
 } OsmTracesInfo;
 
 static VikLayerParam prefs[] = {
-  { VIK_LAYER_NUM_TYPES, VIKING_OSM_TRACES_PARAMS_NAMESPACE "username", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("OSM username:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, NULL, NULL, NULL },
-  { VIK_LAYER_NUM_TYPES, VIKING_OSM_TRACES_PARAMS_NAMESPACE "password", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("OSM password:"), VIK_LAYER_WIDGET_PASSWORD, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, OSM_ACCESS_BUTTON, VIK_LAYER_PARAM_PTR, VIK_LAYER_GROUP_NONE, N_("Access Token:"), VIK_LAYER_WIDGET_BUTTON, N_("Get New OSM Access Tokens"), NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, OSM_ACCESS_TOKEN_KEY, VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Access Token Key:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, OSM_ACCESS_TOKEN_SECRET, VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Access Token Secret:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, OSM_USERNAME, VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("OSM username:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, OSM_PASSWORD, VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("OSM password:"), VIK_LAYER_WIDGET_PASSWORD, NULL, NULL, NULL, NULL, NULL, NULL },
 };
 
 /**
@@ -145,16 +158,245 @@ gchar *osm_get_login()
   return user_pass;
 }
 
+#ifdef HAVE_OAUTH_H
+#define OSM_OAUTH_BASE_URL "https://www.openstreetmap.org/oauth"
+//
+// Viking registered using https://sourceforge.net/projects/viking
+//   via 'https://www.openstreetmap.org/user/username/oauth_clients/new'
+//
+// https://wiki.openstreetmap.org/wiki/OAuth
+//
+static const gchar *viking_consumer_key = "bAUxFBhGSzwXo9R43gJ1JXqx8cVphItXLo0PsRV3";
+static const gchar *viking_consumer_secret = "DKWT1ydfZUF9VpiUVkMn3p7faIaUB2cBawh86a0z"; // Not exactly a secret as publically viewable right here!
+
+/**
+ * split and parse URL parameters replied by the server
+ * into <em>oauth_token</em> and <em>oauth_token_secret</em>.
+ */
+static gboolean liboauth_parse_reply ( const char *reply, gchar **token, gchar **secret )
+{
+	int rc;
+	gboolean parsed = FALSE;
+	char **rv = NULL;
+	rc = oauth_split_url_parameters ( reply, &rv );
+	qsort ( rv, rc, sizeof(char *), oauth_cmpstringp );
+	if ( rc==2
+	     && !strncmp(rv[0],"oauth_token=",11)
+	     && !strncmp(rv[1],"oauth_token_secret=",18) ) {
+		parsed = TRUE;
+		if (token)
+			*token = g_strdup ( &(rv[0][12]) );
+		if (secret)
+			*secret = g_strdup ( &(rv[1][19]) );
+	}
+	g_free ( rv );
+	return parsed;
+}
+
+/**
+ * Get new OAUTH access tokens from OSM
+ */
+static gint get_new_access_tokens ( gchar *request_token_key, gchar *request_token_secret, gchar **access_token_key, gchar **access_token_secret )
+{
+	gchar *access = oauth_sign_url2 ( OSM_OAUTH_BASE_URL"/access_token",
+	                                  NULL, OA_HMAC, NULL, viking_consumer_key, viking_consumer_secret, request_token_key, request_token_secret );
+	char* reply = curl_download_get_ptr ( access, NULL );
+	free ( access );
+
+	if ( !reply )
+		return -1;
+
+	if ( !liboauth_parse_reply ( reply, access_token_key, access_token_secret ) )
+		return -2;
+	free ( reply );
+
+	g_debug ( *access_token_key );
+	g_debug ( *access_token_secret );
+
+	return 0;
+}
+
+/**
+ * Get new OAUTH request tokens from OSM
+ */
+static gint get_request_tokens ( gchar **token_key, gchar **token_secret )
+{
+	char *request = oauth_sign_url2 ( OSM_OAUTH_BASE_URL"/request_token",
+	                                  NULL, OA_HMAC, NULL, viking_consumer_key, viking_consumer_secret, NULL, NULL );
+	char* reply = curl_download_get_ptr ( request, NULL );
+	free ( request );
+
+	if ( !reply )
+		return -1;
+
+	if ( !liboauth_parse_reply ( reply, token_key, token_secret ) )
+		return -2;
+	free ( reply );
+
+	g_debug ( *token_key );
+	g_debug ( *token_secret );
+
+	return 0;
+}
+
+/**
+ * Returns the Authorization URL for OSM
+ */
+static gchar* get_authorize_url ( gchar *request_token_key )
+{
+	return g_strdup_printf ( "%s?oauth_token=%s", OSM_OAUTH_BASE_URL"/authorize", request_token_key );
+}
+
+/**
+ * Start request for New OSM Access Token
+ */
+static void new_access_token_cb ( )
+{
+  GtkWindow *parent = GTK_WINDOW(a_vik_window_get_a_window());
+
+  const gchar *access_token_key_pref = a_preferences_get(OSM_ACCESS_TOKEN_KEY)->s;
+  const gchar *access_token_secret_pref = a_preferences_get(OSM_ACCESS_TOKEN_SECRET)->s;
+  if ( access_token_key_pref && access_token_secret_pref &&
+       strlen(access_token_key_pref) > 1 && strlen(access_token_secret_pref) > 1 ) {
+
+    // Check to really override existing values...
+    if ( !a_dialog_yes_or_no(parent, _("Do you want to overwrite existing values?"), NULL) )
+      return;
+  }
+
+  gchar *request_key = NULL;
+  gchar *request_secret = NULL;
+  // Request
+  gint grt = get_request_tokens ( &request_key, &request_secret );
+  if ( grt != 0 )
+     g_warning ( "get_request_tokens() returned %d", grt );
+
+  if ( !request_key || !request_secret ) {
+    a_dialog_error_msg ( parent, _("Not able to generate OSM request tokens.") );
+    return;
+  }
+
+  // JOSM uses some kind of Out of Bound 'OOB' method which doesn't direct the user to the webpage.
+  // However I'm unclear how this works at a low level
+  // it's possible that liboauth doesn't support this 1.0A feature anyway
+
+  // Auto authorize if possible...
+  // gboolean authorized = liboauth_authorize_url ( request_key );
+  // if ( !authorized ) {
+  //   msg();
+  //   return;
+  // }
+
+  // So for now just direct user to OSM website (you will have to enter credentials there & grant permissions)
+  gchar *authorize_url = get_authorize_url ( request_key );
+  g_debug ( authorize_url );
+  if ( authorize_url ) {
+    gtk_show_uri ( gdk_screen_get_default(), authorize_url, GDK_CURRENT_TIME, NULL );
+  }
+  g_free ( authorize_url );
+
+  GtkWidget *dialog = gtk_message_dialog_new ( parent, GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_WARNING, GTK_BUTTONS_OK_CANCEL,
+					       _("Waiting for authorization approval.\nEnsure you have granted access at the website before continuing here."));
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
+  if ( gtk_dialog_run(GTK_DIALOG(dialog)) != GTK_RESPONSE_OK ) {
+      gtk_widget_destroy ( dialog );
+      return;
+  }
+  gtk_widget_destroy ( dialog );
+
+  gchar *access_token_key = NULL;
+  gchar *access_token_secret = NULL;
+
+  gint gnat = get_new_access_tokens ( request_key, request_secret, &access_token_key, &access_token_secret );
+  if ( gnat != 0 )
+     g_warning ( "get_new_access_tokens() returned %d", gnat );
+
+  if ( !access_token_key || !access_token_key ) {
+    a_dialog_error_msg ( parent, _("No Authorization.") );
+    return;
+  }
+
+  // Save the values
+  VikLayerParamData vlp_data;
+  VikLayerParam *pref_key = a_preferences_get_param ( OSM_ACCESS_TOKEN_KEY );
+  VikLayerParam *pref_secret = a_preferences_get_param ( OSM_ACCESS_TOKEN_SECRET );
+  if ( !pref_key || !pref_secret ) {
+    g_critical ("%s: preference not found", __FUNCTION__);
+    return;
+  }
+
+  // Unfortunately since the callback mechanism in preferences only allows a function call with no parameters
+  //  we have no way of accessing the dialog to effect any updates, other than closing it
+  a_uibuilder_factory_close ( GTK_RESPONSE_REJECT );
+  // Note since we are in an event handler already, using GTK_RESPONSE_ACCEPT means this signal
+  //  is processed after this current function finishes.
+  // This then in turn means it would save the values from the dialog,
+  //  overwriting the values set here :(
+  // The current side effect is that any other preferences the user has modified in the dialog are lost
+
+  // Now apply the new values
+  vlp_data.s = access_token_key;
+  a_preferences_run_setparam ( vlp_data, pref_key );
+  vlp_data.s = access_token_secret;
+  a_preferences_run_setparam ( vlp_data, pref_secret );
+
+  a_preferences_save_to_file ();
+
+  g_free ( access_token_key );
+  g_free ( access_token_secret );
+
+  // On success mention can remove username/password if they already exist
+  VikLayerParamData *pref_user = a_preferences_get ( OSM_USERNAME );
+  VikLayerParamData *pref_pwd = a_preferences_get ( OSM_PASSWORD );
+
+  if ( pref_user && pref_pwd &&
+       pref_user->s && pref_pwd->s && strlen(pref_user->s) > 1 ) {
+    a_dialog_info_msg ( parent, _("OSM Username and Password preferences are not required anymore. You can now remove them.") );
+    return;
+  }
+}
+
+/**
+ * Free after use
+ */
+gchar* osm_oauth_sign_url ( const gchar* url, const char *method )
+{
+	gchar *signed_url = NULL;
+	const gchar *access_token_key_pref = a_preferences_get(OSM_ACCESS_TOKEN_KEY)->s;
+	const gchar *access_token_secret_pref = a_preferences_get(OSM_ACCESS_TOKEN_SECRET)->s;
+
+	if ( access_token_key_pref && access_token_secret_pref &&
+	     strlen(access_token_key_pref) > 1 && strlen(access_token_secret_pref) > 1 ) {
+		signed_url = oauth_sign_url2 ( url, NULL, OA_HMAC, method, viking_consumer_key, viking_consumer_secret, access_token_key_pref, access_token_secret_pref );
+	}
+	return signed_url;
+}
+#endif
+
 /* initialisation */
 void osm_traces_init () {
   /* Preferences */
   a_preferences_register_group ( VIKING_OSM_TRACES_PARAMS_GROUP_KEY, _("OpenStreetMap Traces") );
 
+  guint ii = 0;
   VikLayerParamData tmp;
+#ifdef HAVE_OAUTH_H
+  tmp.ptr = new_access_token_cb;
+  a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
   tmp.s = "";
-  a_preferences_register(prefs, tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
+  a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
   tmp.s = "";
-  a_preferences_register(prefs+1, tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
+  a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
+#endif
+  // Only register depreciated preferences if they already exist
+  //  or being forced to use the basic method
+  if ( osm_use_basic_auth() ||
+       (a_preferences_lookup("OSM_USERNAME") && a_preferences_lookup(OSM_PASSWORD)) ) {
+    tmp.s = "";
+    a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
+    tmp.s = "";
+    a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
+  }
 
   login_mutex = vik_mutex_new();
 }
@@ -164,13 +406,16 @@ void osm_traces_uninit()
   vik_mutex_free(login_mutex);
 }
 
+#define OSM_GPX_UPLOAD_URL "https://www.openstreetmap.org/api/0.6/gpx/create"
+
 /*
  * Upload a file
  * returns a basic status:
  *   < 0  : curl error
  *   == 0 : OK
  *   > 0  : HTTP error
-  */
+ *   1001 : URL signing error
+ */
 static gint osm_traces_upload_file(const char *user,
 				   const char *password,
 				   const char *file,
@@ -186,12 +431,20 @@ static gint osm_traces_upload_file(const char *user,
   struct curl_httppost *post=NULL;
   struct curl_httppost *last=NULL;
 
-  gchar *base_url = NULL;
-  if ( !a_settings_get_string ( VIK_SETTINGS_OSM_TRACE_URL, &base_url ) )
-    base_url = g_strdup ("https://www.openstreetmap.org/api/0.6/gpx/create");
+  gchar *trace_url = NULL;
+  if ( !a_settings_get_string ( VIK_SETTINGS_OSM_TRACE_URL, &trace_url ) )
+    trace_url = g_strdup ( OSM_GPX_UPLOAD_URL );
 
   gchar *user_pass = osm_get_login();
-
+#ifdef HAVE_OAUTH_H
+  char *base_url = osm_oauth_sign_url ( trace_url, "POST" );
+  if ( !base_url ) {
+      g_free ( trace_url );
+      return 1001;
+  }
+#else
+  char *base_url = trace_url;
+#endif
   gint result = 0; // Default to it worked!
 
   g_debug("%s: %s %s %s %s %s %s %s", __FUNCTION__,
@@ -223,8 +476,15 @@ static gint osm_traces_upload_file(const char *user,
   curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(curl, CURLOPT_HTTPPOST, post);
   curl_easy_setopt(curl, CURLOPT_URL, base_url);
-  curl_easy_setopt(curl, CURLOPT_USERPWD, user_pass);
-  curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+#ifndef HAVE_OAUTH_H
+    curl_easy_setopt(curl, CURLOPT_USERPWD, user_pass);
+    curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+#else
+    if ( osm_use_basic_auth() ) {
+      curl_easy_setopt(curl, CURLOPT_USERPWD, user_pass);
+      curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
+    }
+#endif
   curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, curl_error_buffer);
   curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
   curl_easy_setopt(curl, CURLOPT_MAXREDIRS, 3L);
@@ -258,7 +518,8 @@ static gint osm_traces_upload_file(const char *user,
   /* Memory */
   g_free(base_url);
   g_free(user_pass); user_pass = NULL;
-  
+  g_free(base_url);
+
   curl_formfree(post);
   curl_easy_cleanup(curl);
   return result;
@@ -331,6 +592,9 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
       msg = g_strdup_printf ( "%s (@%s)", _("Uploaded to OSM"), timestr );
     }
     // Use UPPER CASE for bad news :(
+    else if ( ans == 1001 ) {
+      msg = g_strdup_printf ( "%s (@%s)", _("FAILED TO UPLOAD DATA TO OSM - Ensure the OSM access token preferences are setup."), timestr );
+    }
     else if ( ans < 0 ) {
       msg = g_strdup_printf ( "%s (@%s)", _("FAILED TO UPLOAD DATA TO OSM - CURL PROBLEM"), timestr );
     }
@@ -356,22 +620,37 @@ void osm_login_widgets (GtkWidget *user_entry, GtkWidget *password_entry)
     return;
 
   const gchar *default_user = get_default_user();
-  const gchar *pref_user = a_preferences_get(VIKING_OSM_TRACES_PARAMS_NAMESPACE "username")->s;
-  const gchar *pref_password = a_preferences_get(VIKING_OSM_TRACES_PARAMS_NAMESPACE "password")->s;
-
+  VikLayerParamData *pref_user = a_preferences_get ( OSM_USERNAME );
+  VikLayerParamData *pref_password = a_preferences_get ( OSM_PASSWORD );
+ 
   if (osm_user != NULL && osm_user[0] != '\0')
     gtk_entry_set_text(GTK_ENTRY(user_entry), osm_user);
-  else if (pref_user != NULL && pref_user[0] != '\0')
-    gtk_entry_set_text(GTK_ENTRY(user_entry), pref_user);
+  else if (pref_user && pref_user->s && pref_user->s[0] != '\0')
+    gtk_entry_set_text(GTK_ENTRY(user_entry), pref_user->s);
   else if (default_user != NULL)
     gtk_entry_set_text(GTK_ENTRY(user_entry), default_user);
 
   if (osm_password != NULL && osm_password[0] != '\0')
     gtk_entry_set_text(GTK_ENTRY(password_entry), osm_password);
-  else if (pref_password != NULL)
-    gtk_entry_set_text(GTK_ENTRY(password_entry), pref_password);
+  else if (pref_password && pref_password->s)
+    gtk_entry_set_text(GTK_ENTRY(password_entry), pref_password->s);
   /* This is a password -> invisible */
   gtk_entry_set_visibility(GTK_ENTRY(password_entry), FALSE);
+}
+
+#define VIK_SETTINGS_OSM_BASIC_AUTH "osm_basic_auth"
+// Optional way to force basic auth method when OAuth is built in
+gboolean osm_use_basic_auth ( void )
+{
+#ifdef HAVE_OAUTH_H
+  gboolean basic_auth = FALSE;
+  gboolean setting;
+  if ( a_settings_get_boolean ( VIK_SETTINGS_OSM_BASIC_AUTH, &setting ) )
+    basic_auth = setting;
+#else
+  gboolean basic_auth = TRUE;
+#endif
+  return basic_auth;
 }
 
 /**
@@ -401,26 +680,28 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   GtkWidget *anonymize_checkbutton = NULL;
   const OsmTraceVis_t *vis_t;
 
-  user_label = gtk_label_new(_("Email/username:"));
-  user_entry = gtk_entry_new();
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), user_label, FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), user_entry, FALSE, FALSE, 0);
-  gtk_widget_set_tooltip_markup(GTK_WIDGET(user_entry),
+  if ( osm_use_basic_auth() ) {
+    user_label = gtk_label_new(_("Email/username:"));
+    user_entry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), user_label, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), user_entry, FALSE, FALSE, 0);
+    gtk_widget_set_tooltip_markup(GTK_WIDGET(user_entry),
                         _("The email/username used as login\n"
                         "<small>Enter the email/username you use to login into www.openstreetmap.org.</small>"));
 
-  password_label = gtk_label_new(_("Password:"));
-  password_entry = gtk_entry_new();
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), password_label, FALSE, FALSE, 0);
-  gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), password_entry, FALSE, FALSE, 0);
-  gtk_widget_set_tooltip_markup(GTK_WIDGET(password_entry),
+    password_label = gtk_label_new(_("Password:"));
+    password_entry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), password_label, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dia))), password_entry, FALSE, FALSE, 0);
+    gtk_widget_set_tooltip_markup(GTK_WIDGET(password_entry),
                         _("The password used to login\n"
                         "<small>Enter the password you use to login into www.openstreetmap.org.</small>"));
 
-  osm_login_widgets ( user_entry, password_entry );
+    osm_login_widgets ( user_entry, password_entry );
+  }
 
   name_label = gtk_label_new(_("File's name:"));
-  name_entry = gtk_entry_new();
+  name_entry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   if (trk != NULL)
     name = trk->name;
   else
@@ -434,7 +715,7 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
 			"This is not the name of the local file.</small>"));
 
   description_label = gtk_label_new(_("Description:"));
-  description_entry = gtk_entry_new();
+  description_entry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   const gchar *description = NULL;
   if (trk != NULL)
     description = trk->description;
@@ -460,7 +741,7 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   }
 
   tags_label = gtk_label_new(_("Tags:"));
-  tags_entry = gtk_entry_new();
+  tags_entry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   VikTRWMetadata *md = vik_trw_layer_get_metadata (vtl);
   if (md->keywords)
     gtk_entry_set_text(GTK_ENTRY(tags_entry), md->keywords);
@@ -508,9 +789,11 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
   {
     gchar *title = NULL;
 
-    /* overwrite authentication info */
-    osm_set_login(gtk_entry_get_text(GTK_ENTRY(user_entry)),
-                  gtk_entry_get_text(GTK_ENTRY(password_entry)));
+    if ( osm_use_basic_auth() ) {
+      /* overwrite authentication info */
+      osm_set_login(gtk_entry_get_text(GTK_ENTRY(user_entry)),
+                    gtk_entry_get_text(GTK_ENTRY(password_entry)));
+    }
 
     /* Storing data for the future thread */
     OsmTracesInfo *info = g_malloc(sizeof(OsmTracesInfo));

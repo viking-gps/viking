@@ -58,6 +58,8 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
 void * curl_download_handle_init ();
 void curl_download_handle_cleanup ( void * handle );
 
+char* curl_download_get_ptr ( const char *uri, DownloadFileOptions *options );
+
 G_END_DECLS
 
 #endif

@@ -65,4 +65,17 @@
     <property name="lon-min">-5.8</property>
     <property name="lon-max">1.9</property>
   </object>
+
+  <!-- An example of High Res Tile source -->
+  <object class="VikSlippyMapSource">
+    <property name="id">193</property>
+    <property name="name">OSMANDHD</property>
+    <property name="label">OSMAND HD</property>
+    <property name="url">https://tile.osmand.net/hd/%d/%d/%d.png</property>
+    <property name="scale">2</property>
+    <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
+  </object>
+
 </objects>

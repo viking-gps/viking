@@ -153,7 +153,7 @@ gdouble *vik_track_make_elevation_time_map ( const VikTrack *tr, guint16 num_chu
 gdouble *vik_track_make_speed_dist_map ( const VikTrack *tr, guint16 num_chunks );
 gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt );
 void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *len);
-VikTrack *vik_track_unmarshall (guint8 *data, guint datalen);
+VikTrack *vik_track_unmarshall (const guint8 *data_in, guint datalen);
 
 void vik_track_calculate_bounds ( VikTrack *trk );
 

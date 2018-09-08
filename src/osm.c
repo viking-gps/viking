@@ -200,7 +200,7 @@ void osm_init () {
 
   // Datasource
   VikWebtoolDatasource *vwtds = NULL;
-  vwtds = vik_webtool_datasource_new_with_members ( _("OpenStreetMap Notes"), "http://api.openstreetmap.org/api/0.6/notes.gpx?bbox=%s,%s,%s,%s&amp;closed=0", "LBRT", NULL, NULL, NULL );
+  vwtds = vik_webtool_datasource_new_with_members ( _("OpenStreetMap Notes"), "https://api.openstreetmap.org/api/0.6/notes.gpx?bbox=%s,%s,%s,%s&amp;closed=0", "LBRT", NULL, NULL, NULL );
   vik_ext_tool_datasources_register ( VIK_EXT_TOOL ( vwtds ) );
   g_object_unref ( vwtds );
 

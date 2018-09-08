@@ -44,7 +44,11 @@ BuildRequires:	mingw32-libbz2-1
 BuildRequires:	mingw32-sqlite-devel
 BuildRequires:	mingw32-libzip-devel
 BuildRequires:	mingw32-libnettle-devel
+<<<<<<< HEAD
 BuildRequires:	mingw32-libgps-devel
+=======
+BuildRequires:	mingw32-liboauth-devel
+>>>>>>> OAuth 1.0 support for OpenStreetMap usage
 
 # Libs for runtime (and thus also available for the NSIS installer to include the dependencies)
 Requires:	mingw32-gtk2
@@ -56,6 +60,7 @@ Requires:	mingw32-libsqlite3-0
 Requires:	mingw32-libzip4
 Requires:	mingw32-libnettle
 Requires:	mingw32-libgps
+Requires:	mingw32-liboauth
 # Currently running makensis in seperate script - so you will need it then
 #Requires:	mingw32-cross-nsis
 
@@ -100,7 +105,7 @@ popd
 
 %files -f %{_pkg_name}.lang
 %defattr(-,root,root)
-%doc AUTHORS ChangeLog COPYING NEWS README doc/
+%doc AUTHORS ChangeLog COPYING NEWS README.md doc/
 %{_mingw32_bindir}/*%{_pkg_name}.exe
 %{_mingw32_datadir}/applications/%{_pkg_name}.desktop
 %{_mingw32_datadir}/%{_pkg_name}

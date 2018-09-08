@@ -57,7 +57,7 @@ typedef enum {
   VIK_STATUSBAR_NUM_TYPES
 } vik_statusbar_type_t;
 
-VikStatusbar *vik_statusbar_new ();
+VikStatusbar *vik_statusbar_new ( guint scale );
 void vik_statusbar_set_message ( VikStatusbar *vs, vik_statusbar_type_t field, const gchar *message );
 
 G_END_DECLS

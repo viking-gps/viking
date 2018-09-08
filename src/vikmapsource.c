@@ -70,6 +70,7 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	klass->get_label = NULL;
 	klass->get_tilesize_x = NULL;
 	klass->get_tilesize_y = NULL;
+	klass->get_scale = NULL;
 	klass->get_drawmode = NULL;
 	klass->is_direct_file_access = NULL;
 	klass->is_mbtiles = NULL;
@@ -221,6 +222,19 @@ vik_map_source_get_tilesize_y (VikMapSource *self)
 	g_return_val_if_fail (klass->get_tilesize_y != NULL, (guint16 )0);
 
 	return (*klass->get_tilesize_y)(self);
+}
+
+gdouble
+vik_map_source_get_scale (VikMapSource *self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, (gdouble)1.0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), (gdouble)1.0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_scale != NULL, (gdouble)1.0);
+
+	return (*klass->get_scale)(self);
 }
 
 VikViewportDrawMode

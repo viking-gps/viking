@@ -2,8 +2,8 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (C) 2011, Rob Norris <rw_norris@hotmail.com>
  * Copyright (C) 2012, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2018, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -123,33 +123,24 @@ vik_statusbar_init (VikStatusbar *vs)
   }
 
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_TOOL], FALSE, FALSE, 1);
-  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_TOOL], 125, -1 );
 
   g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_ITEMS]), "clicked", G_CALLBACK (forward_signal), vs);
   gtk_button_set_relief ( GTK_BUTTON(vs->status[VIK_STATUSBAR_ITEMS]), GTK_RELIEF_NONE );
   gtk_widget_set_tooltip_text (GTK_WIDGET (vs->status[VIK_STATUSBAR_ITEMS]), _("Current number of background tasks. Click to see the background jobs."));
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_ITEMS], FALSE, FALSE, 1);
-  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_ITEMS], 100, -1 );
 
   g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_ZOOM]), "clicked", G_CALLBACK (forward_signal), vs);
   gtk_button_set_relief ( GTK_BUTTON(vs->status[VIK_STATUSBAR_ZOOM]), GTK_RELIEF_NONE );
   gtk_widget_set_tooltip_text (GTK_WIDGET (vs->status[VIK_STATUSBAR_ZOOM]), _("Current zoom level. Click to select a new one."));
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_ZOOM], FALSE, FALSE, 1);
-  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_ZOOM], 100, -1 );
 
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_POSITION], FALSE, FALSE, 1);
-  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_POSITION], 275, -1 );
 
   g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_INFO]), "button-release-event", G_CALLBACK (button_release_event), vs);
   g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_INFO]), "clicked", G_CALLBACK (forward_signal), vs);
   gtk_widget_set_tooltip_text (GTK_WIDGET (vs->status[VIK_STATUSBAR_INFO]), _("Left click to clear the message. Right click to copy the message."));
   gtk_button_set_alignment ( GTK_BUTTON(vs->status[VIK_STATUSBAR_INFO]), 0.0, 0.5 ); // Left align the text
   gtk_box_pack_end ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_INFO], TRUE, TRUE, 1);
-
-  // Set minimum overall size
-  //  otherwise the individual size_requests above create an implicit overall size,
-  //  and so one can't downsize horizontally as much as may be desired when the statusbar is on
-  gtk_widget_set_size_request ( GTK_WIDGET(vs), 50, -1 );
 }
 
 /**
@@ -160,9 +151,18 @@ vik_statusbar_init (VikStatusbar *vs)
  * Return value: the new #VikStatusbar widget.
  **/
 VikStatusbar *
-vik_statusbar_new ()
+vik_statusbar_new (guint scale)
 {
   VikStatusbar *vs = VIK_STATUSBAR ( g_object_new ( VIK_STATUSBAR_TYPE, NULL ) );
+
+  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_TOOL], 125*scale, -1 );
+  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_ITEMS], 100*scale, -1 );
+  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_ZOOM], 100*scale, -1 );
+  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_POSITION], 275*scale, -1 );
+  // Set minimum overall size
+  //  otherwise the individual size_requests above create an implicit overall size,
+  //  and so one can't downsize horizontally as much as may be desired when the statusbar is on
+  gtk_widget_set_size_request ( GTK_WIDGET(vs), 50*scale, -1 );
 
   return vs;
 }

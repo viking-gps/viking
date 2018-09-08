@@ -254,10 +254,11 @@ void vik_waypoint_marshall ( VikWaypoint *wp, guint8 **data, guint *datalen)
 /*
  * Take a byte array and convert it into a Waypoint
  */
-VikWaypoint *vik_waypoint_unmarshall (guint8 *data, guint datalen)
+VikWaypoint *vik_waypoint_unmarshall (const guint8 *data_in, guint datalen)
 {
   guint len;
   VikWaypoint *new_wp = vik_waypoint_new();
+  guint8 *data = (guint8*)data_in;
   // This copies the fixed sized elements (i.e. visibility, altitude, image_width, etc...)
   memcpy(new_wp, data, sizeof(*new_wp));
   data += sizeof(*new_wp);

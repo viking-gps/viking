@@ -365,7 +365,7 @@ void vik_layer_marshall_params ( VikLayer *vl, guint8 **data, gint *datalen )
 #undef vlm_append
 }
 
-void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, VikViewport *vvp )
+void vik_layer_unmarshall_params ( VikLayer *vl, const guint8 *data, gint datalen, VikViewport *vvp )
 {
   VikLayerParam *params = vik_layer_get_interface(vl->type)->params;
   VikLayerFuncSetParam set_param = vik_layer_get_interface(vl->type)->set_param;
@@ -433,7 +433,7 @@ void vik_layer_unmarshall_params ( VikLayer *vl, guint8 *data, gint datalen, Vik
   }
 }
 
-VikLayer *vik_layer_unmarshall ( guint8 *data, gint len, VikViewport *vvp )
+VikLayer *vik_layer_unmarshall ( const guint8 *data, gint len, VikViewport *vvp )
 {
   header_t *header;
 

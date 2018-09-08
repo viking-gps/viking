@@ -177,7 +177,7 @@ GtkWidget *vik_file_list_new ( const gchar *title, GtkFileFilter *filter )
 
   gtk_tree_selection_set_mode ( gtk_tree_view_get_selection (GTK_TREE_VIEW(vfl->treeview)), GTK_SELECTION_MULTIPLE );
 
-  gtk_widget_set_size_request ( vfl->treeview, 200, 100);
+  gtk_widget_set_size_request ( vfl->treeview, -1, -1);
 
   add_btn = gtk_button_new_with_label(_("Add..."));
   del_btn = gtk_button_new_with_label(_("Delete"));

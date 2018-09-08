@@ -1587,13 +1587,14 @@ void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *datalen)
 /*
  * Take a byte array and convert it into a Track
  */
-VikTrack *vik_track_unmarshall (guint8 *data, guint datalen)
+VikTrack *vik_track_unmarshall (const guint8 *data_in, guint datalen)
 {
   guint len;
   VikTrack *new_tr = vik_track_new();
   VikTrackpoint *new_tp;
   guint ntp;
   gint i;
+  guint8 *data = (guint8*)data_in;
 
   /* basic properties: */
   new_tr->visible = ((VikTrack *)data)->visible;

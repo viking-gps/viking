@@ -330,6 +330,7 @@ static void trw_layer_delete_all_tracks ( menu_array_layer values );
 static void trw_layer_delete_tracks_from_selection ( menu_array_layer values );
 static void trw_layer_delete_all_waypoints ( menu_array_layer values );
 static void trw_layer_delete_waypoints_from_selection ( menu_array_layer values );
+static void trw_layer_delete_duplicate_waypoints ( menu_array_layer values );
 static void trw_layer_new_wikipedia_wp_viewport ( menu_array_layer values );
 static void trw_layer_new_wikipedia_wp_layer ( menu_array_layer values );
 #ifdef VIK_CONFIG_GEOTAG
@@ -596,9 +597,9 @@ static VikLayerParamData black_color_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#000000", &data.c ); return data; // Black
 }
 static VikLayerParamData drawmode_default ( void ) { return VIK_LPD_UINT ( DRAWMODE_BY_TRACK ); }
-static VikLayerParamData line_thickness_default ( void ) { return VIK_LPD_UINT ( 1 ); }
-static VikLayerParamData trkpointsize_default ( void ) { return VIK_LPD_UINT ( MIN_POINT_SIZE ); }
-static VikLayerParamData trkdirectionsize_default ( void ) { return VIK_LPD_UINT ( 5 ); }
+static VikLayerParamData line_thickness_default ( void ) { return VIK_LPD_UINT ( 1  * vik_viewport_get_scale(NULL) ); }
+static VikLayerParamData trkpointsize_default ( void ) { return VIK_LPD_UINT ( MIN_POINT_SIZE * vik_viewport_get_scale (NULL) ); }
+static VikLayerParamData trkdirectionsize_default ( void ) { return VIK_LPD_UINT ( 5 * vik_viewport_get_scale(NULL) ); }
 static VikLayerParamData bg_line_thickness_default ( void ) { return VIK_LPD_UINT ( 0 ); }
 static VikLayerParamData trackbgcolor_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#FFFFFF", &data.c ); return data; // White
@@ -607,19 +608,34 @@ static VikLayerParamData elevation_factor_default ( void ) { return VIK_LPD_UINT
 static VikLayerParamData stop_length_default ( void ) { return VIK_LPD_UINT ( 60 ); }
 static VikLayerParamData speed_factor_default ( void ) { return VIK_LPD_DOUBLE ( 30.0 ); }
 
-static VikLayerParamData tnfontsize_default ( void ) { return VIK_LPD_UINT ( FS_MEDIUM ); }
-static VikLayerParamData wpfontsize_default ( void ) { return VIK_LPD_UINT ( FS_MEDIUM ); }
+static VikLayerParamData tnfontsize_default ( void )
+{
+  if ( vik_viewport_get_scale(NULL) < 2 )
+    return VIK_LPD_UINT ( FS_MEDIUM );
+  else
+    return VIK_LPD_UINT ( FS_LARGE );
+}
+
+static VikLayerParamData wpfontsize_default ( void )
+{
+  if ( vik_viewport_get_scale(NULL) < 2 )
+    return VIK_LPD_UINT ( FS_MEDIUM );
+  else
+    return VIK_LPD_UINT ( FS_LARGE );
+}
+
 static VikLayerParamData wptextcolor_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#FFFFFF", &data.c ); return data; // White
 }
 static VikLayerParamData wpbgcolor_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#8383C4", &data.c ); return data; // Kind of Blue
 }
-static VikLayerParamData wpsize_default ( void ) { return VIK_LPD_UINT ( 4 ); }
+static VikLayerParamData wpsize_default ( void ) { return VIK_LPD_UINT ( 4 * vik_viewport_get_scale(NULL) );
+}
 static VikLayerParamData wpsymbol_default ( void ) { return VIK_LPD_UINT ( WP_SYMBOL_FILLED_SQUARE ); }
 
-static VikLayerParamData image_size_default ( void ) { return VIK_LPD_UINT ( 64 ); }
-static VikLayerParamData image_alpha_default ( void ) { return VIK_LPD_UINT ( 255 ); }
+static VikLayerParamData image_size_default ( void ) { return VIK_LPD_UINT ( 64 * vik_viewport_get_scale(NULL) ); }
+static VikLayerParamData image_alpha_default ( void ) { return VIK_LPD_UINT ( 255 * vik_viewport_get_scale(NULL) ); }
 static VikLayerParamData image_cache_size_default ( void ) { return VIK_LPD_UINT ( 300 ); }
 
 static VikLayerParamData sort_order_default ( void ) { return VIK_LPD_UINT ( 0 ); }
@@ -762,7 +778,7 @@ static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl );
 static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, gpointer sublayer );
 static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp );
 static void trw_layer_marshall ( VikTrwLayer *vtl, guint8 **data, gint *len );
-static VikTrwLayer *trw_layer_unmarshall ( guint8 *data, gint len, VikViewport *vvp );
+static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, gint len, VikViewport *vvp );
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp );
 static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gboolean is_file_operation );
 static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values );
@@ -1607,11 +1623,12 @@ static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
   *len = ba->len;
 }
 
-static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
+static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, gint len, VikViewport *vvp )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vvp, FALSE ));
   gint pl;
   gint consumed_length;
+  guint8 *data = (guint8*)data_in;
 
   // First the overall layer parameters
   memcpy(&pl, data, sizeof(pl));
@@ -1626,7 +1643,7 @@ static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *v
   // See marshalling above for order of how this is written
 
   // Now the individual sublayers:
-  while ( consumed_length < len ) {
+  while ( data && (consumed_length < len) ) {
     // Normally four extra bytes at the end of the datastream
     //  (since it's a GByteArray and that's where it's length is stored)
     //  So only attempt read when there's an actual block of sublayer data
@@ -1658,9 +1675,15 @@ static VikTrwLayer *trw_layer_unmarshall( guint8 *data, gint len, VikViewport *v
         vik_track_convert (trk, vtl->coord_mode);
       }
     }
-    consumed_length += tlm_size + sizeof_len_and_subtype;
-    //g_debug ("data %d, consumed_length %d vs len %d", tlm_size, consumed_length, len);
-    data += sizeof_len_and_subtype + tlm_size;
+    // Don't shift data pointer to beyond our buffer of data - as otherwise it could point to anything
+    if ( consumed_length + tlm_size < len ) {
+      consumed_length += tlm_size + sizeof_len_and_subtype;
+      //g_debug ("data %d, consumed_length %d vs len %d", tlm_size, consumed_length, len);
+      data += sizeof_len_and_subtype + tlm_size;
+    }
+    else
+      // Done
+      data = NULL;
   }
 
   // Not stored anywhere else so need to regenerate
@@ -4484,36 +4507,49 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_all_tracks), pass_along );
   gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
   gtk_widget_show ( item );
+  gtk_widget_set_sensitive ( item, (gboolean)(g_hash_table_size (vtl->tracks)) );
   
   item = gtk_image_menu_item_new_with_mnemonic ( _("Delete Tracks _From Selection...") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_tracks_from_selection), pass_along );
   gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
   gtk_widget_show ( item );
+  gtk_widget_set_sensitive ( item, (gboolean)(g_hash_table_size (vtl->tracks)) );
 
   item = gtk_image_menu_item_new_with_mnemonic ( _("Delete _All Routes") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_all_routes), pass_along );
   gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
   gtk_widget_show ( item );
+  gtk_widget_set_sensitive ( item, (gboolean)(g_hash_table_size (vtl->routes)) );
 
   item = gtk_image_menu_item_new_with_mnemonic ( _("_Delete Routes From Selection...") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_routes_from_selection), pass_along );
   gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
   gtk_widget_show ( item );
+  gtk_widget_set_sensitive ( item, (gboolean)(g_hash_table_size (vtl->routes)) );
   
   item = gtk_image_menu_item_new_with_mnemonic ( _("Delete All _Waypoints") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_all_waypoints), pass_along );
   gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
   gtk_widget_show ( item );
+  gtk_widget_set_sensitive ( item, (gboolean)(g_hash_table_size (vtl->waypoints)) );
   
   item = gtk_image_menu_item_new_with_mnemonic ( _("Delete Waypoints From _Selection...") );
   gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
   g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_waypoints_from_selection), pass_along );
   gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
   gtk_widget_show ( item );
+  gtk_widget_set_sensitive ( item, (gboolean)(g_hash_table_size (vtl->waypoints)) );
+
+  item = gtk_image_menu_item_new_with_mnemonic ( _("Delete Duplicate Waypoints") );
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_DELETE, GTK_ICON_SIZE_MENU) );
+  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_duplicate_waypoints), pass_along );
+  gtk_menu_shell_append ( GTK_MENU_SHELL(delete_submenu), item );
+  gtk_widget_show ( item );
+  gtk_widget_set_sensitive ( item, (gboolean)(g_hash_table_size (vtl->waypoints)) );
   
   item = a_acquire_trwlayer_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vlp,
 				   vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vlp)), vtl );
@@ -4997,6 +5033,15 @@ gboolean vik_trw_layer_delete_route ( VikTrwLayer *vtl, VikTrack *trk )
   return was_visible;
 }
 
+static void delete_waypoint_low_level ( VikTrwLayer *vtl, VikWaypoint *wp, gpointer uuid, GtkTreeIter *it )
+{
+  vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, it );
+  g_hash_table_remove ( vtl->waypoints_iters, uuid );
+
+  highest_wp_number_remove_wp ( vtl, wp->name );
+  g_hash_table_remove ( vtl->waypoints, uuid ); // last because this frees the name
+}
+
 static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp )
 {
   gboolean was_visible = FALSE;
@@ -5022,11 +5067,7 @@ static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp )
       GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udata.uuid );
     
       if ( it ) {
-        vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, it );
-        g_hash_table_remove ( vtl->waypoints_iters, udata.uuid );
-
-        highest_wp_number_remove_wp(vtl, wp->name);
-        g_hash_table_remove ( vtl->waypoints, udata.uuid ); // last because this frees the name
+        delete_waypoint_low_level ( vtl, wp, udata.uuid, it );
 
 	// If last sublayer, then remove sublayer container
 	if ( g_hash_table_size (vtl->waypoints) == 0 ) {
@@ -5333,6 +5374,10 @@ static void trw_layer_properties_item ( menu_array_sublayer values )
 
       if ( updated && VIK_LAYER(vtl)->visible )
 	vik_layer_emit_update ( VIK_LAYER(vtl) );
+
+      // Position could have changed
+      if ( updated )
+        trw_layer_calculate_bounds_waypoints ( vtl );
     }
   }
   else
@@ -7587,6 +7632,78 @@ static void trw_layer_delete_waypoints_from_selection ( menu_array_layer values 
 }
 
 /**
+ * Only deletes first copy of each duplicated waypoint
+ * Thus call repeatedly to remove all duplicates
+ */
+static guint trw_layer_delete_duplicate_waypoints_main ( VikTrwLayer *vtl )
+{
+  GHashTableIter iter;
+  gpointer key, value;
+
+  guint delete_count = 0;
+  guint sz = g_hash_table_size ( vtl->waypoints );
+
+  for ( int ii = 0; ii < (sz - delete_count); ii++ ) {
+    g_hash_table_iter_init ( &iter, vtl->waypoints );
+    g_hash_table_iter_next ( &iter, &key, &value );
+    // Progress to the nth waypoint
+    for ( int jj = 0; jj < ii; jj++ ) {
+      g_hash_table_iter_next ( &iter, &key, &value );
+    }
+    VikWaypoint *wpt1 = VIK_WAYPOINT(value);
+    if ( wpt1 ) {
+      // Compare against rest of the list
+      gboolean done = FALSE;
+      while ( !done && g_hash_table_iter_next (&iter, &key, &value) ) {
+        VikWaypoint *wpt2 = VIK_WAYPOINT(value);
+        // Just how many other fields is it sensible to compare? altitude, comment, etc ???
+        if ( vik_coord_equalish(&(wpt1->coord), &(wpt2->coord)) &&
+             !g_strcmp0(wpt1->symbol, wpt2->symbol) ) {
+
+          GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, key );
+          if ( it ) {
+              delete_waypoint_low_level ( vtl, wpt2, key, it );
+              // Have to exit now as hash table changed
+              //  (as otherwise continuing iterating over it can go badly wrong)
+              done = TRUE;
+              delete_count++;
+	  }
+        }
+      }
+    }
+  }
+  return delete_count;
+}
+
+/**
+ *
+ */
+static void trw_layer_delete_duplicate_waypoints ( menu_array_layer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+
+  guint delete_count = 0;
+  guint cnt = 0;
+  // Continually call until nothing more deleted
+  do {
+    cnt = trw_layer_delete_duplicate_waypoints_main ( vtl );
+    delete_count += cnt;
+  } while ( cnt );
+
+  if ( delete_count ) {
+    // Inform user how much was changed
+    gchar str[64];
+    const gchar *tmp_str = ngettext("%ld waypoint deleted", "%ld waypoints deleted", delete_count);
+    g_snprintf(str, 64, tmp_str, delete_count);
+    a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), str );
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+  }
+  else {
+    a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("No duplicates found") );
+  }
+}
+
+/**
  *
  */
 static void trw_layer_iter_visibility_toggle ( gpointer id, GtkTreeIter *it, VikTreeview *vt )
@@ -8221,6 +8338,12 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     item = gtk_image_menu_item_new_with_mnemonic ( _("_Delete Waypoints From Selection...") );
     gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
     g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_waypoints_from_selection), pass_along );
+    gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
+    gtk_widget_show ( item );
+
+    item = gtk_image_menu_item_new_with_mnemonic ( _("Delete Duplicate Waypoints") );
+    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_DELETE, GTK_ICON_SIZE_MENU) );
+    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_delete_duplicate_waypoints), pass_along );
     gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
     gtk_widget_show ( item );
 

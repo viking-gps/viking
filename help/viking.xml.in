@@ -335,6 +335,15 @@ and docbook-xsl in your Build-Depends control field.
               <term>tilesize-y (optional)</term>
               <listitem><para>The tile y size. The default is 256 pixels if not specified.</para></listitem>
             </varlistentry>
+            <varlistentry>
+              <term>scale (optional)</term>
+              <listitem>
+		<para>The tile scale. The scale is 1 if not specified.</para>
+                <note><para>Use a value of 2 to represent high res tiles.
+		Don't change the tilesize as the internal display size is still based on 256 pixels.
+		</para></note>
+              </listitem>
+            </varlistentry>
           </variablelist>
         </para>
         <para>The VikTmsMapSource allows to declare any TMS service. It supports the following properties (as per VikSlippyMapSource above):

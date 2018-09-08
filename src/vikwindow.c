@@ -568,10 +568,10 @@ static void open_window ( VikWindow *vw, GSList *files )
     if (vw->filename && check_file_magic_vik ( file_name ) ) {
       VikWindow *newvw = vik_window_new_window ();
       if (newvw)
-        vik_window_open_file ( newvw, file_name, TRUE, TRUE, TRUE );
+        vik_window_open_file ( newvw, file_name, TRUE, TRUE, TRUE, TRUE );
     }
     else {
-      vik_window_open_file ( vw, file_name, change_fn, (file_num==1), (file_num==num_files) );
+      vik_window_open_file ( vw, file_name, change_fn, (file_num==1), (file_num==num_files), TRUE );
     }
     g_free (file_name);
     cur_file = g_slist_next (cur_file);
@@ -852,7 +852,7 @@ static void vik_window_init ( VikWindow *vw )
   vw->viking_vvp = vik_viewport_new();
   vw->viking_vlp = vik_layers_panel_new();
   vik_layers_panel_set_viewport ( vw->viking_vlp, vw->viking_vvp );
-  vw->viking_vs = vik_statusbar_new();
+  vw->viking_vs = vik_statusbar_new ( vik_viewport_get_scale(vw->viking_vvp) );
 
   vw->vt = toolbox_create(vw);
   vw->viking_vtb = vik_toolbar_new ();
@@ -1853,13 +1853,12 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
     vik_coord_to_latlon ( &coord, &ll );
     vik_viewport_coord_to_screen ( vvp, &s->oldcoord, &oldx, &oldy );
 
-    gdk_draw_drawable (buf, gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc,
-		       vik_viewport_get_pixmap(vvp), 0, 0, 0, 0, -1, -1);
-    draw_ruler(vvp, buf, gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc, oldx, oldy, event->x, event->y, vik_coord_diff( &coord, &(s->oldcoord)) );
+    gdk_draw_drawable (buf, vik_viewport_get_black_gc(vvp), vik_viewport_get_pixmap(vvp), 0, 0, 0, 0, -1, -1);
+    draw_ruler(vvp, buf, vik_viewport_get_black_gc(vvp), oldx, oldy, event->x, event->y, vik_coord_diff( &coord, &(s->oldcoord)) );
     if (draw_buf_done) {
       static gpointer pass_along[3];
       pass_along[0] = gtk_widget_get_window(GTK_WIDGET(vvp));
-      pass_along[1] = gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc;
+      pass_along[1] = vik_viewport_get_black_gc ( vvp );
       pass_along[2] = buf;
       g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
       draw_buf_done = FALSE;
@@ -2056,9 +2055,9 @@ static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventMotion *event
 
     // Blank out currently drawn area
     gdk_draw_drawable ( zts->pixmap,
-                        gtk_widget_get_style(GTK_WIDGET(zts->vw->viking_vvp))->black_gc,
+                        vik_viewport_get_black_gc(zts->vw->viking_vvp),
                         vik_viewport_get_pixmap(zts->vw->viking_vvp),
-                        0, 0, 0, 0, -1, -1);
+                        0, 0, 0, 0, -1, -1 );
 
     // Calculate new box starting point & size in pixels
     int xx, yy, width, height;
@@ -2080,13 +2079,13 @@ static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventMotion *event
     }
 
     // Draw the box
-    gdk_draw_rectangle (zts->pixmap, gtk_widget_get_style(GTK_WIDGET(zts->vw->viking_vvp))->black_gc, FALSE, xx, yy, width, height);
+    gdk_draw_rectangle (zts->pixmap, vik_viewport_get_black_gc(zts->vw->viking_vvp), FALSE, xx, yy, width, height);
 
     // Only actually draw when there's time to do so
     if (draw_buf_done) {
       static gpointer pass_along[3];
       pass_along[0] = gtk_widget_get_window(GTK_WIDGET(zts->vw->viking_vvp));
-      pass_along[1] = gtk_widget_get_style(GTK_WIDGET(zts->vw->viking_vvp))->black_gc;
+      pass_along[1] = vik_viewport_get_black_gc ( zts->vw->viking_vvp );
       pass_along[2] = zts->pixmap;
       g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
       draw_buf_done = FALSE;
@@ -3194,8 +3193,9 @@ static void on_activate_recent_item (GtkRecentChooser *chooser,
       // NB: GSList & contents are freed by main.open_window
     }
     else {
-      remove_default_map_layer ( self );
-      vik_window_open_file ( self, path, TRUE, TRUE, TRUE );
+      if ( check_file_magic_vik ( path ) )
+        remove_default_map_layer ( self );
+      vik_window_open_file ( self, path, TRUE, TRUE, TRUE, TRUE );
       g_free ( path );
     }
   }
@@ -3287,7 +3287,7 @@ void vik_window_clear_busy_cursor ( VikWindow *vw )
  * @last:  Indicates the last file in a possible list of files to be loaded
  *        Hence a draw operation can be performed
  */
-void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename, gboolean first, gboolean last )
+void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename, gboolean first, gboolean last, gboolean new_layer )
 {
   if ( first )
     vik_window_set_busy_cursor ( vw );
@@ -3298,7 +3298,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
   vw->filename = g_strdup ( filename );
   gboolean success = FALSE;
   gboolean restore_original_filename = FALSE;
-  vw->loaded_type = a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, vw->containing_vtl, filename );
+  vw->loaded_type = a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, vw->containing_vtl, filename, new_layer );
   switch ( vw->loaded_type )
   {
     case LOAD_TYPE_READ_FAILURE:
@@ -3378,20 +3378,21 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
   if ( last ) {
     // Draw even if the last load unsuccessful, as may have successful loads in a list of files
     draw_update ( vw );
-    vik_window_clear_busy_cursor ( vw );
   }
+  // Always clear cursor (e.g. incase first & last loads are on different VikWindows)
+  vik_window_clear_busy_cursor ( vw );
 }
 
 static void load_file ( GtkAction *a, VikWindow *vw )
 {
   GSList *files = NULL;
   GSList *cur_file = NULL;
-  gboolean newwindow;
+  gboolean append;
   if (!strcmp(gtk_action_get_name(a), "Open")) {
-    newwindow = TRUE;
+    append = FALSE;
   } 
   else if (!strcmp(gtk_action_get_name(a), "Append")) {
-    newwindow = FALSE;
+    append = TRUE;
   } 
   else {
     g_critical("Houston, we've had a problem.");
@@ -3458,9 +3459,9 @@ static void load_file ( GtkAction *a, VikWindow *vw )
     last_folder_files_uri = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER(dialog) );
 
 #ifdef VIKING_PROMPT_IF_MODIFIED
-    if ( (vw->modified || vw->filename) && newwindow )
+    if ( (vw->modified || vw->filename) && !append )
 #else
-    if ( vw->filename && newwindow )
+    if ( vw->filename && !append )
 #endif
       g_signal_emit ( G_OBJECT(vw), window_signals[VW_OPENWINDOW_SIGNAL], 0, gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog) ) );
     else {
@@ -3468,29 +3469,29 @@ static void load_file ( GtkAction *a, VikWindow *vw )
       files = gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog) );
       guint file_num = 0;
       guint num_files = g_slist_length(files);
-      gboolean change_fn = newwindow && (num_files==1); // only change fn if one file
+      gboolean change_fn = !append && (num_files==1); // only change fn if one file
       gboolean first_vik_file = TRUE;
       cur_file = files;
       while ( cur_file ) {
         gchar *file_name = cur_file->data;
         file_num++;
-        if ( newwindow && check_file_magic_vik ( file_name ) ) {
+        if ( !append && check_file_magic_vik ( file_name ) ) {
           // Load first of many .vik files in current window
           if ( first_vik_file ) {
             remove_default_map_layer ( vw );
-            vik_window_open_file ( vw, file_name, TRUE, TRUE, TRUE );
+            vik_window_open_file ( vw, file_name, TRUE, TRUE, TRUE, TRUE );
             first_vik_file = FALSE;
           }
           else {
             // Load each subsequent .vik file in a separate window
             VikWindow *newvw = vik_window_new_window ();
             if (newvw)
-              vik_window_open_file ( newvw, file_name, TRUE, TRUE, TRUE );
+              vik_window_open_file ( newvw, file_name, TRUE, TRUE, TRUE, TRUE );
           }
         }
         else
-          // Other file types
-          vik_window_open_file ( vw, file_name, change_fn, (file_num==1), (file_num==num_files) );
+          // Other file types or appending a .vik file
+          vik_window_open_file ( vw, file_name, change_fn, (file_num==1), (file_num==num_files), !append );
 
         g_free (file_name);
         cur_file = g_slist_next (cur_file);
@@ -3947,38 +3948,13 @@ static void preferences_cb ( GtkAction *a, VikWindow *vw )
 
 static void default_location_cb ( GtkAction *a, VikWindow *vw )
 {
-  /* Simplistic repeat of preference setting
-     Only the name & type are important for setting the preference via this 'external' way */
-  VikLayerParam pref_lat[] = {
-    { VIK_LAYER_NUM_TYPES,
-      VIKING_PREFERENCES_NAMESPACE "default_latitude",
-      VIK_LAYER_PARAM_DOUBLE,
-      VIK_LAYER_GROUP_NONE,
-      NULL,
-      VIK_LAYER_WIDGET_SPINBUTTON,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-    },
-  };
-  VikLayerParam pref_lon[] = {
-    { VIK_LAYER_NUM_TYPES,
-      VIKING_PREFERENCES_NAMESPACE "default_longitude",
-      VIK_LAYER_PARAM_DOUBLE,
-      VIK_LAYER_GROUP_NONE,
-      NULL,
-      VIK_LAYER_WIDGET_SPINBUTTON,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-      NULL,
-    },
-  };
+  // Get relevant preferences - these should always be available
+  VikLayerParam *pref_lat = a_preferences_get_param ( VIKING_PREFERENCES_NAMESPACE "default_latitude" );
+  VikLayerParam *pref_lon = a_preferences_get_param ( VIKING_PREFERENCES_NAMESPACE "default_longitude" );
+  if ( !pref_lat || !pref_lon ) {
+    g_critical ( "%s: preference not found", __FUNCTION__ );
+    return;
+  }
 
   /* Get current center */
   struct LatLon ll;
@@ -4683,6 +4659,21 @@ static void set_highlight_color ( GtkAction *a, VikWindow *vw )
   gtk_widget_destroy ( colorsd );
 }
 
+/**
+ * a_vik_window_get_a_window:
+ *
+ * Returns a #VikWindow for cases when the calling code otherwise has no access visibility of what #VikWindow called it.
+ *  This should only be used in special cases e.g. inside a callback that no data can be passed into it.
+ *  Ideally this should also be only used for new dialogs like messages, so the actual #VikWindow is less relevant
+ *  (rather than trying to get a viewport or similar as it won't necessarily be the right one when there is one than one Window).
+ */
+VikWindow* a_vik_window_get_a_window ( void )
+{
+  GSList *item = g_slist_last (window_list);
+  if ( item )
+    return (VikWindow*)item->data;
+  return NULL;
+}
 
 /***********************************************************************************************
  ** GUI Creation
@@ -4771,7 +4762,7 @@ static GtkActionEntry entries[] = {
   { "Cut",       GTK_STOCK_CUT,          N_("Cu_t"),                          NULL,         N_("Cut selected layer"),                       (GCallback)menu_cut_layer_cb     },
   { "Copy",      GTK_STOCK_COPY,         N_("_Copy"),                         NULL,         N_("Copy selected layer"),                      (GCallback)menu_copy_layer_cb    },
   { "Paste",     GTK_STOCK_PASTE,        N_("_Paste"),                        NULL,         N_("Paste layer into selected container layer or otherwise above selected layer"), (GCallback)menu_paste_layer_cb },
-  { "Delete",    GTK_STOCK_DELETE,       N_("_Delete"),                       NULL,         N_("Remove selected layer"),                    (GCallback)menu_delete_layer_cb  },
+  { "Delete",    GTK_STOCK_DELETE,       N_("_Delete"),                   "<control>Delete",N_("Remove selected layer"),                    (GCallback)menu_delete_layer_cb  },
   { "DeleteAll", NULL,                   N_("Delete All"),                    NULL,         NULL,                                           (GCallback)clear_cb              },
   { "CopyCentre",NULL,                   N_("Copy Centre _Location"),     "<control>h",     NULL,                                           (GCallback)menu_copy_centre_cb   },
   { "MapCacheFlush",NULL,                N_("_Flush Map Cache"),              NULL,         NULL,                                           (GCallback)mapcache_flush_cb     },

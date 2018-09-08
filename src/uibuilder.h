@@ -188,6 +188,8 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       void (*redraw) (gpointer), // Normally vik_layer_emit_update()
                                       gpointer redraw_param ); // Normally VikLayer*
 
+void a_uibuilder_factory_close ( gint response_id );
+
 VikLayerParamData *a_uibuilder_run_dialog ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
                         guint16 params_count, gchar **groups, guint8 groups_count,
 			VikLayerParamData *params_defaults );

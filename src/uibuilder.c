@@ -31,6 +31,7 @@
 #include "vikradiogroup.h"
 #include "vikfileentry.h"
 #include "vikfilelist.h"
+#include "ui_util.h"
 
 VikLayerParamData vik_lpd_true_default ( void ) { return VIK_LPD_BOOLEAN ( TRUE ); }
 VikLayerParamData vik_lpd_false_default ( void ) { return VIK_LPD_BOOLEAN ( FALSE ); }
@@ -179,7 +180,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
     case VIK_LAYER_WIDGET_ENTRY:
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
-        rv = gtk_entry_new ();
+        rv = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
         if ( vlpd.s )
           gtk_entry_set_text ( GTK_ENTRY(rv), vlpd.s );
       }
@@ -187,7 +188,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
     case VIK_LAYER_WIDGET_PASSWORD:
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
-        rv = gtk_entry_new ();
+        rv = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
         gtk_entry_set_visibility ( GTK_ENTRY(rv), FALSE );
         if ( vlpd.s )
           gtk_entry_set_text ( GTK_ENTRY(rv), vlpd.s );
@@ -339,6 +340,18 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
   return rv;
 }
 
+static GtkWidget *dialog = NULL;
+
+/**
+ * Hacky method to enable closing the dialog within preference code
+ */
+void a_uibuilder_factory_close ( gint response_id )
+{
+  if ( dialog ) {
+    gtk_dialog_response ( GTK_DIALOG(dialog), response_id );
+  }
+}
+
 /**
  * @have_apply_button: Whether the dialog should have an apply button
  * @redraw:            Function to be invoked to redraw when apply button is pressed
@@ -383,9 +396,9 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
   else
   {
     /* create widgets and titles; place in table */
-    GtkWidget *dialog = gtk_dialog_new_with_buttons ( dialog_name, parent,
-                                                      GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                      GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
+    dialog = gtk_dialog_new_with_buttons ( dialog_name, parent,
+                                           GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                           GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
     if ( have_apply_button )
       gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY );
     gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_OK, GTK_RESPONSE_ACCEPT );
@@ -411,7 +424,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
       // Switch to vertical notebook mode when many groups
       if ( groups_count > 4 )
         gtk_notebook_set_tab_pos ( GTK_NOTEBOOK(notebook), GTK_POS_LEFT );
-      gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), notebook, FALSE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), notebook, TRUE, TRUE, 0);
       tables = g_malloc ( sizeof(GtkWidget *) * groups_count );
       for ( current_group = 0; current_group < groups_count; current_group++ )
       {
@@ -430,7 +443,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
     else
     {
       table = gtk_table_new( widget_count, 1, FALSE );
-      gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, FALSE, FALSE, 0);
+      gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, TRUE, TRUE, 0);
     }
 
     for ( i = 0, j = 0; i < params_count; i++ )
@@ -445,7 +458,8 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
         if ( widgets[j] ) {
           labels[j] = gtk_label_new(_(params[i].title));
           gtk_table_attach ( GTK_TABLE(table), labels[j], 0, 1, j, j+1, 0, 0, 0, 0 );
-          gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL, 0, 2, 2 );
+          gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL,
+                             params[i].type == VIK_LAYER_PARAM_STRING_LIST ? GTK_EXPAND | GTK_FILL : 0, 2, 2 );
 
           if ( changeparam )
           {
@@ -529,11 +543,11 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
     if ( tables )
       g_free ( tables );
     gtk_widget_destroy ( dialog );
+    dialog = NULL;
 
     return answer;
   }
 }
-
 
 static void uibuilder_run_setparam ( VikLayerParamData *paramdatas, guint16 i, VikLayerParamData data, VikLayerParam *params )
 {

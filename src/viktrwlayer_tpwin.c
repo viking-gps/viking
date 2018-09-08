@@ -257,7 +257,7 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   /* main track info */
   left_vbox = a_dialog_create_label_vbox ( left_label_texts, G_N_ELEMENTS(left_label_texts), 1, 3 );
 
-  tpwin->trkpt_name = gtk_entry_new();
+  tpwin->trkpt_name = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   g_signal_connect_swapped ( G_OBJECT(tpwin->trkpt_name), "focus-out-event", G_CALLBACK(tpwin_set_name), tpwin );
 
   tpwin->course = GTK_LABEL(ui_label_new_selectable(NULL));

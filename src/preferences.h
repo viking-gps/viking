@@ -46,6 +46,10 @@ void a_preferences_show_window(GtkWindow *parent);
 
 VikLayerParamData *a_preferences_get(const gchar *key);
 
+VikLayerParam *a_preferences_get_param(const gchar *key);
+
+gboolean a_preferences_lookup(const gchar *key);
+
 /* Allow preferences to be manipulated externally */
 void a_preferences_run_setparam ( VikLayerParamData data, VikLayerParam *vlparams );
 

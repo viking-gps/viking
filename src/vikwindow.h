@@ -57,7 +57,7 @@ void vik_window_new_window_finish ( VikWindow *vw );
 
 GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode mode );
 gboolean vik_window_get_pan_move ( VikWindow *vw );
-void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename, gboolean first, gboolean last );
+void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename, gboolean first, gboolean last, gboolean new_layer );
 struct _VikLayer;
 void vik_window_selected_layer(VikWindow *vw, struct _VikLayer *vl);
 struct _VikViewport * vik_window_viewport(VikWindow *vw);
@@ -101,6 +101,8 @@ typedef struct {
   GdkGC *gc;
   int oldx, oldy;
 } tool_ed_t;
+
+VikWindow *a_vik_window_get_a_window ();
 
 G_END_DECLS
 

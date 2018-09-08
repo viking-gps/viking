@@ -41,6 +41,7 @@ static guint16 map_source_get_uniq_id (VikMapSource *self);
 static const gchar *map_source_get_label (VikMapSource *self);
 static guint16 map_source_get_tilesize_x (VikMapSource *self);
 static guint16 map_source_get_tilesize_y (VikMapSource *self);
+static gdouble map_source_get_scale (VikMapSource *self);
 static VikViewportDrawMode map_source_get_drawmode (VikMapSource *self);
 static const gchar *map_source_get_file_extension (VikMapSource *self);
 
@@ -62,6 +63,7 @@ struct _VikMapSourceDefaultPrivate
 	gchar *label;
 	guint16 tilesize_x;
 	guint16 tilesize_y;
+	gdouble scale;
 	VikViewportDrawMode drawmode;
 	gchar *file_extension;
 };
@@ -78,6 +80,7 @@ enum
   PROP_LABEL,
   PROP_TILESIZE_X,
   PROP_TILESIZE_Y,
+  PROP_SCALE,
   PROP_DRAWMODE,
   PROP_COPYRIGHT,
   PROP_LICENSE,
@@ -162,6 +165,10 @@ vik_map_source_default_set_property (GObject      *object,
       priv->tilesize_y = g_value_get_uint (value);
       break;
 
+    case PROP_SCALE:
+      priv->scale = g_value_get_double (value);
+      break;
+
     case PROP_DRAWMODE:
       priv->drawmode = g_value_get_enum(value);
       break;
@@ -224,6 +231,10 @@ vik_map_source_default_get_property (GObject    *object,
       g_value_set_uint (value, priv->tilesize_y);
       break;
 
+    case PROP_SCALE:
+      g_value_set_double (value, priv->scale);
+      break;
+
     case PROP_DRAWMODE:
       g_value_set_enum (value, priv->drawmode);
       break;
@@ -271,6 +282,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	parent_class->get_label =      map_source_get_label;
 	parent_class->get_tilesize_x = map_source_get_tilesize_x;
 	parent_class->get_tilesize_y = map_source_get_tilesize_y;
+	parent_class->get_scale =      map_source_get_scale;
 	parent_class->get_drawmode =   map_source_get_drawmode;
 	parent_class->get_file_extension = map_source_get_file_extension;
 	parent_class->download =                 _download;
@@ -322,6 +334,15 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
                                0  /* default value */,
                                G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_TILESIZE_Y, pspec);
+
+	pspec = g_param_spec_double ("scale",
+	                             "Scale",
+                                 "Scale of a tile",
+                                 0.0, // minimum value
+                                 99999.0, // maximum value
+                                 1.0, // default value
+                                 G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_SCALE, pspec);
 
 	pspec = g_param_spec_enum("drawmode",
                               "Drawmode",
@@ -451,6 +472,16 @@ map_source_get_tilesize_y (VikMapSource *self)
     VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
 
 	return priv->tilesize_y;
+}
+
+static double
+map_source_get_scale (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), (gdouble)1.0);
+
+    VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+
+	return priv->scale;
 }
 
 static VikViewportDrawMode
