@@ -101,6 +101,7 @@ struct _VikToolInterface {
   VikToolMouseMoveFunc move;
   VikToolMouseFunc release;
   VikToolKeyFunc key_press; /* return FALSE if we don't use the key press -- should return FALSE most of the time if we want any shortcuts / UI keybindings to work! use sparingly. */
+  VikToolKeyFunc key_release; /* as above */
   gboolean pan_handler; // Call click & release funtions even when 'Pan Mode' is on
   GdkCursorType cursor_type;
   const GdkPixdata *cursor_data;

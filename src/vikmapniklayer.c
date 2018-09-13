@@ -128,6 +128,7 @@ static VikToolInterface mapnik_tools[] = {
     NULL,
     (VikToolMouseFunc) mapnik_feature_release,
     NULL,
+    NULL,
     FALSE,
     GDK_LEFT_PTR, NULL, NULL },
 };

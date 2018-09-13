@@ -203,6 +203,7 @@ static VikToolInterface maps_tools[] = {
     NULL,
     (VikToolMouseFunc) maps_layer_download_release,
     NULL,
+    NULL,
     FALSE,
     GDK_CURSOR_IS_PIXMAP, &cursor_mapdl_pixbuf, NULL },
 };
