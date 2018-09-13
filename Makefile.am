@@ -10,6 +10,7 @@ full:
 	make
 
 EXTRA_DIST = \
+	README.md \
 	HACKING \
 	gnome-doc-utils.make \
 	ChangeLog.0 \
