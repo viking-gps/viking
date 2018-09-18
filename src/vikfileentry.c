@@ -178,11 +178,13 @@ void choose_file ( VikFileEntry *vfe )
     gchar *old_entry = g_strdup ( vik_file_entry_get_filename ( vfe ) );
     gtk_entry_set_text ( GTK_ENTRY (vfe->entry), gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(vfe->file_selector) ) );
     // Ideally this should only be called if the entry has changed, but ATM it's any time OK is selected.
-    if ( vfe->on_finish &&
-         vfe->on_finish(vfe, vfe->user_data) )
-      break;
+    if ( vfe->on_finish )
+      if ( vfe->on_finish(vfe, vfe->user_data) )
+        break;
+      else
+        vik_file_entry_set_filename ( vfe, old_entry );
     else
-      vik_file_entry_set_filename ( vfe, old_entry );
+      break;
     g_free ( old_entry );
   }
   gtk_widget_hide ( vfe->file_selector );
