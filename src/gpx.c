@@ -511,7 +511,12 @@ static void gpx_end(UserDataT *ud, const char *el)
      case tt_wpt_link:
        if ( c_link ) {
          // Correct <link href="uri"></link> format
-         vu_waypoint_set_image_uri ( c_wp, c_link, ud->dirpath );
+         if ( util_is_url(c_link) ) {
+           vik_waypoint_set_url ( c_wp, c_link );
+         }
+         else {
+           vu_waypoint_set_image_uri ( c_wp, c_link, ud->dirpath );
+         }
        }
        else {
          // Fallback for incorrect GPX <link> format (probably from previous versions of Viking!)

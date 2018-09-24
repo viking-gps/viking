@@ -74,6 +74,8 @@ time_t util_timegm (struct tm *tm);
 
 gchar* util_formatd ( const gchar *format, gdouble dd );
 
+gboolean util_is_url ( const gchar *str );
+
 G_END_DECLS
 
 #endif

@@ -323,3 +323,19 @@ time_t util_timegm (struct tm *tm)
 	return result;
 #endif
 }
+
+/**
+ * util_is_url:
+ *
+ * See if a string URI starts with 'http:' or similar
+ *
+ */
+gboolean util_is_url ( const gchar *str )
+{
+	if ( g_ascii_strncasecmp(str, "http://", 7) == 0 ||
+	     g_ascii_strncasecmp(str, "https://", 8) == 0 ||
+	     g_ascii_strncasecmp(str, "ftp://", 6) == 0 ) {
+		return TRUE;
+	}
+	return FALSE;
+}
