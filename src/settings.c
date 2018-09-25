@@ -275,13 +275,15 @@ void a_settings_set_integer_list_containing ( const gchar *name, gint val )
 		}
 	}
 	// Add value into array if necessary
-	if ( vals && need_to_add ) {
+	if ( need_to_add ) {
 		// NB not bothering to sort this 'list' ATM as there is not much to be gained
 		guint new_length = length + 1;
 		gint new_vals[new_length];
-		// Copy array
-		for ( ii = 0; ii < length; ii++ ) {
-			new_vals[ii] = vals[ii];
+		// Copy any previous values
+		if ( vals ) {
+			for ( ii = 0; ii < length; ii++ ) {
+				new_vals[ii] = vals[ii];
+			}
 		}
 		new_vals[length] = val; // Set the new value
 		// Apply
