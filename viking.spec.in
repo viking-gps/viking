@@ -56,12 +56,15 @@ make test
 %clean
 rm -rf %{buildroot}
 
+%find_lang %{name} --with-gnome
+
 %files -f %{name}.lang
 %defattr(-,root,root,-)
 %doc AUTHORS ChangeLog COPYING NEWS README.md TODO doc/
 %{_bindir}/viking
 %{_datadir}/applications/viking.desktop
 %{_datadir}/icons/hicolor/48x48/apps/viking.png
+%{_mandir}/man1/*
 
 %changelog
 * Thu Feb 21 2008 Michael A. Peters <mpeters@mac.com> - 0.9.3.20080220-1
