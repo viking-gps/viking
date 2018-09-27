@@ -40,6 +40,11 @@
 #include "vikdatetime_edit_dialog.h"
 #include "ui_util.h"
 
+// For simplicity these are global values
+//  (i.e. would get shared between multiple windows)
+static gint width = 0;
+static gint height = 0;
+
 struct _VikTrwLayerTpwin {
   GtkDialog parent;
   GtkSpinButton *lat, *lon, *alt, *ts;
@@ -56,6 +61,7 @@ struct _VikTrwLayerTpwin {
   GtkWidget *button_forward;
   VikTrackpoint *cur_tp;
   gboolean sync_to_tp_block;
+  gboolean configured;
 };
 
 GType vik_trw_layer_tpwin_get_type (void)
@@ -210,6 +216,27 @@ static gboolean tpwin_set_name ( VikTrwLayerTpwin *tpwin )
   return FALSE;
 }
 
+static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, VikTrwLayerTpwin *tpwin )
+{
+  if ( !tpwin->configured ) {
+    tpwin->configured = TRUE;
+
+    // Set defaults
+    if ( width == 0 )
+      width = event->width;
+    if ( height == 0 )
+      height = event->height;
+
+    // Allow sizing back down to the minimum
+    GdkGeometry geom = { event->width, event->height, 0, 0, 0, 0, 0, 0, 0, 0, GDK_GRAVITY_STATIC };
+    gtk_window_set_geometry_hints ( GTK_WINDOW(widget), widget, &geom, GDK_HINT_MIN_SIZE );
+
+    // Restore previous size (if one was set)
+    gtk_window_resize ( GTK_WINDOW(widget), width, height );
+  }
+  return FALSE;
+}
+
 VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
 {
   static gchar *left_label_texts[] = { N_("<b>Name:</b>"),
@@ -283,13 +310,13 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   gtk_spin_button_set_digits ( tpwin->ts, 0 );
 
   right_vbox = gtk_vbox_new ( TRUE, 1 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->trkpt_name), FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->lat), FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->lon), FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->alt), FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->course), FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->ts), FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->time), FALSE, FALSE, 3 );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->trkpt_name), TRUE, TRUE, 3 );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->lat), TRUE, TRUE, 3 );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->lon), TRUE, TRUE, 3 );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->alt), TRUE, TRUE, 3 );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->course), TRUE, TRUE, 3 );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->ts), TRUE, TRUE, 3 );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->time), TRUE, TRUE, 3 );
 
   /* diff info */
   diff_left_vbox = a_dialog_create_label_vbox ( right_label_texts, G_N_ELEMENTS(right_label_texts), 1, 3 );
@@ -316,10 +343,10 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->sat), FALSE, FALSE, 3 );
 
   main_hbox = gtk_hbox_new( FALSE, 0 );
-  gtk_box_pack_start ( GTK_BOX(main_hbox), left_vbox, TRUE, TRUE, 3 );
-  gtk_box_pack_start ( GTK_BOX(main_hbox), right_vbox, TRUE, TRUE, 0 );
-  gtk_box_pack_start ( GTK_BOX(main_hbox), diff_left_vbox, TRUE, TRUE, 0 );
-  gtk_box_pack_start ( GTK_BOX(main_hbox), diff_right_vbox, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(main_hbox), left_vbox, FALSE, FALSE, 3 );
+  gtk_box_pack_start ( GTK_BOX(main_hbox), right_vbox, TRUE, TRUE, 3 );
+  gtk_box_pack_start ( GTK_BOX(main_hbox), diff_left_vbox, FALSE, FALSE, 3 );
+  gtk_box_pack_start ( GTK_BOX(main_hbox), diff_right_vbox, FALSE, FALSE, 3 );
 
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(tpwin))), main_hbox, FALSE, FALSE, 0 );
 
@@ -332,7 +359,20 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   if ( response_w )
     gtk_widget_grab_focus ( response_w );
 
+  tpwin->configured = FALSE;
+  g_signal_connect ( G_OBJECT(tpwin), "configure-event", G_CALLBACK (configure_event), tpwin );
+
   return tpwin;
+}
+
+/**
+ *
+ */
+void vik_trw_layer_tpwin_destroy ( VikTrwLayerTpwin *tpwin )
+{
+  // Save the size before closing the dialog
+  gtk_window_get_size ( GTK_WINDOW(tpwin), &width, &height );
+  gtk_widget_destroy ( GTK_WIDGET(tpwin) );
 }
 
 void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )

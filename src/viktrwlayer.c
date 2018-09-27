@@ -9133,7 +9133,7 @@ static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy )
   {
     if ( destroy)
     {
-      gtk_widget_destroy ( GTK_WIDGET(vtl->tpwin) );
+      vik_trw_layer_tpwin_destroy ( vtl->tpwin );
       vtl->tpwin = NULL;
     }
     else
