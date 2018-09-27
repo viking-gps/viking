@@ -44,11 +44,8 @@ BuildRequires:	mingw32-libbz2-1
 BuildRequires:	mingw32-sqlite-devel
 BuildRequires:	mingw32-libzip-devel
 BuildRequires:	mingw32-libnettle-devel
-<<<<<<< HEAD
 BuildRequires:	mingw32-libgps-devel
-=======
 BuildRequires:	mingw32-liboauth-devel
->>>>>>> OAuth 1.0 support for OpenStreetMap usage
 
 # Libs for runtime (and thus also available for the NSIS installer to include the dependencies)
 Requires:	mingw32-gtk2
