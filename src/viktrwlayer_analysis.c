@@ -321,7 +321,7 @@ static void table_output ( track_stats ts, GtkWidget *content[] )
 		else
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
 		break;
-        case VIK_UNITS_SPEED_SECONDS_PER_KM:
+	case VIK_UNITS_SPEED_SECONDS_PER_KM:
 		if ( ts.max_speed > 0 )
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d s/km"), (int)VIK_MPS_TO_PACE_SPK(ts.max_speed) );
 		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
@@ -331,7 +331,7 @@ static void table_output ( track_stats ts, GtkWidget *content[] )
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
 		break;
 
-        case VIK_UNITS_SPEED_MINUTES_PER_KM:
+	case VIK_UNITS_SPEED_MINUTES_PER_KM:
 		if ( ts.max_speed > 0 )
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f min/km"), (double)VIK_MPS_TO_PACE_MPK(ts.max_speed) );
 		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
@@ -341,7 +341,7 @@ static void table_output ( track_stats ts, GtkWidget *content[] )
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
 		break;
 
-        case VIK_UNITS_SPEED_SECONDS_PER_MILE:
+	case VIK_UNITS_SPEED_SECONDS_PER_MILE:
 		if ( ts.max_speed > 0 )
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d sec/mi"), (int)VIK_MPS_TO_PACE_SPM(ts.max_speed) );
 		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
@@ -351,7 +351,7 @@ static void table_output ( track_stats ts, GtkWidget *content[] )
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
 		break;
 
-        case VIK_UNITS_SPEED_MINUTES_PER_MILE:
+	case VIK_UNITS_SPEED_MINUTES_PER_MILE:
 		if ( ts.max_speed > 0 )
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f min/mi"), (double)VIK_MPS_TO_PACE_MPM(ts.max_speed) );
 		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
@@ -597,12 +597,12 @@ GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
 	//  unless you have really large numbers of tracks (i.e. many many thousands or a really slow computer)
 	// One day might store stats in the track itself....
 	val_analyse ( acb->widgets, acb->tracks_and_layers, include_invisible );
-	
+
 	GtkWidget *cb = gtk_check_button_new_with_label ( _("Include Invisible Items") );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(cb), include_invisible );
 	gtk_box_pack_start ( GTK_BOX(content), cb, FALSE, FALSE, 10);
 	acb->check_button = cb;
-	
+
 	gtk_widget_show_all ( dialog );
 
 	g_signal_connect ( G_OBJECT(cb), "toggled", G_CALLBACK(include_invisible_toggled_cb), acb );
