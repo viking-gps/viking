@@ -2779,7 +2779,9 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, PropWidgets *widget
     return NULL;
   }
 
-  minmax_array(widgets->altitudes, min_alt, max_alt, TRUE, widgets->profile_width);
+  // Don't use minmax_array(widgets->altitudes), as that is a simplified representative of the points
+  //  thus can miss the highest & lowest values by a few metres
+  (void)vik_track_get_minmax_alt ( widgets->tr, min_alt, max_alt );
   
   pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
