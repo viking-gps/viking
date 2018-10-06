@@ -48,6 +48,8 @@ typedef struct {
 	time_t   start_time;
 	time_t   end_time;
 	gint     count;
+	GList    *e_list; // of guints to determine Eddington number
+	// https://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling
 } track_stats;
 
 // Early incarnations of the code had facilities to print output for multiple files
@@ -82,6 +84,7 @@ static void val_reset ( track_stat_block block )
 	tracks_stats[block].start_time  = 0;
 	tracks_stats[block].end_time    = 0;
 	tracks_stats[block].count       = 0;
+	tracks_stats[block].e_list      = NULL;
 }
 
 /**
@@ -111,6 +114,20 @@ static void val_analyse_track ( VikTrack *trk )
 	length      = vik_track_get_length (trk);
 	length_gaps = vik_track_get_length_including_gaps (trk);
 	max_speed   = vik_track_get_max_speed (trk);
+
+    if ( !trk->is_route ) {
+		// Eddington number will be in the current Units distance preference
+		gdouble e_len;
+		switch (a_vik_get_units_distance ()) {
+		case VIK_UNITS_DISTANCE_MILES:          e_len = VIK_METERS_TO_MILES(length); break;
+		case VIK_UNITS_DISTANCE_NAUTICAL_MILES: e_len = VIK_METERS_TO_NAUTICAL_MILES(length); break;
+			//VIK_UNITS_DISTANCE_KILOMETRES
+		default: e_len = length/1000.0; break;
+		}
+		gdouble *gd = g_malloc ( sizeof(gdouble) );
+		*gd = e_len;
+		tracks_stats[TS_TRACKS].e_list = g_list_prepend ( tracks_stats[TS_TRACKS].e_list, gd );
+	}
 
 	int ii;
 	for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
@@ -166,7 +183,7 @@ static void val_analyse_track ( VikTrack *trk )
 }
 
 // Could use GtkGrids but that is Gtk3+
-static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[])
+static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[], gboolean extended)
 {
 	GtkTable *table;
 	int i;
@@ -174,18 +191,21 @@ static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[])
 	table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
 	gtk_table_set_col_spacing (table, 0, 10);
 	for (i=0; i<cnt; i++) {
-		GtkWidget *label;
-		label = gtk_label_new(NULL);
-		gtk_misc_set_alignment ( GTK_MISC(label), 1, 0.5 ); // Position text centrally in vertical plane
-		// All text labels are set to be in bold
-		char *markup = g_markup_printf_escaped ("<b>%s:</b>", _(labels[i]) );
-		gtk_label_set_markup ( GTK_LABEL(label), markup );
-		g_free ( markup );
-		gtk_table_attach ( table, label, 0, 1, i, i+1, GTK_FILL, GTK_EXPAND, 4, 2 );
-		if (GTK_IS_MISC(contents[i])) {
-			gtk_misc_set_alignment ( GTK_MISC(contents[i]), 0, 0.5 );
+		// Hacky method to only show 4th entry (Eddington number) when wanted
+		if ( !(i == 4) || extended ) {
+			GtkWidget *label;
+			label = gtk_label_new(NULL);
+			gtk_misc_set_alignment ( GTK_MISC(label), 1, 0.5 ); // Position text centrally in vertical plane
+			// All text labels are set to be in bold
+			char *markup = g_markup_printf_escaped ("<b>%s:</b>", _(labels[i]) );
+			gtk_label_set_markup ( GTK_LABEL(label), markup );
+			g_free ( markup );
+			gtk_table_attach ( table, label, 0, 1, i, i+1, GTK_FILL, GTK_EXPAND, 4, 2 );
+			if (GTK_IS_MISC(contents[i])) {
+				gtk_misc_set_alignment ( GTK_MISC(contents[i]), 0, 0.5 );
+			}
+			gtk_table_attach_defaults ( table, contents[i], 1, 2, i, i+1 );
 		}
-		gtk_table_attach_defaults ( table, contents[i], 1, 2, i, i+1 );
 	}
 	return GTK_WIDGET (table);
 }
@@ -195,6 +215,7 @@ static gchar *label_texts[] = {
 	N_("Date Range"),
 	N_("Total Length"),
 	N_("Average Length"),
+	N_("Eddington number"), // No.4: Extended display only
 	N_("Max Speed"),
 	N_("Avg. Speed"),
 	N_("Minimum Altitude"),
@@ -210,13 +231,27 @@ static gchar *label_texts[] = {
  *
  * Returns a widget to hold the stats information in a table grid layout
  */
-static GtkWidget *create_layout ( GtkWidget *content[] )
+static GtkWidget *create_layout ( GtkWidget *content[], gboolean extended )
 {
 	int cnt = 0;
 	for ( cnt = 0; cnt < G_N_ELEMENTS(label_texts); cnt++ )
 		content[cnt] = ui_label_new_selectable ( NULL );
 
-	return create_table (cnt, label_texts, content);
+	if ( !extended )
+		cnt = cnt - 1;
+
+	return create_table (cnt, label_texts, content, extended );
+}
+
+
+static gint rsort_by_distance (gconstpointer a, gconstpointer b)
+{
+	const gdouble* ad = (const gdouble*) a;
+	const gdouble* bd = (const gdouble*) b;
+	if ( *ad > *bd )
+		return -1;
+	else
+		return 1;
 }
 
 /**
@@ -224,7 +259,7 @@ static GtkWidget *create_layout ( GtkWidget *content[] )
  *
  * Update the given widgets table with the values from the track stats
  */
-static void table_output ( track_stats ts, GtkWidget *content[] )
+static void table_output ( track_stats ts, GtkWidget *content[], gboolean extended )
 {
 	int cnt = 0;
 
@@ -290,6 +325,24 @@ static void table_output ( track_stats ts, GtkWidget *content[] )
 		break;
 	}
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+
+	if ( extended ) {
+		// Note that this currently is a simplified approach to calculate the Eddington number.
+		// In that a per track value is used, rather than trying to work out a length per day.
+		//  (i.e. doesn't combine multiple tracks for a single day or split very long tracks into days)
+		tracks_stats[TS_TRACKS].e_list = g_list_sort ( tracks_stats[TS_TRACKS].e_list, rsort_by_distance );
+		guint Eddington = 0;
+		guint position = 0;
+		for (GList *iter = g_list_first (tracks_stats[TS_TRACKS].e_list); iter != NULL; iter = g_list_next (iter)) {
+			position++;
+			gdouble *num = (gdouble*)iter->data;
+			if ( *num > position )
+				Eddington = position;
+		}
+		g_snprintf ( tmp_buf, sizeof(tmp_buf), ("%d"), Eddington );
+		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+	} else
+		cnt++;
 
 	// I'm sure this could be cleaner...
 	g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
@@ -474,7 +527,7 @@ static void val_analyse_item_maybe ( vik_trw_track_list_t *vtlist, const gpointe
  * Analyse each item in the @tracks_and_layers list
  *
  */
-void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboolean include_invisible )
+void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboolean include_invisible, gboolean extended )
 {
 	val_reset ( TS_TRACKS );
 
@@ -483,7 +536,9 @@ void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboolean incl
 		g_list_foreach ( gl, (GFunc) val_analyse_item_maybe, GINT_TO_POINTER(include_invisible) );
 	}
 
-	table_output ( tracks_stats[TS_TRACKS], widgets );
+	table_output ( tracks_stats[TS_TRACKS], widgets, extended );
+
+	g_list_free_full ( tracks_stats[TS_TRACKS].e_list, g_free );
 }
 
 typedef struct {
@@ -495,6 +550,7 @@ typedef struct {
 	gpointer user_data;
 	VikTrwlayerGetTracksAndLayersFunc get_tracks_and_layers_cb;
 	VikTrwlayerAnalyseCloseFunc on_close_cb;
+	gboolean extended;
 } analyse_cb_t;
 
 static void include_invisible_toggled_cb ( GtkToggleButton *togglebutton, analyse_cb_t *acb )
@@ -512,7 +568,7 @@ static void include_invisible_toggled_cb ( GtkToggleButton *togglebutton, analys
 	// Get the latest list of items to analyse
 	acb->tracks_and_layers = acb->get_tracks_and_layers_cb ( acb->vl, acb->user_data );
 
-	val_analyse ( acb->widgets, acb->tracks_and_layers, value );
+	val_analyse ( acb->widgets, acb->tracks_and_layers, value, acb->extended );
 	gtk_widget_show_all ( acb->layout );
 }
 
@@ -589,14 +645,15 @@ GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
 	acb->on_close_cb = on_close_cb;
 	acb->tracks_and_layers = get_tracks_and_layers_cb ( vl, user_data );
 	acb->widgets = g_malloc ( sizeof(GtkWidget*) * G_N_ELEMENTS(label_texts) );
-	acb->layout = create_layout ( acb->widgets );
+	acb->extended = vl->type == VIK_LAYER_AGGREGATE;
+	acb->layout = create_layout ( acb->widgets, acb->extended );
 
 	gtk_box_pack_start ( GTK_BOX(content), acb->layout, FALSE, FALSE, 0 );
 
 	// Analysis seems reasonably quick
 	//  unless you have really large numbers of tracks (i.e. many many thousands or a really slow computer)
 	// One day might store stats in the track itself....
-	val_analyse ( acb->widgets, acb->tracks_and_layers, include_invisible );
+	val_analyse ( acb->widgets, acb->tracks_and_layers, include_invisible, acb->extended );
 
 	GtkWidget *cb = gtk_check_button_new_with_label ( _("Include Invisible Items") );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(cb), include_invisible );
