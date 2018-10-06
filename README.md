@@ -36,6 +36,9 @@ The following packages are also used, but they can each be disabled with configu
 
 	$ sudo apt-get install libsqlite3-dev nettle-dev libmapnik-dev libgeoclue-2-dev libgexiv2-dev libgps-dev libmagic-dev libbz2-dev libzip-dev liboauth-dev
 
+Further packages are required if you want to generate man and help page documentation:
+	$ sudo apt-get install docbook-xsl rarian-compat
+
 ### Actual Build
 
 If you downloaded Viking from Git, you have to:

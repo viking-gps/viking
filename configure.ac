@@ -553,7 +553,17 @@ AC_DEFINE_UNQUOTED(VIK_CONFIG_DEFAULT_TILE_AGE, ${VIK_CONFIG_DEFAULT_TILE_AGE},
 AC_DEFINE(HAVE_VIKING, 1, [Enable Viking specifics in otherwise reusable code])
 
 dnl man pages processing
-DB2MAN_XSL=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
+dnl Different distributions have differing locations for the docbook.xsl
+dnl Debian like
+if test -r /usr/share/xml/docbook/stylesheet/docbook-xsl/manpages/docbook.xsl; then
+  DB2MAN_XSL=/usr/share/xml/docbook/stylesheet/docbook-xsl/manpages/docbook.xsl
+dnl RedHat like
+elif test -r /usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl; then
+  DB2MAN_XSL=/usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl
+else
+dnl Old default
+  DB2MAN_XSL=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
+fi
 AC_SUBST(DB2MAN_XSL)
 AC_PATH_PROG(XP,xsltproc)
 AM_CONDITIONAL([HAVE_XSLTPROC],[test "x$XP" != "x"])
