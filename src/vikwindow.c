@@ -4482,6 +4482,17 @@ static void draw_to_image_file ( VikWindow *vw, img_generation_t img_gen )
   gtk_widget_destroy ( GTK_WIDGET(dialog) );
 }
 
+static void draw_to_image_file_cb ( GtkAction *a, VikWindow *vw )
+{
+  draw_to_image_file ( vw, VW_GEN_SINGLE_IMAGE );
+}
+
+static void draw_to_image_dir_cb ( GtkAction *a, VikWindow *vw )
+{
+  draw_to_image_file ( vw, VW_GEN_DIRECTORY_OF_IMAGES );
+}
+
+#ifdef HAVE_ZIP_H
 static void draw_to_kmz_file_cb ( GtkAction *a, VikWindow *vw )
 {
   if ( vik_viewport_get_coord_mode(vw->viking_vvp) == VIK_COORD_UTM ) {
@@ -4491,16 +4502,6 @@ static void draw_to_kmz_file_cb ( GtkAction *a, VikWindow *vw )
   // NB ATM This only generates a KMZ file with the current viewport image - intended mostly for map images [but will include any lines/icons from track & waypoints that are drawn]
   // (it does *not* include a full KML dump of every track, waypoint etc...)
   draw_to_image_file ( vw, VW_GEN_KMZ_FILE );
-}
-
-static void draw_to_image_file_cb ( GtkAction *a, VikWindow *vw )
-{
-  draw_to_image_file ( vw, VW_GEN_SINGLE_IMAGE );
-}
-
-static void draw_to_image_dir_cb ( GtkAction *a, VikWindow *vw )
-{
-  draw_to_image_file ( vw, VW_GEN_DIRECTORY_OF_IMAGES );
 }
 
 /**
@@ -4541,6 +4542,7 @@ static void import_kmz_file_cb ( GtkAction *a, VikWindow *vw )
   }
   gtk_widget_destroy ( dialog );
 }
+#endif
 
 static void print_cb ( GtkAction *a, VikWindow *vw )
 {
