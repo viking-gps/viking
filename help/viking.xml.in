@@ -69,6 +69,7 @@ and docbook-xsl in your Build-Depends control field.
       <holder>Rob Norris</holder>
     </copyright>
     &dhdate;
+    <productname>Viking</productname>
   </refentryinfo>
   <refmeta>
     &dhucpackage;
