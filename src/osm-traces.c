@@ -210,8 +210,8 @@ static gint get_new_access_tokens ( gchar *request_token_key, gchar *request_tok
 		return -2;
 	free ( reply );
 
-	g_debug ( *access_token_key );
-	g_debug ( *access_token_secret );
+	g_debug ( "%s:%s", __FUNCTION__, *access_token_key );
+	g_debug ( "%s:%s", __FUNCTION__, *access_token_secret );
 
 	return 0;
 }
@@ -233,8 +233,8 @@ static gint get_request_tokens ( gchar **token_key, gchar **token_secret )
 		return -2;
 	free ( reply );
 
-	g_debug ( *token_key );
-	g_debug ( *token_secret );
+	g_debug ( "%s:%s", __FUNCTION__, *token_key );
+	g_debug ( "%s:%s", __FUNCTION__, *token_secret );
 
 	return 0;
 }
@@ -289,7 +289,7 @@ static void new_access_token_cb ( )
 
   // So for now just direct user to OSM website (you will have to enter credentials there & grant permissions)
   gchar *authorize_url = get_authorize_url ( request_key );
-  g_debug ( authorize_url );
+  g_debug ( "%s:%s", __FUNCTION__, authorize_url );
   if ( authorize_url ) {
     gtk_show_uri ( gdk_screen_get_default(), authorize_url, GDK_CURRENT_TIME, NULL );
   }
