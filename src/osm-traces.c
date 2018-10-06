@@ -671,8 +671,8 @@ void osm_traces_upload_viktrwlayer ( VikTrwLayer *vtl, VikTrack *trk )
                                                  NULL);
 
   const gchar *name = NULL;
-  GtkWidget *user_label, *user_entry;
-  GtkWidget *password_label, *password_entry;
+  GtkWidget *user_label, *user_entry = NULL;
+  GtkWidget *password_label, *password_entry = NULL;
   GtkWidget *name_label, *name_entry;
   GtkWidget *description_label, *description_entry;
   GtkWidget *tags_label, *tags_entry;
