@@ -54,8 +54,8 @@ static void vik_gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp );
 static VikGpsLayer *vik_gps_layer_new ( VikViewport *vp );
 static void vik_gps_layer_post_read ( VikGpsLayer *vgl, VikViewport *vp, gboolean from_file );
 
-static void gps_layer_marshall( VikGpsLayer *vgl, guint8 **data, gint *len );
-static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
+static void gps_layer_marshall( VikGpsLayer *vgl, guint8 **data, guint *len );
+static VikGpsLayer *gps_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );
 static gboolean gps_layer_set_param ( VikGpsLayer *vgl, VikLayerSetParam *vlsp );
 static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gboolean is_file_operation );
 
@@ -467,14 +467,14 @@ static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl )
 }
 
 /* "Copy" */
-static void gps_layer_marshall( VikGpsLayer *vgl, guint8 **data, gint *datalen )
+static void gps_layer_marshall( VikGpsLayer *vgl, guint8 **data, guint *datalen )
 {
   VikLayer *child_layer;
   guint8 *ld; 
-  gint ll;
+  guint ll;
   GByteArray* b = g_byte_array_new ();
-  gint len;
-  gint i;
+  guint len;
+  guint i;
 
 #define alm_append(obj, sz) 	\
   len = (sz);    		\
@@ -500,23 +500,23 @@ static void gps_layer_marshall( VikGpsLayer *vgl, guint8 **data, gint *datalen )
 }
 
 /* "Paste" */
-static VikGpsLayer *gps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
+static VikGpsLayer *gps_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp )
 {
 #define alm_size (*(gint *)data)
 #define alm_next \
-  len -= sizeof(gint) + alm_size; \
-  data += sizeof(gint) + alm_size;
+  len -= sizeof(guint) + alm_size; \
+  data += sizeof(guint) + alm_size;
   
   VikGpsLayer *rv = vik_gps_layer_new(vvp);
   VikLayer *child_layer;
   gint i;
 
-  vik_layer_unmarshall_params ( VIK_LAYER(rv), data+sizeof(gint), alm_size, vvp );
+  vik_layer_unmarshall_params ( VIK_LAYER(rv), data+sizeof(guint), alm_size, vvp );
   alm_next;
 
   i = 0;
   while (len>0 && i < NUM_TRW) {
-    child_layer = vik_layer_unmarshall ( data + sizeof(gint), alm_size, vvp );
+    child_layer = vik_layer_unmarshall ( data + sizeof(guint), alm_size, vvp );
     if (child_layer) {
       rv->trw_children[i++] = (VikTrwLayer *)child_layer;
       // NB no need to attach signal update handler here

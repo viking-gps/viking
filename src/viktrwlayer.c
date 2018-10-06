@@ -777,8 +777,8 @@ static gboolean trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype
 static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl );
 static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, gpointer sublayer );
 static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp );
-static void trw_layer_marshall ( VikTrwLayer *vtl, guint8 **data, gint *len );
-static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, gint len, VikViewport *vvp );
+static void trw_layer_marshall ( VikTrwLayer *vtl, guint8 **data, guint *len );
+static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, guint len, VikViewport *vvp );
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp );
 static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gboolean is_file_operation );
 static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values );
@@ -1556,10 +1556,10 @@ static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values 
   }
 }
 
-static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
+static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, guint *len )
 {
   guint8 *pd;
-  gint pl;
+  guint pl;
 
   *data = NULL;
 
@@ -1623,11 +1623,11 @@ static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, gint *len )
   *len = ba->len;
 }
 
-static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, gint len, VikViewport *vvp )
+static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, guint len, VikViewport *vvp )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vvp, FALSE ));
-  gint pl;
-  gint consumed_length;
+  guint pl;
+  guint consumed_length;
   guint8 *data = (guint8*)data_in;
 
   // First the overall layer parameters
@@ -1637,9 +1637,9 @@ static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, gint len, VikV
   data += pl;
 
   consumed_length = pl;
-  const gint sizeof_len_and_subtype = sizeof(gint) + sizeof(gint);
+  const guint sizeof_len_and_subtype = sizeof(guint) + sizeof(guint);
 
-#define tlm_size (*(gint *)data)
+#define tlm_size (*(guint *)data)
   // See marshalling above for order of how this is written
 
   // Now the individual sublayers:
@@ -1650,7 +1650,7 @@ static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, gint len, VikV
     if ( consumed_length + tlm_size < len ) {
 
       // Reuse pl to read the subtype from the data stream
-      memcpy(&pl, data+sizeof(gint), sizeof(pl));
+      memcpy(&pl, data+sizeof(guint), sizeof(pl));
 
       // Also remember to (attempt to) convert each coordinate in case this is pasted into a different drawmode
       if ( pl == VIK_TRW_LAYER_SUBLAYER_TRACK ) {

@@ -414,10 +414,8 @@ void a_clipboard_copy_selected ( VikLayersPanel *vlp )
       }
     }
     else {
-      gint ilen;
       type = VIK_CLIPBOARD_DATA_LAYER;
-      vik_layer_marshall ( sel, &data, &ilen );
-      len = ilen;
+      vik_layer_marshall ( sel, &data, &len );
       name = vik_layer_get_name ( vik_treeview_item_get_pointer(sel->vt, &iter) );
     }
   }

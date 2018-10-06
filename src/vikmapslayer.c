@@ -104,8 +104,8 @@ static gdouble __mapzooms_y[] = { 0.0, 0.125, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0, 16.
 
 static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_file);
 static const gchar* maps_layer_tooltip ( VikMapsLayer *vml );
-static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len );
-static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
+static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, guint *len );
+static VikMapsLayer *maps_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, VikLayerSetParam *vlsp );
 static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, gboolean is_file_operation );
 static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values );
@@ -876,12 +876,12 @@ static const gchar* maps_layer_tooltip ( VikMapsLayer *vml )
   return vik_maps_layer_get_map_label ( vml );
 }
 
-static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, gint *len )
+static void maps_layer_marshall( VikMapsLayer *vml, guint8 **data, guint *len )
 {
   vik_layer_marshall_params ( VIK_LAYER(vml), data, len );
 }
 
-static VikMapsLayer *maps_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
+static VikMapsLayer *maps_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp )
 {
   VikMapsLayer *rv = maps_layer_new ( vvp );
   vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );

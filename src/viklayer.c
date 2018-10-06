@@ -274,11 +274,11 @@ void vik_layer_change_coord_mode ( VikLayer *l, VikCoordMode mode )
 
 typedef struct {
   VikLayerTypeEnum layer_type;
-  gint len;
+  guint len;
   guint8 data[0];
 } header_t;
 
-void vik_layer_marshall ( VikLayer *vl, guint8 **data, gint *len )
+void vik_layer_marshall ( VikLayer *vl, guint8 **data, guint *len )
 {
   header_t *header;
   if ( vl && vik_layer_interfaces[vl->type]->marshall ) {
@@ -297,12 +297,12 @@ void vik_layer_marshall ( VikLayer *vl, guint8 **data, gint *len )
   }
 }
 
-void vik_layer_marshall_params ( VikLayer *vl, guint8 **data, gint *datalen )
+void vik_layer_marshall_params ( VikLayer *vl, guint8 **data, guint *datalen )
 {
   VikLayerParam *params = vik_layer_get_interface(vl->type)->params;
   VikLayerFuncGetParam get_param = vik_layer_get_interface(vl->type)->get_param;
   GByteArray* b = g_byte_array_new ();
-  gint len;
+  guint len;
 
 #define vlm_append(obj, sz) 	\
   len = (sz);    		\
@@ -339,7 +339,7 @@ void vik_layer_marshall_params ( VikLayer *vl, guint8 **data, gint *datalen )
         GList *list = d.sl;
         
         /* write length of list (# of strings) */
-        gint listlen = g_list_length ( list );
+        guint listlen = g_list_length ( list );
         g_byte_array_append ( b, (guint8 *)&listlen, sizeof(listlen) );
 
         /* write each string */
@@ -365,7 +365,7 @@ void vik_layer_marshall_params ( VikLayer *vl, guint8 **data, gint *datalen )
 #undef vlm_append
 }
 
-void vik_layer_unmarshall_params ( VikLayer *vl, const guint8 *data, gint datalen, VikViewport *vvp )
+void vik_layer_unmarshall_params ( VikLayer *vl, const guint8 *data, guint datalen, VikViewport *vvp )
 {
   VikLayerParam *params = vik_layer_get_interface(vl->type)->params;
   VikLayerFuncSetParam set_param = vik_layer_get_interface(vl->type)->set_param;
@@ -374,8 +374,8 @@ void vik_layer_unmarshall_params ( VikLayer *vl, const guint8 *data, gint datale
   
 #define vlm_size (*(gint *)b)
 #define vlm_read(obj)				\
-  memcpy((obj), b+sizeof(gint), vlm_size);	\
-  b += sizeof(gint) + vlm_size;
+  memcpy((obj), b+sizeof(guint), vlm_size);	\
+  b += sizeof(guint) + vlm_size;
 
   vlm_read(&vl->visible);
 
@@ -407,9 +407,9 @@ void vik_layer_unmarshall_params ( VikLayer *vl, const guint8 *data, gint datale
 	g_free(s);
 	break;
       case VIK_LAYER_PARAM_STRING_LIST:  {
-        gint listlen = vlm_size, j;
+        guint listlen = vlm_size, j;
         GList *list = NULL;
-        b += sizeof(gint); /* skip listlen */;
+        b += sizeof(guint); /* skip listlen */;
 
         for ( j = 0; j < listlen; j++ ) {
           /* get a string */
@@ -433,10 +433,9 @@ void vik_layer_unmarshall_params ( VikLayer *vl, const guint8 *data, gint datale
   }
 }
 
-VikLayer *vik_layer_unmarshall ( const guint8 *data, gint len, VikViewport *vvp )
+VikLayer *vik_layer_unmarshall ( const guint8 *data, guint len, VikViewport *vvp )
 {
   header_t *header;
-
   header = (header_t *)data;
   
   if ( vik_layer_interfaces[header->layer_type]->unmarshall ) {

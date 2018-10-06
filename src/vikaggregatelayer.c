@@ -29,8 +29,8 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
-static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, gint *len );
-static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
+static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, guint *len );
+static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );
 static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoordMode mode );
 static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikAggregateLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val );
@@ -136,14 +136,14 @@ VikAggregateLayer *vik_aggregate_layer_create (VikViewport *vp)
   return rv;
 }
 
-static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, gint *datalen )
+static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, guint *datalen )
 {
   GList *child = val->children;
   VikLayer *child_layer;
   guint8 *ld; 
-  gint ll;
+  guint ll;
   GByteArray* b = g_byte_array_new ();
-  gint len;
+  guint len;
 
 #define alm_append(obj, sz) 	\
   len = (sz);    		\
@@ -169,9 +169,9 @@ static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, gin
 #undef alm_append
 }
 
-static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
+static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp )
 {
-#define alm_size (*(gint *)data)
+#define alm_size (*(guint *)data)
 #define alm_next \
   len -= sizeof(gint) + alm_size; \
   data += sizeof(gint) + alm_size;
@@ -179,11 +179,11 @@ static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, gint len, Vi
   VikAggregateLayer *rv = vik_aggregate_layer_new();
   VikLayer *child_layer;
 
-  vik_layer_unmarshall_params ( VIK_LAYER(rv), data+sizeof(gint), alm_size, vvp );
+  vik_layer_unmarshall_params ( VIK_LAYER(rv), data+sizeof(guint), alm_size, vvp );
   alm_next;
 
   while (len>0) {
-    child_layer = vik_layer_unmarshall ( data + sizeof(gint), alm_size, vvp );
+    child_layer = vik_layer_unmarshall ( data + sizeof(guint), alm_size, vvp );
     if (child_layer) {
       rv->children = g_list_append ( rv->children, child_layer );
       g_signal_connect_swapped ( G_OBJECT(child_layer), "update", G_CALLBACK(vik_layer_emit_update_secondary), rv );
