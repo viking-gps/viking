@@ -2111,6 +2111,26 @@ Tracks are searched first in preference over waypoints.
 </para>
 </section>
 
+<section id="agg_stats" xreflabel="Statistics"><title>Statistics</title>
+<para>
+This opens a dialog to display various statistics about all tracks contained within this Aggregate layer.
+</para>
+<figure>
+<title>Statistics Dialog: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Aggregate_statistics.png"/>
+</screenshot>
+</figure>
+<note>
+  <para>
+    This currently generates a simplified <ulink url="https://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling">Eddington number</ulink>.
+    In that a per track length value is used, rather than trying to work out a length per day.
+    (i.e. doesn't combine multiple tracks for a single day or split very long tracks into days).
+    The Eddington number is in the current Unit distance <xref linkend="prefs"/>.
+  </para>
+</note>
+</section>
+
 </section><!-- End Agg -->
 
 <xi:include href="georef_layer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
