@@ -2449,7 +2449,7 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
 	    /*
 	     * If points are the same in display coordinates, don't draw.
 	     */
-	    if ( x != oldx && y != oldy )
+	    if ( x != oldx || y != oldy )
 	      {
 		vik_viewport_coord_to_screen ( dp->vp, &(tp2->coord), &x, &y );
 		draw_utm_skip_insignia ( dp->vp, main_gc, x, y );
