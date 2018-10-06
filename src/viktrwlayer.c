@@ -6121,7 +6121,7 @@ static gint trackpoint_compare(gconstpointer a, gconstpointer b)
 /**
  * comparison function which can be used to sort tracks or waypoints by name
  */
-static gint sort_alphabetically (gconstpointer a, gconstpointer b, gpointer user_data)
+static gint sort_alphabetically (gconstpointer a, gconstpointer b)
 {
   const gchar* namea = (const gchar*) a;
   const gchar* nameb = (const gchar*) b;
@@ -6183,7 +6183,7 @@ static void trw_layer_merge_with_other ( menu_array_sublayer values )
     iter = g_list_next ( iter );
   }
 
-  other_tracks_names = g_list_sort_with_data (other_tracks_names, sort_alphabetically, NULL);
+  other_tracks_names = g_list_sort (other_tracks_names, sort_alphabetically);
 
   GList *merge_list = a_dialog_select_from_list(VIK_GTK_WINDOW_FROM_LAYER(vtl),
                                                 other_tracks_names,
@@ -6232,7 +6232,7 @@ static void trw_layer_sorted_track_id_by_name_list_exclude_self (const gpointer 
   }
 
   // Sort named list alphabetically
-  *(user_data->result) = g_list_insert_sorted_with_data (*(user_data->result), trk->name, sort_alphabetically, NULL);
+  *(user_data->result) = g_list_insert_sorted (*(user_data->result), trk->name, sort_alphabetically);
 }
 
 /**
@@ -7151,7 +7151,7 @@ static void trw_layer_sorted_name_list(gpointer key, gpointer value, gpointer ud
   GList **list = (GList**)udata;
   // *list = g_list_prepend(*all, key); //unsorted method
   // Sort named list alphabetically
-  *list = g_list_insert_sorted_with_data (*list, key, sort_alphabetically, NULL);
+  *list = g_list_insert_sorted (*list, key, sort_alphabetically);
 }
 */
 
@@ -7162,7 +7162,7 @@ static void trw_layer_sorted_wp_id_by_name_list (const gpointer id, const VikWay
 {
   GList **list = (GList**)udata;
   // Sort named list alphabetically
-  *list = g_list_insert_sorted_with_data (*list, wp->name, sort_alphabetically, NULL);
+  *list = g_list_insert_sorted (*list, wp->name, sort_alphabetically);
 }
 
 /**
@@ -7172,7 +7172,7 @@ static void trw_layer_sorted_track_id_by_name_list (const gpointer id, const Vik
 {
   GList **list = (GList**)udata;
   // Sort named list alphabetically
-  *list = g_list_insert_sorted_with_data (*list, trk->name, sort_alphabetically, NULL);
+  *list = g_list_insert_sorted (*list, trk->name, sort_alphabetically);
 }
 
 
@@ -7603,7 +7603,7 @@ static void trw_layer_delete_waypoints_from_selection ( menu_array_layer values 
     return;
   }
 
-  all = g_list_sort_with_data(all, sort_alphabetically, NULL);
+  all = g_list_sort(all, sort_alphabetically);
 
   // Get list of items to delete from the user
   GList *delete_list = a_dialog_select_from_list(VIK_GTK_WINDOW_FROM_LAYER(vtl),
