@@ -65,8 +65,8 @@ static void dem_layer_draw ( VikDEMLayer *vdl, VikViewport *vp );
 static void dem_layer_free ( VikDEMLayer *vdl );
 static VikDEMLayer *dem_layer_create ( VikViewport *vp );
 static const gchar* dem_layer_tooltip( VikDEMLayer *vdl );
-static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len );
-static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
+static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, guint *len );
+static VikDEMLayer *dem_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );
 static gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp );
 static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gboolean is_file_operation );
 static void dem_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_file );
@@ -305,12 +305,12 @@ static const gchar* dem_layer_tooltip( VikDEMLayer *vdl )
   return tmp_buf;
 }
 
-static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, gint *len )
+static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, guint *len )
 {
   vik_layer_marshall_params ( VIK_LAYER(vdl), data, len );
 }
 
-static VikDEMLayer *dem_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
+static VikDEMLayer *dem_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp )
 {
   VikDEMLayer *rv = dem_layer_new ( vvp );
   gint i;

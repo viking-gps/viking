@@ -96,8 +96,8 @@ enum {
   NUM_PARAMS };
 
 static const gchar* mapnik_layer_tooltip ( VikMapnikLayer *vml );
-static void mapnik_layer_marshall( VikMapnikLayer *vml, guint8 **data, gint *len );
-static VikMapnikLayer *mapnik_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp );
+static void mapnik_layer_marshall( VikMapnikLayer *vml, guint8 **data, guint *len );
+static VikMapnikLayer *mapnik_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );
 static gboolean mapnik_layer_set_param ( VikMapnikLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
 static VikLayerParamData mapnik_layer_get_param ( VikMapnikLayer *vml, guint16 id, gboolean is_file_operation );
 static VikMapnikLayer *mapnik_layer_new ( VikViewport *vvp );
@@ -394,12 +394,12 @@ static void mapnik_layer_set_cache_dir ( VikMapnikLayer *vml, const gchar *name 
 	vml->file_cache_dir = g_strdup (name);
 }
 
-static void mapnik_layer_marshall( VikMapnikLayer *vml, guint8 **data, gint *len )
+static void mapnik_layer_marshall( VikMapnikLayer *vml, guint8 **data, guint *len )
 {
 	vik_layer_marshall_params ( VIK_LAYER(vml), data, len );
 }
 
-static VikMapnikLayer *mapnik_layer_unmarshall( guint8 *data, gint len, VikViewport *vvp )
+static VikMapnikLayer *mapnik_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp )
 {
 	VikMapnikLayer *rv = mapnik_layer_new ( vvp );
 	vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
