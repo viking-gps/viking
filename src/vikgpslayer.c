@@ -1877,8 +1877,10 @@ static gboolean gpsd_data_available(GIOChannel *source, GIOCondition condition, 
   if (condition == G_IO_IN) {
 #if GPSD_API_MAJOR_VERSION == 3 || GPSD_API_MAJOR_VERSION == 4
     if (!gps_poll(&vgl->vgpsd->gpsd)) {
-#elif GPSD_API_MAJOR_VERSION >= 5
+#elif GPSD_API_MAJOR_VERSION == 5 || GPSD_API_MAJOR_VERSION == 6
     if (gps_read(&vgl->vgpsd->gpsd) > -1) {
+#elif GPSD_API_MAJOR_VERSION >= 7
+    if (gps_read(&vgl->vgpsd->gpsd, NULL, 0) > -1) {
       // Reuse old function to perform operations on the new GPS data
       gpsd_raw_hook(vgl->vgpsd, NULL);
 #else
