@@ -1881,11 +1881,11 @@ static gboolean gpsd_data_available(GIOChannel *source, GIOCondition condition, 
     if (gps_read(&vgl->vgpsd->gpsd) > -1) {
 #elif GPSD_API_MAJOR_VERSION >= 7
     if (gps_read(&vgl->vgpsd->gpsd, NULL, 0) > -1) {
-      // Reuse old function to perform operations on the new GPS data
-      gpsd_raw_hook(vgl->vgpsd, NULL);
 #else
       // Broken compile
 #endif
+      // Reuse old function to perform operations on the new GPS data
+      gpsd_raw_hook(vgl->vgpsd, NULL);
       return TRUE;
     }
     else {
