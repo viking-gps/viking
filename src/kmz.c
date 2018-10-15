@@ -201,6 +201,15 @@ static xtag_mapping xtag_path_map[] = {
 	{ tt_kml_go_latlonbox_e, "/kml/GroundOverlay/LatLonBox/east" },
 	{ tt_kml_go_latlonbox_s, "/kml/GroundOverlay/LatLonBox/south" },
 	{ tt_kml_go_latlonbox_w, "/kml/GroundOverlay/LatLonBox/west" },
+	// Some KML files have a 'Document' level
+	{ tt_kml_go,             "/kml/Document/GroundOverlay" },
+	{ tt_kml_go_name,        "/kml/Document/GroundOverlay/name" },
+	{ tt_kml_go_image,       "/kml/Document/GroundOverlay/Icon/href" },
+	{ tt_kml_go_latlonbox,   "/kml/Document/GroundOverlay/LatLonBox" },
+	{ tt_kml_go_latlonbox_n, "/kml/Document/GroundOverlay/LatLonBox/north" },
+	{ tt_kml_go_latlonbox_e, "/kml/Document/GroundOverlay/LatLonBox/east" },
+	{ tt_kml_go_latlonbox_s, "/kml/Document/GroundOverlay/LatLonBox/south" },
+	{ tt_kml_go_latlonbox_w, "/kml/Document/GroundOverlay/LatLonBox/west" },
 };
 
 // NB Don't be pedantic about matching case of strings for tags
