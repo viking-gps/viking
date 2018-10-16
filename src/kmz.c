@@ -176,6 +176,17 @@ typedef struct {
 	const char *tag_name;           /* xpath-ish tag name */
 } xtag_mapping;
 
+#ifdef HAVE_ZIP_H
+// Older libzip compatibility:
+#ifndef zip_t
+typedef struct zip zip_t;
+typedef struct zip_file zip_file_t;
+#endif
+#ifndef ZIP_RDONLY
+#define ZIP_RDONLY 0
+#endif
+
+#ifdef HAVE_EXPAT_H
 typedef struct {
 	GString *xpath;
 	GString *c_cdata;
@@ -186,10 +197,12 @@ typedef struct {
 	gdouble east;
 	gdouble south;
 	gdouble west;
+	zip_t *archive;
+	struct zip_stat* zs;
+	VikViewport *vvp;
+	VikLayersPanel *vlp;
 } xml_data;
 
-#ifdef HAVE_ZIP_H
-#ifdef HAVE_EXPAT_H
 // NB No support for orientation ATM
 static xtag_mapping xtag_path_map[] = {
 	{ tt_kml,                "/kml" },
@@ -217,8 +230,9 @@ static xtag_type get_tag ( const char *t )
 {
 	xtag_mapping *tm;
 	for (tm = xtag_path_map; tm->tag_type != 0; tm++)
-		if (0 == g_ascii_strcasecmp(tm->tag_name, t))
-			return tm->tag_type;
+		if (tm->tag_name != NULL)
+			if (0 == g_ascii_strcasecmp(tm->tag_name, t))
+				return tm->tag_type;
 	return tt_unknown;
 }
 
@@ -229,6 +243,15 @@ static void kml_start ( xml_data *xd, const char *el, const char **attr )
 
 	xd->current_tag = get_tag ( xd->xpath->str );
 	switch ( xd->current_tag ) {
+	case tt_kml_go:
+		// Reset values
+		xd->name = NULL;
+		xd->image = NULL;
+		xd->north = NAN;
+		xd->south = NAN;
+		xd->east = NAN;
+		xd->west = NAN;
+		break;
 	case tt_kml_go_name:
 	case tt_kml_go_image:
 	case tt_kml_go_latlonbox_n:
@@ -241,16 +264,24 @@ static void kml_start ( xml_data *xd, const char *el, const char **attr )
 	}
 }
 
+// Fwd declaration
+void ground_overlay_load ( xml_data *xd );
+
 static void kml_end ( xml_data *xd, const char *el )
 {
 	g_string_truncate ( xd->xpath, xd->xpath->len - strlen(el) - 1 );
 
 	switch ( xd->current_tag ) {
+	case tt_kml_go:
+		ground_overlay_load ( xd );
+		break;
 	case tt_kml_go_name:
+		g_free ( xd->name );
 		xd->name = g_strdup ( xd->c_cdata->str );
 		g_string_erase ( xd->c_cdata, 0, -1 );
 		break;
 	case tt_kml_go_image:
+		g_free ( xd->image );
 		xd->image = g_strdup ( xd->c_cdata->str );
 		g_string_erase ( xd->c_cdata, 0, -1 );
 		break;
@@ -291,14 +322,80 @@ static void kml_cdata ( xml_data *xd, const XML_Char *s, int len )
 	default: break;  // ignore cdata from other things
 	}
 }
-#endif
+
+/**
+ * Create a vikgeoreflayer for each <GroundOverlay> in the kml file
+ *
+ */
+void ground_overlay_load ( xml_data *xd )
+{
+	// Some simple detection of broken position values
+        if ( isnan(xd->north) || isnan(xd->west) ||
+	     isnan(xd->south) || isnan(xd->east) ||
+	     xd->north > 90.001 || xd->north < -90.001 ||
+	     xd->south > 90.001 || xd->south < -90.001 ||
+	     xd->west > 180.001 || xd->west < -180.001 ||
+	     xd->east > 180.001 || xd->east < -180.001 ) {
+		g_warning ("%s: %s %s: N%f,S%f E%f,W%f", __FUNCTION__, "invalid lat/lon values detected in",
+			   xd->name, xd->north, xd->south, xd->east, xd->west );
+		return;
+	}
+
+	GdkPixbuf *pixbuf = NULL;
+
+	// Read zip for image...
+	if ( xd->image ) {
+		if ( zip_stat ( xd->archive, xd->image, ZIP_FL_NOCASE | ZIP_FL_ENC_GUESS, xd->zs ) == 0) {
+			zip_file_t *zfi = zip_fopen_index ( xd->archive, xd->zs->index, 0 );
+			// Don't know a way to create a pixbuf using streams.
+			// Thus write out to file
+			// Could read in chunks rather than one big buffer, but don't expect images to be that big
+			char *ibuffer = g_malloc(xd->zs->size);
+			int ilen = zip_fread ( zfi, ibuffer, xd->zs->size );
+			if ( ilen != xd->zs->size ) {
+				g_warning ( "Unable to read %s from zip file", xd->image );
+			}
+			else {
+				gchar *image_file = util_write_tmp_file_from_bytes ( ibuffer, ilen );
+				GError *error = NULL;
+				pixbuf = gdk_pixbuf_new_from_file ( image_file, &error );
+				if ( error ) {
+					g_warning ("%s: %s", __FUNCTION__, error->message );
+					g_error_free ( error );
+				}
+				else {
+					util_remove ( image_file );
+				}
+				g_free ( image_file );
+			}
+			g_free ( ibuffer );
+		}
+		g_free ( xd->image );
+	}
+
+	if ( pixbuf ) {
+		VikCoord vc_tl, vc_br;
+		struct LatLon ll_tl, ll_br;
+		ll_tl.lat = xd->north;
+		ll_tl.lon = xd->west;
+		ll_br.lat = xd->south;
+		ll_br.lon = xd->east;
+		vik_coord_load_from_latlon ( &vc_tl, vik_viewport_get_coord_mode(xd->vvp), &ll_tl );
+		vik_coord_load_from_latlon ( &vc_br, vik_viewport_get_coord_mode(xd->vvp), &ll_br );
+
+		VikGeorefLayer *vgl = vik_georef_layer_create ( xd->vvp, xd->vlp, xd->name ? xd->name : "GeoRef", pixbuf, &vc_tl, &vc_br );
+		if ( vgl ) {
+			VikAggregateLayer *top = vik_layers_panel_get_top_layer ( xd->vlp );
+			vik_aggregate_layer_add_layer ( top, VIK_LAYER(vgl), FALSE );
+		}
+	}
+}
 
 /**
  *
  */
-static gboolean parse_kml ( const char* buffer, int len, gchar **name, gchar **image, gdouble *north, gdouble *south, gdouble *east, gdouble *west )
+static gboolean parse_kml ( const char* buffer, int len, VikViewport *vvp, VikLayersPanel *vlp, zip_t *archive, struct zip_stat* zs )
 {
-#ifdef HAVE_EXPAT_H
 	XML_Parser parser = XML_ParserCreate(NULL);
 	enum XML_Status status = XML_STATUS_ERROR;
 
@@ -313,6 +410,10 @@ static gboolean parse_kml ( const char* buffer, int len, gchar **name, gchar **i
 	xd->west = NAN;
 	xd->name = NULL;
 	xd->image = NULL;
+	xd->archive = archive;
+	xd->zs = zs;
+	xd->vvp = vvp;
+	xd->vlp = vlp;
 
 	XML_SetElementHandler(parser, (XML_StartElementHandler) kml_start, (XML_EndElementHandler) kml_end);
 	XML_SetUserData(parser, xd);
@@ -322,22 +423,13 @@ static gboolean parse_kml ( const char* buffer, int len, gchar **name, gchar **i
 
 	XML_ParserFree (parser);
 
-	*north = xd->north;
-	*south = xd->south;
-	*east = xd->east;
-	*west = xd->west;
-	*name = xd->name; // NB don't free xd->name
-	*image = xd->image; // NB don't free xd->image
-
 	g_string_free ( xd->xpath, TRUE );
 	g_string_free ( xd->c_cdata, TRUE );
 	g_free ( xd );
 
 	return status != XML_STATUS_ERROR;
-#else
-	return FALSE;
-#endif
 }
+#endif
 #endif
 
 /**
@@ -352,23 +444,11 @@ static gboolean parse_kml ( const char* buffer, int len, gchar **name, gchar **i
  *  >0 <128 ZIP error code
  *  128 - No doc.kml file in KMZ
  *  129 - Couldn't understand the doc.kml file
- *  130 - Couldn't get bounds from KML (error not detected ATM)
- *  131 - No image file in KML
- *  132 - Couldn't get image from KML
- *  133 - Image file problem
  */
 int kmz_open_file ( const gchar* filename, VikViewport *vvp, VikLayersPanel *vlp )
 {
 	// Unzip
 #ifdef HAVE_ZIP_H
-// Older libzip compatibility:
-#ifndef zip_t
-typedef struct zip zip_t;
-typedef struct zip_file zip_file_t;
-#endif
-#ifndef ZIP_RDONLY
-#define ZIP_RDONLY 0
-#endif
 
 	int ans = ZIP_ER_OK;
 	zip_t *archive = zip_open ( filename, ZIP_RDONLY, &ans );
@@ -395,72 +475,14 @@ typedef struct zip_file zip_file_t;
 			goto kmz_cleanup;
 		}
 
-		gdouble north, south, east, west;
-		gchar *name = NULL;
-		gchar *image = NULL;
-		gboolean parsed = parse_kml ( buffer, len, &name, &image, &north, &south, &east, &west );
+		gboolean parsed = FALSE;
+#ifdef HAVE_EXPAT_H
+		parsed = parse_kml ( buffer, len, vvp, vlp, archive, &zs );
+#endif
 		g_free ( buffer );
 
-		GdkPixbuf *pixbuf = NULL;
-
-		if ( parsed ) {
-			// Read zip for image...
-			if ( image ) {
-				if ( zip_stat ( archive, image, ZIP_FL_NOCASE | ZIP_FL_ENC_GUESS, &zs ) == 0) {
-					zip_file_t *zfi = zip_fopen_index ( archive, zs.index, 0 );
-					// Don't know a way to create a pixbuf using streams.
-					// Thus write out to file
-					// Could read in chunks rather than one big buffer, but don't expect images to be that big
-					char *ibuffer = g_malloc(zs.size);
-					int ilen = zip_fread ( zfi, ibuffer, zs.size );
-					if ( ilen != zs.size ) {
-						ans = 131;
-						g_warning ( "Unable to read %s from zip file", image );
-					}
-					else {
-						gchar *image_file = util_write_tmp_file_from_bytes ( ibuffer, ilen );
-						GError *error = NULL;
-						pixbuf = gdk_pixbuf_new_from_file ( image_file, &error );
-						if ( error ) {
-							g_warning ("%s: %s", __FUNCTION__, error->message );
-							g_error_free ( error );
-							ans = 133;
-						}
-						else {
-							util_remove ( image_file );
-						}
-						g_free ( image_file );
-					}
-					g_free ( ibuffer );
-				}
-				g_free ( image );
-			}
-			else {
-				ans = 132;
-			}
-		}
-		else {
+		if ( !parsed ) {
 			ans = 129;
-		}
-
-		if ( pixbuf ) {
-			// Some simple detection of broken position values ??
-			//if ( xd->north > 90.0 || xd->north < -90.0 ||
-			//     xd->south > 90.0 || xd->south < -90.0 || )
-			VikCoord vc_tl, vc_br;
-			struct LatLon ll_tl, ll_br;
-			ll_tl.lat = north;
-			ll_tl.lon = west;
-			ll_br.lat = south;
-			ll_br.lon = east;
-			vik_coord_load_from_latlon ( &vc_tl, vik_viewport_get_coord_mode(vvp), &ll_tl );
-			vik_coord_load_from_latlon ( &vc_br, vik_viewport_get_coord_mode(vvp), &ll_br );
-
-			VikGeorefLayer *vgl = vik_georef_layer_create ( vvp, vlp, name, pixbuf, &vc_tl, &vc_br );
-			if ( vgl ) {
-				VikAggregateLayer *top = vik_layers_panel_get_top_layer ( vlp );
-				vik_aggregate_layer_add_layer ( top, VIK_LAYER(vgl), FALSE );
-			}
 		}
 	}
 
