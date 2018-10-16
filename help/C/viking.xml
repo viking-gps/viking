@@ -3882,6 +3882,10 @@ Accept: */*
 	  <listitem>
 	    <para>export_device_routepoint_limit=250</para>
 	  </listitem>
+	  <listitem>
+	    <para>kmz_default_maps_dir=<emphasis role="italic">Empty</emphasis></para>
+	    <para>You may want to use something like: "/media/<emphasis role="italic">user</emphasis>/GARMIN/Garmin/CustomMaps"</para>
+	  </listitem>
 	</itemizedlist>
 
 	<section>
