@@ -418,6 +418,10 @@ static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
       scale = TRUE;
       layer_width = round(vgl->width * vgl->mpp_easting / xmpp);
       layer_height = round(vgl->height * vgl->mpp_northing / ympp);
+
+      // Has the scaling worked?
+      if ( layer_width == 0 || layer_height == 0 )
+	return;
     }
 
     // If image not in viewport bounds - no need to draw it (or bother with any scaling)
