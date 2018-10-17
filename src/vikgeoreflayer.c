@@ -452,10 +452,12 @@ static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
 
 static void georef_layer_free ( VikGeorefLayer *vgl )
 {
-  if ( vgl->image != NULL )
+  if ( vgl->image )
     g_free ( vgl->image );
-  if ( vgl->scaled != NULL )
+  if ( vgl->scaled )
     g_object_unref ( vgl->scaled );
+  if ( vgl->pixbuf )
+    g_object_unref ( vgl->pixbuf );
 }
 
 static VikGeorefLayer *georef_layer_create ( VikViewport *vp )
@@ -1133,7 +1135,10 @@ static void goto_center_ll ( VikViewport *vp,
 }
 
 /**
+ * vik_georef_layer_create:
  *
+ * @name:   Name for the Georef layer. This string is copied.
+ * @pixbuf: Pixbuf becomes owned by the Georef layer and will manage the freeing of it
  */
 VikGeorefLayer *vik_georef_layer_create ( VikViewport *vp,
                                           VikLayersPanel *vlp,
