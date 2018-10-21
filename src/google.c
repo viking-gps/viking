@@ -44,6 +44,9 @@ void google_init () {
   /*
    * Google no longer supports the API we used
    *
+   * If this is reinstated, implement
+   * google_goto_tool_parse_file_for_candidates in googlesearch.c
+   *
   GoogleGotoTool *gototool = google_goto_tool_new (  );
   vik_goto_register ( VIK_GOTO_TOOL ( gototool ) );
   g_object_unref ( gototool );

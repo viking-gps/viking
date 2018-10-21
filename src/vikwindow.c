@@ -3329,6 +3329,18 @@ void vik_window_clear_busy_cursor ( VikWindow *vw )
   gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), vw->viewport_cursor );
 }
 
+void vik_window_set_busy_cursor_widget ( GtkWidget *widget, VikWindow *vw )
+{
+  gdk_window_set_cursor ( gtk_widget_get_window ( widget ), vw->busy_cursor );
+  vik_window_set_busy_cursor ( vw );
+}
+
+void vik_window_clear_busy_cursor_widget ( GtkWidget *widget, VikWindow *vw )
+{
+  gdk_window_set_cursor ( gtk_widget_get_window( widget ), NULL );
+  vik_window_clear_busy_cursor ( vw );
+}
+
 // ATM Call upon file load
 // TODO maybe also hook into (new) signals on new/deleted viklayers (of TRW)
 // THen only need for adds to mark additional entries.

@@ -211,19 +211,11 @@ void osm_init () {
     "lat-attr", "lat",
     "lon-path", "/searchresults/place",
     "lon-attr", "lon",
+    "desc-path", "/searchresults/place",
+    "desc-attr", "display_name",
     NULL ) );
     vik_goto_register ( VIK_GOTO_TOOL ( nominatim ) );
     g_object_unref ( nominatim );
-
-  VikGotoXmlTool *namefinder = VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "OSM Name finder",
-    "url-format", "http://gazetteer.openstreetmap.org/namefinder/search.xml?find=%s&max=1",
-    "lat-path", "/searchresults/named",
-    "lat-attr", "lat",
-    "lon-path", "/searchresults/named",
-    "lon-attr", "lon",
-    NULL ) );
-    vik_goto_register ( VIK_GOTO_TOOL ( namefinder ) );
-    g_object_unref ( namefinder );
 
   // Not really OSM but can't be bothered to create somewhere else to put it...
   webtool = vik_webtool_center_new_with_members ( _("Wikimedia Toolserver GeoHack"), "http://tools.wmflabs.org/geohack/geohack.php?params=%s;%s" );

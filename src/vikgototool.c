@@ -204,6 +204,11 @@ gboolean vik_goto_tool_parse_file_for_latlon (VikGotoTool *self, gchar *filename
   return VIK_GOTO_TOOL_GET_CLASS( self )->parse_file_for_latlon( self, filename, ll );
 }
 
+gboolean vik_goto_tool_parse_file_for_candidates (VikGotoTool *self, gchar *filename, GList **candidates)
+{
+  return VIK_GOTO_TOOL_GET_CLASS( self )->parse_file_for_candidates( self, filename, candidates );
+}
+
 /**
  * vik_goto_tool_get_coord:
  *
@@ -226,11 +231,7 @@ int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp
   int ret = 0;  /* OK */
   struct LatLon ll;
 
-  g_debug("%s: raw goto: %s", __FUNCTION__, srch_str);
-
   escaped_srch_str = g_uri_escape_string(srch_str, NULL, TRUE);
-
-  g_debug("%s: escaped goto: %s", __FUNCTION__, escaped_srch_str);
 
   uri = g_strdup_printf(vik_goto_tool_get_url_format(self), escaped_srch_str);
 
@@ -242,7 +243,6 @@ int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp
     goto done_no_file;
   }
 
-  g_debug("%s: %s", __FILE__, tmpname);
   if (!vik_goto_tool_parse_file_for_latlon(self, tmpname, &ll)) {
     ret = -1;
     goto done;
@@ -256,4 +256,64 @@ done_no_file:
   g_free(escaped_srch_str);
   g_free(uri);
   return ret;
+}
+
+/**
+ * vik_goto_tool_get_candidates
+ *
+ * @self:       The #VikGotoTool
+ * @vvp:        The #VikViewport
+ * @srch_str:   The string to search with
+ * @candidates: Returns a list of matches
+ *
+ * Returns: An integer value indicating:
+ *  0  = search found something
+ *  -1 = search place not found by the #VikGotoTool
+ *  1  = search unavailable in the #VikGotoTool due to communication issue
+ *
+ */
+int vik_goto_tool_get_candidates ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, GList **candidates )
+{
+  gchar *tmpname;
+  gchar *uri;
+  gchar *escaped_srch_str;
+  int ret = 0;  /* OK */
+
+  escaped_srch_str = g_uri_escape_string(srch_str, NULL, TRUE);
+
+  uri = g_strdup_printf(vik_goto_tool_get_url_format(self), escaped_srch_str);
+
+  tmpname = a_download_uri_to_tmp_file ( uri, vik_goto_tool_get_download_options(self) );
+
+  if ( !tmpname ) {
+    // Some kind of download error, so no tmp file
+    ret = 1;
+    goto done_no_file;
+  }
+
+  g_debug("%s: %s", __FILE__, tmpname);
+  if (!vik_goto_tool_parse_file_for_candidates(self, tmpname, candidates)) {
+    ret = -1;
+    goto done;
+  }
+
+done:
+  (void)util_remove(tmpname);
+done_no_file:
+  g_free(tmpname);
+  g_free(escaped_srch_str);
+  g_free(uri);
+  return ret;
+}
+
+/**
+ * vik_goto_tool_free_candidates
+ *
+ * @data: The candidate object to free
+ */
+void vik_goto_tool_free_candidate ( gpointer data )
+{
+  struct VikGotoCandidate *candidate = data;
+  g_free ( candidate->description );
+  g_free ( candidate );
 }
