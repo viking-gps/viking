@@ -46,6 +46,7 @@ struct _VikGotoToolClass
   gchar *(* get_url_format) (VikGotoTool *self);
   DownloadFileOptions *(* get_download_options) (VikGotoTool *self);
   gboolean (* parse_file_for_latlon) (VikGotoTool *self, gchar *filename, struct LatLon *ll);
+  gboolean (* parse_file_for_candidates) (VikGotoTool *self, gchar *filename, GList *candidates);
 };
 
 GType vik_goto_tool_get_type ();
@@ -54,11 +55,18 @@ struct _VikGotoTool {
   GObject obj;
 };
 
+struct VikGotoCandidate {
+  gchar *description;
+  struct LatLon ll;
+};
+
 gchar *vik_goto_tool_get_label ( VikGotoTool *self );
 gchar *vik_goto_tool_get_url_format ( VikGotoTool *self );
 DownloadFileOptions *vik_goto_tool_get_download_options ( VikGotoTool *self );
 gboolean vik_goto_tool_parse_file_for_latlon ( VikGotoTool *self, gchar *filename, struct LatLon *ll );
 int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord );
+int vik_goto_tool_get_candidates ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, GList **candidates );
+void vik_goto_tool_free_candidate ( struct VikGotoCandidate *candidate );
 
 G_END_DECLS
 
