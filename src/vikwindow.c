@@ -4539,14 +4539,13 @@ static void import_kmz_file_cb ( GtkAction *a, VikWindow *vw )
   gtk_file_filter_add_mime_type ( filter, "vnd.google-earth.kmz");
   gtk_file_filter_add_pattern ( filter, "*.kmz" );
   gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(dialog), filter );
+  // Default filter to KMZ type
   gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
 
   filter = gtk_file_filter_new ();
   gtk_file_filter_set_name( filter, _("All") );
   gtk_file_filter_add_pattern ( filter, "*" );
   gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(dialog), filter );
-  // Default to any file - same as before open filters were added
-  gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
 
   if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )  {
     gchar *fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(dialog) );
