@@ -376,6 +376,7 @@ static void georef_layer_mpp_from_coords ( VikCoordMode mode, struct LatLon ll_t
   ll_bl.lat = ll_br.lat;
   ll_bl.lon = ll_tl.lon;
 
+  gdouble diffx;
   // UTM mode should be exact MPP
   gdouble factor = 1.0;
   if ( mode == VIK_COORD_LATLON ) {
@@ -387,9 +388,23 @@ static void georef_layer_mpp_from_coords ( VikCoordMode mode, struct LatLon ll_t
     // Protect against div by zero (but shouldn't have 90 degrees for mid latitude...)
     if ( fabs(mid_lat) < 89.9 )
       factor = cos(DEG2RAD(mid_lat)) * 1.193;
+
+    // Work out the xmpp in a relationship to the centre of the coords
+    // Consider an area with a large difference in latitude, it will have differing factors
+    // Thus an average factor at the centre will have less distortion.
+    struct LatLon ll_ml;
+    ll_ml.lat = mid_lat;
+    ll_ml.lon = ll_tl.lon;
+
+    struct LatLon ll_mr;
+    ll_mr.lat = mid_lat;
+    ll_mr.lon = ll_tr.lon;
+
+    diffx = a_coords_latlon_diff ( &ll_ml, &ll_mr );
+  } else {
+    diffx = a_coords_latlon_diff ( &ll_tl, &ll_tr );
   }
 
-  gdouble diffx = a_coords_latlon_diff ( &ll_tl, &ll_tr );
   *xmpp = (diffx / width) / factor;
 
   gdouble diffy = a_coords_latlon_diff ( &ll_tl, &ll_bl );
