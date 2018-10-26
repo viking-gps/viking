@@ -109,7 +109,6 @@ void *unzip_file(gchar *zip_file, gulong *unzip_size)
 	local_file_header = (struct _lfh *) zip_file;
 	if (GUINT32_FROM_LE(local_file_header->sig) != 0x04034b50) {
 		g_warning("%s(): wrong format (%d)", __PRETTY_FUNCTION__, GUINT32_FROM_LE(local_file_header->sig));
-		g_free(unzip_data);
 		goto end;
 	}
 
