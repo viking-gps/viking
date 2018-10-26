@@ -1796,7 +1796,13 @@ Some map types supported are for on disk tile formats:
 	<para>This is equivalent to any map set with <emphasis>OSM</emphasis> Cache Layput.</para>
 </listitem>
 <listitem><para><ulink url="https://github.com/mapbox/mbtiles-spec">MBTiles File</ulink></para></listitem>
-<listitem><para><ulink url="http://wiki.openstreetmap.org/wiki/Meta_tiles">OSM Metatiles</ulink></para></listitem>
+<listitem>
+  <para><ulink url="http://wiki.openstreetmap.org/wiki/Meta_tiles">OSM Metatiles</ulink></para>
+  <note>
+    <para>This file format is mostly aimed at being rendering cache feature and is <ulink url="ehttps://en.wikipedia.org/wiki/Endianness">Endian</ulink> dependent.</para>
+    <para>Thus to successfully view the file cache, the Metatile files and Viking must be of the same endian type (which they probably will be).</para>
+  </note>
+</listitem>
 </itemizedlist>
 <para>
 Of course you need to have acquired or generated these tilesets yourself.

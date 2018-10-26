@@ -45,7 +45,7 @@ int main ( int argc, char *argv[] )
     int z = 13;
     //char dir[] = "/var/lib/mod_tile/default";
     char dir[] = "metatile_example";
-    // Example defaults to a metatile that was pre generated using mod_tile
+    // Example defaults to a metatile that was pre generated using mod_tile (on a Little endian machine)
     // Equates to 'metatile_example/13/0/0/250/220/0.meta'
     //  which is Brownsea Island, Dorset, UK (50.69N, 1.96W)
 
