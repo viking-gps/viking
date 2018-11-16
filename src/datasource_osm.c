@@ -35,7 +35,7 @@
 /**
  * See http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces
  */
-#define DOWNLOAD_URL_FMT "api.openstreetmap.org/api/0.6/trackpoints?bbox=%s,%s,%s,%s&page=%d"
+#define DOWNLOAD_URL_FMT "https://api.openstreetmap.org/api/0.6/trackpoints?bbox=%s,%s,%s,%s&page=%d"
 
 typedef struct {
   GtkWidget *page_number;
