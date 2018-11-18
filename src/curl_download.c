@@ -212,13 +212,13 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
     g_warning ( "%s: curl error: %d for uri %s", __FUNCTION__, res, uri );
     res = CURL_DOWNLOAD_ERROR;
   }
-  if (!handle)
-     curl_easy_cleanup ( curl );
   if (curl_send_headers) {
     curl_slist_free_all(curl_send_headers);
     curl_send_headers = NULL;
     curl_easy_setopt ( curl, CURLOPT_HTTPHEADER , NULL);
   }
+  if (!handle)
+     curl_easy_cleanup ( curl );
   return res;
 }
 
