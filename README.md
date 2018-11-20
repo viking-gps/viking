@@ -26,6 +26,7 @@ Git repository:
 ### Dependencies
 
 On Debian Sid, following packages must be installed before building:
+
 	# sudo apt install gtk-doc-tools gnome-doc-utils libpng-dev libgtk-3-dev libicu-dev
 
 The following packages are needed (they are included by default in Debian Sid, but not in other distributions). They must be installed too:
@@ -37,6 +38,7 @@ The following packages are also used, but they can each be disabled with configu
 	$ sudo apt-get install libsqlite3-dev nettle-dev libmapnik-dev libgeoclue-2-dev libgexiv2-dev libgps-dev libmagic-dev libbz2-dev libzip-dev liboauth-dev
 
 Further packages are required if you want to generate man and help page documentation:
+
 	$ sudo apt-get install docbook-xsl rarian-compat
 
 ### Actual Build
