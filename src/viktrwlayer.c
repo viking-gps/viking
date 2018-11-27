@@ -294,6 +294,7 @@ static void trw_layer_goto_track_max_speed ( menu_array_sublayer values );
 static void trw_layer_goto_track_max_alt ( menu_array_sublayer values );
 static void trw_layer_goto_track_min_alt ( menu_array_sublayer values );
 static void trw_layer_goto_track_center ( menu_array_sublayer values );
+static void trw_layer_goto_track_date ( menu_array_sublayer values );
 static void trw_layer_merge_by_segment ( menu_array_sublayer values );
 static void trw_layer_merge_by_timestamp ( menu_array_sublayer values );
 static void trw_layer_merge_with_other ( menu_array_sublayer values );
@@ -5195,8 +5196,11 @@ static void trw_layer_delete_all_tracks ( menu_array_layer values )
   // Get confirmation from the user
   if ( a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
 			    _("Are you sure you want to delete all tracks in %s?"),
-			    vik_layer_get_name ( VIK_LAYER(vtl) ) ) )
+			    vik_layer_get_name ( VIK_LAYER(vtl) ) ) ) {
     vik_trw_layer_delete_all_tracks (vtl);
+    if ( values[MA_VLP] )
+      vik_layers_panel_calendar_update ( VIK_LAYERS_PANEL(values[MA_VLP]) );
+  }
 }
 
 static void trw_layer_delete_all_routes ( menu_array_layer values )
@@ -5253,6 +5257,8 @@ static void trw_layer_delete_item ( menu_array_sublayer values )
       was_visible = vik_trw_layer_delete_track ( vtl, trk );
       // Reset layer timestamp in case it has now changed
       vik_treeview_item_set_timestamp ( vtl->vl.vt, &vtl->vl.iter, trw_layer_get_timestamp(vtl) );
+      if ( values[MA_VLP] )
+	vik_layers_panel_calendar_update ( VIK_LAYERS_PANEL(values[MA_VLP]) );
     }
   }
   else
@@ -5478,6 +5484,24 @@ static void trw_layer_goto_track_center ( menu_array_sublayer values )
     average.lon = (maxmin[0].lon+maxmin[1].lon)/2;
     vik_coord_load_from_latlon ( &coord, vtl->coord_mode, &average );
     goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &coord);
+  }
+}
+
+static void trw_layer_goto_track_date ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  VikTrack *track;
+  if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_TRACK )
+    track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+  else
+    // No dates on routes
+    return;
+
+  if ( track && track->trackpoints ) {
+    VikTrackpoint *tp = vik_track_get_tp_first( track );
+    if ( tp->has_timestamp ) {
+      vik_layers_panel_calendar_date ( VIK_LAYERS_PANEL(values[MA_VLP]), tp->timestamp );
+    }
   }
 }
 
@@ -6473,6 +6497,9 @@ static void trw_layer_merge_by_timestamp ( menu_array_sublayer values )
 
   g_list_free(nearby_tracks);
 
+  if ( values[MA_VLP] )
+    vik_layers_panel_calendar_update ( VIK_LAYERS_PANEL(values[MA_VLP]) );
+
   vik_layer_emit_update( VIK_LAYER(vtl) );
 }
 
@@ -6610,6 +6637,9 @@ static void trw_layer_split_by_timestamp ( menu_array_sublayer values )
     // Remove original track and then update the display
     vik_trw_layer_delete_track (vtl, track);
     vik_layer_emit_update(VIK_LAYER(vtl));
+
+    if ( values[MA_VLP] )
+      vik_layers_panel_calendar_update ( VIK_LAYERS_PANEL(values[MA_VLP]) );
   }
   g_list_free(newlists);
 }
@@ -8605,11 +8635,17 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_menu_shell_append ( GTK_MENU_SHELL(goto_submenu), item );
     gtk_widget_show ( item );
 
-    // Routes don't have speeds
+    // Routes don't have speeds or dates
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
       item = gtk_image_menu_item_new_with_mnemonic ( _("_Maximum Speed") );
       gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_MEDIA_FORWARD, GTK_ICON_SIZE_MENU) );
       g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_track_max_speed), pass_along );
+      gtk_menu_shell_append ( GTK_MENU_SHELL(goto_submenu), item );
+      gtk_widget_show ( item );
+
+      item = gtk_image_menu_item_new_with_mnemonic ( _("_Date") );
+      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_JUMP_TO, GTK_ICON_SIZE_MENU) );
+      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_goto_track_date), pass_along );
       gtk_menu_shell_append ( GTK_MENU_SHELL(goto_submenu), item );
       gtk_widget_show ( item );
     }

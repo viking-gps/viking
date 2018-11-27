@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (c) 2018, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +28,7 @@
 #include "settings.h"
 
 #include <string.h>
+#include <time.h>
 
 #include <glib/gi18n.h>
 #include <gdk/gdkkeysyms.h>
@@ -37,6 +39,15 @@ enum {
   VLP_LAST_SIGNAL
 };
 
+// Calendar markup
+typedef enum {
+  VLP_CAL_MU_NONE = 0,
+  VLP_CAL_MU_MARKED,
+  VLP_CAL_MU_DETAIL,
+  VLP_CAL_MU_AUTO,
+  VLP_CAL_MU_LAST,
+} calendar_mu_t;
+
 static guint layers_panel_signals[VLP_LAST_SIGNAL] = { 0 };
 
 static GObjectClass *parent_class;
@@ -44,6 +55,12 @@ static GObjectClass *parent_class;
 struct _VikLayersPanel {
   GtkVBox vbox;
   GtkWidget *hbox;
+  GtkWidget *calendar;
+  // Could use gtk_widget_get_visible () instead, but needs Gtk2.18
+  // ATM still using Gtk2.16 - so manually track the state for now
+  // NB Doesn't consider if the layers panel is shown or not.
+  gboolean cal_shown;
+  calendar_mu_t cal_markup;
 
   VikAggregateLayer *toplayer;
   GtkTreeIter toplayer_iter;
@@ -85,7 +102,7 @@ static void vik_layers_panel_class_init ( VikLayersPanelClass *klass )
 
   layers_panel_signals[VLP_UPDATE_SIGNAL] = g_signal_new ( "update", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikLayersPanelClass, update), NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
   layers_panel_signals[VLP_DELETE_LAYER_SIGNAL] = g_signal_new ( "delete_layer", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikLayersPanelClass, update), NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
-}
+  }
 
 VikLayersPanel *vik_layers_panel_new ()
 {
@@ -160,6 +177,155 @@ static GtkWidget* layers_panel_create_popup ( VikLayersPanel *vlp, gboolean full
 
   return menu;
 }
+
+static void calendar_mark_layer_in_month ( VikLayersPanel *vlp, VikTrwLayer *vtl )
+{
+  guint year, month, day;
+  gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &year, &month, &day );
+  GDate *gd = g_date_new();
+  GHashTable *trks = vik_trw_layer_get_tracks ( vtl ); 
+  GHashTableIter iter;
+  gpointer key, value;
+  // Foreach Track
+  g_hash_table_iter_init ( &iter, trks );
+  while ( g_hash_table_iter_next ( &iter, &key, &value ) ) {
+    VikTrack *trk = VIK_TRACK(value);
+    // First trackpoint
+    if ( trk->trackpoints && VIK_TRACKPOINT(trk->trackpoints->data)->has_timestamp ) {
+      g_date_set_time_t ( gd, VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
+      // Is in selected month?
+      if ( g_date_get_year(gd) == year && (g_date_get_month(gd) == (month+1)) ) {
+	gtk_calendar_mark_day ( GTK_CALENDAR(vlp->calendar), g_date_get_day(gd) );
+	break;
+      }
+    }
+  }
+  g_date_free ( gd );
+}
+
+/**
+ *
+ */
+void layers_panel_calendar_update ( VikLayersPanel *vlp )
+{
+  // Skip if not shown...
+  if ( !vlp->cal_shown )
+    return;
+
+  gtk_calendar_clear_marks ( GTK_CALENDAR(vlp->calendar) );
+
+  GList *layers = vik_layers_panel_get_all_layers_of_type ( vlp, VIK_LAYER_TRW, TRUE );
+  if ( !layers )
+    return;
+  
+  while ( layers ) {
+    VikTrwLayer *vtl = VIK_TRW_LAYER(layers->data);
+    calendar_mark_layer_in_month ( vlp, vtl );
+    layers = g_list_next ( layers );
+  }
+  g_list_free ( layers );    
+}
+
+/**
+ *
+ */
+void vik_layers_panel_calendar_update ( VikLayersPanel *vlp )
+{
+  if ( vlp->cal_markup == VLP_CAL_MU_NONE )
+    return;
+
+  clock_t begin = clock();
+  layers_panel_calendar_update ( vlp );
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  g_debug ( "%s: %f", __FUNCTION__, time_spent );
+  // Downgrade automatic detail if taking too long
+  // Since ATM the detail method invokes x30 searches,
+  //  it could get noticably slow
+  if ( vlp->cal_markup == VLP_CAL_MU_AUTO )
+    if ( time_spent > (0.5/30.0) )
+      vlp->cal_markup = VLP_CAL_MU_MARKED;
+}
+
+static void layers_calendar_day_selected_dc_cb ( VikLayersPanel *vlp )
+{
+  // Ideally only need to search if the day is marked...
+  guint year, month, day;
+  gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &year, &month, &day );
+  gchar *date_str = g_strdup_printf ( "%d-%02d-%02d", year, month+1, day );
+  (void)vik_aggregate_layer_search_date ( vlp->toplayer, date_str );
+  g_free ( date_str );
+}
+
+static gchar *calendar_detail ( GtkCalendar *calendar,
+                                guint year,
+                                guint month,
+                                guint day,
+                                gpointer user_data )
+{
+  VikLayersPanel *vlp = (VikLayersPanel*)user_data;
+  // Skip if not shown...
+  if ( !vlp->cal_shown )
+    return NULL;
+
+  // Check that detail is wanted
+  if ( vlp->cal_markup < VLP_CAL_MU_DETAIL )
+    return NULL;
+
+  guint ayear, amonth, aday;
+  gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &ayear, &amonth, &aday );
+
+  // Only bother for this actual month
+  // As this event gets fired for the surrounding days too
+  if ( amonth != month )
+    return NULL;
+
+  GList *layers = vik_layers_panel_get_all_layers_of_type ( vlp, VIK_LAYER_TRW, TRUE );
+  if ( !layers )
+    return NULL;
+
+  gboolean need_to_break = FALSE;
+  VikTrwLayer *vtl = NULL;
+  GDate *gd = g_date_new();
+  while ( layers ) {
+    vtl = VIK_TRW_LAYER(layers->data);
+
+    GHashTable *trks = vik_trw_layer_get_tracks ( vtl ); 
+    GHashTableIter iter;
+    gpointer key, value;
+    // Foreach Track
+    g_hash_table_iter_init ( &iter, trks );
+    while ( g_hash_table_iter_next ( &iter, &key, &value ) ) {
+      VikTrack *trk = VIK_TRACK(value);
+      // First trackpoint
+      if ( trk->trackpoints && VIK_TRACKPOINT(trk->trackpoints->data)->has_timestamp ) {
+        g_date_set_time_t ( gd, VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
+        // Is of this day?
+        if ( g_date_get_year(gd) == year &&
+             g_date_get_month(gd) == (month+1) &&
+             g_date_get_day(gd) == day ) {
+          need_to_break = TRUE;
+	  break;
+	}
+      }
+    }
+    // Fully exit
+    if ( need_to_break )
+      break;
+    
+    layers = g_list_next ( layers );
+    vtl = NULL;
+  }
+  g_date_free ( gd );
+  g_list_free ( layers );    
+
+  if ( vtl)
+    return g_strdup (vik_layer_get_name ( VIK_LAYER(vtl) ));
+
+  return NULL;
+}
+
+#define VIK_SETTINGS_CAL_MUM "layers_panel_calendar_markup_mode"
 
 static void vik_layers_panel_init ( VikLayersPanel *vlp )
 {
@@ -243,8 +409,36 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   scrolledwindow = gtk_scrolled_window_new ( NULL, NULL );
   gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
   gtk_container_add ( GTK_CONTAINER(scrolledwindow), GTK_WIDGET(vlp->vt) );
+
+  int cal_markup;
+  if ( a_settings_get_integer ( VIK_SETTINGS_CAL_MUM, &cal_markup ) ) {
+    if ( cal_markup >= VLP_CAL_MU_NONE && cal_markup < VLP_CAL_MU_LAST )
+      vlp->cal_markup = cal_markup;
+    else
+      vlp->cal_markup = VLP_CAL_MU_AUTO;
+  }
+  else
+    vlp->cal_markup = VLP_CAL_MU_AUTO;
+
+  vlp->calendar = gtk_calendar_new();
+  g_signal_connect_swapped ( vlp->calendar, "month-changed", G_CALLBACK(vik_layers_panel_calendar_update), vlp);
+  // Use double click event, rather than just the day-selected event,
+  //  since changing month/year causes the day-selected event to occur
+  // (and then possibly this results in selecting a track) which would be counter intuitive
+  g_signal_connect_swapped ( vlp->calendar, "day-selected-double-click", G_CALLBACK(layers_calendar_day_selected_dc_cb), vlp);
+  vlp->cal_shown = TRUE;
+
+  // Ensure any detail results in a tooltip rather than embedded in the calendar display
+  GValue sd = { 0 };
+  g_value_init ( &sd, G_TYPE_BOOLEAN );
+  g_value_set_boolean ( &sd, FALSE );
+  g_object_set_property ( G_OBJECT(vlp->calendar), "show-details", &sd );
+
+  gtk_calendar_set_detail_func ( GTK_CALENDAR(vlp->calendar), calendar_detail, vlp, NULL );
+  vik_layers_panel_set_preferences ( vlp );
   
   gtk_box_pack_start ( GTK_BOX(vlp), scrolledwindow, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(vlp), vlp->calendar, FALSE, FALSE, 0 );
   gtk_box_pack_start ( GTK_BOX(vlp), vlp->hbox, FALSE, FALSE, 0 );
 }
 
@@ -662,7 +856,7 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
         g_signal_emit ( G_OBJECT(vlp), layers_panel_signals[VLP_DELETE_LAYER_SIGNAL], 0 );
 
         if ( vik_aggregate_layer_delete ( parent, &iter ) )
-	  vik_layers_panel_emit_update ( vlp );
+	  vik_layers_panel_emit_update ( vlp );	
       }
     }
     else
@@ -675,6 +869,8 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
       vik_layer_get_interface(sel->type)->delete_item ( sel, subtype, vik_treeview_item_get_pointer(sel->vt, &iter) );
     }
   }
+  // Always attempt to update the calendar on any delete (even if not actually deleted anything)
+  vik_layers_panel_calendar_update ( vlp );
 }
 
 VikLayer *vik_layers_panel_get_selected ( VikLayersPanel *vlp )
@@ -756,6 +952,7 @@ void vik_layers_panel_clear ( VikLayersPanel *vlp )
   if ( ! vik_aggregate_layer_is_empty(vlp->toplayer) ) {
     g_signal_emit ( G_OBJECT(vlp), layers_panel_signals[VLP_DELETE_LAYER_SIGNAL], 0 );
     vik_aggregate_layer_clear ( vlp->toplayer ); /* simply deletes all layers */
+    gtk_calendar_clear_marks ( GTK_CALENDAR(vlp->calendar) );
   }
 }
 
@@ -782,4 +979,47 @@ void vik_layers_panel_show_buttons ( VikLayersPanel *vlp, gboolean show )
     gtk_widget_show ( vlp->hbox );
   else
     gtk_widget_hide ( vlp->hbox );
+}
+
+void vik_layers_panel_show_calendar ( VikLayersPanel *vlp, gboolean show )
+{
+  if ( show ) {
+    vlp->cal_shown = TRUE;
+    vik_layers_panel_calendar_update ( vlp );
+    gtk_widget_show ( vlp->calendar );
+  }
+  else {
+    vlp->cal_shown = FALSE;
+    gtk_widget_hide ( vlp->calendar );
+  }
+}
+
+/**
+ *
+ */
+void vik_layers_panel_calendar_today ( VikLayersPanel *vlp )
+{
+  vu_calendar_set_to_today (vlp->calendar);
+}
+
+void vik_layers_panel_calendar_date ( VikLayersPanel *vlp, time_t timestamp )
+{
+  GDate *gd = g_date_new();
+  g_date_set_time_t ( gd, timestamp );
+  gtk_calendar_select_month ( GTK_CALENDAR(vlp->calendar), g_date_get_month(gd)-1, g_date_get_year(gd) );
+  gtk_calendar_select_day ( GTK_CALENDAR(vlp->calendar), g_date_get_day(gd) );
+  g_date_free ( gd );
+}
+
+/**
+ * vik_layers_panel_set_preferences:
+ *
+ * Allow reapplying preferences (i.e from the preferences dialog)
+ */
+void vik_layers_panel_set_preferences ( VikLayersPanel *vlp )
+{
+  GValue sd = { 0 };
+  g_value_init ( &sd, G_TYPE_BOOLEAN );
+  g_value_set_boolean ( &sd, a_vik_get_calendar_show_day_names() );
+  g_object_set_property ( G_OBJECT(vlp->calendar), "show-day-names", &sd );
 }

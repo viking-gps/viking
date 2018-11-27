@@ -202,6 +202,7 @@ struct _VikWindow {
   gboolean show_toolbar;
   gboolean show_main_menu;
   gboolean show_side_panel_buttons;
+  gboolean show_side_panel_calendar;
 
   gboolean select_move;
   gboolean pan_move;
@@ -355,6 +356,7 @@ static void destroy_window ( GtkWidget *widget,
 // Thus this value is for setting manually via editting the settings file directly
 #define VIK_SETTINGS_WIN_MENUBAR "window_menubar"
 #define VIK_SETTINGS_WIN_SIDEPANEL_BUTTONS "window_sidepanel_buttons"
+#define VIK_SETTINGS_WIN_SIDEPANEL_CALENDAR "window_sidepanel_calendar"
 
 VikWindow *vik_window_new_window ()
 {
@@ -414,6 +416,14 @@ VikWindow *vik_window_new_window ()
         if ( ! sidepanel_buttons ) {
           vik_layers_panel_show_buttons ( vw->viking_vlp, FALSE );
           GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanelButtons" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
+
+      gboolean sidepanel_calendar;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_CALENDAR, &sidepanel_calendar ) )
+        if ( ! sidepanel_calendar ) {
+          vik_layers_panel_show_calendar ( vw->viking_vlp, FALSE );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanelCalendar" );
           gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
         }
 
@@ -1006,6 +1016,7 @@ static void vik_window_init ( VikWindow *vw )
   vw->show_toolbar = TRUE;
   vw->show_main_menu = TRUE;
   vw->show_side_panel_buttons = TRUE;
+  vw->show_side_panel_calendar = TRUE;
 
   // Only accept Drag and Drop of files onto the viewport
   gtk_drag_dest_set ( GTK_WIDGET(vw->viking_vvp), GTK_DEST_DEFAULT_ALL, NULL, 0, GDK_ACTION_COPY );
@@ -1192,6 +1203,8 @@ static gboolean delete_event( VikWindow *vw )
       a_settings_set_boolean ( VIK_SETTINGS_WIN_TOOLBAR, GTK_WIDGET_VISIBLE (toolbar_get_widget(vw->viking_vtb)) );
 
       a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_BUTTONS, vw->show_side_panel_buttons );
+
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_CALENDAR, vw->show_side_panel_calendar );
 
       // If supersized - no need to save the enlarged width+height values
       if ( ! (state_fullscreen || state_max) ) {
@@ -2559,6 +2572,11 @@ static void draw_refresh_cb ( GtkAction *a, VikWindow *vw )
   simple_map_update ( vw, TRUE );
 }
 
+static void calendar_goto_today ( GtkAction *a, VikWindow *vw )
+{
+  vik_layers_panel_calendar_today ( vw->viking_vlp );
+}
+
 static void menu_addlayer_cb ( GtkAction *a, VikWindow *vw )
 {
  VikLayerTypeEnum type;
@@ -2669,6 +2687,12 @@ static void toggle_side_panel_buttons ( VikWindow *vw )
   vik_layers_panel_show_buttons ( vw->viking_vlp, vw->show_side_panel_buttons );
 }
 
+static void toggle_side_panel_calendar ( VikWindow *vw )
+{
+  vw->show_side_panel_calendar = !vw->show_side_panel_calendar;
+  vik_layers_panel_show_calendar ( vw->viking_vlp, vw->show_side_panel_calendar );
+}
+
 // Only for 'view' toggle menu widgets ATM.
 GtkWidget *get_show_widget_by_name(VikWindow *vw, const gchar *name)
 {
@@ -2751,6 +2775,17 @@ static void tb_view_side_panel_buttons_cb ( GtkAction *a, VikWindow *vw )
     gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
   else
     toggle_side_panel_buttons ( vw );
+}
+
+static void tb_view_side_panel_calendar_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean next_state = !vw->show_side_panel_calendar;
+  GtkWidget *check_box = get_show_widget_by_name ( vw, gtk_action_get_name(a) );
+  gboolean menu_state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
+  if ( next_state != menu_state )
+    gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
+  else
+    toggle_side_panel_calendar ( vw );
 }
 
 static void tb_set_draw_scale ( GtkAction *a, VikWindow *vw )
@@ -2918,6 +2953,21 @@ static void view_side_panel_buttons_cb ( GtkAction *a, VikWindow *vw )
   }
   else
     toggle_side_panel_buttons ( vw );
+}
+
+static void view_side_panel_calendar_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean next_state = !vw->show_side_panel_calendar;
+  GtkToggleToolButton *tbutton = (GtkToggleToolButton *)toolbar_get_widget_by_name ( vw->viking_vtb, gtk_action_get_name(a) );
+  if ( tbutton ) {
+    gboolean tb_state = gtk_toggle_tool_button_get_active ( tbutton );
+    if ( next_state != tb_state )
+      gtk_toggle_tool_button_set_active ( tbutton, next_state );
+    else
+      toggle_side_panel_calendar ( vw );
+  }
+  else
+    toggle_side_panel_calendar ( vw );
 }
 
 /***************************************
@@ -3279,6 +3329,33 @@ void vik_window_clear_busy_cursor ( VikWindow *vw )
   gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), vw->viewport_cursor );
 }
 
+// ATM Call upon file load
+// TODO maybe also hook into (new) signals on new/deleted viklayers (of TRW)
+// THen only need for adds to mark additional entries.
+// For delete may need to recreate
+#if 0
+void calendar_update ( VikWindow *vw )
+{
+  // Maybe skip if not shown...
+  // But then on visibility shown, would need to generate it
+  // Above method seems better.
+  
+  GtkCalendar *calendar = (GtkCalendar*)vik_layers_panel_get_calendar ( vw->viking_vlp );
+  gtk_calendar_clear_marks ( calendar );
+
+  GList *layers = vik_layers_panel_get_all_layers_of_type ( vw->viking_vlp, VIK_LAYER_TRW, TRUE );
+  if ( !layers )
+    return;
+  
+  while ( layers ) {
+    VikTrwLayer *vtl = VIK_TRW_LAYER(layers->data);
+    calendar_consider_layer ( calendar, vtl );
+    layers = g_list_next ( layers );
+  }
+  g_list_free ( layers );    
+}
+#endif
+
 /**
  * @first: Indicates the first file in a possible list of files to be loaded
  * @last:  Indicates the last file in a possible list of files to be loaded
@@ -3375,6 +3452,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
   if ( last ) {
     // Draw even if the last load unsuccessful, as may have successful loads in a list of files
     draw_update ( vw );
+    vik_layers_panel_calendar_update ( vw->viking_vlp );
   }
   // Always clear cursor (e.g. incase first & last loads are on different VikWindows)
   vik_window_clear_busy_cursor ( vw );
@@ -3951,6 +4029,8 @@ static void preferences_cb ( GtkAction *a, VikWindow *vw )
     vu_setup_lat_lon_tz_lookup();
 
   toolbar_apply_settings ( vw->viking_vtb, vw->main_vbox, vw->menu_hbox, TRUE );
+
+  vik_layers_panel_set_preferences ( vw->viking_vlp );
 }
 
 static void default_location_cb ( GtkAction *a, VikWindow *vw )
@@ -4773,6 +4853,7 @@ static GtkActionEntry entries[] = {
   { "GotoSearch", GTK_STOCK_JUMP_TO,     N_("Go to _Location..."),     "<control>F",         N_("Go to address/place using text search"),        (GCallback)goto_address       },
   { "GotoLL",    GTK_STOCK_JUMP_TO,      N_("_Go to Lat/Lon..."),           NULL,         N_("Go to arbitrary lat/lon coordinate"),         (GCallback)draw_goto_cb          },
   { "GotoUTM",   GTK_STOCK_JUMP_TO,      N_("Go to UTM..."),                  NULL,         N_("Go to arbitrary UTM coordinate"),               (GCallback)draw_goto_cb          },
+  { "GotoToday", GTK_STOCK_JUMP_TO,      N_("Go to Today"),               "<control>T",     N_("Go to today on the calendar"),              (GCallback)calendar_goto_today },
   { "Refresh",   GTK_STOCK_REFRESH,      N_("_Refresh"),                      "F5",         N_("Refresh any maps displayed"),               (GCallback)draw_refresh_cb       },
   { "SetHLColor",GTK_STOCK_SELECT_COLOR, N_("Set _Highlight Color..."),       NULL,         N_("Set Highlight Color"),                      (GCallback)set_highlight_color },
   { "SetBGColor",GTK_STOCK_SELECT_COLOR, N_("Set Bac_kground Color..."),      NULL,         N_("Set Background Color"),                     (GCallback)set_bg_color },
@@ -4834,6 +4915,7 @@ static GtkToggleActionEntry toggle_entries[] = {
   { "ViewToolbar",    NULL,                 N_("Show _Toolbar"),             "F3",         N_("Show Toolbar"),                            (GCallback)view_toolbar_cb, TRUE },
   { "ViewMainMenu",   NULL,                 N_("Show _Menu"),                "F4",         N_("Show Menu"),                               (GCallback)view_main_menu_cb, TRUE },
   { "ViewSidePanelButtons",    NULL,        N_("Show Side Panel B_uttons"),  "<shift>F9",  N_("Show Side Panel Buttons"),                 (GCallback)view_side_panel_buttons_cb, TRUE },
+  { "ViewSidePanelCalendar",   NULL,        N_("Show Side Panel Ca_lendar"), "<shift>F8",  N_("Show Side Panel Calendar"),                (GCallback)view_side_panel_calendar_cb, TRUE },
 };
 
 // This must match the toggle entries order above
@@ -4847,6 +4929,7 @@ static gpointer toggle_entries_toolbar_cb[] = {
   (GCallback)tb_view_toolbar_cb,
   (GCallback)tb_view_main_menu_cb,
   (GCallback)tb_view_side_panel_buttons_cb,
+  (GCallback)tb_view_side_panel_calendar_cb,
 };
 
 #include "menu.xml.h"

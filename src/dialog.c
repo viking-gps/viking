@@ -290,14 +290,6 @@ gchar *a_dialog_new_track ( GtkWindow *parent, gchar *default_name, gboolean is_
   return NULL;
 }
 
-static void today_clicked (GtkWidget *cal)
-{
-  GDateTime *now = g_date_time_new_now_local ();
-  gtk_calendar_select_month ( GTK_CALENDAR(cal), g_date_time_get_month(now)-1, g_date_time_get_year(now) );
-  gtk_calendar_select_day ( GTK_CALENDAR(cal), g_date_time_get_day_of_month(now) );
-  g_date_time_unref ( now );
-}
-
 /**
  * a_dialog_get_date:
  *
@@ -331,7 +323,7 @@ gchar *a_dialog_get_date ( GtkWindow *parent, const gchar *title )
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), today, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), cal, FALSE, FALSE, 0);
 
-  g_signal_connect_swapped ( G_OBJECT(today), "clicked", G_CALLBACK(today_clicked), cal );
+  g_signal_connect_swapped ( G_OBJECT(today), "clicked", G_CALLBACK(vu_calendar_set_to_today), cal );
 
   gtk_widget_show_all ( dialog );
 

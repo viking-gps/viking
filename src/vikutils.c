@@ -988,3 +988,14 @@ void vu_waypoint_set_image_uri ( VikWaypoint *wp, const gchar *uri, const gchar 
 		g_free ( full );
 	}
 }
+
+/**
+ * Set a calendar widget to today's date
+ */
+void vu_calendar_set_to_today (GtkWidget *cal)
+{
+  GDateTime *now = g_date_time_new_now_local ();
+  gtk_calendar_select_month ( GTK_CALENDAR(cal), g_date_time_get_month(now)-1, g_date_time_get_year(now) );
+  gtk_calendar_select_day ( GTK_CALENDAR(cal), g_date_time_get_day_of_month(now) );
+  g_date_time_unref ( now );
+}

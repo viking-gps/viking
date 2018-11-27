@@ -122,6 +122,7 @@ static VikLayerParam prefs_advanced[] = {
     N_("Only applies to new windows or on application restart. -1 means all available files."), NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "open_files_in_selected_layer", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Open files in selected layer:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
     N_("Open files (but not .vik ones) into the selected TrackWaypoint layer."), NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "calendar_show_day_names", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show calendar day names:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
 };
 
 static gchar * params_startup_methods[] = {N_("Home Location"), N_("Last Location"), N_("Specified File"), N_("Auto Location"), NULL};
@@ -261,6 +262,9 @@ void a_vik_preferences_init ()
 
   tmp.b = FALSE;
   a_preferences_register(&prefs_advanced[4], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
+
+  tmp.b = TRUE;
+  a_preferences_register(&prefs_advanced[5], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -388,6 +392,11 @@ gint a_vik_get_recent_number_files ( )
 gboolean a_vik_get_open_files_in_selected_layer ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "open_files_in_selected_layer")->b;
+}
+
+gboolean a_vik_get_calendar_show_day_names ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "calendar_show_day_names")->b;
 }
 
 // Startup Options

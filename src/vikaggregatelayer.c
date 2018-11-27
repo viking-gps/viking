@@ -531,22 +531,16 @@ static void aggregate_layer_waypoint_list_dialog ( menu_array_values values )
 }
 
 /**
- * Search all TrackWaypoint layers in this aggregate layer for an item on the user specified date
+ *
  */
-static void aggregate_layer_search_date ( menu_array_values values )
+gboolean vik_aggregate_layer_search_date ( VikAggregateLayer *val, gchar *date_str )
 {
-  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
-  VikCoord position;
-  gchar *date_str = a_dialog_get_date ( VIK_GTK_WINDOW_FROM_LAYER(val), _("Search by Date") );
-
-  if ( !date_str )
-    return;
-
+  gboolean found = FALSE;
   VikViewport *vvp = vik_window_viewport ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
 
+  VikCoord position;
   GList *layers = NULL;
   layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, TRUE );
-  gboolean found = FALSE;
   GList *gl = layers;
   // Search tracks first
   while ( gl && !found ) {
@@ -565,6 +559,19 @@ static void aggregate_layer_search_date ( menu_array_values values )
   }
   g_list_free ( layers );
 
+  return found;
+}
+/**
+ * Search all TrackWaypoint layers in this aggregate layer for an item on the user specified date
+ */
+static void aggregate_layer_search_date ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
+  gchar *date_str = a_dialog_get_date ( VIK_GTK_WINDOW_FROM_LAYER(val), _("Search by Date") );
+  if ( !date_str )
+    return;
+
+  gboolean found = vik_aggregate_layer_search_date ( val, date_str );
   if ( !found )
     a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(val), _("No items found with the requested date.") );
   g_free ( date_str );
@@ -656,6 +663,7 @@ static void aggregate_layer_load_external_layers ( VikAggregateLayer *val )
 static void aggregate_layer_load_external_layers_click ( menu_array_values values )
 {
   aggregate_layer_load_external_layers ( VIK_AGGREGATE_LAYER ( values[MA_VAL] ) );
+  vik_layers_panel_calendar_update ( values[MA_VLP] );
 }
 
 static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp )

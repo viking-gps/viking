@@ -219,6 +219,10 @@ top of the layers panel list are drawn last. You can change the order by
 drag and drop, or by selecting a layer and using the up and down
 buttons at the bottom of the layers panel.
 </para>
+<para>
+  The panel also contains a calendar to show when <xref linkend="TrackWaypoint"/> Layers occurred.
+  Double clicking on the day will select and move the viewport display to that layer.
+</para>
 </section>
 <section><title>Viewport</title>
 <para>
@@ -2655,6 +2659,10 @@ Hopefully a simplified track will be more useful to follow to your destination w
 When no TrackWaypoint Layer is selected (or the layer is invisibile) then the file will be open in the default manner: at the top level.
 </para>
 </section>
+<section><title>Show calendar day names</title>
+<para>A setting to control whether the calendar displays day names (Mon, Tue, etc...) or not.
+</para>
+</section>
 </section>
 </section>
 
@@ -3783,6 +3791,10 @@ Accept: */*
 	  <listitem>
 	    <para>layers_create_trw_auto_default=false</para>
 	    <para>Create new TrackWaypoint layers without showing the layer properties dialog first.</para>
+	  </listitem>
+	  <listitem>
+	    <para>layers_panel_calendar_markup_mode=3</para>
+	    <para>0=No markups. 1=Day marked. 2=Day marked and tooltips created. 3=Auto (timed tooltip creation, so if too slow it reverts to 1)</para>
 	  </listitem>
 	  <listitem>
 	    <para>maps_max_tiles=1000</para>

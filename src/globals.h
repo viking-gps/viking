@@ -226,6 +226,8 @@ gboolean a_vik_get_create_track_tooltip ( );
 
 gboolean a_vik_get_open_files_in_selected_layer ( );
 
+gboolean a_vik_get_calendar_show_day_names ( );
+
 gboolean a_vik_get_restore_window_state ( );
 
 gboolean a_vik_get_add_default_map_layer ( );

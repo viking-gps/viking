@@ -50,6 +50,8 @@ void vu_zoom_to_show_latlons ( VikCoordMode mode, VikViewport *vvp, struct LatLo
 
 void vu_waypoint_set_image_uri ( VikWaypoint *wp, const gchar *uri, const gchar *dirpath );
 
+void vu_calendar_set_to_today ( GtkWidget *cal );
+
 G_END_DECLS
 
 #endif
