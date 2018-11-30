@@ -7,6 +7,7 @@ LDADD           += -lgps
 endif
 
 TESTS = check_degrees_conversions.sh \
+	check_decimal_output.sh \
 	check_babel.sh \
 	check_gpx.sh \
 	check_metatile.sh
@@ -21,6 +22,7 @@ check_PROGRAMS = degrees_converter \
 	gpx2gpx \
 	test_vikgotoxmltool \
 	test_time \
+	test_decimal_output \
 	test_coord_conversion \
 	test_babel \
 	test_md5_hash \
@@ -31,6 +33,7 @@ check_PROGRAMS += geotag_read geotag_write
 endif
 
 check_SCRIPTS = check_degrees_conversions.sh \
+	check_decimal_output.sh \
 	check_gpx.sh \
 	check_metatile.sh
 if GEOTAG
@@ -42,6 +45,7 @@ endif
 
 # Scripts and the test data that they use
 EXTRA_DIST = check_degrees_conversions.sh \
+	check_decimal_output.sh \
 	check_babel.sh \
 	check_gpx.sh \
 	SF\#022.gpx \
@@ -81,6 +85,11 @@ test_vikgotoxmltool_LDADD = \
 
 test_time_SOURCES = test_time.c
 test_time_LDADD = \
+  $(top_builddir)/src/libviking.a \
+  $(LDADD)
+
+test_decimal_output_SOURCES = test_decimal_output.c
+test_decimal_output_LDADD = \
   $(top_builddir)/src/libviking.a \
   $(LDADD)
 

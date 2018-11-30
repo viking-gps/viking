@@ -206,7 +206,7 @@ static int grisu2(double d, char* digits, int* K)
     return generate_digits(&w, &upper, &lower, digits, K);
 }
 
-static int emit_digits(char* digits, int ndigits, char* dest, int K, bool neg)
+static int emit_digits(char* digits, int ndigits, char* dest, int K, bool neg, bool is_decimal)
 {
     int exp = absv(K + ndigits - 1);
 
@@ -219,17 +219,35 @@ static int emit_digits(char* digits, int ndigits, char* dest, int K, bool neg)
     }
 
     /* write decimal w/o scientific notation */
-    if(K < 0 && (K > -7 || exp < 4)) {
+    /* Or force decimal format if desired
+     *  even though it's longer than the scientific notation output */
+    if(K < 0 && ((K > -7 || exp < 4) || is_decimal)) {
         int offset = ndigits - absv(K);
-        /* fp < 1.0 -> write leading zero */
+        /* fp < 1.0 -> write leading zero(s) */
         if(offset <= 0) {
+            /* Pathological case of practically all zeroes */
+            /* NB this can lead to the result being '-0' */
+            if ( exp > (21-(int)neg) ) {
+                memset(dest, '0', 1);
+                return 1;
+            }
             offset = -offset;
             dest[0] = '0';
             dest[1] = '.';
             memset(dest + 2, '0', offset);
-            memcpy(dest + offset + 2, digits, ndigits);
+            /* Now having potentially written a bunch of zeros,
+             * ensure copying only as many digits that fit into the rest of the buffer
+             * hence this is just truncation
+             *  but as this is along way down in the precision with a 24 char buffer
+             *  it's not of concern for our intended usage
+             * (e.g 0.00...01919 -> 0.00...001 rather than 0.00...002 */
+            int n = ndigits;
+            if ( (offset + ndigits) > (21-(int)neg) ) {
+               n = 21-(int)neg - offset;
+            }
+            memcpy(dest + offset + 2, digits, n);
 
-            return ndigits + 2 + offset;
+            return n + 2 + offset;
 
         /* fp > 1.0 */
         } else {
@@ -239,6 +257,14 @@ static int emit_digits(char* digits, int ndigits, char* dest, int K, bool neg)
 
             return ndigits + 1;
         }
+    }
+
+    /* Force decimal format if desired
+     *  even though it's longer than the scientific notation output */
+    if(is_decimal) {
+        memcpy(dest, digits, ndigits);
+        memset(dest + ndigits, '0', K);
+        return ndigits + K;
     }
 
     /* write decimal w/ scientific notation */
@@ -304,12 +330,13 @@ static int filter_special(double fp, char* dest)
     return 3;
 }
 
-int fpconv_dtoa(double d, char dest[24])
+int fpconv_dtoa(double d, char dest[24], int is_decimal)
 {
     char digits[18];
 
     int str_len = 0;
     bool neg = false;
+    bool decimal = (is_decimal != 0);
 
     if(get_dbits(d) & signmask) {
         dest[0] = '-';
@@ -326,7 +353,7 @@ int fpconv_dtoa(double d, char dest[24])
     int K = 0;
     int ndigits = grisu2(d, digits, &K);
 
-    str_len += emit_digits(digits, ndigits, dest + str_len, K, neg);
+    str_len += emit_digits(digits, ndigits, dest + str_len, K, neg, decimal);
 
     return str_len;
 }

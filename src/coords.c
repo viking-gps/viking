@@ -65,7 +65,7 @@ renaming functions and defining LatLon and UTM structs.
  */
 void a_coords_dtostr_buffer ( double d, char buffer[COORDS_STR_BUFFER_SIZE] )
 {
-  int str_len = fpconv_dtoa(d, buffer);
+  int str_len = fpconv_dtoa(d, buffer, 1); // Ensure decimal output (especially for writing GPX files)
   if ( str_len < COORDS_STR_BUFFER_SIZE )
     buffer[str_len] = '\0';
   else

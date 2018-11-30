@@ -5,7 +5,8 @@
  * Grisu-algorithm[1].
  *
  * Input:
- * fp -> the double to convert, dest -> destination buffer.
+ * fp -> the double to convert, dest -> destination buffer,
+ * is_decimal -> force decimal output even if scientific notation is shorter.
  * The generated string will never be longer than 24 characters.
  * Make sure to pass a pointer to at least 24 bytes of memory.
  * The emitted string will not be null terminated.
@@ -18,7 +19,7 @@
  * void print(double d)
  * {
  *      char buf[24 + 1] // plus null terminator
- *      int str_len = fpconv_dtoa(d, buf);
+ *      int str_len = fpconv_dtoa(d, buf, 0);
  *
  *      buf[str_len] = '\0';
  *      printf("%s", buf);
@@ -26,7 +27,7 @@
  *
  */
 
-int fpconv_dtoa(double fp, char dest[24]);
+int fpconv_dtoa(double fp, char dest[24], int is_decimal);
 
 #endif
 
