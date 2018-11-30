@@ -1745,8 +1745,6 @@ static VikTrwLayer* trw_layer_new1 ( VikViewport *vvp )
   rv->draw_sync_do = TRUE;
   rv->coord_mode = VIK_COORD_LATLON;
 
-  rv->crosshair_cursor = gdk_cursor_new ( GDK_CROSSHAIR );
-
   // Everything else is 0, FALSE or NULL
 
   return rv;
@@ -2785,6 +2783,8 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
     /* early exit, as the rest is GUI related */
     return rv;
   }
+
+  rv->crosshair_cursor = gdk_cursor_new ( GDK_CROSSHAIR );
 
   rv->wplabellayout = gtk_widget_create_pango_layout (GTK_WIDGET(vp), NULL);
   pango_layout_set_font_description (rv->wplabellayout, gtk_widget_get_style(GTK_WIDGET(vp))->font_desc);
