@@ -29,7 +29,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#include <metatile.h>
+#include "metatile.h"
 
 int main ( int argc, char *argv[] )
 {

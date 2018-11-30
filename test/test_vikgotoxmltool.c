@@ -1,5 +1,5 @@
 #include <math.h>
-#include <vikgotoxmltool.h>
+#include "vikgotoxmltool.h"
 
 void parse(VikGotoTool *tool, gchar *filename)
 {

@@ -1,6 +1,6 @@
 #include <math.h>
-#include <vikwmscmapsource.h>
-#include <vikslippymapsource.h>
+#include "vikwmscmapsource.h"
+#include "vikslippymapsource.h"
 
 void test_coord_to_mapcoord(VikMapSource *source, gdouble lat, gdouble lon, gdouble zoom)
 {
