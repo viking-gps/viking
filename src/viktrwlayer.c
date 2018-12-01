@@ -6936,6 +6936,7 @@ static void trw_layer_diary_open ( VikTrwLayer *vtl, const gchar *date_str )
   gchar *cmd = g_strdup_printf ( "%s %s%s", diary_program, "--date=", date_str );
   if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
     a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s to open file."), diary_program );
+    g_warning ( "%s", err->message );
     g_error_free ( err );
   }
   g_free ( cmd );
