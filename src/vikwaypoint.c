@@ -282,7 +282,10 @@ VikWaypoint *vik_waypoint_unmarshall (const guint8 *data_in, guint datalen)
   vwu_get(new_wp->url);
   vwu_get(new_wp->image); 
   vwu_get(new_wp->symbol);
-  
+  // Different Viking instances need their seperate versions
+  //  copying to itself will get the same reference
+  new_wp->symbol_pixbuf = a_get_wp_sym(new_wp->symbol);
+
   return new_wp;
 #undef vwu_get
 }
