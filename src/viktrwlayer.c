@@ -2203,9 +2203,7 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
   const guint8 tp_size_cur = dp->vtl->drawpoints_size*2;
   guint8 tp_size;
 
-  if ( dp->vtl->drawelevation )
-  {
-    /* assume if it has elevation at the beginning, it has it throughout. not ness a true good assumption */
+  if ( dp->vtl->drawelevation ) {
     if ( ( drawelevation = vik_track_get_minmax_alt ( track, &min_alt, &max_alt ) ) )
       alt_diff = max_alt - min_alt;
   }

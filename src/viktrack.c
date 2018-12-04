@@ -902,16 +902,19 @@ void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble
 {
   gdouble diff;
   *up = *down = 0;
-  if ( tr->trackpoints && VIK_TRACKPOINT(tr->trackpoints->data)->altitude != VIK_DEFAULT_ALTITUDE )
-  {
+  if ( tr->trackpoints ) {
     GList *iter = tr->trackpoints->next;
-    while (iter)
-    {
-      diff = VIK_TRACKPOINT(iter->data)->altitude - VIK_TRACKPOINT(iter->prev->data)->altitude;
-      if ( diff > 0 )
-        *up += diff;
-      else
-        *down -= diff;
+    while (iter) {
+      VikTrackpoint *tp1 = VIK_TRACKPOINT(iter->data);
+      VikTrackpoint *tp2 = VIK_TRACKPOINT(iter->prev->data);
+      if ( (tp1->altitude != VIK_DEFAULT_ALTITUDE) &&
+	   (tp2->altitude != VIK_DEFAULT_ALTITUDE) ) {
+        diff = tp1->altitude - tp2->altitude;
+        if ( diff > 0 )
+          *up += diff;
+        else
+          *down -= diff;
+      }
       iter = iter->next;
     }
   } else
@@ -1523,23 +1526,32 @@ VikTrackpoint *vik_track_get_tp_prev ( const VikTrack *tr, VikTrackpoint *tp )
   return tp_prev;
 }
 
+/**
+ * vik_track_get_minmax_alt:
+ *
+ * Finds the minimum and maximum altitudes in the specified track
+ *
+ * Returns: Whether any altitudes where found
+ */
 gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt )
 {
   *min_alt = 25000;
   *max_alt = -5000;
-  if ( tr && tr->trackpoints && tr->trackpoints->data && (VIK_TRACKPOINT(tr->trackpoints->data)->altitude != VIK_DEFAULT_ALTITUDE) ) {
-    GList *iter = tr->trackpoints->next;
+  if ( tr && tr->trackpoints ) {
+    GList *iter = tr->trackpoints;
     gdouble tmp_alt;
-    while (iter)
-    {
-      tmp_alt = VIK_TRACKPOINT(iter->data)->altitude;
-      if ( tmp_alt > *max_alt )
-        *max_alt = tmp_alt;
-      if ( tmp_alt < *min_alt )
-        *min_alt = tmp_alt;
+    while (iter) {
+      VikTrackpoint *tp = VIK_TRACKPOINT(iter->data);
+      if ( tp->altitude != VIK_DEFAULT_ALTITUDE ) {
+	tmp_alt = tp->altitude;
+	if ( tmp_alt > *max_alt )
+	  *max_alt = tmp_alt;
+	if ( tmp_alt < *min_alt )
+	  *min_alt = tmp_alt;
+      }
       iter = iter->next;
     }
-    return TRUE;
+    return (*min_alt != 25000);
   }
   return FALSE;
 }
