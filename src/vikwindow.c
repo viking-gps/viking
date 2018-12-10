@@ -3842,6 +3842,16 @@ static void goto_default_location( GtkAction *a, VikWindow *vw)
   vik_layers_panel_emit_update(vw->viking_vlp);
 }
 
+static void goto_auto_location( GtkAction *a, VikWindow *vw)
+{
+  vik_window_statusbar_update ( vw, _("Trying to determine location..."), VIK_STATUSBAR_INFO );
+#ifdef HAVE_LIBGEOCLUE_2
+  libgeoclue_where_am_i ( vw, update_from_geoclue );
+#else
+  determine_location_fallback ( vw );
+#endif
+}
+
 
 static void goto_address( GtkAction *a, VikWindow *vw)
 {
@@ -4758,6 +4768,7 @@ static GtkActionEntry entries[] = {
   { "GoBack",    GTK_STOCK_GO_BACK,      N_("Go to the Pre_vious Location"),  NULL,         N_("Go to the previous location"),              (GCallback)draw_goto_back_and_forth },
   { "GoForward", GTK_STOCK_GO_FORWARD,   N_("Go to the _Next Location"),      NULL,         N_("Go to the next location"),                  (GCallback)draw_goto_back_and_forth },
   { "GotoDefaultLocation", GTK_STOCK_HOME, N_("Go to the _Default Location"),  NULL,         N_("Go to the default location"),                     (GCallback)goto_default_location },
+  { "GotoAutoLocation", GTK_STOCK_REFRESH, N_("Go to the _Auto Location"), "<control>A",     N_("Go to a location via automatic lookup"),   (GCallback)goto_auto_location },
   { "GotoSearch", GTK_STOCK_JUMP_TO,     N_("Go to _Location..."),     "<control>F",         N_("Go to address/place using text search"),        (GCallback)goto_address       },
   { "GotoLL",    GTK_STOCK_JUMP_TO,      N_("_Go to Lat/Lon..."),           NULL,         N_("Go to arbitrary lat/lon coordinate"),         (GCallback)draw_goto_cb          },
   { "GotoUTM",   GTK_STOCK_JUMP_TO,      N_("Go to UTM..."),                  NULL,         N_("Go to arbitrary UTM coordinate"),               (GCallback)draw_goto_cb          },
