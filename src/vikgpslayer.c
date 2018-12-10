@@ -502,7 +502,7 @@ static void gps_layer_marshall( VikGpsLayer *vgl, guint8 **data, guint *datalen 
 /* "Paste" */
 static VikGpsLayer *gps_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp )
 {
-#define alm_size (*(gint *)data)
+#define alm_size (*(guint *)data)
 #define alm_next \
   len -= sizeof(guint) + alm_size; \
   data += sizeof(guint) + alm_size;
