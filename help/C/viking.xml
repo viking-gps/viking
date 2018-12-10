@@ -3760,6 +3760,18 @@ Accept: */*
 	    [Some incompatibily is suspected in the reliant binary DLLs]</para></note>
 	  </listitem>
 	  <listitem>
+	    <para>geoclue_accuracy_level=4</para>
+	    <para>Set the integer value for the accuracy level request to the GeoClue service. Values to match the <ulink url="https://www.freedesktop.org/software/geoclue/docs/libgeoclue/libgeoclue-gclue-enums.html#GClueAccuracyLevel">GClueAccuracyLevel</ulink>:</para>
+	    <itemizedlist>
+	      <listitem><para>0 = GCLUE_ACCURACY_LEVEL_NONE</para></listitem>
+	      <listitem><para>1 = GCLUE_ACCURACY_LEVEL_COUNTRY</para></listitem>
+	      <listitem><para>4 = GCLUE_ACCURACY_LEVEL_CITY</para></listitem>
+	      <listitem><para>5 = GCLUE_ACCURACY_LEVEL_NEIGHBORHOOD</para></listitem>
+	      <listitem><para>6 = GCLUE_ACCURACY_LEVEL_STREET</para></listitem>
+	      <listitem><para>8 = GCLUE_ACCURACY_LEVEL_EXACT</para></listitem>
+	    </itemizedlist>
+	  </listitem>
+	  <listitem>
 	    <para>gpx_tidy_points=true</para>
 	    <para>ATM Only attempts to remove a suspicious first point of a GPX track
 	                (as opposed to any points within a track).</para>

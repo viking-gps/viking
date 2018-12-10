@@ -26,6 +26,7 @@
 
 #include "globals.h"
 #include "libgeoclue.h"
+#include "settings.h"
 
 void libgeoclue_print_location (GClueLocation *location)
 {
@@ -79,6 +80,8 @@ finish:
 	g_free ( clue );
 }
 
+#define VIK_SETTINGS_GC_ACC "geoclue_accuracy_level"
+
 /**
  * libgeoclue_where_am_i:
  *
@@ -92,8 +95,24 @@ void libgeoclue_where_am_i ( VikWindow *vw, callback func )
 	clue->vw   = vw;
 	clue->func = func;
 
+	int accuracy;
+	if ( a_settings_get_integer ( VIK_SETTINGS_GC_ACC, &accuracy ) ) {
+		// Ensure valid value
+		if ( !( accuracy == GCLUE_ACCURACY_LEVEL_NONE ||
+				accuracy == GCLUE_ACCURACY_LEVEL_COUNTRY ||
+				accuracy == GCLUE_ACCURACY_LEVEL_CITY ||
+				accuracy == GCLUE_ACCURACY_LEVEL_NEIGHBORHOOD ||
+				accuracy == GCLUE_ACCURACY_LEVEL_STREET ||
+				accuracy == GCLUE_ACCURACY_LEVEL_EXACT ) ) {
+			g_warning ( "%s: Invalid geoclue accuracy level value '%d', using the default instead", __FUNCTION__, accuracy );
+			accuracy = GCLUE_ACCURACY_LEVEL_CITY;
+		}
+	}
+	else
+		accuracy = GCLUE_ACCURACY_LEVEL_CITY;
+
 	gclue_simple_new (PACKAGE,
-	                  GCLUE_ACCURACY_LEVEL_CITY,
+	                  accuracy,
 	                  NULL,
 	                  on_simple_ready,
 	                  clue);
