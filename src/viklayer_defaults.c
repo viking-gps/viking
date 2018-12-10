@@ -162,7 +162,7 @@ static void use_internal_defaults_if_missing_default ( VikLayerTypeEnum type )
 		if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES ) {
 			gpointer success = GINT_TO_POINTER (FALSE);
 			// Check current default is available
-			get_default_data_answer ( vik_layer_get_interface(type)->fixed_layer_name, params[i].name, params[i].type, &success );
+			(void)get_default_data_answer ( vik_layer_get_interface(type)->fixed_layer_name, params[i].name, params[i].type, &success );
 			// If no longer have a viable default
 			if ( ! GPOINTER_TO_INT (success) ) {
 				// Reset value
