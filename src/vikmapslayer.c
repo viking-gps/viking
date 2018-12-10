@@ -779,6 +779,7 @@ static VikMapsLayer *maps_layer_new ( VikViewport *vvp )
   VikMapsLayer *vml = VIK_MAPS_LAYER ( g_object_new ( VIK_MAPS_LAYER_TYPE, NULL ) );
   vik_layer_set_type ( VIK_LAYER(vml), VIK_LAYER_MAPS );
 
+  vml->filename = NULL;
   vik_layer_set_defaults ( VIK_LAYER(vml), vvp );
 
   vml->dl_tool_x = vml->dl_tool_y = -1;
@@ -787,7 +788,6 @@ static VikMapsLayer *maps_layer_new ( VikViewport *vvp )
   vml->last_ympp = 0.0;
 
   vml->dl_right_click_menu = NULL;
-  vml->filename = NULL;
   return vml;
 }
 

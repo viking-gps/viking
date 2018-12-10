@@ -535,6 +535,7 @@ void vik_window_new_window_finish ( VikWindow *vw )
     VikMapsLayer *vml = VIK_MAPS_LAYER ( vik_layer_create(VIK_LAYER_MAPS, vw->viking_vvp, FALSE) );
     vik_layer_rename ( VIK_LAYER(vml), _("Default Map") );
     vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer(vw->viking_vlp), VIK_LAYER(vml), TRUE );
+    vik_layer_post_read ( VIK_LAYER(vml), vw->viking_vvp, TRUE );
 
     draw_update ( vw );
   }
@@ -543,7 +544,7 @@ void vik_window_new_window_finish ( VikWindow *vw )
   if ( vw->loaded_type == LOAD_TYPE_READ_FAILURE ) {
     if ( a_vik_get_startup_method ( ) == VIK_STARTUP_METHOD_AUTO_LOCATION ) {
 
-      vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, _("Trying to determine location...") );
+      vik_window_statusbar_update ( vw, _("Trying to determine location..."), VIK_STATUSBAR_INFO );
 #ifdef HAVE_LIBGEOCLUE_2
       libgeoclue_where_am_i ( vw, update_from_geoclue );
 #else
