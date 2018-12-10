@@ -2206,6 +2206,7 @@ static void maps_layer_mbtiles_open_cb ( menu_array_values values )
   VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
 
   maps_layer_mbtiles_open ( vml, vvp, map );
+  vik_layer_emit_update ( VIK_LAYER(vml) );
 }
 
 /**
