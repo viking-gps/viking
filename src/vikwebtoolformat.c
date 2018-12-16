@@ -234,7 +234,11 @@ static gchar *webtool_format_get_url_at_position ( VikWebtool *self, VikWindow *
 	llpt.lat = 0.0;
 	llpt.lon = 0.0;
 	if ( vc )
-	  vik_coord_to_latlon ( vc, &ll );
+		vik_coord_to_latlon ( vc, &llpt );
+	else
+		// No position supplied so might as well use the center
+		vik_coord_to_latlon ( coord, &llpt );
+
 	gchar spointlat[G_ASCII_DTOSTR_BUF_SIZE];
 	gchar spointlon[G_ASCII_DTOSTR_BUF_SIZE];
 	g_ascii_dtostr (spointlat, G_ASCII_DTOSTR_BUF_SIZE, llpt.lat);
