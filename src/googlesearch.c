@@ -51,7 +51,7 @@ static void google_goto_tool_finalize ( GObject *gob );
 static gchar *google_goto_tool_get_url_format ( VikGotoTool *self );
 static DownloadFileOptions *google_goto_tool_get_download_options ( VikGotoTool *self );
 static gboolean google_goto_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct LatLon *ll);
-static gboolean google_goto_tool_parse_file_for_candidates(VikGotoTool *self, gchar *filename, GList *candidates);
+static gboolean google_goto_tool_parse_file_for_candidates(VikGotoTool *self, gchar *filename, GList **candidates);
 
 G_DEFINE_TYPE (GoogleGotoTool, google_goto_tool, VIK_GOTO_TOOL_TYPE)
 
@@ -155,7 +155,7 @@ done:
 }
 
 // TODO: implement this -- The Google API is currently disabled
-static gboolean google_goto_tool_parse_file_for_candidates(VikGotoTool *self, gchar *file_name, GList *candidates)
+static gboolean google_goto_tool_parse_file_for_candidates(VikGotoTool *self, gchar *file_name, GList **candidates)
 {
   return FALSE;
 }

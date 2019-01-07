@@ -309,10 +309,11 @@ done_no_file:
 /**
  * vik_goto_tool_free_candidates
  *
- * @candidate: The candidate object to free
+ * @data: The candidate object to free
  */
-void vik_goto_tool_free_candidate ( struct VikGotoCandidate *candidate )
+void vik_goto_tool_free_candidate ( gpointer data )
 {
+  struct VikGotoCandidate *candidate = data;
   g_free ( candidate->description );
   g_free ( candidate );
 }

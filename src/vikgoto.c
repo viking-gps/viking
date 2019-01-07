@@ -59,7 +59,7 @@ struct VikGotoSearchWinData {
   GtkTreeView *results_view;
 };
 
-static enum {
+enum {
   VIK_GOTO_SEARCH_DESC_COL = 0,
   VIK_GOTO_SEARCH_LAT_COL,
   VIK_GOTO_SEARCH_LON_COL,
