@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.64)
-AC_INIT(viking, 1.6.1, , viking, http://viking.sf.net/)
+AC_INIT(viking, 1.7, , viking, http://viking.sf.net/)
 
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET

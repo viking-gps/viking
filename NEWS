@@ -1,3 +1,55 @@
+Viking 1.7 (2019-01-21)
+New features since 1.6.2
+* KMZ Map File Support
+* Apply Button for Layer Properties
+* Support More GPX Fields
+* Updated Default Map: Mapbox Outdoors
+* GeoClue Support for Automatic Location
+* Faster GPX File Loading
+* Waypoint / EXIF GPS Image Direction Support
+* Support More Garmin Waypoint Symbols
+* Support Garmin Device GPX Point Limits
+* Windows GPSD Client
+* Support 'External' GPX File Layers in .vik Files
+* Usage of HTTPS addresses
+* Support OAuth for OSM
+* Support High Resolution Displays
+* Track+Route Split+Join Tools
+* Calculation of Eddington Number
+* Calendar Display
+* Can Select a Result from the Online Search Results
+* Reproducible Builds
+* 64bit Windows Build only
+* Travis Build + CI
+* Consistent Licensing of GPL2+
+* Many Internal Improvements + Fixes
+
+Fixes since 1.6.2
+* SF Bugs#154: Ensure GPX output values are XSD:Decimal
+* SF Bugs#151: Compatibility with GPSD API v7
+* SF Bugs#152: Fix repeatedly showing the license dialog
+* SF Bugs#148: Fix reversing manually created tracks & routes
+* SF Bugs#146: Fix showing elevation gain/loss in track properties.
+* SF Bugs#144: Fix Export to World File
+* SF Bugs#138: Fix handling of <link> tags in GPX files.
+* SF Bugs#135: Fix OSM Maps shown by default at Maximum Zoom.
+* SF Bugs#133: Remove the auto added map when opening the first .vik file from the GUI.
+* SF Bugs#134: Replaced discontinued MapQuest tile service with rate limited Mapbox Outdoors service.
+* SF Bugs#132: Fix to correctly open GPX files in Windows via double click.
+* SF Bugs#130: Fix GeoRef layer alpha value change to 255 is ignored until restart
+* SF Bugs#22: Fix changing coordinates when saving and exporting
+* SF Bugs#128: Fix Crash when loading broken .vik file
+
+Viking 1.6.2 (2015-12-21)
+Bug Fix Release
+* Don't remove project name if one decides not to delete all layers.
+* Fix routes not saved in GPX when tracks are made invisible.
+* SF Bugs#103: Fix TrackWaypoint layer items may not be displayed when pasted
+* Enable Catalan and Turkish translations.
+* Restore opening of JPG files.
+* SF Bugs#127: Fix initial display of Waypoint sort order.
+* Fix map layer widget sensitivity dependent on map type.
+
 Viking 1.6.1 (2015-11-24)
 Bug Fix Release + updated translations
 * Several fixes and many code improvements from Coverity scans
