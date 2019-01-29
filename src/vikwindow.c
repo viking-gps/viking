@@ -4295,6 +4295,21 @@ static void draw_to_image_file_total_area_cb (GtkSpinButton *spinbutton, gpointe
     w *= gtk_spin_button_get_value(GTK_SPIN_BUTTON(pass_along[4]));
     h *= gtk_spin_button_get_value(GTK_SPIN_BUTTON(pass_along[5]));
   }
+
+  // NB UTM mode should be exact MPP & a 'factor' of 1.0
+  VikViewport *vvp = VIK_WINDOW(pass_along[0])->viking_vvp;
+  const VikCoord *vc = vik_viewport_get_center ( vvp );
+  if ( vc->mode == VIK_COORD_LATLON ) {
+    // Convert from actual image MPP to Viking 'pixelfact'
+    // NB the 1.193 - is at the Equator.
+    // http://wiki.openstreetmap.org/wiki/Zoom_levels
+    struct LatLon ll;
+    vik_coord_to_latlon ( vc, &ll );
+    gdouble factor = cos(DEG2RAD(ll.lat)) * 1.193;
+    h = h * factor;
+    w = w * factor;
+  }
+
   vik_units_distance_t dist_units = a_vik_get_units_distance ();
   switch (dist_units) {
   case VIK_UNITS_DISTANCE_KILOMETRES:
