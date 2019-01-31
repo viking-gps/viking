@@ -1695,27 +1695,27 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
       if (distance >= 1000 && distance < 100000) {
         g_sprintf(str, "%3.2f km", distance/1000.0);
       } else if (distance < 1000) {
-        g_sprintf(str, "%d m", (int)distance);
+        g_sprintf(str, "%d m", (int)round(distance));
       } else {
-        g_sprintf(str, "%d km", (int)distance/1000);
+        g_sprintf(str, "%d km", (int)round(distance/1000));
       }
       break;
     case VIK_UNITS_DISTANCE_MILES:
       if (distance >= VIK_MILES_TO_METERS(1) && distance < VIK_MILES_TO_METERS(100)) {
         g_sprintf(str, "%3.2f miles", VIK_METERS_TO_MILES(distance));
       } else if (distance < VIK_MILES_TO_METERS(1)) {
-        g_sprintf(str, "%d yards", (int)(distance*1.0936133));
+        g_sprintf(str, "%d yards", (int)round((distance*1.0936133)));
       } else {
-        g_sprintf(str, "%d miles", (int)VIK_METERS_TO_MILES(distance));
+        g_sprintf(str, "%d miles", (int)round(VIK_METERS_TO_MILES(distance)));
       }
       break;
     case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
       if (distance >= VIK_NAUTICAL_MILES_TO_METERS(1) && distance < VIK_NAUTICAL_MILES_TO_METERS(100)) {
         g_sprintf(str, "%3.2f NM", VIK_METERS_TO_NAUTICAL_MILES(distance));
       } else if (distance < VIK_NAUTICAL_MILES_TO_METERS(1)) {
-        g_sprintf(str, "%d yards", (int)(distance*1.0936133));
+        g_sprintf(str, "%d yards", (int)round(distance*1.0936133));
       } else {
-        g_sprintf(str, "%d NM", (int)VIK_METERS_TO_NAUTICAL_MILES(distance));
+        g_sprintf(str, "%d NM", (int)round(VIK_METERS_TO_NAUTICAL_MILES(distance)));
       }
       break;
     default:
