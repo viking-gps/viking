@@ -2230,9 +2230,21 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+Z</key
 This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/ruler_18.png"/></guiicon>
 </para>
 <para>
-The ruler is used to measure the bearing and distance between two points: Click on first point and then move the mouse point around - the values will be continually updated.
+The ruler is used to measure either:
+</para>
+<itemizedlist>
+<listitem>
+<para>The bearing and distance between two points: Click on first point and then move the mouse point around - the values will be continually updated.
 A second click will <emphasis>freeze</emphasis> the ruler at that point.
 </para>
+</listitem>
+<listitem>
+<para>An area: <keycap>Shift</keycap> (and hold) + left mouse button: Draws a bounding box area. Area values are shown in the statusbar and on the viewport.
+Releasing the mouse button will <emphasis>freeze</emphasis> the area at that point.
+The viewport label option is controlled by <xref linkend="prefs_advanced"/>.
+</para>
+</listitem>
+</itemizedlist>
 <para>
 This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+U</keycap>
 </para>
@@ -2661,6 +2673,10 @@ When no TrackWaypoint Layer is selected (or the layer is invisibile) then the fi
 </section>
 <section><title>Show calendar day names</title>
 <para>A setting to control whether the calendar displays day names (Mon, Tue, etc...) or not.
+</para>
+</section>
+<section><title>Ruler area label position</title>
+<para>A setting to control the position of the label drawn on the viewport that shows the area value. Includes a setting to turn off the label.
 </para>
 </section>
 </section>

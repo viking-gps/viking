@@ -112,6 +112,7 @@ static VikLayerParam io_prefs_external_gpx[] = {
 
 static gchar * params_vik_fileref[] = {N_("Absolute"), N_("Relative"), NULL};
 static VikLayerParamScale params_recent_files[] = { {-1, 25, 1, 0} };
+static gchar * params_pos_type[] = {N_("None"), N_("Bottom"), N_("Middle"), N_("Top"), NULL};
 
 static VikLayerParam prefs_advanced[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "save_file_reference_mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Save File Reference Mode:"), VIK_LAYER_WIDGET_COMBOBOX, params_vik_fileref, NULL,
@@ -123,6 +124,7 @@ static VikLayerParam prefs_advanced[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "open_files_in_selected_layer", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Open files in selected layer:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
     N_("Open files (but not .vik ones) into the selected TrackWaypoint layer."), NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "calendar_show_day_names", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show calendar day names:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "ruler_area_label_position", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Ruler area label position:"), VIK_LAYER_WIDGET_COMBOBOX, params_pos_type, NULL, NULL, NULL, NULL, NULL },
 };
 
 static gchar * params_startup_methods[] = {N_("Home Location"), N_("Last Location"), N_("Specified File"), N_("Auto Location"), NULL};
@@ -265,6 +267,9 @@ void a_vik_preferences_init ()
 
   tmp.b = TRUE;
   a_preferences_register(&prefs_advanced[5], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
+
+  tmp.u = VIK_POSITIONAL_MIDDLE;
+  a_preferences_register(&prefs_advanced[6], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -397,6 +402,11 @@ gboolean a_vik_get_open_files_in_selected_layer ( )
 gboolean a_vik_get_calendar_show_day_names ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "calendar_show_day_names")->b;
+}
+
+vik_positional_t a_vik_get_ruler_area_label_pos ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "ruler_area_label_position")->u;
 }
 
 // Startup Options

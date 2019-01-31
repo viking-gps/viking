@@ -228,6 +228,15 @@ gboolean a_vik_get_open_files_in_selected_layer ( );
 
 gboolean a_vik_get_calendar_show_day_names ( );
 
+typedef enum {
+ VIK_POSITIONAL_NONE=0,
+ VIK_POSITIONAL_BOTTOM,
+ VIK_POSITIONAL_MIDDLE,
+ VIK_POSITIONAL_TOP,
+} vik_positional_t;
+
+vik_positional_t a_vik_get_ruler_area_label_pos ( );
+
 gboolean a_vik_get_restore_window_state ( );
 
 gboolean a_vik_get_add_default_map_layer ( );

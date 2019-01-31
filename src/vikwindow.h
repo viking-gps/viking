@@ -107,6 +107,10 @@ typedef struct {
   gint start_x;
   gint start_y;
   GdkPixmap *pixmap;
+  // The following are mostly for ruler tool
+  gboolean has_oldcoord;
+  VikCoord oldcoord;
+  gboolean displayed;
 } tool_ed_t;
 
 VikWindow *a_vik_window_get_a_window ();

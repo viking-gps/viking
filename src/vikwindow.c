@@ -1767,28 +1767,21 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
   g_object_unref ( G_OBJECT ( thickgc ) );
 }
 
-typedef struct {
-  VikWindow *vw;
-  VikViewport *vvp;
-  gboolean has_oldcoord;
-  VikCoord oldcoord;
-  gboolean displayed;
-} ruler_tool_state_t;
-
 static gpointer ruler_create (VikWindow *vw, VikViewport *vvp) 
 {
-  ruler_tool_state_t *s = g_new0(ruler_tool_state_t, 1);
-  s->vw = vw;
-  s->vvp = vvp;
-  return s;
+  tool_ed_t *te = g_new0(tool_ed_t, 1);
+  te->vw = vw;
+  return te;
 }
 
-static void ruler_destroy (ruler_tool_state_t *s)
+static void ruler_destroy (tool_ed_t *te)
 {
-  g_free(s);
+  if ( te->pixmap )
+    g_object_unref ( G_OBJECT ( te->pixmap ) );
+  g_free ( te );
 }
 
-static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, ruler_tool_state_t *s)
+static void ruler_click_normal (VikLayer *vl, GdkEventButton *event, tool_ed_t *s)
 {
   struct LatLon ll;
   VikCoord coord;
@@ -1796,7 +1789,7 @@ static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, 
   if ( event->button == 1 ) {
     gchar *lat=NULL, *lon=NULL;
     s->displayed = TRUE;
-    vik_viewport_screen_to_coord ( s->vvp, (gint) event->x, (gint) event->y, &coord );
+    vik_viewport_screen_to_coord ( s->vw->viking_vvp, (gint) event->x, (gint) event->y, &coord );
     vik_coord_to_latlon ( &coord, &ll );
     a_coords_latlon_to_string ( &ll, &lat, &lon );
     if ( s->has_oldcoord ) {
@@ -1831,17 +1824,33 @@ static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, 
     s->oldcoord = coord;
   }
   else {
-    vik_viewport_set_center_screen ( s->vvp, (gint) event->x, (gint) event->y );
+    vik_viewport_set_center_screen ( s->vw->viking_vvp, (gint) event->x, (gint) event->y );
     draw_update ( s->vw );
+  }
+}
+
+static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, tool_ed_t *te)
+{
+  te->bounds_active = FALSE;
+  if ( event->button == 1 && event->state & GDK_SHIFT_MASK ) {
+    // (re)start bounds
+    te->bounds_active = TRUE;
+    te->start_x = (gint)event->x;
+    te->start_y = (gint)event->y;
+    te->displayed = TRUE;
+  } else {
+    ruler_click_normal ( vl, event, te );
   }
   return VIK_LAYER_TOOL_ACK;
 }
 
-static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, ruler_tool_state_t *s)
-{
-  VikViewport *vvp = s->vvp;
-  VikWindow *vw = s->vw;
+static void tool_resize_pixmap (tool_ed_t *te);
+static void tool_redraw_pixmap (tool_ed_t *te, GdkEventMotion *event);
 
+static void ruler_move_normal (VikLayer *vl, GdkEventMotion *event, tool_ed_t *s)
+{
+  VikWindow *vw = s->vw;
+  VikViewport *vvp = s->vw->viking_vvp;
   struct LatLon ll;
   VikCoord coord;
   gchar *temp;
@@ -1896,20 +1905,118 @@ static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, r
     g_free ( lat );
     g_free ( lon );
   }
-  return VIK_LAYER_TOOL_ACK;
 }
 
-static VikLayerToolFuncStatus ruler_release (VikLayer *vl, GdkEventButton *event, ruler_tool_state_t *s)
+/**
+ * Draw a boxed label on the viewport somewhere in the xy coords
+ *  as specified by the positional parameter
+ */
+static void draw_boxed_label (VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gint y1, gint x2, gint y2, vik_positional_t pos, gchar *str)
 {
+  GdkGC *labgc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
+
+#define LABEL(x, y, w, h) { \
+    gdk_draw_rectangle(d, labgc, TRUE, (x)-2, (y)-1, (w)+4, (h)+1); \
+    gdk_draw_rectangle(d, gc, FALSE, (x)-2, (y)-1, (w)+4, (h)+1); \
+    gdk_draw_layout(d, gc, (x), (y), pl); }
+
+  gint wd, hd, xd, yd;
+  PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
+  pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(vvp))->font_desc);
+  pango_layout_set_text(pl, str, -1);
+  pango_layout_get_pixel_size ( pl, &wd, &hd );
+
+  xd = (x1+x2)/2 - wd/2;
+  switch (pos) {
+  case VIK_POSITIONAL_MIDDLE:
+    yd = (y1+y2)/2 - hd/2;
+    break;
+  case VIK_POSITIONAL_TOP:
+    yd = y1 + 5;
+    break;
+  default:
+    // VIK_POSITIONAL_BOTTOM | NONE (obvs this shouldn't be called with NONE)
+    yd = y2 - hd - 5;
+  break;
+  }
+
+  LABEL(xd, yd, wd, hd);
+#undef LABEL
+
+  g_object_unref ( G_OBJECT ( pl ) );
+  g_object_unref ( G_OBJECT ( labgc ) );
+}
+
+static void ruler_move_shift (VikLayer *vl, GdkEventMotion *event, tool_ed_t *te)
+{
+  tool_resize_pixmap ( te );
+  tool_redraw_pixmap ( te, event);
+  gchar *str;
+  gdouble zoom = vik_viewport_get_zoom ( te->vw->viking_vvp );
+  if ( zoom < 64.0 ) {
+    VikCoord tl,tr,bl;
+    vik_viewport_screen_to_coord ( te->vw->viking_vvp, te->start_x, te->start_y, &tl );
+    vik_viewport_screen_to_coord ( te->vw->viking_vvp, (gint)event->x, te->start_y, &bl );
+    vik_viewport_screen_to_coord ( te->vw->viking_vvp, te->start_y, (gint)event->y, &tr );
+
+    gdouble ydiff = vik_coord_diff ( &tl, &bl );
+    gdouble xdiff = vik_coord_diff ( &tl, &tr );
+    /*
+     * Very basic area estimation for coords that are assumed to form a rectangle as a flat projection
+     * i.e. only approximation only works for high zoom levels and also increasingly worse at high latitudes
+     */
+    gdouble area = ydiff * xdiff;
+
+    vik_units_distance_t dist_units = a_vik_get_units_distance ();
+    switch (dist_units) {
+    case VIK_UNITS_DISTANCE_MILES:
+      str = g_strdup_printf ( _("Area: %.3f miles * %.3f miles = %.3f sq. miles"), VIK_METERS_TO_MILES(xdiff),  VIK_METERS_TO_MILES(ydiff), area/2589988.11);
+      break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      str = g_strdup_printf ( _("Area: %.3f NM * %.3f NM = %.3f sq. NM"), VIK_METERS_TO_NAUTICAL_MILES(xdiff), VIK_METERS_TO_NAUTICAL_MILES(ydiff), area/(1852.0*1852.0));
+      break;
+    default:
+      //case VIK_UNITS_DISTANCE_KILOMETRES:
+      str = g_strdup_printf ( _("Area: %.3f km * %.3f km = %.3f sq. km"), (ydiff/1000.0), (xdiff/1000.0), area/1000000.0);
+      break;
+    }
+
+    vik_positional_t label_pos = a_vik_get_ruler_area_label_pos();
+    if ( label_pos != VIK_POSITIONAL_NONE ) {
+      draw_boxed_label ( te->vw->viking_vvp, te->pixmap, vik_viewport_get_black_gc(te->vw->viking_vvp), te->start_x, te->start_y, (gint)event->x, (gint)event->y, label_pos, str );
+    }
+  }
+  else {
+    str = g_strdup ( _("Area approximation not valid at this zoom level") );
+  }
+  vik_statusbar_set_message ( te->vw->viking_vs, VIK_STATUSBAR_INFO, str );
+  g_free ( str );
+}
+
+static VikLayerToolFuncStatus ruler_move (VikLayer *vl, GdkEventMotion *event, tool_ed_t *te)
+{
+  if ( te->bounds_active && event->state & GDK_SHIFT_MASK ) {
+    ruler_move_shift ( vl, event, te );
+  } else {
+    ruler_move_normal ( vl, event, te );
+  }
   return VIK_LAYER_TOOL_ACK;
 }
 
-static void ruler_deactivate (VikLayer *vl, ruler_tool_state_t *s)
+static VikLayerToolFuncStatus ruler_release (VikLayer *vl, GdkEventButton *event, tool_ed_t *te)
+{
+  if ( event->button == 1 && te->bounds_active ) {
+    te->bounds_active = FALSE;
+  }
+  return VIK_LAYER_TOOL_ACK;
+}
+
+static void ruler_deactivate (VikLayer *vl, tool_ed_t *s)
 {
   draw_update ( s->vw );
 }
 
-static gboolean ruler_key_press (VikLayer *vl, GdkEventKey *event, ruler_tool_state_t *s)
+static gboolean ruler_key_press (VikLayer *vl, GdkEventKey *event, tool_ed_t *s)
 {
   if (event->keyval == GDK_Escape) {
     if ( s->displayed ) {
@@ -1931,8 +2038,8 @@ static VikToolInterface ruler_tool =
     (VikToolDestructorFunc) ruler_destroy,
     (VikToolActivationFunc) NULL,
     (VikToolActivationFunc) ruler_deactivate, 
-    (VikToolMouseFunc) ruler_click, 
-    (VikToolMouseMoveFunc) ruler_move, 
+    (VikToolMouseFunc) ruler_click,
+    (VikToolMouseMoveFunc) ruler_move,
     (VikToolMouseFunc) ruler_release,
     (VikToolKeyFunc) ruler_key_press,
     (VikToolKeyFunc) NULL,
