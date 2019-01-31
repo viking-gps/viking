@@ -3610,7 +3610,8 @@ static void load_file ( GtkAction *a, VikWindow *vw )
 
   filter = gtk_file_filter_new ();
   gtk_file_filter_set_name( filter, _("GPX") );
-  gtk_file_filter_add_pattern ( filter, "*.gpx" ); // No MIME type available
+  gtk_file_filter_add_mime_type ( filter, "gpx+xml");
+  gtk_file_filter_add_pattern ( filter, "*.gpx" );
   gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
 
   filter = gtk_file_filter_new ();
