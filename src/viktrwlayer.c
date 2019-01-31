@@ -11805,9 +11805,8 @@ void trw_ensure_layer_loaded ( VikTrwLayer *trw )
 }
 
 /**
- * Convert layer to an external layer and load data from file specified
- * by external_file.  Set as a read only layer (i.e. don't write back to
- * file by default)
+ * Convert layer to an external layer.
+ * Set as a read only layer (i.e. don't write back to file by default)
  */
 void trw_layer_replace_external ( VikTrwLayer *trw, const gchar *external_file )
 {
@@ -11815,8 +11814,7 @@ void trw_layer_replace_external ( VikTrwLayer *trw, const gchar *external_file )
   trw_update_layer_icon ( trw );
   g_free ( trw->external_file );
   trw->external_file = g_strdup ( external_file );
-  trw->external_loaded = FALSE;
-  trw_ensure_layer_loaded ( trw );
+  trw->external_loaded = TRUE;
 }
 
 static void trw_update_layer_icon ( VikTrwLayer *trw )

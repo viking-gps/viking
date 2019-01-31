@@ -58,7 +58,7 @@ typedef enum {
 
 gchar *append_file_ext ( const gchar *filename, VikFileType_t type );
 
-VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer *vtl, const gchar *filename, gboolean new_layer );
+VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer *vtl, const gchar *filename, gboolean new_layer, gboolean external );
 gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filename );
 /* Only need to define VikTrack if the file type is FILE_TYPE_GPX_TRACK */
 gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t file_type, VikTrack *trk, gboolean write_hidden );

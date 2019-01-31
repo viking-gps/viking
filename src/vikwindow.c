@@ -165,7 +165,6 @@ static void register_vik_icons (GtkIconFactory *icon_factory);
 
 /* i/o */
 static void load_file ( GtkAction *a, VikWindow *vw );
-static void open_external_layer ( GtkAction *a, VikWindow *vw );
 static gboolean save_file_as ( GtkAction *a, VikWindow *vw );
 static gboolean save_file ( GtkAction *a, VikWindow *vw );
 static gboolean save_file_and_exit ( GtkAction *a, VikWindow *vw );
@@ -562,7 +561,7 @@ void vik_window_new_window_finish ( VikWindow *vw )
   }
 }
 
-static void open_window ( VikWindow *vw, GSList *files )
+static void open_window ( VikWindow *vw, GSList *files, gboolean external )
 {
   if ( !vw  )
     return;
@@ -577,10 +576,10 @@ static void open_window ( VikWindow *vw, GSList *files )
     if (vw->filename && check_file_magic_vik ( file_name ) ) {
       VikWindow *newvw = vik_window_new_window ();
       if (newvw)
-        vik_window_open_file ( newvw, file_name, TRUE, TRUE, TRUE, TRUE );
+        vik_window_open_file ( newvw, file_name, TRUE, TRUE, TRUE, TRUE, FALSE );
     }
     else {
-      vik_window_open_file ( vw, file_name, change_fn, (file_num==1), (file_num==num_files), TRUE );
+      vik_window_open_file ( vw, file_name, change_fn, (file_num==1), (file_num==num_files), TRUE, external );
     }
     g_free (file_name);
     cur_file = g_slist_next (cur_file);
@@ -777,7 +776,7 @@ static void drag_data_received_cb ( GtkWidget *widget,
       }
 
       if ( filenames )
-        open_window ( VIK_WINDOW_FROM_WIDGET(widget), filenames );
+        open_window ( VIK_WINDOW_FROM_WIDGET(widget), filenames, FALSE );
         // NB: GSList & contents are freed by open_window()
 
       success = TRUE;
@@ -3352,13 +3351,13 @@ static void on_activate_recent_item (GtkRecentChooser *chooser,
     {
       GSList *filenames = NULL;
       filenames = g_slist_append ( filenames, path );
-      open_window ( self, filenames );
+      open_window ( self, filenames, FALSE );
       // NB: GSList & contents are freed by open_window()
     }
     else {
       if ( check_file_magic_vik ( path ) )
         remove_default_map_layer ( self );
-      vik_window_open_file ( self, path, TRUE, TRUE, TRUE, TRUE );
+      vik_window_open_file ( self, path, TRUE, TRUE, TRUE, TRUE, FALSE );
       g_free ( path );
     }
   }
@@ -3489,7 +3488,7 @@ void calendar_update ( VikWindow *vw )
  * @last:  Indicates the last file in a possible list of files to be loaded
  *        Hence a draw operation can be performed
  */
-void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename, gboolean first, gboolean last, gboolean new_layer )
+void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean change_filename, gboolean first, gboolean last, gboolean new_layer, gboolean external )
 {
   if ( first )
     vik_window_set_busy_cursor ( vw );
@@ -3500,7 +3499,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
   vw->filename = g_strdup ( filename );
   gboolean success = FALSE;
   gboolean restore_original_filename = FALSE;
-  vw->loaded_type = a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, vw->containing_vtl, filename, new_layer );
+  vw->loaded_type = a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, vw->containing_vtl, filename, new_layer, external );
   switch ( vw->loaded_type )
   {
     case LOAD_TYPE_READ_FAILURE:
@@ -3591,12 +3590,16 @@ static void load_file ( GtkAction *a, VikWindow *vw )
   GSList *files = NULL;
   GSList *cur_file = NULL;
   gboolean append;
+  gboolean external = FALSE;
   if (!strcmp(gtk_action_get_name(a), "Open")) {
     append = FALSE;
   } 
   else if (!strcmp(gtk_action_get_name(a), "Append")) {
     append = TRUE;
-  } 
+  }
+  else if (!strcmp(gtk_action_get_name(a), "OpenExtLayer")) {
+    external = TRUE;
+  }
   else {
     g_critical("Houston, we've had a problem.");
     return;
@@ -3613,34 +3616,41 @@ static void load_file ( GtkAction *a, VikWindow *vw )
 
   GtkFileFilter *filter;
   // NB file filters are listed this way for alphabetical ordering
+  if ( !external ) {
 #ifdef VIK_CONFIG_GEOCACHES
-  filter = gtk_file_filter_new ();
-  gtk_file_filter_set_name( filter, _("Geocaching") );
-  gtk_file_filter_add_pattern ( filter, "*.loc" ); // No MIME type available
-  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name( filter, _("Geocaching") );
+    gtk_file_filter_add_pattern ( filter, "*.loc" ); // No MIME type available
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
 #endif
 
-  filter = gtk_file_filter_new ();
-  gtk_file_filter_set_name( filter, _("Google Earth") );
-  gtk_file_filter_add_mime_type ( filter, "application/vnd.google-earth.kml+xml");
-  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name( filter, _("Google Earth") );
+    gtk_file_filter_add_mime_type ( filter, "application/vnd.google-earth.kml+xml");
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+  }
 
+  // NB The only named filter for 'External' types ATM
   filter = gtk_file_filter_new ();
   gtk_file_filter_set_name( filter, _("GPX") );
   gtk_file_filter_add_mime_type ( filter, "gpx+xml");
   gtk_file_filter_add_pattern ( filter, "*.gpx" );
   gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+  if ( external )
+    gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
 
-  filter = gtk_file_filter_new ();
-  gtk_file_filter_set_name ( filter, _("JPG") );
-  gtk_file_filter_add_mime_type ( filter, "image/jpeg");
-  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+  if ( !external ) {
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name ( filter, _("JPG") );
+    gtk_file_filter_add_mime_type ( filter, "image/jpeg");
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
 
-  filter = gtk_file_filter_new ();
-  gtk_file_filter_set_name( filter, _("Viking") );
-  gtk_file_filter_add_pattern ( filter, "*.vik" );
-  gtk_file_filter_add_pattern ( filter, "*.viking" );
-  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name( filter, _("Viking") );
+    gtk_file_filter_add_pattern ( filter, "*.vik" );
+    gtk_file_filter_add_pattern ( filter, "*.viking" );
+    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+  }
 
   // NB could have filters for gpspoint (*.gps,*.gpsoint?) + gpsmapper (*.gsm,*.gpsmapper?)
   // However assume this are barely used and thus not worthy of inclusion
@@ -3651,7 +3661,8 @@ static void load_file ( GtkAction *a, VikWindow *vw )
   gtk_file_filter_add_pattern ( filter, "*" );
   gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
   // Default to any file - same as before open filters were added
-  gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog), filter);
+  if ( !external )
+    gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog), filter);
 
   gtk_file_chooser_set_select_multiple ( GTK_FILE_CHOOSER(dialog), TRUE );
   gtk_window_set_transient_for ( GTK_WINDOW(dialog), GTK_WINDOW(vw) );
@@ -3667,7 +3678,7 @@ static void load_file ( GtkAction *a, VikWindow *vw )
 #else
     if ( vw->filename && !append )
 #endif
-      open_window ( vw, gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog)) );
+      open_window ( vw, gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog)), external );
     else {
 
       files = gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog) );
@@ -3683,58 +3694,25 @@ static void load_file ( GtkAction *a, VikWindow *vw )
           // Load first of many .vik files in current window
           if ( first_vik_file ) {
             remove_default_map_layer ( vw );
-            vik_window_open_file ( vw, file_name, TRUE, TRUE, TRUE, TRUE );
+            vik_window_open_file ( vw, file_name, TRUE, TRUE, TRUE, TRUE, FALSE );
             first_vik_file = FALSE;
           }
           else {
             // Load each subsequent .vik file in a separate window
             VikWindow *newvw = vik_window_new_window ();
             if (newvw)
-              vik_window_open_file ( newvw, file_name, TRUE, TRUE, TRUE, TRUE );
+              vik_window_open_file ( newvw, file_name, TRUE, TRUE, TRUE, TRUE, FALSE );
           }
         }
         else
           // Other file types or appending a .vik file
-          vik_window_open_file ( vw, file_name, change_fn, (file_num==1), (file_num==num_files), !append );
+          vik_window_open_file ( vw, file_name, change_fn, (file_num==1), (file_num==num_files), !append, external );
 
         g_free (file_name);
         cur_file = g_slist_next (cur_file);
       }
       g_slist_free (files);
     }
-  }
-  gtk_widget_destroy ( dialog );
-}
-
-static void open_external_layer ( GtkAction *a, VikWindow *vw )
-{
-  GtkWidget *dialog = gtk_file_chooser_dialog_new (_("Open File"),
-                                                   GTK_WINDOW(vw),
-                                                   GTK_FILE_CHOOSER_ACTION_OPEN,
-                                                   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                                   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-                                                   NULL);
-
-  GtkFileFilter *filter;
-  filter = gtk_file_filter_new ();
-  gtk_file_filter_set_name ( filter, _("GPX") );
-  gtk_file_filter_add_mime_type ( filter, "gpx+xml");
-  gtk_file_filter_add_pattern ( filter, "*.gpx" );
-  gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(dialog), filter );
-  gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
-
-  filter = gtk_file_filter_new ();
-  gtk_file_filter_set_name( filter, _("All") );
-  gtk_file_filter_add_pattern ( filter, "*" );
-  gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(dialog), filter );
-
-  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )  {
-    gchar *fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(dialog) );
-    VikTrwLayer *trw = VIK_TRW_LAYER ( vik_layer_create ( VIK_LAYER_TRW, vw->viking_vvp, FALSE ) );
-    vik_layer_rename ( VIK_LAYER ( trw ), _(fn) );
-    vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer(vw->viking_vlp), VIK_LAYER(trw), TRUE );
-    trw_layer_replace_external ( trw, fn );
-    draw_update ( vw );
   }
   gtk_widget_destroy ( dialog );
 }
@@ -4958,7 +4936,7 @@ static GtkActionEntry entries[] = {
   { "Open",      GTK_STOCK_OPEN,         N_("_Open..."),                         "<control>O", N_("Open a file"),                                  (GCallback)load_file             },
   { "OpenRecentFile", NULL,              N_("Open _Recent File"),         NULL,         NULL,                                               (GCallback)NULL },
   { "Append",    GTK_STOCK_ADD,          N_("Append _File..."),           NULL,         N_("Append data from a different file"),            (GCallback)load_file             },
-  { "OpenExtLayer",  NULL,               N_("Open GPX as External _Layer..."),    NULL,         N_("Open a GPX file as an external layer"), (GCallback)open_external_layer },
+  { "OpenExtLayer",  NULL,               N_("Open GPX as External _Layer..."),    NULL,         N_("Open a GPX file as an external layer"), (GCallback)load_file },
   { "Export",    GTK_STOCK_CONVERT,      N_("_Export All"),               NULL,         N_("Export All TrackWaypoint Layers"),              (GCallback)NULL                  },
   { "ExportGPX", NULL,                   N_("_GPX..."),           	      NULL,         N_("Export as GPX"),                                (GCallback)export_to_gpx         },
   { "Acquire",   GTK_STOCK_GO_DOWN,      N_("A_cquire"),                  NULL,         NULL,                                               (GCallback)NULL },

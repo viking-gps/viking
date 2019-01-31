@@ -109,6 +109,10 @@ and docbook-xsl in your Build-Depends control field.
         <arg choice="plain"><option>-m</option></arg>
         <arg choice="plain"><option>--map</option> <replaceable>MapId</replaceable></arg>
       </group>
+      <group choice="opt">
+        <arg choice="plain"><option>-x</option></arg>
+        <arg choice="plain"><option>--external</option></arg>
+      </group>
       <sbr/>
       <arg rep="repeat"><replaceable>file</replaceable></arg>
     </cmdsynopsis>
@@ -215,6 +219,14 @@ and docbook-xsl in your Build-Depends control field.
   <varlistentry><term></term><listitem><para>OSM Cycle = 17</para></listitem></varlistentry>
   <varlistentry><term></term><listitem><para>Mapquest OSM = 19</para></listitem></varlistentry>
 </variablelist>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-e</option></term>
+        <term><option>--external</option></term>
+        <listitem>
+          <para>Load all specified GPX files in 'external' mode.</para>
+          <para>This is in contrast to importing the data and storing it in the Viking file.</para>
         </listitem>
       </varlistentry>
     </variablelist>

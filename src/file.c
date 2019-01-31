@@ -666,7 +666,7 @@ gchar *append_file_ext ( const gchar *filename, VikFileType_t type )
  * a_file_load:
  *
  */
-VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer *vtl, const gchar *filename_or_uri, gboolean new_layer )
+VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer *vtl, const gchar *filename_or_uri, gboolean new_layer, gboolean external )
 {
   g_return_val_if_fail ( vp != NULL, LOAD_TYPE_READ_FAILURE );
 
@@ -744,6 +744,11 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer
     else if ( a_file_check_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
       if ( ! ( success = a_gpx_read_file ( vtl, f, dirpath ) ) ) {
         load_answer = LOAD_TYPE_GPX_FAILURE;
+      }
+      if ( load_answer == LOAD_TYPE_OTHER_SUCCESS ) {
+	if ( external )
+	  // TODO may have to make absolute??
+	  trw_layer_replace_external ( vtl, filename );
       }
     }
     else {
