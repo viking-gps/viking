@@ -565,16 +565,13 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   /*  main hbox  */
   main_hbox = gtk_hbox_new (FALSE, 12);
   gtk_box_pack_start (GTK_BOX (layout), main_hbox, TRUE, TRUE, 0);
-  gtk_widget_show (main_hbox);
 
   /*  main vbox  */
   main_vbox = gtk_vbox_new (FALSE, 12);
   gtk_box_pack_start (GTK_BOX (main_hbox), main_vbox, FALSE, FALSE, 0);
-  gtk_widget_show (main_vbox);
 
   vbox = gtk_vbox_new (FALSE, 6);
   gtk_box_pack_start (GTK_BOX (main_vbox), vbox, FALSE, FALSE, 0);
-  gtk_widget_show (vbox);
 
   /* Page Size */
   button = gtk_button_new_with_mnemonic (_("_Adjust Page Size "
@@ -583,7 +580,6 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   g_signal_connect (G_OBJECT (button), "clicked",
                     G_CALLBACK (page_setup_cb),
                     info);
-  gtk_widget_show (button);
 
   /* Center */
   GtkWidget *combo;
@@ -591,12 +587,10 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
 
   hbox = gtk_hbox_new (FALSE, 6);
   gtk_box_pack_start (GTK_BOX (main_vbox), hbox, FALSE, FALSE, 0);
-  gtk_widget_show (hbox);
 
   label = gtk_label_new_with_mnemonic (_("C_enter:"));
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
-  gtk_widget_show (label);
 
   combo = vik_combo_box_text_new ();
   for (center = center_modes; center->name; center++) {
@@ -604,7 +598,6 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   }
   gtk_combo_box_set_active(GTK_COMBO_BOX(combo), VIK_PRINT_CENTER_BOTH);
   gtk_box_pack_start (GTK_BOX (hbox), combo, TRUE, TRUE, 0);
-  gtk_widget_show (combo);
   gtk_label_set_mnemonic_widget (GTK_LABEL (label), combo);
   g_signal_connect(combo, "changed",
                    G_CALLBACK(center_changed_cb), info);
@@ -619,32 +612,26 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   g_signal_connect (button, "toggled",
                     G_CALLBACK (full_page_toggled_cb),
                     info);
-  gtk_widget_show (button);
 
   /* scale */
   vbox = gtk_vbox_new (FALSE, 1);
   gtk_box_pack_start (GTK_BOX (main_vbox), vbox, FALSE, FALSE, 0);
-  gtk_widget_show (vbox);
 
   hbox = gtk_hbox_new (FALSE, 6);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
-  gtk_widget_show (hbox);
 
   label = gtk_label_new_with_mnemonic (_("Image S_ize:"));
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
   gtk_box_pack_start (GTK_BOX (hbox), label, FALSE, FALSE, 0);
-  gtk_widget_show (label);
 
   label = gtk_label_new (NULL);
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
   info->scale_label = label;
   gtk_box_pack_start (GTK_BOX (hbox), info->scale_label, TRUE, TRUE, 0);
-  gtk_widget_show (info->scale_label);
 
   info->scale = gtk_hscale_new_with_range(1, 100, 1);
   gtk_box_pack_start (GTK_BOX (vbox), info->scale, TRUE, TRUE, 0);
   gtk_scale_set_draw_value(GTK_SCALE(info->scale), FALSE);
-  gtk_widget_show (info->scale);
   gtk_label_set_mnemonic_widget (GTK_LABEL (label), info->scale);
 
   g_signal_connect(info->scale, "change_value",
@@ -655,12 +642,12 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   vik_print_preview_set_use_full_page (VIK_PRINT_PREVIEW(info->preview),
                                         data->use_full_page);
   gtk_box_pack_start (GTK_BOX (main_hbox), info->preview, TRUE, TRUE, 0);
-  gtk_widget_show (info->preview);
 
   g_signal_connect (info->preview, "offsets-changed",
                     G_CALLBACK (preview_offsets_changed_cb),
                     info);
 
+  gtk_widget_show_all (layout);
   update_page_setup (info);
 
   gdouble offset_x_max, offset_y_max;
