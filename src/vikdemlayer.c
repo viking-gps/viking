@@ -1283,13 +1283,9 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
   }
   else {
     if ( !vdl->right_click_menu ) {
-      GtkWidget *item;
       vdl->right_click_menu = GTK_MENU ( gtk_menu_new () );
-
-      item = gtk_image_menu_item_new_with_mnemonic ( _("_Show DEM File Information") );
-      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INFO, GTK_ICON_SIZE_MENU) );
+      GtkWidget *item = vu_menu_add_item ( vdl->right_click_menu, _("_Show DEM File Information"), GTK_STOCK_INFO, NULL, NULL );
       g_signal_connect ( G_OBJECT(item), "activate", G_CALLBACK(dem_layer_file_info), &ll );
-      gtk_menu_shell_append (GTK_MENU_SHELL(vdl->right_click_menu), item);
     }
 
     gtk_menu_popup ( vdl->right_click_menu, NULL, NULL, NULL, NULL, event->button, event->time );

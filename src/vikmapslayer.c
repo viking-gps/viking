@@ -2073,33 +2073,20 @@ static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton 
       vml->dl_tool_x = vml->dl_tool_y = -1;
 
       if ( ! vml->dl_right_click_menu ) {
-        GtkWidget *item;
         VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
 
         vml->dl_right_click_menu = GTK_MENU ( gtk_menu_new () );
+        GtkMenu *menu = vml->dl_right_click_menu; // local rename
 
         // Download options aren't for on disk only maps
         if ( ! (vik_map_source_is_mbtiles(map) ||
                 vik_map_source_is_direct_file_access(map) ||
                 vik_map_source_is_osm_meta_tiles(map)) ) {
-
-          item = gtk_menu_item_new_with_mnemonic ( _("Redownload _Bad Map(s)") );
-          g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_bad), vml );
-          gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
-
-          item = gtk_menu_item_new_with_mnemonic ( _("Redownload _New Map(s)") );
-          g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_new), vml );
-          gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
-
-          item = gtk_menu_item_new_with_mnemonic ( _("Redownload _All Map(s)") );
-          g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all), vml );
-          gtk_menu_shell_append ( GTK_MENU_SHELL(vml->dl_right_click_menu), item );
+          (void)vu_menu_add_item ( menu, _("Redownload _Bad Map(s)"), GTK_STOCK_ADD, G_CALLBACK(maps_layer_redownload_bad), vml );
+          (void)vu_menu_add_item ( menu, _("Redownload _New Map(s)"), GTK_STOCK_REDO, G_CALLBACK(maps_layer_redownload_new), vml );
+          (void)vu_menu_add_item ( menu, _("Redownload _All Map(s)"), GTK_STOCK_REFRESH, G_CALLBACK(maps_layer_redownload_all), vml );
         }
-
-        item = gtk_image_menu_item_new_with_mnemonic ( _("_Show Tile Information") );
-        gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INFO, GTK_ICON_SIZE_MENU) );
-        g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_tile_info), vml );
-        gtk_menu_shell_append (GTK_MENU_SHELL(vml->dl_right_click_menu), item);
+        (void)vu_menu_add_item ( menu, _("_Show Tile Information"), GTK_STOCK_INFO, G_CALLBACK(maps_layer_tile_info), vml );
       }
 
       gtk_menu_popup ( vml->dl_right_click_menu, NULL, NULL, NULL, NULL, event->button, event->time );
@@ -2490,72 +2477,37 @@ static void maps_layer_flush ( menu_array_values values )
 
 static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp )
 {
-  GtkWidget *item;
   static menu_array_values values;
   values[MA_VML] = vml;
   values[MA_VVP] = vik_layers_panel_get_viewport( VIK_LAYERS_PANEL(vlp) );
 
   VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
 
-  item = gtk_menu_item_new();
-  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-  gtk_widget_show ( item );
+  (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
 
   // Download options aren't for on disk only maps
   if ( ! (vik_map_source_is_mbtiles(map) ||
           vik_map_source_is_direct_file_access(map) ||
           vik_map_source_is_osm_meta_tiles(map)) ) {
     /* Now with icons */
-    item = gtk_image_menu_item_new_with_mnemonic ( _("Download _Missing Onscreen Maps") );
-    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ADD, GTK_ICON_SIZE_MENU) );
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_missing_onscreen_maps), values );
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    gtk_widget_show ( item );
-
-    if ( vik_map_source_supports_download_only_new (MAPS_LAYER_NTH_TYPE(vml->maptype)) ) {
-      item = gtk_image_menu_item_new_with_mnemonic ( _("Download _New Onscreen Maps") );
-      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REDO, GTK_ICON_SIZE_MENU) );
-      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_new_onscreen_maps), values );
-      gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-      gtk_widget_show ( item );
-    }
-
-    item = gtk_image_menu_item_new_with_mnemonic ( _("Reload _All Onscreen Maps") );
-    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_redownload_all_onscreen_maps), values );
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    gtk_widget_show ( item );
-
-    item = gtk_image_menu_item_new_with_mnemonic ( _("Download Maps in _Zoom Levels...") );
-    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_DND_MULTIPLE, GTK_ICON_SIZE_MENU) );
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_download_all), values );
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    gtk_widget_show ( item );
+    (void)vu_menu_add_item ( menu, _("Download _Missing Onscreen Maps"), GTK_STOCK_ADD, G_CALLBACK(maps_layer_download_missing_onscreen_maps), values );
+    (void)vu_menu_add_item ( menu, _("Download _New Onscreen Maps"), GTK_STOCK_REDO, G_CALLBACK(maps_layer_download_new_onscreen_maps), values );
+    (void)vu_menu_add_item ( menu, _("Reload _All Onscreen Maps"), GTK_STOCK_REFRESH, G_CALLBACK(maps_layer_redownload_all_onscreen_maps), values );
+    (void)vu_menu_add_item ( menu, _("Download Maps in _Zoom Levels..."), GTK_STOCK_DND_MULTIPLE, G_CALLBACK(maps_layer_download_all), values );
   }
 
   // Quick way to reopen MBTiles file - e.g. if it wasn't available at the time of a .vik file load
   if ( vik_map_source_is_mbtiles ( map ) ) {
     if ( !vml->mbtiles ) {
-      item = gtk_image_menu_item_new_with_mnemonic ( _("_Open MBTiles Files") );
-      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_OPEN, GTK_ICON_SIZE_MENU) );
-      g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_mbtiles_open_cb), values );
-      gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-      gtk_widget_show ( item );
+      vu_menu_add_item ( menu, _("_Open MBTiles Files"), GTK_STOCK_OPEN, G_CALLBACK(maps_layer_mbtiles_open_cb), values );
     }
   }
 
-  item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_ABOUT, NULL );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_about), values );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
+  (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_ABOUT, G_CALLBACK(maps_layer_about), values );
 
   // Typical users shouldn't need to use this functionality - so debug only ATM
   if ( vik_debug ) {
-    item = gtk_image_menu_item_new_with_mnemonic ( _("Flush Map Cache") );
-    gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU) );
-    g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(maps_layer_flush), values );
-    gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-    gtk_widget_show ( item );
+    (void)vu_menu_add_item ( menu, _("Flush Map Cache"), GTK_STOCK_REMOVE, G_CALLBACK(maps_layer_flush), values );
   }
 }
 

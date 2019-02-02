@@ -52,7 +52,11 @@ void vu_waypoint_set_image_uri ( VikWaypoint *wp, const gchar *uri, const gchar 
 
 void vu_calendar_set_to_today ( GtkWidget *cal );
 
+GtkWidget* vu_menu_add_item ( const GtkMenu *menu,
+                              const gchar* mnemonic,
+                              const gchar* stock_icon,
+                              const GCallback callback,
+                              const gpointer user_data );
 G_END_DECLS
 
 #endif
-

@@ -31,6 +31,7 @@
 #include "viking.h"
 #include "vikutils.h"
 #include "globals.h"
+#include "compression.h"
 #include "download.h"
 #include "preferences.h"
 #include "vikmapslayer.h"
@@ -998,4 +999,46 @@ void vu_calendar_set_to_today (GtkWidget *cal)
   gtk_calendar_select_month ( GTK_CALENDAR(cal), g_date_time_get_month(now)-1, g_date_time_get_year(now) );
   gtk_calendar_select_day ( GTK_CALENDAR(cal), g_date_time_get_day_of_month(now) );
   g_date_time_unref ( now );
+}
+
+/**
+ * vu_menu_add_item:
+ *
+ * @menu:     The menu to which this new menu item is added
+ * @mnemonic: The accelerator string to use for the menu item e.g. "_New"
+ *            May be null, typically for creating menu separators
+ *            For stock icons, this string will override the Gtk default
+ * @stock_icon: Display this icon on the menu item
+ *              A GTK Stock icon name, or an own icon name that has been registered
+ *               see a_register_icon() in vikwindow.c
+ *              May be null, for no icon
+ * @callback: The function to be called when the menu item is clicked
+ *            A #GCallback invoked by a 'swapped' connect signal
+ *            May be null, typically for creating sub menus
+ * @user_data: Data to be used in the callback
+ *            May be null, typically for creating sub menus
+ *
+ * A utility function to simplify creating menus
+ *
+ * Returns: The menu item created.
+ */
+GtkWidget* vu_menu_add_item ( const GtkMenu *menu,
+                              const gchar* mnemonic,
+                              const gchar* stock_icon,
+                              const GCallback callback,
+                              const gpointer user_data )
+{
+	GtkWidget *menu_item = gtk_menu_item_new();
+	if ( mnemonic && stock_icon ) {
+		menu_item = gtk_image_menu_item_new_with_mnemonic ( mnemonic );
+		gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menu_item, gtk_image_new_from_stock (stock_icon, GTK_ICON_SIZE_MENU) );
+	}
+	else if ( mnemonic )
+		menu_item = gtk_menu_item_new_with_mnemonic ( mnemonic );
+	else if ( stock_icon )
+		menu_item = gtk_image_menu_item_new_from_stock ( stock_icon, NULL );
+	if ( callback )
+		g_signal_connect_swapped ( G_OBJECT(menu_item), "activate", callback, user_data );
+	gtk_menu_shell_append ( GTK_MENU_SHELL(menu), menu_item );
+	return menu_item;
 }

@@ -30,6 +30,7 @@
 #include "viking.h"
 #include "viktrwlayer_tracklist.h"
 #include "viktrwlayer_propwin.h"
+#include "vikutils.h"
 
 // Long formatted date+basic time - listing this way ensures the string comparison sort works - so no local type format %x or %c here!
 #define TRACK_LIST_DATE_FORMAT "%Y-%m-%d %H:%M"
@@ -259,18 +260,12 @@ static void trw_layer_copy_selected ( GtkWidget *tree_view )
 
 static void add_copy_menu_item ( GtkMenu *menu, GtkWidget *tree_view )
 {
-	GtkWidget *item = gtk_image_menu_item_new_with_mnemonic ( _("_Copy Data") );
-	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_COPY, GTK_ICON_SIZE_MENU) );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_copy_selected), tree_view );
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show ( item );
+	(void)vu_menu_add_item ( menu, _("_Copy Data"), GTK_STOCK_COPY, G_CALLBACK(trw_layer_copy_selected), tree_view );
 }
 
 static gboolean add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikTrack *trk, gpointer trk_uuid, VikViewport *vvp, GtkWidget *tree_view, gpointer data )
 {
 	static menu_array_values values;
-	GtkWidget *item;
-
 	values[MA_VTL]       = vtl;
 	values[MA_TRK]       = trk;
 	values[MA_TRK_UUID]  = trk_uuid;
@@ -278,26 +273,11 @@ static gboolean add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikTrack *trk,
 	values[MA_TREEVIEW]  = tree_view;
 	values[MA_TRKS_LIST] = data;
 
-	/*
-	item = gtk_image_menu_item_new_with_mnemonic ( _("_Select") );
-	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_select), values );
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show ( item );
-	*/
+	//(void)vu_menu_add_item ( menu, _("_Select"), GTK_STOCK_FIND, G_CALLBACK(trw_layer_track_select), values );
 
 	// ATM view auto selects, so don't bother with separate select menu entry
-	item = gtk_image_menu_item_new_with_mnemonic ( _("_View") );
-	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ZOOM_FIT, GTK_ICON_SIZE_MENU) );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_view), values );
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show ( item );
-
-	item = gtk_menu_item_new_with_mnemonic ( _("_Statistics") );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_stats), values );
-	gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-	gtk_widget_show ( item );
-
+	(void)vu_menu_add_item ( menu, _("_View"), GTK_STOCK_ZOOM_FIT, G_CALLBACK(trw_layer_track_view), values );
+	(void)vu_menu_add_item ( menu, _("_Statistics"), NULL, G_CALLBACK(trw_layer_track_stats), values );
 	add_copy_menu_item ( menu, tree_view );
 
 	return TRUE;
@@ -377,6 +357,7 @@ static gboolean trw_layer_track_menu_popup ( GtkWidget *tree_view,
 		                 tree_view,
 		                 data );
 
+		gtk_widget_show_all ( menu );
 		gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
 		return TRUE;
 	}

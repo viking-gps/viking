@@ -673,100 +673,37 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   values[MA_VAL] = val;
   values[MA_VLP] = vlp;
 
-  GtkWidget *item = gtk_menu_item_new();
-  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-  gtk_widget_show ( item );
+  (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
 
-  GtkWidget *vis_submenu = gtk_menu_new ();
-  item = gtk_menu_item_new_with_mnemonic ( _("_Visibility") );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), vis_submenu );
+  GtkMenu *vis_submenu = GTK_MENU(gtk_menu_new());
+  GtkWidget *itemv = vu_menu_add_item ( menu, _("_Visibility"), NULL, NULL, NULL );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemv), GTK_WIDGET(vis_submenu) );
 
-  item = gtk_image_menu_item_new_with_mnemonic ( _("_Show All") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_APPLY, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_child_visible_on), values );
-  gtk_menu_shell_append (GTK_MENU_SHELL (vis_submenu), item);
-  gtk_widget_show ( item );
+  (void)vu_menu_add_item ( vis_submenu, _("_Show All"), GTK_STOCK_APPLY, G_CALLBACK(aggregate_layer_child_visible_on), values );
+  (void)vu_menu_add_item ( vis_submenu, _("_Hide All"), GTK_STOCK_CLEAR, G_CALLBACK(aggregate_layer_child_visible_off), values );
+  (void)vu_menu_add_item ( vis_submenu, _("_Toggle"), GTK_STOCK_REFRESH, G_CALLBACK(aggregate_layer_child_visible_toggle), values );
 
-  item = gtk_image_menu_item_new_with_mnemonic ( _("_Hide All") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_CLEAR, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_child_visible_off), values );
-  gtk_menu_shell_append (GTK_MENU_SHELL (vis_submenu), item);
-  gtk_widget_show ( item );
+  GtkMenu *submenu_sort = GTK_MENU(gtk_menu_new());
+  GtkWidget *items = vu_menu_add_item ( menu, _("_Sort"), GTK_STOCK_REFRESH, NULL, NULL );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(items), GTK_WIDGET(submenu_sort) );
 
-  item = gtk_image_menu_item_new_with_mnemonic ( _("_Toggle") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_child_visible_toggle), values );
-  gtk_menu_shell_append (GTK_MENU_SHELL (vis_submenu), item);
-  gtk_widget_show ( item );
+  (void)vu_menu_add_item ( submenu_sort, _("Name _Ascending"), GTK_STOCK_SORT_ASCENDING, G_CALLBACK(aggregate_layer_sort_a2z), values );
+  (void)vu_menu_add_item ( submenu_sort, _("Name _Descending"), GTK_STOCK_SORT_DESCENDING, G_CALLBACK(aggregate_layer_sort_z2a), values );
+  (void)vu_menu_add_item ( submenu_sort, _("Date Ascending"), GTK_STOCK_SORT_ASCENDING, G_CALLBACK(aggregate_layer_sort_timestamp_ascend), values );
+  (void)vu_menu_add_item ( submenu_sort, _("Date Descending"), GTK_STOCK_SORT_DESCENDING, G_CALLBACK(aggregate_layer_sort_timestamp_descend), values );
 
-  GtkWidget *submenu_sort = gtk_menu_new ();
-  item = gtk_image_menu_item_new_with_mnemonic ( _("_Sort") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), submenu_sort );
+  (void)vu_menu_add_item ( menu, _("_Statistics"), NULL, G_CALLBACK(aggregate_layer_analyse), values );
+  (void)vu_menu_add_item ( menu, _("Track _List..."), GTK_STOCK_INDEX, G_CALLBACK(aggregate_layer_track_list_dialog), values );
+  (void)vu_menu_add_item ( menu, _("_Waypoint List..."), GTK_STOCK_INDEX, G_CALLBACK(aggregate_layer_waypoint_list_dialog), values );
 
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Name _Ascending") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_ASCENDING, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_sort_a2z), values );
-  gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
-  gtk_widget_show ( item );
+  GtkMenu *search_submenu = GTK_MENU(gtk_menu_new());
+  GtkWidget *itemsr = vu_menu_add_item ( menu, _("Searc_h"), GTK_STOCK_JUMP_TO, NULL, NULL );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemsr), GTK_WIDGET(search_submenu) );
 
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Name _Descending") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_DESCENDING, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_sort_z2a), values );
-  gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
-  gtk_widget_show ( item );
+  GtkWidget *itemd = vu_menu_add_item ( search_submenu, _("By _Date..."), NULL, G_CALLBACK(aggregate_layer_search_date), values );
+  gtk_widget_set_tooltip_text ( itemd, _("Find the first item with a specified date") );
 
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Date Ascending") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_ASCENDING, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_sort_timestamp_ascend), values );
-  gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
-  gtk_widget_show ( item );
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Date Descending") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_SORT_DESCENDING, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_sort_timestamp_descend), values );
-  gtk_menu_shell_append ( GTK_MENU_SHELL(submenu_sort), item );
-  gtk_widget_show ( item );
-
-  item = gtk_menu_item_new_with_mnemonic ( _("_Statistics") );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_analyse), values );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Track _List...") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_track_list_dialog), values );
-  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-  gtk_widget_show ( item );
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("_Waypoint List...") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INDEX, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_waypoint_list_dialog), values );
-  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-  gtk_widget_show ( item );
-
-  GtkWidget *search_submenu = gtk_menu_new ();
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Searc_h") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_JUMP_TO, GTK_ICON_SIZE_MENU) );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), search_submenu );
-
-  item = gtk_menu_item_new_with_mnemonic ( _("By _Date...") );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_search_date), values );
-  gtk_menu_shell_append ( GTK_MENU_SHELL(search_submenu), item );
-  gtk_widget_set_tooltip_text (item, _("Find the first item with a specified date"));
-  gtk_widget_show ( item );
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Load E_xternal Layers") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, NULL );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(aggregate_layer_load_external_layers_click), values );
-  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-  gtk_widget_show ( item );
+  (void)vu_menu_add_item ( menu, _("Load E_xternal Layers"), NULL, G_CALLBACK(aggregate_layer_load_external_layers_click), values );
 }
 
 static void disconnect_layer_signal ( VikLayer *vl, VikAggregateLayer *val )

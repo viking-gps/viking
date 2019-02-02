@@ -1050,32 +1050,14 @@ static void georef_layer_goto_center ( gpointer vgl_vlp[2] )
 static void georef_layer_add_menu_items ( VikGeorefLayer *vgl, GtkMenu *menu, gpointer vlp )
 {
   static gpointer pass_along[2];
-  GtkWidget *item;
   pass_along[0] = vgl;
   pass_along[1] = vlp;
 
-  item = gtk_menu_item_new();
-  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-  gtk_widget_show ( item );
-
+  vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
   /* Now with icons */
-  item = gtk_image_menu_item_new_with_mnemonic ( _("_Zoom to Fit Map") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ZOOM_FIT, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(georef_layer_zoom_to_fit), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("_Goto Map Center") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_JUMP_TO, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(georef_layer_goto_center), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("_Export to World File") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_HARDDISK, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(georef_layer_export_params), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
+  (void)vu_menu_add_item ( menu, _("_Zoom to Fit Map"), GTK_STOCK_ZOOM_FIT, G_CALLBACK(georef_layer_zoom_to_fit), pass_along );
+  (void)vu_menu_add_item ( menu, _("_Goto Map Center"), GTK_STOCK_JUMP_TO, G_CALLBACK(georef_layer_goto_center), pass_along );
+  (void)vu_menu_add_item ( menu, _("_Export to World File"), GTK_STOCK_HARDDISK, G_CALLBACK(georef_layer_export_params), pass_along );
 }
 
 
