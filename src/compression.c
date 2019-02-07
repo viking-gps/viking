@@ -35,7 +35,7 @@
 #endif
 
 #include "compression.h"
-#include "string.h"
+#include <string.h>
 #include <gio/gio.h>
 #include <glib/gstdio.h>
 

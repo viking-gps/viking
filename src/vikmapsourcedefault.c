@@ -29,7 +29,7 @@
 #include "vikmapsourcedefault.h"
 #include "vikenumtypes.h"
 #include "download.h"
-#include "string.h"
+#include <string.h>
 
 static void map_source_get_copyright (VikMapSource *self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data);
 static const gchar *map_source_get_license (VikMapSource *self);
