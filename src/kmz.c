@@ -330,7 +330,7 @@ static void kml_cdata ( xml_data *xd, const XML_Char *s, int len )
 void ground_overlay_load ( xml_data *xd )
 {
 	// Some simple detection of broken position values
-        if ( isnan(xd->north) || isnan(xd->west) ||
+	if ( isnan(xd->north) || isnan(xd->west) ||
 	     isnan(xd->south) || isnan(xd->east) ||
 	     xd->north > 90.001 || xd->north < -90.001 ||
 	     xd->south > 90.001 || xd->south < -90.001 ||
