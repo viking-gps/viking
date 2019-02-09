@@ -29,7 +29,7 @@ G_BEGIN_DECLS
 
 void *unzip_file(gchar *zip_file, gulong *unzip_size);
 
-gchar* uncompress_bzip2 ( gchar *name );
+gchar* uncompress_bzip2 ( const gchar *name );
 
 G_END_DECLS
 

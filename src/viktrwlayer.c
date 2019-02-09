@@ -11806,7 +11806,7 @@ void trw_ensure_layer_loaded ( VikTrwLayer *trw )
  * by external_file.  Set as a read only layer (i.e. don't write back to
  * file by default)
  */
-void trw_layer_replace_external ( VikTrwLayer *trw, gchar *external_file )
+void trw_layer_replace_external ( VikTrwLayer *trw, const gchar *external_file )
 {
   trw->external_layer = VIK_TRW_LAYER_EXTERNAL_NO_WRITE;
   trw_update_layer_icon ( trw );

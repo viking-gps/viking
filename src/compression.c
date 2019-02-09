@@ -155,7 +155,7 @@ end:
  *
  * Also see: http://www.bzip.org/1.0.5/bzip2-manual-1.0.5.html
  */
-gchar* uncompress_bzip2 ( gchar *name )
+gchar* uncompress_bzip2 ( const gchar *name )
 {
 #ifdef HAVE_BZLIB_H
 	g_debug ( "%s: bzip2 %s", __FUNCTION__, BZ2_bzlibVersion() );
