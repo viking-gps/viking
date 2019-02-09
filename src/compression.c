@@ -34,10 +34,130 @@
 #include <bzlib.h>
 #endif
 
+#ifdef HAVE_ZIP_H
+#include <zip.h>
+#endif
+
 #include "compression.h"
+#include "util.h"
 #include <string.h>
 #include <gio/gio.h>
 #include <glib/gstdio.h>
+
+#ifdef HAVE_ZIP_H
+/**
+ * figure_out_answer:
+ *
+ * Maintain an 'it worked' status between multiple file loads within a compressed file
+ * A compressed file could clearly have GPS & non GPS related files.
+ * So simplify the various load types into either 'it worked', 'worked with issues', or 'generally all failed'.
+ * However if just 1 file report that particular status regardless.
+ */
+VikLoadType_t figure_out_answer ( VikLoadType_t current_ans, VikLoadType_t last_ans, gint ii, gint entries )
+{
+	// Only singular entry - return this status
+	VikLoadType_t ans = current_ans;
+	if ( ii == 0 && entries == 1 )
+		return ans;
+
+	// Something previously had worked, but this one didn't
+	if ( last_ans >= LOAD_TYPE_VIK_FAILURE_NON_FATAL ) {
+		if ( ans < LOAD_TYPE_VIK_FAILURE_NON_FATAL )
+			ans = LOAD_TYPE_VIK_FAILURE_NON_FATAL;
+	}
+	else {
+		// If the final entry - any failures convert to the general failure
+		if ( ii == entries-1 ) {
+			if ( ans < LOAD_TYPE_VIK_FAILURE_NON_FATAL )
+				ans = LOAD_TYPE_READ_FAILURE;
+		}
+	}
+	return ans;
+}
+#endif
+
+/**
+ * NB is typically called from file.c and circularly calls back into file.c
+ * ATM this works OK!
+ *
+ */
+VikLoadType_t uncompress_load_zip_file ( const gchar *filename,
+                                         VikAggregateLayer *top,
+                                         VikViewport *vp,
+                                         VikTrwLayer *vtl,
+                                         gboolean new_layer,
+                                         gboolean external,
+                                         const gchar *dirpath )
+{
+	VikLoadType_t ans = LOAD_TYPE_READ_FAILURE;
+#ifdef HAVE_ZIP_H
+// Older libzip compatibility:
+#ifndef zip_t
+typedef struct zip zip_t;
+typedef struct zip_file zip_file_t;
+#endif
+#ifndef ZIP_RDONLY
+#define ZIP_RDONLY 0
+#endif
+
+	int zans = ZIP_ER_OK;
+	zip_t *archive = zip_open ( filename, ZIP_RDONLY, &zans );
+	if ( !archive ) {
+		g_warning ( "%s: Unable to open archive: '%s' Error code %d", __FUNCTION__, filename, zans );
+		goto cleanup;
+	}
+
+	int entries = zip_get_num_entries ( archive, ZIP_FL_UNCHANGED );
+	g_debug ( "%s: zip file %s entries %d", __FUNCTION__, filename, entries );
+	if ( entries == 0 )
+		ans = LOAD_TYPE_VIK_FAILURE_NON_FATAL;
+
+	struct zip_stat zs;
+	for ( int ii = 0; ii < entries; ii++ ) {
+		if ( zip_stat_index( archive, ii, 0, &zs ) == 0) {
+			zip_file_t *zf = zip_fopen_index ( archive, ii, 0 );
+			if ( zf ) {
+				char *buffer = g_malloc(zs.size);
+				int len = zip_fread ( zf, buffer, zs.size );
+				if ( len == zs.size ) {
+					VikLoadType_t current_ans = LOAD_TYPE_READ_FAILURE;
+#ifdef HAVE_FMEMOPEN
+					FILE *ff = fmemopen ( buffer, zs.size, "r" );
+					if ( ff ) {
+						current_ans = a_file_load_stream ( ff, zs.name, top, vp, vtl, new_layer, external, dirpath, zs.name );
+						(void)fclose ( ff );
+					}
+					else {
+						g_warning ( "%s: Unable to load stream: %d in '%s'", __FUNCTION__, ii, filename );
+					}
+#else
+					// For example, Windows doesn't have fmemopen()
+					// Fallback to extracting contents to temporary files and then reread back in
+					// Not so efficient but should be reliable enough
+					gchar *tmp_name = util_write_tmp_file_from_bytes ( buffer, zs.size );
+					current_ans = a_file_load ( top, vp, vtl, tmp_name, new_layer, external, zs.name );
+					(void)util_remove ( tmp_name );
+#endif
+					ans = figure_out_answer ( current_ans, ans, ii, entries );
+				}
+				else {
+					g_warning ( "%s: Unable to read index: %d in '%s', got %d, wanted %ld", __FUNCTION__, ii, filename, len, zs.size );
+				}
+			}
+			else {
+				g_warning ( "%s: Unable to open index: %d in '%s'", __FUNCTION__, ii, filename );
+			}
+		}
+		else {
+			g_warning ( "%s: Unable to stat index: %d in '%s'", __FUNCTION__, ii, filename );
+		}
+	}
+	zip_discard ( archive );
+
+#endif
+ cleanup:
+	return ans;
+}
 
 #ifdef HAVE_LIBZ
 /* return size of unzip data or 0 if failed */

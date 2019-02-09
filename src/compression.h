@@ -25,12 +25,29 @@
 
 #include <glib.h>
 
+#include "vikaggregatelayer.h"
+#include "vikviewport.h"
+#include "file.h"
+
 G_BEGIN_DECLS
 
 void *unzip_file(gchar *zip_file, gulong *unzip_size);
 
 gchar* uncompress_bzip2 ( const gchar *name );
 
+VikLoadType_t uncompress_load_zip_file ( const gchar *filename,
+                                         VikAggregateLayer *top,
+                                         VikViewport *vp,
+                                         VikTrwLayer *vtl,
+                                         gboolean new_layer,
+                                         gboolean external,
+                                         const gchar *dirpath );
+                                          VikAggregateLayer *top,
+                                          VikViewport *vp,
+                                          VikTrwLayer *vtl,
+                                          gboolean new_layer,
+                                          gboolean external,
+                                          const gchar *dirpath );
 G_END_DECLS
 
 #endif

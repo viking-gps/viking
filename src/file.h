@@ -23,6 +23,7 @@
 #ifndef _VIKING_FILE_H
 #define _VIKING_FILE_H
 
+#include <stdio.h>
 #include <glib.h>
 
 #include "vikaggregatelayer.h"
@@ -58,7 +59,24 @@ typedef enum {
 
 gchar *append_file_ext ( const gchar *filename, VikFileType_t type );
 
-VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer *vtl, const gchar *filename, gboolean new_layer, gboolean external );
+VikLoadType_t a_file_load_stream ( FILE *f,
+                                   const gchar *filename,
+                                   VikAggregateLayer *top,
+                                   VikViewport *vp,
+                                   VikTrwLayer *vtl,
+                                   gboolean new_layer,
+                                   gboolean external,
+                                   const gchar *dirpath,
+                                   const gchar *name );
+
+VikLoadType_t a_file_load ( VikAggregateLayer *top,
+                            VikViewport *vp,
+                            VikTrwLayer *vtl,
+                            const gchar *filename_or_uri,
+                            gboolean new_layer,
+                            gboolean external,
+                            const gchar *name );
+
 gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filename );
 /* Only need to define VikTrack if the file type is FILE_TYPE_GPX_TRACK */
 gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t file_type, VikTrack *trk, gboolean write_hidden );

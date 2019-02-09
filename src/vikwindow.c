@@ -3576,7 +3576,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
     }
   }
 
-  vw->loaded_type = a_file_load ( agg, vw->viking_vvp, vw->containing_vtl, filename, new_layer, external );
+  vw->loaded_type = a_file_load ( agg, vw->viking_vvp, vw->containing_vtl, filename, new_layer, external, NULL );
   switch ( vw->loaded_type )
   {
     case LOAD_TYPE_READ_FAILURE:

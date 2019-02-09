@@ -31,10 +31,11 @@
 #include "geojson.h"
 #include "babel.h"
 #include "gpsmapper.h"
+#include "compression.h"
+#include "file_magic.h"
 
 #include <string.h>
 #include <stdlib.h>
-#include <stdio.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -663,33 +664,20 @@ gchar *append_file_ext ( const gchar *filename, VikFileType_t type )
 }
 
 /**
- * a_file_load:
+ * a_file_load_stream:
  *
  */
-VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer *vtl, const gchar *filename_or_uri, gboolean new_layer, gboolean external )
+VikLoadType_t a_file_load_stream ( FILE *f,
+                                   const gchar *filename,
+                                   VikAggregateLayer *top,
+                                   VikViewport *vp,
+                                   VikTrwLayer *vtl,
+                                   gboolean new_layer,
+                                   gboolean external,
+                                   const gchar *dirpath,
+                                   const gchar *name )
 {
-  g_return_val_if_fail ( vp != NULL, LOAD_TYPE_READ_FAILURE );
-
-  char *filename = (char *)filename_or_uri;
-  if (strncmp(filename, "file://", 7) == 0) {
-    // Consider replacing this with:
-    // filename = g_filename_from_uri ( entry, NULL, NULL );
-    // Since this doesn't support URIs properly (i.e. will failure if is it has %20 characters in it)
-    filename = filename + 7;
-    g_debug ( "Loading file %s from URI %s", filename, filename_or_uri );
-  }
-  FILE *f = xfopen ( filename );
-
-  if ( ! f )
-    return LOAD_TYPE_READ_FAILURE;
-
   VikLoadType_t load_answer = LOAD_TYPE_OTHER_SUCCESS;
-
-  gchar *absolute = file_realpath_dup ( filename );
-  gchar *dirpath = NULL;
-  if ( absolute )
-    dirpath = g_path_get_dirname ( absolute );
-  g_free ( absolute );
 
   // Attempt loading the primary file type first - our internal .vik file:
   if ( check_magic ( f, VIK_MAGIC, VIK_MAGIC_LEN ) )
@@ -698,6 +686,9 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer
       load_answer = LOAD_TYPE_VIK_SUCCESS;
     else
       load_answer = LOAD_TYPE_VIK_FAILURE_NON_FATAL;
+  }
+  else if ( file_magic_check ( filename, "application/zip", ".zip" ) ) {
+    load_answer = uncompress_load_zip_file ( filename, top, vp, vtl, new_layer, external, dirpath );
   }
   else if ( a_jpg_magic_check ( filename ) ) {
     if ( ! a_jpg_load_file ( top, filename, vp ) )
@@ -728,13 +719,13 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer
 
     if (add_new) {
       vtl = VIK_TRW_LAYER (vik_layer_create ( VIK_LAYER_TRW, vp, FALSE ));
-      vik_layer_rename ( VIK_LAYER(vtl), a_file_basename ( filename ) );
+      vik_layer_rename ( VIK_LAYER(vtl), name ? name : a_file_basename ( filename ) );
     }
 
     // In fact both kml & gpx files start the same as they are in xml
     if ( a_file_check_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
       // Implicit Conversion
-      ProcessOptions po = { "-i kml", filename, NULL, NULL, NULL, NULL };
+      ProcessOptions po = { "-i kml", (gchar*)filename, NULL, NULL, NULL, NULL };
       if ( ! ( success = a_babel_convert_from ( vtl, &po, NULL, NULL, NULL ) ) ) {
         load_answer = LOAD_TYPE_GPSBABEL_FAILURE;
       }
@@ -776,6 +767,44 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top, VikViewport *vp, VikTrwLayer
       vik_trw_layer_auto_set_view ( vtl, vp );
     }
   }
+  return load_answer;
+}
+
+/**
+ * a_file_load:
+ *
+ */
+VikLoadType_t a_file_load ( VikAggregateLayer *top,
+                            VikViewport *vp,
+                            VikTrwLayer *vtl,
+                            const gchar *filename_or_uri,
+                            gboolean new_layer,
+                            gboolean external,
+                            const gchar *name )
+{
+  g_return_val_if_fail ( vp != NULL, LOAD_TYPE_READ_FAILURE );
+
+  char *filename = (char *)filename_or_uri;
+  if (strncmp(filename, "file://", 7) == 0) {
+    // Consider replacing this with:
+    // filename = g_filename_from_uri ( entry, NULL, NULL );
+    // Since this doesn't support URIs properly (i.e. will failure if is it has %20 characters in it)
+    filename = filename + 7;
+    g_debug ( "Loading file %s from URI %s", filename, filename_or_uri );
+  }
+  FILE *f = xfopen ( filename );
+
+  if ( ! f )
+    return LOAD_TYPE_READ_FAILURE;
+
+  gchar *absolute = file_realpath_dup ( filename );
+  gchar *dirpath = NULL;
+  if ( absolute )
+    dirpath = g_path_get_dirname ( absolute );
+  g_free ( absolute );
+
+  VikLoadType_t load_answer = a_file_load_stream ( f, filename, top, vp, vtl, new_layer, external, dirpath, name );
+
   g_free ( dirpath );
   xfclose(f);
   return load_answer;
