@@ -62,9 +62,9 @@ gboolean file_magic_check ( const gchar *filename, const gchar *magic_string, co
 		if ( ml == 0 ) {
 			const char* magic = magic_file ( myt, filename );
 			g_debug ("%s: magic output: %s", __FUNCTION__, magic );
-
-			if ( g_ascii_strncasecmp ( magic, magic_string, strlen(magic_string) ) == 0 )
-				is_requested_file_type = TRUE;
+			if ( magic )
+				if ( g_ascii_strncasecmp ( magic, magic_string, strlen(magic_string) ) == 0 )
+					is_requested_file_type = TRUE;
 		}
 		else {
 			g_critical ("%s: magic load database failure", __FUNCTION__ );
