@@ -194,8 +194,7 @@ vik_treeview_tooltip_cb (GtkWidget  *widget,
   GtkTreeView *tree_view = GTK_TREE_VIEW (widget);
   GtkTreeModel *model = gtk_tree_view_get_model (tree_view);
   GtkTreePath *path = NULL;
-
-  char buffer[256];
+  const gchar *tiptext = NULL;
 
   if (!gtk_tree_view_get_tooltip_context (tree_view, &x, &y,
 					  keyboard_tip,
@@ -215,12 +214,12 @@ vik_treeview_tooltip_cb (GtkWidget  *widget,
     gpointer parent;
     gtk_tree_model_get (model, &iter, ITEM_PARENT_COLUMN, &parent, -1);
 
-    g_snprintf (buffer, sizeof(buffer), "%s", vik_layer_sublayer_tooltip (VIK_LAYER(parent), rv, sublayer));
+    tiptext = vik_layer_sublayer_tooltip (VIK_LAYER(parent), rv, sublayer);
   }
   else if ( rv == VIK_TREEVIEW_TYPE_LAYER ) {
     gpointer layer;
     gtk_tree_model_get (model, &iter, ITEM_POINTER_COLUMN, &layer, -1);
-    g_snprintf (buffer, sizeof(buffer), "%s", vik_layer_layer_tooltip (VIK_LAYER(layer)));
+    tiptext = vik_layer_layer_tooltip (VIK_LAYER(layer));
   }
   else {
     gtk_tree_path_free (path);
@@ -228,7 +227,7 @@ vik_treeview_tooltip_cb (GtkWidget  *widget,
   }
 
   // Don't display null strings :)
-  if ( strncmp (buffer, "(null)", 6) == 0 ) {
+  if ( !tiptext ) {
     gtk_tree_path_free (path);
     return FALSE;
   }
@@ -236,7 +235,7 @@ vik_treeview_tooltip_cb (GtkWidget  *widget,
     // No point in using (Pango) markup verson - gtk_tooltip_set_markup()
     //  especially as waypoint comments may well contain HTML markup which confuses the pango markup parser
     // This plain text is probably faster too.
-    gtk_tooltip_set_text (tooltip, buffer);
+    gtk_tooltip_set_text (tooltip, tiptext);
   }
 
   gtk_tree_view_set_tooltip_row (tree_view, tooltip, path);
