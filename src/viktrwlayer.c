@@ -9108,7 +9108,7 @@ static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean b
     if (tp_current->course != NAN && tp_other->course != NAN)
       tp_new->course = (tp_current->course + tp_other->course)/2;
 
-    /* DOP / sat values remain at defaults as not they do not seem applicable to a dreamt up point */
+    /* DOP / sat values remain at defaults as they do not seem applicable to a dreamt up point */
 
     // Insert new point into the appropriate trackpoint list, either before or after the current trackpoint as directed
     VikTrack *trk = g_hash_table_lookup ( vtl->tracks, vtl->current_tp_id );
