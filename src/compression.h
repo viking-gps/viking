@@ -42,12 +42,13 @@ VikLoadType_t uncompress_load_zip_file ( const gchar *filename,
                                          gboolean new_layer,
                                          gboolean external,
                                          const gchar *dirpath );
+
+VikLoadType_t uncompress_load_bzip_file ( const gchar *filename,
                                           VikAggregateLayer *top,
                                           VikViewport *vp,
                                           VikTrwLayer *vtl,
                                           gboolean new_layer,
-                                          gboolean external,
-                                          const gchar *dirpath );
+                                          gboolean external );
 G_END_DECLS
 
 #endif

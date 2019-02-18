@@ -349,3 +349,16 @@ gchar* uncompress_bzip2 ( const gchar *name )
 	return NULL;
 #endif
 }
+
+VikLoadType_t uncompress_load_bzip_file ( const gchar *filename,
+                                          VikAggregateLayer *top,
+                                          VikViewport *vp,
+                                          VikTrwLayer *vtl,
+                                          gboolean new_layer,
+                                          gboolean external )
+{
+	gchar *tmp_name = uncompress_bzip2 ( filename );
+	VikLoadType_t ans = a_file_load ( top, vp, vtl, tmp_name, new_layer, external, filename );
+	(void)util_remove ( tmp_name );
+	return ans;
+}

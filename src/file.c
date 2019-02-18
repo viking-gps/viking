@@ -690,6 +690,9 @@ VikLoadType_t a_file_load_stream ( FILE *f,
   else if ( file_magic_check ( filename, "application/zip", ".zip" ) ) {
     load_answer = uncompress_load_zip_file ( filename, top, vp, vtl, new_layer, external, dirpath );
   }
+  else if ( file_magic_check ( filename, "application/x-bzip2", ".bz2" ) ) {
+    load_answer = uncompress_load_bzip_file ( filename, top, vp, vtl, new_layer, external );
+  }
   else if ( a_jpg_magic_check ( filename ) ) {
     if ( ! a_jpg_load_file ( top, filename, vp ) )
       load_answer = LOAD_TYPE_UNSUPPORTED_FAILURE;
