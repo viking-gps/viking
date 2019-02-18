@@ -370,7 +370,7 @@ static void trw_layer_waypoint_webpage ( menu_array_sublayer values );
 static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer pass_along[5] );
 static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pass_along[5] );
 
-static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean );
+static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean before, gboolean is_route );
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
 static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response );
 static void trw_layer_tpwin_init ( VikTrwLayer *vtl );
@@ -6910,7 +6910,7 @@ static void trw_layer_insert_point_after ( menu_array_sublayer values )
   if ( ! track )
     return;
 
-  trw_layer_insert_tp_beside_current_tp ( vtl, FALSE );
+  trw_layer_insert_tp_beside_current_tp ( vtl, FALSE, GPOINTER_TO_INT(values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE );
 
   vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
@@ -6927,7 +6927,7 @@ static void trw_layer_insert_point_before ( menu_array_sublayer values )
   if ( ! track )
     return;
 
-  trw_layer_insert_tp_beside_current_tp ( vtl, TRUE );
+  trw_layer_insert_tp_beside_current_tp ( vtl, TRUE, GPOINTER_TO_INT(values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE );
 
   vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
@@ -9057,8 +9057,10 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
   return rv;
 }
 
-// TODO: Probably better to rework this track manipulation in viktrack.c
-static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean before )
+/**
+ *
+ */
+static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean before, gboolean is_route )
 {
   // sanity check
   if (!vtl->current_tpl)
@@ -9110,11 +9112,13 @@ static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean b
 
     /* DOP / sat values remain at defaults as they do not seem applicable to a dreamt up point */
 
-    // Insert new point into the appropriate trackpoint list, either before or after the current trackpoint as directed
-    VikTrack *trk = g_hash_table_lookup ( vtl->tracks, vtl->current_tp_id );
-    if ( !trk )
-      // Otherwise try routes
+    // Insert new point into the appropriate trackpoint list, either before or after the current trackpoint as directed   
+    VikTrack *trk;
+    if ( is_route )
       trk = g_hash_table_lookup ( vtl->routes, vtl->current_tp_id );
+    else
+      trk = g_hash_table_lookup ( vtl->tracks, vtl->current_tp_id );
+
     if ( !trk )
       return;
 
@@ -9207,7 +9211,9 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_INSERT && vtl->current_tpl->next )
   {
-    trw_layer_insert_tp_beside_current_tp ( vtl, FALSE );
+    if ( vtl->current_tp_track ) {
+      trw_layer_insert_tp_beside_current_tp ( vtl, FALSE, vtl->current_tp_track->is_route );
+    }
     vik_layer_emit_update(VIK_LAYER(vtl));
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_DATA_CHANGED )
