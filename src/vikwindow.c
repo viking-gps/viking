@@ -1160,6 +1160,14 @@ static gboolean key_release_event( VikWindow *vw, GdkEventKey *event, gpointer d
     if ( handled )
       return TRUE;
   }
+  // Ensure called on window tools
+  if ( vw->current_tool < TOOL_LAYER ) {
+    if ( vw->vt->tools[vw->vt->active_tool].ti.key_release ) {
+      handled = vw->vt->tools[vw->vt->active_tool].ti.key_release ( vl, event, vw->vt->tools[vw->vt->active_tool].state );
+    if ( handled )
+      return TRUE;
+    }
+  }
   return FALSE;
 }
 
@@ -2475,7 +2483,7 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
       /* Act on currently selected item to show menu */
       if ( t->vw->selected_track || t->vw->selected_waypoint )
 	if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
-	  (void)vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, event, t->vw->viking_vvp );
+	  (void)vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, event->button, t->vw->viking_vvp );
   }
 
   return VIK_LAYER_TOOL_ACK;
@@ -2519,6 +2527,18 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
   return VIK_LAYER_TOOL_ACK;
 }
 
+static gboolean selecttool_key_release (VikLayer *vl, GdkEventKey *event, tool_ed_t *t)
+{
+  if ( (event->keyval == GDK_Menu) && (vl && (vl->type == VIK_LAYER_TRW)) ) {
+    if ( vl->visible )
+      /* Act on currently selected item to show menu */
+      if ( t->vw->selected_track || t->vw->selected_waypoint )
+        if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
+          return vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, 0, t->vw->viking_vvp );
+  }
+  return FALSE;
+}
+
 static VikToolInterface select_tool =
   { &select_18_pixbuf,
     { "Select", "vik-icon-select", N_("_Select"), "<control><shift>S", N_("Select Tool"), TOOL_SELECT },
@@ -2530,7 +2550,7 @@ static VikToolInterface select_tool =
     (VikToolMouseMoveFunc) selecttool_move,
     (VikToolMouseFunc) selecttool_release,
     (VikToolKeyFunc) NULL,
-    (VikToolKeyFunc) NULL,
+    (VikToolKeyFunc) selecttool_key_release,
     FALSE,
     GDK_LEFT_PTR,
     NULL,
