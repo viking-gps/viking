@@ -1239,6 +1239,21 @@ The following colors are used in the elevation-distance graph:
 </varlistentry>
 </variablelist>
 </section>
+
+<section id='track_time_splits' xreflabel="Track Time Splits"><title>Track Time Splits</title>
+<para>
+<figure>
+<title>Splits Tab: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Track_time_splits.png"/>
+</screenshot>
+</figure>
+</para>
+<para>
+This tab displays timing splits on tracks with timing information.
+A few different values of split lengths are available, each having it's own tab display.
+</para>
+</section>
 </section>
 
 <section><title>Track and Route Operations</title>

@@ -46,6 +46,7 @@ DOC_FIGURES = \
     figures/Track_elevation_graph.png \
     figures/Track_properties.png \
     figures/Track_statistics.png \
+    figures/Track_time_splits.png \
     figures/trw_statusbar.png \
     figures/vik_new_route_18.png \
     figures/WaypointsList.png \

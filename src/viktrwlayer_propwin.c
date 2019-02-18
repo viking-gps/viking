@@ -3151,6 +3151,162 @@ static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[])
   return GTK_WIDGET (table);
 }
 
+static GtkWidget* split_header_cell ( gchar *text )
+{
+  GtkWidget *hd = gtk_label_new ( NULL );
+  gchar *str = g_strdup_printf ("<b>%s</b>", text);
+  gtk_label_set_markup ( GTK_LABEL(hd), str );
+  g_free ( str );
+  return hd;
+}
+
+static void add_split_header_row ( GtkTable *table, gchar *s1, gchar *s2, gchar *s3, gchar *s4, guint row )
+{
+  GtkWidget *hd1 = split_header_cell ( s1 );
+  GtkWidget *hd2 = split_header_cell ( s2 );
+  GtkWidget *hd3 = split_header_cell ( s3 );
+  GtkWidget *hd4 = split_header_cell ( s4 );
+  gtk_table_attach ( table, hd1, 0, 1, row, row+1, GTK_FILL, GTK_SHRINK, 10, 3 );
+  gtk_table_attach ( table, hd2, 1, 2, row, row+1, GTK_FILL, GTK_SHRINK, 10, 3 );
+  gtk_table_attach ( table, hd3, 2, 3, row, row+1, GTK_FILL, GTK_SHRINK, 10, 3 );
+  gtk_table_attach ( table, hd4, 3, 4, row, row+1, GTK_FILL, GTK_SHRINK, 10, 3 );
+}
+
+static GtkTable *create_a_split_table ( VikTrack *trk, guint split_factor )
+{
+  vik_units_distance_t dist_units = a_vik_get_units_distance ();
+  gdouble split_length;
+  switch ( dist_units ) {
+  case VIK_UNITS_DISTANCE_MILES:
+    split_length = VIK_MILES_TO_METERS(split_factor); break;
+  case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+    split_length = VIK_NAUTICAL_MILES_TO_METERS(split_factor); break;
+  default: // VIK_UNITS_DISTANCE_KILOMETRES
+    split_length = split_factor * 1000.0; break;
+  }
+
+  vik_units_height_t height_units = a_vik_get_units_height ();
+  vik_units_speed_t speed_units = a_vik_get_units_speed ();
+
+  GArray *ga = vik_track_speed_splits ( trk, split_length );
+  GtkTable *table = GTK_TABLE(gtk_table_new (ga->len, 4, FALSE));
+  gtk_table_set_col_spacings ( table, 0 );
+
+  // Table headers
+  add_split_header_row ( table, _("Distance"), _("Time"), _("Speed"), _("Gain / Loss"), 0 );
+  gchar *hght_str = NULL;
+  if ( height_units == VIK_UNITS_HEIGHT_METRES )
+    hght_str = _("m");
+  else
+    hght_str = _("ft");
+
+  gchar *dist_str = NULL;
+  switch ( dist_units ) {
+  case VIK_UNITS_DISTANCE_MILES:          dist_str = _("miles"); break;
+  case VIK_UNITS_DISTANCE_NAUTICAL_MILES: dist_str = _("NM"); break;
+    // VIK_UNITS_DISTANCE_KILOMETRES
+  default:                                dist_str = _("km"); break;
+  }
+  // ATM speed value contains the units, so no need in the header
+  add_split_header_row ( table, dist_str, "", "", hght_str, 1 );
+
+  gchar tmp_buf[50];
+  for ( guint gg = 0; gg < ga->len; gg++ ) {
+    VikTrackSpeedSplits_t vtss = g_array_index ( ga, VikTrackSpeedSplits_t, gg );
+
+    gdouble length;
+    switch (dist_units) {
+    case VIK_UNITS_DISTANCE_MILES:
+      length = VIK_METERS_TO_MILES(vtss.length); break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      length = VIK_METERS_TO_NAUTICAL_MILES(vtss.length); break;
+    default: // VIK_UNITS_DISTANCE_KILOMETRES:
+      length = vtss.length/1000.0; break;
+    }
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f", length);
+    GtkWidget *label1 = ui_label_new_selectable ( tmp_buf );
+    gtk_misc_set_alignment ( GTK_MISC(label1), 1, 0.5 );
+
+    gint minutes, seconds;
+    minutes = vtss.time / 60;
+    seconds = vtss.time % 60;
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%d:%02d", minutes, seconds );
+    GtkWidget *label2 = ui_label_new_selectable ( tmp_buf );
+    gtk_misc_set_alignment ( GTK_MISC(label2), 1, 0.5 );
+
+    if ( trk->is_route )
+      g_snprintf(tmp_buf, sizeof(tmp_buf), "--" );
+    else
+      vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, vtss.speed, TRUE, "%.1f" );
+    GtkWidget *label3 = ui_label_new_selectable ( tmp_buf );
+    gtk_misc_set_alignment ( GTK_MISC(label3), 1, 0.5 );
+
+    gdouble up, down;
+    switch (height_units) {
+    case VIK_UNITS_HEIGHT_FEET:
+      up = VIK_METERS_TO_FEET(vtss.elev_up);
+      down = VIK_METERS_TO_FEET(vtss.elev_down);
+      break;
+    default: // VIK_UNITS_HEIGHT_METRES:
+      // No conversion needed
+      up = vtss.elev_up;
+      down = vtss.elev_down;
+      break;
+    }
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f / %.0f", up, down );
+    GtkWidget *label4 = ui_label_new_selectable ( tmp_buf );
+
+    gtk_table_attach ( table, label1, 0, 1, gg+2, gg+3, GTK_FILL, GTK_SHRINK, 10, 3 );
+    gtk_table_attach ( table, label2, 1, 2, gg+2, gg+3, GTK_FILL, GTK_SHRINK, 10, 3 );
+    gtk_table_attach ( table, label3, 2, 3, gg+2, gg+3, GTK_FILL, GTK_SHRINK, 10, 3 );
+    gtk_table_attach ( table, label4, 3, 4, gg+2, gg+3, GTK_FILL, GTK_SHRINK, 10, 3 );
+  }
+
+  (void)g_array_free ( ga, TRUE );
+
+  return table;
+}
+
+static void add_table_to_hbox ( GtkWidget *hbox, GtkTable *table )
+{
+  GtkWidget *scrolledwindow = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
+  gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_WIDGET(table) );
+  gtk_box_pack_start (GTK_BOX(hbox), GTK_WIDGET(scrolledwindow), FALSE, FALSE, 4);
+}
+
+static GtkWidget *create_splits_tables ( VikTrack *trk )
+{
+  // Standard distance splits (in whatever the preferred distance units are)
+  int index[3] = {1, 5, 10};
+  // When very long tracks use bigger split distances
+  gdouble len = vik_track_get_length(trk);
+  // > 1000 KM ?
+  if ( len > 1000000 ) {
+    index[0] = 25;
+    index[1] = 50;
+    index[2] = 50;
+  } // > 100 KM ?
+  else if ( len > 100000 ) {
+    index[0] = 5;
+    index[1] = 10;
+    index[2] = 25;
+  }
+
+  // Create the tables and stick in tabs
+  GtkWidget *tabs = gtk_notebook_new();
+  for ( int i = 0; i < G_N_ELEMENTS(index); i++ ) {
+    GtkTable *table = create_a_split_table ( trk, index[i] );
+    GtkWidget *hbox = gtk_hbox_new (TRUE, 2);
+    add_table_to_hbox ( hbox, table );
+    gchar *str = g_strdup_printf (_("Split %d"), index[i]);
+    gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), GTK_WIDGET(hbox), gtk_label_new(str) );
+    g_free ( str );
+  }
+
+  return tabs;
+}
+
 void vik_trw_layer_propwin_run ( GtkWindow *parent,
                                  VikTrwLayer *vtl,
                                  VikTrack *tr,
@@ -3467,6 +3623,10 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   table = create_table (cnt, stats_texts, content);
 
   gtk_notebook_append_page(GTK_NOTEBOOK(graphs), GTK_WIDGET(table), gtk_label_new(_("Statistics")));
+
+  // TODO: One day might be nice to have bar chart equivalent of the simple table values.
+  // Consider if this could be optional
+  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_splits_tables(tr), gtk_label_new(_("Splits")));
 
   if ( widgets->elev_box ) {
     GtkWidget *page = NULL;

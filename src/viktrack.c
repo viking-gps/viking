@@ -2007,3 +2007,141 @@ int vik_track_compare_timestamp (const void *x, const void *y)
 
   return strcmp ( a->name, b->name );
 }
+
+/**
+ * Scale is the relative distance between trackpoints (0..1)
+ * ATM calculate position, altitude and time
+ *  i.e. not bothered with course and speed etc...
+ */
+static void vik_trackpoint_interpolate ( const VikTrackpoint *tp1, const VikTrackpoint *tp2, gdouble scale, VikTrackpoint *tp )
+{
+  struct LatLon ll, ll1, ll2;
+  vik_coord_to_latlon ( &(tp1->coord), &ll1 );
+  vik_coord_to_latlon ( &(tp2->coord), &ll2 );
+  ll.lat = ll1.lat + ((ll2.lat - ll1.lat) * scale);
+  // NB This won't cope with going over the 180 degrees longitude boundary
+  ll.lon = ll1.lon + ((ll2.lon - ll1.lon) * scale);
+
+  vik_coord_load_from_latlon ( &tp->coord, tp1->coord.mode, &ll );
+
+  if ( !isnan(tp2->altitude) ) {
+    if ( !isnan(tp1->altitude) ) {
+      tp->altitude = tp1->altitude + ((tp2->altitude - tp1->altitude) * scale);
+    } else {
+      tp->altitude = tp2->altitude;
+    }
+  } else {
+    if ( !isnan(tp1->altitude) ) {
+      tp->altitude = tp1->altitude;
+    } else {
+      tp->altitude = NAN;
+    }
+  }
+
+  if ( !isnan(tp1->timestamp) && !isnan(tp2->timestamp) ) {
+    tp->timestamp = tp1->timestamp + ((tp2->timestamp - tp1->timestamp) * scale);
+  } else {
+    tp->timestamp = NAN;
+  }
+}
+
+/**
+ * vik_track_speed_splits:
+ * Free the returned contents of the array & the array itself after use
+ */
+GArray *vik_track_speed_splits (const VikTrack *tr, gdouble split_length )
+{
+  GArray *ga = g_array_new ( FALSE, FALSE, sizeof(VikTrackSpeedSplits_t) );
+
+  if ( !tr->trackpoints ) {
+    return ga;
+  }
+
+  VikTrackpoint *vtp = vik_trackpoint_new(); // 'Virtual' trackpoint
+
+  gdouble len = 0.0;
+  gdouble time = 0;
+  gdouble up = 0.0, down = 0.0;
+
+  GList *iter = tr->trackpoints->next;
+  while (iter) {
+    VikTrackpoint *tp1 = VIK_TRACKPOINT(iter->data);
+    VikTrackpoint *tp2 = VIK_TRACKPOINT(iter->prev->data);
+    if ( !isnan(tp1->timestamp) &&
+         !isnan(tp2->timestamp) &&
+         !tp1->newsegment ) {
+
+      gdouble diff;
+      len += vik_coord_diff ( &(tp2->coord), &(tp1->coord) );
+      time += ABS(tp2->timestamp - tp1->timestamp);
+
+      if ( !isnan(tp1->altitude) && !isnan(tp2->altitude) ) {
+        diff = tp2->altitude - tp1->altitude;
+        if ( diff > 0 )
+          up += diff;
+        else
+          down -= diff;
+      }
+
+      if ( len > split_length ) {
+        // Create split info
+        // Normally distance between crossover points is very small compared to the split length
+        // Which is typically for tracks recorded every second or two.
+        // However to cater for trackpoints seperated in both large time & distance gaps,
+        //  need to interpolate back to the split point to get proper split metrics
+
+        // This bit assumes individual distances between track points won't ever be bigger than the split distances
+        gdouble tmp_len = vik_coord_diff ( &(tp1->coord), &tp2->coord);
+        gdouble over_dist = len - split_length;
+        // Ratio of the distance to the virtual split point, compared to point that is over the split point
+        gdouble scale = (split_length - (len - tmp_len)) / tmp_len;
+
+        vik_trackpoint_interpolate ( tp2, tp1, scale, vtp );
+
+        VikTrackSpeedSplits_t vtss;
+        // Remove the extra bit added by going over distance
+        vtss.length = vtss.length + len - over_dist;
+        vtss.time = time - (tp1->timestamp - vtp->timestamp);
+        vtss.speed = ABS((len-over_dist)/vtss.time);
+        // Elevation change is only applied to one of them
+        gdouble alt_diff = 0.0;
+        if ( !isnan(vtp->altitude) && !isnan(tp1->altitude) ) {
+          alt_diff = tp1->altitude - vtp->altitude;
+        }
+        if ( alt_diff > 0 ) {
+          vtss.elev_up = up - alt_diff;
+          vtss.elev_down = down;
+        } else {
+          vtss.elev_up = up;
+          vtss.elev_down = down - fabs ( alt_diff );
+        }
+        g_array_append_val ( ga, vtss );
+
+        // Reset: starting from the virtual trackpoint
+        if ( alt_diff > 0 ) {
+          up = alt_diff;
+          down = 0.0;
+        } else {
+          up = 0.0;
+          down = fabs ( alt_diff );
+        }
+        len = over_dist;
+        time = ABS(tp1->timestamp - vtp->timestamp);
+      }
+    }
+    iter = iter->next;
+  }
+
+  // Values for trackpoints in the final segment
+  // Stick in whatever is left.
+  VikTrackSpeedSplits_t vtss;
+  vtss.length = len;
+  vtss.time = time;
+  vtss.speed = time ? ABS(len/time) : 0;
+  vtss.elev_up = up;
+  vtss.elev_down = down;
+  g_array_append_val ( ga, vtss );
+
+  vik_trackpoint_free ( vtp );
+  return ga;
+}

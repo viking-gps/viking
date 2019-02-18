@@ -27,6 +27,7 @@
 
 #include "vikcoord.h"
 #include "bbox.h"
+#include "globals.h"
 
 G_BEGIN_DECLS
 
@@ -91,6 +92,14 @@ struct _VikTrack {
   GdkColor color;
   LatLonBBox bbox;
 };
+
+typedef struct {
+  gdouble length; // Metres
+  guint time;     // Seconds
+  gdouble speed;  // Average - m/s
+  gdouble elev_up;   // Gain in elevation: Metres
+  gdouble elev_down; // Loss in elevation: Metres
+} VikTrackSpeedSplits_t;
 
 VikTrack *vik_track_new();
 void vik_track_set_defaults(VikTrack *tr);
@@ -169,6 +178,9 @@ int vik_track_compare_timestamp (const void *x, const void *y);
 
 void vik_track_set_property_dialog(VikTrack *tr, GtkWidget *dialog);
 void vik_track_clear_property_dialog(VikTrack *tr);
+
+// Array of VikTrackSpeedSplits_t
+GArray *vik_track_speed_splits (const VikTrack *tr, gdouble split_length );
 
 G_END_DECLS
 
