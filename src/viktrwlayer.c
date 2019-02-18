@@ -295,6 +295,8 @@ static void trw_layer_goto_track_max_alt ( menu_array_sublayer values );
 static void trw_layer_goto_track_min_alt ( menu_array_sublayer values );
 static void trw_layer_goto_track_center ( menu_array_sublayer values );
 static void trw_layer_goto_track_date ( menu_array_sublayer values );
+static void trw_layer_goto_track_prev_point ( menu_array_sublayer values );
+static void trw_layer_goto_track_next_point ( menu_array_sublayer values );
 static void trw_layer_merge_by_segment ( menu_array_sublayer values );
 static void trw_layer_merge_by_timestamp ( menu_array_sublayer values );
 static void trw_layer_merge_with_other ( menu_array_sublayer values );
@@ -5361,6 +5363,40 @@ static void trw_layer_goto_track_date ( menu_array_sublayer values )
   }
 }
 
+static void my_tpwin_set_tp ( VikTrwLayer *vtl );
+
+static void trw_layer_goto_track_prev_point ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  if ( !vtl->current_tpl )
+    return;
+  if ( !vtl->current_tpl->prev )
+    return;
+
+  if ( vtl->current_tp_track ) {
+    vtl->current_tpl = vtl->current_tpl->prev;
+    if ( vtl->tpwin )
+      my_tpwin_set_tp ( vtl );
+  }
+  vik_layer_emit_update(VIK_LAYER(vtl));
+}
+
+static void trw_layer_goto_track_next_point ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  if ( !vtl->current_tpl )
+    return;
+  if ( !vtl->current_tpl->next )
+    return;
+
+  if ( vtl->current_tp_track ) {
+    vtl->current_tpl = vtl->current_tpl->next;
+    if ( vtl->tpwin )
+      my_tpwin_set_tp ( vtl );
+  }
+  vik_layer_emit_update(VIK_LAYER(vtl));
+}
+
 static void trw_layer_convert_track_route ( menu_array_sublayer values )
 {
   VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
@@ -8224,6 +8260,9 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
       (void)vu_menu_add_item ( goto_submenu, _("_Maximum Speed"), GTK_STOCK_MEDIA_FORWARD, G_CALLBACK(trw_layer_goto_track_max_speed), data );
       (void)vu_menu_add_item ( goto_submenu, _("_Date"), GTK_STOCK_JUMP_TO, G_CALLBACK(trw_layer_goto_track_date), data );
     }
+
+    (void)vu_menu_add_item ( goto_submenu, _("_Previous point"), GTK_STOCK_GO_BACK, G_CALLBACK(trw_layer_goto_track_prev_point), data );
+    (void)vu_menu_add_item ( goto_submenu, _("_Next point"), GTK_STOCK_GO_FORWARD, G_CALLBACK(trw_layer_goto_track_next_point), data );
 
     GtkMenu *combine_submenu = GTK_MENU(gtk_menu_new());
     GtkWidget *itemcomb = vu_menu_add_item ( menu, _("Co_mbine"), GTK_STOCK_CONNECT, NULL, NULL );
