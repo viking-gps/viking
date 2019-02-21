@@ -98,7 +98,6 @@ static void draw_update ( VikWindow *vw );
 static void newwindow_cb ( GtkAction *a, VikWindow *vw );
 
 // Signals
-static void open_window ( VikWindow *vw, GSList *files );
 static void destroy_window ( GtkWidget *widget,
                              gpointer   data );
 
@@ -246,9 +245,10 @@ enum {
  NUMBER_OF_TOOLS
 };
 
+// Unclear what the point of using signals are,
+// Since we don't use any features of signalling
 enum {
   VW_NEWWINDOW_SIGNAL,
-  VW_OPENWINDOW_SIGNAL,
   VW_LAST_SIGNAL
 };
 
@@ -372,8 +372,6 @@ VikWindow *vik_window_new_window ()
 		      G_CALLBACK (destroy_window), NULL);
     g_signal_connect (G_OBJECT (vw), "newwindow",
 		      G_CALLBACK (vik_window_new_window), NULL);
-    g_signal_connect (G_OBJECT (vw), "openwindow",
-		      G_CALLBACK (open_window), NULL);
 
     gtk_widget_show_all ( GTK_WIDGET(vw) );
 
@@ -641,7 +639,6 @@ static void vik_window_class_init ( VikWindowClass *klass )
   GObjectClass *object_class;
 
   window_signals[VW_NEWWINDOW_SIGNAL] = g_signal_new ( "newwindow", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, newwindow), NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
-  window_signals[VW_OPENWINDOW_SIGNAL] = g_signal_new ( "openwindow", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikWindowClass, openwindow), NULL, NULL, g_cclosure_marshal_VOID__POINTER, G_TYPE_NONE, 1, G_TYPE_POINTER);
 
   object_class = G_OBJECT_CLASS (klass);
 
@@ -780,8 +777,8 @@ static void drag_data_received_cb ( GtkWidget *widget,
       }
 
       if ( filenames )
-        g_signal_emit ( G_OBJECT(VIK_WINDOW_FROM_WIDGET(widget)), window_signals[VW_OPENWINDOW_SIGNAL], 0, filenames );
-        // NB: GSList & contents are freed by main.open_window
+        open_window ( VIK_WINDOW_FROM_WIDGET(widget), filenames );
+        // NB: GSList & contents are freed by open_window()
 
       success = TRUE;
       break;
@@ -3355,8 +3352,8 @@ static void on_activate_recent_item (GtkRecentChooser *chooser,
     {
       GSList *filenames = NULL;
       filenames = g_slist_append ( filenames, path );
-      g_signal_emit ( G_OBJECT(self), window_signals[VW_OPENWINDOW_SIGNAL], 0, filenames );
-      // NB: GSList & contents are freed by main.open_window
+      open_window ( self, filenames );
+      // NB: GSList & contents are freed by open_window()
     }
     else {
       if ( check_file_magic_vik ( path ) )
@@ -3670,7 +3667,7 @@ static void load_file ( GtkAction *a, VikWindow *vw )
 #else
     if ( vw->filename && !append )
 #endif
-      g_signal_emit ( G_OBJECT(vw), window_signals[VW_OPENWINDOW_SIGNAL], 0, gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog) ) );
+      open_window ( vw, gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog)) );
     else {
 
       files = gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog) );
