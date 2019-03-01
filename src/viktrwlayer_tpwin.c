@@ -582,32 +582,48 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
 
   switch (dist_units) {
   case VIK_UNITS_DISTANCE_KILOMETRES:
-    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->hdop );
+    if ( isnan(tp->hdop) )
+      g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
+    else
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->hdop );
     gtk_label_set_text ( tpwin->hdop, tmp_str );
-    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->pdop );
+    if ( isnan(tp->pdop) )
+      g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
+    else
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->pdop );
     gtk_label_set_text ( tpwin->pdop, tmp_str );
     break;
   case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
   case VIK_UNITS_DISTANCE_MILES:
-    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f yards", tp->hdop*1.0936133 );
+    if ( isnan(tp->hdop) )
+      g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
+    else
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f yards", tp->hdop*1.0936133 );
     gtk_label_set_text ( tpwin->hdop, tmp_str );
-    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f yards", tp->pdop*1.0936133 );
+    if ( isnan(tp->pdop) )
+      g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
+    else
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f yards", tp->pdop*1.0936133 );
     gtk_label_set_text ( tpwin->pdop, tmp_str );
     break;
   default:
     g_critical("Houston, we've had a problem. distance=%d", dist_units);
   }
 
-  switch (height_units) {
-  case VIK_UNITS_HEIGHT_METRES:
-    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->vdop );
-    break;
-  case VIK_UNITS_HEIGHT_FEET:
-    g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f feet", VIK_METERS_TO_FEET(tp->vdop) );
-    break;
-  default:
+  if ( isnan(tp->vdop) )
     g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
-    g_critical("Houston, we've had a problem. height=%d", height_units);
+  else {
+    switch (height_units) {
+    case VIK_UNITS_HEIGHT_METRES:
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->vdop );
+      break;
+    case VIK_UNITS_HEIGHT_FEET:
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f feet", VIK_METERS_TO_FEET(tp->vdop) );
+      break;
+    default:
+      g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
+      g_critical("Houston, we've had a problem. height=%d", height_units);
+    }
   }
   gtk_label_set_text ( tpwin->vdop, tmp_str );
 

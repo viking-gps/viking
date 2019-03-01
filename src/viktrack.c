@@ -211,10 +211,10 @@ VikTrackpoint *vik_trackpoint_new()
   VikTrackpoint *tp = g_malloc0(sizeof(VikTrackpoint));
   tp->speed = NAN;
   tp->course = NAN;
-  tp->altitude = VIK_DEFAULT_ALTITUDE;
-  tp->hdop = VIK_DEFAULT_DOP;
-  tp->vdop = VIK_DEFAULT_DOP;
-  tp->pdop = VIK_DEFAULT_DOP;
+  tp->altitude = NAN;
+  tp->hdop = NAN;
+  tp->vdop = NAN;
+  tp->pdop = NAN;
   return tp;
 }
 
@@ -523,9 +523,9 @@ void vik_track_to_routepoints ( VikTrack *tr )
     VIK_TRACKPOINT(iter->data)->timestamp = 0;
     VIK_TRACKPOINT(iter->data)->speed = NAN;
     VIK_TRACKPOINT(iter->data)->course = NAN;
-    VIK_TRACKPOINT(iter->data)->hdop = VIK_DEFAULT_DOP;
-    VIK_TRACKPOINT(iter->data)->vdop = VIK_DEFAULT_DOP;
-    VIK_TRACKPOINT(iter->data)->pdop = VIK_DEFAULT_DOP;
+    VIK_TRACKPOINT(iter->data)->hdop = NAN;
+    VIK_TRACKPOINT(iter->data)->vdop = NAN;
+    VIK_TRACKPOINT(iter->data)->pdop = NAN;
     VIK_TRACKPOINT(iter->data)->nsats = 0;
     VIK_TRACKPOINT(iter->data)->fix_mode = VIK_GPS_MODE_NOT_SEEN;
 
@@ -789,7 +789,7 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
       // Since when is 9.9999e+24 a valid elevation!!
       // This can happen when a track (with no elevations) is uploaded to a GPS device and then redownloaded (e.g. using a Garmin Legend EtrexHCx)
       // Some protection against trying to work with crazily massive numbers (otherwise get SIGFPE, Arithmetic exception)
-      if ( VIK_TRACKPOINT(iter->data)->altitude != VIK_DEFAULT_ALTITUDE &&
+      if ( !isnan(VIK_TRACKPOINT(iter->data)->altitude) &&
 	   VIK_TRACKPOINT(iter->data)->altitude < 1E9 ) {
         okay = TRUE; break;
       }
@@ -897,7 +897,12 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
   return pts;
 }
 
-
+/**
+ * vik_track_get_total_elevation_gain:
+ *
+ * elevation gains and losses may be NAN if no elevations are available
+ *
+ */
 void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble *down)
 {
   gdouble diff;
@@ -907,8 +912,7 @@ void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble
     while (iter) {
       VikTrackpoint *tp1 = VIK_TRACKPOINT(iter->data);
       VikTrackpoint *tp2 = VIK_TRACKPOINT(iter->prev->data);
-      if ( (tp1->altitude != VIK_DEFAULT_ALTITUDE) &&
-	   (tp2->altitude != VIK_DEFAULT_ALTITUDE) ) {
+      if ( !isnan(tp1->altitude) && !isnan(tp2->altitude) ) {
         diff = tp1->altitude - tp2->altitude;
         if ( diff > 0 )
           *up += diff;
@@ -918,7 +922,7 @@ void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble
       iter = iter->next;
     }
   } else
-    *up = *down = VIK_DEFAULT_ALTITUDE;
+    *up = *down = NAN;
 }
 
 gdouble *vik_track_make_gradient_map ( const VikTrack *tr, guint16 num_chunks )
@@ -1127,7 +1131,7 @@ gdouble *vik_track_make_elevation_time_map ( const VikTrack *tr, guint16 num_chu
   /* test if there's anything worth calculating */
   gboolean okay = FALSE;
   while ( iter ) {
-    if ( VIK_TRACKPOINT(iter->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+    if ( !isnan(VIK_TRACKPOINT(iter->data)->altitude) ) {
       okay = TRUE;
       break;
     }
@@ -1539,7 +1543,7 @@ gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdoubl
     gdouble tmp_alt;
     while (iter) {
       VikTrackpoint *tp = VIK_TRACKPOINT(iter->data);
-      if ( tp->altitude != VIK_DEFAULT_ALTITUDE ) {
+      if ( !isnan(tp->altitude) ) {
 	tmp_alt = tp->altitude;
 	if ( tmp_alt > *max_alt )
 	  *max_alt = tmp_alt;
@@ -1784,7 +1788,7 @@ gulong vik_track_apply_dem_data ( VikTrack *tr, gboolean skip_existing )
   tp_iter = tr->trackpoints;
   while ( tp_iter ) {
     // Don't apply if the point already has a value and the overwrite is off
-    if ( !(skip_existing && VIK_TRACKPOINT(tp_iter->data)->altitude != VIK_DEFAULT_ALTITUDE) ) {
+    if ( !(skip_existing && !isnan(VIK_TRACKPOINT(tp_iter->data)->altitude)) ) {
       /* TODO: of the 4 possible choices we have for choosing an elevation
        * (trackpoint in between samples), choose the one with the least elevation change
        * as the last */
@@ -1855,7 +1859,7 @@ gulong vik_track_smooth_missing_elevation_data ( VikTrack *tr, gboolean flat )
   gulong num = 0;
 
   GList *tp_iter;
-  gdouble elev = VIK_DEFAULT_ALTITUDE;
+  gdouble elev = NAN;
 
   VikTrackpoint *tp_missing = NULL;
   GList *iter_first = NULL;
@@ -1865,10 +1869,10 @@ gulong vik_track_smooth_missing_elevation_data ( VikTrack *tr, gboolean flat )
   while ( tp_iter ) {
     VikTrackpoint *tp = VIK_TRACKPOINT(tp_iter->data);
 
-    if ( VIK_DEFAULT_ALTITUDE == tp->altitude ) {
+    if ( isnan(tp->altitude) ) {
       if ( flat ) {
         // Simply assign to last known value
-	if ( elev != VIK_DEFAULT_ALTITUDE ) {
+	if ( !isnan(elev) ) {
           tp->altitude = elev;
           num++;
 	}
@@ -1890,7 +1894,7 @@ gulong vik_track_smooth_missing_elevation_data ( VikTrack *tr, gboolean flat )
       // Altitude available (maybe again!)
       // If this marks the end of a section of altitude-less points
       //  then apply smoothing for that section of points
-      if ( points > 0 && elev != VIK_DEFAULT_ALTITUDE )
+      if ( points > 0 && !isnan(elev) )
         if ( !flat ) {
           smoothie ( iter_first, tp_iter, elev, tp->altitude, points );
           num = num + points;

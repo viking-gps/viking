@@ -487,7 +487,7 @@ static void trw_layer_track_list_add ( vik_trw_track_list_t *vtdl,
 		max_alt = -1000;
 		guint i;
 		for ( i=0; i < 500; i++ ) {
-			if ( altitudes[i] != VIK_DEFAULT_ALTITUDE ) {
+			if ( !isnan(altitudes[i]) ) {
 				if ( altitudes[i] > max_alt )
 					max_alt = altitudes[i];
 			}

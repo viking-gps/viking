@@ -33,7 +33,7 @@
 VikWaypoint *vik_waypoint_new()
 {
   VikWaypoint *wp = g_malloc0 ( sizeof ( VikWaypoint ) );
-  wp->altitude = VIK_DEFAULT_ALTITUDE;
+  wp->altitude = NAN;
   wp->name = g_strdup(_("Waypoint"));
   wp->image_direction = NAN;
   return wp;
@@ -207,7 +207,7 @@ VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp)
 gboolean vik_waypoint_apply_dem_data ( VikWaypoint *wp, gboolean skip_existing )
 {
   gboolean updated = FALSE;
-  if ( !(skip_existing && wp->altitude != VIK_DEFAULT_ALTITUDE) ) {
+  if ( !(skip_existing && !isnan(wp->altitude)) ) {
     gint16 elev = a_dems_get_elev_by_coord ( &(wp->coord), VIK_DEM_INTERPOL_BEST );
     if ( elev != VIK_DEM_INVALID_ELEVATION ) {
       wp->altitude = (gdouble)elev;

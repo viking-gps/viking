@@ -1687,8 +1687,8 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
       gboolean replace = FALSE;
       int heading = isnan(vgl->realtime_fix.fix.track) ? 0 : (int)floor(vgl->realtime_fix.fix.track);
       int last_heading = isnan(vgl->last_fix.fix.track) ? 0 : (int)floor(vgl->last_fix.fix.track);
-      int alt = isnan(vgl->realtime_fix.fix.altitude) ? VIK_DEFAULT_ALTITUDE : floor(vgl->realtime_fix.fix.altitude);
-      int last_alt = isnan(vgl->last_fix.fix.altitude) ? VIK_DEFAULT_ALTITUDE : floor(vgl->last_fix.fix.altitude);
+      int alt = isnan(vgl->realtime_fix.fix.altitude) ? 0 : (int)floor(vgl->realtime_fix.fix.altitude);
+      int last_alt = isnan(vgl->last_fix.fix.altitude) ? 0 : (int)floor(vgl->last_fix.fix.altitude);
       if (((last_tp = g_list_last(vgl->realtime_track->trackpoints)) != NULL) &&
           (vgl->realtime_fix.fix.mode > MODE_2D) &&
           (vgl->last_fix.fix.mode <= MODE_2D) &&
@@ -1702,7 +1702,7 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
           ((forced || 
             ((heading < last_heading) && (heading < (last_heading - 3))) || 
             ((heading > last_heading) && (heading > (last_heading + 3))) ||
-            ((alt != VIK_DEFAULT_ALTITUDE) && (alt != last_alt)))))) {
+            (alt && (alt != last_alt)))))) {
         /* TODO: check for new segments */
         VikTrackpoint *tp = vik_trackpoint_new();
         tp->newsegment = FALSE;
@@ -1922,8 +1922,7 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
   vgl->vgpsd->vgl = vgl;
 
   vgl->realtime_fix.dirty = vgl->last_fix.dirty = FALSE;
-  /* track alt/time graph uses VIK_DEFAULT_ALTITUDE (0.0) as invalid */
-  vgl->realtime_fix.fix.altitude = vgl->last_fix.fix.altitude = VIK_DEFAULT_ALTITUDE;
+  vgl->realtime_fix.fix.altitude = vgl->last_fix.fix.altitude = NAN;
   vgl->realtime_fix.fix.speed = vgl->last_fix.fix.speed = NAN;
 
   if (vgl->realtime_record) {

@@ -22,6 +22,7 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+#include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -76,7 +77,7 @@ static found_geoname *new_found_geoname()
   ret->desc = NULL;
   ret->ll.lat = 0.0;
   ret->ll.lon = 0.0;
-  ret->elevation = VIK_DEFAULT_ALTITUDE;
+  ret->elevation = NAN;
   return ret;
 }
 

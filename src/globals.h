@@ -88,9 +88,6 @@ a cutting at 60s/km or equivalent (in other units) has been set*/
 #define VIK_MPS_TO_KNOTS(X) ((X)*VIK_KNOTS_IN_MPS)
 #define VIK_KNOTS_TO_MPS(X) ((X)/VIK_KNOTS_IN_MPS)
 
-#define VIK_DEFAULT_ALTITUDE 0.0
-#define VIK_DEFAULT_DOP 0.0
-
 #define VIK_GTK_WINDOW_FROM_WIDGET(x) GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(x)))
 #define VIK_GTK_WINDOW_FROM_LAYER(x) VIK_GTK_WINDOW_FROM_WIDGET(VIK_LAYER(x)->vt)
 

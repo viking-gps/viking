@@ -262,7 +262,7 @@ static void minmax_array(const gdouble *array, gdouble *min, gdouble *max, gbool
   *min = 20000;
   guint i;
   for ( i=0; i < PROFILE_WIDTH; i++ ) {
-    if ( NO_ALT_TEST || (array[i] != VIK_DEFAULT_ALTITUDE) ) {
+    if ( NO_ALT_TEST || (!isnan(array[i])) ) {
       if ( array[i] > *max )
         *max = array[i];
       if ( array[i] < *min )
@@ -1614,7 +1614,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   /* draw elevations */
   guint height = MARGIN_Y+widgets->profile_height;
   for ( i = 0; i < widgets->profile_width; i++ )
-    if ( widgets->altitudes[i] == VIK_DEFAULT_ALTITUDE )
+    if ( isnan(widgets->altitudes[i]) )
       gdk_draw_line ( GDK_DRAWABLE(pix), no_alt_info, 
                       i + MARGIN_X, MARGIN_Y, i + MARGIN_X, height );
     else 
@@ -2775,14 +2775,14 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, PropWidgets *widget
   widgets->altitudes = vik_track_make_elevation_map ( widgets->tr, widgets->profile_width );
 
   if ( widgets->altitudes == NULL ) {
-    *min_alt = *max_alt = VIK_DEFAULT_ALTITUDE;
+    *min_alt = *max_alt = NAN;
     return NULL;
   }
 
   // Don't use minmax_array(widgets->altitudes), as that is a simplified representative of the points
   //  thus can miss the highest & lowest values by a few metres
   if ( !vik_track_get_minmax_alt (widgets->tr, min_alt, max_alt) )
-    *min_alt = *max_alt = VIK_DEFAULT_ALTITUDE;
+    *min_alt = *max_alt = NAN;
 
   pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
@@ -3500,7 +3500,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   widgets->w_avg_dist = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   vik_units_height_t height_units = a_vik_get_units_height ();
-  if ( (min_alt == VIK_DEFAULT_ALTITUDE) && (max_alt == VIK_DEFAULT_ALTITUDE) )
+  if ( isnan(min_alt) && isnan(max_alt) )
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else {
     switch (height_units) {
@@ -3518,7 +3518,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   widgets->w_elev_range = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   vik_track_get_total_elevation_gain(tr, &max_alt, &min_alt );
-  if ( (min_alt == VIK_DEFAULT_ALTITUDE) && (max_alt == VIK_DEFAULT_ALTITUDE) )
+  if ( isnan(min_alt) && isnan(max_alt) )
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else {
     switch (height_units) {

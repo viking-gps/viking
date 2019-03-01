@@ -2362,7 +2362,7 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
 
             vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy, x, y);
 
-            if ( dp->vtl->drawelevation && list->next && VIK_TRACKPOINT(list->next->data)->altitude != VIK_DEFAULT_ALTITUDE ) {
+            if ( dp->vtl->drawelevation && list->next && !isnan(VIK_TRACKPOINT(list->next->data)->altitude) ) {
               GdkPoint tmp[4];
               #define FIXALTITUDE(what) ((VIK_TRACKPOINT((what))->altitude-min_alt)/alt_diff*DRAW_ELEVATION_FACTOR*dp->vtl->elevation_factor/dp->xmpp)
 
@@ -9659,7 +9659,7 @@ static VikLayerToolFuncStatus tool_edit_track_move ( VikTrwLayer *vtl, GdkEventM
     gdouble elev_new;
     elev_new = (gdouble) a_dems_get_elev_by_coord ( &coord, VIK_DEM_INTERPOL_BEST );
     if ( elev_new != VIK_DEM_INVALID_ELEVATION ) {
-      if ( last_tpt->altitude != VIK_DEFAULT_ALTITUDE ) {
+      if ( !isnan(last_tpt->altitude) ) {
 	// Adjust elevation of last track point
 	if ( elev_new > last_tpt->altitude )
 	  // Going up

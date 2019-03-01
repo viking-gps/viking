@@ -898,7 +898,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   fprintf ( f, "<wpt lat=\"%s\" lon=\"%s\"%s>\n",
                s_lat, s_lon, wp->visible ? "" : " hidden=\"hidden\"" );
 
-  if ( wp->altitude != VIK_DEFAULT_ALTITUDE )
+  if ( !isnan(wp->altitude) )
   {
     gchar s_alt[COORDS_STR_BUFFER_SIZE];
     a_coords_dtostr_buffer ( wp->altitude, s_alt );
@@ -1010,7 +1010,7 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   a_coords_dtostr_buffer ( ll.lon, s_lon );
   fprintf ( f, "  <%spt lat=\"%s\" lon=\"%s\">\n", (context->options && context->options->is_route) ? "rte" : "trk", s_lat, s_lon );
 
-  if ( tp->altitude != VIK_DEFAULT_ALTITUDE )
+  if ( !isnan(tp->altitude) )
   {
     a_coords_dtostr_buffer ( tp->altitude, s_alt );
     fprintf ( f, "    <ele>%s</ele>\n", s_alt );
@@ -1068,17 +1068,17 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   if (tp->nsats > 0)
     fprintf ( f, "    <sat>%d</sat>\n", tp->nsats );
 
-  if ( tp->hdop != VIK_DEFAULT_DOP ) {
+  if ( !isnan(tp->hdop) ) {
     a_coords_dtostr_buffer ( tp->hdop, s_dop );
     fprintf ( f, "    <hdop>%s</hdop>\n", s_dop );
   }
 
-  if ( tp->vdop != VIK_DEFAULT_DOP ) {
+  if ( !isnan(tp->vdop) ) {
     a_coords_dtostr_buffer ( tp->vdop, s_dop );
     fprintf ( f, "    <vdop>%s</vdop>\n", s_dop );
   }
 
-  if ( tp->pdop != VIK_DEFAULT_DOP ) {
+  if ( !isnan(tp->pdop) ) {
     a_coords_dtostr_buffer ( tp->pdop, s_dop );
     fprintf ( f, "    <pdop>%s</pdop>\n", s_dop );
   }
