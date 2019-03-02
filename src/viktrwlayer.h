@@ -111,6 +111,9 @@ void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl );
 void vik_trw_layer_delete_all_routes ( VikTrwLayer *vtl );
 void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, VikTrack *trk );
 
+void vik_trw_layer_goto_track_prev_point ( VikTrwLayer *vtl );
+void vik_trw_layer_goto_track_next_point ( VikTrwLayer *vtl );
+
 void vik_trw_layer_reset_waypoints ( VikTrwLayer *vtl );
 
 void vik_trw_layer_draw_highlight ( VikTrwLayer *vtl, VikViewport *vvp );

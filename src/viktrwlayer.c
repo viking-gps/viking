@@ -5365,9 +5365,8 @@ static void trw_layer_goto_track_date ( menu_array_sublayer values )
 
 static void my_tpwin_set_tp ( VikTrwLayer *vtl );
 
-static void trw_layer_goto_track_prev_point ( menu_array_sublayer values )
+void vik_trw_layer_goto_track_prev_point ( VikTrwLayer *vtl )
 {
-  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
   if ( !vtl->current_tpl )
     return;
   if ( !vtl->current_tpl->prev )
@@ -5378,12 +5377,17 @@ static void trw_layer_goto_track_prev_point ( menu_array_sublayer values )
     if ( vtl->tpwin )
       my_tpwin_set_tp ( vtl );
   }
+
   vik_layer_emit_update(VIK_LAYER(vtl));
 }
 
-static void trw_layer_goto_track_next_point ( menu_array_sublayer values )
+static void trw_layer_goto_track_prev_point ( menu_array_sublayer values )
 {
-  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  vik_trw_layer_goto_track_prev_point ( (VikTrwLayer*)values[MA_VTL] );
+}
+
+void vik_trw_layer_goto_track_next_point ( VikTrwLayer *vtl )
+{
   if ( !vtl->current_tpl )
     return;
   if ( !vtl->current_tpl->next )
@@ -5395,6 +5399,11 @@ static void trw_layer_goto_track_next_point ( menu_array_sublayer values )
       my_tpwin_set_tp ( vtl );
   }
   vik_layer_emit_update(VIK_LAYER(vtl));
+}
+
+static void trw_layer_goto_track_next_point ( menu_array_sublayer values )
+{
+  vik_trw_layer_goto_track_next_point ( (VikTrwLayer*)values[MA_VTL] );
 }
 
 static void trw_layer_convert_track_route ( menu_array_sublayer values )
@@ -6803,8 +6812,6 @@ static void trw_layer_insert_point_after ( menu_array_sublayer values )
     return;
 
   trw_layer_insert_tp_beside_current_tp ( vtl, FALSE, GPOINTER_TO_INT(values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE );
-
-  vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
 
 static void trw_layer_insert_point_before ( menu_array_sublayer values )
@@ -6820,8 +6827,6 @@ static void trw_layer_insert_point_before ( menu_array_sublayer values )
     return;
 
   trw_layer_insert_tp_beside_current_tp ( vtl, TRUE, GPOINTER_TO_INT(values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE );
-
-  vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
 
 /**
@@ -8551,6 +8556,8 @@ static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean b
       trk->trackpoints = g_list_insert ( trk->trackpoints, tp_new, index );
     }
   }
+
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
 
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy )
@@ -8635,7 +8642,6 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
     if ( vtl->current_tp_track ) {
       trw_layer_insert_tp_beside_current_tp ( vtl, FALSE, vtl->current_tp_track->is_route );
     }
-    vik_layer_emit_update(VIK_LAYER(vtl));
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_DATA_CHANGED )
     vik_layer_emit_update(VIK_LAYER(vtl));
@@ -9837,6 +9843,22 @@ static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event
   } else if ( event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R ) {
     GdkWindow *gdkw = gtk_widget_get_window(GTK_WIDGET(vvp));
     gdk_window_set_cursor ( gdkw, vtl->crosshair_cursor );
+    return TRUE;
+  } else if ( event->keyval == GDK_Left ) {
+    vik_trw_layer_goto_track_prev_point ( vtl );
+    return TRUE;
+  } else if ( event->keyval == GDK_Right ) {
+    vik_trw_layer_goto_track_next_point ( vtl );
+    return TRUE;
+  } else if ( event->keyval == GDK_bracketleft || event->keyval == GDK_KP_Subtract ) {
+    if ( vtl->current_tp_track ) {
+      trw_layer_insert_tp_beside_current_tp ( vtl, TRUE, vtl->current_tp_track->is_route );
+    }
+    return TRUE;
+  } else if ( event->keyval == GDK_bracketright || event->keyval == GDK_KP_Add ) {
+    if ( vtl->current_tp_track ) {
+      trw_layer_insert_tp_beside_current_tp ( vtl, FALSE, vtl->current_tp_track->is_route );
+    }
     return TRUE;
   }
 

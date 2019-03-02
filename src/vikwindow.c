@@ -2525,12 +2525,25 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
 
 static gboolean selecttool_key_release (VikLayer *vl, GdkEventKey *event, tool_ed_t *t)
 {
-  if ( (event->keyval == GDK_Menu) && (vl && (vl->type == VIK_LAYER_TRW)) ) {
-    if ( vl->visible )
-      /* Act on currently selected item to show menu */
-      if ( t->vw->selected_track || t->vw->selected_waypoint )
-        if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
-          return vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, 0, t->vw->viking_vvp );
+  if (vl && (vl->type == VIK_LAYER_TRW)) {
+    if ( vl->visible ) {
+      if ( event->keyval == GDK_Menu ) {
+        /* Act on currently selected item to show menu */
+        if ( t->vw->selected_track || t->vw->selected_waypoint )
+          if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
+            return vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, 0, t->vw->viking_vvp );
+      } else if ( event->keyval == GDK_Left ) {
+	if ( t->vw->containing_vtl ) {
+          vik_trw_layer_goto_track_prev_point ( t->vw->containing_vtl );
+          return TRUE;
+        }
+     } else if ( event->keyval == GDK_Right ) {
+        if ( t->vw->containing_vtl ) {
+          vik_trw_layer_goto_track_next_point ( t->vw->containing_vtl );
+          return TRUE;
+        }
+      }
+    }
   }
   return FALSE;
 }

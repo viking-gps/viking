@@ -1265,6 +1265,8 @@ This centers the viewport on the selected position on the track:
 <listitem><para>Version1.1+: Highest Altitude</para></listitem>
 <listitem><para>Version1.1+: Lowest Altitude</para></listitem>
 <listitem><para>Version1.1+: Maximum Speed (Not Available on Routes)</para></listitem>
+<listitem><para>Version1.8+: Previous trackpoint</para></listitem>
+<listitem><para>Version1.8+: Next trackpoint</para></listitem>
 </itemizedlist>
 </section>
 
@@ -2166,7 +2168,7 @@ This layer is allows drawing of grid lines on the viewport.
 
 <section id="tools" xreflabel="Tools"><title>Tools</title>
 <para>
-&appname;'s mouse actions on the viewport are controlled by which tool is active. Only one tool can be active at a time. The default mode is pan.
+&appname;'s mouse actions on the viewport are controlled by which tool is active. Only one tool can be active at a time. The default mode is pan. You can return to the default mode by pressing <keycap>Escape</keycap>.
 </para>
 <para>
 You can use the scroll wheel, the middle-click, the middle-click+drag to zoom, center map at position and pan respectively no matter what tool you are using.
@@ -2312,6 +2314,18 @@ Finishing the track is also available via the right click <xref linkend="TrackWa
 </para>
 <para>
 One must finish the current track to be able to create another track.
+</para>
+<para>
+<keycap>Keypad Add</keycap> or <keycap>]</keycap>: Insert point after current point.
+</para>
+<para>
+<keycap>Keypad Minus</keycap> or <keycap>[</keycap>: Insert point before current point.
+</para>
+<para>
+<keycap>Left</keycap>: Select the previous point.
+</para>
+<para>
+<keycap>Right</keycap>: Select the next point.
 </para>
 </section>
 
