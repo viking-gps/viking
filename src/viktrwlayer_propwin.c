@@ -3178,17 +3178,12 @@ static GtkWidget *create_graph_page ( GtkWidget *graph,
 
 static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[])
 {
-  GtkTable *table;
-  int i;
-
-  table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
+  GtkTable *table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);
-  for (i=0; i<cnt; i++) {
-    GtkWidget *label;
-
+  for (guint i=0; i<cnt; i++) {
     // Settings so the text positioning only moves around vertically when the dialog is resized
     // This also gives more room to see the track comment
-    label = gtk_label_new(NULL);
+    GtkWidget *label = gtk_label_new(NULL);
     gtk_misc_set_alignment ( GTK_MISC(label), 1, 0.5 ); // Position text centrally in vertical plane
     gtk_label_set_markup ( GTK_LABEL(label), _(labels[i]) );
     gtk_table_attach ( table, label, 0, 1, i, i+1, GTK_FILL, GTK_SHRINK, 0, 0 );
