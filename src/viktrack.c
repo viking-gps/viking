@@ -1437,9 +1437,6 @@ VikTrackpoint* vik_track_get_tp_by_max_speed ( const VikTrack *tr )
     iter = iter->next;
   }
   
-  if (!max_speed_tp)
-    return NULL;
-
   return max_speed_tp;
 }
 
