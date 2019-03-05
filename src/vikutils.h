@@ -24,6 +24,7 @@
 
 #include <glib.h>
 #include "viktrwlayer.h"
+#include "globals.h"
 
 G_BEGIN_DECLS
 
@@ -57,6 +58,9 @@ GtkWidget* vu_menu_add_item ( const GtkMenu *menu,
                               const gchar* stock_icon,
                               const GCallback callback,
                               const gpointer user_data );
+
+void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gboolean convert, gchar *format );
+
 G_END_DECLS
 
 #endif

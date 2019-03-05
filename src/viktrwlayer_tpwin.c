@@ -503,35 +503,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
       else
       {
         gdouble tmp_speed = vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / ABS(tp->timestamp - tpwin->cur_tp->timestamp);
-	switch (speed_units) {
-	case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f km/h", VIK_MPS_TO_KPH(tmp_speed) );
-	  break;
-	case VIK_UNITS_SPEED_MILES_PER_HOUR:
-          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f mph", VIK_MPS_TO_MPH(tmp_speed) );
-	  break;
-	case VIK_UNITS_SPEED_METRES_PER_SECOND:
-          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f m/s", tmp_speed );
-	  break;
-	case VIK_UNITS_SPEED_KNOTS:
-          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed) );
-	  break;
-	case VIK_UNITS_SPEED_SECONDS_PER_KM:
-          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f s/km", VIK_MPS_TO_PACE_SPK(tmp_speed) );
-	  break;
-	case VIK_UNITS_SPEED_MINUTES_PER_KM:
-          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f min/km", VIK_MPS_TO_PACE_MPK(tmp_speed) );
-	  break;
-	case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f sec/mi", VIK_MPS_TO_PACE_SPM(tmp_speed) );
-	  break;
-	case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f min/mi", VIK_MPS_TO_PACE_MPM(tmp_speed) );
-	  break;
-	default:
-	  g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
-	  g_critical("Houston, we've had a problem. speed=%d", speed_units);
-	}
+        vu_speed_text ( tmp_str, sizeof(tmp_str), speed_units, tmp_speed, TRUE, "%.2f" );
         gtk_label_set_text ( tpwin->diff_speed, tmp_str );
       }
     }
@@ -548,37 +520,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
     g_snprintf ( tmp_str, sizeof(tmp_str), "%05.1f\302\260", tp->course );
   gtk_label_set_text ( tpwin->course, tmp_str );
 
-  if ( isnan(tp->speed) )
-    g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
-  else {
-    switch (speed_units) {
-    case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f mph", VIK_MPS_TO_MPH(tp->speed) );
-      break;
-    case VIK_UNITS_SPEED_METRES_PER_SECOND:
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f m/s", tp->speed );
-      break;
-    case VIK_UNITS_SPEED_KNOTS:
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f knots", VIK_MPS_TO_KNOTS(tp->speed) );
-      break;
-    case VIK_UNITS_SPEED_SECONDS_PER_KM:
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f s/km", VIK_MPS_TO_PACE_SPK(tp->speed) );
-      break;
-    case VIK_UNITS_SPEED_MINUTES_PER_KM:
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f min/km", VIK_MPS_TO_PACE_MPK(tp->speed) );
-      break;
-    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f s/mi", VIK_MPS_TO_PACE_SPM(tp->speed) );
-      break;
-    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f min/mi", VIK_MPS_TO_PACE_MPM(tp->speed) );
-      break;
-    default:
-      // VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f km/h", VIK_MPS_TO_KPH(tp->speed) );
-      break;
-    }
-  }
+  vu_speed_text ( tmp_str, sizeof(tmp_str), speed_units, tp->speed, TRUE, "%.2f" );
   gtk_label_set_text ( tpwin->speed, tmp_str );
 
   switch (dist_units) {

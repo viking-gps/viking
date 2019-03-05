@@ -1042,3 +1042,44 @@ GtkWidget* vu_menu_add_item ( const GtkMenu *menu,
 	gtk_menu_shell_append ( GTK_MENU_SHELL(menu), menu_item );
 	return menu_item;
 }
+
+/**
+ * Commonal text for a speed readout
+ */
+void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gboolean convert, gchar *format )
+{
+	if ( isnan(speed) ) {
+		g_snprintf (buf, size, "--" );
+		return;
+	}
+
+	gdouble my_speed = speed;
+	if ( convert ) {
+		switch (speed_units) {
+		case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR: my_speed = VIK_MPS_TO_KPH(speed); break;
+		case VIK_UNITS_SPEED_MILES_PER_HOUR:      my_speed = VIK_MPS_TO_MPH(speed); break;
+		case VIK_UNITS_SPEED_KNOTS:               my_speed = VIK_MPS_TO_KNOTS(speed); break;
+		case VIK_UNITS_SPEED_SECONDS_PER_KM:      my_speed = VIK_MPS_TO_PACE_SPK(speed); break;
+		case VIK_UNITS_SPEED_MINUTES_PER_KM:      my_speed = VIK_MPS_TO_PACE_MPK(speed); break;
+		case VIK_UNITS_SPEED_SECONDS_PER_MILE:    my_speed = VIK_MPS_TO_PACE_SPM(speed); break;
+		case VIK_UNITS_SPEED_MINUTES_PER_MILE:    my_speed = VIK_MPS_TO_PACE_MPM(speed); break;
+		default: break; // VIK_UNITS_SPEED_METRES_PER_SECOND:
+		}
+	}
+
+	gchar *speed_units_str = NULL;
+	switch (speed_units) {
+	case VIK_UNITS_SPEED_MILES_PER_HOUR: speed_units_str = _("mph"); break;
+	case VIK_UNITS_SPEED_KNOTS:	speed_units_str = _("knots"); break;
+	case VIK_UNITS_SPEED_SECONDS_PER_KM: speed_units_str = _("s/km"); break;
+	case VIK_UNITS_SPEED_MINUTES_PER_KM: speed_units_str = _("min/km"); break;
+	case VIK_UNITS_SPEED_SECONDS_PER_MILE: speed_units_str = _("sec/mi"); break;
+	case VIK_UNITS_SPEED_MINUTES_PER_MILE: speed_units_str = _("min/mi");	break;
+	case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR: speed_units_str = _("km/h" ); break;
+	default: speed_units_str = _("m/s"); break; // VIK_UNITS_SPEED_METRES_PER_SECOND:
+	}
+
+	gchar *full_str = g_strdup_printf ( "%s %s", format, speed_units_str );
+	g_snprintf ( buf, size, full_str, my_speed );
+	g_free ( full_str );
+}

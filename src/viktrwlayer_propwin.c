@@ -955,33 +955,7 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
     // Even if GPS speed available (trackpoint->speed), the text will correspond to the speed map shown
     // No conversions needed as already in appropriate units
     vik_units_speed_t speed_units = a_vik_get_units_speed ();
-    switch (speed_units) {
-    case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f kph"), widgets->speeds[ix]);
-      break;
-    case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f mph"), widgets->speeds[ix]);
-      break;
-    case VIK_UNITS_SPEED_KNOTS:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f knots"), widgets->speeds[ix]);
-      break;
-    case VIK_UNITS_SPEED_SECONDS_PER_KM:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f s/km"), widgets->speeds[ix]);
-      break;
-    case VIK_UNITS_SPEED_MINUTES_PER_KM:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f min/km"), widgets->speeds[ix]);
-      break;
-    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f sec/mi"), widgets->speeds[ix]);
-      break;
-    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f min/mi"), widgets->speeds[ix]);
-      break;
-    default:
-      // VIK_UNITS_SPEED_METRES_PER_SECOND:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f m/s"), widgets->speeds[ix]);
-      break;
-    }
+    vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, widgets->speeds[ix], FALSE, "%.1f" );
     gtk_label_set_text(GTK_LABEL(widgets->w_cur_speed), tmp_buf);
   }
 
@@ -1240,33 +1214,7 @@ void track_sd_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
     // Even if GPS speed available (trackpoint->speed), the text will correspond to the speed map shown
     // No conversions needed as already in appropriate units
     vik_units_speed_t speed_units = a_vik_get_units_speed ();
-    switch (speed_units) {
-    case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f kph"), widgets->speeds_dist[ix]);
-      break;
-    case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f mph"), widgets->speeds_dist[ix]);
-      break;
-    case VIK_UNITS_SPEED_KNOTS:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f knots"), widgets->speeds_dist[ix]);
-      break;
-    case VIK_UNITS_SPEED_SECONDS_PER_KM:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f s/km"), widgets->speeds_dist[ix]);
-      break;
-    case VIK_UNITS_SPEED_MINUTES_PER_KM:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f min/km"), widgets->speeds_dist[ix]);
-      break;
-    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f sec/mi"), widgets->speeds_dist[ix]);
-      break;
-    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f min/mi"), widgets->speeds_dist[ix]);
-      break;
-    default:
-      // VIK_UNITS_SPEED_METRES_PER_SECOND:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f m/s"), widgets->speeds_dist[ix]);
-      break;
-    }
+    vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, widgets->speeds[ix], FALSE, "%.1f" );
     gtk_label_set_text(GTK_LABEL(widgets->w_cur_speed_speed), tmp_buf);
   }
 
@@ -3375,35 +3323,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   if ( tmp_speed == 0 )
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else {
-    switch (speed_units) {
-    case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km/h", VIK_MPS_TO_KPH(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f mph", VIK_MPS_TO_MPH(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_METRES_PER_SECOND:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
-      break;
-    case VIK_UNITS_SPEED_KNOTS:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_SECONDS_PER_KM:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f s/km", VIK_MPS_TO_PACE_SPK(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_MINUTES_PER_KM:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f min/km", VIK_MPS_TO_PACE_MPK(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f sec/mi", VIK_MPS_TO_PACE_SPM(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f min/mi", VIK_MPS_TO_PACE_MPM(tmp_speed));
-      break;
-    default:
-      g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );
-      g_critical("Houston, we've had a problem. speed=%d", speed_units);
-    }
+    vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, tmp_speed, TRUE, "%.2f" );
   }
   widgets->w_max_speed = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
@@ -3411,35 +3331,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   if ( tmp_speed == 0 )
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else {
-    switch (speed_units) {
-    case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km/h", VIK_MPS_TO_KPH(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f mph", VIK_MPS_TO_MPH(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_METRES_PER_SECOND:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
-      break;
-    case VIK_UNITS_SPEED_KNOTS:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_SECONDS_PER_KM:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f s/km", VIK_MPS_TO_PACE_SPK(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_MINUTES_PER_KM:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f min/km", VIK_MPS_TO_PACE_MPK(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f sec/mi", VIK_MPS_TO_PACE_SPM(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f min/mi", VIK_MPS_TO_PACE_MPM(tmp_speed));
-      break;
-    default:
-      g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );
-      g_critical("Houston, we've had a problem. speed=%d", speed_units);
-    }
+    vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, tmp_speed, TRUE, "%.2f" );
   }
   widgets->w_avg_speed = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
@@ -3451,35 +3343,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   if ( tmp_speed == 0 )
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else {
-    switch (speed_units) {
-    case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km/h", VIK_MPS_TO_KPH(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_MILES_PER_HOUR:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f mph", VIK_MPS_TO_MPH(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_METRES_PER_SECOND:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f m/s", tmp_speed );
-      break;
-    case VIK_UNITS_SPEED_KNOTS:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_SECONDS_PER_KM:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f s/km", VIK_MPS_TO_PACE_SPK(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_MINUTES_PER_KM:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f min/km", VIK_MPS_TO_PACE_MPK(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f sec/mi", VIK_MPS_TO_PACE_SPM(tmp_speed));
-      break;
-    case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f min/mi", VIK_MPS_TO_PACE_MPM(tmp_speed));
-      break;
-    default:
-      g_snprintf (tmp_buf, sizeof(tmp_buf), "--" );
-      g_critical("Houston, we've had a problem. speed=%d", speed_units);
-    }
+    vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, tmp_speed, TRUE, "%.2f" );
   }
   widgets->w_mvg_speed = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
