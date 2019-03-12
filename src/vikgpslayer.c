@@ -1674,10 +1674,8 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
     struct LatLon ll;
     GList *last_tp;
 
-    /* Note that fix.time is a double, but it should not affect the precision
-       for most GPS */
-    time_t cur_timestamp = vgl->realtime_fix.fix.time;
-    time_t last_timestamp = vgl->last_fix.fix.time;
+    gdouble cur_timestamp = vgl->realtime_fix.fix.time;
+    gdouble last_timestamp = vgl->last_fix.fix.time;
 
     if (cur_timestamp < last_timestamp) {
       return NULL;

@@ -155,10 +155,10 @@ static void val_analyse_track ( VikTrack *trk )
 		tracks_stats[ii].elev_loss += down;
 	}
 
-	if ( trk->trackpoints && VIK_TRACKPOINT(trk->trackpoints->data)->timestamp ) {
-		time_t t1, t2;
-		t1 = VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data)->timestamp;
-		t2 = VIK_TRACKPOINT(g_list_last(trk->trackpoints)->data)->timestamp;
+	// NB Subsecond resolution not needed, as just using the timestamp to get dates
+	if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
+		time_t t1 = (time_t)VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data)->timestamp;
+		time_t t2 = (time_t)VIK_TRACKPOINT(g_list_last(trk->trackpoints)->data)->timestamp;
 
 		// Assume never actually have a track with a time of 0 (1st Jan 1970)
 		for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {

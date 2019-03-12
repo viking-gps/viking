@@ -85,7 +85,7 @@ static const gdouble chunksd[] = {0.1, 0.2, 0.5, 1.0, 2.0, 3.0, 4.0, 5.0, 8.0, 1
 				  750.0, 1000.0, 10000.0};
 
 // Time chunks in seconds
-static const time_t chunkst[] = {
+static const gdouble chunkst[] = {
   60,     // 1 minute
   120,    // 2 minutes
   300,    // 5 minutes
@@ -216,7 +216,7 @@ typedef struct _propwidgets {
   gboolean  is_marker_drawn;
   VikTrackpoint *blob_tp;
   gboolean  is_blob_drawn;
-  time_t    duration;
+  gdouble   duration;
   gchar     *tz; // TimeZone at track's location
 } PropWidgets;
 
@@ -321,10 +321,10 @@ static void get_new_min_and_chunk_index (gdouble mina, gdouble maxa, const gdoub
   }
 }
 
-static guint get_time_chunk_index (time_t duration)
+static guint get_time_chunk_index (gdouble duration)
 {
   // Grid split
-  time_t myduration = duration / LINES;
+  gdouble myduration = duration / LINES;
 
   // Search nearest chunk index
   guint ci = 0;
@@ -467,11 +467,11 @@ static gdouble tp_percentage_by_time ( VikTrack *tr, VikTrackpoint *trackpoint )
   gdouble pc = NAN;
   if (trackpoint == NULL)
     return pc;
-  time_t t_start, t_end, t_total;
+  gdouble t_start, t_end, t_total;
   t_start = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   t_end = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
   t_total = t_end - t_start;
-  pc = (gdouble)(trackpoint->timestamp - t_start)/t_total;
+  pc = (trackpoint->timestamp - t_start)/t_total;
   return pc;
 }
 
@@ -892,9 +892,10 @@ void track_gradient_move( GtkWidget *event_box, GdkEventMotion *event, PropWidge
 }
 
 //
-static void time_label_update (GtkWidget *widget, time_t seconds_from_start)
+static void time_label_update (GtkWidget *widget, gdouble seconds)
 {
   static gchar tmp_buf[20];
+  time_t seconds_from_start = round ( seconds );
   guint h = seconds_from_start/3600;
   guint m = (seconds_from_start - h*3600)/60;
   guint s = seconds_from_start - (3600*h) - (60*m);
@@ -907,9 +908,10 @@ static void real_time_label_update ( PropWidgets *widgets, GtkWidget *widget, Vi
 {
   static gchar tmp_buf[64];
   if ( trackpoint->has_timestamp ) {
+    time_t ts = round ( trackpoint->timestamp );
     // Alternatively could use %c format but I prefer a slightly more compact form here
     //  The full date can of course be seen on the Statistics tab
-    strftime (tmp_buf, sizeof(tmp_buf), "%X %x %Z", localtime(&(trackpoint->timestamp)));
+    strftime (tmp_buf, sizeof(tmp_buf), "%X %x %Z", localtime(&ts));
   }
   else
     g_snprintf (tmp_buf, sizeof(tmp_buf), _("No Data"));
@@ -934,7 +936,7 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   if (x > widgets->profile_width)
     x = widgets->profile_width;
 
-  time_t seconds_from_start;
+  gdouble seconds_from_start;
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( widgets->tr, (gdouble) x / widgets->profile_width, &seconds_from_start );
   if (trackpoint && widgets->w_cur_time) {
     time_label_update ( widgets->w_cur_time, seconds_from_start );
@@ -1015,7 +1017,7 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   if (x > widgets->profile_width)
     x = widgets->profile_width;
 
-  time_t seconds_from_start;
+  gdouble seconds_from_start;
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( widgets->tr, (gdouble) x / widgets->profile_width, &seconds_from_start );
   if (trackpoint && widgets->w_cur_dist_time) {
     time_label_update ( widgets->w_cur_dist_time, seconds_from_start );
@@ -1102,7 +1104,7 @@ void track_et_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   if (x > widgets->profile_width)
     x = widgets->profile_width;
 
-  time_t seconds_from_start;
+  gdouble seconds_from_start;
   VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_time ( widgets->tr, (gdouble) x / widgets->profile_width, &seconds_from_start );
   if (trackpoint && widgets->w_cur_elev_time) {
     time_label_update ( widgets->w_cur_elev_time, seconds_from_start );
@@ -1873,8 +1875,8 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
     gdk_color_parse ( "red", &color );
     gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
 
-    time_t beg_time = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
-    time_t dur =  VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp - beg_time;
+    gdouble beg_time = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+    gdouble dur = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp - beg_time;
 
     GList *iter;
     for (iter = tr->trackpoints; iter; iter = iter->next) {
@@ -3416,9 +3418,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   if ( tr->trackpoints && VIK_TRACKPOINT(tr->trackpoints->data)->timestamp )
   {
-    time_t t1, t2;
-    t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
-    t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+    gdouble t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+    gdouble t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
 
     VikCoord vc;
     // Notional center of a track is simply an average of the bounding box extremities
@@ -3427,12 +3428,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
     widgets->tz = vu_get_tz_at_location ( &vc );
 
+    time_t ts1 = round ( t1 );
+    time_t ts2 = round ( t2 );
     gchar *msg;
-    msg = vu_get_time_string ( &t1, "%c", &vc, widgets->tz );
+    msg = vu_get_time_string ( &ts1, "%c", &vc, widgets->tz );
     widgets->w_time_start = content[cnt++] = ui_label_new_selectable(msg);
     g_free ( msg );
 
-    msg = vu_get_time_string ( &t2, "%c", &vc, widgets->tz );
+    msg = vu_get_time_string ( &ts2, "%c", &vc, widgets->tz );
     widgets->w_time_end = content[cnt++] = ui_label_new_selectable(msg);
     g_free ( msg );
 

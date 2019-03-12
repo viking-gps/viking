@@ -266,7 +266,8 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 			gchar *msg;
 			if ( trkpt->has_timestamp ) {
 				// Compact date time format
-				msg = vu_get_time_string ( &(trkpt->timestamp), "%x %X", &(trkpt->coord), NULL );
+				time_t time = round ( trkpt->timestamp );
+				msg = vu_get_time_string ( &time, "%x %X", &(trkpt->coord), NULL );
 			}
 			else
 				msg = g_strdup ("--");

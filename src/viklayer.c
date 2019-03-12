@@ -214,7 +214,7 @@ const gchar *vik_layer_get_name ( VikLayer *l )
   return l->name;
 }
 
-time_t vik_layer_get_timestamp ( VikLayer *vl )
+gdouble vik_layer_get_timestamp ( VikLayer *vl )
 {
   if ( vik_layer_interfaces[vl->type]->get_timestamp )
     return vik_layer_interfaces[vl->type]->get_timestamp ( vl );

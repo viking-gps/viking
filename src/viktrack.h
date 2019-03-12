@@ -22,7 +22,6 @@
 #ifndef _VIKING_TRACK_H
 #define _VIKING_TRACK_H
 
-#include <time.h>
 #include <glib.h>
 #include <gtk/gtk.h>
 
@@ -42,7 +41,7 @@ struct _VikTrackpoint {
   VikCoord coord;
   gboolean newsegment;
   gboolean has_timestamp;
-  time_t timestamp;
+  gdouble timestamp;
   gdouble altitude;	/* NAN if data unavailable */
   gdouble speed;  	/* NAN if data unavailable */
   gdouble course;   /* NAN if data unavailable */
@@ -119,7 +118,7 @@ guint vik_track_get_segment_count(const VikTrack *tr);
 VikTrack **vik_track_split_into_segments(VikTrack *tr, guint *ret_len);
 guint vik_track_merge_segments(VikTrack *tr);
 void vik_track_reverse(VikTrack *tr);
-time_t vik_track_get_duration(const VikTrack *trk, gboolean include_segments);
+gdouble vik_track_get_duration(const VikTrack *trk, gboolean include_segments);
 
 gulong vik_track_get_dup_point_count ( const VikTrack *vt );
 gulong vik_track_remove_dup_points ( VikTrack *vt );
@@ -139,7 +138,7 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
 void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble *down);
 VikTrackpoint *vik_track_get_tp_by_dist ( VikTrack *trk, gdouble meters_from_start, gboolean get_next_point, gdouble *tp_metres_from_start );
 VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist, gdouble *meters_from_start );
-VikTrackpoint *vik_track_get_closest_tp_by_percentage_time ( VikTrack *tr, gdouble reldist, time_t *seconds_from_start );
+VikTrackpoint *vik_track_get_closest_tp_by_percentage_time ( VikTrack *tr, gdouble reldist, gdouble *seconds_from_start );
 VikTrackpoint *vik_track_get_tp_by_max_speed ( const VikTrack *tr );
 VikTrackpoint *vik_track_get_tp_by_max_alt ( const VikTrack *tr );
 VikTrackpoint *vik_track_get_tp_by_min_alt ( const VikTrack *tr );

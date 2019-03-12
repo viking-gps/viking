@@ -28,7 +28,7 @@
 
 G_BEGIN_DECLS
 
-time_t vik_datetime_edit_dialog ( GtkWindow *parent, const gchar *title, time_t initial_time, GTimeZone *tz );
+gdouble vik_datetime_edit_dialog ( GtkWindow *parent, const gchar *title, gdouble initial_time, GTimeZone *tz );
 
 G_END_DECLS
 

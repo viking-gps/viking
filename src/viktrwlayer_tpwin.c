@@ -95,7 +95,8 @@ static void tpwin_update_times ( VikTrwLayerTpwin *tpwin, VikTrackpoint *tp )
 {
   if ( tp->has_timestamp ) {
     gtk_spin_button_set_value ( tpwin->ts, tp->timestamp );
-    gchar *msg = vu_get_time_string ( &(tp->timestamp), "%c", &(tp->coord), NULL );
+    time_t time = round ( tp->timestamp );
+    gchar *msg = vu_get_time_string ( &time, "%c", &(tp->coord), NULL );
     gtk_button_set_label ( GTK_BUTTON(tpwin->time), msg );
     g_free ( msg );
   }
@@ -149,7 +150,7 @@ static void tpwin_sync_alt_to_tp ( VikTrwLayerTpwin *tpwin )
 static void tpwin_sync_ts_to_tp ( VikTrwLayerTpwin *tpwin )
 {
   if ( tpwin->cur_tp && (!tpwin->sync_to_tp_block) ) {
-    tpwin->cur_tp->timestamp = gtk_spin_button_get_value_as_int ( tpwin->ts );
+    tpwin->cur_tp->timestamp = gtk_spin_button_get_value ( tpwin->ts );
 
     tpwin_update_times ( tpwin, tpwin->cur_tp );
   }
@@ -186,10 +187,10 @@ static void tpwin_sync_time_to_tp ( GtkWidget* widget, GdkEventButton *event, Vi
     time ( &last_edit_time );
 
   GTimeZone *gtz = g_time_zone_new_local ();
-  time_t mytime = vik_datetime_edit_dialog ( GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(&tpwin->parent))),
-                                             _("Date/Time Edit"),
-                                             last_edit_time,
-                                             gtz );
+  gdouble mytime = vik_datetime_edit_dialog ( GTK_WINDOW(gtk_widget_get_toplevel(GTK_WIDGET(&tpwin->parent))),
+                                              _("Date/Time Edit"),
+                                              last_edit_time,
+                                              gtz );
   g_time_zone_unref ( gtz );
 
   // Was the dialog cancelled?
@@ -305,9 +306,8 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
 
   g_signal_connect_swapped ( G_OBJECT(tpwin->alt), "value-changed", G_CALLBACK(tpwin_sync_alt_to_tp), tpwin );
 
-  tpwin->ts = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(0,2147483647,1)); //pow(2,31)-1 limit input to ~2038 for now
+  tpwin->ts = GTK_SPIN_BUTTON(gtk_spin_button_new(GTK_ADJUSTMENT(gtk_adjustment_new(0, -G_MAXDOUBLE, G_MAXDOUBLE, 0.001, 1, 0 )), 0.001, 3));
   g_signal_connect_swapped ( G_OBJECT(tpwin->ts), "value-changed", G_CALLBACK(tpwin_sync_ts_to_tp), tpwin );
-  gtk_spin_button_set_digits ( tpwin->ts, 0 );
 
   right_vbox = gtk_vbox_new ( TRUE, 1 );
   gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->trkpt_name), TRUE, TRUE, 3 );
@@ -496,7 +496,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
     gtk_label_set_text ( tpwin->diff_dist, tmp_str );
     if ( tp->has_timestamp && tpwin->cur_tp->has_timestamp )
     {
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%ld s", tp->timestamp - tpwin->cur_tp->timestamp);
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%.3f s", tp->timestamp - tpwin->cur_tp->timestamp);
       gtk_label_set_text ( tpwin->diff_time, tmp_str );
       if ( tp->timestamp == tpwin->cur_tp->timestamp )
         gtk_label_set_text ( tpwin->diff_speed, "--" );

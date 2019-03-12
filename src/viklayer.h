@@ -181,7 +181,7 @@ typedef gboolean      (*VikLayerFuncSelectMove)            (VikLayer *, GdkEvent
 typedef gboolean      (*VikLayerFuncSelectRelease)         (VikLayer *, GdkEventButton *, VikViewport *, tool_ed_t*);
 typedef gboolean      (*VikLayerFuncSelectedViewportMenu)  (VikLayer *, guint, VikViewport *);
 
-typedef time_t        (*VikLayerFuncGetTimestamp)          (VikLayer *);
+typedef double        (*VikLayerFuncGetTimestamp)          (VikLayer *);
 
 typedef enum {
   VIK_MENU_ITEM_PROPERTY=1,
@@ -271,7 +271,7 @@ void vik_layer_rename ( VikLayer *l, const gchar *new_name );
 void vik_layer_rename_no_copy ( VikLayer *l, gchar *new_name );
 const gchar *vik_layer_get_name ( VikLayer *l );
 
-time_t vik_layer_get_timestamp ( VikLayer *vl );
+gdouble vik_layer_get_timestamp ( VikLayer *vl );
 
 gboolean vik_layer_set_param ( VikLayer *vl, VikLayerSetParam *vlsp );
 

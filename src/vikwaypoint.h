@@ -41,7 +41,7 @@ struct _VikWaypoint {
   VikCoord coord;
   gboolean visible;
   gboolean has_timestamp;
-  time_t timestamp;
+  gdouble timestamp;
   gdouble altitude;
   gchar *name;
   gchar *comment;

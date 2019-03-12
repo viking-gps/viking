@@ -20,6 +20,7 @@
  *
  */
 #include "vikdatetime_edit_dialog.h"
+#include <math.h>
 
 // Show leading zeros
 static gboolean on_output ( GtkSpinButton *spin, gpointer data )
@@ -27,6 +28,17 @@ static gboolean on_output ( GtkSpinButton *spin, gpointer data )
 	GtkAdjustment *adjustment = gtk_spin_button_get_adjustment ( spin );
 	gint value = (gint)gtk_adjustment_get_value ( adjustment );
 	gchar *text = g_strdup_printf ( "%02d", value );
+	gtk_entry_set_text ( GTK_ENTRY (spin), text );
+	g_free ( text );
+
+	return TRUE;
+}
+
+static gboolean on_output6 ( GtkSpinButton *spin, gpointer data )
+{
+	GtkAdjustment *adjustment = gtk_spin_button_get_adjustment ( spin );
+	gint value = (gint)gtk_adjustment_get_value ( adjustment );
+	gchar *text = g_strdup_printf ( "%06d", value );
 	gtk_entry_set_text ( GTK_ENTRY (spin), text );
 	g_free ( text );
 
@@ -41,12 +53,11 @@ static gboolean on_output ( GtkSpinButton *spin, gpointer data )
  * @tz:             The #GTimeZone this dialog will operate in
  *
  * Returns: A time selected by the user via this dialog
- *          Even though a time of zero is notionally valid - consider it unlikely to be actually wanted!
- *          Thus if the time is zero then the dialog was cancelled or somehow an invalid date was encountered.
+ *          Otherwise NAN if the dialog was cancelled or somehow an invalid date was encountered.
  */
-time_t vik_datetime_edit_dialog ( GtkWindow *parent, const gchar *title, time_t initial_time, GTimeZone *tz )
+gdouble vik_datetime_edit_dialog ( GtkWindow *parent, const gchar *title, gdouble initial_time, GTimeZone *tz )
 {
-	g_return_val_if_fail ( tz, 0 );
+	g_return_val_if_fail ( tz, NAN );
 
 	GtkWidget *dialog = gtk_dialog_new_with_buttons ( title,
 	                                                  parent,
@@ -65,7 +76,8 @@ time_t vik_datetime_edit_dialog ( GtkWindow *parent, const gchar *title, time_t 
 	GtkWidget *cal = gtk_calendar_new ();
 
 	// Set according to the given date/time + timezone for display
-	GDateTime *gdt_in = g_date_time_new_from_unix_utc ( (gint64)initial_time );
+	GTimeVal tv = { initial_time, round((initial_time-floor(initial_time))*G_TIME_SPAN_SECOND) };
+	GDateTime *gdt_in = g_date_time_new_from_timeval_utc ( &tv );
 	GDateTime *gdt_tz = g_date_time_to_timezone ( gdt_in, tz );
 	g_date_time_unref ( gdt_in );
 
@@ -98,6 +110,14 @@ time_t vik_datetime_edit_dialog ( GtkWindow *parent, const gchar *title, time_t 
 	gtk_spin_button_set_value ( GTK_SPIN_BUTTON(sb_seconds), g_date_time_get_second(gdt_tz) );
 	g_signal_connect ( sb_seconds, "output", G_CALLBACK(on_output), NULL );
 
+	label = gtk_label_new ( "." );
+	gtk_box_pack_start(GTK_BOX(hbox_time), label, FALSE, FALSE, 0);
+
+	GtkWidget *sb_usecs = gtk_spin_button_new_with_range ( 0, 999999, 1000 );
+	gtk_box_pack_start ( GTK_BOX(hbox_time), sb_usecs, FALSE, FALSE, 0 );
+	gtk_spin_button_set_value ( GTK_SPIN_BUTTON(sb_usecs), g_date_time_get_microsecond(gdt_tz) );
+	g_signal_connect ( sb_usecs, "output", G_CALLBACK(on_output6), NULL );
+
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), cal, FALSE, FALSE, 0 );
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_time, FALSE, FALSE, 5 );
 
@@ -109,7 +129,7 @@ time_t vik_datetime_edit_dialog ( GtkWindow *parent, const gchar *title, time_t 
 	gtk_widget_show_all ( dialog );
 	if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) != GTK_RESPONSE_ACCEPT ) {
 		gtk_widget_destroy ( dialog );
-		return 0;
+		return NAN;
 	}
 
 	// Read values
@@ -119,18 +139,22 @@ time_t vik_datetime_edit_dialog ( GtkWindow *parent, const gchar *title, time_t 
 	guint hours = 0;
 	guint minutes = 0;
 	guint seconds = 0;
+	guint usecs = 0;
 
 	gtk_calendar_get_date ( GTK_CALENDAR(cal), &year, &month, &day );
 	hours = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(sb_hours) );
 	minutes = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(sb_minutes) );
 	seconds = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(sb_seconds) );
+	usecs = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(sb_usecs) );
+	gdouble gsecs = seconds + (gdouble)usecs/G_TIME_SPAN_SECOND;
 
 	gtk_widget_destroy(dialog);
 
-	time_t ans = initial_time;
-	GDateTime *gdt_ans = g_date_time_new ( tz, year, month+1, day, hours, minutes, (gdouble)seconds );
+	gdouble ans = initial_time;
+	GDateTime *gdt_ans = g_date_time_new ( tz, year, month+1, day, hours, minutes, gsecs );
 	if ( gdt_ans ) {
 		ans = g_date_time_to_unix ( gdt_ans );
+		ans += (gdouble)g_date_time_get_microsecond(gdt_ans) / G_TIME_SPAN_SECOND;
 		g_date_time_unref ( gdt_ans );
 	}
 

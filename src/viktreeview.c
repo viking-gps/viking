@@ -283,9 +283,9 @@ void vik_treeview_item_set_pointer ( VikTreeview *vt, GtkTreeIter *iter, gpointe
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, ITEM_POINTER_COLUMN, pointer, -1 );
 }
 
-void vik_treeview_item_set_timestamp ( VikTreeview *vt, GtkTreeIter *iter, time_t timestamp )
+void vik_treeview_item_set_timestamp ( VikTreeview *vt, GtkTreeIter *iter, gdouble timestamp )
 {
-  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, ITEM_TIMESTAMP_COLUMN, (gint64)timestamp, -1 );
+  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, ITEM_TIMESTAMP_COLUMN, timestamp, -1 );
 }
 
 gpointer vik_treeview_item_get_parent ( VikTreeview *vt, GtkTreeIter *iter )
@@ -469,7 +469,6 @@ void vik_treeview_init ( VikTreeview *vt )
 
   // ATM The dates are stored on initial creation and updated when items are deleted
   //  this should be good enough for most purposes, although it may get inaccurate if items are edited in a particular manner
-  // NB implicit conversion of time_t to gint64
   vt->model = GTK_TREE_MODEL(gtk_tree_store_new ( NUM_COLUMNS,
                                                   G_TYPE_STRING,  // Name
                                                   G_TYPE_BOOLEAN, // Visibility
@@ -479,7 +478,7 @@ void vik_treeview_init ( VikTreeview *vt )
                                                   G_TYPE_POINTER, // pointer to the layer or sublayer
                                                   G_TYPE_INT,     // type of the sublayer
                                                   G_TYPE_BOOLEAN, // Editable
-                                                  G_TYPE_INT64 )); // Timestamp
+                                                  G_TYPE_DOUBLE )); // Timestamp
 
   /* create tree view */
   gtk_tree_selection_set_select_function(gtk_tree_view_get_selection (GTK_TREE_VIEW(vt)), vik_treeview_selection_filter, vt, NULL);
@@ -658,7 +657,7 @@ void vik_treeview_item_unselect ( VikTreeview *vt, GtkTreeIter *iter )
 }
 
 void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
-                              gpointer item, gint data, VikLayerTypeEnum layer_type, time_t timestamp )
+                              gpointer item, gint data, VikLayerTypeEnum layer_type, gdouble timestamp )
 {
   g_assert ( iter != NULL );
   if ( above )
@@ -674,12 +673,12 @@ void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTree
     ITEM_DATA_COLUMN, data,
     EDITABLE_COLUMN, parent == NULL ? FALSE : TRUE,
     ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL,
-    ITEM_TIMESTAMP_COLUMN, (gint64)timestamp,
+    ITEM_TIMESTAMP_COLUMN, timestamp,
     -1 );
 }
 
 void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
-                              gpointer item, gint data, VikLayerTypeEnum layer_type, GtkTreeIter *sibling, time_t timestamp )
+                              gpointer item, gint data, VikLayerTypeEnum layer_type, GtkTreeIter *sibling, gdouble timestamp )
 {
   g_assert ( iter != NULL );
   if (sibling) {
@@ -703,12 +702,12 @@ void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
                        ITEM_DATA_COLUMN, data,
                        EDITABLE_COLUMN, TRUE,
                        ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL,
-                       ITEM_TIMESTAMP_COLUMN, (gint64)timestamp,
+                       ITEM_TIMESTAMP_COLUMN, timestamp,
                        -1 );
 }
 
 void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gpointer item,
-                                 gint data, GdkPixbuf *icon, gboolean editable, time_t timestamp )
+                                 gint data, GdkPixbuf *icon, gboolean editable, gdouble timestamp )
 {
   g_assert ( iter != NULL );
 
@@ -722,7 +721,7 @@ void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
                        ITEM_DATA_COLUMN, data,
                        EDITABLE_COLUMN, editable,
                        ICON_COLUMN, icon,
-                       ITEM_TIMESTAMP_COLUMN, (gint64)timestamp,
+                       ITEM_TIMESTAMP_COLUMN, timestamp,
                        -1 );
 }
 
@@ -731,7 +730,7 @@ typedef struct _SortTuple
 {
   gint offset;
   gchar *name;
-  gint64 timestamp;
+  gdouble timestamp;
 } SortTuple;
 
 /**

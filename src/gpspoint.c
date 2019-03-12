@@ -89,7 +89,7 @@ static gdouble line_image_direction = NAN;
 static VikWaypointImageDirectionRef line_image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
 static gboolean line_newsegment = FALSE;
 static gboolean line_has_timestamp = FALSE;
-static time_t line_timestamp = 0;
+static gdouble line_timestamp = 0;
 static gdouble line_altitude = NAN;
 static gboolean line_visible = TRUE;
 
@@ -561,7 +561,7 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   else if (key_len == 8 && strncasecmp( key, "unixtime", key_len ) == 0 && value != NULL)
   {
     line_timestamp = g_ascii_strtod(value, NULL);
-    if ( line_timestamp != 0x80000000 )
+    if ( !isnan(line_timestamp) )
       line_has_timestamp = TRUE;
   }
   else if (key_len == 10 && strncasecmp( key, "newsegment", key_len ) == 0 && value != NULL)
@@ -634,8 +634,11 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
     a_coords_dtostr_buffer ( wp->altitude, s_alt );
     fprintf ( f, " altitude=\"%s\"", s_alt );
   }
-  if ( wp->has_timestamp )
-    fprintf ( f, " unixtime=\"%ld\"", wp->timestamp );
+  if ( wp->has_timestamp ) {
+    gchar s_tm[COORDS_STR_BUFFER_SIZE];
+    a_coords_dtostr_buffer ( wp->timestamp, s_tm );
+    fprintf ( f, " unixtime=\"%s\"", s_tm );
+  }
   if ( wp->comment )
   {
     gchar *tmp_comment = slashdup(wp->comment);
@@ -723,8 +726,11 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
     a_coords_dtostr_buffer ( tp->altitude, s_alt );
     fprintf ( f, " altitude=\"%s\"", s_alt );
   }
-  if ( tp->has_timestamp )
-    fprintf ( f, " unixtime=\"%ld\"", tp->timestamp );
+  if ( tp->has_timestamp ) {
+    gchar s_tm[COORDS_STR_BUFFER_SIZE];
+    a_coords_dtostr_buffer ( tp->timestamp, s_tm );
+    fprintf ( f, " unixtime=\"%s\"", s_tm );
+  }
   if ( tp->newsegment )
     fprintf ( f, " newsegment=\"yes\"" );
 

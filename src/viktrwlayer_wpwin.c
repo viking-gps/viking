@@ -37,7 +37,8 @@
 
 static void update_time ( GtkWidget *widget, VikWaypoint *wp )
 {
-  gchar *msg = vu_get_time_string ( &(wp->timestamp), "%c", &(wp->coord), NULL );
+  time_t tt = (time_t)wp->timestamp;
+  gchar *msg = vu_get_time_string ( &tt, "%c", &(wp->coord), NULL );
   gtk_button_set_label ( GTK_BUTTON(widget), msg );
   g_free ( msg );
 }
@@ -62,14 +63,14 @@ static void time_edit_click ( GtkWidget* widget, GdkEventButton *event, VikWaypo
   }
 
   GTimeZone *gtz = g_time_zone_new_local ();
-  time_t mytime = vik_datetime_edit_dialog ( GTK_WINDOW(gtk_widget_get_toplevel(widget)),
-                                             _("Date/Time Edit"),
-                                             wp->timestamp,
-                                             gtz );
+  gdouble mytime = vik_datetime_edit_dialog ( GTK_WINDOW(gtk_widget_get_toplevel(widget)),
+                                              _("Date/Time Edit"),
+                                              wp->timestamp,
+                                              gtz );
   g_time_zone_unref ( gtz );
 
   // Was the dialog cancelled?
-  if ( mytime == 0 )
+  if ( isnan(mytime) )
     return;
 
   // Otherwise use new value in the edit buffer
@@ -330,8 +331,10 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
     GtkWidget *img = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_MENU );
     gtk_button_set_image ( GTK_BUTTON(timevaluebutton), img );
     // Initially use current time or otherwise whatever the last value used was
-    if ( edit_wp->timestamp == 0 ) {
-      time ( &edit_wp->timestamp );
+    if ( isnan(edit_wp->timestamp) ) {
+      time_t tt;
+      time (&tt);
+      edit_wp->timestamp = (gdouble)tt;
     }
   }
   g_signal_connect ( G_OBJECT(timevaluebutton), "button-release-event", G_CALLBACK(time_edit_click), edit_wp );
@@ -416,7 +419,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
         vik_waypoint_set_type ( wp, gtk_entry_get_text ( GTK_ENTRY(typeentry) ) );
       if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
         a_thumbnails_create ( wp->image );
-      if ( edit_wp->timestamp ) {
+      if ( !isnan(edit_wp->timestamp) ) {
         wp->timestamp = edit_wp->timestamp;
         wp->has_timestamp = TRUE;
       }

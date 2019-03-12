@@ -184,7 +184,8 @@ static void calendar_mark_layer_in_month ( VikLayersPanel *vlp, VikTrwLayer *vtl
     VikTrack *trk = VIK_TRACK(value);
     // First trackpoint
     if ( trk->trackpoints && VIK_TRACKPOINT(trk->trackpoints->data)->has_timestamp ) {
-      g_date_set_time_t ( gd, VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
+      // Not worried about subsecond resolution here!
+      g_date_set_time_t ( gd, (time_t)VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
       // Is in selected month?
       if ( g_date_get_year(gd) == year && (g_date_get_month(gd) == (month+1)) ) {
 	gtk_calendar_mark_day ( GTK_CALENDAR(vlp->calendar), g_date_get_day(gd) );
@@ -397,7 +398,8 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
       VikTrack *trk = VIK_TRACK(value);
       // First trackpoint
       if ( trk->trackpoints && VIK_TRACKPOINT(trk->trackpoints->data)->has_timestamp ) {
-        g_date_set_time_t ( gd, VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
+        // Not worried about subsecond resolution here!
+        g_date_set_time_t ( gd, (time_t)VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
         // Is of this day?
         if ( g_date_get_year(gd) == year &&
              g_date_get_month(gd) == (month+1) &&
