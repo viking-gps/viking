@@ -3924,6 +3924,10 @@ Accept: */*
 	          Needs to be version 0.15.0 or greater (otherwise due to this <ulink url="https://bugs.launchpad.net/stellarium/+bug/1410529">Bug</ulink> means this does not actually work.</para>
 	  </listitem>
 	  <listitem>
+	    <para>external_text_program=<application>gedit</application></para>
+	    <para>Or in Windows it uses <application>notepad</application> - This string value must use Unix separators and not have spaces.</para>
+	  </listitem>
+	  <listitem>
 	    <para>bfilter_simplify=100</para>
 	  </listitem>
 	  <listitem>

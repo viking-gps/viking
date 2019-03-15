@@ -865,6 +865,10 @@ static gboolean have_astro_program = FALSE;
 static gchar *astro_program = NULL;
 #define VIK_SETTINGS_EXTERNAL_ASTRO_PROGRAM "external_astro_program"
 
+static gboolean have_text_program = FALSE;
+static gchar *text_program = NULL;
+#define VIK_SETTINGS_EXTERNAL_TEXT_PROGRAM "external_text_program"
+
 // NB Only performed once per program run
 static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
 {
@@ -937,6 +941,23 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
   }
   if ( g_find_program_in_path( astro_program ) ) {
     have_astro_program = TRUE;
+  }
+
+  // NB don't use xdg-open by default,
+  //  otherwise can end up opening back in a new instance of Viking!
+  if ( ! a_settings_get_string ( VIK_SETTINGS_EXTERNAL_TEXT_PROGRAM, &text_program ) ) {
+#ifdef WINDOWS
+    text_program = g_strdup ( "notepad" );
+#else
+    text_program = g_strdup ( "gedit" );
+#endif
+    if ( g_find_program_in_path( text_program ) ) {
+      have_text_program = TRUE;
+    }
+  }
+  else {
+    // User specified so assume it works
+    have_text_program = TRUE;
   }
 }
 
@@ -3676,6 +3697,24 @@ static void trw_layer_export_gpx_track ( menu_array_sublayer values )
   g_free ( auto_save_name );
 }
 
+static void trw_layer_export_external_text ( menu_array_layer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+  gchar *extfile_full = util_make_absolute_filename ( vtl->external_file, vtl->external_dirpath );
+  gchar *extfile = extfile_full ? extfile_full : vtl->external_file;
+  GError *err = NULL;
+  gchar *quoted_file = g_shell_quote ( extfile );
+  gchar *cmd = g_strdup_printf ( "%s %s", text_program, quoted_file );
+  g_free ( quoted_file );
+  g_free ( extfile_full );
+
+  if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER( vtl), _("Could not launch %s."), text_program );
+    g_error_free ( err );
+  }
+  g_free ( cmd );
+}
+
 gboolean trw_layer_waypoint_find_uuid ( const gpointer id, const VikWaypoint *wp, gpointer udata )
 {
   wpu_udata *user_data = udata;
@@ -4248,6 +4287,10 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gchar* external2 = g_strdup_printf ( _("Open with External Program_2: %s"), a_vik_get_external_gpx_program_2() );
   (void)vu_menu_add_item ( export_submenu, external2, NULL, G_CALLBACK(trw_layer_export_external_gpx_2), data );
   g_free ( external2 );
+
+  if ( vtl->external_layer != VIK_TRW_LAYER_INTERNAL && have_text_program ) {
+    (void)vu_menu_add_item ( export_submenu, _("Open with Text Editor"), GTK_STOCK_FILE, G_CALLBACK(trw_layer_export_external_text), data );
+  }
 
   GtkMenu *new_submenu = GTK_MENU(gtk_menu_new());
   GtkWidget *itemn = vu_menu_add_item ( menu, _("_New"), GTK_STOCK_NEW, NULL, data );
