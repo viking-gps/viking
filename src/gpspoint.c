@@ -90,7 +90,7 @@ static VikWaypointImageDirectionRef line_image_direction_ref = WP_IMAGE_DIRECTIO
 static gboolean line_newsegment = FALSE;
 static gboolean line_has_timestamp = FALSE;
 static time_t line_timestamp = 0;
-static gdouble line_altitude = VIK_DEFAULT_ALTITUDE;
+static gdouble line_altitude = NAN;
 static gboolean line_visible = TRUE;
 
 static gboolean line_extended = FALSE;
@@ -98,9 +98,9 @@ static gdouble line_speed = NAN;
 static gdouble line_course = NAN;
 static gint line_sat = 0;
 static gint line_fix = 0;
-static gdouble line_hdop = VIK_DEFAULT_DOP;
-static gdouble line_vdop = VIK_DEFAULT_DOP;
-static gdouble line_pdop = VIK_DEFAULT_DOP;
+static gdouble line_hdop = NAN;
+static gdouble line_vdop = NAN;
+static gdouble line_pdop = NAN;
 /* other possible properties go here */
 
 
@@ -383,7 +383,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     line_newsegment = FALSE;
     line_has_timestamp = FALSE;
     line_timestamp = 0;
-    line_altitude = VIK_DEFAULT_ALTITUDE;
+    line_altitude = NAN;
     line_visible = TRUE;
     line_symbol = NULL;
 
@@ -392,9 +392,9 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     line_course = NAN;
     line_sat = 0;
     line_fix = 0;
-    line_hdop = VIK_DEFAULT_DOP;
-    line_vdop = VIK_DEFAULT_DOP;
-    line_pdop = VIK_DEFAULT_DOP;
+    line_hdop = NAN;
+    line_vdop = NAN;
+    line_pdop = NAN;
     line_name_label = 0;
     line_dist_label = 0;
   }
@@ -629,7 +629,7 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
   fprintf ( f, "type=\"waypoint\" latitude=\"%s\" longitude=\"%s\" name=\"%s\"", s_lat, s_lon, tmp_name );
   g_free ( tmp_name );
 
-  if ( wp->altitude != VIK_DEFAULT_ALTITUDE ) {
+  if ( !isnan(wp->altitude) ) {
     gchar s_alt[COORDS_STR_BUFFER_SIZE];
     a_coords_dtostr_buffer ( wp->altitude, s_alt );
     fprintf ( f, " altitude=\"%s\"", s_alt );
@@ -719,7 +719,7 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
     g_free(name);
   }
 
-  if ( tp->altitude != VIK_DEFAULT_ALTITUDE ) {
+  if ( !isnan(tp->altitude) ) {
     a_coords_dtostr_buffer ( tp->altitude, s_alt );
     fprintf ( f, " altitude=\"%s\"", s_alt );
   }
@@ -745,17 +745,17 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
     if (tp->fix_mode > 0)
       fprintf ( f, " fix=\"%d\"", tp->fix_mode );
 
-    if ( tp->hdop != VIK_DEFAULT_DOP ) {
+    if ( !isnan(tp->hdop) ) {
       gchar ss[COORDS_STR_BUFFER_SIZE];
       a_coords_dtostr_buffer ( tp->hdop, ss );
       fprintf ( f, " hdop=\"%s\"", ss );
     }
-    if ( tp->vdop != VIK_DEFAULT_DOP ) {
+    if ( !isnan(tp->vdop) ) {
       gchar ss[COORDS_STR_BUFFER_SIZE];
       a_coords_dtostr_buffer ( tp->vdop, ss );
       fprintf ( f, " vdop=\"%s\"", ss );
     }
-    if ( tp->pdop != VIK_DEFAULT_DOP ) {
+    if ( !isnan(tp->pdop) ) {
       gchar ss[COORDS_STR_BUFFER_SIZE];
       a_coords_dtostr_buffer ( tp->pdop, ss );
       fprintf ( f, " pdop=\"%s\"", ss );

@@ -43,7 +43,7 @@ struct _VikTrackpoint {
   gboolean newsegment;
   gboolean has_timestamp;
   time_t timestamp;
-  gdouble altitude;	/* VIK_DEFAULT_ALTITUDE if data unavailable */
+  gdouble altitude;	/* NAN if data unavailable */
   gdouble speed;  	/* NAN if data unavailable */
   gdouble course;   /* NAN if data unavailable */
   guint nsats;      /* number of satellites used. 0 if data unavailable */
@@ -54,9 +54,9 @@ struct _VikTrackpoint {
 #define VIK_GPS_MODE_DGPS	4
 #define VIK_GPS_MODE_PPS 	5	/* military signal used */
   gint fix_mode;    /* VIK_GPS_MODE_NOT_SEEN if data unavailable */
-  gdouble hdop;     /* VIK_DEFAULT_DOP if data unavailable */
-  gdouble vdop;     /* VIK_DEFAULT_DOP if data unavailable */
-  gdouble pdop;     /* VIK_DEFAULT_DOP if data unavailable */
+  gdouble hdop;     /* NAN if data unavailable */
+  gdouble vdop;     /* NAN if data unavailable */
+  gdouble pdop;     /* NAN if data unavailable */
 };
 
 typedef enum {

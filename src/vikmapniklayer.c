@@ -1022,41 +1022,21 @@ static void mapnik_layer_add_menu_items ( VikMapnikLayer *vml, GtkMenu *menu, gp
 	values[MA_VML] = vml;
 	values[MA_VVP] = vik_layers_panel_get_viewport( VIK_LAYERS_PANEL(vlp) );
 
-	GtkWidget *item = gtk_menu_item_new();
-	gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-	gtk_widget_show ( item );
+	(void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
 
 	// Typical users shouldn't need to use this functionality - so debug only ATM
 	if ( vik_debug ) {
-		item = gtk_image_menu_item_new_with_mnemonic ( _("_Flush Memory Cache") );
-		gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU) );
-		g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_flush_memory), values );
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-		gtk_widget_show ( item );
+		(void)vu_menu_add_item ( menu, _("_Flush Memory Cache"), GTK_STOCK_REMOVE, G_CALLBACK(mapnik_layer_flush_memory), values );
 	}
 
-	item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_REFRESH, NULL );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_reload), values );
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show ( item );
+	(void)vu_menu_add_item ( menu, NULL, GTK_STOCK_REFRESH, G_CALLBACK(mapnik_layer_reload), values );
 
 	if ( g_strcmp0 ("", vml->filename_css) ) {
-		item = gtk_image_menu_item_new_with_mnemonic ( _("_Run Carto Command") );
-		gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_EXECUTE, GTK_ICON_SIZE_MENU) );
-		g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_carto), values );
-		gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-		gtk_widget_show ( item );
+		(void)vu_menu_add_item ( menu, _("_Run Carto Command"), GTK_STOCK_EXECUTE, G_CALLBACK(mapnik_layer_carto), values );
 	}
 
-	item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_INFO, NULL );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_information), values );
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show ( item );
-
-	item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_ABOUT, NULL );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_about), values );
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show ( item );
+	(void)vu_menu_add_item ( menu, NULL, GTK_STOCK_INFO, G_CALLBACK(mapnik_layer_information), values );
+	(void)vu_menu_add_item ( menu, NULL, GTK_STOCK_ABOUT, G_CALLBACK(mapnik_layer_about), values );
 }
 
 /**
@@ -1139,18 +1119,10 @@ static gboolean mapnik_feature_release ( VikMapnikLayer *vml, GdkEventButton *ev
 		vml->rerender_zoom = vik_viewport_get_zoom ( vvp );
 
 		if ( ! vml->right_click_menu ) {
-			GtkWidget *item;
 			vml->right_click_menu = gtk_menu_new ();
-
-			item = gtk_image_menu_item_new_with_mnemonic ( _("_Rerender Tile") );
-			gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REFRESH, GTK_ICON_SIZE_MENU) );
-			g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_rerender), vml );
-			gtk_menu_shell_append ( GTK_MENU_SHELL(vml->right_click_menu), item );
-
-			item = gtk_image_menu_item_new_with_mnemonic ( _("_Info") );
-			gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_INFO, GTK_ICON_SIZE_MENU) );
-			g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(mapnik_layer_tile_info), vml );
-			gtk_menu_shell_append ( GTK_MENU_SHELL(vml->right_click_menu), item );
+			GtkMenu *menu = GTK_MENU(vml->right_click_menu); // local rename
+			(void)vu_menu_add_item ( menu, _("_Rerender Tile"), GTK_STOCK_REFRESH, G_CALLBACK(mapnik_layer_rerender), vml );
+			(void)vu_menu_add_item ( menu, _("_Info"), GTK_STOCK_INFO, G_CALLBACK(mapnik_layer_tile_info), vml );
 		}
 
 		gtk_menu_popup ( GTK_MENU(vml->right_click_menu), NULL, NULL, NULL, NULL, event->button, event->time );

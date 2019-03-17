@@ -104,6 +104,7 @@ static gdouble latitude = 0.0;
 static gdouble longitude = 0.0;
 static gint zoom_level_osm = -1;
 static gint map_id = -1;
+static gboolean external = FALSE;
 
 /* Options */
 static GOptionEntry entries[] = 
@@ -115,6 +116,7 @@ static GOptionEntry entries[] =
   { "longitude", 0, 0, G_OPTION_ARG_DOUBLE, &longitude, N_("Longitude in decimal degrees"), NULL },
   { "zoom", 'z', 0, G_OPTION_ARG_INT, &zoom_level_osm, N_("Zoom Level (OSM). Value can be 0 - 22"), NULL },
   { "map", 'm', 0, G_OPTION_ARG_INT, &map_id, N_("Add a map layer by id value. Use 0 for the default map."), NULL },
+  { "external", 'e', 0, G_OPTION_ARG_NONE, &external, N_("Load all GPX files in external mode."), NULL },
   { NULL }
 };
 
@@ -250,7 +252,7 @@ int main( int argc, char *argv[] )
         load_startup_file = FALSE;
     }
     if ( load_startup_file )
-      vik_window_open_file ( first_window, a_vik_get_startup_file(), TRUE, TRUE, TRUE, TRUE );
+      vik_window_open_file ( first_window, a_vik_get_startup_file(), TRUE, TRUE, TRUE, TRUE, FALSE );
   }
 
   while ( ++i < argc ) {
@@ -266,7 +268,7 @@ int main( int argc, char *argv[] )
         change_filename = TRUE;
       }
 
-      vik_window_open_file ( newvw, argv[i], change_filename, (i==1), (i+1 == argc), TRUE );
+      vik_window_open_file ( newvw, argv[i], change_filename, (i==1), (i+1 == argc), TRUE, external );
     }
   }
 

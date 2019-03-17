@@ -262,7 +262,7 @@ static void minmax_array(const gdouble *array, gdouble *min, gdouble *max, gbool
   *min = 20000;
   guint i;
   for ( i=0; i < PROFILE_WIDTH; i++ ) {
-    if ( NO_ALT_TEST || (array[i] != VIK_DEFAULT_ALTITUDE) ) {
+    if ( NO_ALT_TEST || (!isnan(array[i])) ) {
       if ( array[i] > *max )
         *max = array[i];
       if ( array[i] < *min )
@@ -1614,7 +1614,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
   /* draw elevations */
   guint height = MARGIN_Y+widgets->profile_height;
   for ( i = 0; i < widgets->profile_width; i++ )
-    if ( widgets->altitudes[i] == VIK_DEFAULT_ALTITUDE )
+    if ( isnan(widgets->altitudes[i]) )
       gdk_draw_line ( GDK_DRAWABLE(pix), no_alt_info, 
                       i + MARGIN_X, MARGIN_Y, i + MARGIN_X, height );
     else 
@@ -2775,14 +2775,14 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, PropWidgets *widget
   widgets->altitudes = vik_track_make_elevation_map ( widgets->tr, widgets->profile_width );
 
   if ( widgets->altitudes == NULL ) {
-    *min_alt = *max_alt = VIK_DEFAULT_ALTITUDE;
+    *min_alt = *max_alt = NAN;
     return NULL;
   }
 
   // Don't use minmax_array(widgets->altitudes), as that is a simplified representative of the points
   //  thus can miss the highest & lowest values by a few metres
   if ( !vik_track_get_minmax_alt (widgets->tr, min_alt, max_alt) )
-    *min_alt = *max_alt = VIK_DEFAULT_ALTITUDE;
+    *min_alt = *max_alt = NAN;
 
   pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
   image = gtk_image_new_from_pixmap ( pix, NULL );
@@ -3178,17 +3178,12 @@ static GtkWidget *create_graph_page ( GtkWidget *graph,
 
 static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[])
 {
-  GtkTable *table;
-  int i;
-
-  table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
+  GtkTable *table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);
-  for (i=0; i<cnt; i++) {
-    GtkWidget *label;
-
+  for (guint i=0; i<cnt; i++) {
     // Settings so the text positioning only moves around vertically when the dialog is resized
     // This also gives more room to see the track comment
-    label = gtk_label_new(NULL);
+    GtkWidget *label = gtk_label_new(NULL);
     gtk_misc_set_alignment ( GTK_MISC(label), 1, 0.5 ); // Position text centrally in vertical plane
     gtk_label_set_markup ( GTK_LABEL(label), _(labels[i]) );
     gtk_table_attach ( table, label, 0, 1, i, i+1, GTK_FILL, GTK_SHRINK, 0, 0 );
@@ -3505,7 +3500,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   widgets->w_avg_dist = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   vik_units_height_t height_units = a_vik_get_units_height ();
-  if ( (min_alt == VIK_DEFAULT_ALTITUDE) && (max_alt == VIK_DEFAULT_ALTITUDE) )
+  if ( isnan(min_alt) && isnan(max_alt) )
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else {
     switch (height_units) {
@@ -3523,7 +3518,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   widgets->w_elev_range = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   vik_track_get_total_elevation_gain(tr, &max_alt, &min_alt );
-  if ( (min_alt == VIK_DEFAULT_ALTITUDE) && (max_alt == VIK_DEFAULT_ALTITUDE) )
+  if ( isnan(min_alt) && isnan(max_alt) )
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else {
     switch (height_units) {

@@ -30,6 +30,7 @@
 #include "viking.h"
 #include "viktrwlayer_waypointlist.h"
 #include "viktrwlayer_wpwin.h"
+#include "vikutils.h"
 
 // Long formatted date+basic time - listing this way ensures the string comparison sort works - so no local type format %x or %c here!
 #define WAYPOINT_LIST_DATE_FORMAT "%Y-%m-%d %H:%M"
@@ -303,24 +304,15 @@ static void trw_layer_copy_selected_with_position ( GtkWidget *tree_view )
 
 static void add_copy_menu_items ( GtkMenu *menu, GtkWidget *tree_view )
 {
-	GtkWidget *item = gtk_image_menu_item_new_with_mnemonic ( _("_Copy Data") );
-	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_COPY, GTK_ICON_SIZE_MENU) );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_copy_selected_only_visible_columns), tree_view );
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show ( item );
-
-	item = gtk_image_menu_item_new_with_mnemonic ( _("Copy Data (with _positions)") );
-	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_COPY, GTK_ICON_SIZE_MENU) );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_copy_selected_with_position), tree_view );
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show ( item );
+	(void)vu_menu_add_item ( menu, _("_Copy Data"), GTK_STOCK_COPY,
+	                         G_CALLBACK(trw_layer_copy_selected_only_visible_columns), tree_view );
+	(void)vu_menu_add_item ( menu, _("_Copy Data (with _positions)"), GTK_STOCK_COPY,
+	                         G_CALLBACK(trw_layer_copy_selected_with_position), tree_view );
 }
 
 static gboolean add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikWaypoint *wpt, gpointer wpt_uuid, VikViewport *vvp, GtkWidget *tree_view, gpointer data )
 {
 	static menu_array_values values;
-	GtkWidget *item;
-
 	values[MA_VTL]       = vtl;
 	values[MA_WPT]       = wpt;
 	values[MA_WPT_UUID]  = wpt_uuid;
@@ -328,32 +320,14 @@ static gboolean add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikWaypoint *w
 	values[MA_TREEVIEW]  = tree_view;
 	values[MA_WPTS_LIST] = data;
 
-	/*
-	item = gtk_image_menu_item_new_with_mnemonic ( _("_Select") );
-	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_select), values );
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show ( item );
-	*/
-
+	//(void)vu_menu_add_item ( menu, _("_Select"), GTK_STOCK_FIND, G_CALLBACK(trw_layer_waypoint_select), values );
 	// AUTO SELECT NOT TRUE YET...
 	// ATM view auto selects, so don't bother with separate select menu entry
-	item = gtk_image_menu_item_new_with_mnemonic ( _("_View") );
-	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_ZOOM_FIT, GTK_ICON_SIZE_MENU) );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_view), values );
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-	gtk_widget_show ( item );
 
-	item = gtk_image_menu_item_new_from_stock ( GTK_STOCK_PROPERTIES, NULL );
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_properties), values );
-	gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-	gtk_widget_show ( item );
-
-	item = gtk_image_menu_item_new_with_mnemonic ( _("_Show Picture...") );
-	gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock ("vik-icon-Show Picture", GTK_ICON_SIZE_MENU) ); // Own icon - see stock_icons in vikwindow.c
-	g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_show_picture), values );
-	gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-	gtk_widget_show ( item );
+	(void)vu_menu_add_item ( menu, _("_View"), GTK_STOCK_ZOOM_FIT, G_CALLBACK(trw_layer_waypoint_view), values );
+	(void)vu_menu_add_item ( menu, NULL, GTK_STOCK_PROPERTIES, G_CALLBACK(trw_layer_waypoint_properties), values );
+	// Own icon - see stock_icons in vikwindow.c
+	GtkWidget *item = vu_menu_add_item ( menu, _("_Show Picture..."), VIK_ICON_SHOW_PICTURE, G_CALLBACK(trw_layer_show_picture), values );
 	gtk_widget_set_sensitive ( item, GPOINTER_TO_INT(wpt->image) );
 
 	add_copy_menu_items ( menu, tree_view );
@@ -432,6 +406,7 @@ static gboolean trw_layer_waypoint_menu_popup ( GtkWidget *tree_view,
 		                 tree_view,
 		                 data );
 
+		gtk_widget_show_all ( menu );
 		gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
 		return TRUE;
 	}

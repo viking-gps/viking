@@ -876,6 +876,10 @@ Most operations available on tracks are available on routes, except for function
 It is possible to convert between Tracks and Routes, although converting from a Track to a Route may involve a loss of information (hence you are required to confirm this operation before it happens).
 </para>
 
+<para>
+Also see <xref linkend="trw_tools"/> for use in conjunction with this layer.
+</para>
+
 <section><title>Layer Operations</title>
 <para>
 The layer has a context menu with several operations.
@@ -1744,7 +1748,7 @@ This layer provides elevation data from the <ulink url="http://www2.jpl.nasa.gov
 Elevation data can be useful in planning trips, as you many wish to avoid/minimise the hills encountered. [OSM Cyclemap is also useful this way too]
 </para>
 <para>
-To download the data use the DEM Download tool (shown on the toolbar), and then click on a area of the viewport. Once files have been downloaded they can then be loaded from disk via the DEM properties in future application runs.
+To download the data use the <xref linkend="dem_tool_dl"/> tool (shown on the toolbar), and then click on a area of the viewport. Once files have been downloaded they can then be loaded from disk via the DEM properties in future application runs.
 </para>
 <para>
 The current data server is: <ulink url="http://dds.cr.usgs.gov/srtm/version2_1/">NASA STRM 2.1</ulink>.
@@ -1769,6 +1773,11 @@ This layer provides a single map resource, you may have multiple map layers but 
 Some maps are continually improving over time (e.g. OpenStreetMap) thus &appname; employs a caching mechanism to avoid redownloading data (see <xref linkend="mapcache"/>).
 However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option or <keycap>Ctrl+F5</keycap>.
 </para>
+
+<para>
+Also see <xref linkend="map_tool_dl"/> tool for use in conjunction with this layer.
+</para>
+
 <formalpara><title>Online Map Tile Providers</title>
 <para>
 You will need an open internet connection when you are downloading maps these following map types, but once downloaded they are available from the hard disk cache. When map are avaliable from the disk cache it is much faster and can be used offline.
@@ -2265,7 +2274,7 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+S</key
 </para>
 </section>
 
-<section><title>TrackWaypoint Layer Tools</title>
+<section id="trw_tools"><title>TrackWaypoint Layer Tools</title>
 <para>
 You must have a <xref linkend="TrackWaypoint"/> Layer selected to use these tools.
 </para>
@@ -2493,7 +2502,7 @@ This is using MapQuest at &appname; zoom level 128 over the Isle of Wight, UK.
 </para>
 </section>
 
-<section><title>DEM Download</title>
+<section id="dem_tool_dl"><title>DEM Download</title>
 <para>
 You must have a <xref linkend="DEM"/> Layer selected to use this.
 </para>
@@ -3258,6 +3267,16 @@ In order to get some information about what &appname; is doing, start it in verb
 <programlisting>viking -dV</programlisting>
 </para>
 <para>
+NB For <trademark>Windows</trademark> the process is slightly more involved as the output is typically not shown in the command prompt,
+so you have to redirect the output to a file, e.g. open the command prompt and then:
+<programlisting>
+cd "C:\Program Files\Viking"
+viking -dV 2>1 > %TMP/viking.log
+</programlisting>
+Then close &appname; before viewing the output file, such as:
+<programlisting>notepad %TMP/viking.log</programlisting>
+</para>
+<para>
 For instance you can check the correct URLs &appname; is using in requesting remote data for DEMs or map tiles in the verbose debug output.
 E.g. Something like this for DEMs:
 <screen>
@@ -3902,7 +3921,11 @@ Accept: */*
 	  <listitem>
 	    <para>external_astro_program=<ulink url="http://stellarium.org/">stellarium</ulink></para>
 	    <para>Or in Windows use <filename>C:/Progra~1/Stellarium/stellarium.exe</filename> - This string value must use Unix separators and not have spaces.
-	          Needs to be version 0.15.0 or greater (otherwise due to this <ulink url="https://bugs.launchpad.net/stellarium/+bug/1410529">Bug</ulink> means this does not actually work.</para>
+	          Needs to be version 0.15.0 or greater (otherwise due to this <ulink url="https://bugs.launchpad.net/stellarium/+bug/1410529">Bug</ulink> means this does not actually work).</para>
+	  </listitem>
+	  <listitem>
+	    <para>external_text_program=<application>gedit</application></para>
+	    <para>Or in Windows it uses <application>notepad</application> - This string value must use Unix separators and not have spaces.</para>
 	  </listitem>
 	  <listitem>
 	    <para>bfilter_simplify=100</para>
@@ -3965,7 +3988,7 @@ Accept: */*
               <term>Output Notes</term>
               <listitem>
 	      <para>If the output has <emphasis>*</emphasis> after it, then the value has been calculated via interpolation (such as speed when the Trackpoint does not contain a speed value).</para>
-	      <para>If the output has <emphasis>**</emphasis> after it, then difficulties were encountered in trying to work the value so probably a default of 0 will be shown.</para>
+	      <para>If the output has <emphasis>**</emphasis> after it, then difficulties were encountered in trying to work out the value so probably a default of 0 will be shown.</para>
 	      </listitem>
             </varlistentry>
           </variablelist>

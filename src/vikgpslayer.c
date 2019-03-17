@@ -782,67 +782,29 @@ static void gps_layer_change_coord_mode ( VikGpsLayer *vgl, VikCoordMode mode )
 static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer vlp )
 {
   static gpointer pass_along[2];
-  GtkWidget *item;
   pass_along[0] = vgl;
   pass_along[1] = vlp;
 
-  item = gtk_menu_item_new();
-  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-  gtk_widget_show ( item );
+  (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
 
   /* Now with icons */
-  item = gtk_image_menu_item_new_with_mnemonic ( _("_Upload to GPS") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_UP, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_upload_cb), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Download from _GPS") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_GO_DOWN, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_download_cb), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
+  (void)vu_menu_add_item ( menu, _("_Upload to GPS"), GTK_STOCK_GO_UP, G_CALLBACK(gps_upload_cb), pass_along );
+  (void)vu_menu_add_item ( menu, _("Download from _GPS"), GTK_STOCK_GO_DOWN, G_CALLBACK(gps_download_cb), pass_along );
 
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
-  item = gtk_image_menu_item_new_with_mnemonic ( vgl->realtime_tracking  ?
-						 "_Stop Realtime Tracking" :
-						 "_Start Realtime Tracking" );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, vgl->realtime_tracking ?
-				  gtk_image_new_from_stock (GTK_STOCK_MEDIA_STOP, GTK_ICON_SIZE_MENU) :
-				  gtk_image_new_from_stock (GTK_STOCK_MEDIA_PLAY, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_start_stop_tracking_cb), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
+  (void)vu_menu_add_item ( menu,
+                           vgl->realtime_tracking ? "_Stop Realtime Tracking" : "_Start Realtime Tracking",
+                           vgl->realtime_tracking ? GTK_STOCK_MEDIA_STOP : GTK_STOCK_MEDIA_PLAY,
+			   G_CALLBACK(gps_start_stop_tracking_cb), pass_along );
 
-  item = gtk_menu_item_new();
-  gtk_menu_shell_append ( GTK_MENU_SHELL(menu), item );
-  gtk_widget_show ( item );
+  (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
 
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Empty _Realtime") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_realtime_cb), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
+  (void)vu_menu_add_item ( menu, _("Empty _Realtime"), GTK_STOCK_REMOVE, G_CALLBACK(gps_empty_realtime_cb), pass_along );
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
 
-  item = gtk_image_menu_item_new_with_mnemonic ( _("E_mpty Upload") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_upload_cb), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("_Empty Download") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_download_cb), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
-
-  item = gtk_image_menu_item_new_with_mnemonic ( _("Empty _All") );
-  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_REMOVE, GTK_ICON_SIZE_MENU) );
-  g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(gps_empty_all_cb), pass_along );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-  gtk_widget_show ( item );
-
+  (void)vu_menu_add_item ( menu, _("E_mpty Upload"), GTK_STOCK_REMOVE, G_CALLBACK(gps_empty_upload_cb), pass_along );
+  (void)vu_menu_add_item ( menu, _("_Empty Download"), GTK_STOCK_REMOVE, G_CALLBACK(gps_empty_download_cb), pass_along );
+  (void)vu_menu_add_item ( menu, _("Empty _All"), GTK_STOCK_REMOVE, G_CALLBACK(gps_empty_all_cb), pass_along );
 }
 
 static void disconnect_layer_signal ( VikLayer *vl, VikGpsLayer *vgl )
@@ -1725,8 +1687,8 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
       gboolean replace = FALSE;
       int heading = isnan(vgl->realtime_fix.fix.track) ? 0 : (int)floor(vgl->realtime_fix.fix.track);
       int last_heading = isnan(vgl->last_fix.fix.track) ? 0 : (int)floor(vgl->last_fix.fix.track);
-      int alt = isnan(vgl->realtime_fix.fix.altitude) ? VIK_DEFAULT_ALTITUDE : floor(vgl->realtime_fix.fix.altitude);
-      int last_alt = isnan(vgl->last_fix.fix.altitude) ? VIK_DEFAULT_ALTITUDE : floor(vgl->last_fix.fix.altitude);
+      int alt = isnan(vgl->realtime_fix.fix.altitude) ? 0 : (int)floor(vgl->realtime_fix.fix.altitude);
+      int last_alt = isnan(vgl->last_fix.fix.altitude) ? 0 : (int)floor(vgl->last_fix.fix.altitude);
       if (((last_tp = g_list_last(vgl->realtime_track->trackpoints)) != NULL) &&
           (vgl->realtime_fix.fix.mode > MODE_2D) &&
           (vgl->last_fix.fix.mode <= MODE_2D) &&
@@ -1740,7 +1702,7 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
           ((forced || 
             ((heading < last_heading) && (heading < (last_heading - 3))) || 
             ((heading > last_heading) && (heading > (last_heading + 3))) ||
-            ((alt != VIK_DEFAULT_ALTITUDE) && (alt != last_alt)))))) {
+            (alt && (alt != last_alt)))))) {
         /* TODO: check for new segments */
         VikTrackpoint *tp = vik_trackpoint_new();
         tp->newsegment = FALSE;
@@ -1960,8 +1922,7 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
   vgl->vgpsd->vgl = vgl;
 
   vgl->realtime_fix.dirty = vgl->last_fix.dirty = FALSE;
-  /* track alt/time graph uses VIK_DEFAULT_ALTITUDE (0.0) as invalid */
-  vgl->realtime_fix.fix.altitude = vgl->last_fix.fix.altitude = VIK_DEFAULT_ALTITUDE;
+  vgl->realtime_fix.fix.altitude = vgl->last_fix.fix.altitude = NAN;
   vgl->realtime_fix.fix.speed = vgl->last_fix.fix.speed = NAN;
 
   if (vgl->realtime_record) {

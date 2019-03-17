@@ -25,6 +25,7 @@
 #endif
 
 #include "viking.h"
+#include "vikutils.h"
 #include "settings.h"
 
 #include <string.h>
@@ -137,29 +138,20 @@ static GtkWidget* layers_panel_create_popup ( VikLayersPanel *vlp, gboolean full
 
   if ( full ) {
     for ( ii = 0; ii < G_N_ELEMENTS(entries); ii++ ) {
-      if ( entries[ii].stock_id ) {
-        menuitem = gtk_image_menu_item_new_with_mnemonic ( entries[ii].label );
-        gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menuitem, gtk_image_new_from_stock (entries[ii].stock_id, GTK_ICON_SIZE_MENU) );
-      }
-      else
-        menuitem = gtk_menu_item_new_with_mnemonic ( entries[ii].label );
-
-      g_signal_connect_swapped ( G_OBJECT(menuitem), "activate", G_CALLBACK(entries[ii].callback), vlp );
-      gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-      gtk_widget_show ( menuitem );
+      (void)vu_menu_add_item ( GTK_MENU(menu), entries[ii].label, entries[ii].stock_id, G_CALLBACK(entries[ii].callback), vlp );
     }
   }
 
   GtkWidget *submenu = gtk_menu_new();
   menuitem = gtk_menu_item_new_with_mnemonic ( _("New Layer") );
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-  gtk_widget_show ( menuitem );
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), submenu );
 
   // Static: so memory accessible yet not continually allocated
   static gpointer lpnl[VIK_LAYER_NUM_TYPES][2];
 
   for ( ii = 0; ii < VIK_LAYER_NUM_TYPES; ii++ ) {
+
     if ( vik_layer_get_interface(ii)->icon ) {
       menuitem = gtk_image_menu_item_new_with_mnemonic ( _(vik_layer_get_interface(ii)->name) );
       gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menuitem, gtk_image_new_from_pixbuf ( vik_layer_load_icon (ii) ) );
@@ -172,9 +164,9 @@ static GtkWidget* layers_panel_create_popup ( VikLayersPanel *vlp, gboolean full
 
     g_signal_connect_swapped ( G_OBJECT(menuitem), "activate", G_CALLBACK(layers_panel_new_layer), lpnl[ii] );
     gtk_menu_shell_append (GTK_MENU_SHELL (submenu), menuitem);
-    gtk_widget_show ( menuitem );
   }
 
+  gtk_widget_show_all ( menu );
   return menu;
 }
 
@@ -555,7 +547,6 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
 {
   GtkMenu *menu = NULL;
 
-
   if ( iter )
   {
     if ( vik_treeview_item_get_type ( vlp->vt, iter ) == VIK_TREEVIEW_TYPE_LAYER )
@@ -566,47 +557,32 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
         menu = GTK_MENU ( layers_panel_create_popup ( vlp, TRUE ) );
       else
       {
-        GtkWidget *del, *prop;
 	VikStdLayerMenuItem menu_selection = vik_layer_get_menu_items_selection(layer);
 
         menu = GTK_MENU ( gtk_menu_new () );
 
 	if (menu_selection & VIK_MENU_ITEM_PROPERTY) {
-	  prop = gtk_image_menu_item_new_from_stock ( GTK_STOCK_PROPERTIES, NULL );
-	  g_signal_connect_swapped ( G_OBJECT(prop), "activate", G_CALLBACK(vik_layers_panel_properties), vlp );
-	  gtk_menu_shell_append (GTK_MENU_SHELL (menu), prop);
-	  gtk_widget_show ( prop );
+          (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_PROPERTIES, G_CALLBACK(vik_layers_panel_properties), vlp );
 	}
 
 	if (menu_selection & VIK_MENU_ITEM_CUT) {
-	  del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_CUT, NULL );
-	  g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_cut_selected), vlp );
-	  gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
-	  gtk_widget_show ( del );
+          (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_CUT, G_CALLBACK(vik_layers_panel_cut_selected), vlp );
 	}
 
 	if (menu_selection & VIK_MENU_ITEM_COPY) {
-	  del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_COPY, NULL );
-	  g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_copy_selected), vlp );
-	  gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
-	  gtk_widget_show ( del );
+          (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_COPY, G_CALLBACK(vik_layers_panel_copy_selected), vlp );
 	}
 
 	if (menu_selection & VIK_MENU_ITEM_PASTE) {
-	  del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_PASTE, NULL );
-	  g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_paste_selected), vlp );
-	  gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
-	  gtk_widget_show ( del );
+          (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_PASTE, G_CALLBACK(vik_layers_panel_paste_selected), vlp );
 	}
 
 	if (menu_selection & VIK_MENU_ITEM_DELETE) {
-	  del = gtk_image_menu_item_new_from_stock ( GTK_STOCK_DELETE, NULL );
-	  g_signal_connect_swapped ( G_OBJECT(del), "activate", G_CALLBACK(vik_layers_panel_delete_selected), vlp );
-	  gtk_menu_shell_append (GTK_MENU_SHELL (menu), del);
-	  gtk_widget_show ( del );
+          (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_DELETE, G_CALLBACK(vik_layers_panel_delete_selected), vlp );
 	}
       }
       vik_layer_add_menu_items ( layer, menu, vlp );
+      gtk_widget_show_all ( GTK_WIDGET(menu) );
     }
     else
     {
