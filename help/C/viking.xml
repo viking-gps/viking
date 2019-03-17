@@ -3921,7 +3921,7 @@ Accept: */*
 	  <listitem>
 	    <para>external_astro_program=<ulink url="http://stellarium.org/">stellarium</ulink></para>
 	    <para>Or in Windows use <filename>C:/Progra~1/Stellarium/stellarium.exe</filename> - This string value must use Unix separators and not have spaces.
-	          Needs to be version 0.15.0 or greater (otherwise due to this <ulink url="https://bugs.launchpad.net/stellarium/+bug/1410529">Bug</ulink> means this does not actually work.</para>
+	          Needs to be version 0.15.0 or greater (otherwise due to this <ulink url="https://bugs.launchpad.net/stellarium/+bug/1410529">Bug</ulink> means this does not actually work).</para>
 	  </listitem>
 	  <listitem>
 	    <para>external_text_program=<application>gedit</application></para>
@@ -3988,7 +3988,7 @@ Accept: */*
               <term>Output Notes</term>
               <listitem>
 	      <para>If the output has <emphasis>*</emphasis> after it, then the value has been calculated via interpolation (such as speed when the Trackpoint does not contain a speed value).</para>
-	      <para>If the output has <emphasis>**</emphasis> after it, then difficulties were encountered in trying to work the value so probably a default of 0 will be shown.</para>
+	      <para>If the output has <emphasis>**</emphasis> after it, then difficulties were encountered in trying to work out the value so probably a default of 0 will be shown.</para>
 	      </listitem>
             </varlistentry>
           </variablelist>
