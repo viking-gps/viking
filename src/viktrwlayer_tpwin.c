@@ -502,30 +502,31 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
         gtk_label_set_text ( tpwin->diff_speed, "--" );
       else
       {
+        gdouble tmp_speed = vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / ABS(tp->timestamp - tpwin->cur_tp->timestamp);
 	switch (speed_units) {
 	case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f km/h", VIK_MPS_TO_KPH(vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / (ABS(tp->timestamp - tpwin->cur_tp->timestamp))) );
+          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f km/h", VIK_MPS_TO_KPH(tmp_speed) );
 	  break;
 	case VIK_UNITS_SPEED_MILES_PER_HOUR:
-	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f mph", VIK_MPS_TO_MPH(vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / (ABS(tp->timestamp - tpwin->cur_tp->timestamp))) );
+          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f mph", VIK_MPS_TO_MPH(tmp_speed) );
 	  break;
 	case VIK_UNITS_SPEED_METRES_PER_SECOND:
-	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f m/s", vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / ABS(tp->timestamp - tpwin->cur_tp->timestamp) );
+          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f m/s", tmp_speed );
 	  break;
 	case VIK_UNITS_SPEED_KNOTS:
-	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f knots", VIK_MPS_TO_KNOTS(vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / (ABS(tp->timestamp - tpwin->cur_tp->timestamp))) );
+          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f knots", VIK_MPS_TO_KNOTS(tmp_speed) );
 	  break;
 	case VIK_UNITS_SPEED_SECONDS_PER_KM:
-	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f s/km", VIK_MPS_TO_PACE_SPK(vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / (ABS(tp->timestamp - tpwin->cur_tp->timestamp))) );
+          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f s/km", VIK_MPS_TO_PACE_SPK(tmp_speed) );
 	  break;
 	case VIK_UNITS_SPEED_MINUTES_PER_KM:
-	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f min/km", VIK_MPS_TO_PACE_MPK(vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / (ABS(tp->timestamp - tpwin->cur_tp->timestamp))) );
+          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f min/km", VIK_MPS_TO_PACE_MPK(tmp_speed) );
 	  break;
 	case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f sec/mi", VIK_MPS_TO_PACE_SPM(vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / (ABS(tp->timestamp - tpwin->cur_tp->timestamp))) );
+          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f sec/mi", VIK_MPS_TO_PACE_SPM(tmp_speed) );
 	  break;
 	case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-	  g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f min/mi", VIK_MPS_TO_PACE_MPM(vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / (ABS(tp->timestamp - tpwin->cur_tp->timestamp))) );
+          g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f min/mi", VIK_MPS_TO_PACE_MPM(tmp_speed) );
 	  break;
 	default:
 	  g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
