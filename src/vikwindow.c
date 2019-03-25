@@ -1562,27 +1562,75 @@ static void draw_release ( VikWindow *vw, GdkEventButton *event )
   }
 }
 
+static void scroll_zoom_direction ( VikWindow *vw, GdkScrollDirection direction )
+{
+  if ( a_vik_get_invert_scroll_direction() ) {
+    if ( direction == GDK_SCROLL_DOWN )
+     vik_viewport_zoom_in (vw->viking_vvp);
+    else if ( direction == GDK_SCROLL_UP ) {
+      vik_viewport_zoom_out (vw->viking_vvp);
+    }
+  } else {
+    if ( direction == GDK_SCROLL_UP )
+      vik_viewport_zoom_in (vw->viking_vvp);
+    else if ( direction == GDK_SCROLL_DOWN ) {
+      vik_viewport_zoom_out (vw->viking_vvp);
+    }
+  }
+}
+
+static void scroll_move_viewport ( VikWindow *vw, GdkEventScroll *event )
+{
+  if ( a_vik_get_invert_scroll_direction() ) {
+    switch ( event->direction ) {
+    case GDK_SCROLL_RIGHT:
+      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*0.666, vik_viewport_get_height(vw->viking_vvp)/2 ); break;
+    case GDK_SCROLL_LEFT:
+      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*0.333, vik_viewport_get_height(vw->viking_vvp)/2 ); break;
+    case GDK_SCROLL_DOWN:
+      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*0.666 ); break;
+    case GDK_SCROLL_UP:
+      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*0.333 ); break;
+    default: g_critical ( "%s: unhandled scroll direction %d", __FUNCTION__, event->direction ); break;
+    }
+  } else {
+    switch ( event->direction ) {
+    case GDK_SCROLL_RIGHT:
+      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*0.333, vik_viewport_get_height(vw->viking_vvp)/2 ); break;
+    case GDK_SCROLL_LEFT:
+      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*0.666, vik_viewport_get_height(vw->viking_vvp)/2 ); break;
+    case GDK_SCROLL_DOWN:
+      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*0.333 ); break;
+    case GDK_SCROLL_UP:
+      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*0.666 ); break;
+    default: g_critical ( "%s: unhandled scroll direction %d", __FUNCTION__, event->direction ); break;
+    }
+  }
+}
+
 static void draw_scroll (VikWindow *vw, GdkEventScroll *event)
 {
+  if ( !a_vik_get_scroll_to_zoom() ) {
+    scroll_move_viewport ( vw, event );
+    draw_update(vw);
+    return;
+  }
   guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
   if ( modifiers == GDK_CONTROL_MASK ) {
     /* control == pan up & down */
     if ( event->direction == GDK_SCROLL_UP )
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)/3 );
-    else
+    else if ( event->direction == GDK_SCROLL_DOWN )
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*2/3 );
   } else if ( modifiers == GDK_SHIFT_MASK ) {
     /* shift == pan left & right */
     if ( event->direction == GDK_SCROLL_UP )
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/3, vik_viewport_get_height(vw->viking_vvp)/2 );
-    else
+    else if ( event->direction == GDK_SCROLL_DOWN )
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*2/3, vik_viewport_get_height(vw->viking_vvp)/2 );
   } else if ( modifiers == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) ) {
     // This zoom is on the center position
-    if ( event->direction == GDK_SCROLL_UP )
-      vik_viewport_zoom_in (vw->viking_vvp);
-    else
-      vik_viewport_zoom_out (vw->viking_vvp);
+    scroll_zoom_direction ( vw, event->direction );
   } else {
     /* make sure mouse is still over the same point on the map when we zoom */
     VikCoord coord;
@@ -1590,10 +1638,7 @@ static void draw_scroll (VikWindow *vw, GdkEventScroll *event)
     gint center_x = vik_viewport_get_width ( vw->viking_vvp ) / 2;
     gint center_y = vik_viewport_get_height ( vw->viking_vvp ) / 2;
     vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
-    if ( event->direction == GDK_SCROLL_UP )
-      vik_viewport_zoom_in (vw->viking_vvp);
-    else
-      vik_viewport_zoom_out(vw->viking_vvp);
+    scroll_zoom_direction ( vw, event->direction );
     vik_viewport_coord_to_screen ( vw->viking_vvp, &coord, &x, &y );
     vik_viewport_set_center_screen ( vw->viking_vvp, center_x + (x - event->x),
                                      center_y + (y - event->y) );

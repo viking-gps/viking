@@ -234,6 +234,10 @@ typedef enum {
 
 vik_positional_t a_vik_get_ruler_area_label_pos ( );
 
+gboolean a_vik_get_invert_scroll_direction ( );
+
+gboolean a_vik_get_scroll_to_zoom ( );
+
 gboolean a_vik_get_restore_window_state ( );
 
 gboolean a_vik_get_add_default_map_layer ( );

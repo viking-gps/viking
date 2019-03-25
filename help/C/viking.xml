@@ -2703,6 +2703,14 @@ When no TrackWaypoint Layer is selected (or the layer is invisibile) then the fi
 <para>A setting to control the position of the label drawn on the viewport that shows the area value. Includes a setting to turn off the label.
 </para>
 </section>
+<section><title>Use Scroll to Zoom</title>
+<para>A setting to control if scroll events cause the viewport to zoom (rather than moving). Useful with mouse scroll wheels, but less intuitive for touchpads.
+</para>
+</section>
+<section><title>Invert Scroll Direction</title>
+<para>A setting to control the direction of scroll events. Especially useful with touchpads and can be used to override the desktop system's setting.
+</para>
+</section>
 </section>
 </section>
 

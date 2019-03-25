@@ -125,6 +125,10 @@ static VikLayerParam prefs_advanced[] = {
     N_("Open files (but not .vik ones) into the selected TrackWaypoint layer."), NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "calendar_show_day_names", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show calendar day names:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "ruler_area_label_position", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Ruler area label position:"), VIK_LAYER_WIDGET_COMBOBOX, params_pos_type, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "use_scroll_to_zoom", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Use Scroll to Zoom:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Whether scroll events zoom or move the viewport"), NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "invert_scroll_direction", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Invert Scroll Direction:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Invert direction of scrolling, particularly for touchpad use"), NULL, NULL, NULL },
 };
 
 static gchar * params_startup_methods[] = {N_("Home Location"), N_("Last Location"), N_("Specified File"), N_("Auto Location"), NULL};
@@ -270,6 +274,12 @@ void a_vik_preferences_init ()
 
   tmp.u = VIK_POSITIONAL_MIDDLE;
   a_preferences_register(&prefs_advanced[6], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
+
+  tmp.b = TRUE;
+  a_preferences_register(&prefs_advanced[7], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
+
+  tmp.b = FALSE;
+  a_preferences_register(&prefs_advanced[8], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -407,6 +417,16 @@ gboolean a_vik_get_calendar_show_day_names ( )
 vik_positional_t a_vik_get_ruler_area_label_pos ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "ruler_area_label_position")->u;
+}
+
+gboolean a_vik_get_invert_scroll_direction ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "invert_scroll_direction")->b;
+}
+
+gboolean a_vik_get_scroll_to_zoom ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "use_scroll_to_zoom")->b;
 }
 
 // Startup Options
