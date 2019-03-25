@@ -157,6 +157,8 @@ struct _VikTrwLayer {
   guint8 line_thickness;
   guint8 bg_line_thickness;
   vik_layer_sort_order_t track_sort_order;
+  gboolean auto_dem;
+  gboolean auto_dedupl;
 
   // Metadata
   VikTRWMetadata *metadata;
@@ -671,6 +673,10 @@ VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "speed_factor", VIK_LAYER_PARAM_DOUBLE, GROUP_TRACKS_ADV, N_("Draw by Speed Factor (%):"), VIK_LAYER_WIDGET_HSCALE, &params_scales[1], NULL,
     N_("The percentage factor away from the average speed determining the color used"), speed_factor_default, NULL, NULL },
   { VIK_LAYER_TRW, "tracksortorder", VIK_LAYER_PARAM_UINT, GROUP_TRACKS_ADV, N_("Track Sort Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_sort_order, NULL, NULL, sort_order_default, NULL, NULL },
+  { VIK_LAYER_TRW, "trackautodem", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS_ADV, N_("Apply DEM Automatically"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Automatically apply DEM to trackpoints on file load"), vik_lpd_false_default, NULL, NULL },
+  { VIK_LAYER_TRW, "trackautodedupl", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS_ADV, N_("Remove Duplicate Trackpoints"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Automatically delete duplicate trackpoints on file load"), vik_lpd_false_default, NULL, NULL },
 
   { VIK_LAYER_TRW, "drawlabels", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Labels"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpfontsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Font Size:"), VIK_LAYER_WIDGET_COMBOBOX, params_font_sizes, NULL, NULL, wpfontsize_default, NULL, NULL },
@@ -692,6 +698,7 @@ VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "metadataauthor", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Author"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
   { VIK_LAYER_TRW, "metadatatime", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Creation Time"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
   { VIK_LAYER_TRW, "metadatakeywords", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Keywords"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
+
   { VIK_LAYER_TRW, "external_layer", VIK_LAYER_PARAM_UINT, GROUP_FILESYSTEM, N_("External layer:"), VIK_LAYER_WIDGET_COMBOBOX, params_external_type, NULL, N_("Layer data stored in the Viking file, in an external file, or in an external file but changes are not written to the file (file only loaded at startup)"), external_layer_default, NULL, NULL },
   { VIK_LAYER_TRW, "external_file", VIK_LAYER_PARAM_STRING, GROUP_FILESYSTEM, N_("Save layer as:"), VIK_LAYER_WIDGET_FILESAVE, GINT_TO_POINTER(VF_FILTER_GPX), NULL, N_("Specify where layer should be saved.  Overwrites file if it exists."), string_default, NULL, NULL },
 };
@@ -721,6 +728,8 @@ enum {
   PARAM_TBGC,
   PARAM_TDSF,
   PARAM_TSO,
+  PARAM_TADEM,
+  PARAM_TRDUP,
   // Waypoints
   PARAM_DLA,
   PARAM_WPFONTSIZE,
@@ -1337,6 +1346,8 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
       break;
     case PARAM_TDSF: vtl->track_draw_speed_factor = vlsp->data.d; break;
     case PARAM_TSO: if ( vlsp->data.u < VL_SO_LAST ) vtl->track_sort_order = vlsp->data.u; break;
+    case PARAM_TADEM: vtl->auto_dem = vlsp->data.b; break;
+    case PARAM_TRDUP: vtl->auto_dedupl = vlsp->data.b; break;
     case PARAM_DLA: vtl->drawlabels = vlsp->data.b; break;
     case PARAM_DI: vtl->drawimages = vlsp->data.b; break;
     case PARAM_IS:
@@ -1446,6 +1457,8 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_TBGC: rv.c = vtl->track_bg_color; break;
     case PARAM_TDSF: rv.d = vtl->track_draw_speed_factor; break;
     case PARAM_TSO: rv.u = vtl->track_sort_order; break;
+    case PARAM_TADEM: rv.b = vtl->auto_dem; break;
+    case PARAM_TRDUP: rv.b = vtl->auto_dedupl; break;
     case PARAM_IS: rv.u = vtl->image_size; break;
     case PARAM_IA: rv.u = vtl->image_alpha; break;
     case PARAM_ICS: rv.u = vtl->image_cache_size; break;
@@ -10739,6 +10752,27 @@ static void trw_layer_post_read ( VikTrwLayer *vtl, VikViewport *vvp, gboolean f
   if ( VIK_LAYER(vtl)->realized )
     trw_layer_verify_thumbnails ( vtl );
   trw_layer_track_alloc_colors ( vtl );
+
+  GHashTableIter iter;
+  gpointer key, value;
+
+  if ( vtl->auto_dem ) {
+    g_hash_table_iter_init ( &iter, vtl->tracks );
+    while ( g_hash_table_iter_next ( &iter, &key, &value ) ) {
+      VikTrack *trk = VIK_TRACK(value);
+      (void)vik_track_apply_dem_data ( trk, FALSE );
+    }
+  }
+
+  if ( vtl->auto_dedupl ) {
+    g_hash_table_iter_init ( &iter, vtl->tracks );
+    while ( g_hash_table_iter_next ( &iter, &key, &value ) ) {
+      VikTrack *trk = VIK_TRACK(value);
+      gulong count = vik_track_remove_dup_points(trk);
+      if ( count )
+        g_debug ( "%s: Auto removed %ld duplicate points", __FUNCTION__, count );
+    }
+  }
 
   trw_layer_calculate_bounds_waypoints ( vtl );
   trw_layer_calculate_bounds_tracks ( vtl );
