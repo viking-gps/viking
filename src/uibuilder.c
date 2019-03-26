@@ -284,7 +284,7 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
           int pos = gtk_combo_box_get_active ( GTK_COMBO_BOX(widget) );
           rv.s = ((const char **)param->extra_widget_data)[pos];
         }
-        else
+        else if ( widget )
         {
           /* Return raw value */
 #if GTK_CHECK_VERSION (2, 24, 0)
@@ -293,7 +293,9 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
           rv.s = gtk_combo_box_get_active_text ( GTK_COMBO_BOX(widget) );
 #endif
         }
-	g_debug("%s: %s", __FUNCTION__, rv.s);
+        else
+          rv.s = NULL;
+        g_debug("%s: %s", __FUNCTION__, rv.s);
       }
       break;
     case VIK_LAYER_WIDGET_RADIOGROUP:
