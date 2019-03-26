@@ -1079,7 +1079,26 @@ void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdou
 	default: speed_units_str = _("m/s"); break; // VIK_UNITS_SPEED_METRES_PER_SECOND:
 	}
 
-	gchar *full_str = g_strdup_printf ( "%s %s", format, speed_units_str );
-	g_snprintf ( buf, size, full_str, my_speed );
-	g_free ( full_str );
+	switch (speed_units) {
+	case VIK_UNITS_SPEED_MINUTES_PER_KM: // Fall through
+	case VIK_UNITS_SPEED_MINUTES_PER_MILE: {
+		// Mins per dist values -> prefer mins:secs output rather than decimal minutes
+		// NB Thus the input format function parameter is ignored for these
+		gint mins = (gint)my_speed;
+		gdouble secs = (my_speed - (gdouble)mins) * 60.0;
+		gint isecs = (gint)round(secs);
+		if ( isecs == 60 ) {
+			isecs = 0;
+			mins++;
+		}
+		g_snprintf ( buf, size, "%d:%02d %s", mins, isecs, speed_units_str );
+		break;
+	};
+	default: {
+		gchar *full_str = g_strdup_printf ( "%s %s", format, speed_units_str );
+		g_snprintf ( buf, size, full_str, my_speed );
+		g_free ( full_str );
+		break;
+	}
+	}
 }
