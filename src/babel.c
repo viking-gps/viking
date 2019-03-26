@@ -630,8 +630,7 @@ static gboolean load_feature ()
     args[i] = NULL;
 
     ret = babel_general_convert (load_feature_cb, args, NULL);
-  } else
-    g_critical("gpsbabel not found in PATH");
+  }
 
   return ret;
 }
@@ -678,7 +677,7 @@ void a_babel_post_init ()
   if ( g_strcmp0 ( gpsbabel, "gpsbabel" ) == 0 ) {
     gpsbabel_loc = g_find_program_in_path( "gpsbabel" );
     if ( !gpsbabel_loc )
-      g_critical( "gpsbabel not found in PATH" );
+      g_warning( "gpsbabel not found in PATH" );
   }
   else
     gpsbabel_loc = g_strdup ( gpsbabel );
