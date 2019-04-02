@@ -114,7 +114,10 @@ and docbook-xsl in your Build-Depends control field.
         <arg choice="plain"><option>--external</option></arg>
       </group>
       <sbr/>
-      <arg rep="repeat"><replaceable>file</replaceable></arg>
+      <group choice="plain">
+        <arg rep="repeat"><replaceable>file</replaceable></arg>
+        <arg rep="norepeat"><replaceable>-</replaceable></arg>
+      </group>
     </cmdsynopsis>
     <cmdsynopsis>
       <command>&dhpackage;</command>
@@ -158,6 +161,12 @@ and docbook-xsl in your Build-Depends control field.
         <term><option>file</option></term>
         <listitem>
           <para>Specify file to load at start.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-</option></term>
+        <listitem>
+          <para>Read input from standard in.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
