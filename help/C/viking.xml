@@ -222,6 +222,7 @@ buttons at the bottom of the layers panel.
 <para>
   The panel also contains a calendar to show when <xref linkend="TrackWaypoint"/> Layers occurred.
   Double clicking on the day will select and move the viewport display to that layer.
+  Right clicking brings up a menu from which you can select to go to the previous or next layer in time.
 </para>
 </section>
 <section><title>Viewport</title>

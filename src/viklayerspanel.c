@@ -249,6 +249,112 @@ static void layers_calendar_day_selected_dc_cb ( VikLayersPanel *vlp )
   g_free ( date_str );
 }
 
+/**
+ *
+ */
+gboolean layers_calendar_forward ( VikLayersPanel *vlp )
+{
+  guint year, month, day;
+  gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &year, &month, &day );
+  // Limit the search into the future
+  time_t now = time (NULL);
+  if (now == (time_t) -1) {
+    g_critical ( "%s: current time unavailable", __FUNCTION__ );
+    return TRUE;
+  }
+  GDate *gd_now = g_date_new ();
+  g_date_set_time_t ( gd_now, now );
+
+  GDate *gd = g_date_new_dmy ( day, month, year );
+  gboolean found = FALSE;
+  gchar *date_str = NULL;
+  while ( !found && (g_date_compare(gd, gd_now) < 0) ) {
+    // Free previous allocation
+    g_free ( date_str );
+    // Search on the next day
+    g_date_add_days ( gd, 1 );
+    year = g_date_get_year ( gd );
+    month = g_date_get_month ( gd );
+    day = g_date_get_day ( gd );
+    date_str = g_strdup_printf ( "%d-%02d-%02d", year, month+1, day );
+    found = vik_aggregate_layer_search_date ( vlp->toplayer, date_str );
+  }
+  if ( found ) {
+    gtk_calendar_select_day ( GTK_CALENDAR(vlp->calendar), day );
+    gtk_calendar_select_month ( GTK_CALENDAR(vlp->calendar), month, year );
+  } else {
+    a_dialog_info_msg_extra ( GTK_WINDOW(VIK_WINDOW_FROM_WIDGET(vlp)), _("Nothing found up to %s"), date_str );
+  }
+  g_debug ( "%s: %s %d", __FUNCTION__, date_str, found );
+  g_free ( date_str );
+  g_date_free ( gd_now );
+  g_date_free ( gd );
+  return TRUE;
+}
+
+/**
+ *
+ */
+gboolean layers_calendar_back ( VikLayersPanel *vlp )
+{
+  guint year, month, day;
+  gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &year, &month, &day );
+
+  GDate *gd = g_date_new_dmy ( day, month, year );
+  gboolean found = FALSE;
+  const guint limit = 3650; // Search up to 10 years ago from selected date
+  guint ii = 0;
+  gchar *date_str = NULL;
+  while ( !found && ii < limit ) {
+    // Free previous allocation
+    g_free ( date_str );
+    // Search on the previous day
+    g_date_subtract_days ( gd, 1 );
+    year = g_date_get_year ( gd );
+    month = g_date_get_month ( gd );
+    day = g_date_get_day ( gd );
+    date_str = g_strdup_printf ( "%d-%02d-%02d", year, month+1, day );
+    found = vik_aggregate_layer_search_date ( vlp->toplayer, date_str );
+    ii++;
+  }
+  if ( found ) {
+    gtk_calendar_select_day ( GTK_CALENDAR(vlp->calendar), day );
+    gtk_calendar_select_month ( GTK_CALENDAR(vlp->calendar), month, year );
+  } else {
+    a_dialog_info_msg_extra ( GTK_WINDOW(VIK_WINDOW_FROM_WIDGET(vlp)), _("Nothing found back to %s"), date_str );
+  }
+  g_debug ( "%s: %s %d", __FUNCTION__, date_str, found );
+  g_free ( date_str );
+  g_date_free ( gd );
+  return TRUE;
+}
+
+/**
+ *
+ */
+gboolean layers_calendar_today ( VikLayersPanel *vlp )
+{
+  vu_calendar_set_to_today ( vlp->calendar );
+  return TRUE;
+}
+
+/**
+ * Enable a right click menu on the calendar
+ */
+static gboolean layers_calendar_button_press_cb ( VikLayersPanel *vlp, GdkEventButton *event )
+{
+  if ( event->button == 3 ) {
+    GtkMenu *menu = GTK_MENU ( gtk_menu_new () );
+    (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_GO_BACK, G_CALLBACK(layers_calendar_back), vlp );
+    (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_GO_FORWARD, G_CALLBACK(layers_calendar_forward), vlp );
+    (void)vu_menu_add_item ( menu, _("_Today"), GTK_STOCK_HOME, G_CALLBACK(layers_calendar_today), vlp );
+    gtk_widget_show_all ( GTK_WIDGET(menu) );
+    gtk_menu_popup ( menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+    return TRUE;
+  }
+  return FALSE;
+}
+
 static gchar *calendar_detail ( GtkCalendar *calendar,
                                 guint year,
                                 guint month,
@@ -418,6 +524,7 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   //  since changing month/year causes the day-selected event to occur
   // (and then possibly this results in selecting a track) which would be counter intuitive
   g_signal_connect_swapped ( vlp->calendar, "day-selected-double-click", G_CALLBACK(layers_calendar_day_selected_dc_cb), vlp);
+  g_signal_connect_swapped ( vlp->calendar, "button-press-event", G_CALLBACK(layers_calendar_button_press_cb), vlp );
   vlp->cal_shown = TRUE;
 
   // Ensure any detail results in a tooltip rather than embedded in the calendar display
