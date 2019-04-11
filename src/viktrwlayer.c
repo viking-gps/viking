@@ -1031,7 +1031,7 @@ static gboolean trw_layer_find_date_track ( const gpointer id, const VikTrack *t
   gchar date_buf[20];
   date_buf[0] = '\0';
   // Might be an easier way to compare dates rather than converting the strings all the time...
-  if ( trk->trackpoints && VIK_TRACKPOINT(trk->trackpoints->data)->has_timestamp ) {
+  if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
     time_t time = round(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp);
     strftime (date_buf, sizeof(date_buf), "%Y-%m-%d", gmtime(&time));
 
@@ -1049,7 +1049,7 @@ static gboolean trw_layer_find_date_waypoint ( const gpointer id, const VikWaypo
   gchar date_buf[20];
   date_buf[0] = '\0';
   // Might be an easier way to compare dates rather than converting the strings all the time...
-  if ( wpt->has_timestamp ) {
+  if ( !isnan(wpt->timestamp) ) {
     time_t time = round ( wpt->timestamp );
     strftime (date_buf, sizeof(date_buf), "%Y-%m-%d", gmtime(&time));
 
@@ -1897,7 +1897,7 @@ static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, Vi
 static gint track_section_colour_by_speed ( VikTrwLayer *vtl, VikTrackpoint *tp1, VikTrackpoint *tp2, gdouble average_speed, gdouble low_speed, gdouble high_speed )
 {
   gdouble rv = 0;
-  if ( tp1->has_timestamp && tp2->has_timestamp ) {
+  if ( !isnan(tp1->timestamp) && !isnan(tp2->timestamp) ) {
     if ( average_speed > 0 ) {
       rv = ( vik_coord_diff ( &(tp1->coord), &(tp2->coord) ) / (tp1->timestamp - tp2->timestamp) );
       if ( rv < low_speed )
@@ -2880,7 +2880,7 @@ static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pas
 
   gdouble timestamp = 0;
   VikTrackpoint *tpt = vik_track_get_tp_first(track);
-  if ( tpt && tpt->has_timestamp )
+  if ( tpt && !isnan(tpt->timestamp) )
     timestamp = tpt->timestamp;
 
   vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], track->name, pass_along[2], id, GPOINTER_TO_INT (pass_along[4]), pixbuf, TRUE, timestamp );
@@ -2903,7 +2903,7 @@ static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer 
   GtkTreeIter *new_iter = g_malloc(sizeof(GtkTreeIter));
 
   gdouble timestamp = 0;
-  if ( wp->has_timestamp )
+  if ( !isnan(wp->timestamp) )
     timestamp = wp->timestamp;
 
   vik_treeview_add_sublayer ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[0], (GtkTreeIter *) pass_along[1], wp->name, pass_along[2], id, GPOINTER_TO_UINT (pass_along[4]), get_wp_sym_small (wp->symbol), TRUE, timestamp );
@@ -3040,7 +3040,7 @@ static void trw_layer_tracks_tooltip ( const gpointer id, VikTrack *tr, tooltip_
   tt->length = tt->length + vik_track_get_length (tr);
 
   // Ensure times are available
-  if ( tr->trackpoints && vik_track_get_tp_first(tr)->has_timestamp ) {
+  if ( tr->trackpoints && !isnan(vik_track_get_tp_first(tr)->timestamp) ) {
     // Get trkpt only once - as using vik_track_get_tp_last() iterates whole track each time
     VikTrackpoint *trkpt_last = vik_track_get_tp_last(tr);
     if ( !isnan(trkpt_last->timestamp) ) {
@@ -3225,7 +3225,7 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 	static gchar tmp_buf[100];
 	// Compact info: Short date eg (11/20/99), duration and length
 	// Hopefully these are the things that are most useful and so promoted into the tooltip
-	if ( tr->trackpoints && vik_track_get_tp_first(tr)->has_timestamp ) {
+	if ( tr->trackpoints && !isnan(vik_track_get_tp_first(tr)->timestamp) ) {
 	  time_t first = vik_track_get_tp_first(tr)->timestamp;
 	  // %x     The preferred date representation for the current locale without the time.
 	  strftime (time_buf1, sizeof(time_buf1), "%x: ", gmtime(&first));
@@ -4442,7 +4442,7 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
     GtkTreeIter *iter = g_malloc(sizeof(GtkTreeIter));
 
     gdouble timestamp = 0;
-    if ( wp->has_timestamp )
+    if ( !isnan(wp->timestamp) )
       timestamp = wp->timestamp;
 
     // Visibility column always needed for waypoints
@@ -4482,7 +4482,7 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 
     gdouble timestamp = 0;
     VikTrackpoint *tpt = vik_track_get_tp_first(t);
-    if ( tpt && tpt->has_timestamp )
+    if ( tpt && !isnan(tpt->timestamp) )
       timestamp = tpt->timestamp;
 
     // Visibility column always needed for tracks
@@ -5373,7 +5373,7 @@ static void trw_layer_goto_track_date ( menu_array_sublayer values )
 
   if ( track && track->trackpoints ) {
     VikTrackpoint *tp = vik_track_get_tp_first( track );
-    if ( tp->has_timestamp ) {
+    if ( !isnan(tp->timestamp) ) {
       // Not worried about subsecond resolution here!
       vik_layers_panel_calendar_date ( VIK_LAYERS_PANEL(values[MA_VLP]), (time_t)tp->timestamp );
     }
@@ -5928,13 +5928,13 @@ static void find_tracks_with_timestamp_type(gpointer key, gpointer value, gpoint
     p2 = vik_track_get_tp_last(trk);
 
     if ( user_data->with_timestamps ) {
-      if (!p1->has_timestamp || !p2->has_timestamp) {
+      if (isnan(p1->timestamp) || isnan(p2->timestamp)) {
 	return;
       }
     }
     else {
       // Don't add tracks with timestamps when getting non timestamp tracks
-      if (p1->has_timestamp || p2->has_timestamp) {
+      if (!isnan(p1->timestamp) || !isnan(p2->timestamp)) {
 	return;
       }
     }
@@ -5979,7 +5979,7 @@ static void find_nearby_tracks_by_time (gpointer key, gpointer value, gpointer u
     VikTrackpoint *p1 = vik_track_get_tp_first(trk);
     VikTrackpoint *p2 = vik_track_get_tp_last(trk);
 
-    if (!p1->has_timestamp || !p2->has_timestamp) {
+    if (isnan(p1->timestamp) || isnan(p2->timestamp)) {
       //g_print("no timestamp\n");
       return;
     }
@@ -6066,7 +6066,7 @@ static void trw_layer_merge_with_other ( menu_array_sublayer values )
   udata.exclude = track;
   // Allow merging with 'similar' time type time tracks
   // i.e. either those times, or those without
-  udata.with_timestamps = vik_track_get_tp_first(track)->has_timestamp;
+  udata.with_timestamps = !isnan(vik_track_get_tp_first(track)->timestamp);
 
   g_hash_table_foreach(ght_tracks, find_tracks_with_timestamp_type, (gpointer)&udata);
   other_tracks = g_list_reverse(other_tracks);
@@ -6342,7 +6342,7 @@ static void trw_layer_merge_by_timestamp ( menu_array_sublayer values )
   GList *tracks_with_timestamp = NULL;
   VikTrack *orig_trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
   if (orig_trk->trackpoints &&
-      !vik_track_get_tp_first(orig_trk)->has_timestamp) {
+      isnan(vik_track_get_tp_first(orig_trk)->timestamp)) {
     a_dialog_error_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Failed. This track does not have timestamp"));
     return;
   }
@@ -6897,7 +6897,7 @@ static void trw_layer_diary ( menu_array_sublayer values )
 
     gchar date_buf[20];
     date_buf[0] = '\0';
-    if ( trk->trackpoints && VIK_TRACKPOINT(trk->trackpoints->data)->has_timestamp ) {
+    if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
       time_t time = round ( VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
       strftime (date_buf, sizeof(date_buf), "%Y-%m-%d", gmtime(&time));
       trw_layer_diary_open ( vtl, date_buf );
@@ -6912,7 +6912,7 @@ static void trw_layer_diary ( menu_array_sublayer values )
 
     gchar date_buf[20];
     date_buf[0] = '\0';
-    if ( wpt->has_timestamp ) {
+    if ( !isnan(wpt->timestamp) ) {
       time_t time = round ( wpt->timestamp );
       strftime (date_buf, sizeof(date_buf), "%Y-%m-%d", gmtime(&time));
       trw_layer_diary_open ( vtl, date_buf );
@@ -7009,7 +7009,7 @@ static void trw_layer_astro ( menu_array_sublayer values )
       // Give up
       return;
 
-    if ( tp->has_timestamp ) {
+    if ( !isnan(tp->timestamp) ) {
       gchar date_buf[20];
       time_t time = round ( tp->timestamp );
       strftime (date_buf, sizeof(date_buf), "%Y%m%d", gmtime(&time));
@@ -7033,7 +7033,7 @@ static void trw_layer_astro ( menu_array_sublayer values )
     if ( ! wpt )
       return;
 
-    if ( wpt->has_timestamp ) {
+    if ( !isnan(wpt->timestamp) ) {
       gchar date_buf[20];
       time_t time = round ( wpt->timestamp );
       strftime (date_buf, sizeof(date_buf), "%Y%m%d", gmtime(&time));
@@ -8540,11 +8540,10 @@ static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean b
     /* Now other properties that can be interpolated */
     tp_new->altitude = (tp_current->altitude + tp_other->altitude) / 2;
 
-    if (tp_current->has_timestamp && tp_other->has_timestamp) {
+    if (!isnan(tp_current->timestamp) && !isnan(tp_other->timestamp)) {
       /* Note here the division is applied to each part, then added
 	 This was to avoid potential overflow issues with potential 32bit times, but it's now always a 64bit double so it doesn't matter anymore */
       tp_new->timestamp = (tp_current->timestamp/2) + (tp_other->timestamp/2);
-      tp_new->has_timestamp = TRUE;
     }
 
     if (tp_current->speed != NAN && tp_other->speed != NAN)
@@ -9951,8 +9950,7 @@ static gboolean tool_edit_track_or_route_click ( VikTrwLayer *vtl, GdkEventButto
   }
 
   tp->newsegment = newsegment;
-  tp->has_timestamp = FALSE;
-  tp->timestamp = 0;
+  tp->timestamp = NAN;
 
   if ( vtl->current_track ) {
     vik_track_add_trackpoint ( vtl->current_track, tp, TRUE ); // Ensure bounds is updated
@@ -10691,7 +10689,7 @@ static void trw_layer_sort_all ( VikTrwLayer *vtl )
  */
 static gdouble trw_layer_get_timestamp_tracks ( VikTrwLayer *vtl )
 {
-  gdouble timestamp = 0;
+  gdouble timestamp = NAN;
   GList *gl = g_hash_table_get_values ( vtl->tracks );
   gl = g_list_sort ( gl, vik_track_compare_timestamp );
   gl = g_list_first ( gl );
@@ -10701,7 +10699,7 @@ static gdouble trw_layer_get_timestamp_tracks ( VikTrwLayer *vtl )
     VikTrack *trk = (VikTrack*)gl->data;
     // Assume trackpoints already sorted by time
     VikTrackpoint *tpt = vik_track_get_tp_first(trk);
-    if ( tpt && tpt->has_timestamp ) {
+    if ( tpt && !isnan(tpt->timestamp) ) {
       timestamp = tpt->timestamp;
     }
     g_list_free ( gl );
@@ -10714,14 +10712,14 @@ static gdouble trw_layer_get_timestamp_tracks ( VikTrwLayer *vtl )
  */
 static gdouble trw_layer_get_timestamp_waypoints ( VikTrwLayer *vtl )
 {
-  gdouble timestamp = 0;
+  gdouble timestamp = NAN;
   GList *gl = g_hash_table_get_values ( vtl->waypoints );
   GList *iter;
   for (iter = g_list_first (gl); iter != NULL; iter = g_list_next (iter)) {
     VikWaypoint *wpt = (VikWaypoint*)iter->data;
-    if ( wpt->has_timestamp ) {
+    if ( !isnan(wpt->timestamp) ) {
       // When timestamp not set yet - use the first value encountered
-      if ( timestamp == 0 )
+      if ( isnan(timestamp) )
         timestamp = wpt->timestamp;
       else if ( timestamp > wpt->timestamp )
         timestamp = wpt->timestamp;
@@ -10741,16 +10739,16 @@ static gdouble trw_layer_get_timestamp ( VikTrwLayer *vtl )
   gdouble timestamp_waypoints = trw_layer_get_timestamp_waypoints ( vtl );
   // NB routes don't have timestamps - hence they are not considered
 
-  if ( !timestamp_tracks && !timestamp_waypoints ) {
+  if ( isnan(timestamp_tracks) && isnan(timestamp_waypoints) ) {
     // Fallback to get time from the metadata when no other timestamps available
     // NB Seconds resolution from metadata is plenty accurate enough for this usage
     GTimeVal gtv;
     if ( vtl->metadata && vtl->metadata->timestamp && g_time_val_from_iso8601 ( vtl->metadata->timestamp, &gtv ) )
       return (gdouble)gtv.tv_sec;
   }
-  if ( timestamp_tracks && !timestamp_waypoints )
+  if ( !isnan(timestamp_tracks) && isnan(timestamp_waypoints) )
     return timestamp_tracks;
-  if ( timestamp_tracks && timestamp_waypoints && (timestamp_tracks < timestamp_waypoints) )
+  if ( !isnan(timestamp_tracks) && !isnan(timestamp_waypoints) && (timestamp_tracks < timestamp_waypoints) )
     return timestamp_tracks;
   return timestamp_waypoints;
 }

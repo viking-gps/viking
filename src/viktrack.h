@@ -40,8 +40,7 @@ struct _VikTrackpoint {
   gchar* name;
   VikCoord coord;
   gboolean newsegment;
-  gboolean has_timestamp;
-  gdouble timestamp;
+  gdouble timestamp;  	/* NAN if data unavailable */
   gdouble altitude;	/* NAN if data unavailable */
   gdouble speed;  	/* NAN if data unavailable */
   gdouble course;   /* NAN if data unavailable */

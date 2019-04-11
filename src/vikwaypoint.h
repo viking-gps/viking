@@ -40,8 +40,7 @@ typedef struct _VikWaypoint VikWaypoint;
 struct _VikWaypoint {
   VikCoord coord;
   gboolean visible;
-  gboolean has_timestamp;
-  gdouble timestamp;
+  gdouble timestamp; /* NAN if data unavailable */
   gdouble altitude;
   gchar *name;
   gchar *comment;

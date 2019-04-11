@@ -907,7 +907,7 @@ static void time_label_update (GtkWidget *widget, gdouble seconds)
 static void real_time_label_update ( PropWidgets *widgets, GtkWidget *widget, VikTrackpoint *trackpoint)
 {
   static gchar tmp_buf[64];
-  if ( trackpoint->has_timestamp ) {
+  if ( !isnan(trackpoint->timestamp) ) {
     time_t ts = round ( trackpoint->timestamp );
     // Alternatively could use %c format but I prefer a slightly more compact form here
     //  The full date can of course be seen on the Statistics tab
@@ -3416,7 +3416,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 #undef PACK;
 #endif
 
-  if ( tr->trackpoints && VIK_TRACKPOINT(tr->trackpoints->data)->timestamp )
+  if ( tr->trackpoints && !isnan(VIK_TRACKPOINT(tr->trackpoints->data)->timestamp) )
   {
     gdouble t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
     gdouble t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;

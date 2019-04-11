@@ -1704,7 +1704,6 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
         /* TODO: check for new segments */
         VikTrackpoint *tp = vik_trackpoint_new();
         tp->newsegment = FALSE;
-        tp->has_timestamp = TRUE;
         tp->timestamp = vgl->realtime_fix.fix.time;
         tp->altitude = alt;
         /* speed only available for 3D fix. Check for NAN when use this speed */

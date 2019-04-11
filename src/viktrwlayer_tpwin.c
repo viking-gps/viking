@@ -93,7 +93,7 @@ GType vik_trw_layer_tpwin_get_type (void)
  */
 static void tpwin_update_times ( VikTrwLayerTpwin *tpwin, VikTrackpoint *tp )
 {
-  if ( tp->has_timestamp ) {
+  if ( !isnan(tp->timestamp) ) {
     gtk_spin_button_set_value ( tpwin->ts, tp->timestamp );
     time_t time = round ( tp->timestamp );
     gchar *msg = vu_get_time_string ( &time, "%c", &(tp->coord), NULL );
@@ -181,7 +181,7 @@ static void tpwin_sync_time_to_tp ( GtkWidget* widget, GdkEventButton *event, Vi
   if ( !tpwin->cur_tp || tpwin->sync_to_tp_block )
     return;
 
-  if ( tpwin->cur_tp->has_timestamp )
+  if ( !isnan(tpwin->cur_tp->timestamp) )
     last_edit_time = tpwin->cur_tp->timestamp;
   else if ( last_edit_time == 0 )
     time ( &last_edit_time );
@@ -194,12 +194,11 @@ static void tpwin_sync_time_to_tp ( GtkWidget* widget, GdkEventButton *event, Vi
   g_time_zone_unref ( gtz );
 
   // Was the dialog cancelled?
-  if ( mytime == 0 )
+  if ( isnan(mytime) )
     return;
 
   // Otherwise use the new value
   tpwin->cur_tp->timestamp = mytime;
-  tpwin->cur_tp->has_timestamp = TRUE;
   // TODO: consider warning about unsorted times?
 
   // Clear the previous 'Add' image as now a time is set
@@ -443,10 +442,10 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lat), TRUE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->lon), TRUE );
   gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->alt), TRUE );
-  gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->ts), tp->has_timestamp );
-  gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->time), tp->has_timestamp );
+  gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->ts), !isnan(tp->timestamp) );
+  gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->time), !isnan(tp->timestamp) );
   // Enable adding timestamps - but not on routepoints
-  if ( !tp->has_timestamp && !is_route ) {
+  if ( isnan(tp->timestamp) && !is_route ) {
     gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->time), TRUE );
     GtkWidget *img = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_MENU );
     gtk_button_set_image ( GTK_BUTTON(tpwin->time), img );
@@ -494,7 +493,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
     }
 
     gtk_label_set_text ( tpwin->diff_dist, tmp_str );
-    if ( tp->has_timestamp && tpwin->cur_tp->has_timestamp )
+    if ( !isnan(tp->timestamp) && !isnan(tpwin->cur_tp->timestamp) )
     {
       g_snprintf ( tmp_str, sizeof(tmp_str), "%.3f s", tp->timestamp - tpwin->cur_tp->timestamp);
       gtk_label_set_text ( tpwin->diff_time, tmp_str );

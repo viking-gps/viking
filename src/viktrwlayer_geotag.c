@@ -250,6 +250,10 @@ static void trw_layer_geotag_track ( const gpointer id, VikTrack *track, geotag_
 
 		trkpt = VIK_TRACKPOINT(mytrkpt->data);
 
+		if ( isnan(trkpt->timestamp) ) {
+			continue;
+		}
+
 		// is it exactly this point?
 		if ( options->PhotoTime == trkpt->timestamp ) {
 			options->coord = trkpt->coord;
@@ -264,7 +268,7 @@ static void trw_layer_geotag_track ( const gpointer id, VikTrack *track, geotag_
 		if ( !mytrkpt->next ) break;
 		trkpt_next = VIK_TRACKPOINT(mytrkpt->next->data);
 
-		// TODO need to use 'has_timestamp' property
+		if ( isnan(trkpt_next->timestamp) ) continue;
 		if ( trkpt->timestamp == trkpt_next->timestamp ) continue;
 		if ( trkpt->timestamp > trkpt_next->timestamp ) continue;
 
@@ -439,7 +443,6 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 						(void)a_geotag_waypoint_positioned ( options->image, options->coord, options->altitude, &name, wp );
 						wp->image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
 						wp->image_direction = options->image_direction;
-						wp->has_timestamp = TRUE;
 						wp->timestamp = options->PhotoTime;
 						updated_waypoint = TRUE;
 					}
@@ -454,7 +457,6 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 						name = g_strdup ( a_file_basename ( options->image ) );
 					wp->image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
 					wp->image_direction = options->image_direction;
-					wp->has_timestamp = TRUE;
 					wp->timestamp = options->PhotoTime;
 					vik_trw_layer_filein_add_waypoint ( options->vtl, name, wp );
 					g_free ( name );

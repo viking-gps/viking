@@ -88,8 +88,7 @@ static gchar *line_symbol;
 static gdouble line_image_direction = NAN;
 static VikWaypointImageDirectionRef line_image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
 static gboolean line_newsegment = FALSE;
-static gboolean line_has_timestamp = FALSE;
-static gdouble line_timestamp = 0;
+static gdouble line_timestamp = NAN;
 static gdouble line_altitude = NAN;
 static gboolean line_visible = TRUE;
 
@@ -184,7 +183,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
   gchar *tag_start, *tag_end;
   g_assert ( f != NULL && trw != NULL );
   line_type = GPSPOINT_TYPE_NONE;
-  line_timestamp = 0;
+  line_timestamp = NAN;
   line_newsegment = FALSE;
   line_image = NULL;
   line_symbol = NULL;
@@ -251,7 +250,6 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       VikWaypoint *wp = vik_waypoint_new();
       wp->visible = line_visible;
       wp->altitude = line_altitude;
-      wp->has_timestamp = line_has_timestamp;
       wp->timestamp = line_timestamp;
 
       vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &line_latlon );
@@ -335,7 +333,6 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       VikTrackpoint *tp = vik_trackpoint_new();
       vik_coord_load_from_latlon ( &(tp->coord), coord_mode, &line_latlon );
       tp->newsegment = line_newsegment;
-      tp->has_timestamp = line_has_timestamp;
       tp->timestamp = line_timestamp;
       tp->altitude = line_altitude;
       vik_trackpoint_set_name ( tp, line_name );
@@ -381,8 +378,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     line_symbol = NULL;
     line_type = GPSPOINT_TYPE_NONE;
     line_newsegment = FALSE;
-    line_has_timestamp = FALSE;
-    line_timestamp = 0;
+    line_timestamp = NAN;
     line_altitude = NAN;
     line_visible = TRUE;
     line_symbol = NULL;
@@ -561,8 +557,6 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   else if (key_len == 8 && strncasecmp( key, "unixtime", key_len ) == 0 && value != NULL)
   {
     line_timestamp = g_ascii_strtod(value, NULL);
-    if ( !isnan(line_timestamp) )
-      line_has_timestamp = TRUE;
   }
   else if (key_len == 10 && strncasecmp( key, "newsegment", key_len ) == 0 && value != NULL)
   {
@@ -634,7 +628,7 @@ static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp
     a_coords_dtostr_buffer ( wp->altitude, s_alt );
     fprintf ( f, " altitude=\"%s\"", s_alt );
   }
-  if ( wp->has_timestamp ) {
+  if ( !isnan(wp->timestamp) ) {
     gchar s_tm[COORDS_STR_BUFFER_SIZE];
     a_coords_dtostr_buffer ( wp->timestamp, s_tm );
     fprintf ( f, " unixtime=\"%s\"", s_tm );
@@ -726,7 +720,7 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
     a_coords_dtostr_buffer ( tp->altitude, s_alt );
     fprintf ( f, " altitude=\"%s\"", s_alt );
   }
-  if ( tp->has_timestamp ) {
+  if ( !isnan(tp->timestamp) ) {
     gchar s_tm[COORDS_STR_BUFFER_SIZE];
     a_coords_dtostr_buffer ( tp->timestamp, s_tm );
     fprintf ( f, " unixtime=\"%s\"", s_tm );

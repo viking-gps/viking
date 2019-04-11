@@ -421,7 +421,7 @@ static void trw_layer_track_list_add ( vik_trw_track_list_t *vtdl,
 	// Get start date
 	gchar time_buf[32];
 	time_buf[0] = '\0';
-	if ( trk->trackpoints && VIK_TRACKPOINT(trk->trackpoints->data)->has_timestamp ) {
+	if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
 
 #if GLIB_CHECK_VERSION(2,26,0)
 		GDateTime* gdt = g_date_time_new_from_unix_utc ( VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );

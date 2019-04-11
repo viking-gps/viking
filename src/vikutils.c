@@ -113,7 +113,7 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 			gdouble speed = 0.0;
 			gchar *speedtype = NULL;
 			if ( isnan(trkpt->speed) && trkpt_prev ) {
-				if ( trkpt->has_timestamp && trkpt_prev->has_timestamp ) {
+				if ( !isnan(trkpt->timestamp) && !isnan(trkpt_prev->timestamp) ) {
 					if ( trkpt->timestamp != trkpt_prev->timestamp ) {
 
 						// Work out from previous trackpoint location and time difference
@@ -167,7 +167,7 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 			gdouble speed = 0.0;
 			gchar *speedtype = NULL;
 			if ( isnan(climb) && trkpt_prev ) {
-				if ( trkpt->has_timestamp && trkpt_prev->has_timestamp ) {
+				if ( !isnan(trkpt->timestamp) && !isnan(trkpt_prev->timestamp) ) {
 					if ( trkpt->timestamp != trkpt_prev->timestamp ) {
 						// Work out from previous trackpoint altitudes and time difference
 						// 'speed' can be negative if going downhill
@@ -264,7 +264,7 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 
 		case 'T': {
 			gchar *msg;
-			if ( trkpt->has_timestamp ) {
+			if ( !isnan(trkpt->timestamp) ) {
 				// Compact date time format
 				time_t time = round ( trkpt->timestamp );
 				msg = vu_get_time_string ( &time, "%x %X", &(trkpt->coord), NULL );
@@ -278,7 +278,7 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 
 		case 'M': {
 			if ( trkpt_prev ) {
-				if ( trkpt->has_timestamp && trkpt_prev->has_timestamp ) {
+				if ( !isnan(trkpt->timestamp) && !isnan(trkpt_prev->timestamp) ) {
 					time_t t_diff = trkpt->timestamp - trkpt_prev->timestamp;
 					values[i] = g_strdup_printf ( _("%sTime diff %lds"), separator, t_diff );
 				}

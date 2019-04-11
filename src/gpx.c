@@ -558,7 +558,6 @@ static void gpx_end(UserDataT *ud, const char *el)
 	 gdouble d1 = wp_time.tv_sec;
 	 gdouble d2 = (gdouble)wp_time.tv_usec/G_USEC_PER_SEC;
          c_wp->timestamp = (d1 < 0) ? d1 - d2 : d1 + d2;
-         c_wp->has_timestamp = TRUE;
        }
        g_string_erase ( c_cdata, 0, -1 );
        break;
@@ -573,7 +572,6 @@ static void gpx_end(UserDataT *ud, const char *el)
 	 gdouble d1 = tp_time.tv_sec;
 	 gdouble d2 = (gdouble)tp_time.tv_usec/G_USEC_PER_SEC;
          c_tp->timestamp = (d1 < 0) ? d1 - d2 : d1 + d2;
-         c_tp->has_timestamp = TRUE;
        }
        g_string_erase ( c_cdata, 0, -1 );
        break;
@@ -908,7 +906,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
     fprintf ( f, "  <ele>%s</ele>\n", s_alt );
   }
 
-  if ( wp->has_timestamp ) {
+  if ( !isnan(wp->timestamp) ) {
     GTimeVal timestamp;
     timestamp.tv_sec = wp->timestamp;
     timestamp.tv_usec = abs((wp->timestamp-(gint64)wp->timestamp)*G_USEC_PER_SEC);
@@ -1024,7 +1022,7 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   }
   
   time_iso8601 = NULL;
-  if ( tp->has_timestamp ) {
+  if ( !isnan(tp->timestamp) ) {
     GTimeVal timestamp;
     timestamp.tv_sec = tp->timestamp;
     timestamp.tv_usec = abs((tp->timestamp-(gint64)tp->timestamp)*G_USEC_PER_SEC);

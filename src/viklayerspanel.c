@@ -29,7 +29,7 @@
 #include "settings.h"
 
 #include <string.h>
-#include <time.h>
+#include <math.h>
 
 #include <glib/gi18n.h>
 #include <gdk/gdkkeysyms.h>
@@ -183,7 +183,7 @@ static void calendar_mark_layer_in_month ( VikLayersPanel *vlp, VikTrwLayer *vtl
   while ( g_hash_table_iter_next ( &iter, &key, &value ) ) {
     VikTrack *trk = VIK_TRACK(value);
     // First trackpoint
-    if ( trk->trackpoints && VIK_TRACKPOINT(trk->trackpoints->data)->has_timestamp ) {
+    if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
       // Not worried about subsecond resolution here!
       g_date_set_time_t ( gd, (time_t)VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
       // Is in selected month?
@@ -397,7 +397,7 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
     while ( g_hash_table_iter_next ( &iter, &key, &value ) ) {
       VikTrack *trk = VIK_TRACK(value);
       // First trackpoint
-      if ( trk->trackpoints && VIK_TRACKPOINT(trk->trackpoints->data)->has_timestamp ) {
+      if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
         // Not worried about subsecond resolution here!
         g_date_set_time_t ( gd, (time_t)VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
         // Is of this day?

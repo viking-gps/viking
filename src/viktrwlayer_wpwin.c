@@ -324,7 +324,7 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
 
   // TODO: Consider if there should be a remove time button...
 
-  if ( !is_new && wp->has_timestamp ) {
+  if ( !is_new && !isnan(wp->timestamp) ) {
     update_time ( timevaluebutton, wp );
   }
   else {
@@ -421,7 +421,6 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
         a_thumbnails_create ( wp->image );
       if ( !isnan(edit_wp->timestamp) ) {
         wp->timestamp = edit_wp->timestamp;
-        wp->has_timestamp = TRUE;
       }
 
       if ( direction_sb ) {
