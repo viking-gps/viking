@@ -3602,7 +3602,7 @@ static void load_file ( GtkAction *a, VikWindow *vw )
 {
   GSList *files = NULL;
   GSList *cur_file = NULL;
-  gboolean append;
+  gboolean append = FALSE;
   gboolean external = FALSE;
   if (!strcmp(gtk_action_get_name(a), "Open")) {
     append = FALSE;
