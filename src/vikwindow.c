@@ -3557,7 +3557,26 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
   vw->filename = g_strdup ( filename );
   gboolean success = FALSE;
   gboolean restore_original_filename = FALSE;
-  vw->loaded_type = a_file_load ( vik_layers_panel_get_top_layer(vw->viking_vlp), vw->viking_vvp, vw->containing_vtl, filename, new_layer, external );
+
+  VikAggregateLayer *agg = vik_layers_panel_get_top_layer(vw->viking_vlp);
+  // Make Append load into the selected Aggregate layer (if there is one)
+  if ( !new_layer ) {
+    GtkTreeIter iter;
+    VikTreeview *vtv = vik_layers_panel_get_treeview ( vw->viking_vlp );
+    if ( vtv ) {
+      if ( vik_treeview_get_selected_iter ( vtv, &iter ) ) {
+        gint type = vik_treeview_item_get_type ( vtv, &iter );
+        if ( type == VIK_TREEVIEW_TYPE_LAYER ) {
+          VikLayer *vl = VIK_LAYER(vik_treeview_item_get_pointer ( vtv, &iter ));
+          if ( vl->type == VIK_LAYER_AGGREGATE ) {
+            agg = VIK_AGGREGATE_LAYER(vl);
+          }
+        }
+      }
+    }
+  }
+
+  vw->loaded_type = a_file_load ( agg, vw->viking_vvp, vw->containing_vtl, filename, new_layer, external );
   switch ( vw->loaded_type )
   {
     case LOAD_TYPE_READ_FAILURE:
