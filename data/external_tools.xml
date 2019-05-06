@@ -1,18 +1,14 @@
 <objects>
   <object class="VikWebtoolCenter">
     <property name="label">Waymarked Trails</property>
-    <property name="url">http://hiking.lonvia.de/en/?lat=%s&amp;lon=%s&amp;zoom=%d</property>
+    <property name="url">https://hiking.waymarkedtrails.org/#?map=%3$d!%1$s!%2$s</property>
   </object>
   <object class="VikWebtoolCenter">
     <property name="label">Osmose</property>
-    <property name="url">http://osmose.openstreetmap.fr/map/cgi-bin/index.py?layers=B00000FFFFFFFFFFFFT&amp;lat=%s&amp;lon=%s&amp;zoom=%d</property>
-  </object>
-  <object class="VikWebtoolCenter">
-    <property name="label">Yahoo! Maps</property>
-    <property name="url">http://maps.yahoo.com/#lat=%s&amp;lon=%s&amp;zoom=%d</property>
+    <property name="url">https://osmose.openstreetmap.fr/map/cgi-bin/index.py?layers=B00000FFFFFFFFFFFFT&amp;lat=%s&amp;lon=%s&amp;zoom=%d</property>
   </object>
   <object class="VikWebtoolCenter">
     <property name="label">HERE Maps</property>
-    <property name="url">http://here.com/%s,%s,%d</property>
+    <property name="url">https://wego.here.com/?map=%s,%s,%d</property>
   </object>
 </objects>
