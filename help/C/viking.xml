@@ -1688,6 +1688,8 @@ Various options allow control of how the geotagging process is performed:
 <listitem><para>Overwrite Existing Waypoints</para></listitem>
 <listitem><para>Write EXIF</para></listitem>
 <listitem><para>Overwrite Existing GPS Information</para></listitem>
+<listitem><para>Keep File Modification Timestamp</para></listitem>
+<listitem><para>Automatic Image Direction - Assumes the direction will be in line with the track heading</para></listitem>
 <listitem><para>Interpolate Between Track Segments</para></listitem>
 <listitem><para>Image Time Offset - The number of seconds to ADD to the photos time to make it match the GPS data. Calculate this with (GPS - Photo). Can be negative or positive. Useful to adjust times when a camera's timestamp was incorrect.</para></listitem>
 <listitem><para>Image Timezone - The timezone that the used when the images were created. For example, if a camera is set to AWST or +8:00 hours. Enter +8:00 here so that the correct adjustment to the images' time can be made. GPS data is always in UTC.</para></listitem>
