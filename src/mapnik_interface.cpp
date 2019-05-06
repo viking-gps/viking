@@ -209,6 +209,11 @@ gchar* mapnik_interface_load_map_file ( MapnikInterface* mi,
 	return msg;
 }
 
+// GdkPixbufDestroyNotify
+static void destroy_fn ( guchar *pixels, gpointer data )
+{
+	g_free ( pixels );
+}
 
 /**
  * mapnik_interface_render:
@@ -249,7 +254,7 @@ GdkPixbuf* mapnik_interface_render ( MapnikInterface* mi, double lat_tl, double 
 			if (!ImageRawDataPtr)
 				return NULL;
 			memcpy(ImageRawDataPtr, image.raw_data(), width * height * 4);
-			pixbuf = gdk_pixbuf_new_from_data(ImageRawDataPtr, GDK_COLORSPACE_RGB, TRUE, 8, width, height, width * 4, NULL, NULL);
+			pixbuf = gdk_pixbuf_new_from_data(ImageRawDataPtr, GDK_COLORSPACE_RGB, TRUE, 8, width, height, width * 4, destroy_fn, NULL);
 		}
 		else
 			g_warning ("%s not rendered", __FUNCTION__ );
