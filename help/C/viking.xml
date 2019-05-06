@@ -1692,8 +1692,14 @@ Various options allow control of how the geotagging process is performed:
 <listitem><para>Automatic Image Direction - Assumes the direction will be in line with the track heading</para></listitem>
 <listitem><para>Interpolate Between Track Segments</para></listitem>
 <listitem><para>Image Time Offset - The number of seconds to ADD to the photos time to make it match the GPS data. Calculate this with (GPS - Photo). Can be negative or positive. Useful to adjust times when a camera's timestamp was incorrect.</para></listitem>
-<listitem><para>Image Timezone - The timezone that the used when the images were created. For example, if a camera is set to AWST or +8:00 hours. Enter +8:00 here so that the correct adjustment to the images' time can be made. GPS data is always in UTC.</para></listitem>
+<listitem><para>Image Time is Local - Are the timestamps in the image local time or otherwise in UTC.</para></listitem>
+<listitem><para>Image Timezone - The timezone adjustment factor.</para></listitem>
 </itemizedlist>
+<para>
+Typically timestamps in images are either in local time or UTC but there is no way of automatically knowing which; so you need to specify which is the case.
+<emphasis>Image Time Offset</emphasis> is best used for accounting for camera's clock drift, so normally of the order of a few seconds or minutes.
+Whereas <emphasis>Image Timezone</emphasis> is more for adjusting for a camera's timezone difference, or perhaps differences in your current timezone and the timezone the images where taken.
+</para>
 </section>
 
 </section><!-- TRW Layer END -->

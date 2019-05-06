@@ -43,7 +43,7 @@
 
 #define EXIF_DATE_FORMAT "%d:%d:%d %d:%d:%d"
 
-time_t ConvertToUnixTime(char* StringTime, char* Format, int TZOffsetHours, int TZOffsetMinutes)
+static time_t ConvertToUnixTime(char* StringTime, char* Format, int TZOffsetHours, int TZOffsetMinutes, gboolean time_is_local)
 {
 	/* Read the time using the specified format.
 	 * The format and string being read from must
@@ -61,7 +61,6 @@ time_t ConvertToUnixTime(char* StringTime, char* Format, int TZOffsetHours, int 
 	struct tm Time;
 	Time.tm_wday = 0;
 	Time.tm_yday = 0;
-	Time.tm_isdst = 0; // there is no DST in UTC
 
 	/* Read out the time from the string using our format. */
 	sscanf(StringTime, Format, &Time.tm_year, &Time.tm_mon,
@@ -73,11 +72,19 @@ time_t ConvertToUnixTime(char* StringTime, char* Format, int TZOffsetHours, int 
 	Time.tm_mon  -= 1;
 
 	/* Calculate the unix time. */
-	time_t thetime = util_timegm ( &Time );
-
-	/* Add our timezone offset to the time. */
-	/* Note also that we SUBTRACT these times. We want the
-	 * result to be in UTC. */
+	time_t thetime;
+	if ( time_is_local ) {
+		Time.tm_isdst = -1;
+		// Time is apparently in local time, thus use mktime() which is locale dependent.
+		// Hence this assumes the current timezone is the same as the timezone the image was taken in.
+		thetime = mktime ( &Time );
+	}
+	else {
+		Time.tm_isdst = 0; // there is no DST in UTC
+		thetime = util_timegm ( &Time );
+	}
+	/* Apply specified timezone offset to the time. */
+	/* Note also that we SUBTRACT these times */
 	thetime -= TZOffsetHours * 60 * 60;
 	thetime -= TZOffsetMinutes * 60;
 
@@ -102,6 +109,7 @@ typedef struct {
 	GtkCheckButton *auto_image_direction_b;
 	GtkCheckButton *no_change_mtime_b;
 	GtkCheckButton *interpolate_segments_b;
+	GtkCheckButton *time_is_local_b;
 	GtkEntry *time_zone_b; // TODO consider a more user friendly tz widget eg libtimezonemap or similar
 	GtkEntry *time_offset_b;
 } GeoTagWidgets;
@@ -127,6 +135,7 @@ typedef struct {
 	gboolean no_change_mtime;
 	gboolean interpolate_segments;
 	gint time_offset;
+	gboolean time_is_local;
 	gint TimeZoneHours;
 	gint TimeZoneMins;
 } option_values_t;
@@ -159,6 +168,7 @@ typedef struct {
 #define VIK_SETTINGS_GEOTAG_TIME_OFFSET          "geotag_time_offset"
 #define VIK_SETTINGS_GEOTAG_TIME_OFFSET_HOURS    "geotag_time_offset_hours"
 #define VIK_SETTINGS_GEOTAG_TIME_OFFSET_MINS     "geotag_time_offset_mins"
+#define VIK_SETTINGS_GEOTAG_TIME_IS_LOCAL        "geotag_time_is_local"
 
 static void save_default_values ( option_values_t default_values )
 {
@@ -170,6 +180,7 @@ static void save_default_values ( option_values_t default_values )
 	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_NO_CHANGE_MTIME, default_values.no_change_mtime );
 	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_INTERPOLATE_SEGMENTS, default_values.interpolate_segments );
 	a_settings_set_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET, default_values.time_offset );
+	a_settings_set_boolean ( VIK_SETTINGS_GEOTAG_TIME_IS_LOCAL, default_values.time_is_local );
 	a_settings_set_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET_HOURS, default_values.TimeZoneHours );
 	a_settings_set_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET_MINS, default_values.TimeZoneMins );
 }
@@ -193,6 +204,8 @@ static option_values_t get_default_values ( )
 		default_values.interpolate_segments = TRUE;
 	if ( ! a_settings_get_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET, &default_values.time_offset ) )
 		default_values.time_offset = 0;
+	if ( ! a_settings_get_boolean ( VIK_SETTINGS_GEOTAG_TIME_IS_LOCAL, &default_values.time_is_local ) )
+		default_values.time_is_local = FALSE;
 	if ( ! a_settings_get_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET_HOURS, &default_values.TimeZoneHours ) )
 		default_values.TimeZoneHours = 0;
 	if ( ! a_settings_get_integer ( VIK_SETTINGS_GEOTAG_TIME_OFFSET_MINS, &default_values.TimeZoneMins ) )
@@ -385,7 +398,7 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 			return;
 		}
 
-		options->PhotoTime = ConvertToUnixTime ( datetime, EXIF_DATE_FORMAT, options->ov.TimeZoneHours, options->ov.TimeZoneMins);
+		options->PhotoTime = ConvertToUnixTime ( datetime, EXIF_DATE_FORMAT, options->ov.TimeZoneHours, options->ov.TimeZoneMins, options->ov.time_is_local );
 		g_free ( datetime );
 		
 		// Apply any offset
@@ -534,6 +547,7 @@ static void trw_layer_geotag_response_cb ( GtkDialog *dialog, gint resp, GeoTagW
 		options->ov.auto_image_direction = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->auto_image_direction_b) );
 		options->ov.no_change_mtime = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->no_change_mtime_b) );
 		options->ov.interpolate_segments = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->interpolate_segments_b) );
+		options->ov.time_is_local = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->time_is_local_b) );
 		options->ov.TimeZoneHours = 0;
 		options->ov.TimeZoneMins = 0;
 		const gchar* TZString = gtk_entry_get_text(GTK_ENTRY(widgets->time_zone_b));
@@ -653,6 +667,7 @@ void trw_layer_geotag_dialog ( GtkWindow *parent,
 	widgets->interpolate_segments_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
 	widgets->time_zone_b = GTK_ENTRY ( gtk_entry_new () );
 	widgets->time_offset_b = GTK_ENTRY ( gtk_entry_new () );
+	widgets->time_is_local_b = GTK_CHECK_BUTTON ( gtk_check_button_new () );
 
 	gtk_entry_set_width_chars ( widgets->time_zone_b, 7);
 	gtk_entry_set_width_chars ( widgets->time_offset_b, 7);
@@ -672,6 +687,8 @@ void trw_layer_geotag_dialog ( GtkWindow *parent,
 	gtk_entry_set_text ( widgets->time_zone_b, tmp_string );
 	snprintf (tmp_string, 7, "%d", default_values.time_offset );
 	gtk_entry_set_text ( widgets->time_offset_b, tmp_string );
+
+	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->time_is_local_b), default_values.time_is_local );
 
 	// Ensure sensitivities setup
 	write_exif_b_cb ( GTK_WIDGET(widgets->write_exif_b), widgets );
@@ -717,11 +734,17 @@ void trw_layer_geotag_dialog ( GtkWindow *parent,
 	gtk_box_pack_start ( GTK_BOX(to_hbox), GTK_WIDGET(widgets->time_offset_b), FALSE, FALSE, 5 );
 	gtk_widget_set_tooltip_text ( GTK_WIDGET(widgets->time_offset_b), _("The number of seconds to ADD to the photos time to make it match the GPS data. Calculate this with (GPS - Photo). Can be negative or positive. Useful to adjust times when a camera's timestamp was incorrect.") );
 
+	GtkWidget *tl_hbox = gtk_hbox_new ( FALSE, 0 );
+	GtkWidget *time_is_local_l = gtk_label_new ( _("Image Time is Local:") );
+	gtk_box_pack_start ( GTK_BOX(tl_hbox), time_is_local_l, FALSE, FALSE, 5 );
+	gtk_box_pack_start ( GTK_BOX(tl_hbox), GTK_WIDGET(widgets->time_is_local_b), FALSE, FALSE, 5 );
+	gtk_widget_set_tooltip_text ( GTK_WIDGET(widgets->time_is_local_b), _("The timestamps in the images are in local time (rather than UTC) and so current local timezone adjustment will be automatically applied.") );
+
 	GtkWidget *tz_hbox = gtk_hbox_new ( FALSE, 0 );
 	GtkWidget *time_zone_l = gtk_label_new ( _("Image Timezone:") );
 	gtk_box_pack_start ( GTK_BOX(tz_hbox), time_zone_l, FALSE, FALSE, 5 );
 	gtk_box_pack_start ( GTK_BOX(tz_hbox), GTK_WIDGET(widgets->time_zone_b), FALSE, FALSE, 5 );
-	gtk_widget_set_tooltip_text ( GTK_WIDGET(widgets->time_zone_b), _("The timezone that was used when the images were created. For example, if a camera is set to AWST or +8:00 hours. Enter +8:00 here so that the correct adjustment to the images' time can be made. GPS data is always in UTC.") );
+	gtk_widget_set_tooltip_text ( GTK_WIDGET(widgets->time_zone_b), _("The timezone adjustment factor. e.g. for AWST use +8:00. This should be unnecessary if using 'time is local'. However time stamps may be offset due to timezone issues.") );
 
 	gchar *track_string = NULL;
 	if ( widgets->wpt ) {
@@ -737,6 +760,8 @@ void trw_layer_geotag_dialog ( GtkWindow *parent,
 		gtk_widget_set_sensitive ( GTK_WIDGET(time_offset_l), FALSE );
 		gtk_widget_set_sensitive ( GTK_WIDGET(widgets->time_zone_b), FALSE );
 		gtk_widget_set_sensitive ( GTK_WIDGET(time_zone_l), FALSE );
+		gtk_widget_set_sensitive ( GTK_WIDGET(time_is_local_l), FALSE );
+		gtk_widget_set_sensitive ( GTK_WIDGET(widgets->time_is_local_b), FALSE );
 	}
 	else if ( widgets->track )
 		track_string = g_strdup_printf ( _("Using track: %s"), track->name );
@@ -755,6 +780,7 @@ void trw_layer_geotag_dialog ( GtkWindow *parent,
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), aid_hbox, FALSE, FALSE, 0);
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), is_hbox,  FALSE, FALSE, 0);
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), to_hbox,  FALSE, FALSE, 0);
+	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), tl_hbox,  FALSE, FALSE, 0);
 	gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(widgets->dialog))), tz_hbox,  FALSE, FALSE, 0);
 
 	g_signal_connect ( widgets->dialog, "response", G_CALLBACK(trw_layer_geotag_response_cb), widgets );
