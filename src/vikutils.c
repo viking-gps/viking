@@ -218,15 +218,19 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 		}
 
 		case 'A': {
-			vik_units_height_t height_units = a_vik_get_units_height ();
-			switch (height_units) {
-			case VIK_UNITS_HEIGHT_FEET:
-				values[i] = g_strdup_printf ( _("%sAlt %dfeet"), separator, (int)round(VIK_METERS_TO_FEET(trkpt->altitude)) );
-				break;
-			default:
-				//VIK_UNITS_HEIGHT_METRES:
-				values[i] = g_strdup_printf ( _("%sAlt %dm"), separator, (int)round(trkpt->altitude) );
-				break;
+			if ( isnan(trkpt->altitude) ) {
+				values[i] = g_strdup_printf ( _("%sAlt --"), separator );
+			} else {
+				vik_units_height_t height_units = a_vik_get_units_height ();
+				switch (height_units) {
+				case VIK_UNITS_HEIGHT_FEET:
+					values[i] = g_strdup_printf ( _("%sAlt %dfeet"), separator, (int)round(VIK_METERS_TO_FEET(trkpt->altitude)) );
+					break;
+				default:
+					//VIK_UNITS_HEIGHT_METRES:
+					values[i] = g_strdup_printf ( _("%sAlt %dm"), separator, (int)round(trkpt->altitude) );
+					break;
+				}
 			}
 			break;
 		}

@@ -9950,7 +9950,6 @@ static gboolean tool_edit_track_or_route_click ( VikTrwLayer *vtl, GdkEventButto
   }
 
   tp->newsegment = newsegment;
-  tp->timestamp = NAN;
 
   if ( vtl->current_track ) {
     vik_track_add_trackpoint ( vtl->current_track, tp, TRUE ); // Ensure bounds is updated

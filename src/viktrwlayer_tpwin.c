@@ -471,7 +471,10 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
     gtk_spin_button_set_value ( tpwin->alt, tp->altitude );
     g_critical("Houston, we've had a problem. height=%d", height_units);
   }
-
+  // Override spin button text if NAN (otherwise it displays 0.0)
+  if ( isnan(tp->altitude) ) {
+    gtk_entry_set_text ( GTK_ENTRY(tpwin->alt), "--" );
+  }
   tpwin_update_times ( tpwin, tp );
 
   tpwin->sync_to_tp_block = FALSE; // don't update while setting data.

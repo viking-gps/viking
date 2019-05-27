@@ -148,16 +148,20 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   lat = g_strdup_printf ( "%f", ll.lat );
   lon = g_strdup_printf ( "%f", ll.lon );
   vik_units_height_t height_units = a_vik_get_units_height ();
-  switch (height_units) {
-  case VIK_UNITS_HEIGHT_METRES:
-    alt = g_strdup_printf ( "%f", wp->altitude );
-    break;
-  case VIK_UNITS_HEIGHT_FEET:
-    alt = g_strdup_printf ( "%f", VIK_METERS_TO_FEET(wp->altitude) );
-    break;
-  default:
-    alt = g_strdup_printf ( "%f", wp->altitude );
-    g_critical("Houston, we've had a problem. height=%d", height_units);
+  if ( isnan(wp->altitude) ) {
+    alt = NULL;
+  } else {
+    switch (height_units) {
+    case VIK_UNITS_HEIGHT_METRES:
+      alt = g_strdup_printf ( "%f", wp->altitude );
+      break;
+    case VIK_UNITS_HEIGHT_FEET:
+      alt = g_strdup_printf ( "%f", VIK_METERS_TO_FEET(wp->altitude) );
+      break;
+    default:
+      alt = g_strdup_printf ( "%f", wp->altitude );
+      g_critical("Houston, we've had a problem. height=%d", height_units);
+    }
   }
 
   *updated = FALSE;
@@ -395,17 +399,23 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
       ll.lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(latentry) ) );
       ll.lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lonentry) ) );
       vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &ll );
-      // Always store in metres
-      switch (height_units) {
-      case VIK_UNITS_HEIGHT_METRES:
-        wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
-        break;
-      case VIK_UNITS_HEIGHT_FEET:
-        wp->altitude = VIK_FEET_TO_METERS(atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) ));
-        break;
-      default:
-        wp->altitude = atof ( gtk_entry_get_text ( GTK_ENTRY(altentry) ) );
-        g_critical("Houston, we've had a problem. height=%d", height_units);
+      gchar const *alttext = gtk_entry_get_text ( GTK_ENTRY(altentry) );
+      if ( alttext && strlen(alttext) ) {
+        // Always store in metres
+        switch (height_units) {
+        case VIK_UNITS_HEIGHT_METRES:
+          wp->altitude = atof ( alttext );
+          break;
+        case VIK_UNITS_HEIGHT_FEET:
+          wp->altitude = VIK_FEET_TO_METERS(atof ( alttext ));
+          break;
+        default:
+          wp->altitude = atof ( alttext );
+          g_critical("Houston, we've had a problem. height=%d", height_units);
+        }
+      }
+      else {
+        wp->altitude = NAN;
       }
       if ( g_strcmp0 ( wp->comment, gtk_entry_get_text ( GTK_ENTRY(commententry) ) ) )
         vik_waypoint_set_comment ( wp, gtk_entry_get_text ( GTK_ENTRY(commententry) ) );
