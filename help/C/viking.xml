@@ -1991,6 +1991,40 @@ Here are some suggestions:
 Thus one can have a list of all your tracks, but groups can be shown or not using the relevant layers visibility checkbox.
 </para>
 
+<para>
+Tracks Area Coverage (TAC) is a feature to highlight areas with track coverage.
+It is based on OpenStreetMap style tiles - as an approximation to a grid square system.
+The size of the area can be changed, which is linked to the OSM Zoom level,
+such that a higher Zoom level gives a smaller physical area and so more tiles.
+This can be used for general curiousity or perhaps to plan routes to visit areas previously unexplored.
+</para>
+<para>
+The calculations are performed in the background when deemed necessary (e.g. loading in a new file) and can also be manually requested.
+</para>
+<para>
+Note that Viking can be slow in drawing hundreds or more tracks but this analysis is relatively quick and the resulting drawing is much faster.
+Thus ATM is it recommended to turn off the visibility of the tracks themselves for this type of usage.
+</para>
+
+<para>
+<figure>
+<title>Tracks Area Coverage: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Viking-TAC.png"/>
+</screenshot>
+</figure>
+</para>
+
+<section><title>Layer Properties: Tracks Area Coverage</title>
+<para>Offers basic controls whether it is enabled or not and includes the size of the tile.</para>
+</section>
+
+<section><title>Layer Properties: TAC Advanced</title>
+<para>Controls subsets of TAC drawing are calculated and shown with their colour and opacity.</para>
+<para>Note for Max square coverage, ATM it will only draw the first square encountered, although there may be more than one such area.</para>
+<para>Note for Cluster coverage, ATM it will only draw the first cluster encountered, although there may be more than one such area.</para>
+</section>
+
 <section><title>Layer Operations</title>
 <para>
 The following are available on Aggregate Layers:
@@ -2202,6 +2236,18 @@ This opens a dialog to display various statistics about all tracks contained wit
 <section id="agg_append"><title>Append File</title>
 <para>
 This opens a dialog to select files to load within this Aggregate layer.
+</para>
+</section>
+
+<section><title>Tracks Area Coverage->Calculate</title>
+<para>
+Start a new Tracks Area Coverage calculation.
+</para>
+</section>
+
+<section><title>Tracks Area Coverage->Remove</title>
+<para>
+This clears the Tracks Area Coverage information, thus no grid colouring will be displayed.
 </para>
 </section>
 

@@ -69,6 +69,8 @@ guint vik_aggregate_layer_count ( VikAggregateLayer *val );
 
 gboolean vik_aggregate_layer_search_date ( VikAggregateLayer *val, gchar *date_str );
 
+void vik_aggregate_layer_file_load_complete ( VikAggregateLayer *val );
+
 G_END_DECLS
 
 #endif

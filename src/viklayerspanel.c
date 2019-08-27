@@ -125,6 +125,7 @@ static GtkWidget* layers_panel_create_popup ( VikLayersPanel *vlp, gboolean full
   guint ii;
 
   if ( full ) {
+    (void)vu_menu_add_item ( GTK_MENU(menu), NULL, GTK_STOCK_PROPERTIES, G_CALLBACK(vik_layers_panel_properties), vlp );
     for ( ii = 0; ii < G_N_ELEMENTS(entries); ii++ ) {
       (void)vu_menu_add_item ( GTK_MENU(menu), entries[ii].label, entries[ii].stock_id, G_CALLBACK(entries[ii].callback), vlp );
     }
@@ -820,8 +821,6 @@ gboolean vik_layers_panel_properties ( VikLayersPanel *vlp )
 
   if ( vik_treeview_get_selected_iter ( vlp->vt, &iter ) && vik_treeview_item_get_type ( vlp->vt, &iter ) == VIK_TREEVIEW_TYPE_LAYER )
   {
-    if ( vik_treeview_item_get_data ( vlp->vt, &iter ) == VIK_LAYER_AGGREGATE )
-      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), _("Aggregate Layers have no settable properties.") );
     VikLayer *layer = VIK_LAYER( vik_treeview_item_get_pointer ( vlp->vt, &iter ) );
     if ( vik_layer_properties ( layer, vlp->vvp, TRUE ))
       vik_layer_emit_update ( layer );

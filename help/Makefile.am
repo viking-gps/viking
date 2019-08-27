@@ -53,6 +53,7 @@ DOC_FIGURES = \
     figures/zoom_18.png \
     figures/zoom_status_popup.png \
     figures/Viking-OSM-CycleMap-ManyTracks.jpg \
+    figures/Viking-TAC.png \
     figures/DEM_file_info_dialog.png \
     figures/customize_toolbar_dialog.png
 DOC_LINGUAS =

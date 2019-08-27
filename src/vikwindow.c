@@ -3817,6 +3817,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
   g_free ( original_filename );
 
   if ( last ) {
+    vik_aggregate_layer_file_load_complete ( agg );
     // Draw even if the last load unsuccessful, as may have successful loads in a list of files
     draw_update ( vw );
     vik_layers_panel_calendar_update ( vw->viking_vlp );
