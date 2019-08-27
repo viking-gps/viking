@@ -112,7 +112,7 @@ static void center_changed_cb ( VikWindow *vw );
 static void window_configure_event ( VikWindow *vw );
 static void draw_sync ( VikWindow *vw );
 static void draw_redraw ( VikWindow *vw );
-static void draw_scroll  ( VikWindow *vw, GdkEventScroll *event );
+static gboolean draw_scroll  ( VikWindow *vw, GdkEventScroll *event );
 static void draw_click  ( VikWindow *vw, GdkEventButton *event );
 static void draw_release ( VikWindow *vw, GdkEventButton *event );
 static void draw_mouse_motion ( VikWindow *vw, GdkEventMotion *event );
@@ -1608,12 +1608,12 @@ static void scroll_move_viewport ( VikWindow *vw, GdkEventScroll *event )
   }
 }
 
-static void draw_scroll (VikWindow *vw, GdkEventScroll *event)
+static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
 {
   if ( !a_vik_get_scroll_to_zoom() ) {
     scroll_move_viewport ( vw, event );
     draw_update(vw);
-    return;
+    return TRUE;
   }
   guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
   if ( modifiers == GDK_CONTROL_MASK ) {
@@ -1645,6 +1645,7 @@ static void draw_scroll (VikWindow *vw, GdkEventScroll *event)
   }
 
   draw_update(vw);
+  return TRUE;
 }
 
 
