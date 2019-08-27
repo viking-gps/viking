@@ -245,7 +245,6 @@ static void cancel_job_with_iter ( GtkTreeIter *piter )
     args[0] = GINT_TO_POINTER(1); /* set killswitch */
 
     gtk_list_store_remove ( bgstore, piter );
-    g_free ( piter );
     args[5] = NULL;
 }
 
