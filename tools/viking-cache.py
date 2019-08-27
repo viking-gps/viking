@@ -373,7 +373,7 @@ def get_tile_path (tid):
 ##
 parser = OptionParser(usage="""usage: %prog -m <mode> [options] input output
 
-When either the input or output refers to a Viking legacy cache ('vcl'), is it the root directory of the cache, typically ~/.viking-maps
+When either the input or output refers to a Viking legacy cache ('vlc'), is it the root directory of the cache, typically ~/.viking-maps
 
 Examples:
 
