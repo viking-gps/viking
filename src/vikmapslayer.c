@@ -1674,8 +1674,10 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
               g_free (msg);
               break;
             }
-            case DOWNLOAD_SUCCESS:
+            case DOWNLOAD_SUCCESS: break;
             case DOWNLOAD_NOT_REQUIRED:
+	      need_download = FALSE;
+	      break;
             default:
               break;
           }
@@ -1686,7 +1688,9 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
             a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(mdi->maptype)), mdi->mapcoord.scale, mdi->vml->filename );
         if (mdi->refresh_display && mdi->map_layer_alive) {
           /* TODO: check if it's on visible area */
-          vik_layer_emit_update ( VIK_LAYER(mdi->vml) ); // NB update display from background
+          if ( need_download ) {
+            vik_layer_emit_update ( VIK_LAYER(mdi->vml) ); // NB update display from background
+          }
         }
         g_mutex_unlock(mdi->mutex);
         mdi->mapcoord.x = mdi->mapcoord.y = 0; /* we're temporarily between downloads */
