@@ -811,12 +811,12 @@ VikLayerInterface vik_trw_layer_interface = {
   &viktrwlayer_pixbuf,
 
   trw_layer_tools,
-  sizeof(trw_layer_tools) / sizeof(VikToolInterface),
+  G_N_ELEMENTS(trw_layer_tools),
 
   trw_layer_params,
   NUM_PARAMS,
   params_groups, /* params_groups */
-  sizeof(params_groups)/sizeof(params_groups[0]),    /* number of groups */
+  G_N_ELEMENTS(params_groups),    // number of groups
 
   VIK_MENU_ITEM_ALL,
 

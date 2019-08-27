@@ -142,7 +142,7 @@ VikLayerInterface vik_mapnik_layer_interface = {
 	&vikmapniklayer_pixbuf, // icon
 
 	mapnik_tools,
-	sizeof(mapnik_tools) / sizeof(VikToolInterface),
+	G_N_ELEMENTS(mapnik_tools),
 
 	mapnik_layer_params,
 	NUM_PARAMS,

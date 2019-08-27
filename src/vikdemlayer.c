@@ -194,7 +194,7 @@ VikLayerInterface vik_dem_layer_interface = {
   &vikdemlayer_pixbuf,
 
   dem_tools,
-  sizeof(dem_tools) / sizeof(dem_tools[0]),
+  G_N_ELEMENTS(dem_tools),
 
   dem_layer_params,
   NUM_PARAMS,

@@ -215,7 +215,7 @@ VikLayerInterface vik_maps_layer_interface = {
   &vikmapslayer_pixbuf,
 
   maps_tools,
-  sizeof(maps_tools) / sizeof(maps_tools[0]),
+  G_N_ELEMENTS(maps_tools),
 
   maps_layer_params,
   NUM_PARAMS,
