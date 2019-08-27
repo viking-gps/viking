@@ -1327,9 +1327,9 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
 
     /* loop & draw */
     gint x, y;
-    gint xmin = MIN(ulm.x, brm.x), xmax = MAX(ulm.x, brm.x);
-    gint ymin = MIN(ulm.y, brm.y), ymax = MAX(ulm.y, brm.y);
-    guint16 id = vik_map_source_get_uniq_id(map);
+    const gint xmin = MIN(ulm.x, brm.x), xmax = MAX(ulm.x, brm.x);
+    const gint ymin = MIN(ulm.y, brm.y), ymax = MAX(ulm.y, brm.y);
+    const guint16 id = vik_map_source_get_uniq_id(map);
     const gchar *mapname = vik_map_source_get_name(map);
 
     VikCoord coord;
@@ -1339,7 +1339,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
     // Prevent the program grinding to a halt if trying to deal with thousands of tiles
     //  which can happen when using a small fixed zoom level and viewing large areas.
     // Also prevents very large number of tile download requests
-    gint tiles = (xmax-xmin) * (ymax-ymin);
+    const gint tiles = (xmax-xmin) * (ymax-ymin);
     if ( tiles > MAX_TILES ) {
       g_debug ( "%s: existence_only due to wanting too many tiles (%d)", __FUNCTION__, tiles );
       existence_only = TRUE;
@@ -1457,11 +1457,10 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
         /* Only showing grid for the current scale */
         GdkGC *black_gc = GTK_WIDGET(vvp)->style->black_gc;
         /* Draw single grid lines across the whole screen */
-        gint width = vik_viewport_get_width(vvp);
-        gint height = vik_viewport_get_height(vvp);
-        xx = xx_tmp; yy = yy_tmp;
-        gint base_xx = xx - (tilesize_x/2);
-        base_yy = yy - (tilesize_y/2);
+        const gint width = vik_viewport_get_width(vvp);
+        const gint height = vik_viewport_get_height(vvp);
+        gint base_xx = xx_tmp - (tilesize_x/2);
+        base_yy = yy_tmp - (tilesize_y/2);
 
         xx = base_xx;
         for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
