@@ -266,7 +266,7 @@ gboolean layers_calendar_forward ( VikLayersPanel *vlp )
   GDate *gd_now = g_date_new ();
   g_date_set_time_t ( gd_now, now );
 
-  GDate *gd = g_date_new_dmy ( day, month, year );
+  GDate *gd = g_date_new_dmy ( day, month+1, year );
   gboolean found = FALSE;
   gchar *date_str = NULL;
   while ( !found && (g_date_compare(gd, gd_now) < 0) ) {
@@ -277,12 +277,12 @@ gboolean layers_calendar_forward ( VikLayersPanel *vlp )
     year = g_date_get_year ( gd );
     month = g_date_get_month ( gd );
     day = g_date_get_day ( gd );
-    date_str = g_strdup_printf ( "%d-%02d-%02d", year, month+1, day );
+    date_str = g_strdup_printf ( "%d-%02d-%02d", year, month, day );
     found = vik_aggregate_layer_search_date ( vlp->toplayer, date_str );
   }
   if ( found ) {
     gtk_calendar_select_day ( GTK_CALENDAR(vlp->calendar), day );
-    gtk_calendar_select_month ( GTK_CALENDAR(vlp->calendar), month, year );
+    gtk_calendar_select_month ( GTK_CALENDAR(vlp->calendar), month-1, year );
   } else {
     a_dialog_info_msg_extra ( GTK_WINDOW(VIK_WINDOW_FROM_WIDGET(vlp)), _("Nothing found up to %s"), date_str );
   }
@@ -301,7 +301,7 @@ gboolean layers_calendar_back ( VikLayersPanel *vlp )
   guint year, month, day;
   gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &year, &month, &day );
 
-  GDate *gd = g_date_new_dmy ( day, month, year );
+  GDate *gd = g_date_new_dmy ( day, month+1, year );
   gboolean found = FALSE;
   const guint limit = 3650; // Search up to 10 years ago from selected date
   guint ii = 0;
@@ -314,13 +314,13 @@ gboolean layers_calendar_back ( VikLayersPanel *vlp )
     year = g_date_get_year ( gd );
     month = g_date_get_month ( gd );
     day = g_date_get_day ( gd );
-    date_str = g_strdup_printf ( "%d-%02d-%02d", year, month+1, day );
+    date_str = g_strdup_printf ( "%d-%02d-%02d", year, month, day );
     found = vik_aggregate_layer_search_date ( vlp->toplayer, date_str );
     ii++;
   }
   if ( found ) {
     gtk_calendar_select_day ( GTK_CALENDAR(vlp->calendar), day );
-    gtk_calendar_select_month ( GTK_CALENDAR(vlp->calendar), month, year );
+    gtk_calendar_select_month ( GTK_CALENDAR(vlp->calendar), month-1, year );
   } else {
     a_dialog_info_msg_extra ( GTK_WINDOW(VIK_WINDOW_FROM_WIDGET(vlp)), _("Nothing found back to %s"), date_str );
   }
