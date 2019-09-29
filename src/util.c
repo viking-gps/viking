@@ -18,7 +18,7 @@
  *    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
  /*
-  * Dependencies must be just on Glib
+  * Dependencies must be just on Glib or other basic system types (math, string, etc...)
   * see ui_utils for thing that depend on Gtk
   * see vikutils for things that further depend on other Viking types
   */
@@ -30,6 +30,7 @@
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
 #include <gio/gio.h>
+#include <math.h>
 
 #include "util.h"
 #include "globals.h"
@@ -322,6 +323,31 @@ time_t util_timegm (struct tm *tm)
 
 	return result;
 #endif
+}
+
+/**
+ * util_time_decompose:
+ *
+ * Returns for a given time period in seconds, the hours, minutes and seconds components
+ */
+void util_time_decompose ( gdouble total_seconds, guint *hours, guint *minutes, guint *seconds )
+{
+	*hours = total_seconds / 3600; // Note automatic truncation
+	gdouble mins = (total_seconds - *hours*3600)/60.0;
+	*minutes = (guint)trunc(mins);
+	*seconds = (guint)round(total_seconds - *hours*3600 - *minutes*60);
+
+	// Check for modular arithmetic
+	if ( *seconds == 60 ) {
+		*seconds = 0;
+		(*minutes)++;
+	}
+
+	// Check for modular arithmetic
+	if ( *minutes == 60 ) {
+		*minutes = 0;
+		(*hours)++;
+	}
 }
 
 /**

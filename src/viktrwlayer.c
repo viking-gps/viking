@@ -3137,9 +3137,20 @@ static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl )
       // Timing information if available
       tbuf1[0] = '\0';
       if ( tt.duration > 0 ) {
-        g_snprintf (tbuf1, sizeof(tbuf1),
-                    _(" in %d:%02d hrs:mins"),
-                    (int)(tt.duration/3600), (int)round(tt.duration/60.0)%60);
+        guint hours, minutes, seconds;
+        util_time_decompose ( tt.duration, &hours, &minutes, &seconds );
+        // Less than *nearly* an hour, show minutes + seconds
+        if ( tt.duration < 3570 ) {
+          g_snprintf ( tbuf1, sizeof(tbuf1), _(" in %d:%02d mins:secs"), minutes, seconds );
+        } else {
+           // Round to nearest minute, updating the hour value if necessary
+          if ( seconds > 30 ) minutes++;
+          if ( minutes == 60 ) {
+            minutes = 0;
+            hours++;
+          }
+          g_snprintf ( tbuf1, sizeof(tbuf1), _(" in %d:%02d hrs:mins"), hours, minutes );
+        }
       }
       g_snprintf (tbuf2, sizeof(tbuf2),
 		  _("\n%sTotal Length %.1f %s%s"),
@@ -3230,8 +3241,22 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 	  // %x     The preferred date representation for the current locale without the time.
 	  strftime (time_buf1, sizeof(time_buf1), "%x: ", gmtime(&first));
 	  gdouble dur = vik_track_get_duration ( tr, TRUE );
-	  if ( dur > 0 )
-	    g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d hrs:mins"), (int)(dur/3600), (int)round(dur/60.0)%60 );
+	  if ( dur > 0 ) {
+            guint hours, minutes, seconds;
+            util_time_decompose ( dur, &hours, &minutes, &seconds );
+            // Less than *nearly* an hour, show minutes + seconds
+            if ( dur < 3570 ) {
+              g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d mins:secs"), minutes, seconds );
+            } else {
+              // Round to nearest minute, updating the hour value if necessary
+              if ( seconds > 30 ) minutes++;
+              if ( minutes == 60 ) {
+                minutes = 0;
+                hours++;
+              }
+              g_snprintf ( time_buf2, sizeof(time_buf2), _("- %d:%02d hrs:mins"), hours, minutes );
+            }
+          }
 	}
 	// Get length and consider the appropriate distance units
 	gdouble tr_len = vik_track_get_length(tr);

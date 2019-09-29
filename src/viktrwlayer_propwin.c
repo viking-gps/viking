@@ -3545,15 +3545,17 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d minutes - %d minutes moving"), total_duration_m, segments_duration_m);
     widgets->w_time_dur = content[cnt++] = ui_label_new_selectable(tmp_buf);
 
-    // A tooltip to show in more readable hours:minutes
+    // A tooltip to show in more readable hours:minutes:seconds
     gchar tip_buf_total[20];
-    guint h_tot = total_duration_s/3600;
-    guint m_tot = (total_duration_s - h_tot*3600)/60;
-    g_snprintf(tip_buf_total, sizeof(tip_buf_total), "%d:%02d", h_tot, m_tot);
+    guint h_tot, m_tot, s_tot;
+    util_time_decompose ( total_duration_s, &h_tot, &m_tot, &s_tot );
+    g_snprintf(tip_buf_total, sizeof(tip_buf_total), "%d:%02d:%02d", h_tot, m_tot, s_tot);
+
     gchar tip_buf_segments[20];
-    guint h_seg = segments_duration_s/3600;
-    guint m_seg = (segments_duration_s - h_seg*3600)/60;
-    g_snprintf(tip_buf_segments, sizeof(tip_buf_segments), "%d:%02d", h_seg, m_seg);
+    guint h_seg, m_seg, s_seg;
+    util_time_decompose ( segments_duration_s, &h_seg, &m_seg, &s_seg );
+    g_snprintf(tip_buf_segments, sizeof(tip_buf_segments), "%d:%02d:%02d", h_seg, m_seg, s_tot);
+
     gchar *tip = g_strdup_printf (_("%s total - %s in segments"), tip_buf_total, tip_buf_segments);
     gtk_widget_set_tooltip_text ( GTK_WIDGET(widgets->w_time_dur), tip );
     g_free (tip);

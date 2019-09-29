@@ -72,6 +72,8 @@ void util_make_absolute_filenames ( GList *filenames, const gchar *dirpath );
 
 time_t util_timegm (struct tm *tm);
 
+void util_time_decompose ( gdouble total_seconds, guint *hours, guint *minutes, guint *seconds );
+
 gchar* util_formatd ( const gchar *format, gdouble dd );
 
 gboolean util_is_url ( const gchar *str );
