@@ -3592,6 +3592,15 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
     case LOAD_TYPE_UNSUPPORTED_FAILURE:
       a_dialog_error_msg_extra ( GTK_WINDOW(vw), _("Unsupported file type for %s"), filename );
       break;
+    case LOAD_TYPE_OTHER_FAILURE_NON_FATAL:
+    {
+      // Since we can process certain other files with issues (e.g. zip files) just show a warning in the status bar
+      // Not that a user can do much about it... or tells them what this issue is yet...
+      gchar *msg = g_strdup_printf (_("WARNING: issues encountered loading %s"), a_file_basename (filename) );
+      vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, msg );
+      g_free ( msg );
+      break;
+    }
     case LOAD_TYPE_VIK_FAILURE_NON_FATAL:
     {
       // Since we can process .vik files with issues just show a warning in the status bar

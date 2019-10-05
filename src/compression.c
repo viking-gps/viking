@@ -61,14 +61,14 @@ VikLoadType_t figure_out_answer ( VikLoadType_t current_ans, VikLoadType_t last_
 		return ans;
 
 	// Something previously had worked, but this one didn't
-	if ( last_ans >= LOAD_TYPE_VIK_FAILURE_NON_FATAL ) {
-		if ( ans < LOAD_TYPE_VIK_FAILURE_NON_FATAL )
-			ans = LOAD_TYPE_VIK_FAILURE_NON_FATAL;
+	if ( last_ans >= LOAD_TYPE_OTHER_FAILURE_NON_FATAL ) {
+		if ( ans < LOAD_TYPE_OTHER_FAILURE_NON_FATAL )
+			ans = LOAD_TYPE_OTHER_FAILURE_NON_FATAL;
 	}
 	else {
 		// If the final entry - any failures convert to the general failure
 		if ( ii == entries-1 ) {
-			if ( ans < LOAD_TYPE_VIK_FAILURE_NON_FATAL )
+			if ( ans < LOAD_TYPE_OTHER_FAILURE_NON_FATAL )
 				ans = LOAD_TYPE_READ_FAILURE;
 		}
 	}
@@ -110,7 +110,7 @@ typedef struct zip_file zip_file_t;
 	int entries = zip_get_num_entries ( archive, ZIP_FL_UNCHANGED );
 	g_debug ( "%s: zip file %s entries %d", __FUNCTION__, filename, entries );
 	if ( entries == 0 )
-		ans = LOAD_TYPE_VIK_FAILURE_NON_FATAL;
+		ans = LOAD_TYPE_OTHER_FAILURE_NON_FATAL;
 
 	struct zip_stat zs;
 	for ( int ii = 0; ii < entries; ii++ ) {
