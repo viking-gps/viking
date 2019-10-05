@@ -10801,13 +10801,13 @@ static void trw_layer_post_read ( VikTrwLayer *vtl, VikViewport *vvp, gboolean f
 
     if ( need_to_set_time ) {
       GTimeVal timestamp;
-      timestamp.tv_usec = 0;
-      timestamp.tv_sec = trw_layer_get_timestamp ( vtl );
-
-      // No time found - so use 'now' for the metadata time
-      if ( timestamp.tv_sec == 0 ) {
+      gdouble ts = trw_layer_get_timestamp ( vtl );
+      if ( isnan(ts) )
+        // No time found - so use 'now' for the metadata time
         g_get_current_time ( &timestamp );
-      }
+      else
+        timestamp.tv_sec = (glong)ts;
+      timestamp.tv_usec = 0;
 
       vtl->metadata->timestamp = g_time_val_to_iso8601 ( &timestamp );
     }
