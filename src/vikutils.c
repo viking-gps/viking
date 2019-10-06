@@ -1107,3 +1107,110 @@ void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdou
 	}
 	}
 }
+
+// The last used directories
+static gchar *last_folder_files_uri = NULL;
+
+gchar* vu_get_last_folder_files_uri ()
+{
+	return last_folder_files_uri;
+}
+
+void vu_set_last_folder_files_uri ( gchar *folder_uri )
+{
+	g_free ( last_folder_files_uri );
+	last_folder_files_uri = folder_uri;
+}
+
+/**
+ * Manually clear up any memory allocated here
+ */
+void vu_finish ( void )
+{
+	g_free ( last_folder_files_uri );
+}
+
+/**
+ * vu_get_ui_selected_gps_files:
+ * @external: Select filter allows only file types usuable for External Layers
+ *            (i.e. basically just GPX files)
+ *
+ * Returned list must be freed after use
+ *
+ **/
+GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external )
+{
+	GtkWidget *dialog = gtk_file_chooser_dialog_new (_("Please select a GPS data file to open. "),
+	                                                 GTK_WINDOW(vw),
+	                                                 GTK_FILE_CHOOSER_ACTION_OPEN,
+	                                                 GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+	                                                 GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+	                                                 NULL);
+	if ( last_folder_files_uri )
+		gtk_file_chooser_set_current_folder_uri ( GTK_FILE_CHOOSER(dialog), last_folder_files_uri );
+
+	GtkFileFilter *filter;
+	// NB file filters are listed this way for alphabetical ordering
+	//  (at least in the default English langauge)
+	if ( !external ) {
+#ifdef VIK_CONFIG_GEOCACHES
+		filter = gtk_file_filter_new ();
+		gtk_file_filter_set_name( filter, _("Geocaching") );
+		gtk_file_filter_add_pattern ( filter, "*.loc" ); // No MIME type available
+		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+#endif
+
+		filter = gtk_file_filter_new ();
+		gtk_file_filter_set_name( filter, _("Google Earth") );
+		gtk_file_filter_add_mime_type ( filter, "application/vnd.google-earth.kml+xml");
+		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+	}
+
+	// NB The only named filter for 'External' types ATM
+	filter = gtk_file_filter_new ();
+	gtk_file_filter_set_name( filter, _("GPX") );
+	gtk_file_filter_add_mime_type ( filter, "gpx+xml");
+	gtk_file_filter_add_pattern ( filter, "*.gpx" );
+	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+	if ( external )
+		gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
+
+	if ( !external ) {
+		filter = gtk_file_filter_new ();
+		gtk_file_filter_set_name ( filter, _("JPG") );
+		gtk_file_filter_add_mime_type ( filter, "image/jpeg");
+		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+
+		filter = gtk_file_filter_new ();
+		gtk_file_filter_set_name( filter, _("Viking") );
+		gtk_file_filter_add_pattern ( filter, "*.vik" );
+		gtk_file_filter_add_pattern ( filter, "*.viking" );
+		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+	}
+
+	// NB could have filters for gpspoint (*.gps,*.gpsoint?) + gpsmapper (*.gsm,*.gpsmapper?)
+	// However assume this are barely used and thus not worthy of inclusion
+	//   as they'll just make the options too many and have no clear file pattern
+	//   one can always use the all option
+	filter = gtk_file_filter_new ();
+	gtk_file_filter_set_name( filter, _("All") );
+	gtk_file_filter_add_pattern ( filter, "*" );
+	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+	// Default to any file - same as before open filters were added
+	if ( !external )
+		gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog), filter);
+
+	gtk_file_chooser_set_select_multiple ( GTK_FILE_CHOOSER(dialog), TRUE );
+	gtk_window_set_transient_for ( GTK_WINDOW(dialog), GTK_WINDOW(vw) );
+	gtk_window_set_destroy_with_parent ( GTK_WINDOW(dialog), TRUE );
+
+	GSList *files = NULL;
+
+	if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT ) {
+	    vu_set_last_folder_files_uri ( gtk_file_chooser_get_current_folder_uri(GTK_FILE_CHOOSER(dialog)) );
+		files = gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog) );
+	}
+	gtk_widget_destroy ( dialog );
+
+	return files;
+}

@@ -2161,6 +2161,12 @@ This opens a dialog to display various statistics about all tracks contained wit
 </note>
 </section>
 
+<section id="agg_append"><title>Append File</title>
+<para>
+This opens a dialog to select files to load within this Aggregate layer.
+</para>
+</section>
+
 </section><!-- End Agg -->
 
 <xi:include href="georef_layer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>

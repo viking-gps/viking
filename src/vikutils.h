@@ -61,6 +61,13 @@ GtkWidget* vu_menu_add_item ( const GtkMenu *menu,
 
 void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gboolean convert, gchar *format );
 
+GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external );
+
+void vu_finish ( void );
+
+gchar* vu_get_last_folder_files_uri ();
+void vu_set_last_folder_files_uri ( gchar *folder_uri );
+
 G_END_DECLS
 
 #endif

@@ -82,7 +82,6 @@ static GSList *window_list = NULL;
 #define DRAW_IMAGE_DEFAULT_SAVE_AS_PNG TRUE
 
 // The last used directories
-static gchar *last_folder_files_uri = NULL;
 static gchar *last_folder_images_uri = NULL;
 
 static void window_finalize ( GObject *gob );
@@ -339,7 +338,7 @@ static void destroy_window ( GtkWidget *widget,
 {
     g_debug ( "%s", __FUNCTION__ );
     if ( ! --window_count ) {
-      g_free ( last_folder_files_uri );
+      vu_finish ();
       g_free ( last_folder_images_uri );
       gtk_main_quit ();
     }
@@ -3692,83 +3691,18 @@ static void load_file ( GtkAction *a, VikWindow *vw )
     return;
   }
 
-  GtkWidget *dialog = gtk_file_chooser_dialog_new (_("Please select a GPS data file to open. "),
-                                                   GTK_WINDOW(vw),
-                                                   GTK_FILE_CHOOSER_ACTION_OPEN,
-                                                   GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-                                                   GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
-                                                   NULL);
-  if ( last_folder_files_uri )
-    gtk_file_chooser_set_current_folder_uri ( GTK_FILE_CHOOSER(dialog), last_folder_files_uri );
+  files = vu_get_ui_selected_gps_files ( vw, external );
 
-  GtkFileFilter *filter;
-  // NB file filters are listed this way for alphabetical ordering
-  if ( !external ) {
-#ifdef VIK_CONFIG_GEOCACHES
-    filter = gtk_file_filter_new ();
-    gtk_file_filter_set_name( filter, _("Geocaching") );
-    gtk_file_filter_add_pattern ( filter, "*.loc" ); // No MIME type available
-    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
-#endif
-
-    filter = gtk_file_filter_new ();
-    gtk_file_filter_set_name( filter, _("Google Earth") );
-    gtk_file_filter_add_mime_type ( filter, "application/vnd.google-earth.kml+xml");
-    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
-  }
-
-  // NB The only named filter for 'External' types ATM
-  filter = gtk_file_filter_new ();
-  gtk_file_filter_set_name( filter, _("GPX") );
-  gtk_file_filter_add_mime_type ( filter, "gpx+xml");
-  gtk_file_filter_add_pattern ( filter, "*.gpx" );
-  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
-  if ( external )
-    gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
-
-  if ( !external ) {
-    filter = gtk_file_filter_new ();
-    gtk_file_filter_set_name ( filter, _("JPG") );
-    gtk_file_filter_add_mime_type ( filter, "image/jpeg");
-    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
-
-    filter = gtk_file_filter_new ();
-    gtk_file_filter_set_name( filter, _("Viking") );
-    gtk_file_filter_add_pattern ( filter, "*.vik" );
-    gtk_file_filter_add_pattern ( filter, "*.viking" );
-    gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
-  }
-
-  // NB could have filters for gpspoint (*.gps,*.gpsoint?) + gpsmapper (*.gsm,*.gpsmapper?)
-  // However assume this are barely used and thus not worthy of inclusion
-  //   as they'll just make the options too many and have no clear file pattern
-  //   one can always use the all option
-  filter = gtk_file_filter_new ();
-  gtk_file_filter_set_name( filter, _("All") );
-  gtk_file_filter_add_pattern ( filter, "*" );
-  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
-  // Default to any file - same as before open filters were added
-  if ( !external )
-    gtk_file_chooser_set_filter (GTK_FILE_CHOOSER(dialog), filter);
-
-  gtk_file_chooser_set_select_multiple ( GTK_FILE_CHOOSER(dialog), TRUE );
-  gtk_window_set_transient_for ( GTK_WINDOW(dialog), GTK_WINDOW(vw) );
-  gtk_window_set_destroy_with_parent ( GTK_WINDOW(dialog), TRUE );
-
-  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
-  {
-    g_free ( last_folder_files_uri );
-    last_folder_files_uri = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER(dialog) );
-
+  if ( files ) {
 #ifdef VIKING_PROMPT_IF_MODIFIED
-    if ( (vw->modified || vw->filename) && !append )
+    if ( (vw->modified || vw->filename) && !append ) {
 #else
-    if ( vw->filename && !append )
+    if ( vw->filename && !append ) {
 #endif
-      open_window ( vw, gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog)), external );
+      open_window ( vw, files, external );
+      // NB: GSList & contents of 'files' are freed by open_window()
+    }
     else {
-
-      files = gtk_file_chooser_get_filenames (GTK_FILE_CHOOSER(dialog) );
       guint file_num = 0;
       guint num_files = g_slist_length(files);
       gboolean change_fn = !append && (num_files==1); // only change fn if one file
@@ -3801,7 +3735,6 @@ static void load_file ( GtkAction *a, VikWindow *vw )
       g_slist_free (files);
     }
   }
-  gtk_widget_destroy ( dialog );
 }
 
 static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
@@ -3815,8 +3748,9 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
                                                    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
                                                    GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
                                                    NULL);
-  if ( last_folder_files_uri )
-    gtk_file_chooser_set_current_folder_uri ( GTK_FILE_CHOOSER(dialog), last_folder_files_uri );
+
+  if ( vu_get_last_folder_files_uri() )
+    gtk_file_chooser_set_current_folder_uri ( GTK_FILE_CHOOSER(dialog), vu_get_last_folder_files_uri() );
 
   GtkFileFilter *filter;
   filter = gtk_file_filter_new ();
@@ -3851,8 +3785,7 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
       rv = window_save ( vw );
       if ( rv ) {
         vw->modified = FALSE;
-        g_free ( last_folder_files_uri );
-        last_folder_files_uri = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER(dialog) );
+        vu_set_last_folder_files_uri ( gtk_file_chooser_get_current_folder_uri(GTK_FILE_CHOOSER(dialog)) );
       }
       break;
     }
