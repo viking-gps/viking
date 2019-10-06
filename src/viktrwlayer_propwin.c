@@ -3625,8 +3625,9 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   gtk_notebook_append_page(GTK_NOTEBOOK(graphs), GTK_WIDGET(table), gtk_label_new(_("Statistics")));
 
   // TODO: One day might be nice to have bar chart equivalent of the simple table values.
-  // Consider if this could be optional
-  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_splits_tables(tr), gtk_label_new(_("Splits")));
+  // Only bother showing timing splits if times are available
+  if ( widgets->speed_box )
+    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_splits_tables(tr), gtk_label_new(_("Splits")));
 
   if ( widgets->elev_box ) {
     GtkWidget *page = NULL;
