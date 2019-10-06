@@ -433,7 +433,7 @@ The number of track points is normally alot higher (e.g. 500 or typically with l
 
 <para>
 &appname; has it's own file type traditionally marked by the <emphasis>.vik</emphasis> file extension.
-This is a plain text file saving all information of the current window including the view location, zoom level, projection type and then all the layer information (aggregrates, maps, tracks, waypoints, etc...).
+This is a plain text file saving all information of the current window including the view location, zoom level, projection type and then all the layer information (aggregates, maps, tracks, waypoints, etc...).
 </para>
 <para>
 Besides it's own file type, &appname; can open (and save to via export methods) GPX and KML file types.
@@ -1112,13 +1112,13 @@ See <link linkend="geotagging">Geotagging</link> for further detail.
 
 <section><title>List Tracks or Routes</title>
 <para>
-Opens a new dialog with the list. As described in the Aggregrate layer <xref linkend="track_list"/>
+Opens a new dialog with the list. As described in the Aggregate layer <xref linkend="track_list"/>
 </para>
 </section>
 
 <section><title>List Waypoints</title>
 <para>
-Opens a new dialog with the list. As described in the Aggregrate layer <xref linkend="waypoint_list"/>
+Opens a new dialog with the list. As described in the Aggregate layer <xref linkend="waypoint_list"/>
 </para>
 </section>
 
@@ -1149,7 +1149,7 @@ Opens a new dialog with the list. As described in the Aggregrate layer <xref lin
 </varlistentry>
 <varlistentry>
 <term><guilabel>List Tracks or Routes</guilabel></term>
-<listitem><para>Opens a new dialog with the list. As described in the Aggregrate layer <xref linkend="track_list"/></para></listitem>
+<listitem><para>Opens a new dialog with the list. As described in the Aggregate layer <xref linkend="track_list"/></para></listitem>
 </varlistentry>
 </variablelist>
 <para>Also gives other options for handling multiple items:</para>
@@ -1597,7 +1597,7 @@ The record of the Google route is stored in the track's comment, so if the comme
 </varlistentry>
 <varlistentry>
 <term><guilabel>List Waypoints</guilabel></term>
-<listitem><para>Opens a new dialog with the list. As described in the Aggregrate layer <xref linkend="waypoint_list"/></para></listitem>
+<listitem><para>Opens a new dialog with the list. As described in the Aggregate layer <xref linkend="waypoint_list"/></para></listitem>
 </varlistentry>
 </variablelist>
 <para>Also gives other options for handling multiple items:</para>

@@ -380,7 +380,7 @@ static void aggregate_layer_child_visible_toggle ( menu_array_values values )
   VikLayer *vl;
 
   // Loop around all (child) layers applying visibility setting
-  // This does not descend the tree if there are aggregates within aggregrate - just the first level of layers held
+  // This does not descend the tree if there are aggregates within aggregate - just the first level of layers held
   GList *iter = val->children;
   while ( iter ) {
     vl = VIK_LAYER ( iter->data );
@@ -401,7 +401,7 @@ static void aggregate_layer_child_visible ( menu_array_values values, gboolean o
   VikLayer *vl;
 
   // Loop around all (child) layers applying visibility setting
-  // This does not descend the tree if there are aggregates within aggregrate - just the first level of layers held
+  // This does not descend the tree if there are aggregates within aggregate - just the first level of layers held
   GList *iter = val->children;
   while ( iter ) {
     vl = VIK_LAYER ( iter->data );
@@ -881,7 +881,7 @@ GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList 
   while (children) {
     vl = VIK_LAYER(children->data);
     if (vl->type == VIK_LAYER_AGGREGATE ) {
-      // Don't even consider invisible aggregrates, unless told to
+      // Don't even consider invisible aggregates, unless told to
       if (vl->visible || include_invisible)
         l = vik_aggregate_layer_get_all_layers_of_type(VIK_AGGREGATE_LAYER(children->data), l, type, include_invisible);
     }
