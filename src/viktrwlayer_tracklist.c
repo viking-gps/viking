@@ -290,7 +290,7 @@ static gboolean trw_layer_track_menu_popup_multi  ( GtkWidget *tree_view,
 	GtkWidget *menu = gtk_menu_new();
 
 	add_copy_menu_item ( GTK_MENU(menu), tree_view );
-
+	gtk_widget_show_all ( menu );
 	gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
 
 	return TRUE;
