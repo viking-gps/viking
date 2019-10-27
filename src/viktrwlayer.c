@@ -9843,7 +9843,8 @@ static void undo_trackpoint_add ( VikTrwLayer *vtl )
 
 static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )
 {
-  if ( vtl->current_track && event->keyval == GDK_Escape ) {
+  gboolean mods = event->state & gtk_accelerator_get_default_mod_mask ();
+  if ( vtl->current_track && event->keyval == GDK_Escape && !mods ) {
     // Bin track if only one point as it's not very useful
     if ( vik_track_get_tp_count(vtl->current_track) == 1 ) {
       if ( vtl->current_track->is_route )
@@ -9854,7 +9855,7 @@ static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event
     vtl->current_track = NULL;
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
-  } else if ( vtl->current_track && event->keyval == GDK_BackSpace ) {
+  } else if ( vtl->current_track && event->keyval == GDK_BackSpace && !mods ) {
     undo_trackpoint_add ( vtl );
     update_statusbar ( vtl );
     vik_layer_emit_update ( VIK_LAYER(vtl) );
@@ -9863,18 +9864,18 @@ static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event
     GdkWindow *gdkw = gtk_widget_get_window(GTK_WIDGET(vvp));
     gdk_window_set_cursor ( gdkw, vtl->crosshair_cursor );
     return TRUE;
-  } else if ( event->keyval == GDK_Left ) {
+  } else if ( event->keyval == GDK_Left && !mods ) {
     vik_trw_layer_goto_track_prev_point ( vtl );
     return TRUE;
-  } else if ( event->keyval == GDK_Right ) {
+  } else if ( event->keyval == GDK_Right && !mods ) {
     vik_trw_layer_goto_track_next_point ( vtl );
     return TRUE;
-  } else if ( event->keyval == GDK_bracketleft || event->keyval == GDK_KP_Subtract ) {
+  } else if ( ( event->keyval == GDK_bracketleft || event->keyval == GDK_KP_Subtract ) && !mods ) {
     if ( vtl->current_tp_track ) {
       trw_layer_insert_tp_beside_current_tp ( vtl, TRUE, vtl->current_tp_track->is_route );
     }
     return TRUE;
-  } else if ( event->keyval == GDK_bracketright || event->keyval == GDK_KP_Add ) {
+  } else if ( ( event->keyval == GDK_bracketright || event->keyval == GDK_KP_Add ) && !mods ) {
     if ( vtl->current_tp_track ) {
       trw_layer_insert_tp_beside_current_tp ( vtl, FALSE, vtl->current_tp_track->is_route );
     }
