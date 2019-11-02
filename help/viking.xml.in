@@ -453,7 +453,7 @@ and docbook-xsl in your Build-Depends control field.
           <variablelist>
             <varlistentry>
               <term>label</term>
-              <listitem><para>the text displayed in the <guilabel>Go-To</guilabel> dialog</para></listitem>
+              <listitem><para>the text displayed in the <guilabel>Go-To</guilabel> pane</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>url-format</term>
