@@ -1971,7 +1971,6 @@ Thus one can have a list of all your tracks, but groups can be shown or not usin
 <para>
 The following are available on Aggregate Layers:
 </para>
-</section>
 
 <section><title>New Layer</title>
 <para>
@@ -2182,6 +2181,7 @@ This opens a dialog to select files to load within this Aggregate layer.
 </para>
 </section>
 
+</section><!-- End Layer Operations -->
 </section><!-- End Agg -->
 
 <xi:include href="georef_layer.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
