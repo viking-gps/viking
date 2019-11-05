@@ -1697,7 +1697,7 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
 
   (void)vu_menu_add_item ( menu, _("Load E_xternal Layers"), NULL, G_CALLBACK(aggregate_layer_load_external_layers_click), values );
 
-  (void)vu_menu_add_item ( menu, _("Append File..."), GTK_STOCK_ADD, G_CALLBACK(aggregate_layer_file_load), values );
+  (void)vu_menu_add_item ( menu, _("_Append File..."), GTK_STOCK_ADD, G_CALLBACK(aggregate_layer_file_load), values );
 
   GtkMenu *tac_submenu = GTK_MENU(gtk_menu_new());
   GtkWidget *itemt = vu_menu_add_item ( menu, _("_Tracks Area Coverage"), GTK_STOCK_EXECUTE, NULL, NULL );
