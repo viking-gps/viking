@@ -167,20 +167,16 @@ void osm_init () {
 
   // Webtools
   VikWebtoolCenter *webtool = NULL;
-  webtool = vik_webtool_center_new_with_members ( _("OSM (view)"), "http://www.openstreetmap.org/?lat=%s&lon=%s&zoom=%d" );
+  webtool = vik_webtool_center_new_with_members ( _("OSM (view)"), "https://www.openstreetmap.org/?lat=%s&lon=%s&zoom=%d" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
   g_object_unref ( webtool );
 
-  webtool = vik_webtool_center_new_with_members ( _("OSM (edit)"), "http://www.openstreetmap.org/edit?lat=%s&lon=%s&zoom=%d" );
+  webtool = vik_webtool_center_new_with_members ( _("OSM (edit)"), "https://www.openstreetmap.org/edit?lat=%s&lon=%s&zoom=%d" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
   g_object_unref ( webtool );
 
   // Note the use of positional parameters
-  webtool = vik_webtool_center_new_with_members ( _("OSM (query)"), "http://www.openstreetmap.org/query?lat=%1$s&lon=%2$s#map=%3$d/%1$s/%2$s" );
-  vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
-  g_object_unref ( webtool );
-
-  webtool = vik_webtool_center_new_with_members ( _("OSM (render)"), "http://www.informationfreeway.org/?lat=%s&lon=%s&zoom=%d&layers=B0000F000F" );
+  webtool = vik_webtool_center_new_with_members ( _("OSM (query)"), "https://www.openstreetmap.org/query?lat=%1$s&lon=%2$s#map=%3$d/%1$s/%2$s" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
   g_object_unref ( webtool );
 
@@ -193,7 +189,7 @@ void osm_init () {
 
   VikWebtoolFormat *vwtf = NULL;
   vwtf = vik_webtool_format_new_with_members ( _("Geofabrik Map Compare"),
-                                               "http://tools.geofabrik.de/mc/#%s/%s/%s",
+                                               "https://tools.geofabrik.de/mc/#%s/%s/%s",
                                                "ZAO" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( vwtf ) );
   g_object_unref ( vwtf );
@@ -218,8 +214,7 @@ void osm_init () {
     g_object_unref ( nominatim );
 
   // Not really OSM but can't be bothered to create somewhere else to put it...
-  webtool = vik_webtool_center_new_with_members ( _("Wikimedia Toolserver GeoHack"), "http://tools.wmflabs.org/geohack/geohack.php?params=%s;%s" );
+  webtool = vik_webtool_center_new_with_members ( _("Wikimedia Toolserver GeoHack"), "https://tools.wmflabs.org/geohack/geohack.php?params=%s;%s" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
   g_object_unref ( webtool );
 }
-

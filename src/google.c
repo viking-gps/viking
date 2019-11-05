@@ -36,7 +36,7 @@
 
 void google_init () {
   // Webtools
-  VikWebtoolCenter *webtool = vik_webtool_center_new_with_members ( _("Google"), "http://maps.google.com/maps/@%s,%s,%dz" );
+  VikWebtoolCenter *webtool = vik_webtool_center_new_with_members ( _("Google"), "https://maps.google.com/maps/@%s,%s,%dz" );
   vik_ext_tools_register ( VIK_EXT_TOOL ( webtool ) );
   g_object_unref ( webtool );
 
