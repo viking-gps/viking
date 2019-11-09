@@ -656,6 +656,7 @@ static gint blobby_gradient ( gdouble x_blob, PropWidgets *widgets )
   // Ensure ix is inbounds
   if (ix == widgets->profile_width)
     ix--;
+  if (ix < 0) ix = 0;
 
   gint y_blob = widgets->profile_height-widgets->profile_height*(widgets->gradients[ix]-widgets->draw_min_gradient)/(chunksg[widgets->cig]*LINES);
 
@@ -671,6 +672,7 @@ static gint blobby_speed ( gdouble x_blob, PropWidgets *widgets )
   // Ensure ix is inbounds
   if (ix == widgets->profile_width)
     ix--;
+  if (ix < 0) ix = 0;
 
   gint y_blob = widgets->profile_height-widgets->profile_height*(widgets->speeds[ix]-widgets->draw_min_speed)/(chunkss[widgets->cis]*LINES);
 
@@ -686,6 +688,7 @@ static gint blobby_distance ( gdouble x_blob, PropWidgets *widgets )
   // Ensure ix is inbounds
   if (ix == widgets->profile_width)
     ix--;
+  if (ix < 0) ix = 0;
 
   gint y_blob = widgets->profile_height-widgets->profile_height*(widgets->distances[ix])/(chunksd[widgets->cid]*LINES);
   //NB min distance is always 0, so no need to subtract that from this  ______/
@@ -702,6 +705,7 @@ static gint blobby_altitude_time ( gdouble x_blob, PropWidgets *widgets )
   // Ensure ix is inbounds
   if (ix == widgets->profile_width)
     ix--;
+  if (ix < 0) ix = 0;
 
   gint y_blob = widgets->profile_height-widgets->profile_height*(widgets->ats[ix]-widgets->draw_min_altitude_time)/(chunksa[widgets->ciat]*LINES);
   return y_blob;
@@ -716,6 +720,7 @@ static gint blobby_speed_dist ( gdouble x_blob, PropWidgets *widgets )
   // Ensure ix is inbounds
   if (ix == widgets->profile_width)
     ix--;
+  if (ix < 0) ix = 0;
 
   gint y_blob = widgets->profile_height-widgets->profile_height*(widgets->speeds_dist[ix]-widgets->draw_min_speed)/(chunkss[widgets->cisd]*LINES);
 

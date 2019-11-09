@@ -509,7 +509,8 @@ static void viewport_finalize ( GObject *gob )
 void vik_viewport_clear ( VikViewport *vvp )
 {
   g_return_if_fail ( vvp != NULL );
-  gdk_draw_rectangle(GDK_DRAWABLE(vvp->scr_buffer), vvp->background_gc, TRUE, 0, 0, vvp->width, vvp->height);
+  if ( vvp->scr_buffer )
+    gdk_draw_rectangle(GDK_DRAWABLE(vvp->scr_buffer), vvp->background_gc, TRUE, 0, 0, vvp->width, vvp->height);
   vik_viewport_reset_copyrights ( vvp );
   vik_viewport_reset_logos ( vvp );
 }
