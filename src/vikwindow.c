@@ -108,8 +108,8 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
 static gboolean key_release_event( VikWindow *vw, GdkEventKey *event, gpointer data );
 
 static void center_changed_cb ( VikWindow *vw );
-static void window_configure_event ( VikWindow *vw );
-static void draw_sync ( VikWindow *vw );
+static gboolean window_configure_event ( VikWindow *vw );
+static gboolean draw_sync ( VikWindow *vw );
 static void draw_redraw ( VikWindow *vw );
 static gboolean draw_scroll  ( VikWindow *vw, GdkEventScroll *event );
 static void draw_click  ( VikWindow *vw, GdkEventButton *event );
@@ -1241,13 +1241,14 @@ static void newwindow_cb ( GtkAction *a, VikWindow *vw )
 static void draw_update ( VikWindow *vw )
 {
   draw_redraw (vw);
-  draw_sync (vw);
+  (void)draw_sync (vw);
 }
 
-static void draw_sync ( VikWindow *vw )
+static gboolean draw_sync ( VikWindow *vw )
 {
   vik_viewport_sync(vw->viking_vvp);
   draw_status ( vw );
+  return FALSE;
 }
 
 /*
@@ -1290,7 +1291,7 @@ void vik_window_set_redraw_trigger(VikLayer *vl)
     vw->trigger = vl;
 }
 
-static void window_configure_event ( VikWindow *vw )
+static gboolean window_configure_event ( VikWindow *vw )
 {
   static gboolean first = TRUE;
   draw_redraw ( vw );
@@ -1314,6 +1315,7 @@ static void window_configure_event ( VikWindow *vw )
     /* We set cursor, even if it is NULL: it resets to default */
     gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), vw->viewport_cursor );
   }
+  return FALSE;
 }
 
 static void draw_redraw ( VikWindow *vw )
