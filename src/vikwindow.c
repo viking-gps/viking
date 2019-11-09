@@ -542,8 +542,6 @@ void vik_window_new_window_finish ( VikWindow *vw )
     vik_layer_rename ( VIK_LAYER(vml), _("Default Map") );
     vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer(vw->viking_vlp), VIK_LAYER(vml), TRUE );
     vik_layer_post_read ( VIK_LAYER(vml), vw->viking_vvp, TRUE );
-
-    draw_update ( vw );
   }
 
   // If not loaded any file, maybe try the location lookup
