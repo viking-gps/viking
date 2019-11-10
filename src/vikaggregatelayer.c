@@ -582,7 +582,7 @@ static void aggregate_layer_search_date ( menu_array_values values )
  * @vl:        The layer that should create the track and layers list
  * @user_data: Not used in this function
  *
- * Returns: A list of #vik_trw_track_list_t
+ * Returns: A list of #vik_trw_and_track_t
  */
 static GList* aggregate_layer_track_create_list ( VikLayer *vl, gpointer user_data )
 {

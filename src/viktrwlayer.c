@@ -7819,14 +7819,14 @@ static void trw_layer_analyse_close ( GtkWidget *dialog, gint resp, VikLayer* vl
 /**
  * vik_trw_layer_build_track_list_t:
  *
- * Helper function to construct a list of #vik_trw_track_list_t
+ * Helper function to construct a list of #vik_trw_and_track_t
  */
 GList *vik_trw_layer_build_track_list_t ( VikTrwLayer *vtl, GList *tracks )
 {
   GList *tracks_and_layers = NULL;
   // build tracks_and_layers list
   while ( tracks ) {
-    vik_trw_track_list_t *vtdl = g_malloc (sizeof(vik_trw_track_list_t));
+    vik_trw_and_track_t *vtdl = g_malloc (sizeof(vik_trw_and_track_t));
     vtdl->trk = VIK_TRACK(tracks->data);
     vtdl->vtl = vtl;
     tracks_and_layers = g_list_prepend ( tracks_and_layers, vtdl );

@@ -120,12 +120,12 @@ void vik_trw_layer_draw_highlight ( VikTrwLayer *vtl, VikViewport *vvp );
 void vik_trw_layer_draw_highlight_item ( VikTrwLayer *vtl, VikTrack *trk, VikWaypoint *wpt, VikViewport *vvp );
 void vik_trw_layer_draw_highlight_items ( VikTrwLayer *vtl, GHashTable *trks, GHashTable *wpts, VikViewport *vvp );
 
-// For creating a list of tracks with the corresponding layer it is in
+// E.g for creating a list of tracks with the corresponding layer it is in
 //  (thus a selection of tracks may be from differing layers)
 typedef struct {
   VikTrack *trk;
   VikTrwLayer *vtl;
-} vik_trw_track_list_t;
+} vik_trw_and_track_t;
 
 typedef GList* (*VikTrwlayerGetTracksAndLayersFunc) (VikLayer*, gpointer);
 GList *vik_trw_layer_build_track_list_t ( VikTrwLayer *vtl, GList *tracks );

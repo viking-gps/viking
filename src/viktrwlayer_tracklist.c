@@ -391,7 +391,7 @@ static gboolean trw_layer_track_button_pressed ( GtkWidget *tree_view,
  * Foreach entry we copy the various individual track properties into the tree store
  *  formatting & converting the internal values into something for display
  */
-static void trw_layer_track_list_add ( vik_trw_track_list_t *vtdl,
+static void trw_layer_track_list_add ( vik_trw_and_track_t *vtt,
                                        GtkTreeStore *store,
                                        vik_units_distance_t dist_units,
                                        vik_units_speed_t speed_units,
@@ -399,8 +399,8 @@ static void trw_layer_track_list_add ( vik_trw_track_list_t *vtdl,
                                        const gchar* date_format )
 {
 	GtkTreeIter t_iter;
-	VikTrack *trk = vtdl->trk;
-	VikTrwLayer *vtl = vtdl->vtl;
+	VikTrack *trk = vtt->trk;
+	VikTrwLayer *vtl = vtt->vtl;
 
 	gdouble trk_dist = vik_track_get_length ( trk );
 	// Store unit converted value
@@ -572,7 +572,7 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 
 	GList *gl = tracks_and_layers;
 	while ( gl ) {
-		trw_layer_track_list_add ( (vik_trw_track_list_t*)gl->data, store, dist_units, speed_units, height_units, date_format );
+		trw_layer_track_list_add ( (vik_trw_and_track_t*)gl->data, store, dist_units, speed_units, height_units, date_format );
 		gl = g_list_next ( gl );
 	}
 	g_free ( date_format );

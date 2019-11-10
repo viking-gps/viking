@@ -506,7 +506,7 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
  * Analyse this particular track
  *  considering whether it should be included depending on it's visibility
  */
-static void val_analyse_item_maybe ( vik_trw_track_list_t *vtlist, const gpointer data )
+static void val_analyse_item_maybe ( vik_trw_and_track_t *vtlist, const gpointer data )
 {
 	gboolean include_invisible = GPOINTER_TO_INT(data);
 	VikTrack *trk = vtlist->trk;
@@ -534,7 +534,7 @@ static void val_analyse_item_maybe ( vik_trw_track_list_t *vtlist, const gpointe
 /**
  * val_analyse:
  * @widgets:           The widget layout
- * @tracks_and_layers: A list of #vik_trw_track_list_t
+ * @tracks_and_layers: A list of #vik_trw_and_track_t
  * @include_invisible: Whether to include invisible layers and tracks
  *
  * Analyse each item in the @tracks_and_layers list
