@@ -45,8 +45,8 @@ typedef struct {
 	gulong   trackpoints;
 	guint    segments;
 	gint     duration;
-	time_t   start_time;
-	time_t   end_time;
+	gdouble  start_time;
+	gdouble  end_time;
 	gint     count;
 	GList    *e_list; // of guints to determine Eddington number
 	// https://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling
@@ -81,8 +81,8 @@ static void val_reset ( track_stat_block block )
 	tracks_stats[block].trackpoints = 0;
 	tracks_stats[block].segments    = 0;
 	tracks_stats[block].duration    = 0;
-	tracks_stats[block].start_time  = 0;
-	tracks_stats[block].end_time    = 0;
+	tracks_stats[block].start_time  = NAN;
+	tracks_stats[block].end_time    = NAN;
 	tracks_stats[block].count       = 0;
 	tracks_stats[block].e_list      = NULL;
 }
@@ -115,7 +115,7 @@ static void val_analyse_track ( VikTrack *trk )
 	length_gaps = vik_track_get_length_including_gaps (trk);
 	max_speed   = vik_track_get_max_speed (trk);
 
-    if ( !trk->is_route ) {
+	if ( !trk->is_route ) {
 		// Eddington number will be in the current Units distance preference
 		gdouble e_len;
 		switch (a_vik_get_units_distance ()) {
@@ -157,27 +157,32 @@ static void val_analyse_track ( VikTrack *trk )
 
 	// NB Subsecond resolution not needed, as just using the timestamp to get dates
 	if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
-		time_t t1 = (time_t)VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data)->timestamp;
-		time_t t2 = (time_t)VIK_TRACKPOINT(g_list_last(trk->trackpoints)->data)->timestamp;
+		gdouble t1 = VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data)->timestamp;
+		gdouble t2 = VIK_TRACKPOINT(g_list_last(trk->trackpoints)->data)->timestamp;
 
-		// Assume never actually have a track with a time of 0 (1st Jan 1970)
+		// Initialize to the first or smallest/largest value
 		for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
-			if ( tracks_stats[ii].start_time == 0)
-				tracks_stats[ii].start_time = t1;
-			if ( tracks_stats[ii].end_time == 0)
-				tracks_stats[ii].end_time = t2;
-		}
+			if ( !isnan(t1) ) {
+				if ( !isnan(tracks_stats[ii].start_time) ) {
+					if ( t1 < tracks_stats[ii].start_time )
+						tracks_stats[ii].start_time = t1;
+				}
+				else
+					tracks_stats[ii].start_time = t1;
+			}
 
-		// Initialize to the first value
-		for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
-			if (t1 < tracks_stats[ii].start_time)
-				tracks_stats[ii].start_time = t1;
-			if (t2 > tracks_stats[ii].end_time)
-				tracks_stats[ii].end_time = t2;
-		}
+			if ( !isnan(t2) ) {
+				if ( !isnan(tracks_stats[ii].end_time) ) {
+					if ( t2 > tracks_stats[ii].end_time )
+						tracks_stats[ii].end_time = t2;
+				}
+				else
+					tracks_stats[ii].end_time = t2;
+			}
 
-		for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
-			tracks_stats[ii].duration = tracks_stats[ii].duration + (int)(t2-t1);
+			if ( !isnan(t1) && !isnan(t2) ) {
+				tracks_stats[ii].duration = tracks_stats[ii].duration + (int)(t2-t1);
+			}
 		}
 	}
 }
@@ -278,13 +283,13 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 	// Check for potential date range
 	// Test if the same day by comparing the date string of the timestamp
 	GDate* gdate_start = g_date_new ();
-	g_date_set_time_t ( gdate_start, ts.start_time );
+	g_date_set_time_t ( gdate_start, (time_t)ts.start_time );
 	gchar time_start[32];
 	g_date_strftime ( time_start, sizeof(time_start), "%x", gdate_start );
 	g_date_free ( gdate_start );
 
 	GDate* gdate_end = g_date_new ();
-	g_date_set_time_t ( gdate_end, ts.end_time );
+	g_date_set_time_t ( gdate_end, (time_t)ts.end_time );
 	gchar time_end[32];
 	g_date_strftime ( time_end, sizeof(time_end), "%x", gdate_end );
 	g_date_free ( gdate_end );
@@ -533,7 +538,7 @@ void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboolean incl
 
 	GList *gl = g_list_first ( tracks_and_layers );
 	if ( gl ) {
-		g_list_foreach ( gl, (GFunc) val_analyse_item_maybe, GINT_TO_POINTER(include_invisible) );
+		g_list_foreach ( gl, (GFunc)val_analyse_item_maybe, GINT_TO_POINTER(include_invisible) );
 	}
 
 	table_output ( tracks_stats[TS_TRACKS], widgets, extended );
