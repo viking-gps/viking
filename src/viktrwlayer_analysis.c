@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2013 Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2019 Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,10 @@ typedef enum {
 } track_stat_block;
 static track_stats tracks_stats[1];
 
+#define YEARS_HELD 100
+static track_stats tracks_years[YEARS_HELD];
+static guint current_year = 2020;
+
 // cf with vik_track_get_minmax_alt internals
 #define VIK_VAL_MIN_ALT 25000.0
 #define VIK_VAL_MAX_ALT -5000.0
@@ -93,6 +97,15 @@ static void reset_me ( track_stats *stats )
 static void val_reset ( track_stat_block block )
 {
 	reset_me ( &tracks_stats[block] );
+}
+
+/**
+ * Reset the years info
+ */
+static void val_reset_years ( void )
+{
+	for ( guint yi = 0; yi < YEARS_HELD; yi++ )
+		reset_me ( &tracks_years[yi] );
 }
 
 /**
@@ -163,9 +176,11 @@ static void val_analyse_track ( VikTrack *trk )
 		tracks_stats[ii].elev_loss += down;
 	}
 
+	gdouble t1 = NAN;
+
 	// NB Subsecond resolution not needed, as just using the timestamp to get dates
 	if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
-		gdouble t1 = VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data)->timestamp;
+		t1 = VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data)->timestamp;
 		gdouble t2 = VIK_TRACKPOINT(g_list_last(trk->trackpoints)->data)->timestamp;
 
 		// Initialize to the first or smallest/largest value
@@ -193,6 +208,29 @@ static void val_analyse_track ( VikTrack *trk )
 			}
 		}
 	}
+
+	// Insert into Years
+	if ( !isnan(t1) ) {
+		// What Year is it?
+		GDate* gdate = g_date_new ();
+		g_date_set_time_t ( gdate, (time_t)t1 );
+		guint trk_year = g_date_get_year ( gdate );
+
+		// Store track info
+		guint yi = current_year - trk_year;
+		if ( yi < YEARS_HELD ) {
+			tracks_years[yi].count++;
+			tracks_years[yi].length += length;
+			tracks_years[yi].elev_gain += up;
+			if ( max_alt > tracks_years[yi].max_alt )
+				tracks_years[yi].max_alt = max_alt;
+			if ( max_speed > tracks_years[yi].max_speed )
+				tracks_years[yi].max_speed = max_speed;
+		}
+		g_date_free ( gdate );
+	}
+	else
+		g_debug ( "%s: %s has no time", __FUNCTION__, trk->name );
 }
 
 // Could use GtkGrids but that is Gtk3+
@@ -473,6 +511,14 @@ static void val_analyse_item_maybe ( vik_trw_and_track_t *vtlist, const gpointer
 static void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboolean include_invisible, gboolean extended )
 {
 	val_reset ( TS_TRACKS );
+	val_reset_years ( );
+	time_t now = time ( NULL );
+	if ( now != (time_t)-1 ) {
+		GDate* gdate = g_date_new ();
+		g_date_set_time_t ( gdate, now );
+		current_year = g_date_get_year ( gdate );
+		g_date_free ( gdate );
+	}
 
 	GList *gl = g_list_first ( tracks_and_layers );
 	if ( gl ) {
@@ -482,6 +528,14 @@ static void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboole
 	table_output ( tracks_stats[TS_TRACKS], widgets, extended );
 
 	g_list_free_full ( tracks_stats[TS_TRACKS].e_list, g_free );
+
+	// Years info...
+	if ( vik_debug ) {
+		for ( guint yi = 0; yi < YEARS_HELD; yi++ ) {
+			if ( tracks_years[yi].count > 0 )
+				g_printf ( "%s: %d: %d %d %5.2f %5.1f %d\n", __FUNCTION__, current_year-yi, tracks_years[yi].count, (gint)tracks_years[yi].max_alt, tracks_years[yi].max_speed, tracks_years[yi].length/1000, (gint)tracks_years[yi].elev_gain );
+		}
+	}
 }
 
 typedef struct {
@@ -495,7 +549,158 @@ typedef struct {
 	VikTrwlayerAnalyseCloseFunc on_close_cb;
 	gboolean extended;
 	VikWindow *vw;
+	GtkTreeStore *store;
 } analyse_cb_t;
+
+static gdouble get_distance_in_units ( vik_units_distance_t dist_units, gdouble dist_in )
+{
+	gdouble dist = dist_in;
+	switch ( dist_units ) {
+	case VIK_UNITS_DISTANCE_MILES:
+		dist = VIK_METERS_TO_MILES(dist);
+		break;
+	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+		dist = VIK_METERS_TO_NAUTICAL_MILES(dist);
+		break;
+	default:
+		dist = dist/1000.0;
+		break;
+	}
+	return dist;
+}
+
+#define YEARS_COLS 4
+
+static void years_copy_all ( GtkWidget *tree_view )
+{
+	GString *str = g_string_new ( NULL );
+	gchar sep = '\t';
+
+	// Get info from the GTK store
+	//  using this way gets the items in the ordered by the user
+	GtkTreeModel *model = gtk_tree_view_get_model ( GTK_TREE_VIEW(tree_view) );
+	GtkTreeIter iter;
+	if ( !gtk_tree_model_get_iter_first(model, &iter) )
+		return;
+
+	gboolean cont = TRUE;
+	while ( cont ) {
+		gint value;
+		for (guint ii=0; ii<YEARS_COLS; ii++) {
+			// Most items integers
+			if ( ii < YEARS_COLS-1 ) {
+				gtk_tree_model_get ( model, &iter, ii, &value, -1 );
+				g_string_append_printf ( str, "%d%c", value, sep );
+			} else {
+				// Except last which is a double
+				gdouble dvalue;
+				gtk_tree_model_get ( model, &iter, ii, &dvalue, -1 );
+				g_string_append_printf ( str, "%.1f", dvalue );
+			}
+		}
+		g_string_append_printf ( str, "\n" );
+		cont = gtk_tree_model_iter_next ( model, &iter );
+	}
+
+	a_clipboard_copy ( VIK_CLIPBOARD_DATA_TEXT, 0, 0, 0, str->str, NULL );
+	g_string_free ( str, TRUE );
+}
+
+static gboolean years_menu_popup ( GtkWidget *tree_view,
+                                   GdkEventButton *event,
+                                   gpointer data )
+{
+	GtkWidget *menu = gtk_menu_new();
+	(void)vu_menu_add_item ( GTK_MENU(menu), _("_Copy Data"), GTK_STOCK_COPY, G_CALLBACK(years_copy_all), tree_view );
+	gtk_widget_show_all ( menu );
+	gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+	return TRUE;
+}
+
+static gboolean years_button_pressed ( GtkWidget *tree_view,
+                                       GdkEventButton *event,
+                                       gpointer data )
+{
+	// Only on right clicks...
+	if ( ! (event->type == GDK_BUTTON_PRESS && event->button == 3) )
+		return FALSE;
+	return years_menu_popup ( tree_view, event, data );
+}
+
+static void years_update_store ( GtkTreeStore *store )
+{
+	// Reset store
+	gtk_tree_store_clear ( store );
+
+	vik_units_distance_t dist_units = a_vik_get_units_distance ();
+	GtkTreeIter t_iter;
+	// NB Default ordering in store is in the order they are added
+	//  thus for here is it in reverse time
+	for ( guint yi = 0; yi < YEARS_HELD; yi++ ) {
+		if ( tracks_years[yi].count > 0 ) {
+			gdouble distd = get_distance_in_units ( dist_units, tracks_years[yi].length );
+			guint distu = (guint)round(distd);
+			distd = distd / tracks_years[yi].count;
+			gtk_tree_store_append ( store, &t_iter, NULL );
+			gtk_tree_store_set ( store, &t_iter,
+			                     0, current_year-yi,
+			                     1, tracks_years[yi].count,
+			                     2, distu,
+			                     3, distd,
+			                     -1 );
+		}
+	}
+}
+
+/**
+ * years_display_build:
+ *
+ * Setup a treeview for a table of output
+ */
+static void years_display_build ( analyse_cb_t *acb, GtkWidget* scrolledwindow )
+{
+	// It's simple storing the gdouble values in the tree store as the sort works automatically
+	// Then apply specific cell data formatting (rather default double is to 6 decimal places!)
+	GtkTreeStore *store = gtk_tree_store_new ( YEARS_COLS,
+	                                           G_TYPE_UINT,    // 0: Year
+	                                           G_TYPE_UINT,    // 1: Num Tracks
+	                                           G_TYPE_UINT,    // 2: Length
+	                                           G_TYPE_DOUBLE );// 3: Average Length
+	acb->store = store;
+
+	GtkWidget *view = gtk_tree_view_new();
+	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+
+	gint column_runner = 0;
+	(void)ui_new_column_text ( _("Year"), renderer, view, column_runner++ );
+	(void)ui_new_column_text ( _("Tracks"), renderer, view, column_runner++ );
+
+	GtkTreeViewColumn *column;
+	vik_units_distance_t dist_units = a_vik_get_units_distance ();
+	switch ( dist_units ) {
+	case VIK_UNITS_DISTANCE_MILES:
+		(void)ui_new_column_text ( _("Distance (miles)"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Average Dist (miles)"), renderer, view, column_runner++ );
+		break;
+	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+		(void)ui_new_column_text ( _("Distance (NM)"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Average Dist (NM)"), renderer, view, column_runner++ );
+		break;
+	default:
+		(void)ui_new_column_text ( _("Distance (km)"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Average Dist (km)"), renderer, view, column_runner++ );
+		break;
+	}
+	gtk_tree_view_column_set_cell_data_func ( column, renderer, ui_format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
+
+	gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(store) );
+	gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_NONE );
+	gtk_tree_view_set_rules_hint ( GTK_TREE_VIEW(view), TRUE );
+
+	g_signal_connect ( view, "button-press-event", G_CALLBACK(years_button_pressed), NULL );
+
+	gtk_container_add ( GTK_CONTAINER(scrolledwindow), view );
+}
 
 static void include_invisible_toggled_cb ( GtkToggleButton *togglebutton, analyse_cb_t *acb )
 {
@@ -515,6 +720,9 @@ static void include_invisible_toggled_cb ( GtkToggleButton *togglebutton, analys
 	vik_window_set_busy_cursor ( acb->vw );
 	val_analyse ( acb->widgets, acb->tracks_and_layers, value, acb->extended );
 	vik_window_clear_busy_cursor ( acb->vw );
+
+	if ( acb->store )
+		years_update_store ( acb->store );
 
 	gtk_widget_show_all ( acb->layout );
 }
@@ -537,6 +745,9 @@ static void analyse_close ( GtkWidget *dialog, gint resp, analyse_cb_t *data )
 	g_free ( data->widgets );
 	g_list_foreach ( data->tracks_and_layers, (GFunc) g_free, NULL );
 	g_list_free ( data->tracks_and_layers );
+
+	if ( data->store )
+		g_object_unref ( data->store );
 
 	if ( data->on_close_cb )
 		data->on_close_cb ( dialog, resp, data->vl );
@@ -583,7 +794,7 @@ GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
 	if ( ! a_settings_get_boolean ( VIK_SETTINGS_ANALYSIS_DO_INVISIBLE, &include_invisible ) )
 		include_invisible = TRUE;
 
-	analyse_cb_t *acb = g_malloc (sizeof(analyse_cb_t));
+	analyse_cb_t *acb = g_malloc0 (sizeof(analyse_cb_t));
 	acb->vw = VIK_WINDOW(window);
 	acb->vl = vl;
 	acb->user_data = user_data;
@@ -594,14 +805,33 @@ GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
 	acb->extended = vl->type == VIK_LAYER_AGGREGATE;
 	acb->layout = create_layout ( acb->widgets, acb->extended );
 
-	gtk_box_pack_start ( GTK_BOX(content), acb->layout, FALSE, FALSE, 0 );
-
 	// Analysis seems reasonably quick
 	//  unless you have really large numbers of tracks (i.e. many many thousands or a really slow computer)
 	// One day might store stats in the track itself....
 	vik_window_set_busy_cursor ( acb->vw );
 	val_analyse ( acb->widgets, acb->tracks_and_layers, include_invisible, acb->extended );
 	vik_window_clear_busy_cursor ( acb->vw );
+
+	guint num_yrs = 0;
+	for ( guint yi = 0; yi < YEARS_HELD; yi++ )
+		if ( tracks_years[yi].count > 0 )
+			num_yrs++;
+
+	if ( num_yrs > 1 ) {
+		// Multiple Years so show per year info as well
+		GtkWidget *tabs = gtk_notebook_new();
+		gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), acb->layout, gtk_label_new(_("Totals")) );
+		gtk_box_pack_start ( GTK_BOX(content), tabs, TRUE, TRUE, 0 );
+
+		GtkWidget *scrolledwindow = gtk_scrolled_window_new ( NULL, NULL );
+		gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+		gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), scrolledwindow, gtk_label_new(_("Years")) );
+
+		years_display_build ( acb, scrolledwindow );
+		years_update_store ( acb->store );
+	}
+	else
+		gtk_box_pack_start ( GTK_BOX(content), acb->layout, TRUE, TRUE, 0 );
 
 	GtkWidget *cb = gtk_check_button_new_with_label ( _("Include Invisible Items") );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(cb), include_invisible );
