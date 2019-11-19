@@ -556,6 +556,7 @@ typedef struct {
 	VikTrwlayerGetTracksAndLayersFunc get_tracks_and_layers_cb;
 	VikTrwlayerAnalyseCloseFunc on_close_cb;
 	gboolean extended;
+	VikWindow *vw;
 } analyse_cb_t;
 
 static void include_invisible_toggled_cb ( GtkToggleButton *togglebutton, analyse_cb_t *acb )
@@ -573,7 +574,10 @@ static void include_invisible_toggled_cb ( GtkToggleButton *togglebutton, analys
 	// Get the latest list of items to analyse
 	acb->tracks_and_layers = acb->get_tracks_and_layers_cb ( acb->vl, acb->user_data );
 
+	vik_window_set_busy_cursor ( acb->vw );
 	val_analyse ( acb->widgets, acb->tracks_and_layers, value, acb->extended );
+	vik_window_clear_busy_cursor ( acb->vw );
+
 	gtk_widget_show_all ( acb->layout );
 }
 
@@ -621,8 +625,6 @@ GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
                                         VikTrwlayerGetTracksAndLayersFunc get_tracks_and_layers_cb,
                                         VikTrwlayerAnalyseCloseFunc on_close_cb )
 {
-	//VikWindow *vw = VIK_WINDOW(window);
-
 	GtkWidget *dialog;
 	dialog = gtk_dialog_new_with_buttons ( _("Statistics"),
 	                                       window,
@@ -644,6 +646,7 @@ GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
 		include_invisible = TRUE;
 
 	analyse_cb_t *acb = g_malloc (sizeof(analyse_cb_t));
+	acb->vw = VIK_WINDOW(window);
 	acb->vl = vl;
 	acb->user_data = user_data;
 	acb->get_tracks_and_layers_cb = get_tracks_and_layers_cb;
@@ -658,7 +661,9 @@ GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
 	// Analysis seems reasonably quick
 	//  unless you have really large numbers of tracks (i.e. many many thousands or a really slow computer)
 	// One day might store stats in the track itself....
+	vik_window_set_busy_cursor ( acb->vw );
 	val_analyse ( acb->widgets, acb->tracks_and_layers, include_invisible, acb->extended );
+	vik_window_clear_busy_cursor ( acb->vw );
 
 	GtkWidget *cb = gtk_check_button_new_with_label ( _("Include Invisible Items") );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(cb), include_invisible );
