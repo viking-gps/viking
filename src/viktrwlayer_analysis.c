@@ -67,24 +67,32 @@ static track_stats tracks_stats[1];
 
 /**
  * Reset the specified block
+ */
+static void reset_me ( track_stats *stats )
+{
+	stats->min_alt     = VIK_VAL_MIN_ALT;
+	stats->max_alt     = VIK_VAL_MAX_ALT;
+	stats->elev_gain   = 0.0;
+	stats->elev_loss   = 0.0;
+	stats->length      = 0.0;
+	stats->length_gaps = 0.0;
+	stats->max_speed   = 0.0;
+	stats->trackpoints = 0;
+	stats->segments    = 0;
+	stats->duration    = 0;
+	stats->start_time  = NAN;
+	stats->end_time    = NAN;
+	stats->count       = 0;
+	stats->e_list      = NULL;
+}
+
+/**
+ * Reset the specified block
  * Call this when starting to processing multiple items
  */
 static void val_reset ( track_stat_block block )
 {
-	tracks_stats[block].min_alt     = VIK_VAL_MIN_ALT;
-	tracks_stats[block].max_alt     = VIK_VAL_MAX_ALT;
-	tracks_stats[block].elev_gain   = 0.0;
-	tracks_stats[block].elev_loss   = 0.0;
-	tracks_stats[block].length      = 0.0;
-	tracks_stats[block].length_gaps = 0.0;
-	tracks_stats[block].max_speed   = 0.0;
-	tracks_stats[block].trackpoints = 0;
-	tracks_stats[block].segments    = 0;
-	tracks_stats[block].duration    = 0;
-	tracks_stats[block].start_time  = NAN;
-	tracks_stats[block].end_time    = NAN;
-	tracks_stats[block].count       = 0;
-	tracks_stats[block].e_list      = NULL;
+	reset_me ( &tracks_stats[block] );
 }
 
 /**
