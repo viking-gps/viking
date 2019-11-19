@@ -532,7 +532,7 @@ static void val_analyse_item_maybe ( vik_trw_track_list_t *vtlist, const gpointe
  * Analyse each item in the @tracks_and_layers list
  *
  */
-void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboolean include_invisible, gboolean extended )
+static void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboolean include_invisible, gboolean extended )
 {
 	val_reset ( TS_TRACKS );
 
