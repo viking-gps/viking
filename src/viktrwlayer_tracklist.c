@@ -533,7 +533,6 @@ static GtkTreeViewColumn *my_new_column_text ( const gchar *title, GtkCellRender
 	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes ( title, renderer, "text", column_runner, NULL );
 	gtk_tree_view_column_set_sort_column_id ( column, column_runner );
 	gtk_tree_view_append_column ( GTK_TREE_VIEW(view), column );
-	gtk_tree_view_column_set_reorderable ( column, TRUE );
 	gtk_tree_view_column_set_resizable ( column, TRUE );
 	return column;
 }
