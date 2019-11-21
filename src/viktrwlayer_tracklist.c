@@ -263,7 +263,7 @@ static void add_copy_menu_item ( GtkMenu *menu, GtkWidget *tree_view )
 	(void)vu_menu_add_item ( menu, _("_Copy Data"), GTK_STOCK_COPY, G_CALLBACK(trw_layer_copy_selected), tree_view );
 }
 
-static gboolean add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikTrack *trk, gpointer trk_uuid, VikViewport *vvp, GtkWidget *tree_view, gpointer data )
+static void add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikTrack *trk, gpointer trk_uuid, VikViewport *vvp, GtkWidget *tree_view, gpointer data )
 {
 	static menu_array_values values;
 	values[MA_VTL]       = vtl;
@@ -279,8 +279,6 @@ static gboolean add_menu_items ( GtkMenu *menu, VikTrwLayer *vtl, VikTrack *trk,
 	(void)vu_menu_add_item ( menu, _("_View"), GTK_STOCK_ZOOM_FIT, G_CALLBACK(trw_layer_track_view), values );
 	(void)vu_menu_add_item ( menu, _("_Statistics"), NULL, G_CALLBACK(trw_layer_track_stats), values );
 	add_copy_menu_item ( menu, tree_view );
-
-	return TRUE;
 }
 
 static gboolean trw_layer_track_menu_popup_multi  ( GtkWidget *tree_view,
