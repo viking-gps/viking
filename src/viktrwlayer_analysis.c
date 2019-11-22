@@ -40,10 +40,10 @@ typedef struct {
 	gdouble  elev_gain;
 	gdouble  elev_loss;
 	gdouble  length;
-	gdouble  length_gaps;
+	//gdouble  length_gaps;
 	gdouble  max_speed;
-	gulong   trackpoints;
-	guint    segments;
+	//gulong   trackpoints;
+	//guint    segments;
 	gint     duration;
 	gdouble  start_time;
 	gdouble  end_time;
@@ -79,10 +79,10 @@ static void reset_me ( track_stats *stats )
 	stats->elev_gain   = 0.0;
 	stats->elev_loss   = 0.0;
 	stats->length      = 0.0;
-	stats->length_gaps = 0.0;
+	//stats->length_gaps = 0.0;
 	stats->max_speed   = 0.0;
-	stats->trackpoints = 0;
-	stats->segments    = 0;
+	//stats->trackpoints = 0;
+	//stats->segments    = 0;
 	stats->duration    = 0;
 	stats->start_time  = NAN;
 	stats->end_time    = NAN;
@@ -114,67 +114,16 @@ static void val_reset_years ( void )
  *
  * Function to collect statistics, using the internal track functions
  */
-static void val_analyse_track ( VikTrack *trk )
+static void val_analyse_track ( VikTrack *trk, gboolean include_no_times )
 {
 	//val_reset ( TS_TRACK );
-	gdouble min_alt;
-	gdouble max_alt;
-	gdouble up;
-	gdouble down;
+	gdouble min_alt, max_alt, up, down;
 
+	//gdouble  length_gaps = vik_track_get_length_including_gaps (trk);
 	gdouble  length      = 0.0;
-	gdouble  length_gaps = 0.0;
 	gdouble  max_speed   = 0.0;
-	gulong   trackpoints = 0;
-	guint    segments    = 0;
-
-	tracks_stats[TS_TRACKS].count++;
-
-	trackpoints = vik_track_get_tp_count (trk);
-	segments    = vik_track_get_segment_count (trk);
-	length      = vik_track_get_length (trk);
-	length_gaps = vik_track_get_length_including_gaps (trk);
-	max_speed   = vik_track_get_max_speed (trk);
-
-	if ( !trk->is_route ) {
-		// Eddington number will be in the current Units distance preference
-		gdouble e_len;
-		switch (a_vik_get_units_distance ()) {
-		case VIK_UNITS_DISTANCE_MILES:          e_len = VIK_METERS_TO_MILES(length); break;
-		case VIK_UNITS_DISTANCE_NAUTICAL_MILES: e_len = VIK_METERS_TO_NAUTICAL_MILES(length); break;
-			//VIK_UNITS_DISTANCE_KILOMETRES
-		default: e_len = length/1000.0; break;
-		}
-		gdouble *gd = g_malloc ( sizeof(gdouble) );
-		*gd = e_len;
-		tracks_stats[TS_TRACKS].e_list = g_list_prepend ( tracks_stats[TS_TRACKS].e_list, gd );
-	}
-
-	int ii;
-	for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
-		tracks_stats[ii].trackpoints += trackpoints;
-		tracks_stats[ii].segments    += segments;
-		tracks_stats[ii].length      += length;
-		tracks_stats[ii].length_gaps += length_gaps;
-		if ( max_speed > tracks_stats[ii].max_speed )
-			tracks_stats[ii].max_speed = max_speed;
-	}
-
-	if ( vik_track_get_minmax_alt (trk, &min_alt, &max_alt) ) {
-		for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
-			if ( min_alt < tracks_stats[ii].min_alt )
-				tracks_stats[ii].min_alt = min_alt;
-			if ( max_alt > tracks_stats[ii].max_alt )
-				tracks_stats[ii].max_alt = max_alt;
-		}
-	}
-
-	vik_track_get_total_elevation_gain (trk, &up, &down );
-
-	for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
-		tracks_stats[ii].elev_gain += up;
-		tracks_stats[ii].elev_loss += down;
-	}
+	//gulong   trackpoints = vik_track_get_tp_count (trk);
+	//guint    segments    = vik_track_get_segment_count (trk);
 
 	gdouble t1 = NAN;
 
@@ -184,7 +133,7 @@ static void val_analyse_track ( VikTrack *trk )
 		gdouble t2 = VIK_TRACKPOINT(g_list_last(trk->trackpoints)->data)->timestamp;
 
 		// Initialize to the first or smallest/largest value
-		for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
+		for (guint ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
 			if ( !isnan(t1) ) {
 				if ( !isnan(tracks_stats[ii].start_time) ) {
 					if ( t1 < tracks_stats[ii].start_time )
@@ -209,7 +158,58 @@ static void val_analyse_track ( VikTrack *trk )
 		}
 	}
 
-	// Insert into Years
+	// Only consider tracks with times (unless specified otherwise)
+	//  i.e. generally a track recorded on a GPS device rather than manual/computer generated track
+	if ( !isnan(t1) || include_no_times ) {
+
+		tracks_stats[TS_TRACKS].count++;
+
+		length    = vik_track_get_length (trk);
+		max_speed = vik_track_get_max_speed (trk);
+
+		// NB A route shouldn't have times anyway
+		if ( !trk->is_route ) {
+			// Eddington number will be in the current Units distance preference
+			gdouble e_len;
+			switch (a_vik_get_units_distance ()) {
+			case VIK_UNITS_DISTANCE_MILES:          e_len = VIK_METERS_TO_MILES(length); break;
+			case VIK_UNITS_DISTANCE_NAUTICAL_MILES: e_len = VIK_METERS_TO_NAUTICAL_MILES(length); break;
+				//VIK_UNITS_DISTANCE_KILOMETRES
+			default: e_len = length/1000.0; break;
+			}
+			gdouble *gd = g_malloc ( sizeof(gdouble) );
+			*gd = e_len;
+			tracks_stats[TS_TRACKS].e_list = g_list_prepend ( tracks_stats[TS_TRACKS].e_list, gd );
+		}
+
+		int ii;
+		for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
+			//tracks_stats[ii].trackpoints += trackpoints;
+			//tracks_stats[ii].segments    += segments;
+			tracks_stats[ii].length      += length;
+			//tracks_stats[ii].length_gaps += length_gaps;
+			if ( max_speed > tracks_stats[ii].max_speed )
+				tracks_stats[ii].max_speed = max_speed;
+		}
+
+		if ( vik_track_get_minmax_alt (trk, &min_alt, &max_alt) ) {
+			for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
+				if ( min_alt < tracks_stats[ii].min_alt )
+					tracks_stats[ii].min_alt = min_alt;
+				if ( max_alt > tracks_stats[ii].max_alt )
+					tracks_stats[ii].max_alt = max_alt;
+			}
+		}
+
+		vik_track_get_total_elevation_gain (trk, &up, &down );
+
+		for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
+			tracks_stats[ii].elev_gain += up;
+			tracks_stats[ii].elev_loss += down;
+		}
+	}
+
+	// Insert into Years data - the track must have a time
 	if ( !isnan(t1) ) {
 		// What Year is it?
 		GDate* gdate = g_date_new ();
@@ -466,6 +466,11 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 }
 
+typedef struct {
+	gboolean include_invisible;
+	gboolean include_no_times;
+} track_options_t;
+
 /**
  * val_analyse_item_maybe:
  * @vtlist: A track and the associated layer to consider for analysis
@@ -476,7 +481,7 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
  */
 static void val_analyse_item_maybe ( vik_trw_and_track_t *vtlist, const gpointer data )
 {
-	gboolean include_invisible = GPOINTER_TO_INT(data);
+	track_options_t *tot = (track_options_t*)data;
 	VikTrack *trk = vtlist->trk;
 	VikTrwLayer *vtl = vtlist->vtl;
 
@@ -484,7 +489,7 @@ static void val_analyse_item_maybe ( vik_trw_and_track_t *vtlist, const gpointer
 	if ( !IS_VIK_TRW_LAYER(vtl) ) return;
 	if ( !trk ) return;
 
-	if ( !include_invisible ) {
+	if ( !tot->include_invisible ) {
 		// Skip invisible layers or sublayers
 		if ( !VIK_LAYER(vtl)->visible ||
 			 (trk->is_route && !vik_trw_layer_get_routes_visibility(vtl)) ||
@@ -496,7 +501,8 @@ static void val_analyse_item_maybe ( vik_trw_and_track_t *vtlist, const gpointer
 			return;
 	}
 
-	val_analyse_track ( trk );
+	gboolean include_no_times = FALSE;
+	val_analyse_track ( trk, tot->include_no_times );
 }
 
 /**
@@ -504,11 +510,13 @@ static void val_analyse_item_maybe ( vik_trw_and_track_t *vtlist, const gpointer
  * @widgets:           The widget layout
  * @tracks_and_layers: A list of #vik_trw_and_track_t
  * @include_invisible: Whether to include invisible layers and tracks
+ * @include_no_times: Whether tracks with no times should be included
+ * @extended: Whether this is an extended table output
  *
  * Analyse each item in the @tracks_and_layers list
  *
  */
-static void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboolean include_invisible, gboolean extended )
+static void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboolean include_invisible, gboolean include_no_times, gboolean extended )
 {
 	val_reset ( TS_TRACKS );
 	val_reset_years ( );
@@ -520,10 +528,14 @@ static void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboole
 		g_date_free ( gdate );
 	}
 
+	track_options_t *tot = g_malloc0 (sizeof(track_options_t));
+	tot->include_invisible = include_invisible;
+	tot->include_no_times  = include_no_times;
 	GList *gl = g_list_first ( tracks_and_layers );
 	if ( gl ) {
-		g_list_foreach ( gl, (GFunc)val_analyse_item_maybe, GINT_TO_POINTER(include_invisible) );
+		g_list_foreach ( gl, (GFunc)val_analyse_item_maybe, tot );
 	}
+	g_free ( tot );
 
 	table_output ( tracks_stats[TS_TRACKS], widgets, extended );
 
@@ -542,12 +554,15 @@ typedef struct {
 	GtkWidget **widgets;
 	GtkWidget *layout;
 	GtkWidget *check_button;
+	GtkWidget *check_button_times;
 	GList *tracks_and_layers;
 	VikLayer *vl;
 	gpointer user_data;
 	VikTrwlayerGetTracksAndLayersFunc get_tracks_and_layers_cb;
 	VikTrwlayerAnalyseCloseFunc on_close_cb;
 	gboolean extended;
+	gboolean include_invisible;
+	gboolean include_no_times;
 	VikWindow *vw;
 	GtkTreeStore *store;
 } analyse_cb_t;
@@ -702,6 +717,23 @@ static void years_display_build ( analyse_cb_t *acb, GtkWidget* scrolledwindow )
 	gtk_container_add ( GTK_CONTAINER(scrolledwindow), view );
 }
 
+static void include_no_times_toggled_cb ( GtkToggleButton *togglebutton, analyse_cb_t *acb )
+{
+	gboolean value = FALSE;
+	if ( gtk_toggle_button_get_active ( togglebutton ) )
+		value = TRUE;
+	acb->include_no_times = value;
+
+	// NB no change to the track list
+	// NB2 This option has no effect on the per Year output
+
+	vik_window_set_busy_cursor ( acb->vw );
+	val_analyse ( acb->widgets, acb->tracks_and_layers, acb->include_invisible, acb->include_no_times, acb->extended );
+	vik_window_clear_busy_cursor ( acb->vw );
+
+	gtk_widget_show_all ( acb->layout );
+}
+
 static void include_invisible_toggled_cb ( GtkToggleButton *togglebutton, analyse_cb_t *acb )
 {
 	gboolean value = FALSE;
@@ -717,8 +749,10 @@ static void include_invisible_toggled_cb ( GtkToggleButton *togglebutton, analys
 	// Get the latest list of items to analyse
 	acb->tracks_and_layers = acb->get_tracks_and_layers_cb ( acb->vl, acb->user_data );
 
+	acb->include_invisible = value;
+
 	vik_window_set_busy_cursor ( acb->vw );
-	val_analyse ( acb->widgets, acb->tracks_and_layers, value, acb->extended );
+	val_analyse ( acb->widgets, acb->tracks_and_layers, acb->include_invisible, acb->include_no_times, acb->extended );
 	vik_window_clear_busy_cursor ( acb->vw );
 
 	if ( acb->store )
@@ -728,6 +762,7 @@ static void include_invisible_toggled_cb ( GtkToggleButton *togglebutton, analys
 }
 
 #define VIK_SETTINGS_ANALYSIS_DO_INVISIBLE "track_analysis_do_invisible"
+#define VIK_SETTINGS_ANALYSIS_DO_NO_TIMES "track_analysis_do_no_times"
 
 /**
  * analyse_close:
@@ -740,6 +775,9 @@ static void analyse_close ( GtkWidget *dialog, gint resp, analyse_cb_t *data )
 	// Save current invisible value for next time
 	gboolean do_invisible = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(data->check_button) );
 	a_settings_set_boolean ( VIK_SETTINGS_ANALYSIS_DO_INVISIBLE, do_invisible );
+
+	gboolean do_no_times = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(data->check_button_times) );
+	a_settings_set_boolean ( VIK_SETTINGS_ANALYSIS_DO_NO_TIMES, do_no_times );
 
 	//g_free ( data->layout );
 	g_free ( data->widgets );
@@ -794,6 +832,10 @@ GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
 	if ( ! a_settings_get_boolean ( VIK_SETTINGS_ANALYSIS_DO_INVISIBLE, &include_invisible ) )
 		include_invisible = TRUE;
 
+	gboolean include_no_times;
+	if ( ! a_settings_get_boolean ( VIK_SETTINGS_ANALYSIS_DO_NO_TIMES, &include_no_times ) )
+		include_no_times = FALSE;
+
 	analyse_cb_t *acb = g_malloc0 (sizeof(analyse_cb_t));
 	acb->vw = VIK_WINDOW(window);
 	acb->vl = vl;
@@ -804,12 +846,14 @@ GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
 	acb->widgets = g_malloc ( sizeof(GtkWidget*) * G_N_ELEMENTS(label_texts) );
 	acb->extended = vl->type == VIK_LAYER_AGGREGATE;
 	acb->layout = create_layout ( acb->widgets, acb->extended );
+	acb->include_invisible = include_invisible;
+	acb->include_no_times = include_no_times;
 
 	// Analysis seems reasonably quick
 	//  unless you have really large numbers of tracks (i.e. many many thousands or a really slow computer)
 	// One day might store stats in the track itself....
 	vik_window_set_busy_cursor ( acb->vw );
-	val_analyse ( acb->widgets, acb->tracks_and_layers, include_invisible, acb->extended );
+	val_analyse ( acb->widgets, acb->tracks_and_layers, include_invisible, include_no_times, acb->extended );
 	vik_window_clear_busy_cursor ( acb->vw );
 
 	guint num_yrs = 0;
@@ -835,12 +879,18 @@ GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
 
 	GtkWidget *cb = gtk_check_button_new_with_label ( _("Include Invisible Items") );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(cb), include_invisible );
-	gtk_box_pack_start ( GTK_BOX(content), cb, FALSE, FALSE, 10);
+	gtk_box_pack_start ( GTK_BOX(content), cb, FALSE, FALSE, 2 );
 	acb->check_button = cb;
+
+	GtkWidget *cbt = gtk_check_button_new_with_label ( _("Include Tracks With No Times") );
+	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(cbt), include_no_times );
+	gtk_box_pack_start ( GTK_BOX(content), cbt, FALSE, FALSE, 2 );
+	acb->check_button_times = cbt;
 
 	gtk_widget_show_all ( dialog );
 
 	g_signal_connect ( G_OBJECT(cb), "toggled", G_CALLBACK(include_invisible_toggled_cb), acb );
+	g_signal_connect ( G_OBJECT(cbt), "toggled", G_CALLBACK(include_no_times_toggled_cb), acb );
 	g_signal_connect ( G_OBJECT(dialog), "response", G_CALLBACK(analyse_close), acb );
 
 	return dialog;
