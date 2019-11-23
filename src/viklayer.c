@@ -106,9 +106,9 @@ void vik_layer_emit_update ( VikLayer *vl )
     // Only ever draw when there is time to do so
     if ( g_thread_self() != thread )
       // Drawing requested from another (background) thread, so handle via the gdk thread method
-      gdk_threads_add_idle ( (GSourceFunc) idle_draw, vl );
+      (void)gdk_threads_add_idle ( (GSourceFunc)idle_draw, vl );
     else
-      g_idle_add ( (GSourceFunc) idle_draw, vl );
+      (void)g_idle_add ( (GSourceFunc)idle_draw, vl );
   }
 }
 
@@ -119,7 +119,7 @@ void vik_layer_emit_update ( VikLayer *vl )
 void vik_layer_emit_update_although_invisible ( VikLayer *vl )
 {
   vik_window_set_redraw_trigger(vl);
-  g_idle_add ( (GSourceFunc) idle_draw, vl );
+  (void)g_idle_add ( (GSourceFunc)idle_draw, vl );
 }
 
 /* doesn't set the trigger. should be done by aggregate layer when child emits update. */
@@ -128,7 +128,7 @@ void vik_layer_emit_update_secondary ( VikLayer *vl )
   if ( vl->visible )
     // TODO: this can used from the background - eg in acquire
     //       so will need to flow background update status through too
-    g_idle_add ( (GSourceFunc) idle_draw, vl );
+    (void)g_idle_add ( (GSourceFunc)idle_draw, vl );
 }
 
 static VikLayerInterface *vik_layer_interfaces[VIK_LAYER_NUM_TYPES] = {

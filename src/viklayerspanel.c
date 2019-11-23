@@ -562,9 +562,9 @@ void vik_layers_panel_emit_update ( VikLayersPanel *vlp )
   // Only ever draw when there is time to do so
   if ( g_thread_self() != thread )
     // Drawing requested from another (background) thread, so handle via the gdk thread method
-    gdk_threads_add_idle ( (GSourceFunc) idle_draw_panel, vlp );
+    (void)gdk_threads_add_idle ( (GSourceFunc)idle_draw_panel, vlp );
   else
-    g_idle_add ( (GSourceFunc) idle_draw_panel, vlp );
+    (void)g_idle_add ( (GSourceFunc)idle_draw_panel, vlp );
 }
 
 static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter)

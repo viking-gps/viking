@@ -9278,7 +9278,7 @@ static void marker_moveto ( tool_ed_t *t, gint x, gint y )
   t->moving = TRUE;
 
   if (tool_sync_done) {
-    g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, tool_sync, vvp, NULL);
+    (void)g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, tool_sync, vvp, NULL);
     tool_sync_done = FALSE;
   }
 }
@@ -9813,7 +9813,7 @@ static VikLayerToolFuncStatus tool_edit_track_move ( VikTrwLayer *vtl, GdkEventM
     statusbar_write (distance, elev_gain, elev_loss, last_step, angle, vtl);
 
     // draw pixmap when we have time to
-    g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_sync, passalong, NULL);
+    (void)g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_sync, passalong, NULL);
     vtl->draw_sync_done = FALSE;
     return VIK_LAYER_TOOL_ACK_GRAB_FOCUS;
   }

@@ -324,11 +324,11 @@ void vik_window_statusbar_update ( VikWindow *vw, const gchar* message, vik_stat
   sid->message = g_strdup ( message );
 
   if ( g_thread_self() == thread ) {
-    g_idle_add ( (GSourceFunc) statusbar_idle_update, sid );
+    (void)g_idle_add ( (GSourceFunc)statusbar_idle_update, sid );
   }
   else {
     // From a background thread
-    gdk_threads_add_idle ( (GSourceFunc) statusbar_idle_update, sid );
+    (void)gdk_threads_add_idle ( (GSourceFunc)statusbar_idle_update, sid );
   }
 }
 
@@ -1930,7 +1930,7 @@ static void ruler_move_normal (VikLayer *vl, GdkEventMotion *event, tool_ed_t *s
       pass_along[0] = gtk_widget_get_window(GTK_WIDGET(vvp));
       pass_along[1] = vik_viewport_get_black_gc ( vvp );
       pass_along[2] = buf;
-      g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
+      (void)g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
       draw_buf_done = FALSE;
     }
     a_coords_latlon_to_string(&ll, &lat, &lon);
@@ -2165,7 +2165,7 @@ static void tool_redraw_pixmap (tool_ed_t *te, GdkEventMotion *event)
       pass_along[0] = gtk_widget_get_window(GTK_WIDGET(te->vw->viking_vvp));
       pass_along[1] = vik_viewport_get_black_gc ( te->vw->viking_vvp );
       pass_along[2] = te->pixmap;
-      g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
+      (void)g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
       draw_buf_done = FALSE;
     }
 }
