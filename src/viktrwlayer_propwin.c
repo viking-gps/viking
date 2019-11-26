@@ -182,11 +182,17 @@ typedef struct _propwidgets {
   PropSaved elev_time_graph_saved_img;
   PropSaved speed_dist_graph_saved_img;
   GtkWidget *elev_box;
+  GtkWidget *elev_image;
   GtkWidget *gradient_box;
+  GtkWidget *gradient_image;
   GtkWidget *speed_box;
+  GtkWidget *speed_image;
   GtkWidget *dist_box;
+  GtkWidget *dist_image;
   GtkWidget *elev_time_box;
+  GtkWidget *elev_time_image;
   GtkWidget *speed_dist_box;
+  GtkWidget *speed_dist_image;
   gdouble   *altitudes;
   gdouble   *ats; // altitudes in time
   gdouble   min_altitude;
@@ -516,7 +522,6 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, Prop
 
   widgets->marker_tp = trackpoint;
 
-  GList *child;
   GtkWidget *image;
   GtkWidget *window = gtk_widget_get_toplevel(GTK_WIDGET(event_box));
   GtkWidget *graph_box;
@@ -533,31 +538,37 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, Prop
     switch (graphite) {
     default:
     case PROPWIN_GRAPH_TYPE_ELEVATION_DISTANCE:
+      image           = widgets->elev_image;
       graph_box       = widgets->elev_box;
       graph_saved_img = &widgets->elev_graph_saved_img;
       is_time_graph   = FALSE;
       break;
     case PROPWIN_GRAPH_TYPE_GRADIENT_DISTANCE:
+      image           = widgets->gradient_image;
       graph_box       = widgets->gradient_box;
       graph_saved_img = &widgets->gradient_graph_saved_img;
       is_time_graph   = FALSE;
       break;
     case PROPWIN_GRAPH_TYPE_SPEED_TIME:
+      image           = widgets->speed_image;
       graph_box       = widgets->speed_box;
       graph_saved_img = &widgets->speed_graph_saved_img;
       is_time_graph   = TRUE;
       break;
     case PROPWIN_GRAPH_TYPE_DISTANCE_TIME:
+      image           = widgets->dist_image;
       graph_box       = widgets->dist_box;
       graph_saved_img = &widgets->dist_graph_saved_img;
       is_time_graph   = TRUE;
       break;
     case PROPWIN_GRAPH_TYPE_ELEVATION_TIME:
+      image           = widgets->elev_time_image;
       graph_box       = widgets->elev_time_box;
       graph_saved_img = &widgets->elev_time_graph_saved_img;
       is_time_graph   = TRUE;
       break;
     case PROPWIN_GRAPH_TYPE_SPEED_DISTANCE:
+      image           = widgets->speed_dist_image;
       graph_box       = widgets->speed_dist_box;
       graph_saved_img = &widgets->speed_dist_graph_saved_img;
       is_time_graph   = FALSE;
@@ -566,9 +577,6 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, Prop
 
     // Commonal method of redrawing marker
     if ( graph_box ) {
-
-      child = gtk_container_get_children(GTK_CONTAINER(graph_box));
-      image = GTK_WIDGET(child->data);
 
       if (is_time_graph)
 	pc = tp_percentage_by_time ( widgets->tr, trackpoint );
@@ -589,7 +597,6 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, Prop
 					&widgets->is_marker_drawn,
 					&widgets->is_blob_drawn);
       }
-      g_list_free(child);
     }
   }
 
@@ -784,9 +791,6 @@ void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, PropWidget
     return;
 
   GtkWidget *window = gtk_widget_get_toplevel (event_box);
-  GList *child = gtk_container_get_children(GTK_CONTAINER(event_box));
-  GtkWidget *image = GTK_WIDGET(child->data);
-
   gint y_blob = blobby_altitude (x, widgets);
 
   gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
@@ -797,7 +801,7 @@ void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, PropWidget
     }
   }
 
-  save_image_and_draw_graph_marks (image,
+  save_image_and_draw_graph_marks (widgets->elev_image,
 				   marker_x,
 				   gtk_widget_get_style(window)->black_gc,
 				   MARGIN_X+x,
@@ -808,8 +812,6 @@ void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, PropWidget
 				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
-
-  g_list_free(child);
 }
 
 void track_gradient_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *widgets )
@@ -868,9 +870,6 @@ void track_gradient_move( GtkWidget *event_box, GdkEventMotion *event, PropWidge
     return;
 
   GtkWidget *window = gtk_widget_get_toplevel (event_box);
-  GList *child = gtk_container_get_children(GTK_CONTAINER(event_box));
-  GtkWidget *image = GTK_WIDGET(child->data);
-
   gint y_blob = blobby_gradient (x, widgets);
 
   gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
@@ -881,7 +880,7 @@ void track_gradient_move( GtkWidget *event_box, GdkEventMotion *event, PropWidge
     }
   }
 
-  save_image_and_draw_graph_marks (image,
+  save_image_and_draw_graph_marks (widgets->gradient_image,
 				   marker_x,
 				   gtk_widget_get_style(window)->black_gc,
 				   MARGIN_X+x,
@@ -892,8 +891,6 @@ void track_gradient_move( GtkWidget *event_box, GdkEventMotion *event, PropWidge
 				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
-
-  g_list_free(child);
 }
 
 //
@@ -972,9 +969,6 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
     return;
 
   GtkWidget *window = gtk_widget_get_toplevel (event_box);
-  GList *child = gtk_container_get_children(GTK_CONTAINER(event_box));
-  GtkWidget *image = GTK_WIDGET(child->data);
-
   gint y_blob = blobby_speed (x, widgets);
 
   gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
@@ -985,7 +979,7 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
     }
   }
 
-  save_image_and_draw_graph_marks (image,
+  save_image_and_draw_graph_marks (widgets->speed_image,
 				   marker_x,
 				   gtk_widget_get_style(window)->black_gc,
 				   MARGIN_X+x,
@@ -996,8 +990,6 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
-
-  g_list_free(child);
 }
 
 /**
@@ -1059,9 +1051,6 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
     return;
 
   GtkWidget *window = gtk_widget_get_toplevel (event_box);
-  GList *child = gtk_container_get_children(GTK_CONTAINER(event_box));
-  GtkWidget *image = GTK_WIDGET(child->data);
-
   gint y_blob = blobby_distance (x, widgets);
 
   gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
@@ -1072,7 +1061,7 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
     }
   }
 
-  save_image_and_draw_graph_marks (image,
+  save_image_and_draw_graph_marks (widgets->dist_image,
 				   marker_x,
 				   gtk_widget_get_style(window)->black_gc,
 				   MARGIN_X+x,
@@ -1083,8 +1072,6 @@ void track_dt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
-
-  g_list_free(child);
 }
 
 /**
@@ -1139,9 +1126,6 @@ void track_et_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
     return;
 
   GtkWidget *window = gtk_widget_get_toplevel (event_box);
-  GList *child = gtk_container_get_children(GTK_CONTAINER(event_box));
-  GtkWidget *image = GTK_WIDGET(child->data);
-
   gint y_blob = blobby_altitude_time (x, widgets);
 
   gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
@@ -1152,7 +1136,7 @@ void track_et_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
     }
   }
 
-  save_image_and_draw_graph_marks (image,
+  save_image_and_draw_graph_marks (widgets->elev_time_image,
 				   marker_x,
 				   gtk_widget_get_style(window)->black_gc,
 				   MARGIN_X+x,
@@ -1163,8 +1147,6 @@ void track_et_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
-
-  g_list_free(child);
 }
 
 void track_sd_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *widgets )
@@ -1228,9 +1210,6 @@ void track_sd_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
   widgets->blob_tp = trackpoint;
 
   GtkWidget *window = gtk_widget_get_toplevel (event_box);
-  GList *child = gtk_container_get_children(GTK_CONTAINER(event_box));
-  GtkWidget *image = GTK_WIDGET(child->data);
-
   gint y_blob = blobby_speed_dist (x, widgets);
 
   gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
@@ -1241,7 +1220,7 @@ void track_sd_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
     }
   }
 
-  save_image_and_draw_graph_marks (image,
+  save_image_and_draw_graph_marks (widgets->speed_dist_image,
 				   marker_x,
 				   gtk_widget_get_style(window)->black_gc,
 				   MARGIN_X+x,
@@ -1252,8 +1231,6 @@ void track_sd_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
-
-  g_list_free(child);
 }
 
 /**
@@ -2370,9 +2347,6 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean resized )
 {
   // Draw graphs even if they are not visible
-
-  GList *child = NULL;
-  GtkWidget *image = NULL;
   GtkWidget *window = gtk_widget_get_toplevel(widget);
   gdouble pc = NAN;
   gdouble pc_blob = NAN;
@@ -2387,11 +2361,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
       widgets->elev_graph_saved_img.saved = FALSE;
     }
 
-    child = gtk_container_get_children(GTK_CONTAINER(widgets->elev_box));
-    draw_elevations (GTK_WIDGET(child->data), widgets->tr, widgets );
-
-    image = GTK_WIDGET(child->data);
-    g_list_free(child);
+    draw_elevations ( widgets->elev_image, widgets->tr, widgets );
 
     // Ensure marker or blob are redrawn if necessary
     if (widgets->is_marker_drawn || widgets->is_blob_drawn) {
@@ -2412,7 +2382,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
         marker_x = (pc * widgets->profile_width) + MARGIN_X;
       }
 
-      save_image_and_draw_graph_marks (image,
+      save_image_and_draw_graph_marks (widgets->elev_image,
 				       marker_x,
 				       gtk_widget_get_style(window)->black_gc,
 				       x_blob+MARGIN_X,
@@ -2436,11 +2406,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
       widgets->gradient_graph_saved_img.saved = FALSE;
     }
 
-    child = gtk_container_get_children(GTK_CONTAINER(widgets->gradient_box));
-    draw_gradients (GTK_WIDGET(child->data), widgets->tr, widgets );
-
-    image = GTK_WIDGET(child->data);
-    g_list_free(child);
+    draw_gradients ( widgets->gradient_image, widgets->tr, widgets );
 
     // Ensure marker or blob are redrawn if necessary
     if (widgets->is_marker_drawn || widgets->is_blob_drawn) {
@@ -2461,7 +2427,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
         marker_x = (pc * widgets->profile_width) + MARGIN_X;
       }
 
-      save_image_and_draw_graph_marks (image,
+      save_image_and_draw_graph_marks (widgets->gradient_image,
 				       marker_x,
 				       gtk_widget_get_style(window)->black_gc,
 				       x_blob+MARGIN_X,
@@ -2485,11 +2451,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
       widgets->speed_graph_saved_img.saved = FALSE;
     }
 
-    child = gtk_container_get_children(GTK_CONTAINER(widgets->speed_box));
-    draw_vt (GTK_WIDGET(child->data), widgets->tr, widgets );
-
-    image = GTK_WIDGET(child->data);
-    g_list_free(child);
+    draw_vt ( widgets->speed_image, widgets->tr, widgets );
 
     // Ensure marker or blob are redrawn if necessary
     if (widgets->is_marker_drawn || widgets->is_blob_drawn) {
@@ -2512,7 +2474,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
         marker_x = (pc * widgets->profile_width) + MARGIN_X;
       }
 
-      save_image_and_draw_graph_marks (image,
+      save_image_and_draw_graph_marks (widgets->speed_image,
 				       marker_x,
 				       gtk_widget_get_style(window)->black_gc,
 				       x_blob+MARGIN_X,
@@ -2536,11 +2498,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
       widgets->dist_graph_saved_img.saved = FALSE;
     }
 
-    child = gtk_container_get_children(GTK_CONTAINER(widgets->dist_box));
-    draw_dt (GTK_WIDGET(child->data), widgets->tr, widgets );
-
-    image = GTK_WIDGET(child->data);
-    g_list_free(child);
+    draw_dt ( widgets->dist_image, widgets->tr, widgets );
 
     // Ensure marker or blob are redrawn if necessary
     if (widgets->is_marker_drawn || widgets->is_blob_drawn) {
@@ -2563,7 +2521,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
         marker_x = (pc * widgets->profile_width) + MARGIN_X;
       }
 
-      save_image_and_draw_graph_marks (image,
+      save_image_and_draw_graph_marks (widgets->dist_image,
 				       marker_x,
 				       gtk_widget_get_style(window)->black_gc,
 				       x_blob+MARGIN_X,
@@ -2587,11 +2545,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
       widgets->elev_time_graph_saved_img.saved = FALSE;
     }
 
-    child = gtk_container_get_children(GTK_CONTAINER(widgets->elev_time_box));
-    draw_et (GTK_WIDGET(child->data), widgets->tr, widgets );
-
-    image = GTK_WIDGET(child->data);
-    g_list_free(child);
+    draw_et ( widgets->elev_time_image, widgets->tr, widgets );
 
     // Ensure marker or blob are redrawn if necessary
     if (widgets->is_marker_drawn || widgets->is_blob_drawn) {
@@ -2613,7 +2567,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
         marker_x = (pc * widgets->profile_width) + MARGIN_X;
       }
 
-      save_image_and_draw_graph_marks (image,
+      save_image_and_draw_graph_marks (widgets->elev_time_image,
 				       marker_x,
 				       gtk_widget_get_style(window)->black_gc,
 				       x_blob+MARGIN_X,
@@ -2637,11 +2591,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
       widgets->speed_dist_graph_saved_img.saved = FALSE;
     }
 
-    child = gtk_container_get_children(GTK_CONTAINER(widgets->speed_dist_box));
-    draw_sd (GTK_WIDGET(child->data), widgets->tr, widgets );
-
-    image = GTK_WIDGET(child->data);
-    g_list_free(child);
+    draw_sd ( widgets->speed_dist_image, widgets->tr, widgets );
 
     // Ensure marker or blob are redrawn if necessary
     if (widgets->is_marker_drawn || widgets->is_blob_drawn) {
@@ -2662,7 +2612,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
         marker_x = (pc * widgets->profile_width) + MARGIN_X;
       }
 
-      save_image_and_draw_graph_marks (image,
+      save_image_and_draw_graph_marks (widgets->speed_dist_image,
 				       marker_x,
 				       gtk_widget_get_style(window)->black_gc,
 				       x_blob+MARGIN_X,
@@ -2723,7 +2673,6 @@ static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, P
 GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, PropWidgets *widgets, gdouble *min_alt, gdouble *max_alt)
 {
   GdkPixmap *pix;
-  GtkWidget *image;
   GtkWidget *eventbox;
 
   // First allocation
@@ -2740,14 +2689,13 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, PropWidgets *widget
     *min_alt = *max_alt = NAN;
 
   pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
-  image = gtk_image_new_from_pixmap ( pix, NULL );
-
+  widgets->elev_image = gtk_image_new_from_pixmap ( pix, NULL );
   g_object_unref ( G_OBJECT(pix) );
 
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_profile_click), widgets );
   g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_profile_move), widgets );
-  gtk_container_add ( GTK_CONTAINER(eventbox), image );
+  gtk_container_add ( GTK_CONTAINER(eventbox), widgets->elev_image );
   gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_STRUCTURE_MASK);
 
   return eventbox;
@@ -2759,7 +2707,6 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, PropWidgets *widget
 GtkWidget *vik_trw_layer_create_gradient ( GtkWidget *window, PropWidgets *widgets)
 {
   GdkPixmap *pix;
-  GtkWidget *image;
   GtkWidget *eventbox;
 
   // First allocation
@@ -2770,14 +2717,13 @@ GtkWidget *vik_trw_layer_create_gradient ( GtkWidget *window, PropWidgets *widge
   }
 
   pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
-  image = gtk_image_new_from_pixmap ( pix, NULL );
-
+  widgets->gradient_image = gtk_image_new_from_pixmap ( pix, NULL );
   g_object_unref ( G_OBJECT(pix) );
 
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_gradient_click), widgets );
   g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_gradient_move), widgets );
-  gtk_container_add ( GTK_CONTAINER(eventbox), image );
+  gtk_container_add ( GTK_CONTAINER(eventbox), widgets->gradient_image );
   gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_STRUCTURE_MASK);
 
   return eventbox;
@@ -2789,7 +2735,6 @@ GtkWidget *vik_trw_layer_create_gradient ( GtkWidget *window, PropWidgets *widge
 GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, PropWidgets *widgets)
 {
   GdkPixmap *pix;
-  GtkWidget *image;
   GtkWidget *eventbox;
 
   // First allocation
@@ -2798,7 +2743,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, PropWidgets *widgets
     return NULL;
 
   pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
-  image = gtk_image_new_from_pixmap ( pix, NULL );
+  widgets->speed_image = gtk_image_new_from_pixmap ( pix, NULL );
 
 #if 0
   /* XXX this can go out, it's just a helpful dev tool */
@@ -2828,7 +2773,7 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, PropWidgets *widgets
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_vt_click), widgets );
   g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_vt_move), widgets );
-  gtk_container_add ( GTK_CONTAINER(eventbox), image );
+  gtk_container_add ( GTK_CONTAINER(eventbox), widgets->speed_image );
   gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK);
 
   return eventbox;
@@ -2840,7 +2785,6 @@ GtkWidget *vik_trw_layer_create_vtdiag ( GtkWidget *window, PropWidgets *widgets
 GtkWidget *vik_trw_layer_create_dtdiag ( GtkWidget *window, PropWidgets *widgets)
 {
   GdkPixmap *pix;
-  GtkWidget *image;
   GtkWidget *eventbox;
 
   // First allocation
@@ -2849,15 +2793,13 @@ GtkWidget *vik_trw_layer_create_dtdiag ( GtkWidget *window, PropWidgets *widgets
     return NULL;
 
   pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
-  image = gtk_image_new_from_pixmap ( pix, NULL );
-
+  widgets->dist_image = gtk_image_new_from_pixmap ( pix, NULL );
   g_object_unref ( G_OBJECT(pix) );
 
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_dt_click), widgets );
   g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_dt_move), widgets );
-  //g_signal_connect_swapped ( G_OBJECT(eventbox), "destroy", G_CALLBACK(g_free), widgets );
-  gtk_container_add ( GTK_CONTAINER(eventbox), image );
+  gtk_container_add ( GTK_CONTAINER(eventbox), widgets->dist_image );
   gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK);
 
   return eventbox;
@@ -2869,7 +2811,6 @@ GtkWidget *vik_trw_layer_create_dtdiag ( GtkWidget *window, PropWidgets *widgets
 GtkWidget *vik_trw_layer_create_etdiag ( GtkWidget *window, PropWidgets *widgets)
 {
   GdkPixmap *pix;
-  GtkWidget *image;
   GtkWidget *eventbox;
 
   // First allocation
@@ -2878,14 +2819,13 @@ GtkWidget *vik_trw_layer_create_etdiag ( GtkWidget *window, PropWidgets *widgets
     return NULL;
 
   pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
-  image = gtk_image_new_from_pixmap ( pix, NULL );
-
+  widgets->elev_time_image = gtk_image_new_from_pixmap ( pix, NULL );
   g_object_unref ( G_OBJECT(pix) );
 
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_et_click), widgets );
   g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_et_move), widgets );
-  gtk_container_add ( GTK_CONTAINER(eventbox), image );
+  gtk_container_add ( GTK_CONTAINER(eventbox), widgets->elev_time_image );
   gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK);
 
   return eventbox;
@@ -2897,7 +2837,6 @@ GtkWidget *vik_trw_layer_create_etdiag ( GtkWidget *window, PropWidgets *widgets
 GtkWidget *vik_trw_layer_create_sddiag ( GtkWidget *window, PropWidgets *widgets)
 {
   GdkPixmap *pix;
-  GtkWidget *image;
   GtkWidget *eventbox;
 
   // First allocation
@@ -2906,14 +2845,13 @@ GtkWidget *vik_trw_layer_create_sddiag ( GtkWidget *window, PropWidgets *widgets
     return NULL;
 
   pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
-  image = gtk_image_new_from_pixmap ( pix, NULL );
-
+  widgets->speed_dist_image = gtk_image_new_from_pixmap ( pix, NULL );
   g_object_unref ( G_OBJECT(pix) );
 
   eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_sd_click), widgets );
   g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_sd_move), widgets );
-  gtk_container_add ( GTK_CONTAINER(eventbox), image );
+  gtk_container_add ( GTK_CONTAINER(eventbox), widgets->speed_dist_image );
   gtk_widget_set_events (eventbox, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK);
 
   return eventbox;
