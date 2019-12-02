@@ -458,20 +458,21 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
                                                   GTK_STOCK_OK,
                                                   GTK_RESPONSE_ACCEPT,
                                                   NULL);
-  GtkWidget *table, *t1, *t2, *t3, *t4, *spin, *label;
+  GtkWidget *table, *t1, *t2, *t3, *t4, *t5, *spin, *label;
   GtkWidget *pass_along[1];
 
-  table = gtk_table_new ( 4, 2, FALSE );
+  table = gtk_table_new ( 5, 2, FALSE );
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), table, TRUE, TRUE, 0 );
 
   label = gtk_label_new (label_text);
 
   t1 = gtk_radio_button_new_with_label ( NULL, _("1 min") );
   t2 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t1), _("1 hour") );
-  t3 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t2), _("1 day") );
-  t4 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t3), _("Custom (in minutes):") );
+  t3 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t2), _("6 hours") );
+  t4 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t3), _("1 day") );
+  t5 = gtk_radio_button_new_with_label_from_widget ( GTK_RADIO_BUTTON(t4), _("Custom (in minutes):") );
 
-  pass_along[0] = t4;
+  pass_along[0] = t5;
 
   spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( *thr, 0, 65536, 1, 5, 0 ), 1, 0 );
 
@@ -480,7 +481,8 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
   gtk_table_attach_defaults ( GTK_TABLE(table), t2, 0, 1, 2, 3 );
   gtk_table_attach_defaults ( GTK_TABLE(table), t3, 0, 1, 3, 4 );
   gtk_table_attach_defaults ( GTK_TABLE(table), t4, 0, 1, 4, 5 );
-  gtk_table_attach_defaults ( GTK_TABLE(table), spin, 1, 2, 4, 5 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), t5, 0, 1, 5, 6 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), spin, 1, 2, 5, 6 );
 
   gtk_widget_show_all ( table );
 
@@ -495,8 +497,10 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
     } else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(t2))) {
       *thr = 60;
     } else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(t3))) {
-      *thr = 60 * 24;
+      *thr = 60 * 6;
     } else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(t4))) {
+      *thr = 60 * 24;
+    } else if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(t5))) {
       *thr = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(spin) );
     }
     gtk_widget_destroy ( dialog );
