@@ -448,6 +448,26 @@ static void split_spin_focused ( GtkSpinButton *spin, GtkWidget *pass_along[1] )
   gtk_toggle_button_set_active    (GTK_TOGGLE_BUTTON(pass_along[0]), 1);
 }
 
+static void time_1m_clicked_cb ( GtkButton *button, GtkWidget *spin )
+{
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(spin), 1.0 );
+}
+
+static void time_1h_clicked_cb ( GtkButton *button, GtkWidget *spin )
+{
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(spin), 60.0 );
+}
+
+static void time_6h_clicked_cb ( GtkButton *button, GtkWidget *spin )
+{
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(spin), 6*60.0 );
+}
+
+static void time_1d_clicked_cb ( GtkButton *button, GtkWidget *spin )
+{
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(spin), 24*60.0 );
+}
+
 gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *label_text, guint *thr )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons (title_text, 
@@ -487,6 +507,11 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
   gtk_widget_show_all ( table );
 
   g_signal_connect ( G_OBJECT(spin), "grab-focus", G_CALLBACK(split_spin_focused), pass_along );
+
+  g_signal_connect ( G_OBJECT(t1), "clicked", G_CALLBACK(time_1m_clicked_cb), spin );
+  g_signal_connect ( G_OBJECT(t2), "clicked", G_CALLBACK(time_1h_clicked_cb), spin );
+  g_signal_connect ( G_OBJECT(t3), "clicked", G_CALLBACK(time_6h_clicked_cb), spin );
+  g_signal_connect ( G_OBJECT(t4), "clicked", G_CALLBACK(time_1d_clicked_cb), spin );
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
