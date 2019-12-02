@@ -67,7 +67,7 @@ static void format_1f_cell_data_func ( GtkTreeViewColumn *col,
 	g_object_set ( renderer, "text", buf, NULL );
 }
 
-#define TRK_LIST_COLS 11
+#define TRK_LIST_COLS 12
 #define TRK_COL_NUM TRK_LIST_COLS-1
 #define TRW_COL_NUM TRK_COL_NUM-1
 
@@ -210,6 +210,7 @@ static void trw_layer_track_view ( menu_array_values values )
 
 typedef struct {
   gboolean has_layer_names;
+  gboolean is_only_routes;
   GString *str;
 } copy_data_t;
 
@@ -231,10 +232,17 @@ static void copy_selection (GtkTreeModel *model,
 	gchar sep = '\t'; // Could make this configurable - but simply always make it a tab character for now
 	// NB Even if the columns have been reordered - this copies it out only in the original default order
 	// if col 0 is displayed then also copy the layername
-	if ( cd->has_layer_names )
-		g_string_append_printf ( cd->str, "%s%c%s%c%s%c%.1f%c%d%c%.1f%c%.1f%c%d\n", layername, sep, name, sep, date, sep, d1, sep, d2, sep, d3, sep, d4, sep, d5 );
-	else
-		g_string_append_printf ( cd->str, "%s%c%s%c%.1f%c%d%c%.1f%c%.1f%c%d\n", name, sep, date, sep, d1, sep, d2, sep, d3, sep, d4, sep, d5 );
+	if ( cd->has_layer_names ) {
+		if ( cd->is_only_routes )
+			g_string_append_printf ( cd->str, "%s%c%s%c%.1f%c%d\n", layername, sep, name, sep, d1, sep, d5 );
+		else
+			g_string_append_printf ( cd->str, "%s%c%s%c%s%c%.1f%c%d%c%.1f%c%.1f%c%d\n", layername, sep, name, sep, date, sep, d1, sep, d2, sep, d3, sep, d4, sep, d5 );
+	} else {
+		if ( cd->is_only_routes )
+			g_string_append_printf ( cd->str, "%s%c%.1f%c%d\n", name, sep, d1, sep, d5 );
+		else
+			g_string_append_printf ( cd->str, "%s%c%s%c%.1f%c%d%c%.1f%c%.1f%c%d\n", name, sep, date, sep, d1, sep, d2, sep, d3, sep, d4, sep, d5 );
+	}
 	g_free ( layername );
 	g_free ( name );
 	g_free ( date );
@@ -248,7 +256,9 @@ static void trw_layer_copy_selected ( GtkWidget *tree_view )
 	guint count = g_list_length ( gl );
 	g_list_free ( gl );
 	copy_data_t cd;
-	cd.has_layer_names = (count > TRK_LIST_COLS-3);
+	// Infer properties just from the number of columns shown
+	cd.has_layer_names = (count == 10 || count == 6);
+	cd.is_only_routes = (count == 6 || count == 5);
 	// Or use gtk_tree_view_column_get_visible()?
 	cd.str = g_string_new ( NULL );
 	gtk_tree_selection_selected_foreach ( selection, copy_selection, &cd );
@@ -512,6 +522,7 @@ static void trw_layer_track_list_add ( vik_trw_and_track_t *vtt,
 	                     6, av_speed,
 	                     7, max_speed,
 	                     8, (gint)round(max_alt),
+	                     9, trk->is_route,
 	                     TRW_COL_NUM, vtl,
 	                     TRK_COL_NUM, trk,
 	                     -1 );
@@ -555,8 +566,9 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	                                           G_TYPE_DOUBLE,    // 6: Av. Speed
 	                                           G_TYPE_DOUBLE,    // 7: Max Speed
 	                                           G_TYPE_INT,       // 8: Max Height
-	                                           G_TYPE_POINTER,   // 9: TrackWaypoint Layer pointer
-	                                           G_TYPE_POINTER ); // 10: Track pointer
+	                                           G_TYPE_BOOLEAN,   // 9: Is Route
+	                                           G_TYPE_POINTER,   // 10: TrackWaypoint Layer pointer
+	                                           G_TYPE_POINTER ); // 11: Track pointer
 
 	//gtk_tree_selection_set_select_function ( gtk_tree_view_get_selection (GTK_TREE_VIEW(vt)), vik_treeview_selection_filter, vt, NULL );
 
@@ -570,9 +582,11 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	if ( !a_settings_get_string ( VIK_SETTINGS_LIST_DATE_FORMAT, &date_format ) )
 		date_format = g_strdup ( TRACK_LIST_DATE_FORMAT );
 
+	gboolean is_only_routes = TRUE;
 	GList *gl = tracks_and_layers;
 	while ( gl ) {
 		trw_layer_track_list_add ( (vik_trw_and_track_t*)gl->data, store, dist_units, speed_units, height_units, date_format );
+		is_only_routes = is_only_routes & ((vik_trw_and_track_t*)gl->data)->trk->is_route;
 		gl = g_list_next ( gl );
 	}
 	g_free ( date_format );
@@ -604,8 +618,11 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 		// remember the name column so we can sort by it later
 		sort_by_column = column;
 
-	column = my_new_column_text ( _("Date"), renderer, view, column_runner++ );
-	gtk_tree_view_column_set_expand ( column, TRUE );
+	if ( !is_only_routes ) {
+		column = my_new_column_text ( _("Date"), renderer, view, column_runner++ );
+		gtk_tree_view_column_set_expand ( column, TRUE );
+	} else
+		column_runner++;
 
 	GtkCellRenderer *renderer_toggle = gtk_cell_renderer_toggle_new ();
 	column = gtk_tree_view_column_new_with_attributes ( _("Visible"), renderer_toggle, "active", column_runner, NULL );
@@ -628,37 +645,47 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	// Apply own formatting of the data
 	gtk_tree_view_column_set_cell_data_func ( column, renderer, format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL);
 
-	(void)my_new_column_text ( _("Length\n(minutes)"), renderer, view, column_runner++ );
+	if ( !is_only_routes ) {
+		(void)my_new_column_text ( _("Length\n(minutes)"), renderer, view, column_runner++ );
 
-	gchar *spd_units = NULL;
-	switch (speed_units) {
-	case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR: spd_units = g_strdup (_("km/h")); break;
-	case VIK_UNITS_SPEED_MILES_PER_HOUR:      spd_units = g_strdup (_("mph")); break;
-	case VIK_UNITS_SPEED_KNOTS:               spd_units = g_strdup (_("knots")); break;
-	case VIK_UNITS_SPEED_SECONDS_PER_KM:      spd_units = g_strdup (_("s/km")); break;
-	case VIK_UNITS_SPEED_MINUTES_PER_KM:      spd_units = g_strdup (_("min/km")); break;
-	case VIK_UNITS_SPEED_SECONDS_PER_MILE:    spd_units = g_strdup (_("sec/mi")); break;
-	case VIK_UNITS_SPEED_MINUTES_PER_MILE:    spd_units = g_strdup (_("min/mi")); break;
-	// VIK_UNITS_SPEED_METRES_PER_SECOND:
-	default:                                  spd_units = g_strdup (_("m/s")); break;
-	}
+		gchar *spd_units = NULL;
+		switch (speed_units) {
+		case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR: spd_units = g_strdup (_("km/h")); break;
+		case VIK_UNITS_SPEED_MILES_PER_HOUR:      spd_units = g_strdup (_("mph")); break;
+		case VIK_UNITS_SPEED_KNOTS:               spd_units = g_strdup (_("knots")); break;
+		case VIK_UNITS_SPEED_SECONDS_PER_KM:      spd_units = g_strdup (_("s/km")); break;
+		case VIK_UNITS_SPEED_MINUTES_PER_KM:      spd_units = g_strdup (_("min/km")); break;
+		case VIK_UNITS_SPEED_SECONDS_PER_MILE:    spd_units = g_strdup (_("sec/mi")); break;
+		case VIK_UNITS_SPEED_MINUTES_PER_MILE:    spd_units = g_strdup (_("min/mi")); break;
+		// VIK_UNITS_SPEED_METRES_PER_SECOND:
+		default:                                  spd_units = g_strdup (_("m/s")); break;
+		}
 
-	gchar *title = g_strdup_printf ( _("Av. Speed\n(%s)"), spd_units );
-	column = my_new_column_text ( title, renderer, view, column_runner++ );
-	g_free ( title );
-	gtk_tree_view_column_set_cell_data_func ( column, renderer, format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
+		gchar *title = g_strdup_printf ( _("Av. Speed\n(%s)"), spd_units );
+		column = my_new_column_text ( title, renderer, view, column_runner++ );
+		g_free ( title );
+		gtk_tree_view_column_set_cell_data_func ( column, renderer, format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
 
-	title = g_strdup_printf ( _("Max Speed\n(%s)"), spd_units );
-	column = my_new_column_text ( title, renderer, view, column_runner++ );
-	gtk_tree_view_column_set_cell_data_func ( column, renderer, format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
+		title = g_strdup_printf ( _("Max Speed\n(%s)"), spd_units );
+		column = my_new_column_text ( title, renderer, view, column_runner++ );
+		gtk_tree_view_column_set_cell_data_func ( column, renderer, format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
 
-	g_free ( title );
-	g_free ( spd_units );
+		g_free ( title );
+		g_free ( spd_units );
+	} else
+		column_runner += 3;
 
 	if ( height_units == VIK_UNITS_HEIGHT_FEET )
 		(void)my_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
 	else
 		(void)my_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
+
+	GtkCellRenderer *renderer_toggle_rt = gtk_cell_renderer_toggle_new ();
+	column = gtk_tree_view_column_new_with_attributes ( _("Route"), renderer_toggle_rt, "active", column_runner, NULL );
+	gtk_tree_view_column_set_reorderable ( column, TRUE );
+	gtk_tree_view_column_set_sort_column_id ( column, column_runner );
+	gtk_tree_view_append_column ( GTK_TREE_VIEW(view), column );
+	column_runner++;
 
 	gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(store) );
 	gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_MULTIPLE );
@@ -685,8 +712,11 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 
 	// Ensure a reasonable number of items are shown
 	//  TODO: may be save window size, column order, sorted by between invocations.
-	// Gtk too stupid to work out best size so need to tell it.
-	gtk_window_set_default_size ( GTK_WINDOW(dialog), show_layer_names ? 900 : 700, 400 );
+	// Gtk doesn't always work out best size so try to give it some help.
+	guint width = show_layer_names ? 900 : 700;
+	if ( is_only_routes )
+		width -= 250;
+	gtk_window_set_default_size ( GTK_WINDOW(dialog), width, 400 );
 }
 
 
