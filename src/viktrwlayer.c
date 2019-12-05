@@ -5563,6 +5563,9 @@ static void apply_dem_data_common ( VikTrwLayer *vtl, VikLayersPanel *vlp, VikTr
   const gchar *tmp_str = ngettext("%ld point adjusted", "%ld points adjusted", changed);
   g_snprintf(str, 64, tmp_str, changed);
   a_dialog_info_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl), str);
+
+  if ( changed )
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
 
 static void trw_layer_apply_dem_data_all ( menu_array_sublayer values )
