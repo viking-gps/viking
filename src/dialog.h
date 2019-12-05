@@ -69,6 +69,8 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean mul
 
 void a_dialog_license ( GtkWindow *parent, const gchar *map, const gchar *license, const gchar *url);
 
+void a_dialog_build_info ( GtkWindow *parent );
+
 G_END_DECLS
 
 #endif
