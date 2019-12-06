@@ -9949,7 +9949,7 @@ static gboolean tool_edit_track_or_route_click ( VikTrwLayer *vtl, GdkEventButto
   if ( vtl->current_track ) {
     vik_track_add_trackpoint ( vtl->current_track, tp, TRUE ); // Ensure bounds is updated
     /* Auto attempt to get elevation from DEM data (if it's available) */
-    vik_track_apply_dem_data_last_trackpoint ( vtl->current_track );
+    (void)vik_trackpoint_apply_dem_data ( tp );
   }
 
   vtl->ct_x1 = vtl->ct_x2;

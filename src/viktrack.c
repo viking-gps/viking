@@ -1799,20 +1799,38 @@ gulong vik_track_apply_dem_data ( VikTrack *tr, gboolean skip_existing )
 }
 
 /**
+ * vik_trackpoint_apply_dem_data:
+ * Apply DEM data (if available) to the trackpoint
+ * NB This will overwrite whatever was in the trackpoint before
+ */
+void vik_trackpoint_apply_dem_data ( VikTrackpoint *tp )
+{
+  if ( tp ) {
+    gint16 elev = a_dems_get_elev_by_coord ( &(tp->coord), VIK_DEM_INTERPOL_BEST );
+    if ( elev != VIK_DEM_INVALID_ELEVATION ) {
+      tp->altitude = elev;
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
  * vik_track_apply_dem_data_last_trackpoint:
  * Apply DEM data (if available) - to only the last trackpoint
  */
+/*
 void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr )
 {
   gint16 elev;
   if ( tr->trackpoints ) {
-    /* As in vik_track_apply_dem_data above - use 'best' interpolation method */
+    // As in vik_track_apply_dem_data above - use 'best' interpolation method
     elev = a_dems_get_elev_by_coord ( &(VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->coord), VIK_DEM_INTERPOL_BEST );
     if ( elev != VIK_DEM_INVALID_ELEVATION )
       VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->altitude = elev;
   }
 }
-
+*/
 
 /**
  * smoothie:

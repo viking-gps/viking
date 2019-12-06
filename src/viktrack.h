@@ -116,6 +116,7 @@ VikTrackpoint *vik_trackpoint_new();
 void vik_trackpoint_free(VikTrackpoint *tp);
 VikTrackpoint *vik_trackpoint_copy(VikTrackpoint *tp);
 void vik_trackpoint_set_name(VikTrackpoint *tp, const gchar *name);
+void vik_trackpoint_apply_dem_data(VikTrackpoint *tp);
 
 void vik_track_add_trackpoint(VikTrack *tr, VikTrackpoint *tp, gboolean recalculate);
 gdouble vik_track_get_length_to_trackpoint (const VikTrack *tr, const VikTrackpoint *tp);
@@ -167,7 +168,7 @@ void vik_track_calculate_bounds ( VikTrack *trk );
 void vik_track_anonymize_times ( VikTrack *tr );
 void vik_track_interpolate_times ( VikTrack *tr );
 gulong vik_track_apply_dem_data ( VikTrack *tr, gboolean skip_existing );
-void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr );
+//void vik_track_apply_dem_data_last_trackpoint ( VikTrack *tr );
 gulong vik_track_smooth_missing_elevation_data ( VikTrack *tr, gboolean flat );
 
 void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 );
