@@ -9686,6 +9686,11 @@ static gboolean tool_plot_route ( VikTrwLayer *vtl, VikCoord *target )
 
   gboolean find_status = vik_routing_default_find ( vtl, start, end );
 
+  if ( find_status && vtl->current_track ) {
+    gulong chgd = vik_track_apply_dem_data ( vtl->current_track, TRUE );
+    g_debug ( "%s %ld points changed for DEM", __FUNCTION__, chgd );
+  }
+
   /* Update UI to say we're done */
   vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
   msg = ( find_status ) ? g_strdup_printf ( _("%s returned route between (%.3f, %.3f) and (%.3f, %.3f)."),
