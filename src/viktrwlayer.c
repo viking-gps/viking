@@ -5642,7 +5642,7 @@ static void trw_layer_missing_elevation_data_flat ( menu_array_sublayer values )
 /**
  * Commonal helper function
  */
-static void wp_changed_message ( VikTrwLayer *vtl, gint changed )
+static void wp_changed_message ( VikTrwLayer *vtl, guint changed )
 {
   gchar str[64];
   const gchar *tmp_str = ngettext("%ld waypoint changed", "%ld waypoints changed", changed);
@@ -5658,12 +5658,12 @@ static void trw_layer_apply_dem_data_wpt_all ( menu_array_sublayer values )
   if ( !trw_layer_dem_test ( vtl, vlp ) )
     return;
 
-  gint changed = 0;
+  guint changed = 0;
   if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
     // Single Waypoint
     VikWaypoint *wp = (VikWaypoint *) g_hash_table_lookup ( vtl->waypoints, values[MA_SUBLAYER_ID] );
     if ( wp )
-      changed = (gint)vik_waypoint_apply_dem_data ( wp, FALSE );
+      changed = (guint)vik_waypoint_apply_dem_data ( wp, FALSE );
   }
   else {
     // All waypoints
@@ -5687,12 +5687,12 @@ static void trw_layer_apply_dem_data_wpt_only_missing ( menu_array_sublayer valu
   if ( !trw_layer_dem_test ( vtl, vlp ) )
     return;
 
-  gint changed = 0;
+  guint changed = 0;
   if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
     // Single Waypoint
     VikWaypoint *wp = (VikWaypoint *) g_hash_table_lookup ( vtl->waypoints, values[MA_SUBLAYER_ID] );
     if ( wp )
-      changed = (gint)vik_waypoint_apply_dem_data ( wp, TRUE );
+      changed = (guint)vik_waypoint_apply_dem_data ( wp, TRUE );
   }
   else {
     // All waypoints
@@ -5702,7 +5702,7 @@ static void trw_layer_apply_dem_data_wpt_only_missing ( menu_array_sublayer valu
     g_hash_table_iter_init ( &iter, vtl->waypoints );
     while ( g_hash_table_iter_next (&iter, &key, &value) ) {
       VikWaypoint *wp = VIK_WAYPOINT(value);
-      changed = changed + (gint)vik_waypoint_apply_dem_data ( wp, TRUE );
+      changed = changed + (guint)vik_waypoint_apply_dem_data ( wp, TRUE );
     }
   }
   wp_changed_message ( vtl, changed );
