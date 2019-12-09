@@ -361,6 +361,8 @@ Other function keys control turn on/off visibility of various elements:
 <listitem><para><keycap>Shift+F5</keycap> Toggle visibility of the Scale indicator on the viewport</para></listitem>
 <listitem><para><keycap>F6</keycap> Toggle visibility of the Center Crosshairs on the viewport</para></listitem>
 <listitem><para><keycap>F7</keycap> Toggle showing selected items (e.g. tracks or waypoints) in the highlight colour in the viewport</para></listitem>
+<listitem><para><keycap>Shift+F8</keycap> Toggle visibility of the calendar</para></listitem>
+<listitem><para><keycap>Shift+F9</keycap> Toggle visibility of the Layers Panel buttons</para></listitem>
 <listitem><para><keycap>F9</keycap> Toggle visibility of the Layers Panel</para></listitem>
 <listitem><para><keycap>F12</keycap> Toggle visibility of the Statusbar</para></listitem>
 </itemizedlist>
