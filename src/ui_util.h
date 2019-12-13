@@ -45,6 +45,14 @@ GdkPixbuf *ui_pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha );
 GdkPixbuf *ui_pixbuf_scale_alpha ( GdkPixbuf *pixbuf, guint8 alpha );
 void ui_add_recent_file ( const gchar *filename );
 
+void ui_format_1f_cell_data_func ( GtkTreeViewColumn *col,
+                                   GtkCellRenderer   *renderer,
+                                   GtkTreeModel      *model,
+                                   GtkTreeIter       *iter,
+                                   gpointer           user_data );
+
+GtkTreeViewColumn *ui_new_column_text ( const gchar *title, GtkCellRenderer *renderer, GtkWidget *view, gint column_runner );
+
 G_END_DECLS
 
 #endif

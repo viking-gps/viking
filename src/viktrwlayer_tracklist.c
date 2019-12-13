@@ -31,6 +31,7 @@
 #include "viktrwlayer_tracklist.h"
 #include "viktrwlayer_propwin.h"
 #include "vikutils.h"
+#include "ui_util.h"
 
 // Long formatted date+basic time - listing this way ensures the string comparison sort works - so no local type format %x or %c here!
 #define TRACK_LIST_DATE_FORMAT "%Y-%m-%d %H:%M"
@@ -45,26 +46,6 @@ static void track_close_cb ( GtkWidget *dialog, gint resp, GList *data )
 	g_list_free ( data );
 
 	gtk_widget_destroy (dialog);
-}
-
-/**
- * format_1f_cell_data_func:
- *
- * General purpose column double formatting
- *
- */
-static void format_1f_cell_data_func ( GtkTreeViewColumn *col,
-                                       GtkCellRenderer   *renderer,
-                                       GtkTreeModel      *model,
-                                       GtkTreeIter       *iter,
-                                       gpointer           user_data )
-{
-	gdouble value;
-	gchar buf[20];
-	gint column = GPOINTER_TO_INT (user_data);
-	gtk_tree_model_get ( model, iter, column, &value, -1 );
-	g_snprintf ( buf, sizeof(buf), "%.1f", value );
-	g_object_set ( renderer, "text", buf, NULL );
 }
 
 #define TRK_LIST_COLS 12
@@ -528,15 +509,6 @@ static void trw_layer_track_list_add ( vik_trw_and_track_t *vtt,
 	                     -1 );
 }
 
-static GtkTreeViewColumn *my_new_column_text ( const gchar *title, GtkCellRenderer *renderer, GtkWidget *view, gint column_runner )
-{
-	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes ( title, renderer, "text", column_runner, NULL );
-	gtk_tree_view_column_set_sort_column_id ( column, column_runner );
-	gtk_tree_view_append_column ( GTK_TREE_VIEW(view), column );
-	gtk_tree_view_column_set_resizable ( column, TRUE );
-	return column;
-}
-
 /**
  * vik_trw_layer_track_list_internal:
  * @dialog:            The dialog to create the widgets in
@@ -603,7 +575,7 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	gint column_runner = 0;
 	if ( show_layer_names ) {
 		// Insert column for the layer name when viewing multi layers
-		column = my_new_column_text ( _("Layer"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Layer"), renderer, view, column_runner++ );
 		gtk_tree_view_column_set_expand ( column, TRUE );
 		// remember the layer column so we can sort by it later
 		sort_by_column = column;
@@ -611,14 +583,14 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	else
 		column_runner++;
 
-	column = my_new_column_text ( _("Name"), renderer, view, column_runner++ );
+	column = ui_new_column_text ( _("Name"), renderer, view, column_runner++ );
 	gtk_tree_view_column_set_expand ( column, TRUE );
 	if ( !show_layer_names )
 		// remember the name column so we can sort by it later
 		sort_by_column = column;
 
 	if ( !is_only_routes ) {
-		column = my_new_column_text ( _("Date"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Date"), renderer, view, column_runner++ );
 		gtk_tree_view_column_set_expand ( column, TRUE );
 	} else
 		column_runner++;
@@ -632,20 +604,20 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 
 	switch ( dist_units ) {
 	case VIK_UNITS_DISTANCE_MILES:
-		column = my_new_column_text ( _("Distance\n(miles)"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Distance\n(miles)"), renderer, view, column_runner++ );
 		break;
 	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
-		column = my_new_column_text ( _("Distance\n(NM)"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Distance\n(NM)"), renderer, view, column_runner++ );
 		break;
 	default:
-		column = my_new_column_text ( _("Distance\n(km)"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Distance\n(km)"), renderer, view, column_runner++ );
 		break;
 	}
 	// Apply own formatting of the data
-	gtk_tree_view_column_set_cell_data_func ( column, renderer, format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL);
+	gtk_tree_view_column_set_cell_data_func ( column, renderer, ui_format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL);
 
 	if ( !is_only_routes ) {
-		(void)my_new_column_text ( _("Length\n(minutes)"), renderer, view, column_runner++ );
+		(void)ui_new_column_text ( _("Length\n(minutes)"), renderer, view, column_runner++ );
 
 		gchar *spd_units = NULL;
 		switch (speed_units) {
@@ -661,13 +633,13 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 		}
 
 		gchar *title = g_strdup_printf ( _("Av. Speed\n(%s)"), spd_units );
-		column = my_new_column_text ( title, renderer, view, column_runner++ );
+		column = ui_new_column_text ( title, renderer, view, column_runner++ );
 		g_free ( title );
-		gtk_tree_view_column_set_cell_data_func ( column, renderer, format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
+		gtk_tree_view_column_set_cell_data_func ( column, renderer, ui_format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
 
 		title = g_strdup_printf ( _("Max Speed\n(%s)"), spd_units );
-		column = my_new_column_text ( title, renderer, view, column_runner++ );
-		gtk_tree_view_column_set_cell_data_func ( column, renderer, format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
+		column = ui_new_column_text ( title, renderer, view, column_runner++ );
+		gtk_tree_view_column_set_cell_data_func ( column, renderer, ui_format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
 
 		g_free ( title );
 		g_free ( spd_units );
@@ -675,9 +647,9 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 		column_runner += 3;
 
 	if ( height_units == VIK_UNITS_HEIGHT_FEET )
-		(void)my_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
+		(void)ui_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
 	else
-		(void)my_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
+		(void)ui_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
 
 	GtkCellRenderer *renderer_toggle_rt = gtk_cell_renderer_toggle_new ();
 	column = gtk_tree_view_column_new_with_attributes ( _("Route"), renderer_toggle_rt, "active", column_runner, NULL );

@@ -47,26 +47,6 @@ static void waypoint_close_cb ( GtkWidget *dialog, gint resp, GList *data )
 	gtk_widget_destroy (dialog);
 }
 
-/**
- * format_1f_cell_data_func:
- *
- * General purpose column double formatting
- *
-static void format_1f_cell_data_func ( GtkTreeViewColumn *col,
-                                       GtkCellRenderer   *renderer,
-                                       GtkTreeModel      *model,
-                                       GtkTreeIter       *iter,
-                                       gpointer           user_data )
-{
-	gdouble value;
-	gchar buf[20];
-	gint column = GPOINTER_TO_INT (user_data);
-	gtk_tree_model_get ( model, iter, column, &value, -1 );
-	g_snprintf ( buf, sizeof(buf), "%.1f", value );
-	g_object_set ( renderer, "text", buf, NULL );
-}
- */
-
 #define WPT_LIST_COLS 9
 #define WPT_COL_NUM WPT_LIST_COLS-1
 #define TRW_COL_NUM WPT_COL_NUM-1
@@ -514,15 +494,6 @@ gint sort_pixbuf_compare_func ( GtkTreeModel *model,
 	return g_strcmp0 ( wpt1->symbol, wpt2->symbol );
 }
 
-static GtkTreeViewColumn *my_new_column_text ( const gchar *title, GtkCellRenderer *renderer, GtkWidget *view, gint column_runner )
-{
-	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes ( title, renderer, "text", column_runner, NULL );
-	gtk_tree_view_column_set_sort_column_id ( column, column_runner );
-	gtk_tree_view_append_column ( GTK_TREE_VIEW(view), column );
-	gtk_tree_view_column_set_resizable ( column, TRUE );
-	return column;
-}
-
 /**
  * vik_trw_layer_waypoint_list_internal:
  * @dialog:            The dialog to create the widgets in
@@ -580,7 +551,7 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	gint column_runner = 0;
 	if ( show_layer_names ) {
 		// Insert column for the layer name when viewing multi layers
-		column = my_new_column_text ( _("Layer"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Layer"), renderer, view, column_runner++ );
 		g_object_set (G_OBJECT (renderer), "xalign", 0.0, "ellipsize", PANGO_ELLIPSIZE_END, NULL);
 		gtk_tree_view_column_set_expand ( column, TRUE );
 		// remember the layer column so we can sort by it later
@@ -589,13 +560,13 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	else
 		column_runner++;
 
-	column = my_new_column_text ( _("Name"), renderer, view, column_runner++ );
+	column = ui_new_column_text ( _("Name"), renderer, view, column_runner++ );
 	gtk_tree_view_column_set_expand ( column, TRUE );
 	if ( !show_layer_names )
 		// remember the name column so we can sort by it later
 		sort_by_column = column;
 
-	column = my_new_column_text ( _("Date"), renderer, view, column_runner++ );
+	column = ui_new_column_text ( _("Date"), renderer, view, column_runner++ );
 	gtk_tree_view_column_set_resizable ( column, TRUE );
 
 	GtkCellRenderer *renderer_toggle = gtk_cell_renderer_toggle_new ();
@@ -604,13 +575,13 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	gtk_tree_view_append_column ( GTK_TREE_VIEW(view), column );
 	column_runner++;
 
-	column = my_new_column_text ( _("Comment"), renderer, view, column_runner++ );
+	column = ui_new_column_text ( _("Comment"), renderer, view, column_runner++ );
 	gtk_tree_view_column_set_expand ( column, TRUE );
 
 	if ( height_units == VIK_UNITS_HEIGHT_FEET )
-		(void)my_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
+		(void)ui_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
 	else
-		(void)my_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
+		(void)ui_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
 
 	GtkCellRenderer *renderer_pixbuf = gtk_cell_renderer_pixbuf_new ();
 	g_object_set (G_OBJECT (renderer_pixbuf), "xalign", 0.5, NULL);

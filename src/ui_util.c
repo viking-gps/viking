@@ -340,3 +340,38 @@ GtkWidget *ui_spin_button_new ( GtkAdjustment *adjustment,
 	g_signal_connect ( spin, "icon-release", G_CALLBACK(ui_icon_clear_entry), GINT_TO_POINTER(GTK_ENTRY_ICON_PRIMARY) );
 	return spin;
 }
+
+/**
+ * ui_format_1f_cell_data_func:
+ *
+ * General purpose column double formatting
+ *
+ */
+void ui_format_1f_cell_data_func ( GtkTreeViewColumn *col,
+                                   GtkCellRenderer   *renderer,
+                                   GtkTreeModel      *model,
+                                   GtkTreeIter       *iter,
+                                   gpointer           user_data )
+{
+	gdouble value;
+	gchar buf[20];
+	gint column = GPOINTER_TO_INT (user_data);
+	gtk_tree_model_get ( model, iter, column, &value, -1 );
+	g_snprintf ( buf, sizeof(buf), "%.1f", value );
+	g_object_set ( renderer, "text", buf, NULL );
+}
+
+/**
+ * ui_new_column_text:
+ *
+ * Standard adding of a text column
+ *
+ */
+GtkTreeViewColumn *ui_new_column_text ( const gchar *title, GtkCellRenderer *renderer, GtkWidget *view, gint column_runner )
+{
+	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes ( title, renderer, "text", column_runner, NULL );
+	gtk_tree_view_column_set_sort_column_id ( column, column_runner );
+	gtk_tree_view_append_column ( GTK_TREE_VIEW(view), column );
+	gtk_tree_view_column_set_resizable ( column, TRUE );
+	return column;
+}
