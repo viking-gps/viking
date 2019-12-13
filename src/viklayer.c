@@ -468,7 +468,7 @@ gboolean vik_layer_selected ( VikLayer *l, gint subtype, gpointer sublayer, gint
   if ( vik_layer_interfaces[l->type]->layer_selected )
     return vik_layer_interfaces[l->type]->layer_selected ( l, subtype, sublayer, type, vlp );
   /* Since no 'layer_selected' function explicitly turn off here */
-  return vik_window_clear_highlight ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l) );
+  return vik_window_clear_selected ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l) );
 }
 
 void vik_layer_realize ( VikLayer *l, VikTreeview *vt, GtkTreeIter *layer_iter )

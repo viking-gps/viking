@@ -3417,7 +3417,7 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
 	    break;
 	  default:
 	    {
-              return vik_window_clear_highlight ( vw );
+              return vik_window_clear_selected ( vw );
 	    }
 	    break;
 	  }
@@ -3426,7 +3426,7 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
       break;
 
     default:
-      return vik_window_clear_highlight ( vw );
+      return vik_window_clear_selected ( vw );
       break;
     }
 }
@@ -4812,7 +4812,7 @@ gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, VikTrack *trk )
 	}
       }
       // Incase it was selected (no item delete signal ATM)
-      vik_window_clear_highlight ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+      (void)vik_window_clear_selected ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
     }
   }
   return was_visible;
@@ -4860,7 +4860,7 @@ gboolean vik_trw_layer_delete_route ( VikTrwLayer *vtl, VikTrack *trk )
         }
       }
       // Incase it was selected (no item delete signal ATM)
-      vik_window_clear_highlight ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+      (void)vik_window_clear_selected ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
     }
   }
   return was_visible;
@@ -4908,7 +4908,7 @@ static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp )
 	}
       }
       // Incase it was selected (no item delete signal ATM)
-      vik_window_clear_highlight ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+      (void)vik_window_clear_selected ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
     }
 
   }

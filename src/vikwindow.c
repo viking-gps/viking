@@ -926,7 +926,7 @@ static void vik_window_init ( VikWindow *vw )
   // Own signals
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "updated_center", G_CALLBACK(center_changed_cb), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vlp), "update", G_CALLBACK(draw_update), vw);
-  g_signal_connect_swapped (G_OBJECT(vw->viking_vlp), "delete_layer", G_CALLBACK(vik_window_clear_highlight), vw);
+  g_signal_connect_swapped (G_OBJECT(vw->viking_vlp), "delete_layer", G_CALLBACK(vik_window_clear_selected), vw);
 
   // Signals from GTK
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "expose_event", G_CALLBACK(draw_sync), vw);
@@ -2508,7 +2508,7 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
             VIK_LAYER(vik_treeview_item_get_pointer ( vtv, &iter ))->type == VIK_LAYER_TRW ) {
    
             vik_treeview_item_unselect ( vtv, &iter );
-            if ( vik_window_clear_highlight ( t->vw ) )
+            if ( vik_window_clear_selected ( t->vw ) )
               draw_update ( t->vw );
           }
         }
@@ -5388,7 +5388,7 @@ void vik_window_set_selected_waypoint ( VikWindow *vw, gpointer *vwp, gpointer v
   vw->selected_waypoints = NULL;
 }
 
-gboolean vik_window_clear_highlight ( VikWindow *vw )
+gboolean vik_window_clear_selected ( VikWindow *vw )
 {
   gboolean need_redraw = FALSE;
   vw->containing_vtl = NULL;
