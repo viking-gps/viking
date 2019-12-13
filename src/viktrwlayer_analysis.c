@@ -289,25 +289,27 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 	}
 
 	// Check for potential date range
-	// Test if the same day by comparing the date string of the timestamp
-	GDate* gdate_start = g_date_new ();
-	g_date_set_time_t ( gdate_start, (time_t)ts.start_time );
-	gchar time_start[32];
-	g_date_strftime ( time_start, sizeof(time_start), "%x", gdate_start );
-	g_date_free ( gdate_start );
+	if ( !isnan(ts.start_time) && !isnan(ts.end_time) ) {
+		GDate* gdate_start = g_date_new ();
+		g_date_set_time_t ( gdate_start, (time_t)ts.start_time );
+		gchar time_start[32];
+		g_date_strftime ( time_start, sizeof(time_start), "%x", gdate_start );
+		g_date_free ( gdate_start );
 
-	GDate* gdate_end = g_date_new ();
-	g_date_set_time_t ( gdate_end, (time_t)ts.end_time );
-	gchar time_end[32];
-	g_date_strftime ( time_end, sizeof(time_end), "%x", gdate_end );
-	g_date_free ( gdate_end );
+		GDate* gdate_end = g_date_new ();
+		g_date_set_time_t ( gdate_end, (time_t)ts.end_time );
+		gchar time_end[32];
+		g_date_strftime ( time_end, sizeof(time_end), "%x", gdate_end );
+		g_date_free ( gdate_end );
 
-	if ( ts.start_time == ts.end_time )
+		// Test if the same day by comparing the date string of the timestamp
+		if ( strncmp(time_start, time_end, 32) )
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), "%s --> %s", time_start, time_end );
+		else
+			g_snprintf ( tmp_buf, sizeof(tmp_buf), "%s", time_start );
+	} else {
 		g_snprintf ( tmp_buf, sizeof(tmp_buf), _("No Data") );
-	else if ( strncmp(time_start, time_end, 32) )
-		g_snprintf ( tmp_buf, sizeof(tmp_buf), "%s --> %s", time_start, time_end );
-	else
-		g_snprintf ( tmp_buf, sizeof(tmp_buf), "%s", time_start );
+	}
 
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 
