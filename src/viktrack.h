@@ -116,7 +116,7 @@ VikTrackpoint *vik_trackpoint_new();
 void vik_trackpoint_free(VikTrackpoint *tp);
 VikTrackpoint *vik_trackpoint_copy(VikTrackpoint *tp);
 void vik_trackpoint_set_name(VikTrackpoint *tp, const gchar *name);
-void vik_trackpoint_apply_dem_data(VikTrackpoint *tp);
+gboolean vik_trackpoint_apply_dem_data(VikTrackpoint *tp);
 
 void vik_track_add_trackpoint(VikTrack *tr, VikTrackpoint *tp, gboolean recalculate);
 gdouble vik_track_get_length_to_trackpoint (const VikTrack *tr, const VikTrackpoint *tp);

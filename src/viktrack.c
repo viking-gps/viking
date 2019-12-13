@@ -1803,7 +1803,7 @@ gulong vik_track_apply_dem_data ( VikTrack *tr, gboolean skip_existing )
  * Apply DEM data (if available) to the trackpoint
  * NB This will overwrite whatever was in the trackpoint before
  */
-void vik_trackpoint_apply_dem_data ( VikTrackpoint *tp )
+gboolean vik_trackpoint_apply_dem_data ( VikTrackpoint *tp )
 {
   if ( tp ) {
     gint16 elev = a_dems_get_elev_by_coord ( &(tp->coord), VIK_DEM_INTERPOL_BEST );
