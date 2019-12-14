@@ -9002,6 +9002,7 @@ static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *eve
     if ( t->is_waypoint ) {
       // Update waypoint position
       vtl->current_wp->coord = new_coord;
+      (void)vik_waypoint_apply_dem_data ( vtl->current_wp, FALSE );
       trw_layer_calculate_bounds_waypoints ( vtl );
       // Reset waypoint pointer
       vtl->current_wp    = NULL;
@@ -9010,6 +9011,7 @@ static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *eve
     else {
       if ( vtl->current_tpl ) {
         VIK_TRACKPOINT(vtl->current_tpl->data)->coord = new_coord;
+        (void)vik_trackpoint_apply_dem_data ( VIK_TRACKPOINT(vtl->current_tpl->data) );
 
         if ( vtl->current_tp_track )
           vik_track_calculate_bounds ( vtl->current_tp_track );
