@@ -72,35 +72,8 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 		values[i] = '\0';
 	}
 
-	gchar *speed_units_str = NULL;
 	vik_units_speed_t speed_units = a_vik_get_units_speed ();
-	switch (speed_units) {
-	case VIK_UNITS_SPEED_MILES_PER_HOUR:
-		speed_units_str = g_strdup ( _("mph") );
-		break;
-	case VIK_UNITS_SPEED_METRES_PER_SECOND:
-		speed_units_str = g_strdup ( _("m/s") );
-		break;
-	case VIK_UNITS_SPEED_KNOTS:
-		speed_units_str = g_strdup ( _("knots") );
-		break;
-	case VIK_UNITS_SPEED_SECONDS_PER_KM:
-		speed_units_str = g_strdup ( _("s/km") );
-		break;
-	case VIK_UNITS_SPEED_MINUTES_PER_KM:
-		speed_units_str = g_strdup ( _("min/km") );
-		break;
-	case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-		speed_units_str = g_strdup ( _("sec/mi") );
-		break;
-	case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-		speed_units_str = g_strdup ( _("min/mi") );
-		break;
-	default:
-		// VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-		speed_units_str = g_strdup ( _("km/h") );
-		break;
-	}
+	gchar *speed_units_str = vu_speed_units_text ( speed_units );
 
 	gchar *separator = g_strdup ( " | " );
 
@@ -130,34 +103,7 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 				speed = trkpt->speed;
 				speedtype = g_strdup ( "" );
 			}
-			switch (speed_units) {
-			case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-				speed = VIK_MPS_TO_KPH(speed);
-				break;
-			case VIK_UNITS_SPEED_MILES_PER_HOUR:
-				speed = VIK_MPS_TO_MPH(speed);
-				break;
-			case VIK_UNITS_SPEED_KNOTS:
-				speed = VIK_MPS_TO_KNOTS(speed);
-				break;
-			case VIK_UNITS_SPEED_SECONDS_PER_KM:
-				speed = VIK_MPS_TO_PACE_SPK(speed);
-				break;
-			case VIK_UNITS_SPEED_MINUTES_PER_KM:
-				speed = VIK_MPS_TO_PACE_MPK(speed);
-				break;
-			case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-				speed = VIK_MPS_TO_PACE_SPM(speed);
-				break;
-			case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-				speed = VIK_MPS_TO_PACE_SPK(speed);
-				break;
-			default:
-				// VIK_UNITS_SPEED_METRES_PER_SECOND:
-				// Already in m/s so nothing to do
-				break;
-			}
-
+			speed = vu_speed_convert ( speed_units, speed );
 			values[i] = g_strdup_printf ( _("%sSpeed%s %.1f%s"), separator, speedtype, speed, speed_units_str );
 			g_free ( speedtype );
 			break;
@@ -184,33 +130,7 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 				speed = climb;
 				speedtype = g_strdup ( "" );
 			}
-			switch (speed_units) {
-			case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-				speed = VIK_MPS_TO_KPH(speed);
-				break;
-			case VIK_UNITS_SPEED_MILES_PER_HOUR:
-				speed = VIK_MPS_TO_MPH(speed);
-				break;
-			case VIK_UNITS_SPEED_KNOTS:
-				speed = VIK_MPS_TO_KNOTS(speed);
-				break;
-			case VIK_UNITS_SPEED_SECONDS_PER_KM:
-				speed = VIK_MPS_TO_PACE_SPK(speed);
-				break;
-			case VIK_UNITS_SPEED_MINUTES_PER_KM:
-				speed = VIK_MPS_TO_PACE_MPK(speed);
-				break;
-			case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-				speed = VIK_MPS_TO_PACE_SPM(speed);
-				break;
-			case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-				speed = VIK_MPS_TO_PACE_SPK(speed);
-				break;
-			default:
-				// VIK_UNITS_SPEED_METRES_PER_SECOND:
-				// Already in m/s so nothing to do
-				break;
-			}
+			speed = vu_speed_convert ( speed_units, speed );
 			// Go for 2dp as expect low values for vertical speeds
 			values[i] = g_strdup_printf ( _("%sClimb%s %.2f%s"), separator, speedtype, speed, speed_units_str );
 			g_free ( speedtype );
@@ -1049,6 +969,75 @@ GtkWidget* vu_menu_add_item ( const GtkMenu *menu,
 }
 
 /**
+ * vu_speed_convert:
+ *
+ * Convert the speed from m/s into the specified units
+ */
+gdouble vu_speed_convert ( vik_units_speed_t speed_units, gdouble speed )
+{
+	gdouble my_speed = speed;
+	switch (speed_units) {
+	case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR: my_speed = VIK_MPS_TO_KPH(speed); break;
+	case VIK_UNITS_SPEED_MILES_PER_HOUR:      my_speed = VIK_MPS_TO_MPH(speed); break;
+	case VIK_UNITS_SPEED_KNOTS:               my_speed = VIK_MPS_TO_KNOTS(speed); break;
+	case VIK_UNITS_SPEED_SECONDS_PER_KM:      my_speed = VIK_MPS_TO_PACE_SPK(speed); break;
+	case VIK_UNITS_SPEED_MINUTES_PER_KM:      my_speed = VIK_MPS_TO_PACE_MPK(speed); break;
+	case VIK_UNITS_SPEED_SECONDS_PER_MILE:    my_speed = VIK_MPS_TO_PACE_SPM(speed); break;
+	case VIK_UNITS_SPEED_MINUTES_PER_MILE:    my_speed = VIK_MPS_TO_PACE_MPM(speed); break;
+	default: break; // VIK_UNITS_SPEED_METRES_PER_SECOND:
+	}
+	return my_speed;
+}
+
+/**
+ * vu_speed_units_text:
+ *
+ * Free the returned string after use
+ */
+gchar* vu_speed_units_text ( vik_units_speed_t speed_units )
+{
+	gchar *speed_units_str = NULL;
+	switch ( speed_units ) {
+	case VIK_UNITS_SPEED_MILES_PER_HOUR:    speed_units_str = g_strdup ( _("mph") ); break;
+	case VIK_UNITS_SPEED_METRES_PER_SECOND:	speed_units_str = g_strdup ( _("m/s") ); break;
+	case VIK_UNITS_SPEED_KNOTS:             speed_units_str = g_strdup ( _("knots") ); break;
+	case VIK_UNITS_SPEED_SECONDS_PER_KM:    speed_units_str = g_strdup ( _("s/km") ); break;
+	case VIK_UNITS_SPEED_MINUTES_PER_KM:    speed_units_str = g_strdup ( _("min/km") );	break;
+	case VIK_UNITS_SPEED_SECONDS_PER_MILE:  speed_units_str = g_strdup ( _("sec/mi") ); break;
+	case VIK_UNITS_SPEED_MINUTES_PER_MILE:  speed_units_str = g_strdup ( _("min/mi") );	break;
+		// VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
+	default:                                speed_units_str = g_strdup ( _("km/h") ); break;
+	}
+	return speed_units_str;
+}
+
+/**
+ * Commonal text for just the speed value
+ */
+void vu_speed_text_value ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gchar *format )
+{
+	switch (speed_units) {
+	case VIK_UNITS_SPEED_MINUTES_PER_KM: // Fall through
+	case VIK_UNITS_SPEED_MINUTES_PER_MILE: {
+		// Mins per dist values -> prefer mins:secs output rather than decimal minutes
+		// NB Thus the input format function parameter is ignored for these
+		gint mins = (gint)speed;
+		gdouble secs = (speed - (gdouble)mins) * 60.0;
+		gint isecs = (gint)round(secs);
+		if ( isecs == 60 ) {
+			isecs = 0;
+			mins++;
+		}
+		g_snprintf ( buf, size, "%d:%02d", mins, isecs );
+		break;
+	};
+	default:
+		g_snprintf ( buf, size, format, speed );
+		break;
+	}
+}
+
+/**
  * Commonal text for a speed readout
  */
 void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gboolean convert, gchar *format )
@@ -1059,53 +1048,19 @@ void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdou
 	}
 
 	gdouble my_speed = speed;
-	if ( convert ) {
-		switch (speed_units) {
-		case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR: my_speed = VIK_MPS_TO_KPH(speed); break;
-		case VIK_UNITS_SPEED_MILES_PER_HOUR:      my_speed = VIK_MPS_TO_MPH(speed); break;
-		case VIK_UNITS_SPEED_KNOTS:               my_speed = VIK_MPS_TO_KNOTS(speed); break;
-		case VIK_UNITS_SPEED_SECONDS_PER_KM:      my_speed = VIK_MPS_TO_PACE_SPK(speed); break;
-		case VIK_UNITS_SPEED_MINUTES_PER_KM:      my_speed = VIK_MPS_TO_PACE_MPK(speed); break;
-		case VIK_UNITS_SPEED_SECONDS_PER_MILE:    my_speed = VIK_MPS_TO_PACE_SPM(speed); break;
-		case VIK_UNITS_SPEED_MINUTES_PER_MILE:    my_speed = VIK_MPS_TO_PACE_MPM(speed); break;
-		default: break; // VIK_UNITS_SPEED_METRES_PER_SECOND:
-		}
-	}
+	if ( convert )
+		my_speed = vu_speed_convert ( speed_units, speed );
 
-	gchar *speed_units_str = NULL;
-	switch (speed_units) {
-	case VIK_UNITS_SPEED_MILES_PER_HOUR: speed_units_str = _("mph"); break;
-	case VIK_UNITS_SPEED_KNOTS:	speed_units_str = _("knots"); break;
-	case VIK_UNITS_SPEED_SECONDS_PER_KM: speed_units_str = _("s/km"); break;
-	case VIK_UNITS_SPEED_MINUTES_PER_KM: speed_units_str = _("min/km"); break;
-	case VIK_UNITS_SPEED_SECONDS_PER_MILE: speed_units_str = _("sec/mi"); break;
-	case VIK_UNITS_SPEED_MINUTES_PER_MILE: speed_units_str = _("min/mi");	break;
-	case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR: speed_units_str = _("km/h" ); break;
-	default: speed_units_str = _("m/s"); break; // VIK_UNITS_SPEED_METRES_PER_SECOND:
-	}
+	gchar *speed_units_str = vu_speed_units_text ( speed_units );
 
-	switch (speed_units) {
-	case VIK_UNITS_SPEED_MINUTES_PER_KM: // Fall through
-	case VIK_UNITS_SPEED_MINUTES_PER_MILE: {
-		// Mins per dist values -> prefer mins:secs output rather than decimal minutes
-		// NB Thus the input format function parameter is ignored for these
-		gint mins = (gint)my_speed;
-		gdouble secs = (my_speed - (gdouble)mins) * 60.0;
-		gint isecs = (gint)round(secs);
-		if ( isecs == 60 ) {
-			isecs = 0;
-			mins++;
-		}
-		g_snprintf ( buf, size, "%d:%02d %s", mins, isecs, speed_units_str );
-		break;
-	};
-	default: {
-		gchar *full_str = g_strdup_printf ( "%s %s", format, speed_units_str );
-		g_snprintf ( buf, size, full_str, my_speed );
-		g_free ( full_str );
-		break;
-	}
-	}
+    gchar tbuf[16];
+	vu_speed_text_value ( tbuf, sizeof(tbuf), speed_units, my_speed, format );
+
+	gchar *full_str = g_strdup_printf ( "%s %s", tbuf, speed_units_str );
+	g_snprintf ( buf, size, full_str, my_speed );
+	g_free ( full_str );
+
+	g_free ( speed_units_str );
 }
 
 // The last used directories

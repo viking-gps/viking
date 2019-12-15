@@ -59,6 +59,10 @@ GtkWidget* vu_menu_add_item ( const GtkMenu *menu,
                               const GCallback callback,
                               const gpointer user_data );
 
+gchar* vu_speed_units_text ( vik_units_speed_t speed_units );
+gdouble vu_speed_convert ( vik_units_speed_t speed_units, gdouble speed );
+void vu_speed_text_value ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gchar *format );
+
 void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gboolean convert, gchar *format );
 
 GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external );

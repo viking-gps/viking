@@ -359,87 +359,15 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 	} else
 		cnt++;
 
-	// I'm sure this could be cleaner...
+	vik_units_speed_t speed_units = a_vik_get_units_speed ();
 	g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-	switch (a_vik_get_units_speed()) {
-	case VIK_UNITS_SPEED_MILES_PER_HOUR:
-		if ( ts.max_speed > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f mph"), (double)VIK_MPS_TO_MPH(ts.max_speed) );
-		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
-		if ( ts.duration > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), ("%.1f mph"), (double)VIK_MPS_TO_MPH(ts.length/ts.duration) );
-		else
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-		break;
-	case VIK_UNITS_SPEED_METRES_PER_SECOND:
-		if ( ts.max_speed > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.2f m/s"), (double)ts.max_speed );
-		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
-		if ( ts.duration > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), ("%.2f m/s"), (double)(ts.length/ts.duration) );
-		else
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-		break;
-	case VIK_UNITS_SPEED_KNOTS:
-		if ( ts.max_speed > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.2f knots"), (double)VIK_MPS_TO_KNOTS(ts.max_speed) );
-		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
-		if ( ts.duration > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.2f knots"), (double)VIK_MPS_TO_KNOTS(ts.length/ts.duration) );
-		else
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-		break;
-	case VIK_UNITS_SPEED_SECONDS_PER_KM:
-		if ( ts.max_speed > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d s/km"), (int)VIK_MPS_TO_PACE_SPK(ts.max_speed) );
-		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
-		if ( ts.duration > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d s/km"), (int)VIK_MPS_TO_PACE_SPK(ts.length/ts.duration) );
-		else
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-		break;
+	if ( ts.max_speed > 0 )
+		vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, ts.max_speed, TRUE, "%.1f" );
+	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 
-	case VIK_UNITS_SPEED_MINUTES_PER_KM:
-		if ( ts.max_speed > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f min/km"), (double)VIK_MPS_TO_PACE_MPK(ts.max_speed) );
-		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
-		if ( ts.duration > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f min/km"), (double)VIK_MPS_TO_PACE_MPK(ts.length/ts.duration) );
-		else
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-		break;
-
-	case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-		if ( ts.max_speed > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d sec/mi"), (int)VIK_MPS_TO_PACE_SPM(ts.max_speed) );
-		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
-		if ( ts.duration > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d sec/mi"), (int)VIK_MPS_TO_PACE_SPM(ts.length/ts.duration) );
-		else
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-		break;
-
-	case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-		if ( ts.max_speed > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f min/mi"), (double)VIK_MPS_TO_PACE_MPM(ts.max_speed) );
-		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
-		if ( ts.duration > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.1f min/mi"), (double)VIK_MPS_TO_PACE_MPM(ts.length/ts.duration) );
-		else
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-		break;
-
-	default:
-		//VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-		if ( ts.max_speed > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.2f km/h"), (double)VIK_MPS_TO_KPH(ts.max_speed) );
-		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
-		if ( ts.duration > 0 )
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%.2f km/h"), (double)VIK_MPS_TO_KPH(ts.length/ts.duration) );
-		else
-			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-		break;
-	}
+	g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
+	if ( ts.duration > 0 )
+		vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, ts.length/ts.duration, TRUE, "%.1f" );
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 
 	switch ( a_vik_get_units_height() ) {

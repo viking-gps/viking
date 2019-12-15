@@ -444,31 +444,10 @@ static void trw_layer_track_list_add ( vik_trw_and_track_t *vtt,
 	gdouble max_alt = 0.0;
 
 	av_speed = vik_track_get_average_speed ( trk );
-	switch (speed_units) {
-	case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR: av_speed = VIK_MPS_TO_KPH(av_speed); break;
-	case VIK_UNITS_SPEED_MILES_PER_HOUR:      av_speed = VIK_MPS_TO_MPH(av_speed); break;
-	case VIK_UNITS_SPEED_KNOTS:               av_speed = VIK_MPS_TO_KNOTS(av_speed); break;
-	case VIK_UNITS_SPEED_SECONDS_PER_KM:      av_speed = VIK_MPS_TO_PACE_SPK(av_speed); break;
-	case VIK_UNITS_SPEED_MINUTES_PER_KM:      av_speed = VIK_MPS_TO_PACE_MPK(av_speed); break;
-	case VIK_UNITS_SPEED_SECONDS_PER_MILE:    av_speed = VIK_MPS_TO_PACE_SPM(av_speed); break;
-	case VIK_UNITS_SPEED_MINUTES_PER_MILE:    av_speed = VIK_MPS_TO_PACE_MPM(av_speed); break;
-
-	default: // VIK_UNITS_SPEED_METRES_PER_SECOND therefore no change
-		break;
-	}
+	av_speed = vu_speed_convert ( speed_units, av_speed );
 
 	max_speed = vik_track_get_max_speed ( trk );
-	switch (speed_units) {
-	case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR: max_speed = VIK_MPS_TO_KPH(max_speed); break;
-	case VIK_UNITS_SPEED_MILES_PER_HOUR:      max_speed = VIK_MPS_TO_MPH(max_speed); break;
-	case VIK_UNITS_SPEED_KNOTS:               max_speed = VIK_MPS_TO_KNOTS(max_speed); break;
-	case VIK_UNITS_SPEED_SECONDS_PER_KM:      max_speed = VIK_MPS_TO_PACE_SPK(max_speed); break;
-	case VIK_UNITS_SPEED_MINUTES_PER_KM:      max_speed = VIK_MPS_TO_PACE_MPK(max_speed); break;
-	case VIK_UNITS_SPEED_SECONDS_PER_MILE:    max_speed = VIK_MPS_TO_PACE_SPM(max_speed); break;
-	case VIK_UNITS_SPEED_MINUTES_PER_MILE:    max_speed = VIK_MPS_TO_PACE_MPM(max_speed); break;
-	default: // VIK_UNITS_SPEED_METRES_PER_SECOND therefore no change
-		break;
-	}
+	max_speed = vu_speed_convert ( speed_units, max_speed );
 
 	// TODO - make this a function to get min / max values?
 	gdouble *altitudes = NULL;
@@ -619,18 +598,7 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	if ( !is_only_routes ) {
 		(void)ui_new_column_text ( _("Length\n(minutes)"), renderer, view, column_runner++ );
 
-		gchar *spd_units = NULL;
-		switch (speed_units) {
-		case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR: spd_units = g_strdup (_("km/h")); break;
-		case VIK_UNITS_SPEED_MILES_PER_HOUR:      spd_units = g_strdup (_("mph")); break;
-		case VIK_UNITS_SPEED_KNOTS:               spd_units = g_strdup (_("knots")); break;
-		case VIK_UNITS_SPEED_SECONDS_PER_KM:      spd_units = g_strdup (_("s/km")); break;
-		case VIK_UNITS_SPEED_MINUTES_PER_KM:      spd_units = g_strdup (_("min/km")); break;
-		case VIK_UNITS_SPEED_SECONDS_PER_MILE:    spd_units = g_strdup (_("sec/mi")); break;
-		case VIK_UNITS_SPEED_MINUTES_PER_MILE:    spd_units = g_strdup (_("min/mi")); break;
-		// VIK_UNITS_SPEED_METRES_PER_SECOND:
-		default:                                  spd_units = g_strdup (_("m/s")); break;
-		}
+		gchar *spd_units = vu_speed_units_text ( speed_units );
 
 		gchar *title = g_strdup_printf ( _("Av. Speed\n(%s)"), spd_units );
 		column = ui_new_column_text ( title, renderer, view, column_runner++ );

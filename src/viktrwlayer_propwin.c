@@ -1744,46 +1744,8 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
 
   // Convert into appropriate units
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
-  switch (speed_units) {
-  case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds[i] = VIK_MPS_TO_KPH(widgets->speeds[i]);
-    }
-    break;
-  case VIK_UNITS_SPEED_MILES_PER_HOUR:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds[i] = VIK_MPS_TO_MPH(widgets->speeds[i]);
-    }
-    break;
-  case VIK_UNITS_SPEED_KNOTS:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds[i] = VIK_MPS_TO_KNOTS(widgets->speeds[i]);
-    }
-    break;
-  case VIK_UNITS_SPEED_SECONDS_PER_KM:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds[i] = VIK_MPS_TO_PACE_SPK(widgets->speeds[i]);
-    }
-  break;
-  case VIK_UNITS_SPEED_MINUTES_PER_KM:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds[i] = VIK_MPS_TO_PACE_MPK(widgets->speeds[i]);
-    }
-  break;
-  case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds[i] = VIK_MPS_TO_PACE_SPM(widgets->speeds[i]);
-    }
-  break;
-  case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds[i] = VIK_MPS_TO_PACE_MPM(widgets->speeds[i]);
-    }
-  break;
-  default:
-    // VIK_UNITS_SPEED_METRES_PER_SECOND:
-    // No need to convert as already in m/s
-    break;
+  for ( i = 0; i < widgets->profile_width; i++ ) {
+    widgets->speeds[i] = vu_speed_convert ( speed_units, widgets->speeds[i] );
   }
 
   GtkWidget *window = gtk_widget_get_toplevel (widgets->speed_box);
@@ -1865,33 +1827,9 @@ static void draw_vt ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
       gdouble gps_speed = VIK_TRACKPOINT(iter->data)->speed;
       if (isnan(gps_speed))
         continue;
-      switch (speed_units) {
-      case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-	gps_speed = VIK_MPS_TO_KPH(gps_speed);
-	break;
-      case VIK_UNITS_SPEED_MILES_PER_HOUR:
-	gps_speed = VIK_MPS_TO_MPH(gps_speed);
-	break;
-      case VIK_UNITS_SPEED_KNOTS:
-	gps_speed = VIK_MPS_TO_KNOTS(gps_speed);
-	break;
-      case VIK_UNITS_SPEED_SECONDS_PER_KM:
-	gps_speed = VIK_MPS_TO_PACE_SPK(gps_speed);
-	break;
-      case VIK_UNITS_SPEED_MINUTES_PER_KM:
-	gps_speed = VIK_MPS_TO_PACE_MPK(gps_speed);
-	break;
-      case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-	gps_speed = VIK_MPS_TO_PACE_SPM(gps_speed);
-	break;
-      case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-	gps_speed = VIK_MPS_TO_PACE_MPM(gps_speed);
-	break;
-      default:
-	// VIK_UNITS_SPEED_METRES_PER_SECOND:
-	// No need to convert as already in m/s
-	break;
-      }
+
+      gps_speed = vu_speed_convert ( speed_units, gps_speed );
+
       int x = MARGIN_X + widgets->profile_width * (VIK_TRACKPOINT(iter->data)->timestamp - beg_time) / dur;
       int y = height - widgets->profile_height*(gps_speed - mins)/(chunkss[widgets->cis]*LINES);
       gdk_draw_rectangle(GDK_DRAWABLE(pix), gps_speed_gc, TRUE, x-2, y-2, 4, 4);
@@ -2175,47 +2113,8 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
 
   // Convert into appropriate units
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
-  switch (speed_units) {
-  case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds_dist[i] = VIK_MPS_TO_KPH(widgets->speeds_dist[i]);
-    }
-    break;
-  case VIK_UNITS_SPEED_MILES_PER_HOUR:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds_dist[i] = VIK_MPS_TO_MPH(widgets->speeds_dist[i]);
-    }
-    break;
-  case VIK_UNITS_SPEED_KNOTS:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds_dist[i] = VIK_MPS_TO_KNOTS(widgets->speeds_dist[i]);
-    }
-    break;
-  case VIK_UNITS_SPEED_SECONDS_PER_KM:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds_dist[i] = VIK_MPS_TO_PACE_SPK(widgets->speeds_dist[i]);
-    }
-    break;
-  case VIK_UNITS_SPEED_MINUTES_PER_KM:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds_dist[i] = VIK_MPS_TO_PACE_MPK(widgets->speeds_dist[i]);
-    }
-    break;
-  case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds_dist[i] = VIK_MPS_TO_PACE_SPM(widgets->speeds_dist[i]);
-    }
-    break;
-  case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-    for ( i = 0; i < widgets->profile_width; i++ ) {
-      widgets->speeds_dist[i] = VIK_MPS_TO_PACE_MPM(widgets->speeds_dist[i]);
-    }
-    break;
-
-  default:
-    // VIK_UNITS_SPEED_METRES_PER_SECOND:
-    // No need to convert as already in m/s
-    break;
+  for ( i = 0; i < widgets->profile_width; i++ ) {
+    widgets->speeds_dist[i] = vu_speed_convert ( speed_units, widgets->speeds_dist[i] );
   }
 
   GtkWidget *window = gtk_widget_get_toplevel (widgets->speed_dist_box);
@@ -2299,33 +2198,9 @@ static void draw_sd ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets)
       gdouble gps_speed = VIK_TRACKPOINT(iter->data)->speed;
       if (isnan(gps_speed))
         continue;
-      switch (speed_units) {
-      case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
-	gps_speed = VIK_MPS_TO_KPH(gps_speed);
-	break;
-      case VIK_UNITS_SPEED_MILES_PER_HOUR:
-	gps_speed = VIK_MPS_TO_MPH(gps_speed);
-	break;
-      case VIK_UNITS_SPEED_KNOTS:
-	gps_speed = VIK_MPS_TO_KNOTS(gps_speed);
-	break;
-      case VIK_UNITS_SPEED_SECONDS_PER_KM:
-	gps_speed = VIK_MPS_TO_PACE_SPK(gps_speed);
-	break;
-      case VIK_UNITS_SPEED_MINUTES_PER_KM:
-	gps_speed = VIK_MPS_TO_PACE_MPK(gps_speed);
-	break;
-      case VIK_UNITS_SPEED_SECONDS_PER_MILE:
-	gps_speed = VIK_MPS_TO_PACE_SPM(gps_speed);
-	break;
-      case VIK_UNITS_SPEED_MINUTES_PER_MILE:
-	gps_speed = VIK_MPS_TO_PACE_MPM(gps_speed);
-	break;
-      default:
-	// VIK_UNITS_SPEED_METRES_PER_SECOND:
-	// No need to convert as already in m/s
-	break;
-      }
+
+      gps_speed = vu_speed_convert ( speed_units, gps_speed );
+
       dist_tp += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord), &(VIK_TRACKPOINT(iter->prev->data)->coord) );
       int x = MARGIN_X + (widgets->profile_width * dist_tp / dist);
       int y = height - widgets->profile_height*(gps_speed - mins)/(chunkss[widgets->cisd]*LINES);
