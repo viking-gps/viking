@@ -2969,29 +2969,114 @@ static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[])
   return GTK_WIDGET (table);
 }
 
-static GtkWidget* split_header_cell ( gchar *text )
+#define SPLIT_COLS 5
+
+static void splits_copy_all ( GtkWidget *tree_view )
 {
-  GtkWidget *hd = gtk_label_new ( NULL );
-  gchar *str = g_strdup_printf ("<b>%s</b>", text);
-  gtk_label_set_markup ( GTK_LABEL(hd), str );
-  g_free ( str );
-  return hd;
+  GString *str = g_string_new ( NULL );
+  gchar sep = '\t';
+
+  // Get info from the GTK store
+  //  using this way gets the items in the ordered by the user
+  GtkTreeModel *model = gtk_tree_view_get_model ( GTK_TREE_VIEW(tree_view) );
+  GtkTreeIter iter;
+  if ( !gtk_tree_model_get_iter_first(model, &iter) )
+    return;
+
+  vik_units_speed_t speed_units = a_vik_get_units_speed ();
+
+  gboolean cont = TRUE;
+  while ( cont ) {
+    gint ivalue;
+    gdouble dvalue;
+
+    gtk_tree_model_get ( model, &iter, 0, &dvalue, -1 );
+    g_string_append_printf ( str, "%.1f%c", dvalue, sep );
+
+    gtk_tree_model_get ( model, &iter, 1, &ivalue, -1 );
+    gint minutes, seconds;
+    minutes = ivalue / 60;
+    seconds = ivalue % 60;
+    g_string_append_printf ( str, "%d:%02d%c", minutes, seconds, sep );
+
+    // Speed value a little more involved:
+    gtk_tree_model_get ( model, &iter, 2, &dvalue, -1 );
+    gchar buf[16];
+    vu_speed_text_value ( buf, sizeof(buf), speed_units, dvalue, "%.1f" );
+    g_string_append_printf ( str, "%s%c", buf, sep );
+
+    gtk_tree_model_get ( model, &iter, 3, &ivalue, -1 );
+    g_string_append_printf ( str, "%d%c", ivalue, sep );
+
+    gtk_tree_model_get ( model, &iter, 4, &ivalue, -1 );
+    g_string_append_printf ( str, "%d%c", ivalue, sep );
+
+    g_string_append_printf ( str, "\n" );
+    cont = gtk_tree_model_iter_next ( model, &iter );
+  }
+
+  a_clipboard_copy ( VIK_CLIPBOARD_DATA_TEXT, 0, 0, 0, str->str, NULL );
+  g_string_free ( str, TRUE );
 }
 
-static void add_split_header_row ( GtkTable *table, gchar *s1, gchar *s2, gchar *s3, gchar *s4, guint row )
+static gboolean splits_menu_popup ( GtkWidget *tree_view,
+                                    GdkEventButton *event,
+                                    gpointer data )
 {
-  GtkWidget *hd1 = split_header_cell ( s1 );
-  GtkWidget *hd2 = split_header_cell ( s2 );
-  GtkWidget *hd3 = split_header_cell ( s3 );
-  GtkWidget *hd4 = split_header_cell ( s4 );
-  gtk_table_attach ( table, hd1, 0, 1, row, row+1, GTK_FILL, GTK_SHRINK, 10, 3 );
-  gtk_table_attach ( table, hd2, 1, 2, row, row+1, GTK_FILL, GTK_SHRINK, 10, 3 );
-  gtk_table_attach ( table, hd3, 2, 3, row, row+1, GTK_FILL, GTK_SHRINK, 10, 3 );
-  gtk_table_attach ( table, hd4, 3, 4, row, row+1, GTK_FILL, GTK_SHRINK, 10, 3 );
+  GtkWidget *menu = gtk_menu_new();
+  (void)vu_menu_add_item ( GTK_MENU(menu), _("_Copy Data"), GTK_STOCK_COPY, G_CALLBACK(splits_copy_all), tree_view );
+  gtk_widget_show_all ( menu );
+  gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+  return TRUE;
 }
 
-static GtkTable *create_a_split_table ( VikTrack *trk, guint split_factor )
+static gboolean splits_button_pressed ( GtkWidget *tree_view,
+                                        GdkEventButton *event,
+                                        gpointer data )
 {
+  // Only on right clicks...
+  if ( ! (event->type == GDK_BUTTON_PRESS && event->button == 3) )
+    return FALSE;
+  return splits_menu_popup ( tree_view, event, data );
+}
+
+static void format_time_cell_data_func ( GtkTreeViewColumn *col,
+                                         GtkCellRenderer   *renderer,
+                                         GtkTreeModel      *model,
+                                         GtkTreeIter       *iter,
+                                         gpointer           user_data )
+{
+  guint value;
+  gchar buf[32];
+  gint column = GPOINTER_TO_INT (user_data);
+  gtk_tree_model_get ( model, iter, column, &value, -1 );
+
+  gint minutes, seconds;
+  minutes = value / 60;
+  seconds = value % 60;
+  g_snprintf ( buf, sizeof(buf), "%d:%02d", minutes, seconds );
+
+  g_object_set ( renderer, "text", buf, NULL );
+}
+
+/**
+ * create_a_split_table:
+ *
+ * Create a table of the split values in a scrollable treeview,
+ *  which then allows sorting by each of the columns and a way to copy all the data
+ */
+static GtkWidget *create_a_split_table ( VikTrack *trk, guint split_factor )
+{
+  GtkWidget *scrolledwindow = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+
+  GtkTreeStore *store = gtk_tree_store_new ( SPLIT_COLS,
+                                             G_TYPE_DOUBLE,  // 0: Distance
+                                             G_TYPE_UINT,    // 1: Time
+                                             G_TYPE_DOUBLE,  // 2: Speed
+                                             G_TYPE_INT,     // 3: Gain
+                                             G_TYPE_INT ) ;  // 4: Loss
+
   vik_units_distance_t dist_units = a_vik_get_units_distance ();
   gdouble split_length;
   switch ( dist_units ) {
@@ -3006,18 +3091,12 @@ static GtkTable *create_a_split_table ( VikTrack *trk, guint split_factor )
   vik_units_height_t height_units = a_vik_get_units_height ();
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
 
-  GArray *ga = vik_track_speed_splits ( trk, split_length );
-  GtkTable *table = GTK_TABLE(gtk_table_new (ga->len, 4, FALSE));
-  gtk_table_set_col_spacings ( table, 0 );
+  GtkWidget *view = gtk_tree_view_new();
+  GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+  GtkTreeViewColumn *column;
+  gint column_runner = 0;
 
-  // Table headers
-  add_split_header_row ( table, _("Distance"), _("Time"), _("Speed"), _("Gain / Loss"), 0 );
-  gchar *hght_str = NULL;
-  if ( height_units == VIK_UNITS_HEIGHT_METRES )
-    hght_str = _("m");
-  else
-    hght_str = _("ft");
-
+  GString *str0 = g_string_new ( _("Distance") );
   gchar *dist_str = NULL;
   switch ( dist_units ) {
   case VIK_UNITS_DISTANCE_MILES:          dist_str = _("miles"); break;
@@ -3025,10 +3104,53 @@ static GtkTable *create_a_split_table ( VikTrack *trk, guint split_factor )
     // VIK_UNITS_DISTANCE_KILOMETRES
   default:                                dist_str = _("km"); break;
   }
-  // ATM speed value contains the units, so no need in the header
-  add_split_header_row ( table, dist_str, "", "", hght_str, 1 );
+  g_string_append_printf ( str0, "\n(%s)", dist_str );
 
-  gchar tmp_buf[50];
+  column = ui_new_column_text ( str0->str, renderer, view, column_runner++ );
+  gtk_tree_view_column_set_cell_data_func ( column, renderer, ui_format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL );
+  g_string_free ( str0, TRUE );
+
+  column = ui_new_column_text ( _("Time\n(m:ss)"), renderer, view, column_runner++ );
+  gtk_tree_view_column_set_cell_data_func ( column, renderer, format_time_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL );
+
+  gchar *speed_units_str = vu_speed_units_text ( speed_units );
+
+  GString *str1 = g_string_new ( _("Speed") );
+  g_string_append_printf ( str1, "\n(%s)", speed_units_str );
+  column = ui_new_column_text ( str1->str, renderer, view, column_runner++ );
+  gtk_tree_view_column_set_cell_data_func ( column, renderer, vu_format_speed_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL );
+  g_string_free ( str1, TRUE );
+  g_free ( speed_units_str );
+
+  gchar *hght_str = NULL;
+  if ( height_units == VIK_UNITS_HEIGHT_METRES )
+    hght_str = _("m");
+  else
+    hght_str = _("ft");
+
+  GString *str2 = g_string_new ( _("Gain") );
+  g_string_append_printf ( str2, "\n(%s)", hght_str );
+  (void)ui_new_column_text ( str2->str, renderer, view, column_runner++ );
+  g_string_free ( str2, TRUE );
+
+  GString *str3 = g_string_new ( _("Loss") );
+  g_string_append_printf ( str3, "\n(%s)", hght_str );
+  (void)ui_new_column_text ( str3->str, renderer, view, column_runner++ );
+  g_string_free ( str3, TRUE );
+
+  gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(store) );
+  gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_NONE );
+  gtk_tree_view_set_rules_hint ( GTK_TREE_VIEW(view), TRUE );
+
+  g_signal_connect ( view, "button-press-event", G_CALLBACK(splits_button_pressed), NULL );
+
+  gtk_container_add ( GTK_CONTAINER(scrolledwindow), view );
+
+  // Update the datastore
+
+  GArray *ga = vik_track_speed_splits ( trk, split_length );
+  GtkTreeIter t_iter;
+
   for ( guint gg = 0; gg < ga->len; gg++ ) {
     VikTrackSpeedSplits_t vtss = g_array_index ( ga, VikTrackSpeedSplits_t, gg );
 
@@ -3041,23 +3163,8 @@ static GtkTable *create_a_split_table ( VikTrack *trk, guint split_factor )
     default: // VIK_UNITS_DISTANCE_KILOMETRES:
       length = vtss.length/1000.0; break;
     }
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f", length);
-    GtkWidget *label1 = ui_label_new_selectable ( tmp_buf );
-    gtk_misc_set_alignment ( GTK_MISC(label1), 1, 0.5 );
 
-    gint minutes, seconds;
-    minutes = vtss.time / 60;
-    seconds = vtss.time % 60;
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%d:%02d", minutes, seconds );
-    GtkWidget *label2 = ui_label_new_selectable ( tmp_buf );
-    gtk_misc_set_alignment ( GTK_MISC(label2), 1, 0.5 );
-
-    if ( trk->is_route )
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "--" );
-    else
-      vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, vtss.speed, TRUE, "%.1f" );
-    GtkWidget *label3 = ui_label_new_selectable ( tmp_buf );
-    gtk_misc_set_alignment ( GTK_MISC(label3), 1, 0.5 );
+    gdouble my_speed = vu_speed_convert ( speed_units, vtss.speed );
 
     gdouble up, down;
     switch (height_units) {
@@ -3071,26 +3178,20 @@ static GtkTable *create_a_split_table ( VikTrack *trk, guint split_factor )
       down = vtss.elev_down;
       break;
     }
-    g_snprintf(tmp_buf, sizeof(tmp_buf), "%.0f / %.0f", up, down );
-    GtkWidget *label4 = ui_label_new_selectable ( tmp_buf );
 
-    gtk_table_attach ( table, label1, 0, 1, gg+2, gg+3, GTK_FILL, GTK_SHRINK, 10, 3 );
-    gtk_table_attach ( table, label2, 1, 2, gg+2, gg+3, GTK_FILL, GTK_SHRINK, 10, 3 );
-    gtk_table_attach ( table, label3, 2, 3, gg+2, gg+3, GTK_FILL, GTK_SHRINK, 10, 3 );
-    gtk_table_attach ( table, label4, 3, 4, gg+2, gg+3, GTK_FILL, GTK_SHRINK, 10, 3 );
+    gtk_tree_store_append ( store, &t_iter, NULL );
+    gtk_tree_store_set ( store, &t_iter,
+                         0, length,
+                         1, vtss.time,
+                         2, my_speed,
+                         3, (gint)round(up),
+                         4, (gint)round(down),
+                         -1 );
   }
 
   (void)g_array_free ( ga, TRUE );
 
-  return table;
-}
-
-static void add_table_to_hbox ( GtkWidget *hbox, GtkTable *table )
-{
-  GtkWidget *scrolledwindow = gtk_scrolled_window_new ( NULL, NULL );
-  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
-  gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_WIDGET(table) );
-  gtk_box_pack_start (GTK_BOX(hbox), GTK_WIDGET(scrolledwindow), FALSE, FALSE, 4);
+  return scrolledwindow;
 }
 
 static GtkWidget *create_splits_tables ( VikTrack *trk )
@@ -3114,11 +3215,9 @@ static GtkWidget *create_splits_tables ( VikTrack *trk )
   // Create the tables and stick in tabs
   GtkWidget *tabs = gtk_notebook_new();
   for ( int i = 0; i < G_N_ELEMENTS(index); i++ ) {
-    GtkTable *table = create_a_split_table ( trk, index[i] );
-    GtkWidget *hbox = gtk_hbox_new (TRUE, 2);
-    add_table_to_hbox ( hbox, table );
+    GtkWidget *table = create_a_split_table ( trk, index[i] );
     gchar *str = g_strdup_printf (_("Split %d"), index[i]);
-    gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), GTK_WIDGET(hbox), gtk_label_new(str) );
+    gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), GTK_WIDGET(table), gtk_label_new(str) );
     g_free ( str );
   }
 
