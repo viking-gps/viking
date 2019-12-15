@@ -2092,10 +2092,10 @@ GArray *vik_track_speed_splits (const VikTrack *tr, gdouble split_length )
 
       gdouble diff;
       len += vik_coord_diff ( &(tp2->coord), &(tp1->coord) );
-      time += ABS(tp2->timestamp - tp1->timestamp);
+      time += ABS(tp1->timestamp - tp2->timestamp);
 
       if ( !isnan(tp1->altitude) && !isnan(tp2->altitude) ) {
-        diff = tp2->altitude - tp1->altitude;
+        diff = tp1->altitude - tp2->altitude;
         if ( diff > 0 )
           up += diff;
         else
