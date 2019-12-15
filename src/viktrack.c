@@ -2080,6 +2080,7 @@ GArray *vik_track_speed_splits (const VikTrack *tr, gdouble split_length )
   gdouble len = 0.0;
   gdouble time = 0;
   gdouble up = 0.0, down = 0.0;
+  gdouble cur_len = 0.0;
 
   GList *iter = tr->trackpoints->next;
   while (iter) {
@@ -2118,7 +2119,8 @@ GArray *vik_track_speed_splits (const VikTrack *tr, gdouble split_length )
 
         VikTrackSpeedSplits_t vtss;
         // Remove the extra bit added by going over distance
-        vtss.length = vtss.length + len - over_dist;
+        cur_len = cur_len + len - over_dist;
+        vtss.length = cur_len;
         vtss.time = time - (tp1->timestamp - vtp->timestamp);
         vtss.speed = ABS((len-over_dist)/vtss.time);
         // Elevation change is only applied to one of them
@@ -2153,7 +2155,7 @@ GArray *vik_track_speed_splits (const VikTrack *tr, gdouble split_length )
   // Values for trackpoints in the final segment
   // Stick in whatever is left.
   VikTrackSpeedSplits_t vtss;
-  vtss.length = len;
+  vtss.length = cur_len + len;
   vtss.time = time;
   vtss.speed = time ? ABS(len/time) : 0;
   vtss.elev_up = up;
