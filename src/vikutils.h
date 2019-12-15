@@ -67,6 +67,12 @@ void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdou
 
 GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external );
 
+void vu_format_speed_cell_data_func ( GtkTreeViewColumn *col,
+                                      GtkCellRenderer   *renderer,
+                                      GtkTreeModel      *model,
+                                      GtkTreeIter       *iter,
+                                      gpointer           user_data );
+
 void vu_finish ( void );
 
 gchar* vu_get_last_folder_files_uri ();

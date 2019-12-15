@@ -1063,6 +1063,31 @@ void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdou
 	g_free ( speed_units_str );
 }
 
+// This is in vikutils due to speed units dependency
+// Unfortunatelty can't simply use the .1f format
+//  as want text for minutes per distance speed values
+void vu_format_speed_cell_data_func ( GtkTreeViewColumn *col,
+                                      GtkCellRenderer   *renderer,
+                                      GtkTreeModel      *model,
+                                      GtkTreeIter       *iter,
+                                      gpointer           user_data )
+{
+	// Seems a little unecessary to call this each time
+	// TODO determine a better way to pass this value around
+	//  (but then probably need to deal with lifecycle of memory allocation...)
+	vik_units_speed_t speed_units = a_vik_get_units_speed ();
+
+	gdouble value;
+	gchar buf[16];
+	gint column = GPOINTER_TO_INT (user_data);
+	gtk_tree_model_get ( model, iter, column, &value, -1 );
+
+	// NB cell value already in the appropriate units for display
+	vu_speed_text_value ( buf, sizeof(buf), speed_units, value, "%.1f" );
+
+	g_object_set ( renderer, "text", buf, NULL );
+}
+
 // The last used directories
 static gchar *last_folder_files_uri = NULL;
 

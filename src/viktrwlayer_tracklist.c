@@ -202,13 +202,19 @@ static void copy_selection (GtkTreeModel *model,
 {
 	copy_data_t *cd = (copy_data_t*) data;
 
+	vik_units_speed_t speed_units = a_vik_get_units_speed ();
+
 	gchar* layername; gtk_tree_model_get ( model, iter, 0, &layername, -1 );
 	gchar* name; gtk_tree_model_get ( model, iter, 1, &name, -1 );
 	gchar* date; gtk_tree_model_get ( model, iter, 2, &date, -1 );
 	gdouble d1; gtk_tree_model_get ( model, iter, 4, &d1, -1 );
 	guint d2; gtk_tree_model_get ( model, iter, 5, &d2, -1 );
 	gdouble d3; gtk_tree_model_get ( model, iter, 6, &d3, -1 );
+	gchar buf3[16];
+	vu_speed_text_value ( buf3, sizeof(buf3), speed_units, d3, "%.1f" );
 	gdouble d4; gtk_tree_model_get ( model, iter, 7, &d4, -1 );
+	gchar buf4[16];
+	vu_speed_text_value ( buf4, sizeof(buf4), speed_units, d4, "%.1f" );
 	gint d5; gtk_tree_model_get ( model, iter, 8, &d5, -1 );
 	gchar sep = '\t'; // Could make this configurable - but simply always make it a tab character for now
 	// NB Even if the columns have been reordered - this copies it out only in the original default order
@@ -217,12 +223,12 @@ static void copy_selection (GtkTreeModel *model,
 		if ( cd->is_only_routes )
 			g_string_append_printf ( cd->str, "%s%c%s%c%.1f%c%d\n", layername, sep, name, sep, d1, sep, d5 );
 		else
-			g_string_append_printf ( cd->str, "%s%c%s%c%s%c%.1f%c%d%c%.1f%c%.1f%c%d\n", layername, sep, name, sep, date, sep, d1, sep, d2, sep, d3, sep, d4, sep, d5 );
+			g_string_append_printf ( cd->str, "%s%c%s%c%s%c%.1f%c%d%c%s%c%s%c%d\n", layername, sep, name, sep, date, sep, d1, sep, d2, sep, buf3, sep, buf4, sep, d5 );
 	} else {
 		if ( cd->is_only_routes )
 			g_string_append_printf ( cd->str, "%s%c%.1f%c%d\n", name, sep, d1, sep, d5 );
 		else
-			g_string_append_printf ( cd->str, "%s%c%s%c%.1f%c%d%c%.1f%c%.1f%c%d\n", name, sep, date, sep, d1, sep, d2, sep, d3, sep, d4, sep, d5 );
+			g_string_append_printf ( cd->str, "%s%c%s%c%.1f%c%d%c%s%c%s%c%d\n", name, sep, date, sep, d1, sep, d2, sep, buf3, sep, buf4, sep, d5 );
 	}
 	g_free ( layername );
 	g_free ( name );
@@ -603,11 +609,11 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 		gchar *title = g_strdup_printf ( _("Av. Speed\n(%s)"), spd_units );
 		column = ui_new_column_text ( title, renderer, view, column_runner++ );
 		g_free ( title );
-		gtk_tree_view_column_set_cell_data_func ( column, renderer, ui_format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
+		gtk_tree_view_column_set_cell_data_func ( column, renderer, vu_format_speed_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
 
 		title = g_strdup_printf ( _("Max Speed\n(%s)"), spd_units );
 		column = ui_new_column_text ( title, renderer, view, column_runner++ );
-		gtk_tree_view_column_set_cell_data_func ( column, renderer, ui_format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
+		gtk_tree_view_column_set_cell_data_func ( column, renderer, vu_format_speed_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
 
 		g_free ( title );
 		g_free ( spd_units );
