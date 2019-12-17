@@ -690,7 +690,11 @@ void a_babel_post_init ()
     g_warning( "unbuffer not found in PATH" );
 #endif
 
-  load_feature ();
+  if ( gpsbabel_loc ) {
+    if ( !load_feature() ) {
+      g_warning ( "%s: running gpsbabel to get features failed", __FUNCTION__ );
+    }
+  }
 }
 
 /**
