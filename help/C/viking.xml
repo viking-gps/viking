@@ -703,7 +703,7 @@ If the program is not detected on your system, then this option will not be avai
 See <ulink url="https://www.npmjs.org/package/togpx">here</ulink> for the installation method.
 </para>
 <para>
-The current version (1.4.4) of GPSBabel does not support the <ulink url="http://geojson.org/">GeoJSON</ulink> file format.
+Versions proir to 1.6.0 of GPSBabel did not support the <ulink url="https://geojson.org/">GeoJSON</ulink> file format.
 </para>
 </section>
 
