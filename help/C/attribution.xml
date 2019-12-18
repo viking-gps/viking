@@ -106,7 +106,7 @@ OF SUCH DAMAGE.
 
 <section>
 	<title>Data: cities15000.txt</title>
-	<para>Source: <ulink url="http://download.geonames.org/export/dump/"></ulink></para>
+	<para>Source: <ulink url="https://download.geonames.org/export/dump/"></ulink></para>
 	<para>This is used in a lookup of positions to timezones.</para>
 	<para>Unneccesary fields in the dataset (for Viking) have been removed and the resultant file is <filename>data/latlontz.txt</filename></para>
 	<para> Available under license:</para>

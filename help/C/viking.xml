@@ -136,7 +136,7 @@ maps exist for it.
 </listitem>
 <listitem>
 <para>
-Making maps with using <ulink url="http://mapnik.org/">Mapnik</ulink>.
+Making maps with using <ulink url="https://mapnik.org/">Mapnik</ulink>.
 Not on <trademark>Windows</trademark> at the moment.
 </para>
 </listitem>
@@ -186,7 +186,7 @@ View, create and update Geotagged Images (using EXIF data).
 </itemizedlist>
 <note>
 <para>
-&appname; is under continual improvement: see the potential areas in the <ulink url="http://sourceforge.net/apps/mediawiki/viking/index.php?title=Main_Page#TODO_.2F_Ideas"><citetitle>Roadmap / Wishlist</citetitle></ulink>:
+&appname; is under continual improvement: see the  the <ulink url="https://sourceforge.net/p/viking/wikiallura/Main_Page/#todo-ideas"><citetitle>Roadmap / Wishlist</citetitle></ulink>:
 </para>
 </note>
 <figure>
@@ -213,7 +213,7 @@ This can be useful for analysis and general handling of various sets of data.
 Unfortunately the downside of this complexity is remembering how differing layers of data can obscure other data.
 </para>
 <para>
-The Map layers have <ulink url="http://en.wikipedia.org/wiki/Alpha_compositing"><citetitle>Alpha Compositing</citetitle></ulink>,
+The Map layers have <ulink url="https://en.wikipedia.org/wiki/Alpha_compositing"><citetitle>Alpha Compositing</citetitle></ulink>,
 to create the appearance of partial transparency.
 By controlling this value one can see data below it in the layer heirarchy for interesting effects.
 </para>
@@ -322,7 +322,7 @@ The &appname; automatic caching strategy is two fold:
 </para>
 <note>
 <para>
-  This can be useful if you contribute to OpenStreetMap and wish to see your modifications (of course give time for the server to have processed your changes - see <ulink url="http://help.openstreetmap.org/questions/102/i-have-made-edits-but-they-dont-show-up-on-the-map">I have made edits but they don't show up on the map</ulink>)
+  This can be useful if you contribute to OpenStreetMap and wish to see your modifications (of course give time for the server to have processed your changes - see <ulink url="https://help.openstreetmap.org/questions/102/i-have-made-edits-but-they-dont-show-up-on-the-map">I have made edits but they don't show up on the map</ulink>)
 </para>
 </note>
 
@@ -960,7 +960,7 @@ The layer (all tracks, routes and waypoints) can be exported to following file f
 		<para>Google's KML</para>
 	</listitem>
 	<listitem>
-		<para>Any GPSBabel <ulink url="http://www.gpsbabel.org/capabilities.html">File Formats</ulink></para>
+		<para>Any GPSBabel <ulink url="https://www.gpsbabel.org/capabilities.html">File Formats</ulink></para>
 	</listitem>
 	<listitem>
 		<para>GeoJSON. Via the program <ulink url="https://github.com/mapbox/togeojson">togeojson</ulink></para>
@@ -1032,7 +1032,7 @@ Tracks, Routes or Waypoints that are invisible will not be transferred.
 
 <section id="osm_upload" xreflabel="Upload To OSM" ><title>Upload To OSM</title>
 <para>
-This opens a dialog to upload all tracks and waypoints to <ulink url="http://openstreetmap.org/">OpenStreetMap</ulink> traces.
+This opens a dialog to upload all tracks and waypoints to <ulink url="https://openstreetmap.org/">OpenStreetMap</ulink> traces.
 Useful if you are an OpenStreetMap contributor, access details are stored in &appname; <xref linkend="prefs_osm"/>
 </para>
 <para>
@@ -1778,7 +1778,7 @@ There are several options to quickly delete a subsection of data:
 
 <section id="DEM" xreflabel="DEM"><title>DEM (Digital Elevation Model) Layer</title>
 <para>
-This layer provides elevation data from the <ulink url="http://www2.jpl.nasa.gov/srtm/">Shuttle Radar Topography Mission (SRTM)</ulink>
+This layer provides elevation data from the <ulink url="https://www2.jpl.nasa.gov/srtm/">Shuttle Radar Topography Mission (SRTM)</ulink>
 </para>
 <para>
 Elevation data can be useful in planning trips, as you many wish to avoid/minimise the hills encountered. [OSM Cyclemap is also useful this way too]
@@ -1787,14 +1787,14 @@ Elevation data can be useful in planning trips, as you many wish to avoid/minimi
 To download the data use the <xref linkend="dem_tool_dl"/> tool (shown on the toolbar), and then click on a area of the viewport. Once files have been downloaded they can then be loaded from disk via the DEM properties in future application runs.
 </para>
 <para>
-The current data server is: <ulink url="http://dds.cr.usgs.gov/srtm/version2_1/">NASA STRM 2.1</ulink>.
+The current data server is: <ulink url="https://dds.cr.usgs.gov/srtm/version2_1/">NASA STRM 2.1</ulink>.
 </para>
 <para>
 ATM &appname; does not auto download DEM data. If you want to get lots of data blocks, you may wish to use some other program get such as <application>curl</application> or <application>wget</application> to download them for an area.
 </para>
 <note>
 <para>
-Using many DEMs is CPU/memory intensive. Depending on your computer's capability, &appname; will be less responsive when about 50+ DEM blocks are loaded. It is probably unwise to attempt using 200+ blocks, so trying to use DEMs covering large countries/continents (USA, Australia etc...) is unlikely to work. In these conditions under Linux, &appname; may be automatically stopped by the "<ulink url="http://en.wikipedia.org/wiki/Out_of_memory/">OOM</ulink> Killer"
+Using many DEMs is CPU/memory intensive. Depending on your computer's capability, &appname; will be less responsive when about 50+ DEM blocks are loaded. It is probably unwise to attempt using 200+ blocks, so trying to use DEMs covering large countries/continents (USA, Australia etc...) is unlikely to work. In these conditions under Linux, &appname; may be automatically stopped by the "<ulink url="https://en.wikipedia.org/wiki/Out_of_memory/">OOM</ulink> Killer"
 </para>
 </note>
 
@@ -1817,7 +1817,7 @@ Also see <xref linkend="map_tool_dl"/> tool for use in conjunction with this lay
 <formalpara><title>Online Map Tile Providers</title>
 <para>
 You will need an open internet connection when you are downloading maps these following map types, but once downloaded they are available from the hard disk cache. When map are avaliable from the disk cache it is much faster and can be used offline.
-Inbuilt maps include various <ulink url="http://openstreetmap.org/">OpenStreetMap (OSM)</ulink> ones and more:
+Inbuilt maps include various <ulink url="https://openstreetmap.org/">OpenStreetMap (OSM)</ulink> ones and more:
 </para>
 </formalpara>
 <itemizedlist>
@@ -1846,9 +1846,9 @@ Some map types supported are for on disk tile formats:
 </listitem>
 <listitem><para><ulink url="https://github.com/mapbox/mbtiles-spec">MBTiles File</ulink></para></listitem>
 <listitem>
-  <para><ulink url="http://wiki.openstreetmap.org/wiki/Meta_tiles">OSM Metatiles</ulink></para>
+  <para><ulink url="https://wiki.openstreetmap.org/wiki/Meta_tiles">OSM Metatiles</ulink></para>
   <note>
-    <para>This file format is mostly aimed at being rendering cache feature and is <ulink url="ehttps://en.wikipedia.org/wiki/Endianness">Endian</ulink> dependent.</para>
+    <para>This file format is mostly aimed at being rendering cache feature and is <ulink url="https://en.wikipedia.org/wiki/Endianness">Endian</ulink> dependent.</para>
     <para>Thus to successfully view the file cache, the Metatile files and Viking must be of the same endian type (which they probably will be).</para>
   </note>
 </listitem>
@@ -1937,7 +1937,7 @@ There are some inbuilt limits to prevent downloading large amounts of map tiles.
 </para>
 <para>
 Please respect the usage policy of the tile set provider.
-Such as <ulink url="http://wiki.openstreetmap.org/wiki/Tile_usage_policy"><citetitle>OSM Tile Usage Policy</citetitle></ulink>.
+Such as <ulink url="https://operations.osmfoundation.org/policies/tiles/"><citetitle>OSM Tile Usage Policy</citetitle></ulink>.
 </para>
 </warning>
 <para>
@@ -2857,7 +2857,7 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 <term>Auto Location</term>
 <listitem>
 	<para>Uses the <ulink url="https://www.freedesktop.org/wiki/Software/GeoClue">GeoClue</ulink> service if available
-	or otherwise the web service <ulink url="http://www.hostip.info">hostip.info</ulink> to attempt to determine your location via IP lookup
+	or otherwise the web service <ulink url="https://www.hostip.info">hostip.info</ulink> to attempt to determine your location via IP lookup
 	</para>
 </listitem>
 </varlistentry>
@@ -3167,7 +3167,7 @@ Do not forget to save your configuration (as discussed above).
 </section>
 <section><title>OpenStreetMap project</title>
 <para>
-<ulink url="http://openstreetmap.org/">OpenStreetMap (OSM)</ulink> is a collaborative project to create a free editable map of the world.
+<ulink url="https://openstreetmap.org/">OpenStreetMap (OSM)</ulink> is a collaborative project to create a free editable map of the world.
 One of the sources of data for this project is GPS tracks.
 &appname; supports this project via the GPS Traces methods, both uploading and downloading such data.
 </para>
@@ -3175,7 +3175,7 @@ One of the sources of data for this project is GPS tracks.
   Authentication/authorization is required to use these services. See <xref linkend="prefs_osm"/>.
 </para>
 <para>
-Also see <ulink url="http://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for further detail.
+Also see <ulink url="https://wiki.openstreetmap.org/wiki/API_v0.6#GPS_Traces"/> for further detail.
 </para>
 <section><title>Uploading data to OpenStreetMap</title>
 <para>
@@ -3292,7 +3292,7 @@ This list can be sorted on each column so that it easier to find an individual t
 
 <section><title>GPS Real Time Location</title>
 <para>
-	&appname; relies on <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> to provide the current location from a real time feed from a GPS device.
+	&appname; relies on <ulink url="https://gpsd.gitlab.io/gpsd">gpsd</ulink> to provide the current location from a real time feed from a GPS device.
 </para>
 <para>
 	This assumes you already have a <xref linkend="Maps"/> layer enabled for ease of use (if not see above to get one).
@@ -3305,7 +3305,7 @@ This list can be sorted on each column so that it easier to find an individual t
 	You will need a <xref linkend="GPS"/> layer. One can be added via <menuchoice><guimenu>Layers</guimenu><guisubmenu>Add GPS Layer</guisubmenu></menuchoice>.
 </para>
 <para>
-	Adjust the <emphasis>Realtime Tracking Mode</emphasis> settings to interface with <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> as necessary. Normally the defaults should suffice.
+	Adjust the <emphasis>Realtime Tracking Mode</emphasis> settings to interface with <ulink url="https://gpsd.gitlab.io/gpsd">gpsd</ulink> as necessary. Normally the defaults should suffice.
 </para>
 <para>
   Current Linux distributions should run <application>gpsd</application> automatically when a GPS Device is plugged in. Otherwise you may have to run <application>gpsd</application> manually.
@@ -3453,7 +3453,7 @@ Accept: */*
       <section id="map_source" xreflabel="Map Source Extensions">
         <title>Map Source</title>
         <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename> for <trademark>UNIX</trademark> like systems, <filename>C:\Documents and Settings\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows XP</trademark> or <filename>C:\Users\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows 7</trademark> onwards.</para>
-        <para>An example of the file is in the distribution <filename>doc/examples/maps.xml</filename>. Further examples and values are online in the <ulink url="http://sourceforge.net/apps/mediawiki/viking/index.php?title=Maps">Maps Wiki</ulink></para>
+        <para>An example of the file is in the distribution <filename>doc/examples/maps.xml</filename>. Further examples and values are online in the <ulink url="https://sourceforge.net/p/viking/wikiallura/Maps/">Maps Wiki</ulink></para>
 
         <para>The <classname>VikSlippyMapSource</classname> allows to declare any map's source working like OpenStreetMap. It supports the following properties:
           <variablelist>
@@ -3491,7 +3491,7 @@ Accept: */*
               <term>zoom-max (optional)</term>
               <listitem>
                  <para>The maximum zoom value supported by the tile server. The Default is 18 if not specified.</para>
-                 <para>See <ulink url="http://wiki.openstreetmap.org/wiki/Zoom_levels">Zoom Levels</ulink></para>
+                 <para>See <ulink url="https://wiki.openstreetmap.org/wiki/Zoom_levels">Zoom Levels</ulink></para>
               </listitem>
             </varlistentry>
             <varlistentry>
@@ -3546,7 +3546,7 @@ Accept: */*
             <varlistentry>
               <term>use-etag (optional)</term>
               <listitem>
-                <para>Use and compare the <ulink url="http://en.wikipedia.org/wiki/HTTP_ETag">ETag</ulink> value in determining whether to download a newer tile. The default is false.</para>
+                <para>Use and compare the <ulink url="https://en.wikipedia.org/wiki/HTTP_ETag">ETag</ulink> value in determining whether to download a newer tile. The default is false.</para>
                 <para>The ETag value is stored in a separate file in the same directory as the tile to enable checking the value across multiple runs of the program.</para>
               </listitem>
             </varlistentry>
@@ -3805,7 +3805,7 @@ Accept: */*
                 <para>R = Right of the current view i.e. maximum longitude</para>
                 <para>A = center lAtitude of the current view</para>
                 <para>O = center lOngitude of the current view</para>
-                <para>Z = OSM Zoom value of the current view. See <ulink url="http://wiki.openstreetmap.org/wiki/Zoom_levels">Zoom Levels</ulink></para>
+                <para>Z = OSM Zoom value of the current view. See <ulink url="https://wiki.openstreetmap.org/wiki/Zoom_levels">Zoom Levels</ulink></para>
                 <para>P = selected Point's latitude</para>
                 <para>N = selected poiNt's longitude</para>
                 <para>S = A user specified input string requested from the user via a dialog box</para>
@@ -3817,7 +3817,7 @@ Accept: */*
               <listitem>
                 <para>This value is passed on for the -i parameter in interfacing with GPSBabel.</para>
                 <para>If it is not defined then the returned file is interpreted internally as a GPX file.</para>
-                <para>Possible values such as 'kml', 'mapsource' etc.. can be used. See <ulink url="http://www.gpsbabel.org/capabilities.html">GPSBabel File Formats</ulink> for the full list.</para>
+                <para>Possible values such as 'kml', 'mapsource' etc.. can be used. See <ulink url="https://www.gpsbabel.org/capabilities.html">GPSBabel File Formats</ulink> for the full list.</para>
               </listitem>
             </varlistentry>
             <varlistentry>
@@ -3977,11 +3977,11 @@ Accept: */*
 	    </para>
 	  </listitem>
 	  <listitem>
-	    <para>external_diary_program=<ulink url="http://rednotebook.sourceforge.net/">rednotebook</ulink></para>
+	    <para>external_diary_program=<ulink url="https://rednotebook.sourceforge.io/">rednotebook</ulink></para>
 	    <para>Or in Windows it uses <filename>C:/Progra~1/Rednotebook/rednotebook.exe</filename> - This string value must use Unix separators and not have spaces.</para>
 	  </listitem>
 	  <listitem>
-	    <para>external_astro_program=<ulink url="http://stellarium.org/">stellarium</ulink></para>
+	    <para>external_astro_program=<ulink url="https://stellarium.org/">stellarium</ulink></para>
 	    <para>Or in Windows use <filename>C:/Progra~1/Stellarium/stellarium.exe</filename> - This string value must use Unix separators and not have spaces.
 	          Needs to be version 0.15.0 or greater (otherwise due to this <ulink url="https://bugs.launchpad.net/stellarium/+bug/1410529">Bug</ulink> means this does not actually work).</para>
 	  </listitem>
@@ -3997,7 +3997,7 @@ Accept: */*
 	  </listitem>
 	  <listitem>
 	    <para>list_date_format=%Y-%m-%d %H:%M</para>
-	    <para>A <ulink url="http://pubs.opengroup.org/onlinepubs/007908799/xsh/strftime.html">date format description</ulink> as passed on to strftime().
+	    <para>A <ulink url="https://pubs.opengroup.org/onlinepubs/007908799/xsh/strftime.html">date format description</ulink> as passed on to strftime().
 	          Note that when displayed in tables sorting by this column simply uses the text value, rather than the underlying date/time value.
 	    </para>
 	  </listitem>

@@ -2,7 +2,7 @@
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
    <!ENTITY appname          "Viking">
-   <!ENTITY gpsbabel         "<ulink url='http://gpsbabel.org/'>GPSBabel</ulink>">
+   <!ENTITY gpsbabel         "<ulink url='https://gpsbabel.org/'>GPSBabel</ulink>">
 ]>
 
 <section id="recommeds">
@@ -31,7 +31,7 @@
 <para>This mainly applies to <trademark>Unix</trademark> like systems when invoking &gpsbabel; commands.</para>
 
 <formalpara><title>gpsd (not available for <trademark>Windows</trademark>)</title>
-<para>&appname; can use <ulink url="http://www.catb.org/gpsd/">gpsd</ulink> to get the current location.</para>
+<para>&appname; can use <ulink url="https://gpsd.gitlab.io/gpsd">gpsd</ulink> to get the current location.</para>
 </formalpara>
 
 <formalpara><title>togpx</title>

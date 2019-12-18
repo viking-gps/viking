@@ -9,7 +9,7 @@
 This layer allows one to use any image as a map. You will need to tell it how to align the map to a position in the world and the scale of map.
 </para>
 <para>
-When a new image is selected the values from a <ulink url="http://en.wikipedia.org/wiki/World_file">World File</ulink> will automatically be tried to be found. 
+When a new image is selected the values from a <ulink url="https://en.wikipedia.org/wiki/World_file">World File</ulink> will automatically be tried to be found. 
 (subject to the setting in <xref linkend="prefs_external"/>)
 </para>
 <note>
@@ -60,7 +60,7 @@ Center the viewport on this map.
 </section>
 <section><title>Export to World File</title>
 <para>
-Opens a file save dialog to save the scale and position information as a <ulink url="http://en.wikipedia.org/wiki/World_file">World File</ulink>.
+Opens a file save dialog to save the scale and position information as a <ulink url="https://en.wikipedia.org/wiki/World_file">World File</ulink>.
 </para>
 </section>
 </section>

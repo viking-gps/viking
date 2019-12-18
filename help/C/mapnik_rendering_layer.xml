@@ -9,7 +9,7 @@
 <title>Mapnik Rendering Layer</title>
 
 <para>
-The Mapnik Rendering Layer uses the <ulink url="http://mapnik.org/">Mapnik Library</ulink> to generate map images according to the Mapnik configuration.
+The Mapnik Rendering Layer uses the <ulink url="https://mapnik.org/">Mapnik Library</ulink> to generate map images according to the Mapnik configuration.
 </para>
 
 <para>
@@ -33,7 +33,7 @@ To force &appname; to (re)render all tiles - create the file <filename>~/.viking
 Creating a Carto project or an initial Mapnik configuration file and maintaining the datasource is beyond the scope of this documentation.
 There are various existing Carto projects such as <ulink url="https://github.com/gravitystorm/openstreetmap-carto">OSM Carto</ulink>
 or <ulink url="https://github.com/mapbox/osm-bright">OSM Bright</ulink>. These use OSM data and contain guides on how to setup the datasource.
-Further detail about using OSM data can be found on the <ulink url="http://switch2osm.org/loading-osm-data/">Switch2OSM</ulink> website.
+Further detail about using OSM data can be found on the <ulink url="https://switch2osm.org/">Switch2OSM</ulink> website.
 </para>
 
 <para>
@@ -44,7 +44,7 @@ Hence &appname; runs these tasks in the background and uses the tile cache to sa
 </para>
 
 <para>
-Generated tiles are stored in the <emphasis>PNG</emphasis> format in the standard <ulink url="http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames">OSM Tile name</ulink> layout.
+Generated tiles are stored in the <emphasis>PNG</emphasis> format in the standard <ulink url="https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames">OSM Tile name</ulink> layout.
 </para>
 
 <note>
