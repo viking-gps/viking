@@ -169,6 +169,14 @@ Show the live GPS position on the map (for use on a mobile device - e.g. a lapto
 <para>
 Import and export track, route and waypoint files of various types via <application>GPSBabel</application>
 </para>
+<note>
+<para>
+Previously on <trademark>Windows</trademark>, <application>GPSBabel</application> was distributed with &appname;, but this no longer the case.
+</para>
+<para>
+It can be downloaded from its website <ulink url="https://www.gpsbabel.org"></ulink>.
+</para>
+</note>
 </listitem>
 <listitem>
 <para>

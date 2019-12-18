@@ -46,6 +46,7 @@
 #include "geonamessearch.h"
 #include "dir.h"
 #include "kmz.h"
+#include "ui_util.h"
 #ifdef HAVE_LIBGEOCLUE_2
 #include "libgeoclue.h"
 #endif
@@ -4039,6 +4040,12 @@ static void acquire_from_url ( GtkAction *a, VikWindow *vw )
   my_acquire ( vw, &vik_datasource_url_interface );
 }
 
+#define GPSBABEL_URL "https://www.gpsbabel.org"
+static void goto_gpsbabel_website ( GtkAction *a, VikWindow *vw )
+{
+  open_url ( GTK_WINDOW(vw), GPSBABEL_URL );
+}
+
 static void goto_default_location( GtkAction *a, VikWindow *vw)
 {
   struct LatLon ll;
@@ -5035,6 +5042,10 @@ static GtkActionEntry entries_gpsbabel[] = {
   { "AcquireGPSBabel", NULL,             N_("Import File With GPS_Babel..."), NULL,     N_("Import file via GPSBabel converter"),           (GCallback)acquire_from_file },
 };
 
+static GtkActionEntry entries_nogpsbabel[] = {
+  { "GPSBabelURL", GTK_STOCK_MISSING_IMAGE, N_("Missing GPSBabel program recommended..."), NULL, GPSBABEL_URL,                              (GCallback)goto_gpsbabel_website },
+};
+
 static GtkActionEntry entries_geojson[] = {
   { "AcquireGeoJSON",   NULL,            N_("Import Geo_JSON File..."),   NULL,         N_("Import GeoJSON file"),                          (GCallback)acquire_from_geojson },
 };
@@ -5152,6 +5163,12 @@ static void window_create_ui( VikWindow *window )
          "</ui>",
          -1, &error ) )
       gtk_action_group_add_actions ( action_group, entries_gpsbabel, G_N_ELEMENTS (entries_gpsbabel), window );
+  } else {
+    // Stick in a link to GPSBabel website
+    if ( gtk_ui_manager_add_ui_from_string ( uim,
+         "<ui><menubar name='MainMenu'><menu action='Help'><separator/><menuitem action='GPSBabelURL'/></menu></menubar></ui>",
+         -1, &error ) )
+      gtk_action_group_add_actions ( action_group, entries_nogpsbabel, G_N_ELEMENTS (entries_nogpsbabel), window );
   }
 
   // GeoJSON import capability

@@ -19,8 +19,7 @@
 <para>Thus these will not be available if the program can not be found.</para>
 <para>For <trademark>Unix</trademark> like systems this will search the system path to find the program, as it is typically installed via the System's package manager.</para>
 <para>
-	From &appname; 1.6 onwards &gpsbabel; is not deployed automatically on <trademark>Windows</trademark> systems,
-	as it is made an optional install component (using the official &gpsbabel; installation program).
+	From &appname; 1.6 onwards &gpsbabel; is not deployed automatically on <trademark>Windows</trademark> systems.
 	If &gpsbabel; is not installed in a typical <trademark>Windows</trademark> location that &appname; can find,
 	then the &gpsbabel; preference can be set to specify the exact location. See <xref linkend="prefs_external"/>.
 </para>

@@ -87,10 +87,16 @@ VIAddVersionKey "FileDescription" "Viking Installer"
   !define MUI_COMPONENTSPAGE_SMALLDESC
   !define MUI_ABORTWARNING
 
+  !define GPSBABEL_URL "https://www.gpsbabel.org"
   ;Finish Page config
   !define MUI_FINISHPAGE_NOAUTOCLOSE
   !define MUI_FINISHPAGE_RUN			"$INSTDIR\viking.exe"
   !define MUI_FINISHPAGE_RUN_NOTCHECKED
+  !define MUI_FINISHPAGE_TEXT $(VIKING_INSTALL_GPSBABEL_DESC)
+  !define MUI_FINISHPAGE_SHOWREADME ${GPSBABEL_URL}
+  !define MUI_FINISHPAGE_SHOWREADME_TEXT ${GPSBABEL_URL}
+  !define MUI_FINISHPAGE_SHOWREADME_NOTCHECKED
+
   !define MUI_FINISHPAGE_LINK			$(VIKING_FINISH_VISIT_WEB_SITE)
   !define MUI_FINISHPAGE_LINK_LOCATION		"http://viking.sourceforge.net"
 
@@ -260,7 +266,7 @@ Section $(VIKING_SECTION_TITLE) SecViking
     WriteRegDWORD SHCTX "${VIKING_UNINSTALL_KEY}" "NoRepair" 1
     WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "UninstallString" "$INSTDIR\${VIKING_UNINST_EXE}"
 
-    ; Copy only specific items as now some components (e.g. GPSBabel) are optional.
+    ; Copy only specific items as some components could be optional.
     ; This is mostly to get a more accurate install size value (especially as saved into the registry)
     File ${BINARIES}\viking*
     File ${BINARIES}\g*.exe
@@ -317,15 +323,6 @@ SectionGroupEnd
 
 Section $(VIKING_FILE_ASSOCIATION_SECTION_TITLE) SecFileAssociation
   ${registerExtension} "$INSTDIR\viking.exe" ".gpx" "GPX File"
-SectionEnd
-
-;--------------------------------
-; GPSBabel Install Section
-;
-Section $(VIKING_GPSBABEL_SECTION_TITLE) SecGPSBabel
-  File "${BINARIES}\Optional\GPSBabel-1.5.4-Setup.exe"
-  ExecWait '"$INSTDIR\GPSBabel-1.5.4-Setup.exe" /SILENT'
-  Delete "$INSTDIR\GPSBabel-1.5.4-Setup.exe"
 SectionEnd
 
 ;--------------------------------
@@ -417,8 +414,6 @@ SectionEnd ; end of uninstall section
         $(VIKING_STARTMENU_SHORTCUT_DESC)
   !insertmacro MUI_DESCRIPTION_TEXT ${SecFileAssociation} \
         $(VIKING_FILE_ASSOCIATION_DESC)
-  !insertmacro MUI_DESCRIPTION_TEXT ${SecGPSBabel} \
-        $(VIKING_INSTALL_GPSBABEL_DESC)
 
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 

@@ -139,11 +139,6 @@ cp -a $MINGW/lib/gtk-2.0 $DESTINATION/lib
 mkdir -p $DESTINATION/share/themes
 cp -a $MINGW/share/themes/MS-Windows $DESTINATION/share/themes
 
-echo Copying GPSBabel Installer
-mkdir $DESTINATION/Optional
-# ATM GPSBabel needs to be in 'cache' dir
-cp cache/GPSBabel-1.5.4-Setup.exe $DESTINATION/Optional
-
 pushd installer
 if [ -z "$DEBUG" ]; then
 	makensis -X"SetCompressor lzma" viking-installer.nsi

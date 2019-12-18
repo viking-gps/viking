@@ -23,13 +23,12 @@
 !define VIKING_STARTMENU_SHORTCUT_SECTION_TITLE	"Menu Démarrer"
 !define VIKING_FILE_ASSOCIATION_SECTION_TITLE	"Extension .gpx"
 !define VIKING_SECTION_DESCRIPTION		"Fichiers et DLLs de base de Viking"
-!define VIKING_GPSBABEL_SECTION_TITLE	"GPSBabel 1.5.4"
 
 !define VIKING_SHORTCUTS_SECTION_DESCRIPTION	"Raccourcis pour lancer Viking"
 !define VIKING_DESKTOP_SHORTCUT_DESC		"Créer un raccourci pour Viking sur le bureau"
 !define VIKING_STARTMENU_SHORTCUT_DESC		"Créer un raccourci pour Viking dans le menu Démarrer"
 !define VIKING_FILE_ASSOCIATION_DESC    "Associer Viking avec l'extension .gpx"
-!define VIKING_INSTALL_GPSBABEL_DESC	"Installer GPSBabel Programme"
+!define VIKING_INSTALL_GPSBABEL_DESC	"Viking recommande d'installer le programme GPSBabel"
 
 ; Installer Finish Page
 !define VIKING_FINISH_VISIT_WEB_SITE		"Visitez la page web de Viking"
