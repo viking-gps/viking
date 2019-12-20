@@ -734,8 +734,39 @@ static gint blobby_speed_dist ( gdouble x_blob, PropWidgets *widgets )
   return y_blob;
 }
 
+static void get_distance_text ( gchar* buf, guint size, gdouble meters_from_start )
+{
+  vik_units_distance_t dist_units = a_vik_get_units_distance ();
+  switch ( dist_units ) {
+  case VIK_UNITS_DISTANCE_KILOMETRES:
+    g_snprintf ( buf, size, "%.2f km", meters_from_start/1000.0 );
+    break;
+  case VIK_UNITS_DISTANCE_MILES:
+    g_snprintf ( buf, size, "%.2f miles", VIK_METERS_TO_MILES(meters_from_start) );
+    break;
+  case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+    g_snprintf ( buf, size, "%.2f NM", VIK_METERS_TO_NAUTICAL_MILES(meters_from_start) );
+    break;
+  default:
+    g_snprintf ( buf, size, "--" );
+    g_critical("Houston, we've had a problem. distance=%d", dist_units);
+    break;
+  }
+}
 
-void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *widgets )
+static void get_altitude_text ( gchar* buf, guint size, VikTrackpoint *trackpoint )
+{
+  if ( isnan(trackpoint->altitude) ) {
+    g_snprintf ( buf, size, "--" );
+  } else {
+    if ( a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
+      g_snprintf ( buf, size, "%d ft", (int)round(VIK_METERS_TO_FEET(trackpoint->altitude)) );
+    else
+      g_snprintf ( buf, size, "%d m", (int)round(trackpoint->altitude) );
+  }
+}
+
+static void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *widgets )
 {
   int mouse_x, mouse_y;
   GdkModifierType state;
@@ -755,34 +786,19 @@ void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, PropWidget
     x = widgets->profile_width;
 
   gdouble meters_from_start;
-  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_dist ( widgets->tr, (gdouble) x / widgets->profile_width, &meters_from_start );
-  if (trackpoint && widgets->w_cur_dist) {
+  VikTrackpoint *trackpoint = vik_track_get_closest_tp_by_percentage_dist ( widgets->tr, x / widgets->profile_width, &meters_from_start );
+
+  if ( trackpoint && widgets->w_cur_dist ) {
     static gchar tmp_buf[20];
-    vik_units_distance_t dist_units = a_vik_get_units_distance ();
-    switch (dist_units) {
-    case VIK_UNITS_DISTANCE_KILOMETRES:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f km", meters_from_start/1000.0);
-      break;
-    case VIK_UNITS_DISTANCE_MILES:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f miles", VIK_METERS_TO_MILES(meters_from_start) );
-      break;
-    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%.2f NM", VIK_METERS_TO_NAUTICAL_MILES(meters_from_start) );
-      break;
-    default:
-      g_critical("Houston, we've had a problem. distance=%d", dist_units);
-    }
-    gtk_label_set_text(GTK_LABEL(widgets->w_cur_dist), tmp_buf);
+    get_distance_text ( tmp_buf, sizeof(tmp_buf), meters_from_start );
+    gtk_label_set_text ( GTK_LABEL(widgets->w_cur_dist), tmp_buf );
   }
 
   // Show track elevation for this position - to the nearest whole number
-  if (trackpoint && widgets->w_cur_elevation) {
+  if ( trackpoint && widgets->w_cur_elevation ) {
     static gchar tmp_buf[20];
-    if (a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET)
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%d ft", (int)VIK_METERS_TO_FEET(trackpoint->altitude));
-    else
-      g_snprintf(tmp_buf, sizeof(tmp_buf), "%d m", (int)trackpoint->altitude);
-    gtk_label_set_text(GTK_LABEL(widgets->w_cur_elevation), tmp_buf);
+    get_altitude_text ( tmp_buf, sizeof(tmp_buf), trackpoint );
+    gtk_label_set_text ( GTK_LABEL(widgets->w_cur_elevation), tmp_buf );
   }
 
   widgets->blob_tp = trackpoint;
@@ -2545,7 +2561,7 @@ static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, P
 /**
  * Create height profile widgets including the image and callbacks
  */
-GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, PropWidgets *widgets, gdouble *min_alt, gdouble *max_alt)
+GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, PropWidgets *widgets )
 {
   GdkPixmap *pix;
   GtkWidget *eventbox;
@@ -2553,15 +2569,8 @@ GtkWidget *vik_trw_layer_create_profile ( GtkWidget *window, PropWidgets *widget
   // First allocation
   widgets->altitudes = vik_track_make_elevation_map ( widgets->tr, widgets->profile_width );
 
-  if ( widgets->altitudes == NULL ) {
-    *min_alt = *max_alt = NAN;
+  if ( widgets->altitudes == NULL )
     return NULL;
-  }
-
-  // Don't use minmax_array(widgets->altitudes), as that is a simplified representative of the points
-  //  thus can miss the highest & lowest values by a few metres
-  if ( !vik_track_get_minmax_alt (widgets->tr, min_alt, max_alt) )
-    *min_alt = *max_alt = NAN;
 
   pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
   widgets->elev_image = gtk_image_new_from_pixmap ( pix, NULL );
@@ -2767,6 +2776,52 @@ static void destroy_cb ( GtkDialog *dialog, PropWidgets *widgets )
   prop_widgets_free(widgets);
 }
 
+/**
+ *
+ */
+static gboolean split_at_marker ( PropWidgets *widgets )
+{
+  VikTrack *tr = widgets->tr;
+  VikTrwLayer *vtl = widgets->vtl;
+      {
+        GList *iter = tr->trackpoints;
+        while ((iter = iter->next)) {
+          if (widgets->marker_tp == VIK_TRACKPOINT(iter->data))
+            break;
+        }
+        if (iter == NULL) {
+          a_dialog_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), GTK_MESSAGE_ERROR,
+                  _("Failed spliting track. Track unchanged"), NULL);
+          return TRUE;
+        }
+
+        gchar *r_name = trw_layer_new_unique_sublayer_name(vtl,
+                                                           widgets->tr->is_route ? VIK_TRW_LAYER_SUBLAYER_ROUTE : VIK_TRW_LAYER_SUBLAYER_TRACK,
+                                                           widgets->tr->name);
+        iter->prev->next = NULL;
+        iter->prev = NULL;
+        VikTrack *tr_right = vik_track_new();
+        if ( tr->comment )
+          vik_track_set_comment ( tr_right, tr->comment );
+        tr_right->visible = tr->visible;
+        tr_right->is_route = tr->is_route;
+        tr_right->trackpoints = iter;
+
+        if ( widgets->tr->is_route )
+          vik_trw_layer_add_route(vtl, r_name, tr_right);
+        else
+          vik_trw_layer_add_track(vtl, r_name, tr_right);
+        vik_track_calculate_bounds ( tr );
+        vik_track_calculate_bounds ( tr_right );
+
+        g_free ( r_name );
+
+        vik_layer_emit_update ( VIK_LAYER(vtl) );
+      }
+
+      return FALSE;
+}
+
 static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widgets )
 {
   VikTrack *tr = widgets->tr;
@@ -2840,42 +2895,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
       }
       break;
     case VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER:
-      {
-        GList *iter = tr->trackpoints;
-        while ((iter = iter->next)) {
-          if (widgets->marker_tp == VIK_TRACKPOINT(iter->data))
-            break;
-        }
-        if (iter == NULL) {
-          a_dialog_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), GTK_MESSAGE_ERROR,
-                  _("Failed spliting track. Track unchanged"), NULL);
-          keep_dialog = TRUE;
-          break;
-        }
-
-        gchar *r_name = trw_layer_new_unique_sublayer_name(vtl,
-                                                           widgets->tr->is_route ? VIK_TRW_LAYER_SUBLAYER_ROUTE : VIK_TRW_LAYER_SUBLAYER_TRACK,
-                                                           widgets->tr->name);
-        iter->prev->next = NULL;
-        iter->prev = NULL;
-        VikTrack *tr_right = vik_track_new();
-        if ( tr->comment )
-          vik_track_set_comment ( tr_right, tr->comment );
-        tr_right->visible = tr->visible;
-        tr_right->is_route = tr->is_route;
-        tr_right->trackpoints = iter;
-
-        if ( widgets->tr->is_route )
-          vik_trw_layer_add_route(vtl, r_name, tr_right);
-        else
-          vik_trw_layer_add_track(vtl, r_name, tr_right);
-        vik_track_calculate_bounds ( tr );
-        vik_track_calculate_bounds ( tr_right );
-
-        g_free ( r_name );
-
-        vik_layer_emit_update ( VIK_LAYER(vtl) );
-      }
+      keep_dialog = split_at_marker ( widgets );
       break;
     default:
       fprintf(stderr, "DEBUG: unknown response\n");
@@ -3224,74 +3244,20 @@ static GtkWidget *create_splits_tables ( VikTrack *trk )
   return tabs;
 }
 
-void vik_trw_layer_propwin_run ( GtkWindow *parent,
-                                 VikTrwLayer *vtl,
-                                 VikTrack *tr,
-                                 gpointer vlp,
-                                 VikViewport *vvp,
-                                 gboolean start_on_stats )
+/**
+ *
+ */
+static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
 {
-  PropWidgets *widgets = prop_widgets_new();
-  widgets->vtl = vtl;
-  widgets->vvp = vvp;
-  widgets->vlp = vlp;
-  widgets->tr = tr;
-
-  gint profile_size_value;
-  // Ensure minimum values
-  widgets->profile_width = 600 * vik_viewport_get_scale(vvp);
-  if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_WIDTH, &profile_size_value ) )
-    if ( profile_size_value > widgets->profile_width )
-      widgets->profile_width = profile_size_value;
-
-  widgets->profile_height = 300 * vik_viewport_get_scale(vvp);
-  if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, &profile_size_value ) )
-    if ( profile_size_value > widgets->profile_height )
-      widgets->profile_height = profile_size_value;
-
-  gchar *title = g_strdup_printf(_("%s - Track Properties"), tr->name);
-  GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
-                         parent,
-                         GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
-                         GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
-                         _("Split at _Marker"), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER,
-                         _("Split _Segments"), VIK_TRW_LAYER_PROPWIN_SPLIT,
-                         _("_Reverse"),        VIK_TRW_LAYER_PROPWIN_REVERSE,
-                         _("_Delete Dupl."),   VIK_TRW_LAYER_PROPWIN_DEL_DUP,
-                         GTK_STOCK_OK,     GTK_RESPONSE_ACCEPT,
-                         NULL);
-  widgets->dialog = dialog;
-  g_signal_connect( G_OBJECT(dialog), "response", G_CALLBACK(propwin_response_cb), widgets);
-
-  g_free(title);
+  GtkWidget *content[20];
+  int cnt = 0;
   GtkWidget *table;
   gdouble tr_len;
   gulong tp_count;
-  guint seg_count;
+  gdouble tmp_speed;
 
-  gboolean DEM_available = a_dems_overlaps_bbox (tr->bbox);
+  static gchar tmp_buf[50];
 
-  gdouble min_alt, max_alt;
-  widgets->elev_box = vik_trw_layer_create_profile(GTK_WIDGET(parent), widgets, &min_alt, &max_alt);
-  widgets->gradient_box = vik_trw_layer_create_gradient(GTK_WIDGET(parent), widgets);
-  widgets->speed_box = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), widgets);
-  widgets->dist_box = vik_trw_layer_create_dtdiag(GTK_WIDGET(parent), widgets);
-  widgets->elev_time_box = vik_trw_layer_create_etdiag(GTK_WIDGET(parent), widgets);
-  widgets->speed_dist_box = vik_trw_layer_create_sddiag(GTK_WIDGET(parent), widgets);
-  GtkWidget *graphs = gtk_notebook_new();
-
-  GtkWidget *content_prop[20];
-  int cnt_prop = 0;
-
-  static gchar *label_texts[] = {
-    N_("<b>Comment:</b>"),
-    N_("<b>Description:</b>"),
-    N_("<b>Source:</b>"),
-    N_("<b>Type:</b>"),
-    N_("<b>Color:</b>"),
-    N_("<b>Draw Name:</b>"),
-    N_("<b>Distance Labels:</b>"),
-  };
   static gchar *stats_texts[] = {
     N_("<b>Track Length:</b>"),
     N_("<b>Trackpoints:</b>"),
@@ -3307,59 +3273,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     N_("<b>End:</b>"),
     N_("<b>Duration:</b>"),
   };
-  static gchar tmp_buf[50];
-  gdouble tmp_speed;
 
-  // Properties
-  widgets->w_comment = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
-  if ( tr->comment )
-    gtk_entry_set_text ( GTK_ENTRY(widgets->w_comment), tr->comment );
-  content_prop[cnt_prop++] = widgets->w_comment;
+  guint seg_count = vik_track_get_segment_count ( widgets->tr );
 
-  widgets->w_description = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
-  if ( tr->description )
-    gtk_entry_set_text ( GTK_ENTRY(widgets->w_description), tr->description );
-  content_prop[cnt_prop++] = widgets->w_description;
-
-  widgets->w_source = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
-  if ( tr->source )
-    gtk_entry_set_text ( GTK_ENTRY(widgets->w_source), tr->source );
-  content_prop[cnt_prop++] = widgets->w_source;
-
-  widgets->w_type = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
-  if ( tr->type )
-    gtk_entry_set_text ( GTK_ENTRY(widgets->w_type), tr->type );
-  content_prop[cnt_prop++] = widgets->w_type;
-
-  widgets->w_color = content_prop[cnt_prop++] = gtk_color_button_new_with_color ( &(tr->color) );
-
-  static gchar *draw_name_labels[] = {
-    N_("No"),
-    N_("Centre"),
-    N_("Start only"),
-    N_("End only"),
-    N_("Start and End"),
-    N_("Centre, Start and End"),
-    NULL
-  };
-
-  widgets->w_namelabel = content_prop[cnt_prop++] = vik_combo_box_text_new ();
-  gchar **pstr = draw_name_labels;
-  while ( *pstr )
-    vik_combo_box_text_append ( widgets->w_namelabel, *(pstr++) );
-  gtk_combo_box_set_active ( GTK_COMBO_BOX(widgets->w_namelabel), tr->draw_name_mode );
-
-  widgets->w_number_distlabels = content_prop[cnt_prop++] =
-   gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new(tr->max_number_dist_labels, 0, 100, 1, 1, 0)), 1, 0 );
-  gtk_widget_set_tooltip_text ( GTK_WIDGET(widgets->w_number_distlabels), _("Maximum number of distance labels to be shown") );
-
-  table = create_table (cnt_prop, label_texts, content_prop);
-
-  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), GTK_WIDGET(table), gtk_label_new(_("Properties")));
-
-  // Statistics
-  GtkWidget *content[20];
-  int cnt = 0;
+  // Don't use minmax_array(widgets->altitudes), as that is a simplified representative of the points
+  //  thus can miss the highest & lowest values by a few metres
+  gdouble min_alt, max_alt;
+  if ( !vik_track_get_minmax_alt (widgets->tr, &min_alt, &max_alt) )
+    min_alt = max_alt = NAN;
 
   vik_units_distance_t dist_units = a_vik_get_units_distance ();
 
@@ -3386,7 +3307,6 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", tp_count );
   widgets->w_tp_count = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
-  seg_count = vik_track_get_segment_count(tr) ;
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%u", seg_count );
   widgets->w_segment_count = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
@@ -3497,7 +3417,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     VikCoord vc;
     // Notional center of a track is simply an average of the bounding box extremities
     struct LatLon center = { (tr->bbox.north+tr->bbox.south)/2, (tr->bbox.east+tr->bbox.west)/2 };
-    vik_coord_load_from_latlon ( &vc, vik_trw_layer_get_coord_mode(vtl), &center );
+    vik_coord_load_from_latlon ( &vc, vik_trw_layer_get_coord_mode(widgets->vtl), &center );
 
     widgets->tz = vu_get_tz_at_location ( &vc );
 
@@ -3541,7 +3461,125 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   table = create_table (cnt, stats_texts, content);
 
-  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), GTK_WIDGET(table), gtk_label_new(_("Statistics")));
+  return table;
+}
+
+/**
+ *
+ */
+void vik_trw_layer_propwin_run ( GtkWindow *parent,
+                                 VikTrwLayer *vtl,
+                                 VikTrack *tr,
+                                 gpointer vlp,
+                                 VikViewport *vvp,
+                                 gboolean start_on_stats )
+{
+  PropWidgets *widgets = prop_widgets_new();
+  widgets->vtl = vtl;
+  widgets->vvp = vvp;
+  widgets->vlp = vlp;
+  widgets->tr = tr;
+
+  gint profile_size_value;
+  // Ensure minimum values
+  widgets->profile_width = 600 * vik_viewport_get_scale(vvp);
+  if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_WIDTH, &profile_size_value ) )
+    if ( profile_size_value > widgets->profile_width )
+      widgets->profile_width = profile_size_value;
+
+  widgets->profile_height = 300 * vik_viewport_get_scale(vvp);
+  if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, &profile_size_value ) )
+    if ( profile_size_value > widgets->profile_height )
+      widgets->profile_height = profile_size_value;
+
+  gchar *title = g_strdup_printf(_("%s - Track Properties"), tr->name);
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
+                         parent,
+                         GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
+                         GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+                         _("Split at _Marker"), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER,
+                         _("Split _Segments"), VIK_TRW_LAYER_PROPWIN_SPLIT,
+                         _("_Reverse"),        VIK_TRW_LAYER_PROPWIN_REVERSE,
+                         _("_Delete Dupl."),   VIK_TRW_LAYER_PROPWIN_DEL_DUP,
+                         GTK_STOCK_OK,     GTK_RESPONSE_ACCEPT,
+                         NULL);
+  widgets->dialog = dialog;
+  g_signal_connect( G_OBJECT(dialog), "response", G_CALLBACK(propwin_response_cb), widgets);
+
+  g_free(title);
+  GtkWidget *table;
+
+  gboolean DEM_available = a_dems_overlaps_bbox (tr->bbox);
+
+  widgets->elev_box = vik_trw_layer_create_profile(GTK_WIDGET(parent), widgets);
+  widgets->gradient_box = vik_trw_layer_create_gradient(GTK_WIDGET(parent), widgets);
+  widgets->speed_box = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), widgets);
+  widgets->dist_box = vik_trw_layer_create_dtdiag(GTK_WIDGET(parent), widgets);
+  widgets->elev_time_box = vik_trw_layer_create_etdiag(GTK_WIDGET(parent), widgets);
+  widgets->speed_dist_box = vik_trw_layer_create_sddiag(GTK_WIDGET(parent), widgets);
+  GtkWidget *graphs = gtk_notebook_new();
+
+  GtkWidget *content_prop[20];
+  int cnt_prop = 0;
+
+  static gchar *label_texts[] = {
+    N_("<b>Comment:</b>"),
+    N_("<b>Description:</b>"),
+    N_("<b>Source:</b>"),
+    N_("<b>Type:</b>"),
+    N_("<b>Color:</b>"),
+    N_("<b>Draw Name:</b>"),
+    N_("<b>Distance Labels:</b>"),
+  };
+
+  // Properties
+  widgets->w_comment = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+  if ( tr->comment )
+    gtk_entry_set_text ( GTK_ENTRY(widgets->w_comment), tr->comment );
+  content_prop[cnt_prop++] = widgets->w_comment;
+
+  widgets->w_description = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+  if ( tr->description )
+    gtk_entry_set_text ( GTK_ENTRY(widgets->w_description), tr->description );
+  content_prop[cnt_prop++] = widgets->w_description;
+
+  widgets->w_source = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+  if ( tr->source )
+    gtk_entry_set_text ( GTK_ENTRY(widgets->w_source), tr->source );
+  content_prop[cnt_prop++] = widgets->w_source;
+
+  widgets->w_type = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+  if ( tr->type )
+    gtk_entry_set_text ( GTK_ENTRY(widgets->w_type), tr->type );
+  content_prop[cnt_prop++] = widgets->w_type;
+
+  widgets->w_color = content_prop[cnt_prop++] = gtk_color_button_new_with_color ( &(tr->color) );
+
+  static gchar *draw_name_labels[] = {
+    N_("No"),
+    N_("Centre"),
+    N_("Start only"),
+    N_("End only"),
+    N_("Start and End"),
+    N_("Centre, Start and End"),
+    NULL
+  };
+
+  widgets->w_namelabel = content_prop[cnt_prop++] = vik_combo_box_text_new ();
+  gchar **pstr = draw_name_labels;
+  while ( *pstr )
+    vik_combo_box_text_append ( widgets->w_namelabel, *(pstr++) );
+  gtk_combo_box_set_active ( GTK_COMBO_BOX(widgets->w_namelabel), tr->draw_name_mode );
+
+  widgets->w_number_distlabels = content_prop[cnt_prop++] =
+   gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new(tr->max_number_dist_labels, 0, 100, 1, 1, 0)), 1, 0 );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(widgets->w_number_distlabels), _("Maximum number of distance labels to be shown") );
+
+  table = create_table (cnt_prop, label_texts, content_prop);
+
+  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), GTK_WIDGET(table), gtk_label_new(_("Properties")));
+
+  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_statistics_page(widgets, widgets->tr), gtk_label_new(_("Statistics")));
 
   // TODO: One day might be nice to have bar chart equivalent of the simple table values.
   // Only bother showing timing splits if times are available
@@ -3650,7 +3688,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), graphs, FALSE, FALSE, 0);
 
   gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER, FALSE);
-  if (seg_count <= 1)
+  if (vik_track_get_segment_count(tr) <= 1)
     gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_SPLIT, FALSE);
   if (vik_track_get_dup_point_count(tr) <= 0)
     gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_DEL_DUP, FALSE);
