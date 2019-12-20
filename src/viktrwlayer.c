@@ -864,6 +864,8 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncSelectMove)              trw_layer_select_move,
   (VikLayerFuncSelectRelease)           trw_layer_select_release,
   (VikLayerFuncSelectedViewportMenu)    trw_layer_show_selected_viewport_menu,
+
+  (VikLayerFuncRefresh)                 vik_trw_layer_propwin_main_refresh,
 };
 
 static gboolean have_diary_program = FALSE;
@@ -3369,6 +3371,47 @@ static void set_statusbar_msg_info_wpt ( VikTrwLayer *vtl, VikWaypoint *wpt )
 }
 
 /**
+ *
+ */
+static void close_vw_graphs_if_layer_different ( gpointer props, VikWindow *vw, VikTrwLayer *vtl )
+{
+  if ( props ) {
+    vik_trw_and_track_t vt = vik_trw_layer_propwin_main_get_track ( props );
+    if ( vt.vtl != vtl ) {
+      vik_window_close_graphs ( vw );
+    }
+  }
+}
+
+/**
+ * Returns TRUE if graphs to be (or continued to be) shown
+ */
+static gboolean show_graphs_for_track ( gpointer gw, VikWindow *vw, VikTrwLayer *vtl, VikTrack *track )
+{
+  // TODO Don't show when invisible due to the hierachy
+  // NB If the same track selected do nothing
+  if ( VIK_LAYER(vtl)->visible && track->visible ) {
+    if ( gw ) {
+      vik_trw_and_track_t vt = vik_trw_layer_propwin_main_get_track ( gw );
+      if ( vt.trk == track ) {
+        return TRUE;
+      } else {
+        vik_window_close_graphs ( vw );
+      }
+    }
+    GtkWidget *graphs = vik_window_get_graphs_widget ( vw );
+    VikViewport *vvp = vik_window_viewport ( vw );
+    gboolean show = vik_window_get_graphs_widgets_shown ( vw );
+    vik_window_set_graphs_widgets ( vw, vik_trw_layer_propwin_main(GTK_WINDOW(vw), vtl, track, vvp, graphs, show) );
+
+    return TRUE;
+  }
+  // Not visible so close
+  vik_window_close_graphs ( vw );
+  return FALSE;
+}
+
+/**
  * General layer selection function, find out which bit is selected and take appropriate action
  */
 static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp )
@@ -3384,11 +3427,14 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
   // Clear statusbar
   vik_statusbar_set_message ( vik_window_get_statusbar(vw), VIK_STATUSBAR_INFO, "" );
 
+  gpointer gw = vik_window_get_graphs_widgets ( vw );
+
   switch ( type )
     {
     case VIK_TREEVIEW_TYPE_LAYER:
       {
         vik_window_set_selected_trw_layer ( vw, l );
+        close_vw_graphs_if_layer_different ( gw, vw, l );
         return TRUE; // Mark for redraw
       }
       break;
@@ -3400,6 +3446,7 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
 	  case VIK_TRW_LAYER_SUBLAYER_TRACKS:
 	    {
               vik_window_set_selected_tracks ( vw, l->tracks, l );
+              close_vw_graphs_if_layer_different ( gw, vw, l );
               return TRUE; // Mark for redraw
 	    }
 	    break;
@@ -3407,12 +3454,14 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
 	    {
 	      VikTrack *track = g_hash_table_lookup ( l->tracks, sublayer );
               vik_window_set_selected_track ( vw, (gpointer)track, l );
-              return TRUE; // Mark for redraw
+              if ( show_graphs_for_track(gw, vw, l, track) )
+                return TRUE; // Mark for redraw
 	    }
 	    break;
 	  case VIK_TRW_LAYER_SUBLAYER_ROUTES:
 	    {
 	      vik_window_set_selected_tracks ( vw, l->routes, l );
+              close_vw_graphs_if_layer_different ( gw, vw, l );
               return TRUE; // Mark for redraw
 	    }
 	    break;
@@ -3420,12 +3469,14 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
 	    {
 	      VikTrack *track = g_hash_table_lookup ( l->routes, sublayer );
 	      vik_window_set_selected_track ( vw, (gpointer)track, l );
-              return TRUE; // Mark for redraw
+              if ( show_graphs_for_track(gw, vw, l, track) )
+                return TRUE; // Mark for redraw
 	    }
 	    break;
 	  case VIK_TRW_LAYER_SUBLAYER_WAYPOINTS:
 	    {
               vik_window_set_selected_waypoints ( vw, l->waypoints, l );
+              close_vw_graphs_if_layer_different ( gw, vw, l );
               return TRUE; // Mark for redraw
 	    }
 	    break;
@@ -3436,6 +3487,7 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
                 vik_window_set_selected_waypoint ( vw, (gpointer)wpt, l );
                 // Show some waypoint info
                 set_statusbar_msg_info_wpt ( l, wpt );
+                close_vw_graphs_if_layer_different ( gw, vw, l );
                 return TRUE; // Mark for redraw
               }
 	    }
@@ -9023,6 +9075,7 @@ static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *eve
       }
     }
 
+    // Selected item may have moved, so an update() not just a redraw()
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
   }
@@ -9089,8 +9142,8 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
         }
       }
 
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
-
+      // Selection change only (no change to the layer)
+      vik_layer_redraw ( VIK_LAYER(vtl) );
       return TRUE;
     }
   }
@@ -9134,7 +9187,8 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       if ( vtl->tpwin )
         my_tpwin_set_tp ( vtl );
 
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      // Selection change only (no change to the layer)
+      vik_layer_redraw ( VIK_LAYER(vtl) );
       return TRUE;
     }
   }
@@ -9169,7 +9223,8 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       if ( vtl->tpwin )
         my_tpwin_set_tp ( vtl );
 
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      // Selection change only (no change to the layer)
+      vik_layer_redraw ( VIK_LAYER(vtl) );
       return TRUE;
     }
   }
@@ -9634,7 +9689,8 @@ static gboolean tool_select_tp ( VikTrwLayer *vtl, TPSearchParams *params, gbool
     vtl->current_tp_id = params->closest_track_id;
     vtl->current_tp_track = g_hash_table_lookup ( vtl->tracks, params->closest_track_id );
     set_statusbar_msg_info_trkpt ( vtl, params->closest_tp );
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    // Selection change only (no change to the layer)
+    vik_layer_redraw ( VIK_LAYER(vtl) );
     return TRUE;
   }
 
@@ -9648,7 +9704,8 @@ static gboolean tool_select_tp ( VikTrwLayer *vtl, TPSearchParams *params, gbool
     vtl->current_tp_id = params->closest_track_id;
     vtl->current_tp_track = g_hash_table_lookup ( vtl->routes, params->closest_track_id );
     set_statusbar_msg_info_trkpt ( vtl, params->closest_tp );
-    vik_layer_emit_update ( VIK_LAYER(vtl) );
+    // Selection change only (no change to the layer)
+    vik_layer_redraw ( VIK_LAYER(vtl) );
     return TRUE;
   }
 
@@ -10115,8 +10172,15 @@ static gboolean tool_edit_route_new ( VikTrwLayer *vtl, GdkEventButton *event, V
 //     If not, create new track point
 static gboolean tool_edit_track_or_route_click_dispatch ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, gboolean is_track )
 {
-  if ( event->button != 1 )
-    return tool_edit_track_or_route_click ( vtl, event, vvp, FALSE );
+  gboolean ans = FALSE;
+  // goto is evil ;)
+  // but here I think for simple flow control to get to a commonal exit point it is sensible usage
+  //  (whereas before it would return from any of the goto uses)
+
+  if ( event->button != 1 ) {
+    ans = tool_edit_track_or_route_click ( vtl, event, vvp, FALSE );
+    goto my_end;
+  }
 
   TPSearchParams params;
   params.vvp = vvp;
@@ -10132,23 +10196,40 @@ static gboolean tool_edit_track_or_route_click_dispatch ( VikTrwLayer *vtl, GdkE
   if ( ! vtl->current_track || (vtl->current_track && vtl->current_track->is_route == is_track ) )
   {
     // attach to existing if shift pressed
-    if ( event->state & GDK_SHIFT_MASK )
-      return tool_edit_track_or_route_split ( vtl, &params, is_track );
+    if ( event->state & GDK_SHIFT_MASK ) {
+      ans = tool_edit_track_or_route_split ( vtl, &params, is_track );
+      goto my_end;
+    }
 
     // else, new track or route
-    if ( is_track )
-      return tool_edit_track_new ( vtl, event, vvp );
-    else
-      return tool_edit_route_new ( vtl, event, vvp );
+    if ( is_track ) {
+      ans = tool_edit_track_new ( vtl, event, vvp );
+      goto my_end;
+    } else {
+      ans = tool_edit_route_new ( vtl, event, vvp );
+      goto my_end;
+    }
   }
   else
   {
     // try to join existing if shift pressed
-    if ( event->state & GDK_SHIFT_MASK )
-      return tool_edit_track_or_route_join ( vtl, &params, FALSE );
-    else
-      return tool_edit_track_or_route_click ( vtl, event, vvp, FALSE );
+    if ( event->state & GDK_SHIFT_MASK ) {
+      ans = tool_edit_track_or_route_join ( vtl, &params, FALSE );
+    goto my_end;
+    } else {
+      ans = tool_edit_track_or_route_click ( vtl, event, vvp, FALSE );
+      goto my_end;
+    }
   }
+
+ my_end:
+  // Show properties (this is done after point(s) have been added so it gets the latest track information)
+  if ( vtl->current_track ) {
+    VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+    gpointer gw = vik_window_get_graphs_widgets ( vw );
+    (void)show_graphs_for_track(gw, vw, vtl, vtl->current_track );
+  }
+  return ans;
 }
 
 static gboolean tool_edit_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )

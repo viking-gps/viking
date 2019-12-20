@@ -51,6 +51,7 @@
 #include "libgeoclue.h"
 #endif
 #include "viktrwlayer.h"
+#include "viktrwlayer_propwin.h"
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -173,10 +174,15 @@ static gboolean window_save ( VikWindow *vw );
 struct _VikWindow {
   GtkWindow gtkwindow;
   GtkWidget *hpaned;
+  GtkWidget *vpaned;
+  gdouble vpaned_pc; // A percentage: 0.0..1.0 (from the top of the screen)
+  gboolean vpaned_shown;
   VikViewport *viking_vvp;
   VikLayersPanel *viking_vlp;
   VikStatusbar *viking_vs;
   VikToolbar *viking_vtb;
+  GtkWidget *graphs;
+  gpointer graphs_widgets; // viktrwlayer_propwin.c : _propwidgets
 
   GtkWidget *main_vbox;
   GtkWidget *menu_hbox;
@@ -196,6 +202,7 @@ struct _VikWindow {
   // NB scale, centermark and highlight are in viewport.
   gboolean show_full_screen;
   gboolean show_side_panel;
+  gboolean show_track_graphs;
   gboolean show_statusbar;
   gboolean show_toolbar;
   gboolean show_main_menu;
@@ -348,6 +355,7 @@ static void destroy_window ( GtkWidget *widget,
 #define VIK_SETTINGS_WIN_DEFAULT_TOOL "window_default_tool"
 
 #define VIK_SETTINGS_WIN_SIDEPANEL "window_sidepanel"
+#define VIK_SETTINGS_WIN_GRAPHS "window_track_graphs"
 #define VIK_SETTINGS_WIN_STATUSBAR "window_statusbar"
 #define VIK_SETTINGS_WIN_TOOLBAR "window_toolbar"
 // Menubar setting to off is never auto saved in case it's accidentally turned off
@@ -381,6 +389,14 @@ VikWindow *vik_window_new_window ()
         if ( ! sidepanel ) {
           gtk_widget_hide ( GTK_WIDGET(vw->viking_vlp) );
           GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanel" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
+
+      gboolean track_graphs;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_GRAPHS, &track_graphs ) )
+        if ( ! track_graphs ) {
+          gtk_widget_hide ( GTK_WIDGET(vw->graphs) );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewTrackGraphs" );
           gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
         }
 
@@ -801,6 +817,12 @@ static void toolbar_reload_cb ( GtkActionGroup *grp, gpointer gp )
   center_changed_cb ( vw );
 }
 
+// Force the previously hidden widgets inside the container to get drawn
+static void map_signal_cb ( VikWindow *vw )
+{
+  gtk_widget_show_all ( vw->graphs );
+}
+
 static void default_tool_enable ( VikWindow *vw )
 {
   gchar *tool_str = NULL;
@@ -843,6 +865,7 @@ static void default_tool_enable ( VikWindow *vw )
 #define VIK_SETTINGS_WIN_WIDTH "window_width"
 #define VIK_SETTINGS_WIN_HEIGHT "window_height"
 #define VIK_SETTINGS_WIN_PANE_POSITION "window_horizontal_pane_position"
+#define VIK_SETTINGS_WIN_VPANE_POSITION "window_vertical_main_pane_position_decimal_percent"
 #define VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH "window_save_image_width"
 #define VIK_SETTINGS_WIN_SAVE_IMAGE_HEIGHT "window_save_image_height"
 #define VIK_SETTINGS_WIN_SAVE_IMAGE_PNG "window_save_image_as_png"
@@ -945,9 +968,17 @@ static void vik_window_init ( VikWindow *vw )
   // Set initial button sensitivity
   center_changed_cb ( vw );
 
+  vw->vpaned = gtk_vpaned_new ();
+  vw->graphs = gtk_frame_new ( NULL );
+
+  g_signal_connect_swapped (G_OBJECT(vw->graphs), "map", G_CALLBACK(map_signal_cb), vw);
+
+  gtk_paned_pack1 ( GTK_PANED(vw->vpaned), GTK_WIDGET(vw->viking_vvp), TRUE, TRUE );
+  gtk_paned_pack2 ( GTK_PANED(vw->vpaned), vw->graphs, FALSE, TRUE );
+
   vw->hpaned = gtk_hpaned_new ();
-  gtk_paned_pack1 ( GTK_PANED(vw->hpaned), GTK_WIDGET (vw->viking_vlp), FALSE, TRUE );
-  gtk_paned_pack2 ( GTK_PANED(vw->hpaned), GTK_WIDGET (vw->viking_vvp), TRUE, TRUE );
+  gtk_paned_pack1 ( GTK_PANED(vw->hpaned), GTK_WIDGET(vw->viking_vlp), FALSE, TRUE );
+  gtk_paned_pack2 ( GTK_PANED(vw->hpaned), vw->vpaned, TRUE, TRUE );
 
   /* This packs the button into the window (a gtk container). */
   gtk_box_pack_start (GTK_BOX(vw->main_vbox), vw->hpaned, TRUE, TRUE, 0);
@@ -960,6 +991,8 @@ static void vik_window_init ( VikWindow *vw )
 
   gint height = VIKING_WINDOW_HEIGHT;
   gint width = VIKING_WINDOW_WIDTH;
+
+  vw->vpaned_pc = -1.0; // Auto positioning
 
   if ( a_vik_get_restore_window_state() ) {
     if ( a_settings_get_integer ( VIK_SETTINGS_WIN_HEIGHT, &height ) ) {
@@ -1001,11 +1034,18 @@ static void vik_window_init ( VikWindow *vw )
       position = -1;
     }
     gtk_paned_set_position ( GTK_PANED(vw->hpaned), position );
+
+    gdouble pos;
+    if ( a_settings_get_double(VIK_SETTINGS_WIN_VPANE_POSITION, &pos) ) {
+      if ( pos > 0.0 && pos < 1.0 )
+        vw->vpaned_pc = pos;
+    }
   }
 
   gtk_window_set_default_size ( GTK_WINDOW(vw), width, height );
 
   vw->show_side_panel = TRUE;
+  vw->show_track_graphs = TRUE;
   vw->show_statusbar = TRUE;
   vw->show_toolbar = TRUE;
   vw->show_main_menu = TRUE;
@@ -1034,6 +1074,18 @@ static void vik_window_init ( VikWindow *vw )
 static VikWindow *window_new ()
 {
   return VIK_WINDOW ( g_object_new ( VIK_WINDOW_TYPE, NULL ) );
+}
+
+/**
+ * Percentage is from the top / left depending on the pane type
+ */
+gdouble get_pane_position_as_percent ( GtkWidget *pane )
+{
+  GtkAllocation allocation;
+  gtk_widget_get_allocation ( pane, &allocation );
+  gint position = gtk_paned_get_position ( GTK_PANED(pane) );
+  gdouble pc = (gdouble)position / (gdouble)allocation.height;
+  return pc;
 }
 
 /**
@@ -1200,6 +1252,8 @@ static gboolean delete_event( VikWindow *vw )
 
       a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vlp)) );
 
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_GRAPHS, GTK_WIDGET_VISIBLE (vw->graphs) );
+
       a_settings_set_boolean ( VIK_SETTINGS_WIN_STATUSBAR, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vs)) );
 
       a_settings_set_boolean ( VIK_SETTINGS_WIN_TOOLBAR, GTK_WIDGET_VISIBLE (toolbar_get_widget(vw->viking_vtb)) );
@@ -1217,6 +1271,14 @@ static gboolean delete_event( VikWindow *vw )
       }
 
       a_settings_set_integer ( VIK_SETTINGS_WIN_PANE_POSITION, gtk_paned_get_position (GTK_PANED(vw->hpaned)) );
+
+      // Only save the value if the vpane is being used
+      if ( vw->show_track_graphs ) {
+        // Get latest value
+        if ( vw->vpaned_shown )
+          vw->vpaned_pc = get_pane_position_as_percent ( vw->vpaned );
+        a_settings_set_double ( VIK_SETTINGS_WIN_VPANE_POSITION, vw->vpaned_pc );
+      }
     }
 
     a_settings_set_integer ( VIK_SETTINGS_WIN_SAVE_IMAGE_WIDTH, vw->draw_image_width );
@@ -1290,6 +1352,27 @@ void vik_window_set_redraw_trigger(VikLayer *vl)
     vw->trigger = vl;
 }
 
+/**
+ * If graphs shown, then scale pane according to saved value
+ */
+static void scale_graphs_pane ( VikWindow *vw )
+{
+  if ( vw->graphs_widgets ) {
+    if ( vw->show_track_graphs ) {
+      GtkAllocation allocation;
+      gtk_widget_get_allocation ( vw->vpaned, &allocation );
+      guint position;
+      if ( vw->vpaned_pc <= 0.0 || vw->vpaned_pc > 1.0 ) {
+        position = allocation.height * 0.8;
+      } else {
+        position = allocation.height * vw->vpaned_pc;
+      }
+      gtk_paned_set_position ( GTK_PANED(vw->vpaned), position );
+      vw->vpaned_shown = TRUE;
+    }
+  }
+}
+
 static gboolean window_configure_event ( VikWindow *vw )
 {
   static gboolean first = TRUE;
@@ -1314,6 +1397,11 @@ static gboolean window_configure_event ( VikWindow *vw )
     /* We set cursor, even if it is NULL: it resets to default */
     gdk_window_set_cursor ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), vw->viewport_cursor );
   }
+
+  // NB Would be nice to resize the graphs pane here when the overall window size has changed
+  //  partically when jumping from small window <-> maximised
+  // But ATM this function also gets called when moving the vpane & it's not easy to separate out the individual drawing parts
+
   return FALSE;
 }
 
@@ -2828,6 +2916,15 @@ static void toggle_full_screen ( VikWindow *vw )
     gtk_window_unfullscreen ( GTK_WINDOW(vw) );
 }
 
+static void toggle_track_graphs ( VikWindow *vw )
+{
+  vw->show_track_graphs = !vw->show_track_graphs;
+  if ( vw->show_track_graphs )
+    gtk_widget_show ( GTK_WIDGET(vw->graphs) );
+  else
+    gtk_widget_hide ( GTK_WIDGET(vw->graphs) );
+}
+
 static void toggle_statusbar ( VikWindow *vw )
 {
   vw->show_statusbar = !vw->show_statusbar;
@@ -2905,6 +3002,17 @@ static void tb_full_screen_cb ( GtkAction *a, VikWindow *vw )
     gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
   else
     toggle_full_screen ( vw );
+}
+
+static void tb_view_track_graphs_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean next_state = !vw->show_track_graphs;
+  GtkWidget *check_box = get_show_widget_by_name ( vw, gtk_action_get_name(a) );
+  gboolean menu_state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
+  if ( next_state != menu_state )
+    gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
+  else
+    toggle_track_graphs ( vw );
 }
 
 static void tb_view_statusbar_cb ( GtkAction *a, VikWindow *vw )
@@ -3067,6 +3175,22 @@ static void view_side_panel_cb ( GtkAction *a, VikWindow *vw )
   }
   else
     toggle_side_panel ( vw );
+}
+
+
+static void view_track_graphs_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean next_state = !vw->show_track_graphs;
+  GtkToggleToolButton *tbutton = (GtkToggleToolButton *)toolbar_get_widget_by_name ( vw->viking_vtb, gtk_action_get_name(a) );
+  if ( tbutton ) {
+    gboolean tb_state = gtk_toggle_tool_button_get_active ( tbutton );
+    if ( next_state != tb_state )
+      gtk_toggle_tool_button_set_active ( tbutton, next_state );
+    else
+      toggle_track_graphs ( vw );
+  }
+  else
+    toggle_track_graphs ( vw );
 }
 
 static void view_statusbar_cb ( GtkAction *a, VikWindow *vw )
@@ -3343,6 +3467,49 @@ static void window_set_filename ( VikWindow *vw, const gchar *filename )
 static const gchar *window_get_filename ( VikWindow *vw )
 {
   return vw->filename ? a_file_basename ( vw->filename ) : _("Untitled");
+}
+
+GtkWidget *vik_window_get_graphs_widget ( VikWindow *vw )
+{
+  return vw->graphs;
+}
+
+gpointer vik_window_get_graphs_widgets ( VikWindow *vw )
+{
+  return vw->graphs_widgets;
+}
+
+void vik_window_set_graphs_widgets ( VikWindow *vw, gpointer gp )
+{
+  vw->graphs_widgets = gp;
+  // Manual restore of previous pane position
+  scale_graphs_pane ( vw );
+}
+
+gboolean vik_window_get_graphs_widgets_shown ( VikWindow *vw )
+{
+  return vw->show_track_graphs;
+}
+
+/**
+ * Close the graphs portion of the main display
+ *
+ */
+void vik_window_close_graphs ( VikWindow *vw )
+{
+  if ( vw->graphs_widgets ) {
+    // Store current position of the separator so we can restore it
+    vw->vpaned_pc = get_pane_position_as_percent ( vw->vpaned );
+
+    vik_trw_layer_propwin_main_close ( vw->graphs_widgets );
+    vw->graphs_widgets = NULL;
+
+    // The 'hide' - move the handle all the way to the end
+    GtkAllocation allocation;
+    gtk_widget_get_allocation ( vw->vpaned, &allocation );
+    gtk_paned_set_position ( GTK_PANED(vw->vpaned), allocation.height );
+    vw->vpaned_shown = FALSE;
+  }
 }
 
 GtkWidget *vik_window_get_drawmode_button ( VikWindow *vw, VikViewportDrawMode mode )
@@ -5064,6 +5231,7 @@ static GtkToggleActionEntry toggle_entries[] = {
   { "ShowHighlight",  GTK_STOCK_UNDERLINE,  N_("Show _Highlight"),           "F7",         N_("Show Highlight"),                          (GCallback)toggle_draw_highlight, TRUE },
   { "FullScreen",     GTK_STOCK_FULLSCREEN, N_("_Full Screen"),              "F11",        N_("Activate full screen mode"),               (GCallback)full_screen_cb, FALSE },
   { "ViewSidePanel",  GTK_STOCK_INDEX,      N_("Show Side _Panel"),          "F9",         N_("Show Side Panel"),                         (GCallback)view_side_panel_cb, TRUE },
+  { "ViewTrackGraphs",NULL,                 N_("Show Track _Graphs"),        "<shift>F12", N_("Show Track Graphs"),                       (GCallback)view_track_graphs_cb, TRUE },
   { "ViewStatusBar",  NULL,                 N_("Show Status_bar"),           "F12",        N_("Show Statusbar"),                          (GCallback)view_statusbar_cb, TRUE },
   { "ViewToolbar",    NULL,                 N_("Show _Toolbar"),             "F3",         N_("Show Toolbar"),                            (GCallback)view_toolbar_cb, TRUE },
   { "ViewMainMenu",   NULL,                 N_("Show _Menu"),                "F4",         N_("Show Menu"),                               (GCallback)view_main_menu_cb, TRUE },
@@ -5078,6 +5246,7 @@ static gpointer toggle_entries_toolbar_cb[] = {
   (GCallback)tb_set_draw_highlight,
   (GCallback)tb_full_screen_cb,
   (GCallback)tb_view_side_panel_cb,
+  (GCallback)tb_view_track_graphs_cb,
   (GCallback)tb_view_statusbar_cb,
   (GCallback)tb_view_toolbar_cb,
   (GCallback)tb_view_main_menu_cb,
@@ -5407,6 +5576,10 @@ void vik_window_set_selected_waypoint ( VikWindow *vw, gpointer *vwp, gpointer v
 
 gboolean vik_window_clear_selected ( VikWindow *vw )
 {
+  if ( vw->graphs_widgets ) {
+    vik_window_close_graphs ( vw );
+  }
+
   gboolean need_redraw = FALSE;
   vw->containing_vtl = NULL;
   if ( vw->selected_vtl != NULL ) {

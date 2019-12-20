@@ -195,6 +195,8 @@ VikLayerInterface vik_mapnik_layer_interface = {
 	(VikLayerFuncSelectMove)              NULL,
 	(VikLayerFuncSelectRelease)           NULL,
 	(VikLayerFuncSelectedViewportMenu)    NULL,
+
+	(VikLayerFuncRefresh)                 NULL,
 };
 
 struct _VikMapnikLayer {

@@ -183,6 +183,11 @@ typedef gboolean      (*VikLayerFuncSelectedViewportMenu)  (VikLayer *, guint, V
 
 typedef double        (*VikLayerFuncGetTimestamp)          (VikLayer *);
 
+// 'Self' callback from vik_layer_emit_update()
+//  i.e. don't call that function from this function as it will get stuck in a infinite loop
+//  useful to hook in a separate redraw
+typedef gboolean      (*VikLayerFuncRefresh)               (VikLayer *);
+
 typedef enum {
   VIK_MENU_ITEM_PROPERTY=1,
   VIK_MENU_ITEM_CUT=2,
@@ -259,6 +264,8 @@ struct _VikLayerInterface {
   VikLayerFuncSelectMove            select_move;
   VikLayerFuncSelectRelease         select_release;
   VikLayerFuncSelectedViewportMenu  show_viewport_menu;
+
+  VikLayerFuncRefresh               refresh;
 };
 
 VikLayerInterface *vik_layer_get_interface ( VikLayerTypeEnum type );
@@ -278,6 +285,8 @@ gboolean vik_layer_set_param ( VikLayer *vl, VikLayerSetParam *vlsp );
 void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp );
 
 void vik_layer_emit_update ( VikLayer *vl );
+
+void vik_layer_redraw ( VikLayer *vl );
 
 /* GUI */
 void vik_layer_set_menu_items_selection(VikLayer *l, guint16 selection);

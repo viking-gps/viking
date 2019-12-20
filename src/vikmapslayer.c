@@ -268,6 +268,8 @@ VikLayerInterface vik_maps_layer_interface = {
   (VikLayerFuncSelectMove)              NULL,
   (VikLayerFuncSelectRelease)           NULL,
   (VikLayerFuncSelectedViewportMenu)    NULL,
+
+  (VikLayerFuncRefresh)                 NULL,
 };
 
 struct _VikMapsLayer {

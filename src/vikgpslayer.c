@@ -309,6 +309,8 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncSelectMove)              NULL,
   (VikLayerFuncSelectRelease)           NULL,
   (VikLayerFuncSelectedViewportMenu)    NULL,
+
+  (VikLayerFuncRefresh)                 NULL,
 };
 
 enum {TRW_DOWNLOAD=0, TRW_UPLOAD,

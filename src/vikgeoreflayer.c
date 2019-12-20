@@ -172,6 +172,8 @@ VikLayerInterface vik_georef_layer_interface = {
   (VikLayerFuncSelectMove)              NULL,
   (VikLayerFuncSelectRelease)           NULL,
   (VikLayerFuncSelectedViewportMenu)    NULL,
+
+  (VikLayerFuncRefresh)                 NULL,
 };
 
 typedef struct {

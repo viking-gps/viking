@@ -238,6 +238,18 @@ buttons at the bottom of the layers panel.
 The main &appname; area where the layer data is drawn, is called the <emphasis role="bold">viewport</emphasis>.
 </para>
 </section>
+<section><title>Track Graphs</title>
+<para>
+Below the viewport can be shown track (and route) elevation/distance and time/speed (tracks only) graphs of the selected item.
+These are the same graphs as shown in <xref linkend="track_properties"/>.
+The graphs will automatically hide itself when nothing or no suitable item is selected.
+</para>
+<para>
+Moving the mouse pointer over the graphs will show a tooltip readout of the nearest trackpoint.
+Similarily to the track properties graphs, left clicking will center the viewport on the trackpoint.
+A right click menu offers controls of the drawing options, a subset of track operations and access to further information dialogs.
+</para>
+</section>
 <section><title>Statusbar</title>
 <para>This provides a readout of various information:</para>
 <itemizedlist>
@@ -373,6 +385,7 @@ Other function keys control turn on/off visibility of various elements:
 <listitem><para><keycap>Shift+F9</keycap> Toggle visibility of the Layers Panel buttons</para></listitem>
 <listitem><para><keycap>F9</keycap> Toggle visibility of the Layers Panel</para></listitem>
 <listitem><para><keycap>F12</keycap> Toggle visibility of the Statusbar</para></listitem>
+<listitem><para><keycap>Shift+F12</keycap> Toggle visibility of the Track Graphs</para></listitem>
 </itemizedlist>
 <para>
 Standard shortcuts are provided for normal GUI operations: such as creating new files, opening, saving and exitting.
@@ -1175,7 +1188,7 @@ Opens a new dialog with the list. As described in the Aggregate layer <xref link
 </variablelist>
 </section>
 
-<section xreflabel="Track and Route Properties"><title>Track and Route Properties</title>
+<section id='track_properties' xreflabel="Track and Route Properties"><title>Track and Route Properties</title>
 <para>
 This shows several tabs for properties and useful statistics about a track or a route, including elevation-distance and speed-time graphs (if data is available).
 Moving the mouse pointer over the graph displays values related to that point along the track.
@@ -1192,7 +1205,7 @@ The difference between Speed vs GPS Speed is that GPS Speed is taken directly fr
 Typically speeds used in Viking are calculated between the points time and position differences.
 This is due to the reporting of speed values in source data is not mandatory and often not present.
 </para>
-<section id='track_properties' xreflabel="Track and Route Properties"><title>Track and Route Properties Tab</title>
+<section xreflabel="Track and Route Properties"><title>Track and Route Properties Tab</title>
 <para>
 <figure>
 <title>Properties Tab: Example</title>
