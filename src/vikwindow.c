@@ -1247,7 +1247,7 @@ static gboolean draw_sync ( VikWindow *vw )
 {
   vik_viewport_sync(vw->viking_vvp);
   draw_status ( vw );
-  return TRUE;
+  return FALSE;
 }
 
 /*
