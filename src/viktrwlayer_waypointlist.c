@@ -31,6 +31,8 @@
 #include "viktrwlayer_waypointlist.h"
 #include "viktrwlayer_wpwin.h"
 #include "vikutils.h"
+#include "ui_util.h"
+#include "dem.h"
 
 // Long formatted date+basic time - listing this way ensures the string comparison sort works - so no local type format %x or %c here!
 #define WAYPOINT_LIST_DATE_FORMAT "%Y-%m-%d %H:%M"
@@ -455,11 +457,15 @@ static void trw_layer_waypoint_list_add ( vik_trw_waypoint_list_t *vtdl,
 	visible = visible && vik_trw_layer_get_waypoints_visibility(vtl);
 
 	gdouble alt = wpt->altitude;
-	switch (height_units) {
-	case VIK_UNITS_HEIGHT_FEET: alt = VIK_METERS_TO_FEET(alt); break;
-	default:
-		// VIK_UNITS_HEIGHT_METRES: no need to convert
-		break;
+	if ( isnan(alt) ) {
+		alt = VIK_DEM_INVALID_ELEVATION;
+	} else {
+		switch (height_units) {
+		case VIK_UNITS_HEIGHT_FEET: alt = VIK_METERS_TO_FEET(alt); break;
+		default:
+			// VIK_UNITS_HEIGHT_METRES: no need to convert
+			break;
+		}
 	}
 
 	gtk_tree_store_append ( store, &t_iter, NULL );
@@ -492,6 +498,29 @@ gint sort_pixbuf_compare_func ( GtkTreeModel *model,
 	if ( !wpt2 ) return 0;
 
 	return g_strcmp0 ( wpt1->symbol, wpt2->symbol );
+}
+
+/**
+ * format_elev_cell_data_func
+ *
+ * Integer display handling invalid/undefined elevation values
+ *
+ */
+static void format_elev_cell_data_func ( GtkTreeViewColumn *col,
+                                         GtkCellRenderer   *renderer,
+                                         GtkTreeModel      *model,
+                                         GtkTreeIter       *iter,
+                                         gpointer           user_data )
+{
+	gint value;
+	gchar buf[20];
+	gint column = GPOINTER_TO_INT(user_data);
+	gtk_tree_model_get ( model, iter, column, &value, -1 );
+	if ( value == VIK_DEM_INVALID_ELEVATION )
+		g_snprintf ( buf, sizeof(buf), "--" );
+	else
+		g_snprintf ( buf, sizeof(buf), "%d", value );
+	g_object_set ( renderer, "text", buf, NULL );
 }
 
 /**
@@ -579,9 +608,12 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	gtk_tree_view_column_set_expand ( column, TRUE );
 
 	if ( height_units == VIK_UNITS_HEIGHT_FEET )
-		(void)ui_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
 	else
-		(void)ui_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
+	// Apply own formatting of the data
+	gtk_tree_view_column_set_cell_data_func ( column, renderer, format_elev_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL);
+
 
 	GtkCellRenderer *renderer_pixbuf = gtk_cell_renderer_pixbuf_new ();
 	g_object_set (G_OBJECT (renderer_pixbuf), "xalign", 0.5, NULL);
