@@ -501,7 +501,6 @@ static void val_analyse_item_maybe ( vik_trw_and_track_t *vtlist, const gpointer
 			return;
 	}
 
-	gboolean include_no_times = FALSE;
 	val_analyse_track ( trk, tot->include_no_times );
 }
 
