@@ -24,7 +24,7 @@
 #define _DATASOURCE_GPS_H
 
 #include "viking.h"
-#include "gtk/gtk.h"
+#include "vikgpslayer.h"
 
 G_BEGIN_DECLS
 

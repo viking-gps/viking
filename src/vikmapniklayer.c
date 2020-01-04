@@ -19,6 +19,7 @@
  *
  */
 #include "viking.h"
+#include "vikmapniklayer.h"
 #include <ctype.h>
 
 #include "map_ids.h"

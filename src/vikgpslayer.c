@@ -21,6 +21,7 @@
  *
  */
 #include "viking.h"
+#include "vikgpslayer.h"
 #include "icons/icons.h"
 #include "babel.h"
 #include "viktrwlayer.h"

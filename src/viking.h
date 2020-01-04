@@ -55,15 +55,9 @@
 #include "viklayer_defaults.h"
 #include "vikaggregatelayer.h"
 #include "viklayerspanel.h"
-#include "vikcoordlayer.h"
-#include "vikgeoreflayer.h"
 #include "vikstatus.h"
 #include "vikfileentry.h"
 #include "viktrwlayer.h"
-#include "vikgpslayer.h"
-#ifdef HAVE_LIBMAPNIK
-#include "vikmapniklayer.h"
-#endif
 #include "clipboard.h"
 #include "dialog.h"
 #include "file.h"

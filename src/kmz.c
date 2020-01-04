@@ -31,6 +31,7 @@
 #ifdef HAVE_EXPAT_H
 #include <expat.h>
 #endif
+#include "vikgeoreflayer.h"
 
 #ifdef HAVE_ZIP_H
 /**

@@ -20,6 +20,7 @@
  *
  */
 #include "viking.h"
+#include "vikgeoreflayer.h"
 #include <ctype.h>
 
 #include "preferences.h"

@@ -29,6 +29,7 @@
 #include "gpsmapper.h"
 #include "compression.h"
 #include "file_magic.h"
+#include "vikgpslayer.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>

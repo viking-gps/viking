@@ -20,6 +20,7 @@
  *
  */
 #include "viking.h"
+#include "vikgpslayer.h"
 #include "viktrwlayer_analysis.h"
 #include "viktrwlayer_tracklist.h"
 #include "viktrwlayer_waypointlist.h"
