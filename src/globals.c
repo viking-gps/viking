@@ -28,10 +28,10 @@
 #endif
 
 #include <glib/gi18n.h>
+#include <math.h>
 
 #include "globals.h"
 #include "preferences.h"
-#include "math.h"
 #include "dir.h"
 
 gboolean vik_debug = FALSE;

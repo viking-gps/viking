@@ -22,11 +22,11 @@
 
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <math.h>
 
 #include "background.h"
 #include "settings.h"
 #include "util.h"
-#include "math.h"
 #include "uibuilder.h"
 #include "globals.h"
 #include "preferences.h"
