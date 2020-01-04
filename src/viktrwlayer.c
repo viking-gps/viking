@@ -25,11 +25,6 @@
  */
 /* WARNING: If you go beyond this point, we are NOT responsible for any ill effects on your sanity */
 /* viktrwlayer.c -- 8000+ lines can make a difference in the state of things */
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "viking.h"
 #include "vikmapslayer.h"
 #include "vikgpslayer.h"
@@ -61,27 +56,11 @@
 #include "datasource_gps.h"
 #include "vikexttools.h"
 #include "vikexttool_datasources.h"
-#include "ui_util.h"
 #include "vikrouting.h"
-
 #include "icons/icons.h"
 
-#ifdef HAVE_MATH_H
-#include <math.h>
-#endif
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#include <stdio.h>
 #include <ctype.h>
-
 #include <gdk/gdkkeysyms.h>
-#include <glib.h>
-#include <glib/gstdio.h>
-#include <glib/gi18n.h>
 
 #define VIK_TRW_LAYER_TRACK_GC 6
 #define VIK_TRW_LAYER_TRACK_GCS 10

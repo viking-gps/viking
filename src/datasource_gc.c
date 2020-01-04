@@ -23,10 +23,6 @@
 #include "config.h"
 #endif
 #ifdef VIK_CONFIG_GEOCACHES
-#include <string.h>
-
-#include <glib/gi18n.h>
-
 #include "viking.h"
 #include "babel.h"
 #include "gpx.h"

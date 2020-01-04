@@ -19,22 +19,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#ifdef HAVE_MATH_H
-#include <math.h>
-#endif
-#include <glib.h>
-#include <glib/gstdio.h>
-#include <glib/gprintf.h>
-#include <glib/gi18n.h>
-
 #include "viking.h"
-
 #include "vikgotoxmltool.h"
 
 static void vik_goto_xml_tool_finalize ( GObject *gob );

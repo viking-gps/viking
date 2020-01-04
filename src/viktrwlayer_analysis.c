@@ -21,16 +21,8 @@
  ***********************************************************
  *
  */
-
-#include <math.h>
-#include <time.h>
-#include <string.h>
-#include <glib/gprintf.h>
-#include <glib/gi18n.h>
-
 #include "viking.h"
 #include "viktrwlayer_analysis.h"
-#include "ui_util.h"
 
 // Units of each item are in SI Units
 // (as returned by the appropriate internal viking track functions)

@@ -23,13 +23,6 @@
  *  Similar to the track and trackpoint properties dialogs,
  *   this is made a separate file for ease of grouping related stuff together
  */
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
-#include <glib/gi18n.h>
 #include "viking.h"
 #include "vikfilelist.h"
 #include "geotag_exif.h"

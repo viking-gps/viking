@@ -19,10 +19,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include <math.h>
-#include <stdlib.h>
-#include <glib/gi18n.h>
-
 #include "viktrwlayer_wpwin.h"
 #include "degrees_converters.h"
 #include "garminsymbols.h"
@@ -33,7 +29,6 @@
 #include "viking.h"
 #include "vikdatetime_edit_dialog.h"
 #include "vikgoto.h"
-#include "ui_util.h"
 
 static void update_time ( GtkWidget *widget, VikWaypoint *wp )
 {

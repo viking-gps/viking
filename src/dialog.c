@@ -20,21 +20,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "viking.h"
 #include "degrees_converters.h"
 #include "authors.h"
 #include "documenters.h"
-#include "ui_util.h"
 
-#include <glib/gi18n.h>
-
-#include <stdlib.h>
-#include <string.h>
 #include <ctype.h>
 
 void a_dialog_msg ( GtkWindow *parent, gint type, const gchar *info, const gchar *extra )

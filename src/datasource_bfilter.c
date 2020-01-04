@@ -20,12 +20,6 @@
  *
  * See: http://www.gpsbabel.org/htmldoc-development/Data_Filters.html
  */
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-#include <string.h>
-#include <glib/gi18n.h>
-
 #include "viking.h"
 #include "babel.h"
 #include "gpx.h"

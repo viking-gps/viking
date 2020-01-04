@@ -20,13 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <glib.h>
 #include <unistd.h>
-#include <glib/gstdio.h>
-#include <glib/gi18n.h>
 
 #include "babel.h"
 #include "babel_ui.h"

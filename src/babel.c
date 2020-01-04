@@ -30,22 +30,13 @@
  *  one can use shell_command option but this will be OS platform specific
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "viking.h"
 #include "gpx.h"
 #include "babel.h"
 #include "preferences.h"
-#include <stdio.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#include <string.h>
-#include <glib.h>
-#include <glib/gstdio.h>
-#include <glib/gi18n.h>
 
 /* TODO in the future we could have support for other shells (change command strings), or not use a shell at all */
 #define BASH_LOCATION "/bin/bash"

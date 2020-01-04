@@ -21,16 +21,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-#include <math.h>
-#include <string.h>
-#include <glib/gi18n.h>
-#include <gdk-pixbuf/gdk-pixdata.h>
-
 #include "viking.h"
 #include "viktrwlayer_propwin.h"
 #include "dems.h"
-#include "ui_util.h"
 
 #define BLOB_SIZE 4
 

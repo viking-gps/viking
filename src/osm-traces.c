@@ -18,28 +18,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <errno.h>
-#include <time.h>
 
 #include <curl/curl.h>
 #include <curl/easy.h>
-
-#include <glib.h>
-#include <glib/gstdio.h>
-#include <glib/gi18n.h>
 
 #include "viking.h"
 #include "viktrwlayer.h"
 #include "osm-traces.h"
 #include "gpx.h"
-#include "ui_util.h"
 #include "background.h"
 #include "preferences.h"
 #include "curl_download.h"

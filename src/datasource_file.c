@@ -19,16 +19,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-#include <string.h>
-
-#include <glib/gprintf.h>
-#include <glib/gi18n.h>
-
-#include <gtk/gtk.h>
-
 #include "viking.h"
 #include "babel.h"
 #include "gpx.h"

@@ -30,14 +30,10 @@
 #include "config.h"
 #endif
 
-#include <stdlib.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 #include <errno.h>
-#include <string.h>
-#include <glib.h>
-#include <glib/gstdio.h>
 #include "viking.h"
 #include "thumbnails.h"
 #include "icons/icons.h"

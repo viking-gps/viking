@@ -20,16 +20,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include <glib/gi18n.h>
-
 #include "viking.h"
-#include <string.h>
-#include <stdlib.h>
 #include "viklayer_defaults.h"
 
 /* functions common to all layers. */

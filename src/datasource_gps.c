@@ -23,14 +23,9 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-#include <string.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-
-#include <glib/gstdio.h>
-#include <glib/gprintf.h>
-#include <glib/gi18n.h>
 
 #include "datasource_gps.h"
 #include "viking.h"

@@ -27,17 +27,6 @@
 #include "config.h"
 #endif
 
-#include <glib.h>
-#include <glib/gstdio.h>
-#include <glib/gi18n.h>
-
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-#ifdef HAVE_MATH_H
-#include <math.h>
-#endif
-
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -51,7 +40,6 @@
 #include "vikmapslayer.h"
 #include "icons/icons.h"
 #include "metatile.h"
-#include "ui_util.h"
 #include "map_ids.h"
 
 #ifdef HAVE_SQLITE3_H
@@ -466,15 +454,12 @@ gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml)
 #define MAPS_CACHE_DIR maps_layer_default_dir()
 
 #ifdef WINDOWS
-#include <io.h>
 #define GLOBAL_MAPS_DIR "C:\\VIKING-MAPS\\"
 #define LOCAL_MAPS_DIR "VIKING-MAPS"
 #elif defined __APPLE__
-#include <stdlib.h>
 #define GLOBAL_MAPS_DIR "/Library/cache/Viking/maps/"
 #define LOCAL_MAPS_DIR "/Library/Application Support/Viking/viking-maps"
 #else /* POSIX */
-#include <stdlib.h>
 #define GLOBAL_MAPS_DIR "/var/cache/maps/"
 #define LOCAL_MAPS_DIR ".viking-maps"
 #endif

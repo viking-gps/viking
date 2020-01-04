@@ -31,26 +31,12 @@
 #include "babel.h"
 #include "curl_download.h"
 #include "preferences.h"
-#include "viklayer_defaults.h"
-#include "globals.h"
 #include "vikmapslayer.h"
 #include "vikgeoreflayer.h"
 #include "vikrouting.h"
-#include "util.h"
 #include "toolbar.h"
 #include "thumbnails.h"
 #include "viktrwlayer_export.h"
-
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-
-#include <glib/gprintf.h>
-#include <glib/gi18n.h>
-
 #include "modules.h"
 
 /* FIXME LOCALEDIR must be configured by ./configure --localedir */

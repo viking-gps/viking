@@ -19,13 +19,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include <glib/gi18n.h>
-#include <gtk/gtk.h>
-
 #include "viking.h"
 #include "acquire.h"
 #include "babel.h"
-#include "ui_util.h"
 
 // Initially was just going to be a URL and always in GPX format
 // But might as well specify the file type as per datasource_file.c

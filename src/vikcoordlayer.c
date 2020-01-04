@@ -18,15 +18,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#ifdef HAVE_MATH_H
-#include <math.h>
-#endif
-#include <glib/gi18n.h>
-
 #include "viking.h"
 #include "icons/icons.h"
 

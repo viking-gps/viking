@@ -20,12 +20,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include <string.h>
-
 #include <glib/gprintf.h>
 #include <glib/gi18n.h>
 
@@ -34,7 +28,6 @@
 #include "gpx.h"
 #include "acquire.h"
 #include "vikrouting.h"
-#include "ui_util.h"
 
 typedef struct {
   GtkWidget *engines_combo;

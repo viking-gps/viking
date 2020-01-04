@@ -28,13 +28,9 @@
 #include <zip.h>
 #endif
 #include "viking.h"
-#include <string.h>
-#include <stdio.h>
-#include <glib/gstdio.h>
 #ifdef HAVE_EXPAT_H
 #include <expat.h>
 #endif
-#include <math.h>
 
 #ifdef HAVE_ZIP_H
 /**

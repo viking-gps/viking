@@ -23,20 +23,12 @@
  * Dependencies in this file can be on anything.
  * For functions with simple system dependencies put it in util.c
  */
-#include <math.h>
-#include <glib/gstdio.h>
-#include <glib/gi18n.h>
-#include <gtk/gtk.h>
-
 #include "viking.h"
-#include "vikutils.h"
-#include "globals.h"
 #include "compression.h"
 #include "download.h"
 #include "preferences.h"
 #include "vikmapslayer.h"
 #include "settings.h"
-#include "ui_util.h"
 #include "dir.h"
 #include "misc/kdtree.h"
 #include "misc/gtkhtml-private.h"

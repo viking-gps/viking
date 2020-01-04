@@ -20,11 +20,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "viking.h"
 #include "background.h"
 #include "acquire.h"
@@ -46,27 +41,13 @@
 #include "geonamessearch.h"
 #include "dir.h"
 #include "kmz.h"
-#include "ui_util.h"
 #ifdef HAVE_LIBGEOCLUE_2
 #include "libgeoclue.h"
 #endif
 #include "viktrwlayer.h"
 #include "viktrwlayer_propwin.h"
 
-#ifdef HAVE_STDLIB_H
-#include <stdlib.h>
-#endif
-#ifdef HAVE_MATH_H
-#include <math.h>
-#endif
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
 #include <ctype.h>
-#include <glib.h>
-#include <glib/gstdio.h>
-#include <glib/gprintf.h>
-#include <glib/gi18n.h>
 #include <gio/gio.h>
 #include <gdk/gdkkeysyms.h>
 

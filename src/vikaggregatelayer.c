@@ -19,15 +19,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
 #include "viking.h"
 #include "viktrwlayer_analysis.h"
 #include "viktrwlayer_tracklist.h"
 #include "viktrwlayer_waypointlist.h"
 #include "icons/icons.h"
-
-#include <string.h>
-#include <glib/gi18n.h>
 
 static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, guint *len );
 static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );

@@ -19,19 +19,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-#include <math.h>
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <glib.h>
-#include <glib/gstdio.h>
-#include <glib/gi18n.h>
-
 #include "viking.h"
 #include "viktrwlayer_waypointlist.h"
 #include "viktrwlayer_wpwin.h"
-#include "vikutils.h"
-#include "ui_util.h"
 #include "dem.h"
 
 // Long formatted date+basic time - listing this way ensures the string comparison sort works - so no local type format %x or %c here!

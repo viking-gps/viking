@@ -25,9 +25,6 @@
 #include "garminsymbols.h"
 #include "icons/icons.h"
 
-#include <string.h>
-#include <stdlib.h>
-
 static struct {
   gchar *sym;     /* icon names used by gpsbabel, garmin */
   gchar *old_sym; /* keep backward compatible */

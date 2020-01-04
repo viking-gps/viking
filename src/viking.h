@@ -22,9 +22,18 @@
 #ifndef __VIKING_VIKING_H
 #define __VIKING_VIKING_H
 
+// General common system headers
+#include <glib.h>
+#include <glib/gstdio.h>
+#include <glib/gprintf.h>
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
 #include <time.h>
+#include <math.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #ifdef WINDOWS
 #include <io.h>
@@ -63,6 +72,7 @@
 #include "gpspoint.h"
 #include "settings.h"
 #include "util.h"
+#include "ui_util.h"
 #include "vikutils.h"
 
 #endif

@@ -20,15 +20,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include <stdlib.h>
-#ifdef HAVE_MATH_H
-#include <math.h>
-#endif
 #include "viking.h"
 #include "icons/icons.h"
 #include "babel.h"
@@ -37,12 +28,6 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#ifdef HAVE_STRING_H
-#include <string.h>
-#endif
-#include <glib/gstdio.h>
-#include <glib/gprintf.h>
-#include <glib/gi18n.h>
 #ifdef VIK_CONFIG_REALTIME_GPS_TRACKING
 #include <gps.h>
 #endif

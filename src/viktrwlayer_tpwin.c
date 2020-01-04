@@ -19,26 +19,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#include <gtk/gtk.h>
-#include <glib/gi18n.h>
-#include <time.h>
-#include <math.h>
-
-#include "coords.h"
-#include "vikcoord.h"
-#include "viktrack.h"
+#include "viking.h"
 #include "viktrwlayer_tpwin.h"
-#include "vikwaypoint.h"
-#include "vikutils.h"
-#include "dialog.h"
-#include "globals.h"
 #include "vikdatetime_edit_dialog.h"
-#include "ui_util.h"
 
 // For simplicity these are global values
 //  (i.e. would get shared between multiple windows)
