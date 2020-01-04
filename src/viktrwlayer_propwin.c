@@ -22,27 +22,15 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
-#ifdef HAVE_MATH_H
 #include <math.h>
-#endif
-
-#include <gtk/gtk.h>
-#include <glib/gi18n.h>
-#include <time.h>
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
-#include "viktrwlayer.h"
+#include <glib/gi18n.h>
+#include <gdk-pixbuf/gdk-pixdata.h>
+
+#include "viking.h"
 #include "viktrwlayer_propwin.h"
 #include "dems.h"
-#include "viking.h"
-#include "vikviewport.h" /* ugh */
 #include "ui_util.h"
-#include <gdk-pixbuf/gdk-pixdata.h>
 
 #define BLOB_SIZE 4
 

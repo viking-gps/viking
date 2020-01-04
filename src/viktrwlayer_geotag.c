@@ -27,10 +27,8 @@
 #include "config.h"
 #endif
 #include <math.h>
-#include <time.h>
 #include <string.h>
 #include <stdlib.h>
-#include <gtk/gtk.h>
 #include <glib/gi18n.h>
 #include "viking.h"
 #include "vikfilelist.h"

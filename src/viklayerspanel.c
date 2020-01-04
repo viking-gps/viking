@@ -20,13 +20,7 @@
  *
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "viking.h"
-#include "vikutils.h"
-#include "settings.h"
 
 #include <string.h>
 #include <math.h>

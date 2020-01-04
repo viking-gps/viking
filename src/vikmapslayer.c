@@ -27,8 +27,6 @@
 #include "config.h"
 #endif
 
-#include <gtk/gtk.h>
-#include <gdk-pixbuf/gdk-pixdata.h>
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
