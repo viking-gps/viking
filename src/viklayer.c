@@ -135,7 +135,6 @@ void vik_layer_redraw ( VikLayer *vl )
  */
 void vik_layer_emit_update ( VikLayer *vl )
 {
-  g_printf ( "%s\n", __FUNCTION__ );
   if ( vl->visible && vl->realized ) {
     GThread *thread = vik_window_get_thread ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl)) );
     if ( !thread )
