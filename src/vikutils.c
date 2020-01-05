@@ -1125,6 +1125,11 @@ GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external )
 	// NB file filters are listed this way for alphabetical ordering
 	//  (at least in the default English langauge)
 	if ( !external ) {
+		filter = gtk_file_filter_new ();
+		gtk_file_filter_set_name( filter, _("Bzip2 File") );
+		gtk_file_filter_add_mime_type ( filter, "application/x-bzip2");
+		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+
 #ifdef VIK_CONFIG_GEOCACHES
 		filter = gtk_file_filter_new ();
 		gtk_file_filter_set_name( filter, _("Geocaching") );
@@ -1153,6 +1158,12 @@ GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external )
 		gtk_file_filter_add_mime_type ( filter, "image/jpeg");
 		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
 
+		filter = gtk_file_filter_new ();
+		gtk_file_filter_set_name( filter, _("Zip File") );
+		gtk_file_filter_add_mime_type ( filter, "application/zip");
+		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+
+		// Viking type always second from last
 		filter = gtk_file_filter_new ();
 		gtk_file_filter_set_name( filter, _("Viking") );
 		gtk_file_filter_add_pattern ( filter, "*.vik" );
