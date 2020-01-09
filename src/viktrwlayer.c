@@ -3382,7 +3382,6 @@ static gboolean show_graphs_for_track ( gpointer gw, VikWindow *vw, VikTrwLayer 
     VikViewport *vvp = vik_window_viewport ( vw );
     gboolean show = vik_window_get_graphs_widgets_shown ( vw );
     vik_window_set_graphs_widgets ( vw, vik_trw_layer_propwin_main(GTK_WINDOW(vw), vtl, track, vvp, graphs, show) );
-
     return TRUE;
   }
   // Not visible so close
@@ -5432,6 +5431,16 @@ static void trw_layer_goto_track_date ( menu_array_sublayer values )
 
 static void my_tpwin_set_tp ( VikTrwLayer *vtl );
 
+static void trw_layer_graph_draw_tp ( VikTrwLayer *vtl )
+{
+  if ( vtl->current_tpl ) {
+    VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+    gpointer gw = vik_window_get_graphs_widgets ( vw );
+    if ( gw )
+      vik_trw_layer_propwin_main_draw_blob ( gw, VIK_TRACKPOINT(vtl->current_tpl->data) );
+  }
+}
+
 void vik_trw_layer_goto_track_prev_point ( VikTrwLayer *vtl )
 {
   if ( !vtl->current_tpl )
@@ -5444,8 +5453,8 @@ void vik_trw_layer_goto_track_prev_point ( VikTrwLayer *vtl )
     if ( vtl->tpwin )
       my_tpwin_set_tp ( vtl );
   }
-
   vik_layer_emit_update(VIK_LAYER(vtl));
+  trw_layer_graph_draw_tp ( vtl );
 }
 
 static void trw_layer_goto_track_prev_point ( menu_array_sublayer values )
@@ -5466,6 +5475,7 @@ void vik_trw_layer_goto_track_next_point ( VikTrwLayer *vtl )
       my_tpwin_set_tp ( vtl );
   }
   vik_layer_emit_update(VIK_LAYER(vtl));
+  trw_layer_graph_draw_tp ( vtl );
 }
 
 static void trw_layer_goto_track_next_point ( menu_array_sublayer values )
@@ -8700,6 +8710,7 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
       my_tpwin_set_tp ( vtl );
     }
     vik_layer_emit_update(VIK_LAYER(vtl)); /* TODO longone: either move or only update if tp is inside drawing window */
+    trw_layer_graph_draw_tp ( vtl );
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_BACK && vtl->current_tpl->prev )
   {
@@ -8708,6 +8719,7 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
       my_tpwin_set_tp ( vtl );
     }
     vik_layer_emit_update(VIK_LAYER(vtl));
+    trw_layer_graph_draw_tp ( vtl );
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_INSERT && vtl->current_tpl->next )
   {
@@ -9168,6 +9180,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
 
       // Selection change only (no change to the layer)
       vik_layer_redraw ( VIK_LAYER(vtl) );
+      trw_layer_graph_draw_tp ( vtl );
       return TRUE;
     }
   }
@@ -9204,6 +9217,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
 
       // Selection change only (no change to the layer)
       vik_layer_redraw ( VIK_LAYER(vtl) );
+      trw_layer_graph_draw_tp ( vtl );
       return TRUE;
     }
   }
@@ -9670,6 +9684,7 @@ static gboolean tool_select_tp ( VikTrwLayer *vtl, TPSearchParams *params, gbool
     set_statusbar_msg_info_trkpt ( vtl, params->closest_tp );
     // Selection change only (no change to the layer)
     vik_layer_redraw ( VIK_LAYER(vtl) );
+    trw_layer_graph_draw_tp ( vtl );
     return TRUE;
   }
 
@@ -9685,6 +9700,7 @@ static gboolean tool_select_tp ( VikTrwLayer *vtl, TPSearchParams *params, gbool
     set_statusbar_msg_info_trkpt ( vtl, params->closest_tp );
     // Selection change only (no change to the layer)
     vik_layer_redraw ( VIK_LAYER(vtl) );
+    trw_layer_graph_draw_tp ( vtl );
     return TRUE;
   }
 

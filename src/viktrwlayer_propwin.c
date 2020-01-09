@@ -3835,6 +3835,70 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
 
 /**
+ * Draw blob
+ */
+void vik_trw_layer_propwin_main_draw_blob ( gpointer self, VikTrackpoint *trkpt )
+{
+  PropWidgets *widgets = (PropWidgets*)self;
+  gdouble pc = NAN;
+  gdouble pc_blob = NAN;
+
+  if ( !widgets->graphs )
+    return;
+
+  widgets->blob_tp = trkpt;
+
+  GtkWidget *page = gtk_notebook_get_nth_page ( GTK_NOTEBOOK(widgets->graphs),
+                                                gtk_notebook_get_current_page(GTK_NOTEBOOK(widgets->graphs)) );
+  if ( !page )
+    return;
+
+  GtkWidget *window = gtk_widget_get_toplevel ( page );
+  GtkWidget *image;
+  PropSaved saved_img;
+  gdouble x_blob = -MARGIN_X - 1.0; // i.e. Don't draw unless we get a valid value
+  gint    y_blob = 0;
+
+  if ( page == widgets->elev_box ) {
+    pc = tp_percentage_by_distance ( widgets->tr, widgets->marker_tp, widgets->track_length_inc_gaps );
+    pc_blob = tp_percentage_by_distance ( widgets->tr, widgets->blob_tp, widgets->track_length_inc_gaps );
+    image = widgets->elev_image;
+    saved_img = widgets->elev_graph_saved_img;
+  }
+
+  if ( page == widgets->speed_box ) {
+    pc = tp_percentage_by_time ( widgets->tr, widgets->marker_tp );
+    pc_blob = tp_percentage_by_time ( widgets->tr, widgets->blob_tp );
+    image = widgets->speed_image;
+    saved_img = widgets->speed_graph_saved_img;
+  }
+
+  if ( !isnan(pc_blob) )
+    x_blob = pc_blob * widgets->profile_width;
+
+  if ( page == widgets->elev_box )
+    y_blob = blobby_altitude ( x_blob, widgets );
+  if ( page == widgets->speed_box )
+    y_blob = blobby_speed ( x_blob, widgets );
+
+  gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
+  if ( !isnan(pc) )
+    marker_x = (pc * widgets->profile_width) + MARGIN_X;
+
+  save_image_and_draw_graph_marks ( image,
+                                    marker_x,
+                                    gtk_widget_get_style(window)->black_gc,
+                                    x_blob+MARGIN_X,
+                                    y_blob+MARGIN_Y,
+                                    &saved_img,
+                                    widgets->profile_width,
+                                    widgets->profile_height,
+                                    BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
+                                    &widgets->is_marker_drawn,
+                                    &widgets->is_blob_drawn );
+}
+
+/**
  * Update this property dialog
  * e.g. if the track has been renamed
  */
