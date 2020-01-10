@@ -160,6 +160,9 @@ void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk );
 
 void trw_layer_dialog_shift ( VikTrwLayer *vtl, GtkWindow *dialog, VikCoord *coord, gboolean vertical );
 
+void trw_layer_tpwin_init ( VikTrwLayer *vtl );
+gboolean trw_layer_tpwin_is_shown ( VikTrwLayer *vtl );
+
 void trw_layer_replace_external ( VikTrwLayer *vtl, const gchar *external_file );
 void trw_ensure_layer_loaded ( VikTrwLayer *trw );
 

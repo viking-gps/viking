@@ -562,6 +562,12 @@ static gboolean menu_statistics_cb ( PropWidgets *widgets )
   return FALSE;
 }
 
+static gboolean menu_edit_trkpt_cb ( PropWidgets *widgets )
+{
+  trw_layer_tpwin_init ( widgets->vtl );
+  return FALSE;
+}
+
 /**
  *
  */
@@ -572,6 +578,8 @@ static void graph_click_menu_popup ( PropWidgets *widgets, VikPropWinGraphType_t
   gtk_widget_set_sensitive ( GTK_WIDGET(iprop), !widgets->tr->property_dialog );
   GtkWidget *ist = vu_menu_add_item ( GTK_MENU(menu), _("_Statistics"), NULL, G_CALLBACK(menu_statistics_cb), widgets );
   gtk_widget_set_sensitive ( GTK_WIDGET(ist), !widgets->tr->property_dialog );
+  GtkWidget *itp = vu_menu_add_item ( GTK_MENU(menu), _("_Edit Trackpoint..."), NULL, G_CALLBACK(menu_edit_trkpt_cb), widgets );
+  gtk_widget_set_sensitive ( GTK_WIDGET(itp), !trw_layer_tpwin_is_shown(widgets->vtl) );
   GtkWidget *ism = vu_menu_add_item ( GTK_MENU(menu), _("Split at Marker"), GTK_STOCK_CUT, G_CALLBACK(menu_split_at_marker_cb), widgets );
   gtk_widget_set_sensitive ( ism, (gboolean)GPOINTER_TO_INT(widgets->marker_tp) );
 

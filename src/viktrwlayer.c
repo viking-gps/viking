@@ -355,7 +355,6 @@ static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pas
 static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean before, gboolean is_route );
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
 static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response );
-static void trw_layer_tpwin_init ( VikTrwLayer *vtl );
 
 static void trw_layer_sort_all ( VikTrwLayer *vtl );
 
@@ -8797,7 +8796,10 @@ void trw_layer_dialog_shift ( VikTrwLayer *vtl, GtkWindow *dialog, VikCoord *coo
   }
 }
 
-static void trw_layer_tpwin_init ( VikTrwLayer *vtl )
+/**
+ * Should only be otherwise used by viktrwlayer_propwin
+ **/
+void trw_layer_tpwin_init ( VikTrwLayer *vtl )
 {
   if ( ! vtl->tpwin )
   {
@@ -8821,6 +8823,11 @@ static void trw_layer_tpwin_init ( VikTrwLayer *vtl )
     if ( vtl->current_tp_track )
       my_tpwin_set_tp ( vtl );
   /* set layer name and TP data */
+}
+
+gboolean trw_layer_tpwin_is_shown ( VikTrwLayer *vtl )
+{
+  return (vtl->tpwin != NULL);
 }
 
 /***************************************************************************
