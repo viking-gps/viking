@@ -183,7 +183,6 @@ struct _VikTrwLayer {
   /* track editing tool */
   GList *current_tpl;
   VikTrack *current_tp_track;
-  gpointer current_tp_id;
   VikTrwLayerTpwin *tpwin;
 
   /* track editing tool -- more specifically, moving tps */
@@ -4834,7 +4833,6 @@ gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, VikTrack *trk )
     if ( trk == vtl->current_track ) {
       vtl->current_track = NULL;
       vtl->current_tp_track = NULL;
-      vtl->current_tp_id = NULL;
       vtl->moving_tp = FALSE;
     }
 
@@ -4882,7 +4880,6 @@ gboolean vik_trw_layer_delete_route ( VikTrwLayer *vtl, VikTrack *trk )
     if ( trk == vtl->current_track ) {
       vtl->current_track = NULL;
       vtl->current_tp_track = NULL;
-      vtl->current_tp_id = NULL;
       vtl->moving_tp = FALSE;
     }
 
@@ -6516,22 +6513,6 @@ static void trw_layer_split_at_selected_trackpoint ( VikTrwLayer *vtl, gint subt
 
       // Bounds of the new track created by the split
       vik_track_calculate_bounds ( tr );
-
-      trku_udata udata;
-      udata.trk  = tr;
-      udata.uuid = NULL;
-
-      // Also need id of newly created track
-      gpointer trkf;
-      if ( tr->is_route )
-         trkf = g_hash_table_find ( vtl->routes, (GHRFunc) trw_layer_track_find_uuid, &udata );
-      else
-         trkf = g_hash_table_find ( vtl->tracks, (GHRFunc) trw_layer_track_find_uuid, &udata );
-
-      if ( trkf && udata.uuid )
-        vtl->current_tp_id = udata.uuid;
-      else
-        vtl->current_tp_id = NULL;
 
       vik_layer_emit_update(VIK_LAYER(vtl));
     }
@@ -8621,12 +8602,7 @@ static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean b
     /* DOP / sat values remain at defaults as they do not seem applicable to a dreamt up point */
 
     // Insert new point into the appropriate trackpoint list, either before or after the current trackpoint as directed   
-    VikTrack *trk;
-    if ( is_route )
-      trk = g_hash_table_lookup ( vtl->routes, vtl->current_tp_id );
-    else
-      trk = g_hash_table_lookup ( vtl->tracks, vtl->current_tp_id );
-
+    VikTrack *trk = vtl->current_tp_track;
     if ( !trk )
       return;
 
@@ -8658,7 +8634,6 @@ static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy )
   {
     vtl->current_tpl = NULL;
     vtl->current_tp_track = NULL;
-    vtl->current_tp_id = NULL;
     vik_layer_emit_update(VIK_LAYER(vtl));
   }
 }
@@ -8689,10 +8664,8 @@ static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )
   }
   else if ( response == VIK_TRW_LAYER_TPWIN_DELETE )
   {
-    VikTrack *tr = g_hash_table_lookup ( vtl->tracks, vtl->current_tp_id );
-    if ( tr == NULL )
-      tr = g_hash_table_lookup ( vtl->routes, vtl->current_tp_id );
-    if ( tr == NULL )
+    VikTrack *tr = vtl->current_tp_track;
+    if ( !tr )
       return;
 
     trw_layer_trackpoint_selected_delete ( vtl, tr );
@@ -9170,7 +9143,6 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       }
 
       vtl->current_tpl = tp_params.closest_tpl;
-      vtl->current_tp_id = tp_params.closest_track_id;
       vtl->current_tp_track = g_hash_table_lookup ( vtl->tracks, tp_params.closest_track_id );
 
       set_statusbar_msg_info_trkpt ( vtl, tp_params.closest_tp );
@@ -9207,7 +9179,6 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       }
 
       vtl->current_tpl = tp_params.closest_tpl;
-      vtl->current_tp_id = tp_params.closest_track_id;
       vtl->current_tp_track = g_hash_table_lookup ( vtl->routes, tp_params.closest_track_id );
 
       set_statusbar_msg_info_trkpt ( vtl, tp_params.closest_tp );
@@ -9679,7 +9650,6 @@ static gboolean tool_select_tp ( VikTrwLayer *vtl, TPSearchParams *params, gbool
   {
     vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->tracks_iters, params->closest_track_id ), TRUE );
     vtl->current_tpl = params->closest_tpl;
-    vtl->current_tp_id = params->closest_track_id;
     vtl->current_tp_track = g_hash_table_lookup ( vtl->tracks, params->closest_track_id );
     set_statusbar_msg_info_trkpt ( vtl, params->closest_tp );
     // Selection change only (no change to the layer)
@@ -9695,7 +9665,6 @@ static gboolean tool_select_tp ( VikTrwLayer *vtl, TPSearchParams *params, gbool
   {
     vik_treeview_select_iter ( VIK_LAYER(vtl)->vt, g_hash_table_lookup ( vtl->routes_iters, params->closest_track_id ), TRUE );
     vtl->current_tpl = params->closest_tpl;
-    vtl->current_tp_id = params->closest_track_id;
     vtl->current_tp_track = g_hash_table_lookup ( vtl->routes, params->closest_track_id );
     set_statusbar_msg_info_trkpt ( vtl, params->closest_tp );
     // Selection change only (no change to the layer)
@@ -10081,7 +10050,6 @@ static gboolean tool_edit_track_or_route_split ( VikTrwLayer *vtl, TPSearchParam
     vtl->current_track = origin_tp_track;
     vtl->current_tpl = NULL;
     vtl->current_tp_track = NULL;
-    vtl->current_tp_id = NULL;
 
     vik_layer_emit_update(VIK_LAYER(vtl));
     return TRUE;
@@ -10125,7 +10093,6 @@ static gboolean tool_edit_track_or_route_join ( VikTrwLayer *vtl, TPSearchParams
     tool_select_track ( vtl, origin_track );
     vtl->current_tpl = NULL;
     vtl->current_tp_track = NULL;
-    vtl->current_tp_id = NULL;
 
     vik_layer_emit_update( VIK_LAYER(vtl) );
     return TRUE;
@@ -10322,9 +10289,7 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
   {
     /* first check if it is within range of prev. tp. and if current_tp track is shown. (if it is, we are moving that trackpoint.) */
     VikTrackpoint *tp = VIK_TRACKPOINT(vtl->current_tpl->data);
-    VikTrack *current_tr = VIK_TRACK(g_hash_table_lookup(vtl->tracks, vtl->current_tp_id));
-    if ( !current_tr )
-      current_tr = VIK_TRACK(g_hash_table_lookup(vtl->routes, vtl->current_tp_id));
+    VikTrack *current_tr = vtl->current_tp_track;
     if ( !current_tr )
       return FALSE;
 
