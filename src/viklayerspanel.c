@@ -572,11 +572,12 @@ static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter)
       visible = (VIK_LAYER(p)->visible ^= 1);
       vik_layer_emit_update_although_invisible ( VIK_LAYER(p) ); /* set trigger for half-drawn */
       break;
-    case VIK_TREEVIEW_TYPE_SUBLAYER:
-      visible = vik_layer_sublayer_toggle_visible ( VIK_LAYER(vik_treeview_item_get_parent(vlp->vt, iter)),
-						vik_treeview_item_get_data(vlp->vt, iter), p);
-      vik_layer_emit_update_although_invisible ( VIK_LAYER(vik_treeview_item_get_parent(vlp->vt, iter)) );
+    case VIK_TREEVIEW_TYPE_SUBLAYER: {
+      VikLayer *vl = VIK_LAYER(vik_treeview_item_get_parent ( vlp->vt, iter ));
+      visible = vik_layer_sublayer_toggle_visible ( vl, vik_treeview_item_get_data(vlp->vt, iter), p);
+      vik_layer_emit_update_although_invisible ( vl );
       break;
+    }
     default: return;
   }
 
