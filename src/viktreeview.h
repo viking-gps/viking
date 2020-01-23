@@ -68,6 +68,7 @@ void vik_treeview_item_set_timestamp ( VikTreeview *vt, GtkTreeIter *iter, gdoub
 
 gpointer vik_treeview_item_get_parent ( VikTreeview *vt, GtkTreeIter *iter );
 gboolean vik_treeview_item_get_visible_tree ( VikTreeview *vt, GtkTreeIter *iter );
+void vik_treeview_item_set_visible_tree ( VikTreeview *vt, GtkTreeIter *iter );
 
 void vik_treeview_select_iter ( VikTreeview *vt, GtkTreeIter *iter, gboolean view_all );
 gboolean vik_treeview_get_selected_iter ( VikTreeview *vt, GtkTreeIter *iter );

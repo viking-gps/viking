@@ -315,6 +315,43 @@ gboolean vik_treeview_item_get_visible_tree ( VikTreeview *vt, GtkTreeIter *iter
   return ans;
 }
 
+/**
+ * Ensure visibility of an item considering visibility of all parents
+ *  i.e. if any parent is off then they will be turned on
+ * NB This also sets the value of the associated layer
+ *  to ensure the Tree <-> Layer visibility value is kept in sync
+ */
+void vik_treeview_item_set_visible_tree ( VikTreeview *vt, GtkTreeIter *iter )
+{
+  VikLayer *vl;
+  gboolean vis;
+
+  // This layer
+  TREEVIEW_GET ( vt->model, iter, VISIBLE_COLUMN, &vis );
+  if ( !vis ) {
+    gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, VISIBLE_COLUMN, TRUE, -1 );
+    vl = VIK_LAYER(vik_treeview_item_get_pointer ( vt, iter ));
+    if ( vl )
+      vl->visible = TRUE;
+  }
+
+  // All parent layers
+  GtkTreeIter parent;
+  GtkTreeIter child = *iter;
+  while ( gtk_tree_model_iter_parent (vt->model, &parent, &child) ) {
+    // Visibility of this parent
+    TREEVIEW_GET ( vt->model, &parent, VISIBLE_COLUMN, &vis );
+    if ( !vis ) {
+      gtk_tree_store_set ( GTK_TREE_STORE(vt->model), &parent, VISIBLE_COLUMN, TRUE, -1 );
+      vl = VIK_LAYER(vik_treeview_item_get_pointer ( vt, &parent ));
+      if ( vl )
+        vl->visible = TRUE;
+    }
+    child = parent;
+  }
+}
+
+
 static void vik_treeview_add_columns ( VikTreeview *vt )
 {
   gint col_offset;

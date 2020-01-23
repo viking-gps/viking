@@ -4279,6 +4279,14 @@ static void trw_layer_auto_waypoints_view ( menu_array_layer values )
   vik_layers_panel_emit_update ( vlp );
 }
 
+static void trw_layer_visibility_tree ( menu_array_layer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(values[MA_VLP]);
+  vik_treeview_item_set_visible_tree ( VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter) );
+  vik_layers_panel_emit_update ( vlp );
+}
+
 void trw_layer_osm_traces_upload_cb ( menu_array_layer values )
 {
   osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(values[MA_VTL]), NULL);
@@ -4324,6 +4332,7 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   (void)vu_menu_add_item ( view_submenu, _("View All _Tracks"), NULL, G_CALLBACK(trw_layer_auto_tracks_view), data );
   (void)vu_menu_add_item ( view_submenu, _("View All _Routes"), NULL, G_CALLBACK(trw_layer_auto_routes_view), data );
   (void)vu_menu_add_item ( view_submenu, _("View All _Waypoints"), NULL, G_CALLBACK(trw_layer_auto_waypoints_view), data );
+  (void)vu_menu_add_item ( view_submenu, _("_Ensure Visibility On"), NULL, G_CALLBACK(trw_layer_visibility_tree), data );
 
   (void)vu_menu_add_item ( menu, _("_Goto Center of Layer"), GTK_STOCK_JUMP_TO, G_CALLBACK(trw_layer_centerize), data );
   (void)vu_menu_add_item ( menu, _("Goto _Waypoint..."), NULL, G_CALLBACK(trw_layer_goto_wp), data );
