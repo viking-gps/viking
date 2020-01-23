@@ -2218,7 +2218,7 @@ Tracks are searched first in preference over waypoints.
 This opens a dialog to display various statistics about all tracks contained within this Aggregate layer.
 </para>
 <figure>
-<title>Statistics Dialog: Example</title>
+<title>Statistics Dialog: Totals</title>
 <screenshot>
   <graphic format="PNG" fileref="figures/Aggregate_statistics.png"/>
 </screenshot>
@@ -2231,6 +2231,12 @@ This opens a dialog to display various statistics about all tracks contained wit
     The Eddington number is in the current Unit distance <xref linkend="prefs"/>.
   </para>
 </note>
+<figure>
+<title>Statistics Dialog: Years</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Aggregate_statistics_years.png"/>
+</screenshot>
+</figure>
 </section>
 
 <section id="agg_append"><title>Append File</title>

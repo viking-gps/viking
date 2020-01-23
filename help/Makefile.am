@@ -23,6 +23,7 @@ DOC_ENTITIES = legal.xml \
 DOC_INCLUDES =
 DOC_FIGURES = \
     figures/Aggregate_statistics.png \
+    figures/Aggregate_statistics_years.png \
     figures/addtr_18.png \
     figures/addwp_18.png \
     figures/demdl_18.png \
