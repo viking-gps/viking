@@ -4042,6 +4042,12 @@ gboolean vik_trw_layer_propwin_main_refresh ( VikLayer *vl )
   if ( !widgets )
     return FALSE;
 
+  // Ensure closed if not visible
+  if ( !widgets->tr->visible ) {
+    vik_window_close_graphs ( vw );
+    return FALSE;
+  }
+
   // Should be on the right track...
   widgets->track_length_inc_gaps = vik_track_get_length_including_gaps ( widgets->tr );
 

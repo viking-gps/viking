@@ -571,6 +571,8 @@ static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter)
     case VIK_TREEVIEW_TYPE_LAYER:
       visible = (VIK_LAYER(p)->visible ^= 1);
       vik_layer_emit_update_although_invisible ( VIK_LAYER(p) ); /* set trigger for half-drawn */
+      if ( !visible && VIK_LAYER(p)->type == VIK_LAYER_TRW )
+        vik_window_close_graphs ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(VIK_LAYER(p))) );
       break;
     case VIK_TREEVIEW_TYPE_SUBLAYER: {
       VikLayer *vl = VIK_LAYER(vik_treeview_item_get_parent ( vlp->vt, iter ));

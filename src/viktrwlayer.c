@@ -2951,40 +2951,60 @@ static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *
   trw_update_layer_icon ( vtl );
 }
 
+static void close_graphs_of_specific_track_or_type ( VikTrwLayer *vtl, VikTrack *trk, gint subtype )
+{
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  gpointer gw = vik_window_get_graphs_widgets ( vw );
+  if ( gw ) {
+    vik_trw_and_track_t vt = vik_trw_layer_propwin_main_get_track ( gw );
+    if ( vt.trk && (vt.trk == trk) ) {
+      vik_window_close_graphs ( vw );
+    }
+    if ( vt.trk && ((vt.trk->is_route && subtype == VIK_TRW_LAYER_SUBLAYER_ROUTES) ||
+		    (!vt.trk->is_route && subtype == VIK_TRW_LAYER_SUBLAYER_TRACKS)) )
+      vik_window_close_graphs ( vw );
+  }
+}
+
 static gboolean trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, gpointer sublayer )
 {
+  gboolean answer = TRUE;
+  VikTrack *t = NULL;
   switch ( subtype )
   {
-    case VIK_TRW_LAYER_SUBLAYER_TRACKS: return (l->tracks_visible ^= 1);
-    case VIK_TRW_LAYER_SUBLAYER_WAYPOINTS: return (l->waypoints_visible ^= 1);
-    case VIK_TRW_LAYER_SUBLAYER_ROUTES: return (l->routes_visible ^= 1);
+    case VIK_TRW_LAYER_SUBLAYER_TRACKS: answer = (l->tracks_visible ^= 1); break;
+    case VIK_TRW_LAYER_SUBLAYER_WAYPOINTS: answer = (l->waypoints_visible ^= 1); break;
+    case VIK_TRW_LAYER_SUBLAYER_ROUTES: answer = (l->routes_visible ^= 1); break;
     case VIK_TRW_LAYER_SUBLAYER_TRACK:
     {
-      VikTrack *t = g_hash_table_lookup ( l->tracks, sublayer );
+      t = g_hash_table_lookup ( l->tracks, sublayer );
       if (t)
-        return (t->visible ^= 1);
-      else
-        return TRUE;
+        answer = (t->visible ^= 1);
+      break;
     }
     case VIK_TRW_LAYER_SUBLAYER_WAYPOINT:
     {
       VikWaypoint *t = g_hash_table_lookup ( l->waypoints, sublayer );
       if (t)
-        return (t->visible ^= 1);
-      else
-        return TRUE;
+        answer = (t->visible ^= 1);
+      break;
     }
     case VIK_TRW_LAYER_SUBLAYER_ROUTE:
     {
-      VikTrack *t = g_hash_table_lookup ( l->routes, sublayer );
+      t = g_hash_table_lookup ( l->routes, sublayer );
       if (t)
-        return (t->visible ^= 1);
-      else
-        return TRUE;
+        answer = (t->visible ^= 1);
+      break;
     }
     default: break;
   }
-  return TRUE;
+  if ( !answer ) {
+    // Close associated graphs on main display if the specific route/track is toggled off
+    //   or all routes/tracks toggled off and the same type was on display
+    // ATM no method to restore graphs if it was previously shown
+    close_graphs_of_specific_track_or_type ( l, t, subtype );
+  }
+  return answer;
 }
 
 /*
@@ -3365,9 +3385,9 @@ static void close_vw_graphs_if_layer_different ( gpointer props, VikWindow *vw, 
  */
 static gboolean show_graphs_for_track ( gpointer gw, VikWindow *vw, VikTrwLayer *vtl, VikTrack *track )
 {
-  // TODO Don't show when invisible due to the hierachy
   // NB If the same track selected do nothing
-  if ( VIK_LAYER(vtl)->visible && track->visible ) {
+  // Check the layer for visibility (including all the parents visibilities)
+  if ( track->visible && vik_treeview_item_get_visible_tree(VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter)) ) {
     if ( gw ) {
       vik_trw_and_track_t vt = vik_trw_layer_propwin_main_get_track ( gw );
       if ( vt.trk == track ) {
@@ -3389,6 +3409,7 @@ static gboolean show_graphs_for_track ( gpointer gw, VikWindow *vw, VikTrwLayer 
 
 /**
  * General layer selection function, find out which bit is selected and take appropriate action
+ * Also open or close the associated graphs on the main view, according to what is selected
  */
 static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp )
 {
@@ -5066,7 +5087,6 @@ static void remove_item_from_treeview ( const gpointer id, GtkTreeIter *it, VikT
 
 void vik_trw_layer_delete_all_routes ( VikTrwLayer *vtl )
 {
-
   vtl->current_track = NULL;
   vtl->route_finder_added_track = NULL;
   if (vtl->current_tp_track)
@@ -5079,12 +5099,12 @@ void vik_trw_layer_delete_all_routes ( VikTrwLayer *vtl )
     vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->routes_iter) );
   g_hash_table_remove_all(vtl->routes);
 
+  close_graphs_of_specific_track_or_type ( vtl, NULL, VIK_TRW_LAYER_SUBLAYER_ROUTES );
   vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
 
 void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl )
 {
-
   vtl->current_track = NULL;
   vtl->route_finder_added_track = NULL;
   if (vtl->current_tp_track)
@@ -5097,6 +5117,7 @@ void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl )
     vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, &(vtl->tracks_iter) );
   g_hash_table_remove_all(vtl->tracks);
 
+  close_graphs_of_specific_track_or_type ( vtl, NULL, VIK_TRW_LAYER_SUBLAYER_TRACKS );
   vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
 
