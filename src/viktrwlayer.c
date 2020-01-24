@@ -5878,6 +5878,23 @@ static void trw_layer_goto_track_min_alt ( menu_array_sublayer values )
   goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vtp->coord));
 }
 
+
+/*
+ * Automatically change the viewport to center on the track and zoom to see the extent of the track
+ */
+void vik_trw_layer_center_view_track ( VikTrwLayer *vtl, VikTrack *trk, VikViewport *vvp, VikLayersPanel *vlp )
+{
+  if ( trk && trk->trackpoints ) {
+    struct LatLon maxmin[2] = { {0,0}, {0,0} };
+    trw_layer_find_maxmin_tracks ( NULL, trk, maxmin );
+    trw_layer_zoom_to_show_latlons ( vtl, vvp, maxmin );
+    if ( vlp )
+      vik_layers_panel_emit_update ( vlp );
+    else
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
+  }
+}
+
 /*
  * Automatically change the viewport to center on the track and zoom to see the extent of the track
  */
@@ -5890,16 +5907,7 @@ static void trw_layer_auto_track_view ( menu_array_sublayer values )
   else
     trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
 
-  if ( trk && trk->trackpoints )
-  {
-    struct LatLon maxmin[2] = { {0,0}, {0,0} };
-    trw_layer_find_maxmin_tracks ( NULL, trk, maxmin );
-    trw_layer_zoom_to_show_latlons ( vtl, values[MA_VVP], maxmin );
-    if ( values[MA_VLP] )
-      vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(values[MA_VLP]) );
-    else
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
-  }
+  vik_trw_layer_center_view_track ( vtl, trk, values[MA_VVP], VIK_LAYERS_PANEL(values[MA_VLP]) );
 }
 
 /*

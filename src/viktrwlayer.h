@@ -93,6 +93,7 @@ VikTrack *vik_trw_layer_get_track ( VikTrwLayer *vtl, const gchar *name );
 gboolean vik_trw_layer_delete_track ( VikTrwLayer *vtl, VikTrack *trk );
 gboolean vik_trw_layer_delete_route ( VikTrwLayer *vtl, VikTrack *trk );
 
+void vik_trw_layer_center_view_track ( VikTrwLayer *vtl, VikTrack *trk, VikViewport *vvp, VikLayersPanel *vlp );
 gboolean vik_trw_layer_auto_set_view ( VikTrwLayer *vtl, VikViewport *vvp );
 gboolean vik_trw_layer_find_center ( VikTrwLayer *vtl, VikCoord *dest );
 GHashTable *vik_trw_layer_get_tracks ( VikTrwLayer *l );

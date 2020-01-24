@@ -568,6 +568,12 @@ static gboolean menu_edit_trkpt_cb ( PropWidgets *widgets )
   return FALSE;
 }
 
+static gboolean menu_center_view_cb ( PropWidgets *widgets )
+{
+  vik_trw_layer_center_view_track ( widgets->vtl, widgets->tr, widgets->vvp, widgets->vlp );
+  return FALSE;
+}
+
 /**
  *
  */
@@ -578,6 +584,8 @@ static void graph_click_menu_popup ( PropWidgets *widgets, VikPropWinGraphType_t
   gtk_widget_set_sensitive ( GTK_WIDGET(iprop), !widgets->tr->property_dialog );
   GtkWidget *ist = vu_menu_add_item ( GTK_MENU(menu), _("_Statistics"), NULL, G_CALLBACK(menu_statistics_cb), widgets );
   gtk_widget_set_sensitive ( GTK_WIDGET(ist), !widgets->tr->property_dialog );
+  (void)vu_menu_add_item ( GTK_MENU(menu), widgets->tr->is_route ? _("_Center View on Route") : _("_Center View on Track"),
+                           GTK_STOCK_ZOOM_FIT, G_CALLBACK(menu_center_view_cb), widgets );
   GtkWidget *itp = vu_menu_add_item ( GTK_MENU(menu), _("_Edit Trackpoint..."), NULL, G_CALLBACK(menu_edit_trkpt_cb), widgets );
   gtk_widget_set_sensitive ( GTK_WIDGET(itp), a_vik_get_auto_trackpoint_select() &&
                                               !trw_layer_tpwin_is_shown(widgets->vtl) );
