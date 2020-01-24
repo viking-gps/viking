@@ -673,6 +673,12 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 		gint32 new_y;
 
 		// calculate gradient from height points all around the current one
+                // Note this code suffers from edge effects, as currently prev & next columns
+                //  (and for rows when y < 0 && y > n_points) should really attempt to read values
+                //  from a different DEM file to get a change value across this particular DEM's boundary.
+                // However it's probably not worth trying to do this as accessing the right DEM is not
+                //  straight-forward and the other DEMs could have differing numbers of columns/points
+                //  and so would need to reconsider scale factors as well...
 		new_y = y - gradient_skip_factor;
 		if(new_y < 0)
                   new_y = 0;
