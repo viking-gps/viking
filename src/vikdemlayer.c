@@ -611,14 +611,14 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
         // get previous and next column. catch out-of-bound.
 	gint32 new_x = x;
 	new_x -= gradient_skip_factor;
-        if(new_x < 1)
-          prevcolumn = g_ptr_array_index ( dem->columns, x+1);
+        if(new_x < 0)
+          prevcolumn = g_ptr_array_index ( dem->columns, 0);
         else
           prevcolumn = g_ptr_array_index ( dem->columns, new_x);
 	new_x = x;
 	new_x += gradient_skip_factor;
         if(new_x >= dem->n_columns)
-          nextcolumn = g_ptr_array_index ( dem->columns, x-1);
+          nextcolumn = g_ptr_array_index ( dem->columns, dem->n_columns-1);
         else
           nextcolumn = g_ptr_array_index ( dem->columns, new_x);
 
@@ -675,7 +675,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
 		// calculate gradient from height points all around the current one
 		new_y = y - gradient_skip_factor;
 		if(new_y < 0)
-			new_y = y;
+                  new_y = 0;
 		change += get_height_difference(elev, prevcolumn->points[new_y]);
 		change += get_height_difference(elev, column->points[new_y]);
 		change += get_height_difference(elev, nextcolumn->points[new_y]);
@@ -776,7 +776,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
     counter.letter = dem->utm_letter;
 
     for ( x=start_x, counter.easting = start_eas; counter.easting <= end_eas; counter.easting += dem->east_scale * skip_factor, x += skip_factor ) {
-      if ( x > 0 && x < dem->n_columns ) {
+      if ( x >= 0 && x < dem->n_columns ) {
         column = g_ptr_array_index ( dem->columns, x );
         for ( y=start_y, counter.northing = start_nor; counter.northing <= end_nor; counter.northing += dem->north_scale * skip_factor, y += skip_factor ) {
           if ( y > column->n_points )
