@@ -165,6 +165,7 @@ struct _VikTrwLayer {
   GdkGC *waypoint_gc; GdkColor waypoint_color;
   GdkGC *waypoint_text_gc; GdkColor waypoint_text_color;
   GdkGC *waypoint_bg_gc; GdkColor waypoint_bg_color;
+  GdkGC *track_graph_point_gc;
   gboolean wpbgand;
   VikTrack *current_track; // ATM shared between new tracks and new routes
   guint16 ct_x1, ct_y1, ct_x2, ct_y2;
@@ -1802,6 +1803,9 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
   if ( trwlayer->waypoint_bg_gc != NULL )
     g_object_unref ( G_OBJECT ( trwlayer->waypoint_bg_gc ) );
 
+  if ( trwlayer->track_graph_point_gc )
+    g_object_unref ( trwlayer->track_graph_point_gc );
+
   g_free ( trwlayer->wp_fsize_str );
   g_free ( trwlayer->track_fsize_str );
 
@@ -2810,6 +2814,7 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
 
   trw_layer_edit_track_gcs ( rv, vp );
 
+  rv->track_graph_point_gc = gdk_gc_new ( gtk_widget_get_window(GTK_WIDGET(vp)) );
   rv->waypoint_gc = vik_viewport_new_gc_from_color ( vp, &(rv->waypoint_color), 2 );
   rv->waypoint_text_gc = vik_viewport_new_gc_from_color ( vp, &(rv->waypoint_text_color), 1 );
   rv->waypoint_bg_gc = vik_viewport_new_gc_from_color ( vp, &(rv->waypoint_bg_color), 1 );
@@ -9587,6 +9592,85 @@ static gboolean draw_sync ( gpointer data )
   }
   g_free ( ds );
   return FALSE;
+}
+
+/**
+ * Draw a specific trackpoint in its own seperate gc
+ * ATM This is intended to be called from the embedded graph
+ */
+void vik_trw_layer_trackpoint_draw ( VikTrwLayer *vtl, VikViewport *vvp, VikTrack *trk, VikTrackpoint *tpt )
+{
+  static GdkPixmap *pixmap = NULL;
+
+  if ( !trk || !tpt ) {
+    if ( a_vik_get_auto_trackpoint_select() )
+      // Full update as selected trackpoint has probably changed
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
+    else
+      // Basic refresh to clear any previous 'highlighted' trackpoint drawing
+      vik_layer_redraw ( VIK_LAYER(vtl) );
+    return;
+  }
+
+  gint w2, h2;
+  // Need to check in case window has been resized
+  gint w1 = vik_viewport_get_width ( vvp );
+  gint h1 = vik_viewport_get_height ( vvp );
+  if ( !pixmap ) {
+    pixmap = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), w1, h1, -1 );
+  }
+  gdk_drawable_get_size ( pixmap, &w2, &h2 );
+  if ( w1 != w2 || h1 != h2 ) {
+    g_object_unref ( G_OBJECT(pixmap) );
+    pixmap = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), w1, h1, -1 );
+  }
+
+  // Workout the colour (NB ignoring 'by speed' mode as that requires more information)
+  const gchar *color;
+  if ( vtl->drawmode == DRAWMODE_BY_TRACK )
+    color = gdk_color_to_string ( &(trk->color) );
+  else
+    color = gdk_color_to_string ( &(vtl->track_color) );
+  if ( vik_viewport_get_draw_highlight(vvp) )
+    color = vik_viewport_get_highlight_color ( vvp );
+
+  GdkGC *tp_gc = vik_viewport_new_gc ( vvp, color, 1 );
+  gdk_draw_drawable ( pixmap,
+                      tp_gc,
+                      vik_viewport_get_pixmap(vvp),
+                      0, 0, 0, 0, -1, -1 );
+  gint xd, yd;
+  vik_viewport_coord_to_screen ( vvp, &(tpt->coord), &xd, &yd );
+  gint tp_size = vtl->drawpoints_size * 2;
+  gdk_draw_rectangle ( pixmap, tp_gc, TRUE, xd-tp_size, yd-tp_size, 2*tp_size, 2*tp_size );
+  g_object_unref ( G_OBJECT(tp_gc) );
+
+  draw_sync_t *passalong;
+  passalong = g_new0 ( draw_sync_t, 1 ); // freed by draw_sync()
+  passalong->vtl = vtl;
+  passalong->pixmap = pixmap;
+  passalong->drawable = gtk_widget_get_window ( GTK_WIDGET(vvp) );
+  passalong->gc = vtl->track_graph_point_gc;
+
+  // NB using g_list_find() is not particularly efficient (to go from a VikTrackpoint* to the GList* entry)
+  //  as it potentially searching the entire list, and this function can be called a lot.
+  // Hence another reason for the config open
+
+  // Don't change the current selected/edit trackpoint if
+  //  the Trackpoint Edit dialog is open
+  //  or if configured not to change that trackpoint
+  if ( !vtl->tpwin &&
+       a_vik_get_auto_trackpoint_select() ) {
+    GList *tpl = g_list_find ( trk->trackpoints, tpt );
+    if ( tpl ) {
+      vtl->current_tpl = tpl;
+      vtl->current_tp_track = trk;
+    }
+  }
+
+  // draw pixmap when we have time to
+  (void)g_idle_add_full ( G_PRIORITY_HIGH_IDLE + 10, draw_sync, passalong, NULL );
+  vtl->draw_sync_done = FALSE;
 }
 
 static gchar* distance_string (gdouble distance)

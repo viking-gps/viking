@@ -129,6 +129,8 @@ static VikLayerParam prefs_advanced[] = {
     N_("Whether scroll events zoom or move the viewport"), NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "invert_scroll_direction", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Invert Scroll Direction:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
     N_("Invert direction of scrolling, particularly for touchpad use"), NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "auto_trackpoint_select", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Auto Select Trackpoint:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Select trackpoint from mouse over graph on main display"), NULL, NULL, NULL },
 };
 
 static gchar * params_startup_methods[] = {N_("Home Location"), N_("Last Location"), N_("Specified File"), N_("Auto Location"), NULL};
@@ -280,6 +282,9 @@ void a_vik_preferences_init ()
 
   tmp.b = FALSE;
   a_preferences_register(&prefs_advanced[8], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
+
+  tmp.b = TRUE;
+  a_preferences_register(&prefs_advanced[9], tmp, VIKING_PREFERENCES_ADVANCED_GROUP_KEY);
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -427,6 +432,11 @@ gboolean a_vik_get_invert_scroll_direction ( )
 gboolean a_vik_get_scroll_to_zoom ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "use_scroll_to_zoom")->b;
+}
+
+gboolean a_vik_get_auto_trackpoint_select ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "auto_trackpoint_select")->b;
 }
 
 // Startup Options

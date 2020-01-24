@@ -25,7 +25,7 @@
 #include "viktrwlayer_propwin.h"
 #include "dems.h"
 
-#define BLOB_SIZE 4
+#define BLOB_SIZE 6
 
 typedef enum {
   PROPWIN_GRAPH_TYPE_ELEVATION_DISTANCE,
@@ -579,7 +579,8 @@ static void graph_click_menu_popup ( PropWidgets *widgets, VikPropWinGraphType_t
   GtkWidget *ist = vu_menu_add_item ( GTK_MENU(menu), _("_Statistics"), NULL, G_CALLBACK(menu_statistics_cb), widgets );
   gtk_widget_set_sensitive ( GTK_WIDGET(ist), !widgets->tr->property_dialog );
   GtkWidget *itp = vu_menu_add_item ( GTK_MENU(menu), _("_Edit Trackpoint..."), NULL, G_CALLBACK(menu_edit_trkpt_cb), widgets );
-  gtk_widget_set_sensitive ( GTK_WIDGET(itp), !trw_layer_tpwin_is_shown(widgets->vtl) );
+  gtk_widget_set_sensitive ( GTK_WIDGET(itp), a_vik_get_auto_trackpoint_select() &&
+                                              !trw_layer_tpwin_is_shown(widgets->vtl) );
   GtkWidget *ism = vu_menu_add_item ( GTK_MENU(menu), _("Split at Marker"), GTK_STOCK_CUT, G_CALLBACK(menu_split_at_marker_cb), widgets );
   gtk_widget_set_sensitive ( ism, (gboolean)GPOINTER_TO_INT(widgets->marker_tp) );
 
@@ -945,6 +946,14 @@ static void track_profile_move( GtkWidget *event_box, GdkEventMotion *event, Pro
 				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
+
+  if ( widgets->graphs && widgets->blob_tp )
+    vik_trw_layer_trackpoint_draw ( widgets->vtl, widgets->vvp, widgets->tr, widgets->blob_tp );
+}
+
+static void track_graph_leave ( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *widgets )
+{
+  vik_trw_layer_trackpoint_draw ( widgets->vtl, widgets->vvp, NULL, NULL );
 }
 
 void track_gradient_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *widgets )
@@ -1123,6 +1132,9 @@ void track_vt_move( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *wi
 				   BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 				   &widgets->is_marker_drawn,
 				   &widgets->is_blob_drawn);
+
+  if ( widgets->graphs && widgets->blob_tp )
+    vik_trw_layer_trackpoint_draw ( widgets->vtl, widgets->vvp, widgets->tr, widgets->blob_tp );
 }
 
 /**
@@ -4147,12 +4159,14 @@ gpointer vik_trw_layer_propwin_main ( GtkWindow *parent,
   widgets->speed_box = vik_trw_layer_create_vtdiag ( GTK_WIDGET(parent), widgets );
 
   if ( widgets->elev_box ) {
+    g_signal_connect ( G_OBJECT(widgets->elev_box), "leave_notify_event", G_CALLBACK(track_graph_leave), widgets );
     gtk_notebook_append_page ( GTK_NOTEBOOK(graphs), widgets->elev_box, gtk_label_new(_("Elevation-distance")) );
     g_object_set ( widgets->elev_box, "has-tooltip", TRUE, NULL );
     g_signal_connect ( widgets->elev_box, "query-tooltip", G_CALLBACK(graph_tooltip_cb), widgets );
   }
 
   if ( widgets->speed_box ) {
+    g_signal_connect ( G_OBJECT(widgets->speed_box), "leave_notify_event", G_CALLBACK(track_graph_leave), widgets );
     gtk_notebook_append_page ( GTK_NOTEBOOK(graphs), widgets->speed_box, gtk_label_new(_("Speed-time")) );
     g_object_set ( widgets->speed_box, "has-tooltip", TRUE, NULL );
     g_signal_connect ( widgets->speed_box, "query-tooltip", G_CALLBACK(graph_tooltip_cb), widgets );

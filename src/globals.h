@@ -238,6 +238,8 @@ gboolean a_vik_get_invert_scroll_direction ( );
 
 gboolean a_vik_get_scroll_to_zoom ( );
 
+gboolean a_vik_get_auto_trackpoint_select ( );
+
 gboolean a_vik_get_restore_window_state ( );
 
 gboolean a_vik_get_add_default_map_layer ( );
