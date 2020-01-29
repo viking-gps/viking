@@ -40,6 +40,7 @@ static void update_time ( GtkWidget *widget, VikWaypoint *wp )
 
 static VikWaypoint *edit_wp;
 static gulong direction_signal_id;
+static gchar *last_sym = NULL;
 
 /**
  * time_edit_click:
@@ -234,12 +235,12 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
     gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (symbolentry), r, FALSE);
     gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (symbolentry), r, "text", 2, NULL);
 
-    if ( !is_new && wp->symbol ) {
+    if ( wp->symbol || (is_new && last_sym) ) {
       gboolean ok;
       gchar *sym;
       for (ok = gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &iter ); ok; ok = gtk_tree_model_iter_next ( GTK_TREE_MODEL(store), &iter)) {
-	gtk_tree_model_get ( GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
-	if (sym && !strcmp(sym, wp->symbol)) {
+        gtk_tree_model_get ( GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
+        if (sym && (!g_strcmp0(sym, wp->symbol) || !g_strcmp0(sym, last_sym)) ) {
 	  g_free(sym);
 	  break;
 	} else {
@@ -436,14 +437,17 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
         }
       }
 
+      g_free ( last_sym );
       GtkTreeIter iter, first;
       gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(store), &first );
       if ( !gtk_combo_box_get_active_iter ( GTK_COMBO_BOX(symbolentry), &iter ) || !memcmp(&iter, &first, sizeof(GtkTreeIter)) ) {
         vik_waypoint_set_symbol ( wp, NULL );
+        last_sym = NULL;
       } else {
         gchar *sym;
         gtk_tree_model_get ( GTK_TREE_MODEL(store), &iter, 0, (void *)&sym, -1 );
         vik_waypoint_set_symbol ( wp, sym );
+        last_sym = g_strdup ( sym );
         g_free(sym);
       }
 
