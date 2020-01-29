@@ -262,7 +262,7 @@ static void kml_start ( xml_data *xd, const char *el, const char **attr )
 }
 
 // Fwd declaration
-void ground_overlay_load ( xml_data *xd );
+static void ground_overlay_load ( xml_data *xd );
 
 static void kml_end ( xml_data *xd, const char *el )
 {
@@ -324,7 +324,7 @@ static void kml_cdata ( xml_data *xd, const XML_Char *s, int len )
  * Create a vikgeoreflayer for each <GroundOverlay> in the kml file
  *
  */
-void ground_overlay_load ( xml_data *xd )
+static void ground_overlay_load ( xml_data *xd )
 {
 	// Some simple detection of broken position values
 	if ( isnan(xd->north) || isnan(xd->west) ||
