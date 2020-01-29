@@ -101,7 +101,7 @@ typedef struct {
  * If it's not a tag we explicitly handle, it doesn't go here.
  */
 
-tag_mapping tag_path_map[] = {
+static tag_mapping tag_path_map[] = {
 
         { tt_gpx, "/gpx" },
         { tt_gpx_name, "/gpx/name" },
@@ -180,29 +180,29 @@ static tag_type get_tag(const char *t)
 
 /******************************************/
 
-tag_type current_tag = tt_unknown;
-GString *xpath = NULL;
-GString *c_cdata = NULL;
+static tag_type current_tag = tt_unknown;
+static GString *xpath = NULL;
+static GString *c_cdata = NULL;
 
 /* current ("c_") objects */
-VikTrackpoint *c_tp = NULL;
-VikWaypoint *c_wp = NULL;
-VikTrack *c_tr = NULL;
-VikTRWMetadata *c_md = NULL;
+static VikTrackpoint *c_tp = NULL;
+static VikWaypoint *c_wp = NULL;
+static VikTrack *c_tr = NULL;
+static VikTRWMetadata *c_md = NULL;
 
-gchar *c_wp_name = NULL;
-gchar *c_tr_name = NULL;
+static gchar *c_wp_name = NULL;
+static gchar *c_tr_name = NULL;
 
 /* temporary things so we don't have to create them lots of times */
-const gchar *c_slat, *c_slon;
-struct LatLon c_ll;
+static const gchar *c_slat, *c_slon;
+static struct LatLon c_ll;
 
 /* specialty flags / etc */
-gboolean f_tr_newseg;
-const gchar *c_link = NULL;
-guint unnamed_waypoints = 0;
-guint unnamed_tracks = 0;
-guint unnamed_routes = 0;
+static gboolean f_tr_newseg;
+static const gchar *c_link = NULL;
+static guint unnamed_waypoints = 0;
+static guint unnamed_tracks = 0;
+static guint unnamed_routes = 0;
 
 typedef struct {
 	VikTrwLayer *vtl;
