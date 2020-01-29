@@ -804,6 +804,9 @@ void a_dialog_license ( GtkWindow *parent, const gchar *map, const gchar *licens
  * Mainly for debug
  * Run Time or Build information that can be easily extracted from the libraries in use
  */
+#ifdef HAVE_EXPAT_H
+#include <expat.h>
+#endif
 #ifdef HAVE_LIBCURL
 #include <curl/curl.h>
 #endif
@@ -841,6 +844,9 @@ void a_dialog_build_info ( GtkWindow *parent )
   g_string_append_printf ( msg, "GDK Pixbuf version: %s\n", gdk_pixbuf_version );
   g_string_append_printf ( msg, "Cairo version: %s\n", cairo_version_string() );
   g_string_append_printf ( msg, "Pango version: %s\n", pango_version_string() );
+#ifdef HAVE_EXPAT_H
+  g_string_append_printf ( msg, "Expat version: %s\n", XML_ExpatVersion()  );
+#endif
 #ifdef HAVE_LIBCURL
   g_string_append_printf ( msg, "libcurl version: %s\n", curl_version() );
 #endif
