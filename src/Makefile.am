@@ -123,6 +123,7 @@ libviking_a_SOURCES = \
 	viktmsmapsource.c viktmsmapsource.h \
 	metatile.c metatile.h \
 	gpx.c gpx.h \
+	tcx.c tcx.h \
 	garminsymbols.c garminsymbols.h \
 	acquire.c acquire.h \
 	babel.c babel.h \

@@ -24,6 +24,7 @@
 
 #include "jpg.h"
 #include "gpx.h"
+#include "tcx.h"
 #include "geojson.h"
 #include "babel.h"
 #include "gpsmapper.h"
@@ -697,6 +698,12 @@ VikLoadType_t a_file_load_stream ( FILE *f,
   else if ( a_jpg_magic_check ( filename ) ) {
     if ( ! a_jpg_load_file ( top, filename, vp ) )
       load_answer = LOAD_TYPE_UNSUPPORTED_FAILURE;
+  }
+  // NB TCX files are XML
+  else if ( a_file_check_ext ( filename, ".tcx" ) && check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
+    if ( !a_tcx_read_file ( top, vp, f, filename ) ) {
+      load_answer = LOAD_TYPE_TCX_FAILURE;
+    }
   }
   else
   {

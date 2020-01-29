@@ -1159,6 +1159,11 @@ GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external )
 		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
 
 		filter = gtk_file_filter_new ();
+		gtk_file_filter_set_name( filter, _("TCX") );
+		gtk_file_filter_add_pattern ( filter, "*.tcx" );
+		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+
+		filter = gtk_file_filter_new ();
 		gtk_file_filter_set_name( filter, _("Zip File") );
 		gtk_file_filter_add_mime_type ( filter, "application/zip");
 		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
