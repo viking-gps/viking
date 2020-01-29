@@ -686,12 +686,17 @@ gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath ) {
     status = XML_Parse(parser, buf, len, done);
   }
 
+  gboolean ans = (status != XML_STATUS_ERROR);
+  if ( !ans ) {
+    g_warning ( "%s: XML error %s at line %ld\n", __FUNCTION__, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
+  }
+
   XML_ParserFree (parser);
   g_free ( ud );
   g_string_free ( xpath, TRUE );
   g_string_free ( c_cdata, TRUE );
 
-  return status != XML_STATUS_ERROR;
+  return ans;
 }
 
 /**** entitize from GPSBabel ****/
