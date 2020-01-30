@@ -9,13 +9,15 @@ env:
 # and/or travis docker image(s) not having enabled 'deb-src' lines
 # contrary to docker documentation -> https://docs.docker.com/samples/library/ubuntu/
 # NB At time of writing 2018-11-11: artful doesn't really need this FIX_APT_CONFIG, but no harm in applying it
-   - FIX_APT_CONFIG="more /etc/apt/sources.list && sed -i '/^#\sdeb-src /s/^#//' '/etc/apt/sources.list'"
+# TRAVIS BROKEN
+#   - FIX_APT_CONFIG="sed -i '/^#\sdeb-src /s/^#//' /etc/apt/sources.list"
   matrix:
-   - BUILD_IMG=ubuntu:16.04 DEPS=libmapnik-dev
+# NB Ubuntu 16.04 doesn't have a new enough geoclue so simply disable using it
+   - BUILD_IMG=ubuntu:16.04 DEPS=libmapnik-dev OPTS="--disable-geoclue"
    - BUILD_IMG=ubuntu:18.04
    - BUILD_IMG=ubuntu:18.10
    - BUILD_IMG=ubuntu:19.04
    - BUILD_IMG=ubuntu:19.10
 
-script: docker run --rm=true -v $HOME:$HOME:rw $BUILD_IMG /bin/sh -c "$FIX_APT_CONFIG && apt-get update && apt-get build-dep --yes viking && apt-get install --yes gtk-doc-tools libgeoclue-2-dev nettle-dev liboauth-dev libzip-dev $DEPS && cd $PWD && ./autogen.sh && make -j && make -j check && make install"
+script: docker run --rm=true -v $HOME:$HOME:rw $BUILD_IMG /bin/sh -c "sed -i '/^#\sdeb-src /s/^#//' /etc/apt/sources.list && apt-get update && apt-get build-dep --yes viking && apt-get install --yes gtk-doc-tools libgeoclue-2-dev nettle-dev liboauth-dev libzip-dev $DEPS && cd $PWD && ./autogen.sh $OPTS && make -j && make -j check && make install"
 # Further packages are installed as these are new dependencies for the latest source code, compared to the dependencies listed in the distribution version (`apt-get build-dep` always refers to the version which is built for the OS rather than the up-to-date source)
