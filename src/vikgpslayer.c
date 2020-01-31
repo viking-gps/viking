@@ -1662,8 +1662,15 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
     struct LatLon ll;
     GList *last_tp;
 
+#if GPSD_API_MAJOR_VERSION >= 9
+    gdouble cur_timestamp = vgl->realtime_fix.fix.time.tv_sec +
+      (gdouble)vgl->realtime_fix.fix.time.tv_nsec/(G_USEC_PER_SEC*1000);
+    gdouble last_timestamp = vgl->last_fix.fix.time.tv_sec +
+      (gdouble)vgl->last_fix.fix.time.tv_nsec/(G_USEC_PER_SEC*1000);
+#else
     gdouble cur_timestamp = vgl->realtime_fix.fix.time;
     gdouble last_timestamp = vgl->last_fix.fix.time;
+#endif
 
     if (cur_timestamp < last_timestamp) {
       return NULL;
@@ -1692,7 +1699,12 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
         /* TODO: check for new segments */
         VikTrackpoint *tp = vik_trackpoint_new();
         tp->newsegment = FALSE;
+#if GPSD_API_MAJOR_VERSION >= 9
+        tp->timestamp = vgl->realtime_fix.fix.time.tv_sec +
+          (gdouble)vgl->realtime_fix.fix.time.tv_nsec/(G_USEC_PER_SEC*1000);
+#else
         tp->timestamp = vgl->realtime_fix.fix.time;
+#endif
         tp->altitude = alt;
         /* speed only available for 3D fix. Check for NAN when use this speed */
         tp->speed = vgl->realtime_fix.fix.speed;  
