@@ -418,13 +418,18 @@ static gboolean parse_kml ( const char* buffer, int len, VikViewport *vvp, VikLa
 
 	status = XML_Parse(parser, buffer, len, TRUE);
 
+	gboolean ans = (status != XML_STATUS_ERROR);
+	if ( !ans ) {
+		g_warning ( "%s: XML error %s at line %ld\n", __FUNCTION__, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
+	}
+
 	XML_ParserFree (parser);
 
 	g_string_free ( xd->xpath, TRUE );
 	g_string_free ( xd->c_cdata, TRUE );
 	g_free ( xd );
 
-	return status != XML_STATUS_ERROR;
+	return ans;
 }
 #endif
 #endif
