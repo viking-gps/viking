@@ -1,3 +1,26 @@
+Viking 1.8 (2020-02-02)
+New features since 1.7
+* New GeoClue Layer to Track Position from the GeoClue service
+** Not available on Windows
+* Per Year Track Analysis
+* Track Timing Speed Splits Analysis
+* Subsecond Timing Precision for Tracks & Waypoints
+* Track Area Coverage Feature
+* Native Read Support of Zip & bzip2 Files
+** This attempts to load supported files found within the compressed file
+* Native Basic TCX Read Support
+* Embedded (Elevation & Speed) Graphs in the Main Window
+* Improved icons for Aggregate and Maps layers
+* Scrolling Options for Better Usage with Touchpads
+* Right Click Menu Options on the Calendar
+* Various Keyboard Enhancements:
+** Left & Right arrow keys selects the previous or next trackpoint respectively
+** Keypad '+' & Keypad '-' inserts a trackpoint after or before of the current trackpoint
+** Menu key opens the track context menu
+* SF Features#117: Area Calculation Tool
+* Large Basque language translation update
+* Many other small fixes - see the ChangeLog for the full details.
+
 Viking 1.7 (2019-01-21)
 New features since 1.6.2
 * KMZ Map File Support
