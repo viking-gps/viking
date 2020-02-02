@@ -690,6 +690,7 @@ VikLoadType_t a_file_load_stream ( FILE *f,
       load_answer = LOAD_TYPE_VIK_FAILURE_NON_FATAL;
   }
   else if ( file_magic_check ( filename, "application/zip", ".zip" ) ) {
+    (void)fclose ( f );
     load_answer = uncompress_load_zip_file ( filename, top, vp, vtl, new_layer, external, dirpath );
   }
   else if ( file_magic_check ( filename, "application/x-bzip2", ".bz2" ) ) {
