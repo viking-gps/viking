@@ -172,7 +172,7 @@ gdouble convert_dms_to_dec(const gchar *dms)
 		if (strpbrk (dms, "-wWsS") != NULL)
 		    neg = TRUE;
 
-		// Peek the différent components
+		// Peek at the different components
 		endptr = dms;
 		do {
 			gdouble value;
