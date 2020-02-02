@@ -278,8 +278,6 @@ end:
 gchar* uncompress_bzip2 ( const gchar *name )
 {
 #ifdef HAVE_BZLIB_H
-	g_debug ( "%s: bzip2 %s", __FUNCTION__, BZ2_bzlibVersion() );
-
 	FILE *ff = g_fopen ( name, "rb" );
 	if ( !ff )
 		return NULL;

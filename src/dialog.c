@@ -819,6 +819,9 @@ void a_dialog_license ( GtkWindow *parent, const gchar *map, const gchar *licens
 #ifdef HAVE_MAGIC_H
 #include <magic.h>
 #endif
+#ifdef HAVE_BZLIB_H
+#include <bzlib.h>
+#endif
 #ifdef HAVE_ZIP_H
 #include <zip.h>
 #endif
@@ -860,6 +863,9 @@ void a_dialog_build_info ( GtkWindow *parent )
 #ifdef MAGIC_VERSION
   g_string_append_printf ( msg, "magic API version: %d\n", MAGIC_VERSION );
 #endif
+#endif
+#ifdef HAVE_BZLIB_H
+  g_string_append_printf ( msg, "bzip2 version: %s\n", BZ2_bzlibVersion() );
 #endif
 #ifdef HAVE_ZIP_H
 #ifdef LIBZIP_VERSION
