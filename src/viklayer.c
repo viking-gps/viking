@@ -36,7 +36,7 @@ extern VikLayerInterface vik_dem_layer_interface;
 #ifdef HAVE_LIBMAPNIK
 extern VikLayerInterface vik_mapnik_layer_interface;
 #endif
-#ifdef HAVE_LIBMAPNIK
+#ifdef HAVE_LIBGEOCLUE_2
 extern VikLayerInterface vik_geoclue_layer_interface;
 #endif
 
