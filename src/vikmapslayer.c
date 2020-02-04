@@ -2174,6 +2174,7 @@ static void maps_layer_about ( menu_array_values values )
                         vik_map_source_get_label (map) );
 }
 
+#ifdef HAVE_SQLITE3_H
 static void maps_layer_mbtiles_open_cb ( menu_array_values values )
 {
   VikMapsLayer *vml = VIK_MAPS_LAYER(values[MA_VML]);
@@ -2183,6 +2184,7 @@ static void maps_layer_mbtiles_open_cb ( menu_array_values values )
   maps_layer_mbtiles_open ( vml, vvp, map );
   vik_layer_emit_update ( VIK_LAYER(vml) );
 }
+#endif
 
 /**
  * maps_layer_how_many_maps:
@@ -2484,12 +2486,14 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
     (void)vu_menu_add_item ( menu, _("Download Maps in _Zoom Levels..."), GTK_STOCK_DND_MULTIPLE, G_CALLBACK(maps_layer_download_all), values );
   }
 
+#ifdef HAVE_SQLITE3_H
   // Quick way to reopen MBTiles file - e.g. if it wasn't available at the time of a .vik file load
   if ( vik_map_source_is_mbtiles ( map ) ) {
     if ( !vml->mbtiles ) {
       vu_menu_add_item ( menu, _("_Open MBTiles Files"), GTK_STOCK_OPEN, G_CALLBACK(maps_layer_mbtiles_open_cb), values );
     }
   }
+#endif
 
   (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_ABOUT, G_CALLBACK(maps_layer_about), values );
 
