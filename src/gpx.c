@@ -50,8 +50,20 @@ typedef enum {
         tt_wpt_ele,
         tt_wpt_sym,
         tt_wpt_time,
+        tt_wpt_course,          // Not in GPX 1.1 (although can be in extensions in 1.1)
+        tt_wpt_speed,           // Not in GPX 1.1 (although can be in extensions in 1.1)
+        tt_wpt_magvar,
+        tt_wpt_geoidheight,
         tt_wpt_url,
+        tt_wpt_url_name,
         tt_wpt_link,            /* New in GPX 1.1 */
+        tt_wpt_fix,
+        tt_wpt_sat,
+        tt_wpt_hdop,
+        tt_wpt_vdop,
+        tt_wpt_pdop,
+        tt_wpt_ageofdgpsdata,
+        tt_wpt_dgpsid,
 
         tt_trk,
         tt_trk_cmt,
@@ -124,6 +136,10 @@ static tag_mapping tag_path_map[] = {
         { tt_wpt_ele, "/gpx/wpt/ele" },
         { tt_wpt_time, "/gpx/wpt/time" },
         { tt_wpt_name, "/gpx/wpt/name" },
+        { tt_wpt_course, "/gpx/wpt/course" },
+        { tt_wpt_speed, "/gpx/wpt/speed" },
+        { tt_wpt_magvar, "/gpx/wpt/magvar" },
+        { tt_wpt_geoidheight, "/gpx/wpt/geoidheight" },
         { tt_wpt_cmt, "/gpx/wpt/cmt" },
         { tt_wpt_desc, "/gpx/wpt/desc" },
         { tt_wpt_src, "/gpx/wpt/src" },
@@ -131,7 +147,15 @@ static tag_mapping tag_path_map[] = {
         { tt_wpt_sym, "/gpx/wpt/sym" },
         { tt_wpt_sym, "/loc/waypoint/type" },
         { tt_wpt_url, "/gpx/wpt/url" },
+        { tt_wpt_url_name, "/gpx/wpt/url_name" },            // GPX 1.0 only
         { tt_wpt_link, "/gpx/wpt/link" },                    /* GPX 1.1 */
+        { tt_wpt_fix,  "/gpx/wpt/fix" },
+        { tt_wpt_sat, "/gpx/wpt/sat" },
+        { tt_wpt_hdop, "/gpx/wpt/hdop" },
+        { tt_wpt_vdop, "/gpx/wpt/vdop" },
+        { tt_wpt_pdop, "/gpx/wpt/pdop" },
+        { tt_wpt_ageofdgpsdata, "/gpx/wpt/ageofdgpsdata" },
+        { tt_wpt_dgpsid, "/gpx/wpt/dgpsid" },
 
         { tt_trk, "/gpx/trk" },
         { tt_trk_name, "/gpx/trk/name" },
@@ -303,7 +327,19 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
      case tt_wpt_name:
      case tt_wpt_ele:
      case tt_wpt_time:
+     case tt_wpt_course:
+     case tt_wpt_speed:
+     case tt_wpt_magvar:
+     case tt_wpt_geoidheight:
      case tt_wpt_url:
+     case tt_wpt_url_name:
+     case tt_wpt_fix:
+     case tt_wpt_sat:
+     case tt_wpt_hdop:
+     case tt_wpt_vdop:
+     case tt_wpt_pdop:
+     case tt_wpt_ageofdgpsdata:
+     case tt_wpt_dgpsid:
      case tt_trk_cmt:
      case tt_trk_desc:
      case tt_trk_src:
@@ -491,6 +527,11 @@ static void gpx_end(UserDataT *ud, const char *el)
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
+     case tt_wpt_url_name:
+       vik_waypoint_set_url_name ( c_wp, c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
      case tt_wpt_link:
        if ( c_link ) {
          // Correct <link href="uri"></link> format
@@ -514,6 +555,70 @@ static void gpx_end(UserDataT *ud, const char *el)
 
      case tt_wpt_sym:
        vik_waypoint_set_symbol ( c_wp, c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_wpt_course:
+       c_wp->course = g_ascii_strtod ( c_cdata->str, NULL );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_wpt_speed:
+       c_wp->speed = g_ascii_strtod ( c_cdata->str, NULL );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_wpt_magvar:
+       c_wp->magvar = g_ascii_strtod ( c_cdata->str, NULL );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_wpt_geoidheight:
+       c_wp->geoidheight = g_ascii_strtod ( c_cdata->str, NULL );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_wpt_fix:
+       if (!strcmp("2d", c_cdata->str))
+         c_wp->fix_mode = VIK_GPS_MODE_2D;
+       else if (!strcmp("3d", c_cdata->str))
+         c_wp->fix_mode = VIK_GPS_MODE_3D;
+       else if (!strcmp("dgps", c_cdata->str))
+         c_wp->fix_mode = VIK_GPS_MODE_DGPS;
+       else if (!strcmp("pps", c_cdata->str))
+         c_wp->fix_mode = VIK_GPS_MODE_PPS;
+       else
+         c_wp->fix_mode = VIK_GPS_MODE_NOT_SEEN;
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_wpt_sat:
+       c_wp->nsats = atoi ( c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_wpt_hdop:
+       c_wp->hdop = g_ascii_strtod ( c_cdata->str, NULL );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_wpt_vdop:
+       c_wp->vdop = g_ascii_strtod ( c_cdata->str, NULL );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_wpt_pdop:
+       c_wp->pdop = g_ascii_strtod ( c_cdata->str, NULL );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_wpt_ageofdgpsdata:
+       c_wp->ageofdgpsdata = g_ascii_strtod ( c_cdata->str, NULL );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_wpt_dgpsid:
+       c_wp->dgpsid = atoi ( c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
@@ -628,7 +733,19 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_wpt_type:
     case tt_wpt_sym:
     case tt_wpt_url:
+    case tt_wpt_url_name:
     case tt_wpt_link:
+    case tt_wpt_course:
+    case tt_wpt_speed:
+    case tt_wpt_magvar:
+    case tt_wpt_geoidheight:
+    case tt_wpt_fix:
+    case tt_wpt_sat:
+    case tt_wpt_hdop:
+    case tt_wpt_vdop:
+    case tt_wpt_pdop:
+    case tt_wpt_ageofdgpsdata:
+    case tt_wpt_dgpsid:
     case tt_trk_cmt:
     case tt_trk_desc:
     case tt_trk_src:
@@ -865,6 +982,32 @@ entitize(const char * str)
 /**** end GPSBabel code ****/
 
 /* export GPX */
+static void write_double ( FILE *ff, guint spaces, const gchar *tag, gdouble value )
+{
+  if ( !isnan(value) ) {
+    gchar buf[COORDS_STR_BUFFER_SIZE];
+    a_coords_dtostr_buffer ( value, buf );
+    fprintf ( ff, "%*s<%s>%s</%s>\n", spaces, "", tag, buf, tag );
+  }
+}
+
+// Value must positive to be written otherwise it is ignored
+static void write_positive_uint ( FILE *ff, guint spaces, const gchar *tag, guint value )
+{
+  if ( value )
+    fprintf ( ff, "%*s<%s>%d</%s>\n", spaces, "", tag, value, tag );
+}
+
+static void write_string ( FILE *ff, guint spaces, const gchar *tag, const gchar *value )
+{
+  if ( value && strlen(value) ) {
+    gchar *tmp = entitize ( value );
+    fprintf ( ff, "%*s<%s>%s</%s>\n", spaces, "", tag, value, tag );
+    g_free ( tmp );
+  }
+}
+
+#define WPT_SPACES 2
 
 /**
  * Note that elements are written in the schema specification order
@@ -888,12 +1031,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   fprintf ( f, "<wpt lat=\"%s\" lon=\"%s\"%s>\n",
                s_lat, s_lon, wp->visible ? "" : " hidden=\"hidden\"" );
 
-  if ( !isnan(wp->altitude) )
-  {
-    gchar s_alt[COORDS_STR_BUFFER_SIZE];
-    a_coords_dtostr_buffer ( wp->altitude, s_alt );
-    fprintf ( f, "  <ele>%s</ele>\n", s_alt );
-  }
+  write_double ( f, WPT_SPACES, "ele", wp->altitude );
 
   if ( !isnan(wp->timestamp) ) {
     GTimeVal timestamp;
@@ -906,6 +1044,11 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
     g_free ( time_iso8601 );
   }
 
+  write_double ( f, WPT_SPACES, "course", wp->course );
+  write_double ( f, WPT_SPACES, "speed", wp->speed );
+  write_double ( f, WPT_SPACES, "magvar", wp->magvar );
+  write_double ( f, WPT_SPACES, "geoidheight", wp->geoidheight );
+
   // Sanity clause
   if ( wp->name )
     tmp = entitize ( wp->name );
@@ -915,30 +1058,13 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   fprintf ( f, "  <name>%s</name>\n", tmp );
   g_free ( tmp);
 
-  if ( wp->comment )
-  {
-    tmp = entitize(wp->comment);
-    fprintf ( f, "  <cmt>%s</cmt>\n", tmp );
-    g_free ( tmp );
-  }
-  if ( wp->description )
-  {
-    tmp = entitize(wp->description);
-    fprintf ( f, "  <desc>%s</desc>\n", tmp );
-    g_free ( tmp );
-  }
-  if ( wp->source )
-  {
-    tmp = entitize(wp->source);
-    fprintf ( f, "  <src>%s</src>\n", tmp );
-    g_free ( tmp );
-  }
-  if ( wp->url )
-  {
-    tmp = entitize(wp->url);
-    fprintf ( f, "  <url>%s</url>\n", tmp );
-    g_free ( tmp );
-  }
+  write_string ( f, WPT_SPACES, "cmt", wp->comment );
+  write_string ( f, WPT_SPACES, "desc", wp->description );
+  write_string ( f, WPT_SPACES, "src", wp->source );
+
+  write_string ( f, WPT_SPACES, "url", wp->url );
+  write_string ( f, WPT_SPACES, "urlname", wp->url_name );
+
   if ( wp->image )
   {
     gchar *tmp = NULL;
@@ -968,16 +1094,28 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
       fprintf ( f, "  <sym>%s</sym>\n", tmp);
     g_free ( tmp );
   }
-  if ( wp->type )
-  {
-    tmp = entitize(wp->type);
-    fprintf ( f, "  <type>%s</type>\n", tmp );
-    g_free ( tmp );
-  }
+  write_string ( f, WPT_SPACES, "type", wp->type );
+
+  if ( wp->fix_mode == VIK_GPS_MODE_2D )
+    fprintf ( f, "  <fix>2d</fix>\n" );
+  else if ( wp->fix_mode == VIK_GPS_MODE_3D )
+    fprintf ( f, "  <fix>3d</fix>\n" );
+  else if ( wp->fix_mode == VIK_GPS_MODE_DGPS )
+    fprintf ( f, "  <fix>dgps</fix>\n" );
+  else if ( wp->fix_mode == VIK_GPS_MODE_PPS )
+    fprintf ( f, "  <fix>pps</fix>\n" );
+
+  write_positive_uint ( f, WPT_SPACES, "sat", wp->nsats );
+  write_double ( f, WPT_SPACES, "hdop", wp->hdop );
+  write_double ( f, WPT_SPACES, "vdop", wp->vdop );
+  write_double ( f, WPT_SPACES, "pdop", wp->pdop );
+  write_double ( f, WPT_SPACES, "ageofdgpsdata", wp->ageofdgpsdata );
+  write_positive_uint ( f, WPT_SPACES, "dgpsid", wp->dgpsid );
 
   fprintf ( f, "</wpt>\n" );
 }
 
+#define TRKPT_SPACES 4
 /**
  * Note that elements are written in the schema specification order
  */
@@ -988,7 +1126,6 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   gchar s_lat[COORDS_STR_BUFFER_SIZE];
   gchar s_lon[COORDS_STR_BUFFER_SIZE];
   gchar s_alt[COORDS_STR_BUFFER_SIZE];
-  gchar s_dop[COORDS_STR_BUFFER_SIZE];
   gchar *time_iso8601;
   vik_coord_to_latlon ( &(tp->coord), &ll );
 
@@ -1030,22 +1167,9 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   g_free(time_iso8601);
   time_iso8601 = NULL;
   
-  if (!isnan(tp->course)) {
-    gchar s_course[COORDS_STR_BUFFER_SIZE];
-    a_coords_dtostr_buffer ( tp->course, s_course );
-    fprintf ( f, "    <course>%s</course>\n", s_course );
-  }
-  if (!isnan(tp->speed)) {
-    gchar s_speed[COORDS_STR_BUFFER_SIZE];
-    a_coords_dtostr_buffer ( tp->speed, s_speed );
-    fprintf ( f, "    <speed>%s</speed>\n", s_speed );
-  }
-
-  if (tp->name) {
-    gchar *s_name = entitize(tp->name);
-    fprintf ( f, "    <name>%s</name>\n", s_name );
-    g_free(s_name);
-  }
+  write_double ( f, TRKPT_SPACES, "course", tp->course );
+  write_double ( f, TRKPT_SPACES, "speed", tp->speed );
+  write_string ( f, TRKPT_SPACES, "name", tp->name );
 
   if (tp->fix_mode == VIK_GPS_MODE_2D)
     fprintf ( f, "    <fix>2d</fix>\n");
@@ -1055,27 +1179,16 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
     fprintf ( f, "    <fix>dgps</fix>\n");
   if (tp->fix_mode == VIK_GPS_MODE_PPS)
     fprintf ( f, "    <fix>pps</fix>\n");
-  if (tp->nsats > 0)
-    fprintf ( f, "    <sat>%d</sat>\n", tp->nsats );
 
-  if ( !isnan(tp->hdop) ) {
-    a_coords_dtostr_buffer ( tp->hdop, s_dop );
-    fprintf ( f, "    <hdop>%s</hdop>\n", s_dop );
-  }
-
-  if ( !isnan(tp->vdop) ) {
-    a_coords_dtostr_buffer ( tp->vdop, s_dop );
-    fprintf ( f, "    <vdop>%s</vdop>\n", s_dop );
-  }
-
-  if ( !isnan(tp->pdop) ) {
-    a_coords_dtostr_buffer ( tp->pdop, s_dop );
-    fprintf ( f, "    <pdop>%s</pdop>\n", s_dop );
-  }
+  write_positive_uint ( f, TRKPT_SPACES, "sat", tp->nsats );
+  write_double ( f, TRKPT_SPACES, "hdop", tp->hdop );
+  write_double ( f, TRKPT_SPACES, "vdop", tp->vdop );
+  write_double ( f, TRKPT_SPACES, "pdop", tp->pdop );
 
   fprintf ( f, "  </%spt>\n", (context->options && context->options->is_route) ? "rte" : "trk" );
 }
 
+#define TRK_SPACES 2
 
 static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
 {
@@ -1101,33 +1214,10 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
 	    tmp );
   g_free ( tmp );
 
-  if ( t->comment )
-  {
-    tmp = entitize ( t->comment );
-    fprintf ( f, "  <cmt>%s</cmt>\n", tmp );
-    g_free ( tmp );
-  }
-
-  if ( t->description )
-  {
-    tmp = entitize ( t->description );
-    fprintf ( f, "  <desc>%s</desc>\n", tmp );
-    g_free ( tmp );
-  }
-
-  if ( t->source )
-  {
-    tmp = entitize ( t->source );
-    fprintf ( f, "  <src>%s</src>\n", tmp );
-    g_free ( tmp );
-  }
-
-  if ( t->type )
-  {
-    tmp = entitize ( t->type );
-    fprintf ( f, "  <type>%s</type>\n", tmp );
-    g_free ( tmp );
-  }
+  write_string ( f, TRK_SPACES, "cmt", t->comment );
+  write_string ( f, TRK_SPACES, "desc", t->description );
+  write_string ( f, TRK_SPACES, "src", t->source );
+  write_string ( f, TRK_SPACES, "type", t->type );
 
   /* No such thing as a rteseg! */
   if ( !t->is_route )
@@ -1192,36 +1282,16 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
 
   gpx_write_header ( f );
 
-  gchar *tmp;
+  //gchar *tmp;
   const gchar *name = vik_layer_get_name(VIK_LAYER(vtl));
-  if ( name ) {
-    tmp = entitize ( name );
-    fprintf ( f, "  <name>%s</name>\n", tmp );
-    g_free ( tmp );
-  }
+  write_string ( f, TRK_SPACES, "name", name );
 
   VikTRWMetadata *md = vik_trw_layer_get_metadata (vtl);
   if ( md ) {
-    if ( md->author && strlen(md->author) > 0 ) {
-      tmp = entitize ( md->author );
-      fprintf ( f, "  <author>%s</author>\n", tmp );
-      g_free ( tmp );
-    }
-    if ( md->description && strlen(md->description) > 0) {
-      tmp = entitize ( md->description );
-      fprintf ( f, "  <desc>%s</desc>\n", tmp );
-      g_free ( tmp );
-    }
-    if ( md->timestamp ) {
-      tmp = entitize ( md->timestamp );
-      fprintf ( f, "  <time>%s</time>\n", tmp );
-      g_free ( tmp );
-    }
-    if ( md->keywords && strlen(md->keywords) > 0) {
-      tmp = entitize ( md->keywords );
-      fprintf ( f, "  <keywords>%s</keywords>\n", tmp );
-      g_free ( tmp );
-    }
+    write_string ( f, TRK_SPACES, "author", md->author );
+    write_string ( f, TRK_SPACES, "desc", md->description );
+    write_string ( f, TRK_SPACES, "time", md->timestamp );
+    write_string ( f, TRK_SPACES, "keywords", md->keywords );
   }
 
   if ( vik_trw_layer_get_waypoints_visibility(vtl) || (options && options->hidden) ) {

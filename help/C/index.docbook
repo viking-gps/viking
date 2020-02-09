@@ -1682,6 +1682,13 @@ This can be useful when the waypoint has been moved.
 If the waypoint has a time then clicking on it opens the time edit dialog. Right clicking on the button enables copying the time value as text and middle clicking enables a method to remove the time value.
 </para>
 
+<figure>
+<title>Waypoint Properties: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/WaypointProperties.png"/>
+</screenshot>
+</figure>
+
 </section><!-- WP Prop END -->
 
 <section><title>Waypoint Operations</title>

@@ -70,6 +70,8 @@ static gint line_name_label = 0;
 static gint line_dist_label = 0;
 static gchar *line_image;
 static gchar *line_symbol;
+static gchar *line_url;
+static gchar *line_url_name;
 static gdouble line_image_direction = NAN;
 static VikWaypointImageDirectionRef line_image_direction_ref = WP_IMAGE_DIRECTION_REF_TRUE;
 static gboolean line_newsegment = FALSE;
@@ -80,11 +82,15 @@ static gboolean line_visible = TRUE;
 static gboolean line_extended = FALSE;
 static gdouble line_speed = NAN;
 static gdouble line_course = NAN;
-static gint line_sat = 0;
-static gint line_fix = 0;
+static gdouble line_magvar = NAN;
+static gdouble line_geoidheight = NAN;
+static guint line_sat = 0;
+static guint line_fix = 0;
 static gdouble line_hdop = NAN;
 static gdouble line_vdop = NAN;
 static gdouble line_pdop = NAN;
+static gdouble line_ageofdgpsdata = NAN;
+static guint line_dgpsid = 0;
 /* other possible properties go here */
 
 
@@ -236,6 +242,17 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       wp->visible = line_visible;
       wp->altitude = line_altitude;
       wp->timestamp = line_timestamp;
+      wp->speed = line_speed;
+      wp->course = line_course;
+      wp->magvar = line_magvar;
+      wp->geoidheight = line_geoidheight;
+      wp->nsats = line_sat;
+      wp->fix_mode = line_fix;
+      wp->hdop = line_hdop;
+      wp->vdop = line_vdop;
+      wp->pdop = line_pdop;
+      wp->ageofdgpsdata = line_ageofdgpsdata;
+      wp->dgpsid = line_dgpsid;
 
       vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &line_latlon );
 
@@ -251,6 +268,12 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
 
       if ( line_source )
         vik_waypoint_set_source ( wp, line_source );
+
+      if ( line_url )
+        vik_waypoint_set_url ( wp, line_url );
+
+      if ( line_url_name )
+        vik_waypoint_set_url_name ( wp, line_url_name );
 
       if ( line_xtype )
         vik_waypoint_set_type ( wp, line_xtype );
@@ -352,6 +375,10 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       g_free ( line_image );
     if (line_symbol)
       g_free ( line_symbol );
+    if (line_url)
+      g_free ( line_url );
+    if (line_url_name)
+      g_free ( line_url_name );
     line_comment = NULL;
     line_description = NULL;
     line_source = NULL;
@@ -366,7 +393,10 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     line_timestamp = NAN;
     line_altitude = NAN;
     line_visible = TRUE;
-    line_symbol = NULL;
+    line_url = NULL;
+    line_url_name = NULL;
+    line_magvar = NAN;
+    line_geoidheight = NAN;
 
     line_extended = FALSE;
     line_speed = NAN;
@@ -376,6 +406,8 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     line_hdop = NAN;
     line_vdop = NAN;
     line_pdop = NAN;
+    line_ageofdgpsdata = NAN;
+    line_dgpsid = 0;
     line_name_label = 0;
     line_dist_label = 0;
   }
@@ -443,7 +475,24 @@ value = NULL for none
 */
 static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, const gchar *value, guint value_len )
 {
-  if (key_len == 4 && strncasecmp( key, "type", key_len ) == 0 )
+  // Most commonlly encountered keys should be tested first
+  if (key_len == 8 && strncasecmp( key, "latitude", key_len ) == 0 && value != NULL)
+  {
+    line_latlon.lat = g_ascii_strtod(value, NULL);
+  }
+  else if (key_len == 9 && strncasecmp( key, "longitude", key_len ) == 0 && value != NULL)
+  {
+    line_latlon.lon = g_ascii_strtod(value, NULL);
+  }
+  else if (key_len == 8 && strncasecmp( key, "unixtime", key_len ) == 0 && value != NULL)
+  {
+    line_timestamp = g_ascii_strtod(value, NULL);
+  }
+  else if (key_len == 8 && strncasecmp( key, "altitude", key_len ) == 0 && value != NULL)
+  {
+    line_altitude = g_ascii_strtod(value, NULL);
+  }
+  else if (key_len == 4 && strncasecmp( key, "type", key_len ) == 0 )
   {
     if (value == NULL)
       line_type = GPSPOINT_TYPE_NONE;
@@ -519,18 +568,6 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   {
     line_image_direction_ref = atoi(value);
   }
-  else if (key_len == 8 && strncasecmp( key, "latitude", key_len ) == 0 && value != NULL)
-  {
-    line_latlon.lat = g_ascii_strtod(value, NULL);
-  }
-  else if (key_len == 9 && strncasecmp( key, "longitude", key_len ) == 0 && value != NULL)
-  {
-    line_latlon.lon = g_ascii_strtod(value, NULL);
-  }
-  else if (key_len == 8 && strncasecmp( key, "altitude", key_len ) == 0 && value != NULL)
-  {
-    line_altitude = g_ascii_strtod(value, NULL);
-  }
   else if (key_len == 7 && strncasecmp( key, "visible", key_len ) == 0 && value != NULL && value[0] != 'y' && value[0] != 'Y' && value[0] != 't' && value[0] != 'T')
   {
     line_visible = FALSE;
@@ -538,10 +575,6 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   else if (key_len == 6 && strncasecmp( key, "symbol", key_len ) == 0 && value != NULL)
   {
     line_symbol = g_strndup ( value, value_len );
-  }
-  else if (key_len == 8 && strncasecmp( key, "unixtime", key_len ) == 0 && value != NULL)
-  {
-    line_timestamp = g_ascii_strtod(value, NULL);
   }
   else if (key_len == 10 && strncasecmp( key, "newsegment", key_len ) == 0 && value != NULL)
   {
@@ -561,11 +594,11 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   }
   else if (key_len == 3 && strncasecmp( key, "sat", key_len ) == 0 && value != NULL)
   {
-    line_sat = atoi(value);
+    line_sat = (guint)atoi(value);
   }
   else if (key_len == 3 && strncasecmp( key, "fix", key_len ) == 0 && value != NULL)
   {
-    line_fix = atoi(value);
+    line_fix = (guint)atoi(value);
   }
   else if (key_len == 4 && strncasecmp( key, "hdop", key_len ) == 0 && value != NULL)
   {
@@ -578,6 +611,30 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   else if (key_len == 4 && strncasecmp( key, "pdop", key_len ) == 0 && value != NULL)
   {
     line_pdop = g_ascii_strtod(value, NULL);
+  }
+  else if (key_len == 6 && strncasecmp( key, "magvar", key_len ) == 0 && value != NULL)
+  {
+    line_magvar = g_ascii_strtod(value, NULL);
+  }
+  else if (key_len == 11 && strncasecmp( key, "geoidheight", key_len ) == 0 && value != NULL)
+  {
+    line_geoidheight = g_ascii_strtod(value, NULL);
+  }
+  else if (key_len == 3 && strncasecmp( key, "url", key_len ) == 0 && value != NULL)
+  {
+    line_url = deslashndup ( value, value_len );
+  }
+  else if (key_len == 8 && strncasecmp( key, "url_name", key_len ) == 0 && value != NULL)
+  {
+    line_url_name = deslashndup ( value, value_len );
+  }
+  else if (key_len == 13 && strncasecmp( key, "ageofdgpsdata", key_len ) == 0 && value != NULL)
+  {
+    line_ageofdgpsdata = g_ascii_strtod(value, NULL);
+  }
+  else if (key_len == 6 && strncasecmp( key, "dgpsid", key_len ) == 0 && value != NULL)
+  {
+    line_dgpsid = (guint)atoi(value);
   }
 }
 
@@ -608,6 +665,8 @@ static void a_gpspoint_write_waypoint ( const VikWaypoint *wp, WritingContext *w
   fprintf ( f, "type=\"waypoint\" latitude=\"%s\" longitude=\"%s\" name=\"%s\"", s_lat, s_lon, tmp_name );
   g_free ( tmp_name );
 
+  gchar buf[COORDS_STR_BUFFER_SIZE];
+
   if ( !isnan(wp->altitude) ) {
     gchar s_alt[COORDS_STR_BUFFER_SIZE];
     a_coords_dtostr_buffer ( wp->altitude, s_alt );
@@ -617,6 +676,22 @@ static void a_gpspoint_write_waypoint ( const VikWaypoint *wp, WritingContext *w
     gchar s_tm[COORDS_STR_BUFFER_SIZE];
     a_coords_dtostr_buffer ( wp->timestamp, s_tm );
     fprintf ( f, " unixtime=\"%s\"", s_tm );
+  }
+  if ( !isnan(wp->speed) ) {
+    a_coords_dtostr_buffer ( wp->speed, buf );
+    fprintf ( f, " speed=\"%s\"", buf );
+  }
+  if ( !isnan(wp->course) ) {
+    a_coords_dtostr_buffer ( wp->course, buf );
+    fprintf ( f, " course=\"%s\"", buf );
+  }
+  if ( !isnan(wp->magvar) ) {
+    a_coords_dtostr_buffer ( wp->magvar, buf );
+    fprintf ( f, " magvar=\"%s\"", buf );
+  }
+  if ( !isnan(wp->geoidheight) ) {
+    a_coords_dtostr_buffer ( wp->geoidheight, buf );
+    fprintf ( f, " geoidheight=\"%s\"", buf );
   }
   if ( wp->comment )
   {
@@ -636,11 +711,48 @@ static void a_gpspoint_write_waypoint ( const VikWaypoint *wp, WritingContext *w
     fprintf ( f, " source=\"%s\"", tmp_source );
     g_free ( tmp_source );
   }
+  if ( wp->url )
+  {
+    gchar *tmp_url = slashdup(wp->url);
+    fprintf ( f, " url=\"%s\"", tmp_url );
+    g_free ( tmp_url );
+  }
+  if ( wp->url_name )
+  {
+    gchar *tmp_url = slashdup(wp->url_name);
+    fprintf ( f, " url_name=\"%s\"", tmp_url );
+    g_free ( tmp_url );
+  }
   if ( wp->type )
   {
     gchar *tmp_type = slashdup(wp->type);
     fprintf ( f, " xtype=\"%s\"", tmp_type );
     g_free ( tmp_type );
+  }
+  if ( wp->fix_mode ) {
+    fprintf ( f, " fix=\"%d\"", wp->fix_mode );
+  }
+  if ( wp->nsats ) {
+    fprintf ( f, " sat=\"%d\"", wp->nsats );
+  }
+  if ( !isnan(wp->hdop) ) {
+    a_coords_dtostr_buffer ( wp->hdop, buf );
+    fprintf ( f, " hdop=\"%s\"", buf );
+  }
+  if ( !isnan(wp->vdop) ) {
+    a_coords_dtostr_buffer ( wp->vdop, buf );
+    fprintf ( f, " vdop=\"%s\"", buf );
+  }
+  if ( !isnan(wp->pdop) ) {
+    a_coords_dtostr_buffer ( wp->pdop, buf );
+    fprintf ( f, " pdop=\"%s\"", buf );
+  }
+  if ( !isnan(wp->ageofdgpsdata) ) {
+    a_coords_dtostr_buffer ( wp->ageofdgpsdata, buf );
+    fprintf ( f, " ageofdgpsdata=\"%s\"", buf );
+  }
+  if ( wp->dgpsid ) {
+    fprintf ( f, " dgpsid=\"%d\"", wp->dgpsid );
   }
   if ( wp->image )
   {

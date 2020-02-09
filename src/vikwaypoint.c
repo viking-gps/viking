@@ -37,6 +37,14 @@ VikWaypoint *vik_waypoint_new()
   wp->name = g_strdup(_("Waypoint"));
   wp->image_direction = NAN;
   wp->timestamp = NAN;
+  wp->course = NAN;
+  wp->speed = NAN;
+  wp->magvar = NAN;
+  wp->geoidheight = NAN;
+  wp->hdop = NAN;
+  wp->vdop = NAN;
+  wp->pdop = NAN;
+  wp->ageofdgpsdata = NAN;
   return wp;
 }
 
@@ -111,6 +119,17 @@ void vik_waypoint_set_url(VikWaypoint *wp, const gchar *url)
     wp->url = NULL;
 }
 
+void vik_waypoint_set_url_name(VikWaypoint *wp, const gchar *url_name)
+{
+  if ( wp->url_name )
+    g_free ( wp->url_name );
+
+  if ( url_name && url_name[0] != '\0' )
+    wp->url_name = g_strdup(url_name);
+  else
+    wp->url_name = NULL;
+}
+
 void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image)
 {
   if ( wp->image )
@@ -164,10 +183,12 @@ void vik_waypoint_free(VikWaypoint *wp)
     g_free ( wp->description );
   if ( wp->source )
     g_free ( wp->source );
-  if ( wp->type )
-    g_free ( wp->type );
   if ( wp->url )
     g_free ( wp->url );
+  if ( wp->url_name )
+    g_free ( wp->url_name );
+  if ( wp->type )
+    g_free ( wp->type );
   if ( wp->image )
     g_free ( wp->image );
   if ( wp->symbol )
@@ -182,12 +203,24 @@ VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp)
   new_wp->visible = wp->visible;
   new_wp->altitude = wp->altitude;
   new_wp->timestamp = wp->timestamp;
+  new_wp->course = wp->course;
+  new_wp->speed = wp->speed;
+  new_wp->magvar = wp->magvar;
+  new_wp->geoidheight = wp->geoidheight;
+  new_wp->fix_mode = wp->fix_mode;
+  new_wp->nsats = wp->nsats;
+  new_wp->hdop = wp->hdop;
+  new_wp->vdop = wp->vdop;
+  new_wp->pdop = wp->pdop;
+  new_wp->ageofdgpsdata = wp->ageofdgpsdata;
+  new_wp->dgpsid = wp->dgpsid;
   vik_waypoint_set_name(new_wp,wp->name);
   vik_waypoint_set_comment(new_wp,wp->comment);
   vik_waypoint_set_description(new_wp,wp->description);
   vik_waypoint_set_source(new_wp,wp->source);
-  vik_waypoint_set_type(new_wp,wp->type);
   vik_waypoint_set_url(new_wp,wp->url);
+  vik_waypoint_set_url_name(new_wp,wp->url_name);
+  vik_waypoint_set_type(new_wp,wp->type);
   vik_waypoint_set_image(new_wp,wp->image);
   vik_waypoint_set_symbol(new_wp,wp->symbol);
   new_wp->image_direction = wp->image_direction;
@@ -240,8 +273,9 @@ void vik_waypoint_marshall ( VikWaypoint *wp, guint8 **data, guint *datalen)
   vwm_append(wp->comment);
   vwm_append(wp->description);
   vwm_append(wp->source);
-  vwm_append(wp->type);
   vwm_append(wp->url);
+  vwm_append(wp->url_name);
+  vwm_append(wp->type);
   vwm_append(wp->image);
   vwm_append(wp->symbol);
 
@@ -278,8 +312,9 @@ VikWaypoint *vik_waypoint_unmarshall (const guint8 *data_in, guint datalen)
   vwu_get(new_wp->comment);
   vwu_get(new_wp->description);
   vwu_get(new_wp->source);
-  vwu_get(new_wp->type);
   vwu_get(new_wp->url);
+  vwu_get(new_wp->url_name);
+  vwu_get(new_wp->type);
   vwu_get(new_wp->image); 
   vwu_get(new_wp->symbol);
   // Different Viking instances need their seperate versions
@@ -289,4 +324,3 @@ VikWaypoint *vik_waypoint_unmarshall (const guint8 *data_in, guint datalen)
   return new_wp;
 #undef vwu_get
 }
-

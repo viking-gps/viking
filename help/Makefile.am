@@ -46,6 +46,7 @@ HELP_MEDIA = \
     figures/Track_time_splits.png \
     figures/trw_statusbar.png \
     figures/vik_new_route_18.png \
+    figures/WaypointProperties.png \
     figures/WaypointsList.png \
     figures/zoom_18.png \
     figures/zoom_status_popup.png \

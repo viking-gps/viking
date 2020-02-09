@@ -8511,7 +8511,9 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
         if ( wp->url ||
              ( wp->comment && !strncmp(wp->comment, "http", 4) ) ||
              ( wp->description && !strncmp(wp->description, "http", 4) )) {
-          (void)vu_menu_add_item ( menu, _("Visit _Webpage"), GTK_STOCK_NETWORK, G_CALLBACK(trw_layer_waypoint_webpage), data );
+          GtkWidget *webpg = vu_menu_add_item ( menu, _("Visit _Webpage"), GTK_STOCK_NETWORK, G_CALLBACK(trw_layer_waypoint_webpage), data );
+          if ( wp->url_name )
+            gtk_widget_set_tooltip_text ( webpg, wp->url_name );
         }
       }
     }

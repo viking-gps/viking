@@ -40,14 +40,26 @@ typedef struct _VikWaypoint VikWaypoint;
 struct _VikWaypoint {
   VikCoord coord;
   gboolean visible;
-  gdouble timestamp; /* NAN if data unavailable */
+  gdouble timestamp;         /* NAN if data unavailable */
   gdouble altitude;
+  gdouble course;            /* NAN if data unavailable */
+  gdouble speed;             /* NAN if data unavailable */
+  gdouble magvar;            /* NAN if data unavailable */
+  gdouble geoidheight;       /* NAN if data unavailable */
   gchar *name;
   gchar *comment;
   gchar *description;
   gchar *source;
-  gchar *type;
   gchar *url;
+  gchar *url_name;
+  gchar *type;
+  guint fix_mode;            /* VIK_GPS_MODE_NOT_SEEN if data unavailable */
+  guint nsats;               /* number of satellites used. 0 if data unavailable */
+  gdouble hdop;              /* NAN if data unavailable */
+  gdouble vdop;              /* NAN if data unavailable */
+  gdouble pdop;              /* NAN if data unavailable */
+  gdouble ageofdgpsdata;     /* NAN if data unavailable */
+  guint dgpsid;              /* 0 .. 1023 */
   gchar *image;
   // NB Only really applicable if geotagging(exif info) is being used
   gdouble image_direction;   /* NAN if data unavailable */
@@ -69,6 +81,7 @@ void vik_waypoint_set_description(VikWaypoint *wp, const gchar *description);
 void vik_waypoint_set_source(VikWaypoint *wp, const gchar *source);
 void vik_waypoint_set_type(VikWaypoint *wp, const gchar *type);
 void vik_waypoint_set_url(VikWaypoint *wp, const gchar *url);
+void vik_waypoint_set_url_name(VikWaypoint *wp, const gchar *url_name);
 void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image);
 void vik_waypoint_set_image_direction_info(VikWaypoint *wp, gdouble direction, VikWaypointImageDirectionRef direction_ref);
 void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname);

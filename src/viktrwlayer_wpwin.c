@@ -141,6 +141,24 @@ static void symbol_entry_changed_cb(GtkWidget *combo, GtkListStore *store)
   g_free(sym);
 }
 
+// returns in m/s
+gdouble get_speed_from_text ( vik_units_speed_t speed_units, gchar const *text )
+{
+  gdouble speed = NAN;
+  // Handle input of speed pace types in the form of XX:XX...
+  gchar **components = g_strsplit ( text, ":", -1 );
+  guint nn = g_strv_length ( components );
+  if ( nn >= 1 )
+    speed = atof ( components[0] );
+  if ( nn == 2 ) {
+    speed = speed + ( atof(components[1])/60.0 );
+  }
+  g_strfreev ( components );
+  if ( !isnan(speed) )
+    speed = vu_speed_deconvert ( speed_units, speed );
+  return speed;
+}
+
 /* Specify if a new waypoint or not */
 /* If a new waypoint then it uses the default_name for the suggested name allowing the user to change it.
     The name to use is returned
@@ -392,9 +410,143 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   gtk_box_pack_start (GTK_BOX(basic), symbollabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(basic), GTK_WIDGET(symbolentry), FALSE, FALSE, 0);
 
+  // 'Extra' level of Waypoint properties
+  GtkWidget *extra = gtk_vbox_new ( FALSE, 0 );
+
+  gchar *crs = isnan(wp->course) ? NULL : g_strdup_printf ( "%05.2f", wp->course );
+  GtkWidget *crslabel = gtk_label_new ( _("Course:") );
+  GtkWidget *crsentry = ui_entry_new ( crs, GTK_ENTRY_ICON_SECONDARY );
+  g_free ( crs );
+  
+  gtk_box_pack_start ( GTK_BOX(extra), crslabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), crsentry, FALSE, FALSE, 0 );
+
+  vik_units_speed_t speed_units = a_vik_get_units_speed ();
+  char tmp_lab[64];
+  g_snprintf ( tmp_lab, sizeof(tmp_lab), _("Speed: (%s)"), vu_speed_units_text(speed_units) );
+  GtkWidget *speedlabel = gtk_label_new ( tmp_lab );
+  char tmp_str[64];
+  gdouble my_speed = wp->speed;
+  if ( isnan(my_speed) )
+    tmp_str[0] = '\0';
+  else {
+    my_speed = vu_speed_convert ( speed_units, my_speed );
+    vu_speed_text_value ( tmp_str, sizeof(tmp_str), speed_units, my_speed, "%.2f" );
+  }
+  GtkWidget *speedentry = ui_entry_new ( tmp_str, GTK_ENTRY_ICON_SECONDARY );
+
+  gtk_box_pack_start ( GTK_BOX(extra), speedlabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), speedentry, FALSE, FALSE, 0 );
+
+  char msg[64];
+  if ( isnan(wp->magvar) )
+    g_snprintf ( msg, sizeof(msg), "--" );
+  else
+    g_snprintf ( msg, sizeof(msg), "%05.2f", wp->magvar );
+  GtkWidget *magvarlabel = gtk_label_new ( _("Magnetic Variance:") );
+  GtkWidget *magvarvalue = ui_label_new_selectable(msg); // NB No edit ATM
+  gtk_box_pack_start ( GTK_BOX(extra), magvarlabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), magvarvalue, FALSE, FALSE, 0 );
+
+  GtkWidget *geoidhgtlabel = gtk_label_new ( _("Geoid Height:") );
+  if ( isnan(wp->geoidheight) )
+    tmp_str[0] = '\0';
+  else {
+    switch (height_units) {
+    case VIK_UNITS_HEIGHT_FEET:
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%2f", VIK_METERS_TO_FEET(wp->geoidheight) );
+      break;
+    default:
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%2f", wp->geoidheight );
+      break;
+    }
+  }
+  GtkWidget *geoidhgtentry = ui_entry_new ( tmp_str, GTK_ENTRY_ICON_SECONDARY );
+  gtk_box_pack_start ( GTK_BOX(extra), geoidhgtlabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), geoidhgtentry, FALSE, FALSE, 0 );
+
+  GtkWidget *urllabel = NULL;
+  if ( wp->url && !strncmp(wp->url, "http", 4) )
+    urllabel = gtk_link_button_new_with_label (wp->url, _("URL:") );
+  else
+    urllabel = gtk_label_new (_("URL:"));
+  GtkWidget *urlentry = ui_entry_new ( wp->url, GTK_ENTRY_ICON_SECONDARY );
+  GtkWidget *urlnamelabel = gtk_label_new (_("URL Name:")); 
+  GtkWidget *urlnameentry = ui_entry_new ( wp->url_name, GTK_ENTRY_ICON_SECONDARY );
+
+  gtk_box_pack_start ( GTK_BOX(extra), urllabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), urlentry, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), urlnamelabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), urlnameentry, FALSE, FALSE, 0 );
+
+  // Combine fix & satellites into one line??
+  if ( wp->fix_mode )
+    g_snprintf ( msg, sizeof(msg), "%d", wp->fix_mode );
+  else
+    g_snprintf ( msg, sizeof(msg), "--" );
+  GtkWidget *fixlabel = gtk_label_new ( _("Fix Mode:") );
+  GtkWidget *fixvalue = ui_label_new_selectable(msg); // NB No edit ATM
+  gtk_box_pack_start ( GTK_BOX(extra), fixlabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), fixvalue, FALSE, FALSE, 0 );
+
+  if ( wp->nsats )
+    g_snprintf ( msg, sizeof(msg), "%d", wp->nsats );
+  else
+    g_snprintf ( msg, sizeof(msg), "--" );
+  GtkWidget *satlabel = gtk_label_new ( _("Satellites:") );
+  GtkWidget *satvalue = ui_label_new_selectable(msg); // NB No edit ATM
+  gtk_box_pack_start ( GTK_BOX(extra), satlabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), satvalue, FALSE, FALSE, 0 );
+
+  if ( isnan(wp->hdop) )
+    g_snprintf ( msg, sizeof(msg), "--" );
+  else
+    g_snprintf ( msg, sizeof(msg), "%.3f", wp->hdop ); // TODO feet version...
+  GtkWidget *hdoplabel = gtk_label_new ( _("HDOP:") );
+  GtkWidget *hdopvalue = ui_label_new_selectable(msg); // NB No edit ATM
+  gtk_box_pack_start ( GTK_BOX(extra), hdoplabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), hdopvalue, FALSE, FALSE, 0 );
+
+  if ( isnan(wp->vdop) )
+    g_snprintf ( msg, sizeof(msg), "--" );
+  else
+    g_snprintf ( msg, sizeof(msg), "%.3f", wp->vdop ); // TODO feet version...
+  GtkWidget *vdoplabel = gtk_label_new ( _("VDOP:") );
+  GtkWidget *vdopvalue = ui_label_new_selectable(msg); // NB No edit ATM
+  gtk_box_pack_start ( GTK_BOX(extra), vdoplabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), vdopvalue, FALSE, FALSE, 0 );
+
+  if ( isnan(wp->pdop) )
+    g_snprintf ( msg, sizeof(msg), "--" );
+  else
+    g_snprintf ( msg, sizeof(msg), "%.3f", wp->pdop ); // TODO feet version...
+  GtkWidget *pdoplabel = gtk_label_new ( _("PDOP:") );
+  GtkWidget *pdopvalue = ui_label_new_selectable(msg); // NB No edit ATM
+  gtk_box_pack_start ( GTK_BOX(extra), pdoplabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), pdopvalue, FALSE, FALSE, 0 );
+
+  if ( isnan(wp->ageofdgpsdata) )
+    g_snprintf ( msg, sizeof(msg), "--" );
+  else
+    g_snprintf ( msg, sizeof(msg), "%.3f", wp->ageofdgpsdata ); // TODO feet version...
+  GtkWidget *agedlabel = gtk_label_new ( _("Age of DGPS Data:") );
+  GtkWidget *agedvalue = ui_label_new_selectable(msg); // NB No edit ATM
+  gtk_box_pack_start ( GTK_BOX(extra), agedlabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), agedvalue, FALSE, FALSE, 0 );
+
+  if ( wp->dgpsid )
+    g_snprintf ( msg, sizeof(msg), "%d", wp->dgpsid );
+  else
+    g_snprintf ( msg, sizeof(msg), "--" );
+  GtkWidget *dgpsidlabel = gtk_label_new ( _("DGPS Station Id:") );
+  GtkWidget *dgpsidvalue = ui_label_new_selectable(msg); // NB No edit ATM
+  gtk_box_pack_start ( GTK_BOX(extra), dgpsidlabel, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(extra), dgpsidvalue, FALSE, FALSE, 0 );
+
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
   gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), GTK_WIDGET(basic), gtk_label_new(_("Basic")) );
+  gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), GTK_WIDGET(extra), gtk_label_new(_("Extra")) );
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(tabs), FALSE, FALSE, 0);
 
   gtk_widget_show_all ( gtk_dialog_get_content_area(GTK_DIALOG(dialog)) );
@@ -406,8 +558,15 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
 
   while ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
   {
+    gchar const *crstext = gtk_entry_get_text ( GTK_ENTRY(crsentry) );
+    gdouble crsd = NAN;
+    if ( crstext && strlen(crstext) )
+      crsd = atof ( crstext );
+
     if ( strlen((gchar*)gtk_entry_get_text ( GTK_ENTRY(nameentry) )) == 0 ) /* TODO: other checks (isalpha or whatever ) */
       a_dialog_info_msg ( parent, _("Please enter a name for the waypoint.") );
+    else if ( !isnan(crsd) && ( crsd < 0.0 || crsd > 360.0 ) )
+      a_dialog_warning_msg ( parent, _("Course value must be between 0 and 360.") );
     else {
       // NB: No check for unique names - this allows generation of same named entries.
       gchar *entered_name = g_strdup ( (gchar*)gtk_entry_get_text ( GTK_ENTRY(nameentry) ) );
@@ -470,6 +629,38 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
         last_sym = g_strdup ( sym );
         g_free(sym);
       }
+
+      // Extra tab data
+      wp->course = crsd;
+
+      gchar const *spdtext = gtk_entry_get_text ( GTK_ENTRY(speedentry) );
+      if ( spdtext && strlen(spdtext) ) {
+        wp->speed = get_speed_from_text ( speed_units, spdtext );
+      }
+      else {
+        wp->speed = NAN;
+      }
+
+      gchar const *ghtext = gtk_entry_get_text ( GTK_ENTRY(geoidhgtentry) );
+      if ( ghtext && strlen(ghtext) ) {
+        // Always store in metres
+        switch (height_units) {
+        case VIK_UNITS_HEIGHT_FEET:
+          wp->geoidheight = VIK_FEET_TO_METERS(atof(ghtext));
+          break;
+        default:
+          // VIK_UNITS_HEIGHT_METRES:
+          wp->geoidheight = atof ( ghtext );
+        }
+      }
+      else {
+        wp->geoidheight = NAN;
+      }
+
+      if ( g_strcmp0 ( wp->url, gtk_entry_get_text ( GTK_ENTRY(urlentry) ) ) )
+        vik_waypoint_set_url ( wp, gtk_entry_get_text ( GTK_ENTRY(urlentry) ) );
+      if ( g_strcmp0 ( wp->url_name, gtk_entry_get_text ( GTK_ENTRY(urlnameentry) ) ) )
+        vik_waypoint_set_url_name ( wp, gtk_entry_get_text ( GTK_ENTRY(urlnameentry) ) );
 
       gtk_widget_destroy ( dialog );
       if ( is_new )
