@@ -203,14 +203,10 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   descriptionentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
 
   sourcelabel = gtk_label_new (_("Source:"));
-  if ( wp->source ) {
-    sourceentry = ui_entry_new ( wp->source, GTK_ENTRY_ICON_SECONDARY );
-  }
+  sourceentry = ui_entry_new ( wp->source, GTK_ENTRY_ICON_SECONDARY );
 
   typelabel = gtk_label_new (_("Type:"));
-  if ( wp->type ) {
-    typeentry = ui_entry_new ( wp->type, GTK_ENTRY_ICON_SECONDARY );
-  }
+  typeentry = ui_entry_new ( wp->type, GTK_ENTRY_ICON_SECONDARY );
 
   imagelabel = gtk_label_new (_("Image:"));
   imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE, NULL, NULL);
@@ -353,14 +349,10 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   gtk_box_pack_start (GTK_BOX(basic), commententry, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(basic), descriptionlabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(basic), descriptionentry, FALSE, FALSE, 0);
-  if ( wp->source ) {
-    gtk_box_pack_start (GTK_BOX(basic), sourcelabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), sourceentry, FALSE, FALSE, 0);
-  }
-  if ( wp->type ) {
-    gtk_box_pack_start (GTK_BOX(basic), typelabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), typeentry, FALSE, FALSE, 0);
-  }
+  gtk_box_pack_start (GTK_BOX(basic), sourcelabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), sourceentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), typelabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), typeentry, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(basic), imagelabel, FALSE, FALSE, 0);
   gtk_box_pack_start (GTK_BOX(basic), imageentry, FALSE, FALSE, 0);
   if ( hasGeotagCB ) {
