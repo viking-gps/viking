@@ -961,6 +961,27 @@ GtkWidget* vu_menu_add_item ( const GtkMenu *menu,
 }
 
 /**
+ * vu_speed_deconvert:
+ *
+ * Convert the speed from the specified units into m/s
+ */
+gdouble vu_speed_deconvert ( vik_units_speed_t speed_units, gdouble speed )
+{
+	gdouble my_speed = speed;
+	switch (speed_units) {
+	case VIK_UNITS_SPEED_KILOMETRES_PER_HOUR: my_speed = VIK_KPH_TO_MPS(speed); break;
+	case VIK_UNITS_SPEED_MILES_PER_HOUR:      my_speed = VIK_MPH_TO_MPS(speed); break;
+	case VIK_UNITS_SPEED_KNOTS:               my_speed = VIK_KNOTS_TO_MPS(speed); break;
+	case VIK_UNITS_SPEED_SECONDS_PER_KM:      my_speed = (3600.0 / speed) / VIK_KPH_IN_MPS; break;
+	case VIK_UNITS_SPEED_MINUTES_PER_KM:      my_speed = (60.0 / speed) / VIK_KPH_IN_MPS; break;
+	case VIK_UNITS_SPEED_SECONDS_PER_MILE:    my_speed = (5793.6384 / speed) / VIK_KPH_IN_MPS; break;
+	case VIK_UNITS_SPEED_MINUTES_PER_MILE:    my_speed = (96.56064 / speed) / VIK_KPH_IN_MPS; break;
+	default: break; // VIK_UNITS_SPEED_METRES_PER_SECOND:
+	}
+	return my_speed;
+}
+
+/**
  * vu_speed_convert:
  *
  * Convert the speed from m/s into the specified units
