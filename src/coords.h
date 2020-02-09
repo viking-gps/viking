@@ -7,7 +7,7 @@ renaming functions and defining LatLon and UTM structs.
 */
 /* coords.h - include file for coords routines
 **
-** Copyright © 2001 by Jef Poskanzer <jef@acme.com>.
+** Copyright Â© 2001 by Jef Poskanzer <jef@acme.com>.
 ** All rights reserved.
 **
 ** Redistribution and use in source and binary forms, with or without

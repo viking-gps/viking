@@ -47,11 +47,7 @@ CFILE_GLOB=
 
 # Header files to ignore when scanning.
 # e.g. IGNORE_HFILES=gtkdebug.h gtkintl.h
-# Note the 'non' terraserver files currently contain non UTF8 '(C)' characters
-#  which breaks gtkdoc-scan, so work around it
-IGNORE_HFILES=terraserver.h terraservermapsource.h coords.h jpeg-marker.h jpeg-data.h
-# To find such files something like this (NB isutf8 is in the Debian moreutils package)
-# find . -name '*.[ch]' -exec isutf8 \{\} \;
+IGNORE_HFILES=terraserver.h terraservermapsource.h
 
 # Images to copy into HTML directory.
 # e.g. HTML_IMAGES=$(top_srcdir)/gtk/stock-icons/stock_about_24.png
