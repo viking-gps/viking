@@ -136,6 +136,8 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   GtkWidget *direction_sb = NULL;
   GtkWidget *direction_hb = NULL;
   GtkListStore *store;
+  GtkWidget *tabs = gtk_notebook_new();
+  GtkWidget *basic = gtk_vbox_new ( FALSE, 0 );
 
   gchar *lat, *lon, *alt;
 
@@ -163,13 +165,13 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   *updated = FALSE;
 
   namelabel = gtk_label_new (_("Name:"));
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), namelabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), namelabel, FALSE, FALSE, 0);
   // Name is now always changeable
   nameentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   if ( default_name )
     gtk_entry_set_text( GTK_ENTRY(nameentry), default_name );
   g_signal_connect_swapped ( nameentry, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), nameentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), nameentry, FALSE, FALSE, 0);
 
   latlabel = gtk_label_new (_("Latitude:"));
   latentry = ui_entry_new ( lat, GTK_ENTRY_ICON_SECONDARY );
@@ -339,42 +341,45 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   }
   g_signal_connect ( G_OBJECT(timevaluebutton), "button-release-event", G_CALLBACK(time_edit_click), edit_wp );
 
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latlabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), latentry, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lonlabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), lonentry, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), timelabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), timevaluebutton, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), altlabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), altentry, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), commentlabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), commententry, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), descriptionlabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), descriptionentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), latlabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), latentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), lonlabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), lonentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), timelabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), timevaluebutton, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), altlabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), altentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), commentlabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), commententry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), descriptionlabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), descriptionentry, FALSE, FALSE, 0);
   if ( wp->source ) {
-    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), sourcelabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), sourceentry, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(basic), sourcelabel, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(basic), sourceentry, FALSE, FALSE, 0);
   }
   if ( wp->type ) {
-    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), typelabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), typeentry, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(basic), typelabel, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(basic), typeentry, FALSE, FALSE, 0);
   }
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), imagelabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), imageentry, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), imagelabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), imageentry, FALSE, FALSE, 0);
   if ( hasGeotagCB ) {
     GtkWidget *hbox =  gtk_hbox_new ( FALSE, 0 );
     gtk_box_pack_start (GTK_BOX(hbox), hasGeotagCB, FALSE, FALSE, 0);
     gtk_box_pack_start (GTK_BOX(hbox), consistentGeotagCB, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(basic), hbox, FALSE, FALSE, 0);
   }
   if ( direction_hb )
-    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), direction_hb, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(basic), direction_hb, FALSE, FALSE, 0);
   if ( direction_sb )
-    gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), direction_sb, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), symbollabel, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(symbolentry), FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(basic), direction_sb, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), symbollabel, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(basic), GTK_WIDGET(symbolentry), FALSE, FALSE, 0);
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+
+  gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), GTK_WIDGET(basic), gtk_label_new(_("Basic")) );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(tabs), FALSE, FALSE, 0);
 
   gtk_widget_show_all ( gtk_dialog_get_content_area(GTK_DIALOG(dialog)) );
 
