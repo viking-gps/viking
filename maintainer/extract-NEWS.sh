@@ -22,19 +22,25 @@
 #
 usage()
 {
-  echo "Usage: $0 x.y.z master"
+  echo "Usage: $0 <old_version> <new_version>"
+  #e.g. ./extract-NEWS.sh 1.5 1.6
 }
 
 gen_log()
 {
-  git log --date=short "--format=* %s" "$@"
+  # Note the versions are linked by .. thus only process changes between these versions
+  git log --date=short "--format=* %s" "viking-$1".."viking-$2"
 }
 
-echo "Viking x.y.z (`date +%Y-%m-%d`)"
-echo "New features since x.y.z"
-gen_log "$@" | grep -i -v fix
+# All:
+#gen_log "$@"
+echo "Viking $2 (`date +%Y-%m-%d`)"
+echo "New features since $1"
+gen_log "$@" | grep -i 'SF.Features' | sort
 echo
-echo "Fixes since x.y.z"
-gen_log "$@" | grep -i fix
+echo "Fixes since $1"
+gen_log "$@" | grep -i 'SF.Bugs' | sort
 echo
+# Github issues could be bug or a feature...
+gen_log "$@" | grep -i 'Github.\#' | sort
 
