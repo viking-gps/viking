@@ -362,7 +362,7 @@ VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoor
 	// Not worried if none of the other fields exist, as can default the values to something
 	//
 
-	gdouble alt = VIK_DEFAULT_ALTITUDE;
+	gdouble alt = NAN;
 	ee = exif_content_get_entry (ed->ifd[EXIF_IFD_GPS], EXIF_TAG_GPS_ALTITUDE);
 	if ( ee && ee->components == 1 && ee->format == EXIF_FORMAT_RATIONAL ) {
 		alt = Rational2Double ( ee->data,
