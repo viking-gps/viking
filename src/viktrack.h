@@ -46,13 +46,7 @@ struct _VikTrackpoint {
   gdouble speed;  	/* NAN if data unavailable */
   gdouble course;   /* NAN if data unavailable */
   guint nsats;      /* number of satellites used. 0 if data unavailable */
-#define VIK_GPS_MODE_NOT_SEEN	0	/* mode update not seen yet */
-#define VIK_GPS_MODE_NO_FIX	1	/* none */
-#define VIK_GPS_MODE_2D  	2	/* good for latitude/longitude */
-#define VIK_GPS_MODE_3D  	3	/* good for altitude/climb too */
-#define VIK_GPS_MODE_DGPS	4
-#define VIK_GPS_MODE_PPS 	5	/* military signal used */
-  gint fix_mode;    /* VIK_GPS_MODE_NOT_SEEN if data unavailable */
+  guint fix_mode;   /* VIK_GPS_MODE_NOT_SEEN if data unavailable */
   gdouble hdop;     /* NAN if data unavailable */
   gdouble vdop;     /* NAN if data unavailable */
   gdouble pdop;     /* NAN if data unavailable */
