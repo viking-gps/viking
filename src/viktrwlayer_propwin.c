@@ -24,6 +24,7 @@
 #include "viking.h"
 #include "viktrwlayer_propwin.h"
 #include "dems.h"
+#include "preferences.h"
 
 #define BLOB_SIZE 6
 
@@ -258,6 +259,37 @@ static void prop_widgets_free(PropWidgets *widgets)
   if (widgets->speeds_dist)
     g_free(widgets->speeds_dist);
   g_free(widgets);
+}
+
+#define TPW_PREFS_GROUP_KEY "track.propwin"
+#define TPW_PREFS_NS "track.propwin."
+
+static VikLayerParam prefs[] = {
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"tabs_on_side", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Tabs on the side:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_splits", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show splits tab:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_elev_dist", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Elevation-distance graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_elev_time", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Elevation-time graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_grad_dist", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Gradient-distance graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_speed_time", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Speed-time graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_speed_dist", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Speed-distance graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_dist_time", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Distance-time graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
+};
+
+void vik_trw_layer_propwin_init ()
+{
+  a_preferences_register_group ( TPW_PREFS_GROUP_KEY, _("Track Properties Dialog") );
+
+  VikLayerParamData tmp;
+  tmp.b = FALSE;
+  a_preferences_register ( &prefs[0], tmp, TPW_PREFS_GROUP_KEY );
+  tmp.b = TRUE; // Each graph set to being shown (if possible) by default
+  a_preferences_register ( &prefs[1], tmp, TPW_PREFS_GROUP_KEY );
+  a_preferences_register ( &prefs[2], tmp, TPW_PREFS_GROUP_KEY );
+  a_preferences_register ( &prefs[3], tmp, TPW_PREFS_GROUP_KEY );
+  a_preferences_register ( &prefs[4], tmp, TPW_PREFS_GROUP_KEY );
+  a_preferences_register ( &prefs[5], tmp, TPW_PREFS_GROUP_KEY );
+  a_preferences_register ( &prefs[6], tmp, TPW_PREFS_GROUP_KEY );
+  a_preferences_register ( &prefs[7], tmp, TPW_PREFS_GROUP_KEY );
 }
 
 static void minmax_array(const gdouble *array, gdouble *min, gdouble *max, gboolean NO_ALT_TEST, gint PROFILE_WIDTH)
@@ -3617,6 +3649,11 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
   return table;
 }
 
+gboolean bool_pref_get ( const gchar *pref )
+{
+  VikLayerParamData *vlpd = a_preferences_get ( pref );
+  return vlpd->b;
+}
 /**
  *
  */
@@ -3664,13 +3701,22 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   gboolean DEM_available = a_dems_overlaps_bbox (tr->bbox);
 
-  widgets->elev_box = vik_trw_layer_create_profile(GTK_WIDGET(parent), widgets);
-  widgets->gradient_box = vik_trw_layer_create_gradient(GTK_WIDGET(parent), widgets);
-  widgets->speed_box = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), widgets);
-  widgets->dist_box = vik_trw_layer_create_dtdiag(GTK_WIDGET(parent), widgets);
-  widgets->elev_time_box = vik_trw_layer_create_etdiag(GTK_WIDGET(parent), widgets);
-  widgets->speed_dist_box = vik_trw_layer_create_sddiag(GTK_WIDGET(parent), widgets);
+  if ( bool_pref_get(TPW_PREFS_NS"show_elev_dist") )
+    widgets->elev_box = vik_trw_layer_create_profile(GTK_WIDGET(parent), widgets);
+  if ( bool_pref_get(TPW_PREFS_NS"show_grad_dist") )
+    widgets->gradient_box = vik_trw_layer_create_gradient(GTK_WIDGET(parent), widgets);
+  if ( bool_pref_get(TPW_PREFS_NS"show_speed_time") )
+    widgets->speed_box = vik_trw_layer_create_vtdiag(GTK_WIDGET(parent), widgets);
+  if ( bool_pref_get(TPW_PREFS_NS"show_dist_time") )
+    widgets->dist_box = vik_trw_layer_create_dtdiag(GTK_WIDGET(parent), widgets);
+  if ( bool_pref_get(TPW_PREFS_NS"show_elev_time") )
+    widgets->elev_time_box = vik_trw_layer_create_etdiag(GTK_WIDGET(parent), widgets);
+  if ( bool_pref_get(TPW_PREFS_NS"show_speed_dist") )
+    widgets->speed_dist_box = vik_trw_layer_create_sddiag(GTK_WIDGET(parent), widgets);
   GtkWidget *graphs = gtk_notebook_new();
+
+  if ( bool_pref_get(TPW_PREFS_NS"tabs_on_side") )
+    gtk_notebook_set_tab_pos ( GTK_NOTEBOOK(graphs), GTK_POS_LEFT );
 
   GtkWidget *content_prop[20];
   int cnt_prop = 0;
@@ -3735,9 +3781,10 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_statistics_page(widgets, widgets->tr), gtk_label_new(_("Statistics")));
 
   // TODO: One day might be nice to have bar chart equivalent of the simple table values.
-  // Only bother showing timing splits if times are available
-  if ( widgets->speed_box )
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_splits_tables(tr), gtk_label_new(_("Splits")));
+  // Only bother showing timing splits if track has some kind of timespan
+  if ( bool_pref_get(TPW_PREFS_NS"show_splits") )
+    if ( vik_track_get_duration(tr,FALSE) > 1 )
+      gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_splits_tables(tr), gtk_label_new(_("Splits")));
 
   if ( widgets->elev_box ) {
     GtkWidget *page = NULL;

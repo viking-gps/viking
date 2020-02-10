@@ -33,6 +33,7 @@
 #include "preferences.h"
 #include "vikmapslayer.h"
 #include "vikgeoreflayer.h"
+#include "viktrwlayer_propwin.h"
 #include "vikrouting.h"
 #include "toolbar.h"
 #include "thumbnails.h"
@@ -200,6 +201,7 @@ int main( int argc, char *argv[] )
   a_toolbar_init();
   vik_routing_prefs_init();
   vik_trw_layer_export_init();
+  vik_trw_layer_propwin_init();
 
   /*
    * Second stage initialization

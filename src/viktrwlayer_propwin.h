@@ -33,6 +33,8 @@ G_BEGIN_DECLS
 #define VIK_TRW_LAYER_PROPWIN_DEL_DUP 3
 #define VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER 4
 
+void vik_trw_layer_propwin_init ();
+
 void vik_trw_layer_propwin_run ( GtkWindow *parent,
 								 VikTrwLayer *vtl,
 								 VikTrack *tr,
