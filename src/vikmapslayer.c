@@ -1286,7 +1286,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
     xshrinkfactor = vml->xmapzoom / xzoom;
     yshrinkfactor = vml->ymapzoom / yzoom;
     xzoom = vml->xmapzoom;
-    yzoom = vml->xmapzoom;
+    yzoom = vml->ymapzoom;
     if ( ! (xshrinkfactor > MIN_SHRINKFACTOR && xshrinkfactor < MAX_SHRINKFACTOR &&
          yshrinkfactor > MIN_SHRINKFACTOR && yshrinkfactor < MAX_SHRINKFACTOR ) ) {
       if ( xshrinkfactor > REAL_MIN_SHRINKFACTOR && yshrinkfactor > REAL_MIN_SHRINKFACTOR ) {
