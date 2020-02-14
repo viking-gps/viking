@@ -3637,7 +3637,7 @@ static void trw_layer_find_maxmin (VikTrwLayer *vtl, struct LatLon maxmin[2])
   g_hash_table_foreach ( vtl->routes, (GHFunc) trw_layer_find_maxmin_tracks, maxmin );
 }
 
-static LatLonBBox trw_layer_get_bbox ( VikTrwLayer *vtl )
+LatLonBBox vik_trw_layer_get_bbox ( VikTrwLayer *vtl )
 {
   struct LatLon maxmin[2] = { {0.0,0.0}, {0.0,0.0} };
   trw_layer_find_maxmin (vtl, maxmin);
@@ -3917,7 +3917,7 @@ static void trw_layer_new_wikipedia_wp_layer ( menu_array_layer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
   VikLayersPanel *vlp = VIK_LAYERS_PANEL(values[MA_VLP]);
-  a_geonames_wikipedia_box ( (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, trw_layer_get_bbox(vtl) );
+  a_geonames_wikipedia_box ( (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, vik_trw_layer_get_bbox(vtl) );
   trw_layer_calculate_bounds_waypoints ( vtl );
   vik_layers_panel_emit_update ( vlp );
 }

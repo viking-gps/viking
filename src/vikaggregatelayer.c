@@ -1648,6 +1648,55 @@ static void tac_clear_cb ( menu_array_values values )
   vik_layer_emit_update ( VIK_LAYER(val) ); // NB update display from background
 }
 
+/**
+ * View area of all TRW layers within an aggregrate layer
+ */
+static void aggregate_view_all_trw ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL ( values[MA_VLP] );
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
+  VikViewport *vvp = vik_window_viewport ( vw );
+
+  // Get all TRW layers
+  GList *layers = NULL;
+  layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, TRUE );
+
+  struct LatLon maxmin[2] = { {0,0}, {0,0} };
+
+  gboolean have_bbox = FALSE;
+  GList *iter = g_list_first ( layers );
+  while ( iter ) {
+    VikTrwLayer *vtl = VIK_TRW_LAYER(iter->data);
+    if ( !vik_trw_layer_is_empty(vtl) ) {
+      LatLonBBox bbox = vik_trw_layer_get_bbox ( vtl );
+      if ( !have_bbox ) {
+	maxmin[0].lat = bbox.north;
+	maxmin[1].lat = bbox.south;
+	maxmin[0].lon = bbox.east;
+	maxmin[1].lon = bbox.west;
+	have_bbox = TRUE;
+      } else {
+        if ( bbox.north > maxmin[0].lat )
+          maxmin[0].lat = bbox.north;
+        if ( bbox.south < maxmin[1].lat )
+          maxmin[1].lat = bbox.south;
+        if ( bbox.east > maxmin[0].lon )
+          maxmin[0].lon = bbox.east;
+        if ( bbox.west < maxmin[1].lon )
+          maxmin[1].lon = bbox.west;
+      }
+    }
+    iter = g_list_next ( iter );
+  }
+
+  if ( have_bbox ) {
+    vu_zoom_to_show_latlons ( vik_viewport_get_coord_mode(vvp), vvp, maxmin );
+    vik_layers_panel_emit_update ( vlp );
+  }
+}
+
+
 // This shouldn't be called when already running
 static void tac_calculate_cb ( menu_array_values values )
 {
@@ -1674,6 +1723,13 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   (void)vu_menu_add_item ( vis_submenu, _("_Show All"), GTK_STOCK_APPLY, G_CALLBACK(aggregate_layer_child_visible_on), values );
   (void)vu_menu_add_item ( vis_submenu, _("_Hide All"), GTK_STOCK_CLEAR, G_CALLBACK(aggregate_layer_child_visible_off), values );
   (void)vu_menu_add_item ( vis_submenu, _("_Toggle"), GTK_STOCK_REFRESH, G_CALLBACK(aggregate_layer_child_visible_toggle), values );
+
+  GtkMenu *view_submenu = GTK_MENU(gtk_menu_new());
+  GtkWidget *itemvw = vu_menu_add_item ( menu, _("V_iew"), NULL, NULL, NULL );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemvw), GTK_WIDGET(view_submenu) );
+
+  GtkWidget *itematl = vu_menu_add_item ( view_submenu, _("_All TrackWaypoint Layers"), GTK_STOCK_ZOOM_FIT, G_CALLBACK(aggregate_view_all_trw), values );
+  gtk_widget_set_sensitive ( itematl, val->children ? TRUE : FALSE );
 
   GtkMenu *submenu_sort = GTK_MENU(gtk_menu_new());
   GtkWidget *items = vu_menu_add_item ( menu, _("_Sort"), GTK_STOCK_REFRESH, NULL, NULL );

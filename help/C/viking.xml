@@ -2057,6 +2057,12 @@ This offers a quick way to set all the visibilities of each item within the aggr
 </para>
 </section>
 
+<section><title>View - All TrackWaypoint Layers</title>
+<para>
+Automatically move the viewport and select the best zoom level to see all such <xref linkend="TrackWaypoint"/> layers within this aggregate.
+</para>
+</section>
+
 <section id="sort_items" xreflabel="Sort"><title>Sort</title>
 <para>
 The list within the treeview can be sorted.
