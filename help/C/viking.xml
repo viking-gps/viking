@@ -2037,6 +2037,26 @@ Add a new layer of the selected type.
 </para>
 </section>
 
+<section><title>Visibility Options</title>
+<para>
+This offers a quick way to set all the visibilities of each item within the aggregate, rather than having to change each one individually.
+<variablelist>
+<varlistentry>
+<term><guilabel>Show All</guilabel></term>
+<listitem><para>Ensures all items are set to be visible.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Hide All</guilabel></term>
+<listitem><para>Ensures all items are set to be invisible. This is useful for then turning on single items afterwards so the display is not cluttered.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Toggle</guilabel></term>
+<listitem><para>Inverts the visibility status of each item.</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+</section>
+
 <section id="sort_items" xreflabel="Sort"><title>Sort</title>
 <para>
 The list within the treeview can be sorted.
