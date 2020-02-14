@@ -10,6 +10,7 @@ TESTS = check_degrees_conversions.sh \
 	check_decimal_output.sh \
 	check_babel.sh \
 	check_gpx.sh \
+	check_help_xml.sh \
 	check_metatile.sh
 if GEOTAG
 TESTS += check_geotag.sh
