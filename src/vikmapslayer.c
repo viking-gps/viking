@@ -1244,6 +1244,7 @@ gboolean try_draw_scale_up (VikMapsLayer *vml, VikViewport *vvp, guint vp_scale,
                             gdouble xshrinkfactor, gdouble yshrinkfactor, guint id, const gchar *mapname, gchar *path_buf, guint max_path_len)
 {
   GdkPixbuf *pixbuf;
+  gboolean ans = FALSE;
   // Try with bigger zooms
   int scale_dec;
   for (scale_dec = 1; scale_dec <= SCALE_INC_UP; scale_dec++) {
@@ -1260,18 +1261,16 @@ gboolean try_draw_scale_up (VikMapsLayer *vml, VikViewport *vvp, guint vp_scale,
         ulm3.y += pict_y;
         pixbuf = get_pixbuf ( vml, id, vp_scale, mapname, &ulm3, path_buf, max_path_len, xshrinkfactor / scale_factor, yshrinkfactor / scale_factor );
         if ( pixbuf ) {
-          gint src_x = 0;
-          gint src_y = 0;
           gint dest_x = xx + pict_x * (tilesize_x_ceil / scale_factor);
           gint dest_y = yy + pict_y * (tilesize_y_ceil / scale_factor);
-          vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, dest_x, dest_y, tilesize_x_ceil / scale_factor, tilesize_y_ceil / scale_factor );
+          vik_viewport_draw_pixbuf ( vvp, pixbuf, 0, 0, dest_x, dest_y, tilesize_y_ceil / scale_factor, tilesize_y_ceil / scale_factor );
           g_object_unref(pixbuf);
-          return TRUE;
+          ans = TRUE;
         }
       }
     }
   }
-  return FALSE;
+  return ans;
 }
 
 static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCoord *ul, VikCoord *br )
