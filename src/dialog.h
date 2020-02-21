@@ -61,8 +61,6 @@ gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *
 
 guint a_dialog_get_positive_number ( GtkWindow *parent, gchar *title_text, gchar *label_text, guint default_num, guint min, guint max, guint step );
 
-void a_dialog_choose_dir ( GtkWidget *entry );
-
 gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_map, gchar *zoom_list[], gint default_zoom, gint *selected_map, gint *selected_zoom);
 
 GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg );
