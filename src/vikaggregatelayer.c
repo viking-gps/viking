@@ -28,6 +28,9 @@
 #include "icons/icons.h"
 #include "maputils.h"
 #include "background.h"
+#ifdef HAVE_SQLITE3_H
+#include "sqlite3.h"
+#endif
 
 static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, guint *len );
 static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );
@@ -1649,6 +1652,179 @@ static void tac_clear_cb ( menu_array_values values )
 }
 
 /**
+ * Generate MBTiles file of TAC pixbufs
+ */
+#ifdef HAVE_SQLITE3_H
+
+typedef struct {
+  VikAggregateLayer *val;
+  gchar *fn;
+} MBT_T;
+
+static void mbt_free ( MBT_T *mbt )
+{
+  g_free ( mbt->fn );
+  g_free ( mbt );
+}
+
+static gint tac_mbtiles_thread ( MBT_T *mbt, gpointer threaddata  )
+{
+  VikAggregateLayer *val = mbt->val;
+  clock_t begin = clock();
+
+  gchar *msg = NULL;
+  sqlite3 *mbtiles;
+  int ans = sqlite3_open ( mbt->fn, &mbtiles );
+  if ( ans != SQLITE_OK ) {
+    msg = g_strdup ( sqlite3_errmsg(mbtiles) );
+    goto cleanup;
+  }
+
+  char *err_msg = 0;
+  // Recreate tables and use fast writing options, since the data is not critical and the file can be easily regenerated
+  char *cmd =
+    "DROP TABLE IF EXISTS tiles;"
+    "DROP TABLE IF EXISTS metadata;"
+    "CREATE TABLE tiles (zoom_level integer, tile_column integer, tile_row integer, tile_data blob);"
+    "CREATE TABLE metadata (name text, value text);"
+    "CREATE unique index name on metadata (name);"
+    "CREATE unique index tile_index on tiles (zoom_level, tile_column, tile_row);"
+    "PRAGMA synchronous=0;"
+    "PRAGMA locking_mode=EXCLUSIVE;"
+    "PRAGMA journal_mode=OFF;";
+
+  ans = sqlite3_exec ( mbtiles, cmd, 0, 0, &err_msg);
+  if ( ans != SQLITE_OK ) {
+    msg = g_strdup ( err_msg );
+    sqlite3_free ( err_msg );
+    goto cleanup;
+  }
+
+  gint result = 0;
+  guint zoom = (guint)map_utils_mpp_to_zoom_level(val->zoom_level);
+
+  GHashTableIter iter;
+  gpointer key, value;
+  gint x,y;
+  GdkPixbuf *pixbuf = NULL;
+  guint num_tiles = 0;
+  guint sz = g_hash_table_size ( val->tiles );
+
+  g_hash_table_iter_init ( &iter, val->tiles );
+  while ( g_hash_table_iter_next(&iter, &key, &value) ) {
+
+    num_tiles++;
+    gdouble percent = (gdouble)num_tiles/(gdouble)sz;
+    gint res = a_background_thread_progress ( threaddata, percent );
+    if ( res != 0 ) {
+      result = -1;
+      goto cleanup;
+    }
+
+    (void)sscanf ( key, "%d:%d", &x, &y );
+
+    pixbuf = layer_pixbuf_update ( pixbuf, val->color[BASIC], 256, 256, val->alpha[BASIC] );
+
+    gint flip_y = (gint) pow(2, zoom)-1 - y;
+
+    gchar *ins = g_strdup_printf
+      ("INSERT INTO tiles VALUES (%d, %d, %d, ?);", zoom, x, flip_y);
+
+    sqlite3_stmt *sql_stmt;
+    ans = sqlite3_prepare_v2 ( mbtiles, ins, -1, &sql_stmt, NULL );
+    g_free ( ins );
+    if ( ans != SQLITE_OK ) {
+      msg = g_strdup ( sqlite3_errmsg(mbtiles) );
+      goto cleanup;
+    }
+
+    gchar *buffer;
+    gsize size;
+    GError *error = NULL;
+    ans = gdk_pixbuf_save_to_buffer ( pixbuf, &buffer, &size, "png", &error, NULL );
+    if ( error ) {
+      msg = g_strdup ( error->message );
+      g_error_free ( error );
+      goto cleanup;
+    }
+
+    ans = sqlite3_bind_blob ( sql_stmt, 1, buffer, size, g_free );
+    if ( ans != SQLITE_OK ) {
+      msg = g_strdup ( err_msg );
+      sqlite3_free ( err_msg );
+      goto cleanup;
+    }
+
+    int step = sqlite3_step ( sql_stmt );
+    // This should always complete
+    if ( step != SQLITE_DONE ) {
+      msg = g_strdup_printf ( "sqlite3_step result was %d", step );
+      goto cleanup;
+    }
+
+    (void)sqlite3_finalize ( sql_stmt );
+
+    // Minimize filesize
+    (void)sqlite3_exec ( mbtiles, "ANALYZE; VACUUM;", 0, 0, NULL );
+  }
+
+ cleanup:
+  (void)sqlite3_close ( mbtiles );
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  g_printf ( "%s: %f %d\n", __FUNCTION__, time_spent, num_tiles );
+
+  if ( msg ) {
+    gchar *fullmsg = g_strdup_printf ( _("MBTiles file write problem: %s"), msg );
+    vik_window_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(val), fullmsg, VIK_STATUSBAR_INFO );
+    g_free ( fullmsg );
+    g_free ( msg );
+  }
+
+  return result;
+}
+
+static void tac_generate_mbtiles_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
+
+  gchar *fn = NULL;
+  GtkWidget *dialog = gtk_file_chooser_dialog_new ( _("Export"),
+						    NULL,
+						    GTK_FILE_CHOOSER_ACTION_SAVE,
+						    GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+						    GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+						    NULL );
+  gchar *name = g_strdup_printf ( "%s.mbtiles", vik_layer_get_name(VIK_LAYER(val)) );
+  gtk_file_chooser_set_current_name ( GTK_FILE_CHOOSER(dialog), name );
+  g_free ( name );
+
+  while ( gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_ACCEPT ) {
+    fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(dialog) );
+    if ( g_file_test(fn, G_FILE_TEST_EXISTS) == FALSE || a_dialog_yes_or_no ( GTK_WINDOW(dialog), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
+      break;
+    g_free ( fn );
+  }
+  gtk_widget_destroy ( dialog );
+
+  if ( !fn )
+    return;
+
+  MBT_T *mbt = g_malloc ( sizeof(MBT_T) );
+  mbt->val = val;
+  mbt->fn = fn;
+  a_background_thread ( BACKGROUND_POOL_LOCAL,
+                        VIK_GTK_WINDOW_FROM_LAYER(val),
+                        _("Creating MBTiles File"),
+                        (vik_thr_func)tac_mbtiles_thread,
+                        mbt,
+                        (vik_thr_free_func)mbt_free,
+                        NULL, // cancel() nothing to do, could delete file but ATM leave as progressed
+                        g_hash_table_size(val->tiles) );
+}
+#endif
+
+/**
  * View area of all TRW layers within an aggregrate layer
  */
 static void aggregate_view_all_trw ( menu_array_values values )
@@ -1765,6 +1941,12 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
 
   GtkWidget *itemtclr = vu_menu_add_item ( tac_submenu, _("_Remove"), GTK_STOCK_DELETE, G_CALLBACK(tac_clear_cb), values );
   gtk_widget_set_sensitive ( itemtclr, available );
+
+#ifdef HAVE_SQLITE3_H
+  if ( val->on[BASIC] )
+    if ( !val->calculating )
+      (void)vu_menu_add_item ( tac_submenu, _("_Export as MBTiles"), GTK_STOCK_CONVERT, G_CALLBACK(tac_generate_mbtiles_cb), values );
+#endif
 }
 
 static void disconnect_layer_signal ( VikLayer *vl, VikAggregateLayer *val )
