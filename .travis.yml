@@ -15,9 +15,19 @@ env:
 # NB Ubuntu 16.04 doesn't have a new enough geoclue so simply disable using it
    - BUILD_IMG=ubuntu:16.04 DEPS=libmapnik-dev OPTS="--disable-geoclue"
    - BUILD_IMG=ubuntu:18.04
-   - BUILD_IMG=ubuntu:18.10
+# BROKEN again, docker image previously available has vanished:
+#  - BUILD_IMG=ubuntu:18.10
    - BUILD_IMG=ubuntu:19.04
    - BUILD_IMG=ubuntu:19.10
+# Test basic levels of some configure options
+# Use the latest LTS version for these
+   - BUILD_IMG=ubuntu:18.04 DEPS="libexif-dev" OPTS="--with-libexif"
+   - BUILD_IMG=ubuntu:18.04 OPTS="--disable-bzip2"
+   - BUILD_IMG=ubuntu:18.04 OPTS="--disable-magic"
+   - BUILD_IMG=ubuntu:18.04 OPTS="--disable-mapnik"
+   - BUILD_IMG=ubuntu:18.04 OPTS="--disable-mbtiles"
+   - BUILD_IMG=ubuntu:18.04 OPTS="--disable-nettle"
+   - BUILD_IMG=ubuntu:18.04 OPTS="--disable-zip"
 
 script: docker run --rm=true -v $HOME:$HOME:rw $BUILD_IMG /bin/sh -c "sed -i '/^#\sdeb-src /s/^#//' /etc/apt/sources.list && apt-get update && apt-get build-dep --yes viking && apt-get install --yes gtk-doc-tools libgeoclue-2-dev nettle-dev liboauth-dev libzip-dev $DEPS && cd $PWD && ./autogen.sh $OPTS && make -j && make -j check && make install"
 # Further packages are installed as these are new dependencies for the latest source code, compared to the dependencies listed in the distribution version (`apt-get build-dep` always refers to the version which is built for the OS rather than the up-to-date source)
