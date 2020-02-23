@@ -35,6 +35,7 @@ struct _VikFileList {
   GtkWidget *file_selector;
   GtkTreeModel *model;
   GtkFileFilter *filter;
+  gchar *dir;
 };
 
 static void file_list_add ( VikFileList *vfl )
@@ -55,6 +56,12 @@ static void file_list_add ( VikFileList *vfl )
     gtk_file_chooser_set_select_multiple ( GTK_FILE_CHOOSER(vfl->file_selector), TRUE );
     gtk_window_set_transient_for ( GTK_WINDOW(vfl->file_selector), GTK_WINDOW(win) );
     gtk_window_set_destroy_with_parent ( GTK_WINDOW(vfl->file_selector), TRUE );
+
+    if ( vfl->dir ) {
+      (void)gtk_file_chooser_set_current_folder ( GTK_FILE_CHOOSER(vfl->file_selector), vfl->dir );
+      g_free ( vfl->dir );
+      vfl->dir = NULL;
+    }
 
     if ( vfl->filter )
       gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfl->file_selector), vfl->filter );
@@ -158,13 +165,14 @@ GType vik_file_list_get_type (void)
  * Support just one filter, as that's all that's needed ATM
  * Probably need to use a GList of them if more than one is required
  */
-GtkWidget *vik_file_list_new ( const gchar *title, GtkFileFilter *filter )
+GtkWidget *vik_file_list_new ( const gchar *title, GtkFileFilter *filter, const gchar *dir )
 {
   GtkWidget *add_btn, *del_btn;
   GtkWidget *hbox, *scrolledwindow;
   VikFileList *vfl = VIK_FILE_LIST ( g_object_new ( VIK_FILE_LIST_TYPE, NULL ) );
 
   vfl->filter = filter;
+  vfl->dir = g_strdup ( dir );
 
   GtkTreeViewColumn *column;
 

@@ -224,7 +224,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
     case VIK_LAYER_WIDGET_FILELIST:
       if ( param->type == VIK_LAYER_PARAM_STRING_LIST )
       {
-        rv = vik_file_list_new ( _(param->title), NULL );
+        rv = vik_file_list_new ( _(param->title), NULL, NULL );
         vik_file_list_set_files ( VIK_FILE_LIST(rv), vlpd.sl );
       }
       break;

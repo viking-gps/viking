@@ -4120,6 +4120,11 @@ Accept: */*
 	    <para>kmz_default_maps_dir=<emphasis role="italic">Empty</emphasis></para>
 	    <para>You may want to use something like: "/media/<emphasis role="italic">user</emphasis>/GARMIN/Garmin/CustomMaps"</para>
 	  </listitem>
+	  <listitem>
+	    <para>geotag_photo_dir="/home/<emphasis role="italic">user</emphasis>/Pictures"</para>
+	    <para>Override the base search location for photographs</para>
+	    <para>A matching dated directory corresponding to the track is attempted of the format /geotag_photo_dir/YYYY/MM/DD</para>
+	  </listitem>
 	</itemizedlist>
 
 	<section>

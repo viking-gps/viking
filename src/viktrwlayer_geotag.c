@@ -160,6 +160,8 @@ typedef struct {
 #define VIK_SETTINGS_GEOTAG_TIME_OFFSET_HOURS    "geotag_time_offset_hours"
 #define VIK_SETTINGS_GEOTAG_TIME_OFFSET_MINS     "geotag_time_offset_mins"
 #define VIK_SETTINGS_GEOTAG_TIME_IS_LOCAL        "geotag_time_is_local"
+// Read only option
+#define VIK_SETTINGS_GEOTAG_PHOTO_DIR            "geotag_photo_dir"
 
 static void save_default_values ( option_values_t default_values )
 {
@@ -644,7 +646,65 @@ void trw_layer_geotag_dialog ( GtkWindow *parent,
 	gtk_file_filter_set_name ( filter, _("JPG") );
 	gtk_file_filter_add_mime_type ( filter, "image/jpeg");
 
-	widgets->files = VIK_FILE_LIST(vik_file_list_new ( _("Images"), filter ));
+	// Attempt use a dated photograph directory by default
+	gdouble time = NAN;
+	gchar *dir = NULL;
+	if ( track ) {
+		if ( track->trackpoints ) {
+			time = vik_track_get_tp_first(track)->timestamp;
+		}
+	} else {
+		GHashTable *ght = vik_trw_layer_get_tracks ( vtl );
+		GHashTableIter iter;
+		gpointer key, value;
+		g_hash_table_iter_init ( &iter, ght );
+		// Just get the first track
+		g_hash_table_iter_next ( &iter, &key, &value );
+		if ( value ) {
+			VikTrack *trk = VIK_TRACK(value);
+			if ( trk->trackpoints )
+				time = vik_track_get_tp_first(trk)->timestamp;
+		}
+	}
+	if ( !isnan(time) ) {
+		GDate* gd = g_date_new ();
+		g_date_set_time_t ( gd, (time_t)time );
+		GDateDay day = g_date_get_day ( gd );
+		GDateMonth month = g_date_get_month ( gd );
+		GDateYear year = g_date_get_year ( gd );
+
+		gchar *picsdir = NULL;
+		(void)a_settings_get_string ( VIK_SETTINGS_GEOTAG_PHOTO_DIR, &picsdir );
+
+		if ( !picsdir ) {
+			const gchar *home = g_get_home_dir ();
+			if ( home )
+				picsdir = g_strdup_printf ( ("%s%cPictures"), home, G_DIR_SEPARATOR );
+		}
+		if ( picsdir ) {
+			gchar *tmp = g_strdup_printf ( ("%s/%d/%02d/%02d"), picsdir, year, month, day );
+			if ( g_file_test(tmp, G_FILE_TEST_EXISTS) ) {
+				dir = tmp;
+			} else {
+				g_free ( tmp );
+				tmp = g_strdup_printf ( ("%s/%d/%02d"), picsdir, year, month );
+				if ( g_file_test(tmp, G_FILE_TEST_EXISTS) ) {
+					dir = tmp;
+				} else {
+					g_free ( tmp );
+					tmp = g_strdup_printf ( ("%s/%d"), picsdir, year );
+					if ( g_file_test(tmp, G_FILE_TEST_EXISTS) ) {
+						dir = tmp;
+					} else {
+						g_free ( tmp );
+					}
+				}
+			}
+		}
+	}
+
+	widgets->files = VIK_FILE_LIST(vik_file_list_new ( _("Images"), filter, dir ));
+	g_free ( dir );
 	widgets->vtl = vtl;
 	widgets->wpt = wpt;
 	widgets->track = track;

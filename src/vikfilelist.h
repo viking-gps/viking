@@ -44,7 +44,7 @@ struct _VikFileListClass
 
 GType vik_file_list_get_type ();
 
-GtkWidget *vik_file_list_new ( const gchar *title, GtkFileFilter *filter );
+GtkWidget *vik_file_list_new ( const gchar *title, GtkFileFilter *filter, const gchar* dir );
 /* result must be freed */
 GList *vik_file_list_get_files ( VikFileList *vfl );
 void vik_file_list_set_files ( VikFileList *vfl, GList * );
