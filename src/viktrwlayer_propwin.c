@@ -191,25 +191,25 @@ typedef struct _propwidgets {
   gdouble   max_altitude;
   gdouble   draw_min_altitude;
   gdouble   draw_min_altitude_time;
-  gint      cia; // Chunk size Index into Altitudes
-  gint      ciat; // Chunk size Index into Altitudes / Time
+  guint     cia; // Chunk size Index into Altitudes
+  guint     ciat; // Chunk size Index into Altitudes / Time
   // NB cia & ciat are normally same value but sometimes not due to differing methods of altitude array creation
   //    thus also have draw_min_altitude for each altitude graph type
   gdouble   *gradients;
   gdouble   min_gradient;
   gdouble   max_gradient;
   gdouble   draw_min_gradient;
-  gint      cig; // Chunk size Index into Gradients
+  guint     cig; // Chunk size Index into Gradients
   gdouble   *speeds;
   gdouble   *speeds_dist;
   gdouble   min_speed;
   gdouble   max_speed;
   gdouble   draw_min_speed;
   gdouble   max_speed_dist;
-  gint      cis; // Chunk size Index into Speeds
-  gint      cisd; // Chunk size Index into Speed/Distance
+  guint     cis; // Chunk size Index into Speeds
+  guint     cisd; // Chunk size Index into Speed/Distance
   gdouble   *distances;
-  gint      cid; // Chunk size Index into Distance
+  guint     cid; // Chunk size Index into Distance
   VikTrackpoint *marker_tp;
   gboolean  is_marker_drawn;
   VikTrackpoint *blob_tp;
@@ -284,7 +284,7 @@ static void minmax_array(const gdouble *array, gdouble *min, gdouble *max, gbool
  *   the new minimum value to be used for the graph
  *   the index in to the chunk sizes array (ci = Chunk Index)
  */
-static void get_new_min_and_chunk_index (gdouble mina, gdouble maxa, const gdouble *chunks, size_t chunky, gdouble *new_min, gint *ci)
+static void get_new_min_and_chunk_index (gdouble mina, gdouble maxa, const gdouble *chunks, size_t chunky, gdouble *new_min, guint *ci)
 {
   /* Get unitized chunk */
   /* Find suitable chunk index */
@@ -1414,7 +1414,7 @@ static void draw_dem_alt_speed_dist(VikTrack *tr,
 
   gdouble dist = 0;
   gint h2 = height + MARGIN_Y; // Adjust height for x axis labelling offset
-  gint achunk = chunksa[cia]*LINES;
+  guint achunk = chunksa[cia]*LINES;
 
   for (iter = tr->trackpoints->next; iter; iter = iter->next) {
     int x;
@@ -2198,7 +2198,7 @@ static void draw_et ( GtkWidget *image, VikTrack *tr, PropWidgets *widgets )
     gdk_gc_set_rgb_fg_color ( dem_alt_gc, &color);
 
     gint h2 = widgets->profile_height + MARGIN_Y; // Adjust height for x axis labelling offset
-    gint achunk = chunksa[widgets->ciat]*LINES;
+    guint achunk = chunksa[widgets->ciat]*LINES;
 
     for ( i = 0; i < widgets->profile_width; i++ ) {
       // This could be slow doing this each time...
