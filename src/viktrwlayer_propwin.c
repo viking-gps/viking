@@ -196,6 +196,9 @@ typedef struct _propwidgets {
   guint     ciat; // Chunk size Index into Altitudes / Time
   // NB cia & ciat are normally same value but sometimes not due to differing methods of altitude array creation
   //    thus also have draw_min_altitude for each altitude graph type
+  gboolean  user_set_axis; // Whether to use specific values or otherwise auto calculate best fit
+  guint     user_cia; // Chunk size Index into Altitudes set by the user
+  gdouble   user_mina;
   gdouble   *gradients;
   gdouble   min_gradient;
   gdouble   max_gradient;
@@ -607,6 +610,96 @@ static gboolean menu_center_view_cb ( PropWidgets *widgets )
 }
 
 /**
+ * Allow configuration of the X (height) axis
+ * One use of being able to manually select the values,
+ *  is that one can compare different tracks more easily
+ *  (by ensuring each has the same values)
+ */
+static gboolean menu_axis_cb ( PropWidgets *widgets )
+{
+  GtkWidget *ww = gtk_widget_get_toplevel ( widgets->dialog ? widgets->dialog : widgets->self );
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Axis Control"),
+						    GTK_WINDOW(ww),
+						    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+						    GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_APPLY, GTK_RESPONSE_APPLY, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
+						    NULL );
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+  GtkWidget *response_w = NULL;
+#if GTK_CHECK_VERSION (2, 20, 0)
+  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+#endif
+
+  GtkWidget *dlabel = gtk_label_new ( _("Height Divisions:") );
+  GtkWidget *combo = vik_combo_box_text_new();
+  for ( guint xx = 0; xx < G_N_ELEMENTS(chunksa); xx++ ) {
+    gchar *str = g_strdup_printf ( "%.0f", chunksa[xx] );
+    vik_combo_box_text_append (GTK_COMBO_BOX(combo), str );
+    g_free ( str );
+  }
+  gtk_combo_box_set_active ( GTK_COMBO_BOX(combo), widgets->cia );
+
+  vik_units_height_t height_units = a_vik_get_units_height ();
+  gchar tmp_str[64];
+  switch (height_units) {
+  case VIK_UNITS_HEIGHT_FEET:
+    g_snprintf ( tmp_str, sizeof(tmp_str), "%.0f", VIK_METERS_TO_FEET(widgets->draw_min_altitude) );
+    break;
+  default:
+    g_snprintf ( tmp_str, sizeof(tmp_str), "%.0f", widgets->draw_min_altitude );
+    break;
+  }
+
+  GtkWidget *mlabel = gtk_label_new ( _("Minimum Height:") );
+  GtkWidget *mentry = ui_entry_new ( tmp_str, GTK_ENTRY_ICON_SECONDARY );
+
+  GtkTable *box = GTK_TABLE(gtk_table_new(2, 2, FALSE));
+  gtk_table_attach_defaults ( box, mlabel, 0, 1, 0, 1);
+  gtk_table_attach_defaults ( box, mentry, 1, 2, 0, 1);
+  gtk_table_attach_defaults ( box, dlabel, 0, 1, 1, 2);
+  gtk_table_attach_defaults ( box, combo, 1, 2, 1, 2);
+
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(box), FALSE, FALSE, 5 );
+
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
+
+  gtk_widget_show_all ( dialog );
+
+  gint resp = GTK_RESPONSE_APPLY;
+  while ( resp == GTK_RESPONSE_APPLY ) {
+    resp = gtk_dialog_run (GTK_DIALOG (dialog));
+    if ( resp == GTK_RESPONSE_ACCEPT || resp == GTK_RESPONSE_APPLY ) {
+      widgets->user_set_axis = TRUE;
+      widgets->user_cia = gtk_combo_box_get_active ( GTK_COMBO_BOX(combo) );
+
+      gchar const *mtext = gtk_entry_get_text ( GTK_ENTRY(mentry) );
+      if ( mtext && strlen(mtext) ) {
+        // Always store in metres
+        switch (height_units) {
+        case VIK_UNITS_HEIGHT_FEET:
+          widgets->user_mina = VIK_FEET_TO_METERS(atof(mtext));
+          break;
+        default:
+          // VIK_UNITS_HEIGHT_METRES:
+          widgets->user_mina = atof ( mtext );
+        }
+      } else
+        widgets->user_mina = widgets->draw_min_altitude;
+    }
+
+    if ( resp == GTK_RESPONSE_APPLY )
+      draw_all_graphs ( widgets->dialog ? widgets->dialog : widgets->graphs, widgets, TRUE );
+  }
+
+  gtk_widget_destroy ( dialog );
+
+  if ( resp == GTK_RESPONSE_ACCEPT )
+    draw_all_graphs ( widgets->dialog ? widgets->dialog : widgets->graphs, widgets, TRUE );
+
+  return FALSE;
+}
+
+/**
  *
  */
 static void graph_click_menu_popup ( PropWidgets *widgets, VikPropWinGraphType_t graph_type )
@@ -623,6 +716,8 @@ static void graph_click_menu_popup ( PropWidgets *widgets, VikPropWinGraphType_t
                                               !trw_layer_tpwin_is_shown(widgets->vtl) );
   GtkWidget *ism = vu_menu_add_item ( GTK_MENU(menu), _("Split at Marker"), GTK_STOCK_CUT, G_CALLBACK(menu_split_at_marker_cb), widgets );
   gtk_widget_set_sensitive ( ism, (gboolean)GPOINTER_TO_INT(widgets->marker_tp) );
+
+  (void)vu_menu_add_item ( GTK_MENU(menu), _("Axis Control..."), NULL, G_CALLBACK(menu_axis_cb), widgets );
 
   // Only for the embedded graphs
   GtkMenu *show_submenu = GTK_MENU(gtk_menu_new());
@@ -650,13 +745,27 @@ static void graph_click_menu_popup ( PropWidgets *widgets, VikPropWinGraphType_t
   gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, 1, gtk_get_current_event_time());
 }
 
+/**
+ *
+ */
+static void elev_dialog_click_menu_popup ( PropWidgets *widgets )
+{
+  GtkWidget *menu = gtk_menu_new ();
+  (void)vu_menu_add_item ( GTK_MENU(menu), _("Axis Control..."), NULL, G_CALLBACK(menu_axis_cb), widgets );
+  gtk_widget_show_all ( menu );
+  gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, 1, gtk_get_current_event_time());
+}
+
 static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, PropWidgets *widgets, VikPropWinGraphType_t graph_type )
 {
   // Only use primary clicks for marker position
   if ( event->button != 1 ) {
-    // 'right' click for menu - only on the embedded graphs
-    if ( event->button == 3 && widgets->self ) {
-      graph_click_menu_popup ( widgets, graph_type );
+    // 'right' click for menu
+    if ( event->button == 3 ) {
+      if ( widgets->self )
+        graph_click_menu_popup ( widgets, graph_type );
+      else if ( graph_type == PROPWIN_GRAPH_TYPE_ELEVATION_DISTANCE )
+        elev_dialog_click_menu_popup ( widgets );
     }
     return;
   }
@@ -807,7 +916,14 @@ static gint blobby_altitude ( gdouble x_blob, PropWidgets *widgets )
   if (ix == widgets->profile_width)
     ix--;
 
-  gint y_blob = widgets->profile_height-widgets->profile_height*(widgets->altitudes[ix]-widgets->draw_min_altitude)/(chunksa[widgets->cia]*LINES);
+  gdouble mina = widgets->draw_min_altitude;
+  guint cia = widgets->cia;
+  if ( widgets->user_set_axis ) {
+    cia = widgets->user_cia;
+    mina = widgets->user_mina;
+  }
+
+  gint y_blob = widgets->profile_height-widgets->profile_height*(widgets->altitudes[ix]-mina)/(chunksa[cia]*LINES);
 
   return y_blob;
 }
@@ -1693,6 +1809,11 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 
   // Assign locally
   gdouble mina = widgets->draw_min_altitude;
+  guint cia = widgets->cia;
+  if ( widgets->user_set_axis ) {
+    cia = widgets->user_cia;
+    mina = widgets->user_mina;
+  }
 
   GtkWidget *window = gtk_widget_get_toplevel (widgets->elev_box);
   GdkPixmap *pix = gdk_pixmap_new( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
@@ -1712,11 +1833,11 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 
     switch (height_units) {
     case VIK_UNITS_HEIGHT_METRES:
-      sprintf(s, "%8dm", (int)(mina + (LINES-i)*chunksa[widgets->cia]));
+      sprintf(s, "%8dm", (int)(mina + (LINES-i)*chunksa[cia]));
       break;
     case VIK_UNITS_HEIGHT_FEET:
       // NB values already converted into feet
-      sprintf(s, "%8dft", (int)(mina + (LINES-i)*chunksa[widgets->cia]));
+      sprintf(s, "%8dft", (int)(mina + (LINES-i)*chunksa[cia]));
       break;
     default:
       sprintf(s, "--");
@@ -1736,7 +1857,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
                       i + MARGIN_X, MARGIN_Y, i + MARGIN_X, height );
     else 
       gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[3],
-                      i + MARGIN_X, height, i + MARGIN_X, height-widgets->profile_height*(widgets->altitudes[i]-mina)/(chunksa[widgets->cia]*LINES) );
+                      i + MARGIN_X, height, i + MARGIN_X, height-widgets->profile_height*(widgets->altitudes[i]-mina)/(chunksa[cia]*LINES) );
 
   if ( widgets->show_dem || widgets->show_alt_gps_speed ) {
 
@@ -1760,7 +1881,7 @@ static void draw_elevations (GtkWidget *image, VikTrack *tr, PropWidgets *widget
 			    mina,
 			    widgets->max_altitude - mina,
 			    widgets->max_speed,
-			    widgets->cia,
+			    cia,
 			    widgets->profile_width,
 			    widgets->profile_height,
 			    MARGIN_X,
