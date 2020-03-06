@@ -392,12 +392,12 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 	vik_units_speed_t speed_units = a_vik_get_units_speed ();
 	g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
 	if ( ts.max_speed > 0 )
-		vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, ts.max_speed, TRUE, "%.1f" );
+		vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, ts.max_speed, TRUE, "%.1f", FALSE );
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 
 	g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
 	if ( ts.duration > 0 )
-		vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, ts.length/ts.duration, TRUE, "%.1f" );
+		vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, ts.length/ts.duration, TRUE, "%.1f", FALSE );
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 
 	switch ( a_vik_get_units_height() ) {

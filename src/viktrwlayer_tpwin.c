@@ -507,7 +507,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
       else
       {
         gdouble tmp_speed = vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)) / ABS(tp->timestamp - tpwin->cur_tp->timestamp);
-        vu_speed_text ( tmp_str, sizeof(tmp_str), speed_units, tmp_speed, TRUE, "%.2f" );
+        vu_speed_text ( tmp_str, sizeof(tmp_str), speed_units, tmp_speed, TRUE, "%.2f", FALSE );
         gtk_label_set_text ( tpwin->diff_speed, tmp_str );
       }
     }
@@ -524,7 +524,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
     g_snprintf ( tmp_str, sizeof(tmp_str), "%05.1f\302\260", tp->course );
   gtk_label_set_text ( tpwin->course, tmp_str );
 
-  vu_speed_text ( tmp_str, sizeof(tmp_str), speed_units, tp->speed, TRUE, "%.2f" );
+  vu_speed_text ( tmp_str, sizeof(tmp_str), speed_units, tp->speed, TRUE, "%.2f", FALSE );
   gtk_label_set_text ( tpwin->speed, tmp_str );
 
   switch (dist_units) {

@@ -1048,7 +1048,7 @@ void vu_speed_text_value ( gchar* buf, guint size, vik_units_speed_t speed_units
 /**
  * Commonal text for a speed readout
  */
-void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gboolean convert, gchar *format )
+void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gboolean convert, gchar *format, gboolean compact )
 {
 	if ( isnan(speed) ) {
 		g_snprintf (buf, size, "--" );
@@ -1064,7 +1064,11 @@ void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdou
     gchar tbuf[16];
 	vu_speed_text_value ( tbuf, sizeof(tbuf), speed_units, my_speed, format );
 
-	gchar *full_str = g_strdup_printf ( "%s %s", tbuf, speed_units_str );
+	gchar *full_str = NULL;
+	if ( compact )
+		full_str = g_strdup_printf ( "%s%s", tbuf, speed_units_str );
+	else
+		full_str = g_strdup_printf ( "%s %s", tbuf, speed_units_str );
 	g_snprintf ( buf, size, full_str, my_speed );
 	g_free ( full_str );
 

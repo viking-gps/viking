@@ -64,7 +64,7 @@ gdouble vu_speed_deconvert ( vik_units_speed_t speed_units, gdouble speed );
 gdouble vu_speed_convert ( vik_units_speed_t speed_units, gdouble speed );
 void vu_speed_text_value ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gchar *format );
 
-void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gboolean convert, gchar *format );
+void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gboolean convert, gchar *format, gboolean compact );
 
 GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external );
 
