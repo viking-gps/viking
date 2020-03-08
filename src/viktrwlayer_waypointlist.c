@@ -472,6 +472,67 @@ static void trw_layer_waypoint_list_add ( vik_trw_waypoint_list_t *vtdl,
 	                     -1 );
 }
 
+static gboolean
+filter_waypoints_cb (GtkTreeModel *model, GtkTreeIter *iter, gpointer data)
+{
+	const gchar *filter = gtk_entry_get_text ( GTK_ENTRY(data) );
+
+	if ( filter == NULL || strlen ( filter ) == 0 )
+		return TRUE;
+
+	gchar *filter_case = g_utf8_casefold ( filter, -1 );
+
+	VikWaypoint *wpt;
+	gtk_tree_model_get ( model, iter, WPT_COL_NUM, &wpt, -1 );
+
+	if ( wpt == NULL )
+		return FALSE;
+
+	gboolean visible = FALSE;
+
+	gchar *layer_name;
+	gtk_tree_model_get ( model, iter, 0, &layer_name, -1 );
+	if ( layer_name != NULL ) {
+		gchar *layer_name_case = g_utf8_casefold ( layer_name, -1 );
+		visible |= ( strstr ( layer_name_case, filter_case ) != NULL );
+		g_free ( layer_name_case );
+	}
+	g_free ( layer_name );
+
+	gchar *wpt_name_case = g_utf8_casefold ( wpt->name, -1 );
+	visible |= ( strstr ( wpt_name_case, filter_case ) != NULL );
+	g_free ( wpt_name_case );
+
+	gchar *time_buf;
+	gtk_tree_model_get ( model, iter, 2, &time_buf, -1 );
+	visible |= (time_buf != NULL && strstr ( time_buf, filter_case )  != NULL);
+	g_free ( time_buf );
+
+	if ( wpt->comment != NULL ) {
+		gchar *wpt_comment_case = g_utf8_casefold ( wpt->comment, -1 );
+		visible |= ( strstr ( wpt_comment_case, filter_case ) != NULL );
+		g_free ( wpt_comment_case );
+	}
+
+	if ( wpt->description != NULL ) {
+		gchar *wpt_description_case = g_utf8_casefold ( wpt->description, -1 );
+		visible |= ( strstr ( wpt_description_case, filter_case ) != NULL );
+		g_free ( wpt_description_case );
+	}
+
+	g_free ( filter_case );
+
+	return visible;
+}
+
+static void
+filter_changed_cb (GtkEntry   *entry,
+                   GParamSpec *pspec,
+                   gpointer   data)
+{
+    gtk_tree_model_filter_refilter( GTK_TREE_MODEL_FILTER(data) );
+}
+
 /*
  * Instead of comparing the pixbufs,
  *  look at the waypoint data and compare the symbol (as text).
@@ -613,7 +674,10 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	gtk_tree_view_column_set_sort_column_id ( column, column_runner );
 	gtk_tree_view_append_column ( GTK_TREE_VIEW(view), column );
 
-	gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(store) );
+	GtkTreeModelFilter *model = GTK_TREE_MODEL_FILTER(gtk_tree_model_filter_new ( GTK_TREE_MODEL(store), NULL));
+	GtkTreeModelSort *sorted = GTK_TREE_MODEL_SORT(gtk_tree_model_sort_new_with_model ( GTK_TREE_MODEL(model) ));
+
+	gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(sorted) );
 	gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_MULTIPLE );
 	gtk_tree_view_set_rules_hint ( GTK_TREE_VIEW(view), TRUE );
 
@@ -631,7 +695,18 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	g_signal_connect ( view, "popup-menu", G_CALLBACK(trw_layer_waypoint_menu_popup), waypoints_and_layers );
 	g_signal_connect ( view, "button-press-event", G_CALLBACK(trw_layer_waypoint_button_pressed), waypoints_and_layers );
 
+	GtkWidget *filter_entry = ui_entry_new( NULL, GTK_ENTRY_ICON_SECONDARY );
+	g_signal_connect ( filter_entry, "notify::text", G_CALLBACK(filter_changed_cb), model );
+	gtk_tree_model_filter_set_visible_func ( model, filter_waypoints_cb, filter_entry, NULL );
+
+	GtkWidget *filter_label = gtk_label_new ( _("Filter") );
+
+	GtkWidget *filter_box = gtk_hbox_new( FALSE, 10 );
+	gtk_box_pack_start (GTK_BOX(filter_box), filter_label, FALSE, TRUE, 10);
+	gtk_box_pack_start (GTK_BOX(filter_box), filter_entry, TRUE, TRUE, 10);
+
 	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), scrolledwindow, TRUE, TRUE, 0);
+	gtk_box_pack_end (GTK_BOX(GTK_DIALOG(dialog)->vbox), filter_box, FALSE, TRUE, 10);
 
 	// Set ordering of the initial view by one of the name columns
 	gtk_tree_view_column_clicked ( sort_by_column );
