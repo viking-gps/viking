@@ -111,7 +111,7 @@ AC_SUBST(PACKAGE_LIBS)
 dnl  -------------
 dnl | User Manual |---------------------------------------
 dnl  -------------
-GNOME_DOC_INIT
+YELP_HELP_INIT
 
 dnl ---------------------------------------------------------------------------
 dnl - Use deprecated options (default enabled for devs, disabled in releases) 
@@ -553,23 +553,7 @@ AC_DEFINE_UNQUOTED(VIK_CONFIG_DEFAULT_TILE_AGE, ${VIK_CONFIG_DEFAULT_TILE_AGE},
 AC_DEFINE(HAVE_VIKING, 1, [Enable Viking specifics in otherwise reusable code])
 
 dnl man pages processing
-dnl Different distributions have differing locations for the docbook.xsl
-dnl Debian like
-if test -r /usr/share/xml/docbook/stylesheet/docbook-xsl/manpages/docbook.xsl; then
-  DB2MAN_XSL=/usr/share/xml/docbook/stylesheet/docbook-xsl/manpages/docbook.xsl
-dnl RedHat like
-elif test -r /usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl; then
-  DB2MAN_XSL=/usr/share/sgml/docbook/xsl-stylesheets/manpages/docbook.xsl
-else
-dnl Old default
-  DB2MAN_XSL=/usr/share/sgml/docbook/stylesheet/xsl/nwalsh/manpages/docbook.xsl
-fi
-AC_SUBST(DB2MAN_XSL)
-AC_PATH_PROG(XP,xsltproc)
-AM_CONDITIONAL([HAVE_XSLTPROC],[test "x$XP" != "x"])
-AC_CHECK_PROG([HAVE_SCROLLKEEPER],scrollkeeper-config,"yes")
-AM_CONDITIONAL([GEN_MANPAGES],[test "x$XP" != "x" && test -r "$DB2MAN_XSL"] && test "${HAVE_SCROLLKEEPER}" = "yes" )
-AM_COND_IF([GEN_MANPAGES], [ac_cv_enable_man=yes], [ac_cv_enable_man=no])
+AC_PATH_PROG(XSLTPROC,xsltproc)
 
 ISODATE="$(date --utc --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y-%m-%d)"
 AC_SUBST(ISODATE)
@@ -627,7 +611,6 @@ OAuth                            : $ac_cv_enable_oauth
 Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}
 Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}
 GeoNames user                    : ${VIK_CONFIG_GEONAMES_USERNAME}
-Man page generation              : $ac_cv_enable_man
 Documentation (+HTML)            : ${enable_gtk_doc} (HTML: ${enable_gtk_doc_html})
 -------------------------------------------
 

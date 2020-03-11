@@ -1,2 +1,2 @@
 #!/bin/sh
-yelp-check validate ../help/C/viking.xml
+yelp-check validate ../help/C/index.docbook

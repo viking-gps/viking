@@ -2865,7 +2865,7 @@ static void help_help_cb ( GtkAction *a, VikWindow *vw )
   ShellExecute(NULL, "open", ""PACKAGE".pdf", NULL, NULL, SW_SHOWNORMAL);
 #else /* WINDOWS */
   gchar *uri;
-  uri = g_strdup_printf("ghelp:%s", PACKAGE);
+  uri = g_strdup_printf("help:%s", PACKAGE);
   GError *error = NULL;
   gboolean show = gtk_show_uri (NULL, uri, GDK_CURRENT_TIME, &error);
   if ( !show && !error )

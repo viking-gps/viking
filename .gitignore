@@ -1,4 +1,3 @@
-gnome-doc-utils.m4
 # git-ls-files --others --exclude-from=.git/info/exclude
 # Lines that start with '#' are comments.
 # For a project mostly in C, the following would be a good set of
@@ -19,7 +18,6 @@ gnome-doc-utils.m4
 /config.rpath
 /config.sub
 /depcomp
-/gnome-doc-utils.make
 /gtk-doc.make
 /gtk-doc.m4
 /install-sh

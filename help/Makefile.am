@@ -1,27 +1,23 @@
-if GEN_MANPAGES
-include $(top_srcdir)/gnome-doc-utils.make
-endif
+@YELP_HELP_RULES@
 
 # Annoyingly in the XML, yelp refuses to load relative images fileref, i.e. ../../src/icons/file.png
 #  whereas the PDF generation inserts these references OK
 # Nevertheless we need to copy the images into figures/ so they are available for the distribution installed help
-# Most tool icons are _18, except the pan one which is _22 just to be annoying
-get-icons:
-	-cp -f ../src/icons/*_[12][0-9].png C/figures/
+C/figures/%.png:
+	-cp -f ../src/icons/$(notdir $@) C/figures/
 # '-' ^^^^^ means it doesn't care about the exit status
 #  this copy statement is not critical (especially when run under make distcheck)
 
-dist-hook: get-icons doc-dist-hook
-
-DOC_MODULE = viking
-DOC_ENTITIES = legal.xml \
+HELP_ID = viking
+HELP_FILES = index.docbook
+HELP_EXTRA = legal.xml \
     attribution.xml \
     commandline.xml \
+    geoclue_layer.xml \
     georef_layer.xml \
     mapnik_rendering_layer.xml \
     recommends.xml
-DOC_INCLUDES =
-DOC_FIGURES = \
+HELP_MEDIA = \
     figures/Aggregate_statistics.png \
     figures/Aggregate_statistics_years.png \
     figures/addtr_18.png \
@@ -57,20 +53,17 @@ DOC_FIGURES = \
     figures/Viking-TAC.png \
     figures/DEM_file_info_dialog.png \
     figures/customize_toolbar_dialog.png
-DOC_LINGUAS =
+HELP_LINGUAS =
 
 EXTRA_DIST = viking.xml.in
 
 CLEANFILES=
 
 # man pages processing
-if GEN_MANPAGES
 MANPAGES=viking.1
 man_MANS = $(MANPAGES)
 CLEANFILES+=$(MANPAGES)
-endif
-DB2MAN=@DB2MAN_XSL@
-XP=@XP@ -''-nonet
+XSLTPROC=@XSLTPROC@ -''-nonet
 
 %.1: %.xml
-	$(XP) -o $@ $(DB2MAN) $<
+	$(XSLTPROC) -o $@ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<
