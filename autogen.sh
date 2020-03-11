@@ -19,12 +19,6 @@ if test -z $GTK_DOC; then
         exit 1
 fi
 
-GNOME_DOC=`which gnome-doc-prepare`
-if test -z $GNOME_DOC; then
-        echo "*** No gnome-doc-prepare found, please install the gnome-doc-utils package ***"
-        exit 1
-fi
-
 AUTORECONF=`which autoreconf`
 if test -z $AUTORECONF; then
         echo "*** No autoreconf found, please install it ***"
@@ -36,7 +30,6 @@ if test -z `which autopoint`; then
         exit 1
 fi
 
-gnome-doc-prepare --automake --copy --force || exit $?
 gtkdocize --copy || exit $?
 autopoint --force || exit $?
 AUTOPOINT='intltoolize --automake --copy' autoreconf --force --install --verbose || exit $?

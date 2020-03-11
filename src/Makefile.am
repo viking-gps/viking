@@ -16,16 +16,8 @@ authors.h: $(top_srcdir)/AUTHORS
 	sed -e "s/ \*\*.*//" -e 's/^/"/' -e 's/$$/",\\/' -e '$$s/\\$$//' $< >> $@
 	echo "NULL};" >> $@
 
-if HAVE_XSLTPROC
-documenters.h: $(top_srcdir)/help/C/viking.xml
-	$(XP) $(srcdir)/docbook2documenters.xsl $(top_srcdir)/help/C/viking.xml > $@
-else
-documenters.h:
-	rm -f $@
-	echo "/* Generated file. */" >> $@
-	echo "const gchar *DOCUMENTERS[] = {\\" >> $@
-	echo "NULL};" >> $@
-endif
+documenters.h: $(top_srcdir)/help/C/index.docbook
+	$(XSLTPROC) $(srcdir)/docbook2documenters.xsl $(top_srcdir)/help/C/index.docbook > $@
 
 BUILT_SOURCES = authors.h documenters.h
 

@@ -12,7 +12,6 @@ full:
 EXTRA_DIST = \
 	README.md \
 	HACKING \
-	gnome-doc-utils.make \
 	ChangeLog.0 \
 	viking.spec \
 	mingw-viking.spec \
@@ -29,18 +28,12 @@ generate-changelog:
 dist-hook: viking.spec generate-changelog
 	cp $(top_builddir)/viking.spec $(distdir)
 
-MAINTAINERCLEANFILES = \
-	gnome-doc-utils.make
-
 DISTCLEANFILES = \
 	intltool-extract \
 	intltool-merge \
 	intltool-update
 
 ACLOCAL_AMFLAGS = -I m4
-
-DISTCHECK_CONFIGURE_FLAGS = \
-	--disable-scrollkeeper
 
 # Ignore gtk theme cache files on distcheck
 distuninstallcheck_listfiles = find . -type f -print | grep -v 'icon-theme.cache'
