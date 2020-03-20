@@ -25,6 +25,7 @@ BuildRequires:	mingw32-gettext-tools
 BuildRequires:	mingw32-gnome-doc-utils-devel
 BuildRequires:	intltool
 BuildRequires:	gdk-pixbuf-devel
+BuildRequires:	libxslt-tools
 # ^For gdk-pixbuf-csource
 
 # Code
@@ -82,7 +83,6 @@ popd
   --disable-realtime-gps-tracking \
   --disable-mapnik \
   --disable-geoclue \
-  --disable-scrollkeeper \
   --enable-windows \
   CFLAGS="-DWINDOWS -DWIN32 -mwindows"
 

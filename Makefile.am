@@ -1,4 +1,7 @@
-SUBDIRS = src test data po windows help tools doc
+SUBDIRS = src test data po windows tools doc
+if !WINDOWS
+SUBDIRS += help
+endif
 
 INTLTOOL = \
 	intltool-extract.in \

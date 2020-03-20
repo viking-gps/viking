@@ -111,7 +111,9 @@ AC_SUBST(PACKAGE_LIBS)
 dnl  -------------
 dnl | User Manual |---------------------------------------
 dnl  -------------
-YELP_HELP_INIT
+if test "x$ac_cv_enable_windows" = "xno"; then
+  YELP_HELP_INIT
+fi
 
 dnl ---------------------------------------------------------------------------
 dnl - Use deprecated options (default enabled for devs, disabled in releases) 
@@ -554,6 +556,7 @@ AC_DEFINE(HAVE_VIKING, 1, [Enable Viking specifics in otherwise reusable code])
 
 dnl man pages processing
 AC_PATH_PROG(XSLTPROC,xsltproc)
+#AM_CONDITIONAL([HAVE_XSLTPROC],[test "x$XSLTPROC" != "x"])
 
 ISODATE="$(date --utc --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y-%m-%d)"
 AC_SUBST(ISODATE)

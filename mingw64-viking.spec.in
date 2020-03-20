@@ -25,6 +25,7 @@ BuildRequires:	mingw64-gettext-tools
 BuildRequires:	mingw64-gnome-doc-utils-devel
 BuildRequires:	intltool
 BuildRequires:	gdk-pixbuf-devel
+BuildRequires:	libxslt-tools
 # ^For gdk-pixbuf-csource
 
 # Code
@@ -81,7 +82,6 @@ popd
 %{_mingw64_configure}\
   --disable-mapnik \
   --disable-geoclue \
-  --disable-scrollkeeper \
   --enable-windows \
   CFLAGS="-DWINDOWS -DWIN32 -mwindows"
 # NB not sure if '-DWIN32' is necessary/applicable for a 64bit build...
