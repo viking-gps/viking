@@ -805,6 +805,7 @@ static void disconnect_layer_signal ( VikLayer *vl, VikGpsLayer *vgl )
 
 static void vik_gps_layer_free ( VikGpsLayer *vgl )
 {
+  g_list_free(vgl->children);
   gint i;
   for (i = 0; i < NUM_TRW; i++) {
     if (vgl->vl.realized)

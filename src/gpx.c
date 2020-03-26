@@ -1153,8 +1153,10 @@ static void gpx_write_header( FILE *f )
   // E.g. if something actually cares about it, see for example:
   //   http://strava.github.io/api/v3/uploads/
   gchar *creator = g_strdup(a_vik_gpx_export_creator());
-  if ( g_strcmp0(creator, "") == 0 )
+  if ( g_strcmp0(creator, "") == 0 ) {
+    g_free(creator);
     creator = g_strdup_printf("Viking %s -- %s", PACKAGE_VERSION, PACKAGE_URL);
+  }
 
   fprintf(f, "<?xml version=\"1.0\"?>\n"
              "<gpx version=\"1.0\"\n");

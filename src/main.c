@@ -266,6 +266,7 @@ int main( int argc, char *argv[] )
 
   gtk_main ();
 
+  vik_trwlayer_uninit ();
   a_babel_uninit ();
   a_toolbar_uninit ();
   a_background_uninit ();

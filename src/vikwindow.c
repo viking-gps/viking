@@ -4952,7 +4952,7 @@ static void import_kmz_file_cb ( GtkAction *a, VikWindow *vw )
     int ans = kmz_open_file ( fn, vw->viking_vvp, vw->viking_vlp );
     if ( ans )
       a_dialog_error_msg_extra ( GTK_WINDOW(vw), _("Unable to import %s."), fn );
-
+    g_free ( fn );
     draw_update ( vw );
   }
   gtk_widget_destroy ( dialog );

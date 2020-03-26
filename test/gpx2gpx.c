@@ -22,8 +22,10 @@ int main(int argc, char *argv[])
 
   a_gpx_read_file(trw, stdin, NULL);
   a_gpx_write_file(trw, stdout, NULL, NULL);
-  // NB no layer_free functions directly visible anymore
-  //  automatically called by layers_panel_finalize cleanup in full Viking program
+
+  g_object_unref ( vl );
+
+  vik_trwlayer_uninit ();
 
   a_layer_defaults_uninit ();
   a_preferences_uninit ();

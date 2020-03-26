@@ -390,17 +390,23 @@ static GdkPixbuf *get_wp_sym_from_index ( gint i ) {
       if ( garmin_syms[i].data_large )
 	// Directly load icon
 	garmin_syms[i].icon = gdk_pixbuf_from_pixdata ( garmin_syms[i].data_large, FALSE, NULL );
-      else
-	// Up sample from small image
-	garmin_syms[i].icon = gdk_pixbuf_scale_simple ( gdk_pixbuf_from_pixdata ( garmin_syms[i].data, FALSE, NULL ), 30, 30, GDK_INTERP_BILINEAR );
+      else {
+        // Up sample from small image
+        GdkPixbuf* pixbuf = gdk_pixbuf_from_pixdata ( garmin_syms[i].data, FALSE, NULL );
+        garmin_syms[i].icon = gdk_pixbuf_scale_simple ( pixbuf, 30, 30, GDK_INTERP_BILINEAR );
+        g_object_unref ( pixbuf );
+      }
     }
     else {
       if ( garmin_syms[i].data )
 	// Directly use small symbol
 	garmin_syms[i].icon = gdk_pixbuf_from_pixdata ( garmin_syms[i].data, FALSE, NULL );
-      else
-	// Down size large image
-	garmin_syms[i].icon = gdk_pixbuf_scale_simple ( gdk_pixbuf_from_pixdata ( garmin_syms[i].data_large, FALSE, NULL ), 18, 18, GDK_INTERP_BILINEAR );
+      else {
+        // Down size large image
+        GdkPixbuf* pixbuf = gdk_pixbuf_from_pixdata ( garmin_syms[i].data_large, FALSE, NULL );
+        garmin_syms[i].icon = gdk_pixbuf_scale_simple ( pixbuf, 18, 18, GDK_INTERP_BILINEAR );
+        g_object_unref ( pixbuf );
+      }
     }
   }
   return garmin_syms[i].icon;
@@ -465,4 +471,13 @@ void clear_garmin_icon_syms () {
       garmin_syms[i].icon = NULL;
     }
   }
+}
+
+void a_garmin_icons_uninit ()
+{
+  clear_garmin_icon_syms ();
+  if ( icons )
+    g_hash_table_destroy ( icons );
+  if ( old_icons )
+    g_hash_table_destroy ( old_icons );
 }

@@ -70,6 +70,8 @@ void vik_trw_metadata_free ( VikTRWMetadata *metadata);
 VikTRWMetadata *vik_trw_layer_get_metadata ( VikTrwLayer *vtl );
 void vik_trw_layer_set_metadata ( VikTrwLayer *vtl, VikTRWMetadata *metadata);
 
+void vik_trwlayer_uninit ();
+
 gboolean vik_trw_layer_find_date ( VikTrwLayer *vtl, const gchar *date_str, VikCoord *position, VikViewport *vvp, gboolean do_tracks, gboolean select );
 
 /* These are meant for use in file loaders (gpspoint.c, gpx.c, etc).

@@ -727,6 +727,8 @@ void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp )
       if ( vli->params[i].type != VIK_LAYER_PARAM_STRING_LIST ) {
         vlsp.data = a_layer_defaults_get ( layer_name, vli->params[i].name, vli->params[i].type );
         (void)vik_layer_set_param ( vl, &vlsp );
+        if ( vli->params[i].type == VIK_LAYER_PARAM_STRING )
+          g_free ( (gchar*)vlsp.data.s );
       }
     }
   }

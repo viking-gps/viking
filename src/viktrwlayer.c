@@ -876,7 +876,9 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
     have_diary_program = TRUE;
   }
 
-  if ( g_find_program_in_path( diary_program ) ) {
+  gchar *dp = g_find_program_in_path ( diary_program );
+  if ( dp ) {
+    g_free ( dp );
     gchar *mystdout = NULL;
     gchar *mystderr = NULL;
     // Needs RedNotebook 1.7.3+ for support of opening on a specified date
@@ -913,8 +915,10 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
     g_free ( cmd );
   }
 
-  if ( g_find_program_in_path ( a_geojson_program_export() ) ) {
+  gchar* geojson_prog = g_find_program_in_path ( a_geojson_program_export() );
+  if ( geojson_prog ) {
     have_geojson_export = TRUE;
+    g_free ( geojson_prog );
   }
 
   // Astronomy Domain
@@ -930,7 +934,9 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
     // User specified so assume it works
     have_astro_program = TRUE;
   }
-  if ( g_find_program_in_path( astro_program ) ) {
+  gchar *ap = g_find_program_in_path ( astro_program );
+  if ( ap ) {
+    g_free ( ap );
     have_astro_program = TRUE;
   }
 
@@ -942,7 +948,9 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
 #else
     text_program = g_strdup ( "gedit" );
 #endif
-    if ( g_find_program_in_path( text_program ) ) {
+    gchar *tp = g_find_program_in_path ( text_program );
+    if ( tp ) {
+      g_free ( tp );
       have_text_program = TRUE;
     }
   }
@@ -950,6 +958,19 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
     // User specified so assume it works
     have_text_program = TRUE;
   }
+}
+
+/**
+ * Can't use GClassFinalizeFunc, since VikTrwLayer is a static type
+ *  Thus have to manually perform cleanup for anything done in vik_trwlayer_class_init
+ */
+void vik_trwlayer_uninit ()
+{
+  g_free ( diary_program );
+  g_free ( astro_program );
+  g_free ( text_program );
+  // Might as well do this, as only used by this layer
+  a_garmin_icons_uninit();
 }
 
 GType vik_trw_layer_get_type ()
@@ -982,6 +1003,10 @@ VikTRWMetadata *vik_trw_metadata_new()
 
 void vik_trw_metadata_free ( VikTRWMetadata *metadata)
 {
+  g_free (metadata->description);
+  g_free (metadata->author);
+  g_free (metadata->timestamp);
+  g_free (metadata->keywords);
   g_free (metadata);
 }
 
@@ -1390,10 +1415,30 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
       break;
     case PARAM_WPSO: if ( vlsp->data.u < VL_SO_LAST ) vtl->wp_sort_order = vlsp->data.u; break;
     // Metadata
-    case PARAM_MDDESC: if ( vlsp->data.s && vtl->metadata ) vtl->metadata->description = g_strdup (vlsp->data.s); break;
-    case PARAM_MDAUTH: if ( vlsp->data.s && vtl->metadata ) vtl->metadata->author = g_strdup (vlsp->data.s); break;
-    case PARAM_MDTIME: if ( vlsp->data.s && vtl->metadata ) vtl->metadata->timestamp = g_strdup (vlsp->data.s); break;
-    case PARAM_MDKEYS: if ( vlsp->data.s && vtl->metadata ) vtl->metadata->keywords = g_strdup (vlsp->data.s); break;
+    case PARAM_MDDESC:
+      if ( vlsp->data.s && vtl->metadata ) {
+        g_free (vtl->metadata->description);
+        vtl->metadata->description = g_strdup (vlsp->data.s);
+      }
+      break;
+    case PARAM_MDAUTH:
+      if ( vlsp->data.s && vtl->metadata ) {
+        g_free (vtl->metadata->author);
+        vtl->metadata->author = g_strdup (vlsp->data.s);
+      }
+      break;
+    case PARAM_MDTIME:
+      if ( vlsp->data.s && vtl->metadata ) {
+        g_free (vtl->metadata->timestamp);
+        vtl->metadata->timestamp = g_strdup (vlsp->data.s);
+      }
+      break;
+    case PARAM_MDKEYS:
+      if ( vlsp->data.s && vtl->metadata ) {
+        g_free (vtl->metadata->keywords);
+        vtl->metadata->keywords = g_strdup (vlsp->data.s);
+      }
+      break;
     case PARAM_EXTL:
       if ( vlsp->data.u < VIK_EXTERNAL_TYPE_LAST ) {
           vtl->external_layer = vlsp->data.u;
@@ -1825,6 +1870,8 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
     gdk_cursor_unref ( trwlayer->crosshair_cursor );
     trwlayer->crosshair_cursor = NULL;
   }
+
+  vik_trw_metadata_free ( trwlayer->metadata );
 }
 
 static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp, gboolean highlight )
