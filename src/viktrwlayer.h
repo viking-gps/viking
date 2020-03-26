@@ -192,6 +192,12 @@ void vik_trw_layer_trackpoint_draw ( VikTrwLayer *vtl, VikViewport *vvp, VikTrac
 
 #define VIK_SETTINGS_LIST_DATE_FORMAT "list_date_format"
 
+typedef enum _VikTRWDataType
+{
+ VIKING_WAYPOINT = 0,
+ VIKING_TRACK,
+} VikTRWDataTypeT;
+
 G_END_DECLS
 
 #endif

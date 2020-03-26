@@ -9,6 +9,7 @@ endif
 TESTS = check_degrees_conversions.sh \
 	check_decimal_output.sh \
 	check_babel.sh \
+	check_vik2vik.sh \
 	check_gpx.sh \
 	check_help_xml.sh \
 	check_metatile.sh
@@ -21,6 +22,7 @@ endif
 
 check_PROGRAMS = degrees_converter \
 	gpx2gpx \
+	vik2vik \
 	test_vikgotoxmltool \
 	test_time \
 	test_decimal_output \
@@ -35,6 +37,7 @@ endif
 
 check_SCRIPTS = check_degrees_conversions.sh \
 	check_decimal_output.sh \
+	check_vik2vik.sh \
 	check_gpx.sh \
 	check_metatile.sh
 if GEOTAG
@@ -48,6 +51,8 @@ endif
 EXTRA_DIST = check_degrees_conversions.sh \
 	check_decimal_output.sh \
 	check_babel.sh \
+	check_vik2vik.sh \
+	Simple.vik \
 	check_gpx.sh \
 	SF\#022.gpx \
 	check_md5_hash.sh \
@@ -76,6 +81,11 @@ endif
 
 gpx2gpx_SOURCES = gpx2gpx.c
 gpx2gpx_LDADD = \
+  $(top_builddir)/src/libviking.a \
+  $(LDADD)
+
+vik2vik_SOURCES = vik2vik.c
+vik2vik_LDADD = \
   $(top_builddir)/src/libviking.a \
   $(LDADD)
 

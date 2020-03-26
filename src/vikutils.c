@@ -1223,3 +1223,70 @@ GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external )
 
 	return files;
 }
+
+/**
+ * The sort uses the fact that the UUIDs will simply increase
+ */
+static int sort_hash_compare ( gconstpointer aa, gconstpointer bb, gpointer order )
+{
+	SortTRWHashT *sa = (SortTRWHashT*)aa;
+	SortTRWHashT *sb = (SortTRWHashT*)bb;
+
+	// Sort 'none' AKA creation order - use the UUID
+	if ( GPOINTER_TO_INT(order) == VL_SO_NONE )
+		return sa->uuid > sb->uuid;
+
+	gint answer = -1;
+
+	if ( GPOINTER_TO_INT(order) < VL_SO_DATE_ASCENDING ) {
+		// Alphabetical comparison
+		// Default ascending order
+		answer = g_strcmp0 ( sa->name, sb->name );
+		// Invert sort order for descending order
+		if ( GPOINTER_TO_INT(order) == VL_SO_ALPHABETICAL_DESCENDING )
+			answer = -answer;
+	}
+	else {
+		// Date comparison
+		gboolean ans = ( sa->timestamp > sb->timestamp );
+		if ( ans )
+			answer = 1;
+		// Invert sort order for descending order
+		if ( GPOINTER_TO_INT(order) == VL_SO_DATE_DESCENDING )
+			answer = -answer;
+	}
+	return answer;
+}
+
+/**
+ * Sort only applies to HashTables as used in TrackWaypoint layers
+ * (i.e. waypoints, tracks & routes)
+ *
+ * Returns: A Glist of SortTRWHashT entries
+ */
+GList* vu_sorted_list_from_hash_table ( GHashTable *hash_table, vik_layer_sort_order_t order, VikTRWDataTypeT type )
+{
+	GList *gl = NULL;
+	gpointer key, value;
+	GHashTableIter iter;
+	g_hash_table_iter_init ( &iter, hash_table );
+	while ( g_hash_table_iter_next (&iter, &key, &value) ) {
+		SortTRWHashT *st = g_malloc (sizeof(SortTRWHashT));
+		st->uuid = GPOINTER_TO_UINT(key);
+		st->type = type;
+		if ( type == VIKING_WAYPOINT ) {
+			VikWaypoint *wp = VIK_WAYPOINT(value);
+			st->name = wp->name;
+			st->timestamp = wp->timestamp;
+		} else {
+			// TODO Get first timestamp from trackpoints (ATM this sort is not used)
+			VikTrack *trk = VIK_TRACK(value);
+			st->name = trk->name;
+			st->timestamp = 0;
+		}
+		st->data = value;
+		gl = g_list_prepend ( gl, st );
+	}
+	gl = g_list_sort_with_data ( gl, sort_hash_compare, GINT_TO_POINTER(order) );
+	return gl;
+}

@@ -29,7 +29,6 @@ typedef struct {
   gboolean is_route;
 } TP_write_info_type;
 
-static void a_gpspoint_write_track ( const gpointer id, const VikTrack *t, FILE *f );
 static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type *write_info );
 
 /* outline for file gpspoint.c
@@ -587,7 +586,7 @@ typedef struct {
   const gchar *dirpath;
 } WritingContext;
 
-static void a_gpspoint_write_waypoint ( const gpointer id, const VikWaypoint *wp, WritingContext *wc )
+static void a_gpspoint_write_waypoint ( const VikWaypoint *wp, WritingContext *wc )
 {
   struct LatLon ll;
   gchar s_lat[COORDS_STR_BUFFER_SIZE];
@@ -751,7 +750,7 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
 }
 
 
-static void a_gpspoint_write_track ( const gpointer id, const VikTrack *trk, FILE *f )
+static void a_gpspoint_write_track ( const VikTrack *trk, FILE *f )
 {
   // Sanity clauses
   if ( !trk )
@@ -807,16 +806,34 @@ static void a_gpspoint_write_track ( const gpointer id, const VikTrack *trk, FIL
   fprintf ( f, "type=\"%send\"\n", trk->is_route ? "route" : "track" );
 }
 
+/**
+ * Enforce writing waypoints/tracks/routes in the order they have been read in
+ * This should enable comparing changes between file saves much better,
+ *  as limits it to the actual changes
+ *  (rather than reorderings due to the internal usage of hashtables)
+ */
 void a_gpspoint_write_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath )
 {
   GHashTable *tracks = vik_trw_layer_get_tracks ( trw );
   GHashTable *routes = vik_trw_layer_get_routes ( trw );
   GHashTable *waypoints = vik_trw_layer_get_waypoints ( trw );
-
+  GList *gl = NULL;
   WritingContext wc = { f, dirpath };
+
   fprintf ( f, "type=\"waypointlist\"\n" );
-  g_hash_table_foreach ( waypoints, (GHFunc) a_gpspoint_write_waypoint, &wc );
+  gl = vu_sorted_list_from_hash_table ( waypoints, VL_SO_NONE, VIKING_WAYPOINT );
+  for ( GList *it = g_list_first(gl); it != NULL; it = g_list_next(it) )
+    a_gpspoint_write_waypoint ( (VikWaypoint*)((SortTRWHashT*)it->data)->data, &wc );
+  g_list_free_full ( gl, g_free );
   fprintf ( f, "type=\"waypointlistend\"\n" );
-  g_hash_table_foreach ( tracks, (GHFunc) a_gpspoint_write_track, f );
-  g_hash_table_foreach ( routes, (GHFunc) a_gpspoint_write_track, f );
+
+  gl = vu_sorted_list_from_hash_table ( tracks, VL_SO_NONE, VIKING_TRACK );
+  for ( GList *it = g_list_first(gl); it != NULL; it = g_list_next(it) )
+    a_gpspoint_write_track ( (VikTrack*)((SortTRWHashT*)it->data)->data, f );
+  g_list_free_full ( gl, g_free );
+
+  gl = vu_sorted_list_from_hash_table ( routes, VL_SO_NONE, VIKING_TRACK );
+  for ( GList *it = g_list_first(gl); it != NULL; it = g_list_next(it) )
+    a_gpspoint_write_track ( (VikTrack*)((SortTRWHashT*)it->data)->data, f );
+  g_list_free_full ( gl, g_free );
 }

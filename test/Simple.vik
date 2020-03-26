@@ -1,0 +1,698 @@
+#VIKING GPS Data file http://viking.sf.net/
+FILE_VERSION=1
+
+xmpp=128.000000
+ympp=128.000000
+lat=50.999844
+lon=-0.999357
+mode=mercator
+color=#cccccc
+highlightcolor=#eea500
+drawscale=t
+drawcentermark=t
+drawhighlight=t
+
+~Layer Map
+name=Map
+mode=13
+directory=
+cache_type=1
+mapfile=
+alpha=255
+autodownload=f
+adlonlymissing=t
+mapzoom=0
+~EndLayer
+
+
+~Layer GeoRef Map
+name=GeoRef Map
+image=
+corner_easting=643703.767974
+corner_northing=5561294.973789
+mpp_easting=256.000000
+mpp_northing=256.000000
+corner_zone=30
+corner_letter_as_int=85
+alpha=255
+~EndLayer
+
+
+~Layer TrackWaypoint
+name=Rake2013
+tracks_visible=t
+waypoints_visible=t
+routes_visible=t
+trackdrawlabels=t
+trackfontsize=3
+drawmode=0
+trackcolor=#000000
+drawlines=t
+line_thickness=1
+drawdirections=f
+trkdirectionsize=5
+drawpoints=t
+trkpointsize=2
+drawelevation=f
+elevation_factor=30
+drawstops=f
+stop_length=60
+bg_line_thickness=0
+trackbgcolor=#ffffff
+speed_factor=30.000000
+tracksortorder=0
+trackautodem=f
+trackautodedupl=f
+drawlabels=t
+wpfontsize=3
+wpcolor=#000000
+wptextcolor=#ffffff
+wpbgcolor=#8383c4
+wpbgand=f
+wpsymbol=0
+wpsize=4
+wpsyms=t
+wpsortorder=0
+drawimages=t
+image_size=64
+image_alpha=255
+image_cache_size=300
+metadatadesc=
+metadataauthor=
+metadatatime=2013-10-04T15:47:13Z
+metadatakeywords=
+external_layer=0
+external_file=
+
+
+~LayerData
+type="waypointlist"
+type="waypoint" latitude="51.035452" longitude="-0.837653" name="409" altitude="72.896019" unixtime="1380905286" symbol="pin, blue"
+type="waypoint" latitude="51.039252" longitude="-0.837147" name="410" altitude="85.056068" unixtime="1380905468" symbol="pin, blue"
+type="waypoint" latitude="51.033265" longitude="-0.838429" name="L111" altitude="80.498436" unixtime="1380905236" symbol="city (medium)"
+type="waypoint" latitude="51.046888" longitude="-0.820135" name="411" altitude="134.833954" unixtime="1380906182" symbol="pin, blue"
+type="waypoint" latitude="51.037949" longitude="-0.866178" name="MS9" altitude="159.272736" unixtime="1380902258" symbol="city (medium)"
+type="waypointlistend"
+~EndLayerData
+~EndLayer
+
+
+~Layer TrackWaypoint
+name=TimedWaypoints
+tracks_visible=t
+waypoints_visible=t
+routes_visible=t
+trackdrawlabels=t
+trackfontsize=3
+drawmode=0
+trackcolor=#000000
+drawlines=t
+line_thickness=1
+drawdirections=f
+trkdirectionsize=5
+drawpoints=t
+trkpointsize=2
+drawelevation=f
+elevation_factor=30
+drawstops=f
+stop_length=60
+bg_line_thickness=0
+trackbgcolor=#ffffff
+speed_factor=30.000000
+tracksortorder=0
+trackautodem=f
+trackautodedupl=f
+drawlabels=t
+wpfontsize=3
+wpcolor=#000000
+wptextcolor=#ffffff
+wpbgcolor=#8383c4
+wpbgand=t
+wpsymbol=0
+wpsize=4
+wpsyms=t
+wpsortorder=0
+drawimages=t
+image_size=64
+image_alpha=255
+image_cache_size=300
+metadatadesc=
+metadataauthor=
+metadatatime=2012-07-24T16:34:35Z
+metadatakeywords=
+external_layer=0
+external_file=
+
+
+~LayerData
+type="waypointlist"
+type="waypoint" latitude="50.903757457" longitude="-1.185571337" name="032" altitude="32.57019" unixtime="1343155033" comment="24-JUL-12 18:37:13" symbol="city (small)"
+type="waypoint" latitude="50.851522" longitude="-1.116583" name="20730" altitude="21.755371" unixtime="1343325895" comment="24-JUL-12 18:04:55" symbol="city (small)"
+type="waypoint" latitude="50.854100967" longitude="-1.113654776" name="006" altitude="40.26062" unixtime="1343152992" comment="24-JUL-12 18:03:12" symbol="city (small)"
+type="waypoint" latitude="50.852315621" longitude="-1.096801786" name="002" altitude="37.136353" unixtime="1343152429" comment="24-JUL-12 17:53:49" symbol="block, red"
+type="waypoint" latitude="50.854671691" longitude="-1.113384124" name="005" altitude="40.981567" unixtime="1343152953" comment="24-JUL-12 18:02:33" symbol="city (small)"
+type="waypoint" latitude="50.849338872" longitude="-1.086158445" name="001" altitude="23.197388" unixtime="1343152260" comment="24-JUL-12 17:51:00" symbol="block, red"
+type="waypoint" latitude="50.916602891" longitude="-1.20028845" name="Ms3" altitude="46.268921" unixtime="1343155508" comment="24-JUL-12 18:45:08" symbol="city (medium)"
+type="waypoint" latitude="50.852054525" longitude="-1.10181232" name="003" altitude="31.608887" unixtime="1343152635" comment="24-JUL-12 17:57:15" symbol="block, red"
+type="waypoint" latitude="50.854207166" longitude="-1.108700903" name="004" altitude="49.633423" unixtime="1343152801" comment="24-JUL-12 18:00:01" symbol="block, red"
+type="waypoint" latitude="50.85699507" longitude="-1.131565478" name="030" altitude="75.348389" unixtime="1343153477" comment="24-JUL-12 18:11:17" symbol="city (small)"
+type="waypoint" latitude="50.882190652" longitude="-1.137003154" name="031" altitude="18.87146" unixtime="1343154076" comment="24-JUL-12 18:21:16" symbol="flag, green"
+type="waypointlistend"
+~EndLayerData
+~EndLayer
+
+
+~Layer DEM
+name=DEM
+source=0
+color=#0000ff
+type=0
+min_elev=0.000000
+max_elev=1000.000000
+~EndLayer
+
+
+~Layer GeoClue
+name=GeoClue
+auto_connect=t
+record_tracking=t
+center_start_tracking=t
+moving_map_method=0
+update_statusbar=t
+color=#800080
+~EndLayer
+
+
+~Layer Coord
+name=Coordinate
+color=#ff0000
+min_inc=1.000000
+line_thickness=3
+~EndLayer
+
+
+~Layer GPS
+name=GPS
+gps_protocol=garmin
+gps_port=usb:
+gps_download_tracks=t
+gps_upload_tracks=t
+gps_download_routes=t
+gps_upload_routes=t
+gps_download_waypoints=t
+gps_upload_waypoints=t
+record_tracking=t
+center_start_tracking=f
+moving_map_method=1
+realtime_update_statusbar=t
+auto_connect=f
+gpsd_host=localhost
+gpsd_port=2947
+gpsd_retry_interval=10
+
+~Layer TrackWaypoint
+name=TrackWaypoint
+tracks_visible=t
+waypoints_visible=t
+routes_visible=t
+trackdrawlabels=f
+trackfontsize=3
+drawmode=0
+trackcolor=#000000
+drawlines=t
+line_thickness=1
+drawdirections=f
+trkdirectionsize=5
+drawpoints=t
+trkpointsize=2
+drawelevation=f
+elevation_factor=30
+drawstops=f
+stop_length=60
+bg_line_thickness=0
+trackbgcolor=#ffffff
+speed_factor=30.000000
+tracksortorder=0
+trackautodem=f
+trackautodedupl=f
+drawlabels=t
+wpfontsize=3
+wpcolor=#000000
+wptextcolor=#ffffff
+wpbgcolor=#8383c4
+wpbgand=f
+wpsymbol=0
+wpsize=4
+wpsyms=t
+wpsortorder=0
+drawimages=t
+image_size=64
+image_alpha=255
+image_cache_size=300
+metadatadesc=
+metadataauthor=
+metadatatime=
+metadatakeywords=
+external_layer=0
+external_file=
+
+
+~LayerData
+type="waypointlist"
+type="waypointlistend"
+~EndLayerData
+~EndLayer
+
+
+~Layer TrackWaypoint
+name=TrackWaypoint
+tracks_visible=t
+waypoints_visible=t
+routes_visible=t
+trackdrawlabels=f
+trackfontsize=3
+drawmode=0
+trackcolor=#000000
+drawlines=t
+line_thickness=1
+drawdirections=f
+trkdirectionsize=5
+drawpoints=t
+trkpointsize=2
+drawelevation=f
+elevation_factor=30
+drawstops=f
+stop_length=60
+bg_line_thickness=0
+trackbgcolor=#ffffff
+speed_factor=30.000000
+tracksortorder=0
+trackautodem=f
+trackautodedupl=f
+drawlabels=t
+wpfontsize=3
+wpcolor=#000000
+wptextcolor=#ffffff
+wpbgcolor=#8383c4
+wpbgand=f
+wpsymbol=0
+wpsize=4
+wpsyms=t
+wpsortorder=0
+drawimages=t
+image_size=64
+image_alpha=255
+image_cache_size=300
+metadatadesc=
+metadataauthor=
+metadatatime=
+metadatakeywords=
+external_layer=0
+external_file=
+
+
+~LayerData
+type="waypointlist"
+type="waypointlistend"
+~EndLayerData
+~EndLayer
+
+
+~Layer TrackWaypoint
+name=TrackWaypoint
+tracks_visible=t
+waypoints_visible=t
+routes_visible=t
+trackdrawlabels=f
+trackfontsize=3
+drawmode=0
+trackcolor=#000000
+drawlines=t
+line_thickness=1
+drawdirections=f
+trkdirectionsize=5
+drawpoints=t
+trkpointsize=2
+drawelevation=f
+elevation_factor=30
+drawstops=f
+stop_length=60
+bg_line_thickness=0
+trackbgcolor=#ffffff
+speed_factor=30.000000
+tracksortorder=0
+trackautodem=f
+trackautodedupl=f
+drawlabels=t
+wpfontsize=3
+wpcolor=#000000
+wptextcolor=#ffffff
+wpbgcolor=#8383c4
+wpbgand=f
+wpsymbol=0
+wpsize=4
+wpsyms=t
+wpsortorder=0
+drawimages=t
+image_size=64
+image_alpha=255
+image_cache_size=300
+metadatadesc=
+metadataauthor=
+metadatatime=
+metadatakeywords=
+external_layer=0
+external_file=
+
+
+~LayerData
+type="waypointlist"
+type="waypointlistend"
+~EndLayerData
+~EndLayer
+
+~EndLayer
+
+
+~Layer TrackWaypoint
+name=Waypoint1.0
+tracks_visible=t
+waypoints_visible=t
+routes_visible=t
+trackdrawlabels=f
+trackfontsize=3
+drawmode=0
+trackcolor=#000000
+drawlines=t
+line_thickness=1
+drawdirections=f
+trkdirectionsize=5
+drawpoints=t
+trkpointsize=2
+drawelevation=f
+elevation_factor=30
+drawstops=f
+stop_length=60
+bg_line_thickness=0
+trackbgcolor=#ffffff
+speed_factor=30.000000
+tracksortorder=0
+trackautodem=f
+trackautodedupl=f
+drawlabels=t
+wpfontsize=3
+wpcolor=#000000
+wptextcolor=#ffffff
+wpbgcolor=#8383c4
+wpbgand=f
+wpsymbol=0
+wpsize=4
+wpsyms=t
+wpsortorder=0
+drawimages=t
+image_size=64
+image_alpha=255
+image_cache_size=300
+metadatadesc=Created by: osmdem -- http://viking.sf.net/TODO
+metadataauthor=
+metadatatime=2020-03-26T16:51:14Z
+metadatakeywords=
+external_layer=0
+external_file=
+
+
+~LayerData
+type="waypointlist"
+type="waypoint" latitude="50.9753" longitude="-0.95343" name="003 Kiln Lane" altitude="99" unixtime="1585241482" speed="41.99999999999999" course="321.5" magvar="-3.21" geoidheight="100" comment="Source is SRTM" description="Gradient is 39" source="Secret sauce" url="https://www.openstreetmap.org/way/317198075" url_name="OSM Kiln Lane" xtype="Hill Climb" fix="3" sat="5" hdop="1.234" vdop="0.7654" pdop="12.3456" ageofdgpsdata="123.456" dgpsid="42" symbol="red diamon"
+type="waypointlistend"
+~EndLayerData
+~EndLayer
+
+
+~Layer TrackWaypoint
+name=Stonehenge.gpx
+tracks_visible=t
+waypoints_visible=t
+routes_visible=t
+trackdrawlabels=f
+trackfontsize=3
+drawmode=0
+trackcolor=#000000
+drawlines=t
+line_thickness=1
+drawdirections=f
+trkdirectionsize=5
+drawpoints=t
+trkpointsize=2
+drawelevation=f
+elevation_factor=30
+drawstops=f
+stop_length=60
+bg_line_thickness=0
+trackbgcolor=#ffffff
+speed_factor=30.000000
+tracksortorder=0
+trackautodem=f
+trackautodedupl=f
+drawlabels=t
+wpfontsize=3
+wpcolor=#000000
+wptextcolor=#ffffff
+wpbgcolor=#8383c4
+wpbgand=f
+wpsymbol=0
+wpsize=4
+wpsyms=t
+wpsortorder=0
+drawimages=t
+image_size=64
+image_alpha=255
+image_cache_size=300
+metadatadesc=Created by: Viking -- http://viking.sf.net/
+metadataauthor=
+metadatatime=2011-09-23T15:47:33Z
+metadatakeywords=
+external_layer=0
+external_file=
+
+
+~LayerData
+type="waypointlist"
+type="waypointlistend"
+type="track" name="Stonehenge" color=#2d870a
+type="trackpoint" latitude="51.176017765" longitude="-1.832653843" altitude="103.479004" unixtime="1316792853" newsegment="yes"
+type="trackpoint" latitude="51.176264696" longitude="-1.832530042" altitude="102.5177" unixtime="1316792872"
+type="trackpoint" latitude="51.176368799" longitude="-1.832498275" altitude="102.037109" unixtime="1316792880"
+type="trackpoint" latitude="51.176404171" longitude="-1.832461478" altitude="102.5177" unixtime="1316792885"
+type="trackpoint" latitude="51.176646827" longitude="-1.832331475" altitude="97.711182" unixtime="1316792905"
+type="trackpoint" latitude="51.17666644" longitude="-1.832285291" altitude="95.788452" unixtime="1316792927"
+type="trackpoint" latitude="51.176727964" longitude="-1.832281267" altitude="96.749878" unixtime="1316792938"
+type="trackpoint" latitude="51.176826619" longitude="-1.83228814" altitude="99.153076" unixtime="1316792944"
+type="trackpoint" latitude="51.177043123" longitude="-1.832192838" altitude="102.5177" unixtime="1316792959"
+type="trackpoint" latitude="51.177082015" longitude="-1.832185546" altitude="102.998291" unixtime="1316792963"
+type="trackpoint" latitude="51.177281421000004" longitude="-1.832120251" altitude="105.401733" unixtime="1316792979"
+type="trackpoint" latitude="51.177372113" longitude="-1.832116311" altitude="104.44043" unixtime="1316792983"
+type="trackpoint" latitude="51.177401952" longitude="-1.832094518" altitude="104.921021" unixtime="1316792986"
+type="trackpoint" latitude="51.177470516" longitude="-1.832070882" altitude="103.479004" unixtime="1316792991"
+type="trackpoint" latitude="51.177627007" longitude="-1.831991337" altitude="102.998291" unixtime="1316793004"
+type="trackpoint" latitude="51.177820293" longitude="-1.831948925" altitude="104.44043" unixtime="1316793019"
+type="trackpoint" latitude="51.177905537" longitude="-1.83189" altitude="104.44043" unixtime="1316793026"
+type="trackpoint" latitude="51.177949542" longitude="-1.831837697" altitude="106.363037" unixtime="1316793031"
+type="trackpoint" latitude="51.177933952" longitude="-1.831722697" altitude="108.766235" unixtime="1316793045"
+type="trackpoint" latitude="51.177918026" longitude="-1.831710795" altitude="109.246948" unixtime="1316793078"
+type="trackpoint" latitude="51.177920792" longitude="-1.831709705" altitude="109.246948" unixtime="1316793089"
+type="trackpoint" latitude="51.178156743" longitude="-1.831563944" altitude="110.688843" unixtime="1316793105"
+type="trackpoint" latitude="51.178301079" longitude="-1.831491105" altitude="111.169556" unixtime="1316793115"
+type="trackpoint" latitude="51.178466706" longitude="-1.831310894" altitude="113.092285" unixtime="1316793130"
+type="trackpoint" latitude="51.178645995" longitude="-1.831162954" altitude="112.130981" unixtime="1316793145"
+type="trackpoint" latitude="51.178765269" longitude="-1.831054324" altitude="113.572998" unixtime="1316793154"
+type="trackpoint" latitude="51.178821009" longitude="-1.831027167" altitude="112.611572" unixtime="1316793158"
+type="trackpoint" latitude="51.178957298" longitude="-1.830931948" altitude="108.766235" unixtime="1316793168"
+type="trackpoint" latitude="51.179058719" longitude="-1.830875035" altitude="107.324341" unixtime="1316793174"
+type="trackpoint" latitude="51.179187298" longitude="-1.830724832" altitude="104.921021" unixtime="1316793185"
+type="trackpoint" latitude="51.179265166" longitude="-1.830692645" altitude="102.998291" unixtime="1316793189"
+type="trackpoint" latitude="51.179285115" longitude="-1.830662554" altitude="101.556396" unixtime="1316793191"
+type="trackpoint" latitude="51.179347811" longitude="-1.830585524" altitude="101.556396" unixtime="1316793197"
+type="trackpoint" latitude="51.17946432" longitude="-1.830468765" altitude="100.595093" unixtime="1316793208"
+type="trackpoint" latitude="51.179682333" longitude="-1.830226863" altitude="100.114502" unixtime="1316793227"
+type="trackpoint" latitude="51.179734301" longitude="-1.830195514" altitude="100.595093" unixtime="1316793231"
+type="trackpoint" latitude="51.17991074" longitude="-1.830060482" altitude="101.075684" unixtime="1316793245"
+type="trackpoint" latitude="51.179930437" longitude="-1.830044473" altitude="101.075684" unixtime="1316793247"
+type="trackpoint" latitude="51.180161946" longitude="-1.829762254" altitude="97.230469" unixtime="1316793268"
+type="trackpoint" latitude="51.180165047" longitude="-1.829737863" altitude="97.711182" unixtime="1316793269"
+type="trackpoint" latitude="51.180292452" longitude="-1.829551952" altitude="99.153076" unixtime="1316793287"
+type="trackpoint" latitude="51.180296559" longitude="-1.829268057" altitude="95.307739" unixtime="1316793347"
+type="trackpoint" latitude="51.180151384" longitude="-1.828872012" altitude="92.42395" unixtime="1316793363"
+type="trackpoint" latitude="51.180100087" longitude="-1.82859323" altitude="88.098022" unixtime="1316793376"
+type="trackpoint" latitude="51.179947956" longitude="-1.828193665" altitude="83.771973" unixtime="1316793392"
+type="trackpoint" latitude="51.179931527" longitude="-1.828065338" altitude="82.810791" unixtime="1316793400"
+type="trackpoint" latitude="51.179938316" longitude="-1.828036839" altitude="82.810791" unixtime="1316793402"
+type="trackpoint" latitude="51.17989691" longitude="-1.827922259" altitude="82.330078" unixtime="1316793406"
+type="trackpoint" latitude="51.179830022" longitude="-1.82761196" altitude="83.291382" unixtime="1316793422"
+type="trackpoint" latitude="51.179835889" longitude="-1.827458572" altitude="84.733398" unixtime="1316793430"
+type="trackpoint" latitude="51.179831363" longitude="-1.827404844" altitude="84.733398" unixtime="1316793433"
+type="trackpoint" latitude="51.179823568" longitude="-1.827338794" altitude="84.733398" unixtime="1316793437"
+type="trackpoint" latitude="51.179710161" longitude="-1.826995723" altitude="89.059326" unixtime="1316793454"
+type="trackpoint" latitude="51.179669006" longitude="-1.826896481" altitude="88.098022" unixtime="1316793458"
+type="trackpoint" latitude="51.179625923" longitude="-1.826687856" altitude="85.69458" unixtime="1316793469"
+type="trackpoint" latitude="51.179531291" longitude="-1.826371858" altitude="84.733398" unixtime="1316793486"
+type="trackpoint" latitude="51.179499943" longitude="-1.826278232" altitude="84.733398" unixtime="1316793491"
+type="trackpoint" latitude="51.17948343" longitude="-1.826168848" altitude="86.175293" unixtime="1316793513"
+type="trackpoint" latitude="51.179451579" longitude="-1.825682195" altitude="87.136597" unixtime="1316793538"
+type="trackpoint" latitude="51.179373711" longitude="-1.825293191" altitude="89.059326" unixtime="1316793563"
+type="trackpoint" latitude="51.17925494" longitude="-1.824949365" altitude="93.385132" unixtime="1316793583"
+type="trackpoint" latitude="51.17913072" longitude="-1.824672343" altitude="93.385132" unixtime="1316793598"
+type="trackpoint" latitude="51.179198697" longitude="-1.824699081" altitude="93.385132" unixtime="1316793622"
+type="trackpoint" latitude="51.179209258" longitude="-1.824663542" altitude="93.385132" unixtime="1316793646"
+type="trackpoint" latitude="51.179125691" longitude="-1.824307647" altitude="92.42395" unixtime="1316793665"
+type="trackpoint" latitude="51.179088308" longitude="-1.824071696" altitude="94.346558" unixtime="1316793681"
+type="trackpoint" latitude="51.179010943" longitude="-1.823822334" altitude="93.385132" unixtime="1316793696"
+type="trackpoint" latitude="51.179054696" longitude="-1.823710939" altitude="92.904541" unixtime="1316793701"
+type="trackpoint" latitude="51.178991329" longitude="-1.823409693" altitude="91.943237" unixtime="1316793714"
+type="trackpoint" latitude="51.178913293" longitude="-1.823123703" altitude="92.42395" unixtime="1316793730"
+type="trackpoint" latitude="51.178797791" longitude="-1.822769986" altitude="90.02063" unixtime="1316793748"
+type="trackpoint" latitude="51.178783039" longitude="-1.822690442" altitude="89.539917" unixtime="1316793751"
+type="trackpoint" latitude="51.178726209" longitude="-1.822526408" altitude="88.578735" unixtime="1316793760"
+type="trackpoint" latitude="51.178606851" longitude="-1.822166909" altitude="84.733398" unixtime="1316793776"
+type="trackpoint" latitude="51.178501574" longitude="-1.821849318" altitude="81.849365" unixtime="1316793792"
+type="trackpoint" latitude="51.178406859" longitude="-1.821517311" altitude="78.965454" unixtime="1316793810"
+type="trackpoint" latitude="51.178295296" longitude="-1.821119087" altitude="73.197632" unixtime="1316793827"
+type="trackpoint" latitude="51.17815621842017" longitude="-1.8207528815019531" altitude="67.429688" unixtime="1316793842"
+type="trackend"
+~EndLayerData
+~EndLayer
+
+
+~Layer TrackWaypoint
+name=RobRoute.gpx
+tracks_visible=t
+waypoints_visible=t
+routes_visible=t
+trackdrawlabels=f
+trackfontsize=3
+drawmode=0
+trackcolor=#000000
+drawlines=t
+line_thickness=1
+drawdirections=f
+trkdirectionsize=5
+drawpoints=t
+trkpointsize=2
+drawelevation=f
+elevation_factor=30
+drawstops=f
+stop_length=60
+bg_line_thickness=0
+trackbgcolor=#ffffff
+speed_factor=30.000000
+tracksortorder=0
+trackautodem=f
+trackautodedupl=f
+drawlabels=t
+wpfontsize=3
+wpcolor=#000000
+wptextcolor=#ffffff
+wpbgcolor=#8383c4
+wpbgand=f
+wpsymbol=0
+wpsize=4
+wpsyms=t
+wpsortorder=0
+drawimages=t
+image_size=64
+image_alpha=255
+image_cache_size=300
+metadatadesc=Created by: Viking -- http://viking.sf.net/
+metadataauthor=
+metadatatime=2020-03-26T16:54:00Z
+metadatakeywords=
+external_layer=0
+external_file=
+
+
+~LayerData
+type="waypointlist"
+type="waypointlistend"
+type="route" name="Bimble" color=#b40916
+type="routepoint" latitude="50.829418913756776" longitude="-1.0578498840332031" altitude="2"
+type="routepoint" latitude="50.828063560270614" longitude="-1.058279037475586" altitude="2"
+type="routepoint" latitude="50.83006946945254" longitude="-1.0658321380615234" altitude="2"
+type="routepoint" latitude="50.82985261856134" longitude="-1.066518783569336" altitude="2"
+type="routepoint" latitude="50.83072001608181" longitude="-1.067892074584961" altitude="2"
+type="routepoint" latitude="50.830015256824176" longitude="-1.0696086883544922" altitude="2"
+type="routepoint" latitude="50.82920205984341" longitude="-1.0698661804199219" altitude="2"
+type="routepoint" latitude="50.83050316821277" longitude="-1.0743293762207031" altitude="2"
+type="routepoint" latitude="50.82584069536471" longitude="-1.0775909423828125" altitude="1"
+type="routepoint" latitude="50.8234550640651" longitude="-1.0812816619873047" altitude="5"
+type="routepoint" latitude="50.8224790888538" longitude="-1.0846290588378906" altitude="5"
+type="routepoint" latitude="50.820418629745944" longitude="-1.0844573974609375" altitude="6"
+type="routepoint" latitude="50.81673126546437" longitude="-1.0834274291992188" altitude="6"
+type="routepoint" latitude="50.816785493519085" longitude="-1.0825691223144531" altitude="7"
+type="routeend"
+type="route" name="Underline" color=#ff0000
+type="routepoint" latitude="50.81426482662098" longitude="-1.0862620477294922"
+type="routepoint" latitude="50.81177013629515" longitude="-1.0854037408447266"
+type="routepoint" latitude="50.80748546590681" longitude="-1.0876353387451172"
+type="routepoint" latitude="50.805858272927445" longitude="-1.0876353387451172"
+type="routepoint" latitude="50.80005415640488" longitude="-1.0957892541503906"
+type="routepoint" latitude="50.789637485449255" longitude="-1.0960467462158203"
+type="routepoint" latitude="50.78562210701215" longitude="-1.099651635131836"
+type="routeend"
+type="route" name="Rob" color=#b40916
+type="routepoint" latitude="50.81699518882474" longitude="-1.0824832916259766"
+type="routepoint" latitude="50.815368327096905" longitude="-1.044546127319336"
+type="routepoint" latitude="50.81173479795466" longitude="-1.04119873046875"
+type="routepoint" latitude="50.80810098614" longitude="-1.0424861907958984"
+type="routepoint" latitude="50.80576868933143" longitude="-1.0467777252197266"
+type="routepoint" latitude="50.80679925344171" longitude="-1.0624847412109375"
+type="routepoint" latitude="50.81607330747026" longitude="-1.0648880004882813"
+type="routepoint" latitude="50.816181765044725" longitude="-1.0675487518310547"
+type="routepoint" latitude="50.81553101581989" longitude="-1.0675487518310547"
+type="routepoint" latitude="50.81574793323567" longitude="-1.0685787200927734"
+type="routepoint" latitude="50.81417525914528" longitude="-1.0681495666503906"
+type="routepoint" latitude="50.8141210280597" longitude="-1.069265365600586"
+type="routepoint" latitude="50.8141210280597" longitude="-1.0697803497314453"
+type="routepoint" latitude="50.81206020014752" longitude="-1.0697803497314453"
+type="routepoint" latitude="50.81200596660614" longitude="-1.0704669952392578"
+type="routepoint" latitude="50.81130092483786" longitude="-1.0703811645507813"
+type="routepoint" latitude="50.811355159197866" longitude="-1.070810317993164"
+type="routepoint" latitude="50.81086704769097" longitude="-1.0708961486816406"
+type="routepoint" latitude="50.81081281276424" longitude="-1.073385238647461"
+type="routepoint" latitude="50.80994504537259" longitude="-1.0731277465820313"
+type="routepoint" latitude="50.809782337192" longitude="-1.0766468048095703"
+type="routepoint" latitude="50.808968787787904" longitude="-1.0762176513671875"
+type="routepoint" latitude="50.80869760150464" longitude="-1.077676773071289"
+type="routepoint" latitude="50.80745012432484" longitude="-1.0769901275634766"
+type="routepoint" latitude="50.80755860192375" longitude="-1.0825691223144531"
+type="routepoint" latitude="50.805714448485375" longitude="-1.0834274291992188"
+type="routepoint" latitude="50.80484658638416" longitude="-1.0817108154296875"
+type="routepoint" latitude="50.80555172556936" longitude="-1.0772476196289063"
+type="routepoint" latitude="50.80408719382124" longitude="-1.0760459899902344"
+type="routepoint" latitude="50.80327354523567" longitude="-1.0713253021240234"
+type="routepoint" latitude="50.802731104973546" longitude="-1.063943862915039"
+type="routepoint" latitude="50.79741485714221" longitude="-1.0604248046875"
+type="routepoint" latitude="50.79730635599093" longitude="-1.061197280883789"
+type="routepoint" latitude="50.79551605062587" longitude="-1.0614547729492188"
+type="routepoint" latitude="50.794105458701324" longitude="-1.0620555877685547"
+type="routepoint" latitude="50.79600432252695" longitude="-1.0772476196289063"
+type="routepoint" latitude="50.80435840686775" longitude="-1.0770759582519531"
+type="routepoint" latitude="50.79557030331122" longitude="-1.0774192810058594"
+type="routepoint" latitude="50.79492167293149" longitude="-1.0795650482177734"
+type="routepoint" latitude="50.79231743685392" longitude="-1.0811958312988281"
+type="routepoint" latitude="50.792208923868444" longitude="-1.076303482055664"
+type="routepoint" latitude="50.79285999800263" longitude="-1.0760459899902344"
+type="routepoint" latitude="50.789767315094515" longitude="-1.055704116821289"
+type="routepoint" latitude="50.791774869407334" longitude="-1.0683212280273438"
+type="routepoint" latitude="50.7863488485528" longitude="-1.0698661804199219"
+type="routepoint" latitude="50.786891478979506" longitude="-1.0801658630371094"
+type="routepoint" latitude="50.78824802749207" longitude="-1.0826549530029297"
+type="routepoint" latitude="50.79090674839315" longitude="-1.0827407836914063"
+type="routepoint" latitude="50.79258871821551" longitude="-1.0805091857910156"
+type="routepoint" latitude="50.79068971562043" longitude="-1.0828266143798828"
+type="routepoint" latitude="50.78803098237525" longitude="-1.0826549530029297"
+type="routepoint" latitude="50.78548062676989" longitude="-1.082998275756836"
+type="routepoint" latitude="50.784015465950226" longitude="-1.0854015350341797"
+type="routeend"
+~EndLayerData
+~EndLayer
+

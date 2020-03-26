@@ -79,6 +79,17 @@ void vu_finish ( void );
 gchar* vu_get_last_folder_files_uri ();
 void vu_set_last_folder_files_uri ( gchar *folder_uri );
 
+typedef struct SortTRWHash
+{
+	guint uuid;
+	gchar *name;
+	gdouble timestamp;
+	VikTRWDataTypeT type;
+	gpointer data; // VikWaypoint or VikTrack
+} SortTRWHashT;
+
+GList* vu_sorted_list_from_hash_table ( GHashTable *hash_table, vik_layer_sort_order_t order, VikTRWDataTypeT type );
+
 G_END_DECLS
 
 #endif

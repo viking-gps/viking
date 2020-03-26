@@ -304,7 +304,6 @@ const gchar *vik_viewport_get_background_color ( VikViewport *vvp )
 
 void vik_viewport_set_background_color ( VikViewport *vvp, const gchar *colorname )
 {
-  g_assert ( vvp && vvp->background_gc );
   if ( gdk_color_parse ( colorname, &(vvp->background_color) ) )
     gdk_gc_set_rgb_fg_color ( vvp->background_gc, &(vvp->background_color) );
   else
@@ -313,7 +312,6 @@ void vik_viewport_set_background_color ( VikViewport *vvp, const gchar *colornam
 
 void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor *color )
 {
-  g_assert ( vvp && vvp->background_gc );
   vvp->background_color = *color;
   gdk_gc_set_rgb_fg_color ( vvp->background_gc, color );
 }
@@ -335,14 +333,12 @@ const gchar *vik_viewport_get_highlight_color ( VikViewport *vvp )
 
 void vik_viewport_set_highlight_color ( VikViewport *vvp, const gchar *colorname )
 {
-  g_assert ( vvp->highlight_gc );
   gdk_color_parse ( colorname, &(vvp->highlight_color) );
   gdk_gc_set_rgb_fg_color ( vvp->highlight_gc, &(vvp->highlight_color) );
 }
 
 void vik_viewport_set_highlight_gdkcolor ( VikViewport *vvp, GdkColor *color )
 {
-  g_assert ( vvp->highlight_gc );
   vvp->highlight_color = *color;
   gdk_gc_set_rgb_fg_color ( vvp->highlight_gc, color );
 }
