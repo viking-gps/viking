@@ -5280,6 +5280,26 @@ static void trw_layer_delete_item ( menu_array_sublayer values )
 }
 
 /**
+ * On changes of time, maintain position of waypoint in the treeview
+ */
+void trw_layer_treeview_waypoint_align_time ( VikTrwLayer *vtl, VikWaypoint *wp )
+{
+  wpu_udata udataU;
+  udataU.wp   = wp;
+  udataU.uuid = NULL;
+
+  // Need key of it for treeview update
+  gpointer wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc)trw_layer_waypoint_find_uuid, &udataU );
+  if ( wpf && udataU.uuid ) {
+    GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udataU.uuid );
+    if ( it ) {
+      vik_treeview_item_set_timestamp ( VIK_LAYER(vtl)->vt, it, wp->timestamp );
+      vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), vtl->wp_sort_order );
+    }
+  }
+}
+
+/**
  *  Rename waypoint and maintain corresponding name of waypoint in the treeview
  */
 void trw_layer_waypoint_rename ( VikTrwLayer *vtl, VikWaypoint *wp, const gchar *new_name )
@@ -5346,9 +5366,11 @@ static void trw_layer_properties_item ( menu_array_sublayer values )
       if ( updated && VIK_LAYER(vtl)->visible )
 	vik_layer_emit_update ( VIK_LAYER(vtl) );
 
-      // Position could have changed
-      if ( updated )
+      // Time & Position could have changed
+      if ( updated ) {
         trw_layer_calculate_bounds_waypoints ( vtl );
+        trw_layer_treeview_waypoint_align_time ( vtl, wp );
+      }
     }
   }
   else
@@ -7751,6 +7773,79 @@ static void trw_layer_delete_duplicate_waypoints ( menu_array_layer values )
 /**
  *
  */
+static gboolean waypoint_change_time_from_comment ( VikWaypoint *wp )
+{
+  gboolean changed = FALSE;
+  // Only change waypoints without a time
+  if ( isnan(wp->timestamp) ) {
+    GTimeVal tv;
+    // See also g_date_time_new_from_iso8601() but glib 2.56 needed
+    if ( g_time_val_from_iso8601(wp->comment, &tv) ) {
+      gdouble d1 = tv.tv_sec;
+      gdouble d2 = (gdouble)tv.tv_usec/G_USEC_PER_SEC;
+      wp->timestamp = (d1 < 0) ? d1 - d2 : d1 + d2;
+      changed = TRUE;
+    } else {
+#ifdef HAVE_STRPTIME
+      // Some old Garmins used things like "24-JUL-12 18:45:08"
+      gchar *time_format = NULL;
+      if ( ! a_settings_get_string("gpx_comment_time_format", &time_format) )
+        time_format = g_strdup ( "%d-%B-%y %H:%M:%S" );
+
+      struct tm tm = {0};
+      if ( strptime(wp->comment, time_format, &tm) ) {
+        time_t thetime = util_timegm ( &tm );
+        wp->timestamp = (gdouble)thetime;
+        changed = TRUE;
+      }
+      g_free ( time_format );
+#endif
+    }
+  }
+  return changed;
+}
+
+/**
+ *
+ */
+static void trw_layer_waypoints_set_time_from_comment ( menu_array_layer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+  VikWaypoint *wp;
+  guint changed = 0;
+  if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
+    // Single Waypoint
+    wp = (VikWaypoint*)g_hash_table_lookup ( vtl->waypoints, values[MA_SUBLAYER_ID] );
+    if ( wp ) {
+      changed = (guint)waypoint_change_time_from_comment ( wp );
+      if ( changed ) {
+        trw_layer_treeview_waypoint_align_time ( vtl, wp );
+      }
+    }
+  }
+  else {
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init ( &iter, vtl->waypoints );
+    while ( g_hash_table_iter_next (&iter, &key, &value) ) {
+      wp = VIK_WAYPOINT(value);
+      if ( waypoint_change_time_from_comment(wp) ) {
+        trw_layer_treeview_waypoint_align_time ( vtl, wp );
+        changed++;
+      }
+    }
+  }
+  if ( changed ) {
+    gchar str[64];
+    const gchar *tmp_str = ngettext ( "%ld waypoint adjusted", "%ld waypoints adjusted", changed );
+    g_snprintf ( str, 64, tmp_str, changed );
+    a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), str );
+  }
+}
+
+/**
+ *
+ */
 static void trw_layer_iter_visibility_toggle ( gpointer id, GtkTreeIter *it, VikTreeview *vt )
 {
   vik_treeview_item_toggle_visible ( vt, it );
@@ -8619,6 +8714,8 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     GtkMenu *transform_submenu = GTK_MENU(gtk_menu_new());
     GtkWidget *itemtransform = vu_menu_add_item ( menu, _("_Transform"), GTK_STOCK_CONVERT, NULL, NULL );
     gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemtransform), GTK_WIDGET(transform_submenu) );
+
+    (void)vu_menu_add_item ( transform_submenu, _("Set Time from Comment"), NULL, G_CALLBACK(trw_layer_waypoints_set_time_from_comment), data );
 
     GtkMenu *dem_submenu = GTK_MENU(gtk_menu_new());
     GtkWidget *itemdem = vu_menu_add_item ( transform_submenu, _("_Apply DEM Data"), "vik-icon-DEM Download", NULL, NULL );

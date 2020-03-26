@@ -1652,7 +1652,10 @@ The record of the Google route is stored in the track's comment, so if the comme
 </varlistentry>
 <varlistentry>
 <term><guilabel>Transform</guilabel></term>
-<listitem><para>Offers options to set the altitude value from DEM data. Also see track <xref linkend="transform"/>.</para></listitem>
+<listitem>
+<para>Options to set the altitude value from DEM data. Also see track <xref linkend="transform"/>.</para>
+<para>An option to set the time from the comment field. First tries ISO8601 formats and then a fallback of a custom format, see "gpx_comment_time_format" in <xref linkend="misc_settings"/>.</para>
+</listitem>
 </varlistentry>
 </variablelist>
 </section>
@@ -1687,7 +1690,7 @@ In this circumstance creation of waypoint options are disabled and only the opti
 <section><title>Transform</title>
 <para>
 Offers a subset of the track <xref linkend="transform"/> utilities.
-Currently only setting the altitude from DEM data methods are available.
+Setting the altitude from DEM data and Time from Comment methods are available.
 </para>
 </section>
 
@@ -4124,6 +4127,10 @@ Accept: */*
 	    <para>geotag_photo_dir="/home/<emphasis role="italic">user</emphasis>/Pictures"</para>
 	    <para>Override the base search location for photographs</para>
 	    <para>A matching dated directory corresponding to the track is attempted of the format /geotag_photo_dir/YYYY/MM/DD</para>
+	  </listitem>
+	  <listitem>
+	    <para>gpx_comment_time_format="%d-%B-%y %H:%M:%S"</para>
+	    <para>The fallback format used in generating timestamps for waypoints from their comment</para>
 	  </listitem>
 	</itemizedlist>
 
