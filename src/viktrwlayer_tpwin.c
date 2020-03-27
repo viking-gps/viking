@@ -433,7 +433,6 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
     GtkWidget *img = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_MENU );
     gtk_button_set_image ( GTK_BUTTON(tpwin->time), img );
   }
-  else
 
   vik_trw_layer_tpwin_set_track_name ( tpwin, track_name );
 
