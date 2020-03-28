@@ -5583,6 +5583,141 @@ static void trw_layer_goto_track_next_point ( menu_array_sublayer values )
   vik_trw_layer_goto_track_next_point ( (VikTrwLayer*)values[MA_VTL] );
 }
 
+/**
+ * Convert visible waypoints in the selected layer into a track
+ *  Waypoints are ordered according to the waypoint sort order property
+ * Note that any waypoint symbols and extra data (URL,images, etc...) are lost in this conversion
+ */
+static void trw_layer_convert_to_track ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  VikTrack *trk = vik_track_new();
+  vik_track_set_defaults ( trk );
+  trk->visible = TRUE;
+  if ( vtl->drawmode == DRAWMODE_ALL_SAME_COLOR )
+    // Create track with the preferred colour from the layer properties
+    trk->color = vtl->track_color;
+  else
+    gdk_color_parse ( "#000000", &(trk->color) );
+  trk->has_color = TRUE;
+
+  GList* gl = vu_sorted_list_from_hash_table ( vtl->waypoints, vtl->wp_sort_order, VIKING_WAYPOINT );
+
+  gchar *name;
+  guint count = 1;
+  for ( GList *it = g_list_first(gl); it != NULL; it = g_list_next(it) ) {
+    VikWaypoint *wpt = VIK_WAYPOINT(((SortTRWHashT*)it->data)->data);
+    if ( wpt->visible ) {
+      VikTrackpoint *tp = vik_trackpoint_new();
+      if ( count == 1 ) {
+        tp->newsegment = TRUE;
+	// Remove ending digits
+	gchar *wpnm = wpt->name;
+	guint len = strlen(wpnm);
+	guint pos = 0;
+	while ( wpnm ) {
+	  if ( g_ascii_isdigit(*wpnm) ) {
+	    break;
+	  }
+	  pos++;
+	  wpnm++;
+	}
+	// Very first is a digit so use whole string
+	if ( pos == 0 ) pos = len;
+	name = g_strndup ( wpt->name, pos );
+      }
+      // Do we want to keep/give names?
+      //if ( tp->name )
+      //  wp->name      = g_strdup ( tp->name );
+      tp->coord     = wpt->coord;
+      tp->timestamp = wpt->timestamp;
+      tp->altitude  = wpt->altitude;
+      tp->speed     = wpt->speed;
+      tp->course    = wpt->course;
+      tp->fix_mode  = wpt->fix_mode;
+      tp->nsats     = wpt->nsats;
+      tp->hdop      = wpt->hdop;
+      tp->vdop      = wpt->vdop;
+      tp->pdop      = wpt->pdop;
+      trk->trackpoints = g_list_prepend ( trk->trackpoints, tp );
+      count++;
+    }
+  }
+  g_list_free_full ( gl, g_free );
+  trk->trackpoints = g_list_reverse ( trk->trackpoints );
+
+  // Remove the used Waypoints
+  gl = g_hash_table_get_values ( vtl->waypoints );
+  for ( GList *it = g_list_first(gl); it != NULL; it = g_list_next(it) ) {
+    VikWaypoint *wpt = VIK_WAYPOINT(it->data);
+    // NB Removal quite slow as performing it one-by-one and on each delete it's updating the treeview
+    //  especially if hundreds of waypoints, but so be it.
+    if ( wpt->visible ) {
+      (void)trw_layer_delete_waypoint ( vtl, wpt );
+    }
+  }
+  g_list_free ( gl ); // NB not 'free_full' as wp entries already freed
+  trw_layer_calculate_bounds_waypoints ( vtl );
+
+  vik_trw_layer_add_track ( vtl, name, trk );
+  vik_track_calculate_bounds ( trk );
+  g_free ( name );
+
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+/**
+ *
+ */
+static void trw_layer_convert_to_waypoints ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  VikTrack *trk;
+  if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    trk = (VikTrack *) g_hash_table_lookup ( vtl->routes, values[MA_SUBLAYER_ID] );
+  else
+    trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+
+  guint count = 1;
+  GList *tp_iter;
+  tp_iter = trk->trackpoints;
+  while ( tp_iter ) {
+    VikTrackpoint *tp = VIK_TRACKPOINT(tp_iter->data);
+    VikWaypoint *wpt = vik_waypoint_new();
+    wpt->visible   = TRUE;
+    wpt->timestamp = tp->timestamp;
+    wpt->coord     = tp->coord;
+    wpt->altitude  = tp->altitude;
+    wpt->speed     = tp->speed;
+    wpt->course    = tp->course;
+    wpt->fix_mode  = tp->fix_mode;
+    wpt->nsats     = tp->nsats;
+    wpt->hdop      = tp->hdop;
+    wpt->vdop      = tp->vdop;
+    wpt->pdop      = tp->pdop;
+    gchar *name = g_strdup_printf ( "%s%05d", trk->name, count++ );
+    vik_trw_layer_add_waypoint ( vtl, name, wpt );
+    g_free ( name );
+    tp_iter = tp_iter->next;
+  }
+
+  // Converting may lose some information, so don't always delete
+  gboolean perform_delete = TRUE;
+  if ( trk->comment || trk->description || trk->source || trk->type )
+    perform_delete = FALSE;
+
+  if ( perform_delete ) {
+    if ( trk->is_route )
+      vik_trw_layer_delete_route ( vtl, trk );
+    else
+      vik_trw_layer_delete_track ( vtl, trk );
+  }
+
+  trw_layer_calculate_bounds_waypoints ( vtl );
+
+  vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
 static void trw_layer_convert_track_route ( menu_array_sublayer values )
 {
   VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
@@ -8597,6 +8732,9 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     (void)vu_menu_add_item ( transform_submenu, (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK) ? _("C_onvert to a Route") : _("C_onvert to a Track"),
                              GTK_STOCK_CONVERT, G_CALLBACK(trw_layer_convert_track_route), data );
 
+    (void)vu_menu_add_item ( transform_submenu, _("Convert to Waypoints"),
+                             GTK_STOCK_CONVERT, G_CALLBACK(trw_layer_convert_to_waypoints), data );
+
     // Routes don't have timestamps - so these are only available for tracks
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
       GtkWidget *itemat = vu_menu_add_item ( transform_submenu, _("_Anonymize Times"), NULL, G_CALLBACK(trw_layer_anonymize_times), data );
@@ -8726,6 +8864,10 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
     GtkWidget *itemke = vu_menu_add_item ( dem_submenu, _("_Keep Existing"), NULL, G_CALLBACK(trw_layer_apply_dem_data_wpt_only_missing), data );
     gtk_widget_set_tooltip_text ( itemke, _("Keep existing elevation values, only attempt for missing values") );
+
+    // Can't make a track from just one waypoint!
+    if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINTS )
+      (void)vu_menu_add_item ( transform_submenu, _("Convert to Track"), GTK_STOCK_CONVERT, G_CALLBACK(trw_layer_convert_to_track), data );
   }
 
   gtk_widget_show_all ( GTK_WIDGET(menu) );

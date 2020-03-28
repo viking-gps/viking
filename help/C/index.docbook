@@ -1493,6 +1493,14 @@ Converting from a Track to a Route may involve a loss of information, in particu
 </note>
 </section>
 <section>
+<title>Convert to Waypoints</title>
+<para>
+Each track or route point will be converted into a waypoint.
+The original track or route will be removed unless some information in the track would be lost
+(e.g. If the track has a comment, this is not copied into every waypoint and the track is kept).
+</para>
+</section>
+<section>
 <title>Anonymize Times</title>
 <para>
 Timestamp information of a track can be shifted to be all offset from 1901-01-01.
@@ -1655,6 +1663,7 @@ The record of the Google route is stored in the track's comment, so if the comme
 <listitem>
 <para>Options to set the altitude value from DEM data. Also see track <xref linkend="transform"/>.</para>
 <para>An option to set the time from the comment field. First tries ISO8601 formats and then a fallback of a custom format, see "gpx_comment_time_format" in <xref linkend="misc_settings"/>.</para>
+<para>An option to convert the (visible) waypoints into a track. The points will be ordered according to the layers Waypoint sort order property. Note that some information such as associated images, symbols, comments etc... are lost in this conversion.</para>
 </listitem>
 </varlistentry>
 </variablelist>
