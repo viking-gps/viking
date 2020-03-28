@@ -643,6 +643,30 @@ typedef struct {
   const gchar *dirpath;
 } WritingContext;
 
+static void write_double ( FILE *ff, const gchar *tag, gdouble value )
+{
+  if ( !isnan(value) ) {
+    gchar buf[COORDS_STR_BUFFER_SIZE];
+    a_coords_dtostr_buffer ( value, buf );
+    fprintf ( ff, " %s=\"%s\"", tag, buf );
+  }
+}
+
+static void write_positive_uint ( FILE *ff, const gchar *tag, guint value )
+{
+  if ( value )
+    fprintf ( ff, " %s=\"%d\"", tag, value );
+}
+
+static void write_string ( FILE *ff, const gchar *tag, const gchar *value )
+{
+  if ( value && strlen(value) ) {
+    gchar *tmp = slashdup(value);
+    fprintf ( ff, " %s=\"%s\"", tag, tmp );
+    g_free ( tmp );
+  }
+}
+
 static void a_gpspoint_write_waypoint ( const VikWaypoint *wp, WritingContext *wc )
 {
   struct LatLon ll;
@@ -665,95 +689,27 @@ static void a_gpspoint_write_waypoint ( const VikWaypoint *wp, WritingContext *w
   fprintf ( f, "type=\"waypoint\" latitude=\"%s\" longitude=\"%s\" name=\"%s\"", s_lat, s_lon, tmp_name );
   g_free ( tmp_name );
 
-  gchar buf[COORDS_STR_BUFFER_SIZE];
+  write_double ( f, "altitude", wp->altitude );
+  write_double ( f, "unixtime", wp->timestamp );
+  write_double ( f, "speed", wp->speed );
+  write_double ( f, "course", wp->course );
+  write_double ( f, "magvar", wp->magvar );
+  write_double ( f, "geoidheight", wp->geoidheight );
+  write_string ( f, "comment", wp->comment );
+  write_string ( f, "description", wp->description );
+  write_string ( f, "source", wp->source );
+  write_string ( f, "url", wp->url );
+  write_string ( f, "url_name", wp->url_name );
+  write_string ( f, "xtype", wp->type );
 
-  if ( !isnan(wp->altitude) ) {
-    gchar s_alt[COORDS_STR_BUFFER_SIZE];
-    a_coords_dtostr_buffer ( wp->altitude, s_alt );
-    fprintf ( f, " altitude=\"%s\"", s_alt );
-  }
-  if ( !isnan(wp->timestamp) ) {
-    gchar s_tm[COORDS_STR_BUFFER_SIZE];
-    a_coords_dtostr_buffer ( wp->timestamp, s_tm );
-    fprintf ( f, " unixtime=\"%s\"", s_tm );
-  }
-  if ( !isnan(wp->speed) ) {
-    a_coords_dtostr_buffer ( wp->speed, buf );
-    fprintf ( f, " speed=\"%s\"", buf );
-  }
-  if ( !isnan(wp->course) ) {
-    a_coords_dtostr_buffer ( wp->course, buf );
-    fprintf ( f, " course=\"%s\"", buf );
-  }
-  if ( !isnan(wp->magvar) ) {
-    a_coords_dtostr_buffer ( wp->magvar, buf );
-    fprintf ( f, " magvar=\"%s\"", buf );
-  }
-  if ( !isnan(wp->geoidheight) ) {
-    a_coords_dtostr_buffer ( wp->geoidheight, buf );
-    fprintf ( f, " geoidheight=\"%s\"", buf );
-  }
-  if ( wp->comment )
-  {
-    gchar *tmp_comment = slashdup(wp->comment);
-    fprintf ( f, " comment=\"%s\"", tmp_comment );
-    g_free ( tmp_comment );
-  }
-  if ( wp->description )
-  {
-    gchar *tmp_description = slashdup(wp->description);
-    fprintf ( f, " description=\"%s\"", tmp_description );
-    g_free ( tmp_description );
-  }
-  if ( wp->source )
-  {
-    gchar *tmp_source = slashdup(wp->source);
-    fprintf ( f, " source=\"%s\"", tmp_source );
-    g_free ( tmp_source );
-  }
-  if ( wp->url )
-  {
-    gchar *tmp_url = slashdup(wp->url);
-    fprintf ( f, " url=\"%s\"", tmp_url );
-    g_free ( tmp_url );
-  }
-  if ( wp->url_name )
-  {
-    gchar *tmp_url = slashdup(wp->url_name);
-    fprintf ( f, " url_name=\"%s\"", tmp_url );
-    g_free ( tmp_url );
-  }
-  if ( wp->type )
-  {
-    gchar *tmp_type = slashdup(wp->type);
-    fprintf ( f, " xtype=\"%s\"", tmp_type );
-    g_free ( tmp_type );
-  }
-  if ( wp->fix_mode ) {
-    fprintf ( f, " fix=\"%d\"", wp->fix_mode );
-  }
-  if ( wp->nsats ) {
-    fprintf ( f, " sat=\"%d\"", wp->nsats );
-  }
-  if ( !isnan(wp->hdop) ) {
-    a_coords_dtostr_buffer ( wp->hdop, buf );
-    fprintf ( f, " hdop=\"%s\"", buf );
-  }
-  if ( !isnan(wp->vdop) ) {
-    a_coords_dtostr_buffer ( wp->vdop, buf );
-    fprintf ( f, " vdop=\"%s\"", buf );
-  }
-  if ( !isnan(wp->pdop) ) {
-    a_coords_dtostr_buffer ( wp->pdop, buf );
-    fprintf ( f, " pdop=\"%s\"", buf );
-  }
-  if ( !isnan(wp->ageofdgpsdata) ) {
-    a_coords_dtostr_buffer ( wp->ageofdgpsdata, buf );
-    fprintf ( f, " ageofdgpsdata=\"%s\"", buf );
-  }
-  if ( wp->dgpsid ) {
-    fprintf ( f, " dgpsid=\"%d\"", wp->dgpsid );
-  }
+  write_positive_uint ( f, "fix", wp->fix_mode );
+  write_positive_uint ( f, "sat", wp->nsats );
+  write_double ( f, "hdop", wp->hdop );
+  write_double ( f, "vdop", wp->vdop );
+  write_double ( f, "pdop", wp->pdop );
+  write_double ( f, "ageofdgpsdata", wp->ageofdgpsdata );
+  write_positive_uint ( f, "dgpsid", wp->dgpsid );
+
   if ( wp->image )
   {
     gchar *tmp_image = NULL;
@@ -798,7 +754,6 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
   struct LatLon ll;
   gchar s_lat[COORDS_STR_BUFFER_SIZE];
   gchar s_lon[COORDS_STR_BUFFER_SIZE];
-  gchar s_alt[COORDS_STR_BUFFER_SIZE];
   vik_coord_to_latlon ( &(tp->coord), &ll );
 
   FILE *f = write_info->f;
@@ -807,56 +762,22 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
   a_coords_dtostr_buffer ( ll.lon, s_lon );
   fprintf ( f, "type=\"%spoint\" latitude=\"%s\" longitude=\"%s\"", write_info->is_route ? "route" : "track", s_lat, s_lon );
 
-  if ( tp->name ) {
-    gchar *name = slashdup(tp->name);
-    fprintf ( f, " name=\"%s\"", name );
-    g_free(name);
-  }
+  write_string ( f, "name", tp->name );
+  write_double ( f, "altitude", tp->altitude );
+  write_double ( f, "unixtime", tp->timestamp );
 
-  if ( !isnan(tp->altitude) ) {
-    a_coords_dtostr_buffer ( tp->altitude, s_alt );
-    fprintf ( f, " altitude=\"%s\"", s_alt );
-  }
-  if ( !isnan(tp->timestamp) ) {
-    gchar s_tm[COORDS_STR_BUFFER_SIZE];
-    a_coords_dtostr_buffer ( tp->timestamp, s_tm );
-    fprintf ( f, " unixtime=\"%s\"", s_tm );
-  }
   if ( tp->newsegment )
     fprintf ( f, " newsegment=\"yes\"" );
 
   if (!isnan(tp->speed) || !isnan(tp->course) || tp->nsats > 0) {
     fprintf ( f, " extended=\"yes\"" );
-    if (!isnan(tp->speed)) {
-      gchar s_speed[COORDS_STR_BUFFER_SIZE];
-      a_coords_dtostr_buffer ( tp->speed, s_speed );
-      fprintf ( f, " speed=\"%s\"", s_speed );
-    }
-    if (!isnan(tp->course)) {
-      gchar s_course[COORDS_STR_BUFFER_SIZE];
-      a_coords_dtostr_buffer ( tp->course, s_course );
-      fprintf ( f, " course=\"%s\"", s_course );
-    }
-    if (tp->nsats > 0)
-      fprintf ( f, " sat=\"%d\"", tp->nsats );
-    if (tp->fix_mode > 0)
-      fprintf ( f, " fix=\"%d\"", tp->fix_mode );
-
-    if ( !isnan(tp->hdop) ) {
-      gchar ss[COORDS_STR_BUFFER_SIZE];
-      a_coords_dtostr_buffer ( tp->hdop, ss );
-      fprintf ( f, " hdop=\"%s\"", ss );
-    }
-    if ( !isnan(tp->vdop) ) {
-      gchar ss[COORDS_STR_BUFFER_SIZE];
-      a_coords_dtostr_buffer ( tp->vdop, ss );
-      fprintf ( f, " vdop=\"%s\"", ss );
-    }
-    if ( !isnan(tp->pdop) ) {
-      gchar ss[COORDS_STR_BUFFER_SIZE];
-      a_coords_dtostr_buffer ( tp->pdop, ss );
-      fprintf ( f, " pdop=\"%s\"", ss );
-    }
+    write_double ( f, "speed", tp->speed );
+    write_double ( f, "course", tp->course );
+    write_positive_uint ( f, "sat", tp->nsats );
+    write_positive_uint ( f, "fix", tp->fix_mode );
+    write_double ( f, "hdop", tp->hdop );
+    write_double ( f, "vdop", tp->vdop );
+    write_double ( f, "pdop", tp->pdop );
   }
   fprintf ( f, "\n" );
 }
@@ -874,39 +795,17 @@ static void a_gpspoint_write_track ( const VikTrack *trk, FILE *f )
   fprintf ( f, "type=\"%s\" name=\"%s\"", trk->is_route ? "route" : "track", tmp_name );
   g_free ( tmp_name );
 
-  if ( trk->comment ) {
-    gchar *tmp = slashdup(trk->comment);
-    fprintf ( f, " comment=\"%s\"", tmp );
-    g_free ( tmp );
-  }
-
-  if ( trk->description ) {
-    gchar *tmp = slashdup(trk->description);
-    fprintf ( f, " description=\"%s\"", tmp );
-    g_free ( tmp );
-  }
-
-  if ( trk->source ) {
-    gchar *tmp = slashdup(trk->source);
-    fprintf ( f, " source=\"%s\"", tmp );
-    g_free ( tmp );
-  }
-
-  if ( trk->type ) {
-    gchar *tmp = slashdup(trk->type);
-    fprintf ( f, " xtype=\"%s\"", tmp );
-    g_free ( tmp );
-  }
+  write_string ( f, "comment", trk->comment );
+  write_string ( f, "description", trk->description );
+  write_string ( f, "source", trk->source );
+  write_string ( f, "xtype", trk->type );
 
   if ( trk->has_color ) {
     fprintf ( f, " color=#%.2x%.2x%.2x", (int)(trk->color.red/256),(int)(trk->color.green/256),(int)(trk->color.blue/256));
   }
 
-  if ( trk->draw_name_mode > 0 )
-    fprintf ( f, " draw_name_mode=\"%d\"", trk->draw_name_mode );
-
-  if ( trk->max_number_dist_labels > 0 )
-    fprintf ( f, " number_dist_labels=\"%d\"", trk->max_number_dist_labels );
+  write_positive_uint ( f, "draw_name_mode", trk->draw_name_mode );
+  write_positive_uint ( f, "number_dist_labels", trk->max_number_dist_labels );
 
   if ( ! trk->visible ) {
     fprintf ( f, " visible=\"n\"" );
