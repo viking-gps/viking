@@ -817,6 +817,7 @@ static void maps_layer_mbtiles_open ( VikMapsLayer *vml, VikViewport *vp, VikMap
       a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
                                  _("Failed to open MBTiles file: %s"),
                                  vml->filename );
+      (void)sqlite3_close ( vml->mbtiles );
       vml->mbtiles = NULL;
     }
   }
