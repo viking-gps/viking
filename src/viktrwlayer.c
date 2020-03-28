@@ -4800,7 +4800,7 @@ static void trw_layer_move_item ( VikTrwLayer *vtl_src, VikTrwLayer *vtl_dest, g
     VikWaypoint *wp2 = vik_waypoint_copy ( wp );
     vik_trw_layer_add_waypoint ( vtl_dest, newname, wp2 );
     g_free ( newname );
-    trw_layer_delete_waypoint ( vtl_src, wp );
+    (void)trw_layer_delete_waypoint ( vtl_src, wp );
 
     // Recalculate bounds even if not renamed as maybe dragged between layers
     trw_layer_calculate_bounds_waypoints ( vtl_dest );
