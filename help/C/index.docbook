@@ -1669,6 +1669,9 @@ This shows a dialog with detailed information for the waypoint. Many properties 
 If the waypoint has an associated image, then the Geotag information may be updated, either with updating the file's modification timestamp or not.
 This can be useful when the waypoint has been moved.
 </para>
+<para>
+If the waypoint has a time then clicking on it opens the time edit dialog. Right clicking on the button enables copying the time value as text and middle clicking enables a method to remove the time value.
+</para>
 
 </section><!-- WP Prop END -->
 
@@ -2545,7 +2548,7 @@ If <keycap>Ctrl</keycap> is held at the same time, it will jump the new trackpoi
 Editing options in the Trackpoint Edit dialog include:
 <itemizedlist>
 <listitem><para>Edit the trackpoint name</para></listitem>
-<listitem><para>Changing raw lat/long position and altitude</para></listitem>
+<listitem><para>Changing raw lat/long position, altitude and time</para></listitem>
 <listitem><para>Forward (go to the next trackpoint)</para></listitem>
 <listitem><para>Back (go to the previous trackpoint)</para></listitem>
 <listitem><para>Delete</para></listitem>
@@ -2556,7 +2559,6 @@ Editing options in the Trackpoint Edit dialog include:
 <para>
 Several fields are read only for reference purposes, values are shown if the trackpoint has such information:
 <itemizedlist>
-<listitem><para>Time.</para></listitem>
 <listitem><para>Speed and course.</para></listitem>
 <listitem><para>'Between' values: Speed, Time Difference and Distance Difference. When moving between trackpoints (via the Back and Forward buttons) these values are calculated.</para></listitem>
 <listitem><para>GPS precision factors.</para></listitem>

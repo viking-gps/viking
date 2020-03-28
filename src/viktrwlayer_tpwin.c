@@ -77,6 +77,8 @@ GType vik_trw_layer_tpwin_get_type (void)
 static void tpwin_update_times ( VikTrwLayerTpwin *tpwin, VikTrackpoint *tp )
 {
   if ( !isnan(tp->timestamp) ) {
+    if ( gtk_button_get_image ( GTK_BUTTON(tpwin->time) ) )
+      gtk_button_set_image ( GTK_BUTTON(tpwin->time), NULL );
     gtk_spin_button_set_value ( tpwin->ts, tp->timestamp );
     time_t time = round ( tp->timestamp );
     gchar *msg = vu_get_time_string ( &time, "%c", &(tp->coord), NULL );
@@ -85,7 +87,7 @@ static void tpwin_update_times ( VikTrwLayerTpwin *tpwin, VikTrackpoint *tp )
   }
   else {
     gtk_spin_button_set_value ( tpwin->ts, 0 );
-    gtk_button_set_label ( GTK_BUTTON(tpwin->time), "" );
+    gtk_button_set_label ( GTK_BUTTON(tpwin->time), NULL );
   }
 }
 
@@ -133,13 +135,37 @@ static void tpwin_sync_alt_to_tp ( VikTrwLayerTpwin *tpwin )
 static void tpwin_sync_ts_to_tp ( VikTrwLayerTpwin *tpwin )
 {
   if ( tpwin->cur_tp && (!tpwin->sync_to_tp_block) ) {
-    tpwin->cur_tp->timestamp = gtk_spin_button_get_value ( tpwin->ts );
-
-    tpwin_update_times ( tpwin, tpwin->cur_tp );
+    gtk_widget_set_sensitive ( GTK_WIDGET(tpwin->ts), !isnan(tpwin->cur_tp->timestamp) );
+    if ( !isnan(tpwin->cur_tp->timestamp) ) {
+      tpwin->cur_tp->timestamp = gtk_spin_button_get_value ( tpwin->ts );
+      tpwin_update_times ( tpwin, tpwin->cur_tp );
+    }
   }
 }
 
 static time_t last_edit_time = 0;
+
+/**
+ * time_remove_cb:
+ */
+static void time_remove_cb ( VikTrwLayerTpwin *tpwin )
+{
+  tpwin->cur_tp->timestamp = NAN;
+  GtkWidget *img = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_MENU );
+  gtk_button_set_image ( GTK_BUTTON(tpwin->time), img );
+  tpwin_update_times ( tpwin, tpwin->cur_tp );
+}
+
+/**
+ * remove_menu:
+ */
+static void remove_menu ( GtkWidget *widget, guint button, VikTrwLayerTpwin *tpwin )
+{
+  GtkWidget *menu = gtk_menu_new();
+  (void)vu_menu_add_item ( GTK_MENU(menu), NULL, GTK_STOCK_REMOVE, G_CALLBACK(time_remove_cb), tpwin );
+  gtk_widget_show_all ( GTK_WIDGET(menu) );
+  gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, button, gtk_get_current_event_time() );
+}
 
 /**
  * tpwin_sync_time_to_tp:
@@ -158,6 +184,9 @@ static void tpwin_sync_time_to_tp ( GtkWidget* widget, GdkEventButton *event, Vi
     return;
   }
   else if ( event->button == 2 ) {
+    if ( !gtk_button_get_image ( GTK_BUTTON(widget) ) ) {
+      remove_menu ( widget, event->button, tpwin );
+    }
     return;
   }
 

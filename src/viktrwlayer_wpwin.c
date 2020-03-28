@@ -43,6 +43,28 @@ static gulong direction_signal_id;
 static gchar *last_sym = NULL;
 
 /**
+ * time_remove_cb:
+ */
+static void time_remove_cb ( GtkWidget* widget )
+{
+  edit_wp->timestamp = NAN;
+  gtk_button_set_label ( GTK_BUTTON(widget), NULL );
+  GtkWidget *img = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_MENU );
+  gtk_button_set_image ( GTK_BUTTON(widget), img );
+}
+
+/**
+ * remove_menu:
+ */
+static void remove_menu ( GtkWidget *widget, guint button )
+{
+  GtkWidget *menu = gtk_menu_new();
+  (void)vu_menu_add_item ( GTK_MENU(menu), NULL, GTK_STOCK_REMOVE, G_CALLBACK(time_remove_cb), widget );
+  gtk_widget_show_all ( GTK_WIDGET(menu) );
+  gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, button, gtk_get_current_event_time() );
+}
+
+/**
  * time_edit_click:
  */
 static void time_edit_click ( GtkWidget* widget, GdkEventButton *event, VikWaypoint *wp )
@@ -55,7 +77,17 @@ static void time_edit_click ( GtkWidget* widget, GdkEventButton *event, VikWaypo
     return;
   }
   else if ( event->button == 2 ) {
+    if ( !gtk_button_get_image ( GTK_BUTTON(widget) ) ) {
+      remove_menu ( widget, event->button );
+    }
     return;
+  }
+
+  // Initially use current time or otherwise whatever the last value used was
+  if ( isnan(wp->timestamp) ) {
+    time_t tt;
+    time (&tt);
+    wp->timestamp = (gdouble)tt;
   }
 
   GTimeZone *gtz = g_time_zone_new_local ();
@@ -320,20 +352,12 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
   timevaluebutton = gtk_button_new();
   gtk_button_set_relief ( GTK_BUTTON(timevaluebutton), GTK_RELIEF_NONE );
 
-  // TODO: Consider if there should be a remove time button...
-
   if ( !is_new && !isnan(wp->timestamp) ) {
     update_time ( timevaluebutton, wp );
   }
   else {
     GtkWidget *img = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_MENU );
     gtk_button_set_image ( GTK_BUTTON(timevaluebutton), img );
-    // Initially use current time or otherwise whatever the last value used was
-    if ( isnan(edit_wp->timestamp) ) {
-      time_t tt;
-      time (&tt);
-      edit_wp->timestamp = (gdouble)tt;
-    }
   }
   g_signal_connect ( G_OBJECT(timevaluebutton), "button-release-event", G_CALLBACK(time_edit_click), edit_wp );
 
@@ -422,9 +446,8 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
         vik_waypoint_set_type ( wp, gtk_entry_get_text ( GTK_ENTRY(typeentry) ) );
       if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
         a_thumbnails_create ( wp->image );
-      if ( !isnan(edit_wp->timestamp) ) {
-        wp->timestamp = edit_wp->timestamp;
-      }
+
+      wp->timestamp = edit_wp->timestamp;
 
       if ( direction_sb ) {
         if ( gtk_widget_get_sensitive (direction_sb) ) {
