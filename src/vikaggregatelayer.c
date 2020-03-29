@@ -64,7 +64,7 @@ static VikLayerParamData color_default_cluster ( void ) {
   VikLayerParamData data; gdk_color_parse ( "darkgreen", &data.c ); return data;
 }
 
-static gchar *params_groups[] = { N_("Tracks Area Coverage"), "TAC Advanced" };
+static gchar *params_groups[] = { N_("Tracks Area Coverage"), N_("TAC Advanced") };
 enum { GROUP_TAC, GROUP_TAC_ADV };
 
 VikLayerParam aggregate_layer_params[] = {
@@ -1615,7 +1615,7 @@ static void tac_calculate ( VikAggregateLayer *val )
 
   a_background_thread ( BACKGROUND_POOL_LOCAL,
                         VIK_GTK_WINDOW_FROM_LAYER(val),
-                        "Track Area Coverage",
+                        _("Track Area Coverage"),
                         (vik_thr_func)tac_calculate_thread,
                         ct,
                         (vik_thr_free_func)ct_free,
