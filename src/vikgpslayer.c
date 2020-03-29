@@ -107,11 +107,11 @@ typedef struct {
   gboolean result;
   gchar *info;
   // GUI Updates
-  gint id_status_working;
-  gint id_status_end;
-  gint id_info;
-  gint id_total_count;
-  gint id_count;
+  guint id_status_working;
+  guint id_status_end;
+  guint id_info;
+  guint id_total_count;
+  guint id_count;
   VikViewport *vvp;
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   gboolean realtime_tracking;
