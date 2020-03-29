@@ -162,7 +162,6 @@ static gboolean gpx_export ( VikTrwLayer *vtl, const gchar *fn, VikTrack* trk )
 void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name, VikTrack* trk, VikFileType_t file_type )
 {
   GtkWidget *file_selector;
-  const gchar *fn;
   gboolean failed = FALSE;
   file_selector = gtk_file_chooser_dialog_new (title,
                                                NULL,
@@ -177,7 +176,7 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
 
   while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_ACCEPT )
   {
-    fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) );
+    gchar *fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) );
     if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == FALSE ||
          a_dialog_yes_or_no ( GTK_WINDOW(file_selector), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
     {
@@ -192,8 +191,10 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
       else
         failed = ! a_file_export ( vtl, fn, file_type, trk, trk ? TRUE : FALSE );
       vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+      g_free ( fn );
       break;
     }
+    g_free ( fn );
   }
   gtk_widget_destroy ( file_selector );
   if ( failed )
@@ -243,7 +244,6 @@ void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const
   }
 
   GtkWidget *file_selector;
-  const gchar *fn;
   gboolean failed = FALSE;
   file_selector = gtk_file_chooser_dialog_new (title,
                                                NULL,
@@ -293,7 +293,7 @@ void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const
 
   while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_ACCEPT )
   {
-    fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(file_selector) );
+    gchar *fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(file_selector) );
     if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == FALSE ||
          a_dialog_yes_or_no ( GTK_WINDOW(file_selector), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
     {
@@ -307,9 +307,11 @@ void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const
         a_babel_ui_modes_get( babel_modes, &tracks, &routes, &waypoints );
         failed = ! a_file_export_babel ( vtl, fn, active->name, tracks, routes, waypoints );
         vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+	g_free ( fn );
         break;
       }
     }
+    g_free ( fn );
   }
   //babel_ui_selector_destroy(babel_selector);
   gtk_widget_destroy ( file_selector );

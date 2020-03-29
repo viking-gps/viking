@@ -605,7 +605,8 @@ static void georef_layer_dialog_load ( changeable_widgets *cw )
   if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_ACCEPT )
   {
      gdouble values[4];
-     gint answer = world_file_read_file ( gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(file_selector)), values );
+     gchar *fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) );
+     gint answer = world_file_read_file ( fn, values );
      if ( answer == 1 )
        a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(cw->x_spin), _("The World file you requested could not be opened for reading.") );
      else if ( answer == 2 )
@@ -613,6 +614,7 @@ static void georef_layer_dialog_load ( changeable_widgets *cw )
      else
        // NB answer should == 0 for success
        set_widget_values ( cw, values );
+     g_free ( fn );
   }
 
   gtk_widget_destroy ( file_selector );
@@ -629,9 +631,10 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
 				      NULL);
   if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_ACCEPT )
   {
-    FILE *f = g_fopen ( gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) ), "w" );
-    
-    gtk_widget_destroy ( file_selector ); 
+    gchar *fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) );
+    FILE *f = g_fopen ( fn, "w" );
+    g_free ( fn );
+    gtk_widget_destroy ( file_selector );
     if ( !f )
     {
       a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_WIDGET(pass_along[0]), _("The file you requested could not be opened for writing.") );
@@ -641,11 +644,10 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
     {
       fprintf ( f, "%f\n%f\n%f\n%f\n%f\n%f\n", vgl->mpp_easting, 0.0, 0.0, vgl->mpp_northing, vgl->corner.easting, vgl->corner.northing );
       fclose ( f );
-      f = NULL;
     }
   }
   else
-   gtk_widget_destroy ( file_selector ); 
+    gtk_widget_destroy ( file_selector );
 }
 
 /**

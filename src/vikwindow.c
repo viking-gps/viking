@@ -3900,8 +3900,7 @@ static void load_file ( GtkAction *a, VikWindow *vw )
 static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
 {
   gboolean rv = FALSE;
-  const gchar *fn;
-
+  gchar *fn = NULL;
   GtkWidget *dialog = gtk_file_chooser_dialog_new (_("Save as Viking File."),
                                                    GTK_WINDOW(vw),
                                                    GTK_FILE_CHOOSER_ACTION_SAVE,
@@ -3947,8 +3946,10 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
         vw->modified = FALSE;
         vu_set_last_folder_files_uri ( gtk_file_chooser_get_current_folder_uri(GTK_FILE_CHOOSER(dialog)) );
       }
+      g_free ( fn );
       break;
     }
+    g_free ( fn );
   }
   g_free ( auto_save_name );
   gtk_widget_destroy ( dialog );
