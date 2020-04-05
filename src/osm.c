@@ -136,27 +136,25 @@ void osm_init () {
                                 "is-osm-meta-tiles", TRUE,
                                 NULL));
 
-  // Note using a registered token for the Mapbox Tileservice
-  // Thus not only will the (free) service allocation limit be reached by normal users
-  //  but by anymore who cares to read these sources and use the default themselves.
-  VikMapSource *mapbox_type =
+  VikMapSource *open_topo_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
-                                "id", MAP_ID_MAPBOX_OUTDOORS,
-                                "name", "Mapbox-Outdoors",
-                                "label", _("Mapbox Outdoors"),
-                                "url", "https://api.tiles.mapbox.com/styles/v1/mapbox/outdoors-v9/tiles/256/%d/%d/%d?access_token="VIK_CONFIG_MAPBOX_TOKEN,
+                                "id", MAP_ID_OPEN_TOPO_MAP,
+                                "label", _("OpenTopoMap"),
+                                "name", "OpenTopoMap",
+                                "url", "https://a.tile.opentopomap.org/%d/%d/%d.png",
+                                "follow-location", 2,
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
                                 "zoom-min", 0,
                                 "zoom-max", 19,
-                                "copyright", "© Mapbox © OpenStreetMap",
-                                "license", _("Mapbox Specific"),
-                                "license-url", "https://www.mapbox.com/tos",
+                                "copyright", "Kartendaten: © OpenStreetMap-Mitwirkende, SRTM | Kartendarstellung: © OpenTopoMap",
+                                "license", "CC-BY-SA",
+                                "license-url", "https://creativecommons.org/licenses/by-sa/3.0/",
                                 NULL));
 
   // NB The first registered map source is the default
   //  (unless the user has specified Map Layer defaults)
-  maps_layer_register_map_source (mapbox_type);
+  maps_layer_register_map_source (open_topo_type);
   maps_layer_register_map_source (mapnik_type);
   maps_layer_register_map_source (cycle_type);
   maps_layer_register_map_source (transport_type);
