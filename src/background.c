@@ -48,7 +48,7 @@ static GSList *windows_to_update = NULL;
 
 static gint bgitemcount = 0;
 
-#define VIK_BG_NUM_ARGS 7
+#define VIK_BG_NUM_ARGS 8
 
 enum
 {
@@ -82,7 +82,7 @@ typedef struct {
 static gboolean idle_progress_update ( gpointer user_data )
 {
   progress_t *progress = user_data;
-  if ( bgstore )
+  if ( bgstore && progress->iter )
     gtk_list_store_set ( GTK_LIST_STORE(bgstore), progress->iter, PROGRESS_COLUMN, progress->percent, -1 );
   g_free ( progress );
   return FALSE;
@@ -108,7 +108,7 @@ int a_background_thread_progress ( gpointer callbackdata, gdouble fraction )
     progress_t *progress = g_malloc0 ( sizeof(progress_t) );
     progress->percent = myfraction * 100;
     progress->iter = (GtkTreeIter*)args[5];
-    gdk_threads_add_idle ( idle_progress_update, progress );
+    args[7] = GUINT_TO_POINTER(gdk_threads_add_idle ( idle_progress_update, progress ));
   }
 
   args[6] = GINT_TO_POINTER(GPOINTER_TO_INT(args[6])-1);
@@ -150,17 +150,11 @@ int a_background_testcancel ( gpointer callbackdata )
   return 0;
 }
 
-typedef struct {
-  GtkTreeIter *iter;
-} remove_t;
-
 // Called from the main thread
 static gboolean idle_remove ( gpointer user_data )
 {
-  remove_t *remove = user_data;
-  if ( bgstore )
-    gtk_list_store_remove ( bgstore, remove->iter );
-  g_free ( remove->iter );
+  if ( bgstore && user_data )
+    gtk_list_store_remove ( bgstore, (GtkTreeIter*)user_data );
   return FALSE;
 }
 
@@ -176,9 +170,7 @@ static void thread_helper ( gpointer args[VIK_BG_NUM_ARGS], gpointer user_data )
   func ( userdata, args );
 
   if ( ! args[0] ) {
-    remove_t *remove = g_malloc0 ( sizeof(remove_t) );
-    remove->iter = args[5];
-    gdk_threads_add_idle ( idle_remove, remove );
+    gdk_threads_add_idle ( idle_remove, args[5] );
   }
   thread_die ( args );
 }
@@ -210,6 +202,7 @@ void a_background_thread ( Background_Pool_Type bp, GtkWindow *parent, const gch
   args[4] = userdata_cancel_cleanup_func;
   args[5] = piter;
   args[6] = GINT_TO_POINTER(number_items);
+  args[7] = GUINT_TO_POINTER(0); // Will be id of progress update func
 
   bgitemcount += number_items;
 
@@ -243,8 +236,8 @@ static void cancel_job_with_iter ( GtkTreeIter *piter )
     /* we know args still exists because it is free _after_ the list item is destroyed */
     /* need MUTEX ? */
     args[0] = GINT_TO_POINTER(1); /* set killswitch */
-
-    gtk_list_store_remove ( bgstore, piter );
+    (void)g_source_remove ( GPOINTER_TO_UINT(args[7]) ); // Stop next idle_progress_update() from running
+    g_free ( args[5] );
     args[5] = NULL;
 }
 
@@ -260,16 +253,21 @@ static void bgwindow_response (GtkDialog *dialog, gint response_id, GtkTreeView 
   case 1: // Delete / Cancel selected item
     {
       GtkTreeIter iter;
-      if ( gtk_tree_selection_get_selected ( gtk_tree_view_get_selection(bgtreeview), NULL, &iter ) )
+      if ( gtk_tree_selection_get_selected ( gtk_tree_view_get_selection(bgtreeview), NULL, &iter ) ) {
         cancel_job_with_iter ( &iter );
+        gtk_list_store_remove ( bgstore, &iter );
+      }
       background_thread_update();
     }
     break;
   case 2: // Clear All jobs
     {
       GtkTreeIter iter;
-      while ( gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(bgstore), &iter ) )
-        cancel_job_with_iter ( &iter );
+      if ( gtk_tree_model_get_iter_first(GTK_TREE_MODEL(bgstore), &iter) )
+        do {
+          cancel_job_with_iter ( &iter );
+        } while ( gtk_tree_model_iter_next(GTK_TREE_MODEL(bgstore), &iter) );
+      gtk_list_store_clear ( bgstore );
       background_thread_update();
     }
     default: break;
