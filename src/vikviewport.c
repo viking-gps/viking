@@ -1294,11 +1294,11 @@ void vik_viewport_coord_to_screen ( VikViewport *vvp, const VikCoord *coord, int
   } else if ( vvp->coord_mode == VIK_COORD_LATLON ) {
     struct LatLon *center = (struct LatLon *) &(vvp->center);
     struct LatLon *ll = (struct LatLon *) coord;
-    double xx,yy;
     if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_LATLON ) {
       *x = vvp->width_2 + ( vvp->xmfactor * (ll->lon - center->lon) );
       *y = vvp->height_2 + ( vvp->ymfactor * (center->lat - ll->lat) );
     } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_EXPEDIA ) {
+      double xx,yy;
       calcxy ( &xx, &yy, center->lon, center->lat, ll->lon, ll->lat, vvp->xmpp * ALTI_TO_MPP, vvp->ympp * ALTI_TO_MPP, vvp->width_2, vvp->height_2 );
       *x = xx; *y = yy;
     } else if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {
