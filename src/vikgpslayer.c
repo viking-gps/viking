@@ -672,7 +672,7 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
       rv.u = vgl->vehicle_position;
       break;
     case PARAM_REALTIME_UPDATE_STATUSBAR:
-      rv.u = vgl->realtime_update_statusbar;
+      rv.b = vgl->realtime_update_statusbar;
       break;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
     default:

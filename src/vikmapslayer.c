@@ -686,8 +686,8 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, g
     case PARAM_FILE: rv.s = vml->filename; break;
     case PARAM_MAPTYPE: rv.u = map_index_to_uniq_id ( vml->maptype ); break;
     case PARAM_ALPHA: rv.u = vml->alpha; break;
-    case PARAM_AUTODOWNLOAD: rv.u = vml->autodownload; break;
-    case PARAM_ONLYMISSING: rv.u = vml->adl_only_missing; break;
+    case PARAM_AUTODOWNLOAD: rv.b = vml->autodownload; break;
+    case PARAM_ONLYMISSING: rv.b = vml->adl_only_missing; break;
     case PARAM_MAPZOOM: rv.u = vml->mapzoom_id; break;
     default: break;
   }
