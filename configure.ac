@@ -491,17 +491,6 @@ AC_PROG_CXX
 m4_popdef([AC_MSG_ERROR])
 ##
 
-dnl Compile time defined access token
-AC_ARG_WITH(mapbox_access_token,
-            [AC_HELP_STRING([--with-mapbox_access_token],
-	     [Access token for MapBox tiles.
-              Please register your own if you're going to distribute the
-              package, as requests are limited per token.])],
-	    [VIK_CONFIG_MAPBOX_TOKEN="\"${withval}\""],
-	    [VIK_CONFIG_MAPBOX_TOKEN="\"pk.eyJ1Ijoicndub3JyaXMiLCJhIjoiY2lxc294anN2MDA5bWhzbWFseWsxMW1ydiJ9.HcybKtZsiG6RVuOHg481Kg\""])
-AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPBOX_TOKEN, ${VIK_CONFIG_MAPBOX_TOKEN}, [Mapbox Token])
-
-
 dnl Compile time defined key
 AC_ARG_WITH(thunderforest_apikey,
             [AC_HELP_STRING([--with-thunderforest_apikey],

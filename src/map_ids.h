@@ -41,10 +41,12 @@
 #define MAP_ID_OSM_HUMANITARIAN 22
 #define MAP_ID_MBTILES 23
 #define MAP_ID_OSM_METATILES 24
-#define MAP_ID_MAPBOX_OUTDOORS 25
+//#define MAP_ID_MAPBOX_OUTDOORS 25 // Access deactivated
  
 #define MAP_ID_BING_AERIAL 212
- 
+
+#define MAP_ID_OPEN_TOPO_MAP 901
+
 // Unfortunately previous ID allocations have been a little haphazard,
 //  but hopefully future IDs can be follow this scheme:
 //   0 to 31 are intended for hard coded internal defaults

@@ -221,12 +221,13 @@ and docbook-xsl in your Build-Depends control field.
         <term><option>--map</option></term>
         <listitem>
           <para>Add a map layer by specifying the map id. The value needs to match one of the internal ids or an id from the maps configuration extension (see below).
-          Specifying a value of 0 will use the configured map layer default.</para>
+          Specifying a value of 0 will use the map layer default.</para>
 <variablelist>
   <varlistentry><term></term><listitem><para>Internal Map Ids:</para></listitem></varlistentry>
   <varlistentry><term></term><listitem><para>OSM Mapnik = 13</para></listitem></varlistentry>
   <varlistentry><term></term><listitem><para>OSM Cycle = 17</para></listitem></varlistentry>
-  <varlistentry><term></term><listitem><para>Mapquest OSM = 19</para></listitem></varlistentry>
+  <varlistentry><term></term><listitem><para>OSM Transport = 20</para></listitem></varlistentry>
+  <varlistentry><term></term><listitem><para>OSM Humanitarian = 22</para></listitem></varlistentry>
 </variablelist>
         </listitem>
       </varlistentry>

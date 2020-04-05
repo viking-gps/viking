@@ -237,6 +237,9 @@ buttons at the bottom of the layers panel.
 <para>
 The main &appname; area where the layer data is drawn, is called the <emphasis role="bold">viewport</emphasis>.
 </para>
+<para>
+This will typically include a <xref linkend="Maps"/> layer with a default map created as standard.
+</para>
 </section>
 <section><title>Track Graphs</title>
 <para>
@@ -1831,13 +1834,16 @@ Also see <xref linkend="map_tool_dl"/> tool for use in conjunction with this lay
 
 <formalpara><title>Online Map Tile Providers</title>
 <para>
-You will need an open internet connection when you are downloading maps these following map types, but once downloaded they are available from the hard disk cache. When map are avaliable from the disk cache it is much faster and can be used offline.
+You will need an open internet connection when you are downloading these following map types, but once downloaded they are available from the hard disk cache. When maps are avaliable from the disk cache it is much faster and can be used offline.
 Inbuilt maps include various <ulink url="https://openstreetmap.org/">OpenStreetMap (OSM)</ulink> ones and more:
 </para>
 </formalpara>
 <itemizedlist>
 <listitem><para>Bing Aerial Maps (&appname; Version1.2+)</para></listitem>
-<listitem><para>Mapbox Outdoors - This is the default (&appname; Version1.7+)</para></listitem>
+<listitem>
+<para><ulink url="https://opentopomap.org/about">OpenTopoMap</ulink> - This is the default (&appname; Version1.9+)</para>
+<para>Thank you to the OpenTopoMap team for allowing &appname; to use their tile service as default.</para>
+</listitem>
 <listitem><para>OpenStreetMap (Mapnik)</para></listitem>
 <listitem><para>OpenStreetMap (Cycle)</para></listitem>
 <listitem><para>OpenStreetMap (Transport) (&appname; Version1.3+)</para></listitem>

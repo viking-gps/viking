@@ -34,11 +34,12 @@ void bluemarble_init ()
 							      "label", "BlueMarble",
 							      "hostname", "s3.amazonaws.com",
 							      "url", "/com.modestmaps.bluemarble/%d-r%3$d-c%2$d.jpg",
+							      "file-extension", ".jpg",
 							      "zoom-min", 0,
 							      "zoom-max", 9,
 							      "copyright", "© NASA's Earth Observatory",
 							      "license", "NASA Terms of Use",
-							      "license-url", "http://visibleearth.nasa.gov/useterms.php",
+							      "license-url", "https://earthobservatory.nasa.gov/Features/BlueMarble/",
 							      NULL));
   /* Credit/Copyright from: http://earthobservatory.nasa.gov/Features/BlueMarble/ */
   /* BlueMarble image hosting is courtesy of the Modest Maps project: http://modestmaps.com/ */

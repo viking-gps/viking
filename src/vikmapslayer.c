@@ -112,7 +112,7 @@ static VikLayerParamScale params_scales[] = {
  { 0, 255, 3, 0 }, /* alpha */
 };
 
-static VikLayerParamData id_default ( void ) { return VIK_LPD_UINT ( MAP_ID_MAPBOX_OUTDOORS ); }
+static VikLayerParamData id_default ( void ) { return VIK_LPD_UINT ( MAP_ID_OPEN_TOPO_MAP ); }
 static VikLayerParamData directory_default ( void )
 {
   VikLayerParamData data;

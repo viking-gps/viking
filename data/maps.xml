@@ -139,6 +139,7 @@
     <property name="license-url">http://www.4umaps.eu/terms-of-use-copyright.aspx</property>
     <property name="id">801</property>
   </object>
+<!-- Built in
   <object class="VikSlippyMapSource">
     <property name="label">OpenTopoMap</property>
     <property name="hostname">a.tile.opentopomap.org</property>
@@ -149,4 +150,5 @@
     <property name="license-url">https://creativecommons.org/licenses/by-sa/3.0/</property>
     <property name="id">901</property>
   </object>
+-->
 </objects>

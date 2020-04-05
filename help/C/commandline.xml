@@ -136,7 +136,7 @@ This also enables some extra information features in the GUI itself, primarily o
   <entry>-m</entry>
   <entry>--map</entry>
   <entry>Add a map layer by specifying the map id. The value needs to match one of the internal ids or an id from the <xref linkend="map_source"/>.
-   Specifying a value of 0 will use the configured map layer default.</entry>
+   Specifying a value of 0 will use the map layer default.</entry>
 </row>
 </tbody>
 </tgroup>
@@ -146,7 +146,8 @@ This also enables some extra information features in the GUI itself, primarily o
   <varlistentry><term></term><listitem><para>Internal Map Ids:</para></listitem></varlistentry>
   <varlistentry><term></term><listitem><para>OSM Mapnik = 13</para></listitem></varlistentry>
   <varlistentry><term></term><listitem><para>OSM Cycle = 17</para></listitem></varlistentry>
-  <varlistentry><term></term><listitem><para>Mapquest OSM = 19</para></listitem></varlistentry>
+  <varlistentry><term></term><listitem><para>OSM Transport = 20</para></listitem></varlistentry>
+  <varlistentry><term></term><listitem><para>OSM Humanitarian = 22</para></listitem></varlistentry>
 </variablelist>
 
 <para>
