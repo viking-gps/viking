@@ -3736,6 +3736,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
   {
     case LOAD_TYPE_READ_FAILURE:
       a_dialog_error_msg ( GTK_WINDOW(vw), _("The file you requested could not be opened.") );
+      g_warning ( "%s: could not open %s", __FUNCTION__, filename );
       break;
     case LOAD_TYPE_GPSBABEL_FAILURE:
       a_dialog_error_msg ( GTK_WINDOW(vw), _("GPSBabel is required to load files of this type or GPSBabel encountered problems.") );
