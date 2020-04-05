@@ -2027,6 +2027,7 @@ Here are some suggestions:
 Thus one can have a list of all your tracks, but groups can be shown or not using the relevant layers visibility checkbox.
 </para>
 
+<section><title>Tracks Area Coverage</title>
 <para>
 Tracks Area Coverage (TAC) is a feature to highlight areas with track coverage.
 It is based on OpenStreetMap style tiles - as an approximation to a grid square system.
@@ -2050,6 +2051,30 @@ Thus ATM is it recommended to turn off the visibility of the tracks themselves f
 </screenshot>
 </figure>
 </para>
+</section>
+
+<section><title>Heatmap</title>
+<para>
+The heatmap is another feature to analyse areas with track coverage.
+It must be manually requested via right click on the Aggregate layer and choosing from the menu <menuchoice><guimenu>Tracks Heatmap</guimenu><guisubmenu>Calculate</guisubmenu></menuchoice>.
+The heatmap covers the current area displayed on the viewport.
+</para>
+<para>
+The calculations are performed in the background as depending on the number of tracks, the heatmap options and the speed of the computer the calculation may take a little time.
+If the viewport size is changed then the heatmap is automatically invalidated and removed.
+Panning the display leaves the heatmap image only covering the area already calculated.
+Zooming in and out scales the heatmap image appropriately, but the image may get removed if the scaling operation is likely to be too slow.
+</para>
+
+<para>
+<figure>
+<title>Heatmap: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Aggregate_heatmap.png"/>
+</screenshot>
+</figure>
+</para>
+</section>
 
 <section><title>Layer Properties: Tracks Area Coverage</title>
 <para>Offers basic controls whether it is enabled or not and includes the size of the tile.</para>
@@ -2059,6 +2084,11 @@ Thus ATM is it recommended to turn off the visibility of the tracks themselves f
 <para>Controls subsets of TAC drawing are calculated and shown with their colour and opacity.</para>
 <para>Note for Max square coverage, ATM it will only draw the first square encountered, although there may be more than one such area.</para>
 <para>Note for Cluster coverage, ATM it will only draw the first cluster encountered, although there may be more than one such area.</para>
+</section>
+
+<section><title>Layer Properties: Heatmap</title>
+<para>Offers controls over the heatmap image.</para>
+<para>If there is an existing heatmap on display then changing these values and selecting <guibutton>Apply</guibutton> will cause the heatmap to be recalculated with the new settings.</para>
 </section>
 
 <section><title>Layer Operations</title>
@@ -2316,6 +2346,18 @@ Start a new Tracks Area Coverage calculation.
 <section><title>Tracks Area Coverage->Remove</title>
 <para>
 This clears the Tracks Area Coverage information, thus no grid colouring will be displayed.
+</para>
+</section>
+
+<section><title>Tracks Heatmap->Calculate</title>
+<para>
+Start a new heatmap calculation for current area displayed on the viewport.
+</para>
+</section>
+
+<section><title>Tracks Heatmap->Remove</title>
+<para>
+Clear the heatmap from the display.
 </para>
 </section>
 

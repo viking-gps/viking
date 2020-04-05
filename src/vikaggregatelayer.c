@@ -31,6 +31,7 @@
 #ifdef HAVE_SQLITE3_H
 #include "sqlite3.h"
 #endif
+#include "misc/heatmap.h"
 
 static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, guint *len );
 static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );
@@ -43,13 +44,17 @@ static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, gui
 static void aggregate_layer_change_param ( GtkWidget *widget, ui_change_values values );
 static void aggregate_layer_post_read ( VikAggregateLayer *val, VikViewport *vvp, gboolean from_file );
 static void tac_calculate ( VikAggregateLayer *val );
+static void hm_calculate ( VikAggregateLayer *val );
 
 static gchar *params_tile_area_levels[] = { "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", NULL };
 
 static VikLayerParamScale params_scales[] = {
  // min, max, step, digits (decimal places)
  { 0, 255, 3, 0 }, // alpha
+ { 0, 100, 2, 0 }, // stamp width factor
 };
+
+static VikLayerParamData width_default ( void ) { return VIK_LPD_UINT ( 10 ); }
 
 static VikLayerParamData color_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "orange", &data.c ); return data;
@@ -67,8 +72,18 @@ static VikLayerParamData color_default_cluster ( void ) {
   VikLayerParamData data; gdk_color_parse ( "darkgreen", &data.c ); return data;
 }
 
-static gchar *params_groups[] = { N_("Tracks Area Coverage"), N_("TAC Advanced") };
-enum { GROUP_TAC, GROUP_TAC_ADV };
+static VikLayerParamData hm_alpha_default ( void ) { return VIK_LPD_UINT ( 127 ); }
+
+static gchar * params_styles[] =
+  { N_("Spectral"),
+    N_("Blue/Purple"),
+    N_("Red/Green"),
+    N_("Yellow/Orange/Red"),
+    NULL
+  };
+
+static gchar *params_groups[] = { N_("Tracks Area Coverage"), N_("TAC Advanced"), N_("Tracks Heatmap") };
+enum { GROUP_TAC, GROUP_TAC_ADV, GROUP_THM };
 
 VikLayerParam aggregate_layer_params[] = {
   { VIK_LAYER_AGGREGATE, "tac_on", VIK_LAYER_PARAM_BOOLEAN, GROUP_TAC, N_("On:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_false_default, NULL, NULL },
@@ -90,6 +105,11 @@ VikLayerParam aggregate_layer_params[] = {
   { VIK_LAYER_AGGREGATE, "drawgrid", VIK_LAYER_PARAM_BOOLEAN, GROUP_TAC, N_("Draw Grid:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "tilearealevel", VIK_LAYER_PARAM_UINT, GROUP_TAC, N_("Tile Area Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_tile_area_levels, NULL,
     N_("Area size. A higher level means a smaller grid."), tile_area_level_default, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "hm_alpha", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
+    N_("Control the Alpha value for transparency effects"), hm_alpha_default, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "hm_factor", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Width Factor:"), VIK_LAYER_WIDGET_HSCALE, &params_scales[1], NULL,
+    N_("Note higher values means the heatmap takes longer to generate"), width_default, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "hm_style", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Color Style:"), VIK_LAYER_WIDGET_COMBOBOX, params_styles, NULL, NULL, NULL, NULL, NULL },
 };
 
 typedef enum { BASIC, MAX_SQR, CONTIG, CLUSTER, CP_NUM } common_property_types;
@@ -109,6 +129,9 @@ enum {
       PARAM_CLUSTER_COLOR,
       PARAM_DRAW_GRID,
       PARAM_TILE_AREA_LEVEL,
+      PARAM_HM_ALPHA,
+      PARAM_HM_STAMP_FACTOR,
+      PARAM_HM_STYLE,
       NUM_PARAMS
 };
 
@@ -202,6 +225,27 @@ struct _VikAggregateLayer {
   //  but this seems to work OK at least if all tracks are confined within a not too diverse area
   GHashTable *tiles;
   GHashTable *tiles_clust;
+
+  // Heatmap
+  gboolean hm_calculating;
+  // Values as at original request
+  guint hm_scale;
+  gint hm_zoom;
+  gint hm_width;
+  gint hm_height;
+  LatLonBBox hm_bbox;
+  const VikCoord *hm_center;
+  VikCoord hm_tl;
+  // Drawing values (zoom level may have changed)
+  gint hm_scaled_zoom;
+  gint hm_zoom_max;
+  guint8 hm_alpha;
+  GdkPixbuf *hm_pixbuf;
+  GdkPixbuf *hm_pbf_scaled;
+  gboolean hm_scaled;
+  guint8 hm_stamp_factor;
+  guint hm_style;
+  GdkColor hm_color;
 };
 
 GType vik_aggregate_layer_get_type ()
@@ -226,6 +270,64 @@ GType vik_aggregate_layer_get_type ()
   }
 
   return val_type;
+}
+
+static const unsigned char dd0[] = {
+    0, 0, 0, 0,
+    247, 252, 253, 255,
+    224, 236, 244, 255,
+    191, 211, 230, 255,
+    158, 188, 218, 255,
+    140, 150, 198, 255,
+    140, 107, 177, 255,
+    136, 65, 157, 255,
+    129, 15, 124, 255,
+    77, 0, 75, 255,
+};
+static const heatmap_colorscheme_t d0 = { dd0, sizeof(dd0)/sizeof(dd0[0]/4) };
+
+static const unsigned char dd1[] = {
+    0, 0, 0, 0,
+    26, 26, 26, 255,
+    77, 77, 77, 255,
+    135, 135, 135, 255,
+    186, 186, 186, 255,
+    224, 224, 224, 255,
+    255, 255, 255, 255,
+    253, 219, 199, 255,
+    244, 165, 130, 255,
+    214, 96, 77, 255,
+    178, 24, 43, 255,
+    103, 0, 31, 255,
+};
+static const heatmap_colorscheme_t d1 = { dd1, sizeof(dd1)/sizeof(dd1[0]/4) };
+
+static const unsigned char dd2[] = {
+    0, 0, 0, 0,
+    255, 255, 204, 255,
+    255, 237, 160, 255,
+    254, 217, 118, 255,
+    254, 178, 76, 255,
+    253, 141, 60, 255,
+    252, 78, 42, 255,
+    227, 26, 28, 255,
+    189, 0, 38, 255,
+    128, 0, 38, 255,
+};
+static const heatmap_colorscheme_t d2 = { dd2, sizeof(dd2)/sizeof(dd2[0]/4) };
+
+const heatmap_colorscheme_t* hm_colorschemes[] =
+  { &d0, // Blue/Purple
+    &d1, // Rd/Gr
+    &d2, // Yellow/Orange/Red
+  };
+
+// Ensure when 'apply' button heatmap regenerated to use new values
+static void hm_apply ( VikAggregateLayer *val )
+{
+  if ( VIK_LAYER(val)->realized )
+    if ( !val->hm_calculating && val->hm_pixbuf )
+      hm_calculate ( val );
 }
 
 static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetParam *vlsp )
@@ -259,6 +361,33 @@ static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetP
         }
       }
       break;
+    case PARAM_HM_ALPHA:
+      if ( vlsp->data.u <= 255 ) {
+	guint8 old = val->hm_alpha;
+	val->hm_alpha = vlsp->data.u;
+	if ( val->hm_alpha != old )
+	  if ( !vlsp->is_file_operation )
+	    hm_apply ( val );
+      }
+      break;
+    case PARAM_HM_STAMP_FACTOR:
+      if ( vlsp->data.u <= 255 ) {
+        guint8 old = val->hm_stamp_factor;
+        val->hm_stamp_factor = vlsp->data.u;
+        if ( val->hm_stamp_factor != old )
+          if ( !vlsp->is_file_operation )
+            hm_apply ( val );
+      }
+      break;
+    case PARAM_HM_STYLE:
+      {
+      guint8 old = val->hm_style;
+      val->hm_style = vlsp->data.u;
+      if ( val->hm_style != old )
+        if ( !vlsp->is_file_operation )
+          hm_apply ( val );
+      }
+      break;
     default: break;
   }
   return TRUE;
@@ -282,6 +411,9 @@ static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, gui
     case PARAM_CLUSTER_ALPHA: rv.u = val->alpha[CLUSTER]; break;
     case PARAM_CLUSTER_COLOR: rv.c = val->color[CLUSTER]; break;
     case PARAM_TILE_AREA_LEVEL: rv.u = map_utils_mpp_to_scale ( val->zoom_level ) - 2; break;
+    case PARAM_HM_ALPHA: rv.u = val->hm_alpha; break;
+    case PARAM_HM_STAMP_FACTOR: rv.u = val->hm_stamp_factor; break;
+    case PARAM_HM_STYLE: rv.u = val->hm_style; break;
     default: break;
   }
   return rv;
@@ -719,6 +851,90 @@ static void tac_draw ( VikAggregateLayer *val, VikViewport *vp )
   tac_draw_section ( val, vp, &ul, &br );
 }
 
+/**
+ * c.f. vik_viewport_coord_to_screen() but for a separately configurable zoom level & Mercator only
+ */
+static void coord_to_screen ( gint width, gint height, gdouble mf, struct LatLon *center, VikCoord *coord, gint *xx, gint *yy )
+{
+  struct LatLon *ll = (struct LatLon *)coord;
+  *xx = (int)(width/2 + ( mf * (ll->lon - center->lon) ));
+  *yy = (int)(height/2 + ( mf * ( MERCLAT(center->lat) - MERCLAT(ll->lat) ) ));
+}
+
+/**
+ *
+ */
+static void hm_clear ( VikAggregateLayer *val )
+{
+  if ( val->hm_pixbuf )
+    g_object_unref ( val->hm_pixbuf );
+  if ( val->hm_pbf_scaled )
+    g_object_unref ( val->hm_pbf_scaled );
+  val->hm_pixbuf = NULL;
+  val->hm_pbf_scaled = NULL;
+}
+
+/**
+ * Draw heatmap
+ */
+static void hm_draw ( VikAggregateLayer *val, VikViewport *vp )
+{
+  LatLonBBox bbox = vik_viewport_get_bbox ( vp );
+
+  if ( BBOX_INTERSECT ( bbox, val->hm_bbox ) ) {
+
+    clock_t begin, end;
+
+    gint zz = (gint)vik_viewport_get_zoom ( vp );
+    // Avoid excessive image scaling as it will be too slow
+    //  (and memory intensive) so simply avoid trying.
+    if ( zz < val->hm_zoom_max ) {
+      return;
+    }
+
+    if ( val->hm_width != vik_viewport_get_width(vp) ||
+         val->hm_height != vik_viewport_get_height(vp) ) {
+      hm_clear ( val );
+      return;
+    }
+
+    // Calculate width & height (even if no scaling as not excessive computation)
+    gint ww = round (val->hm_width * (gdouble)val->hm_zoom/(gdouble)zz );
+    gint hh = round (val->hm_height * (gdouble)val->hm_zoom/(gdouble)zz );
+    // Scale only once as necessary when zoom level has changed
+    if ( val->hm_scaled_zoom != zz ) {
+      val->hm_scaled_zoom = zz;
+      // Different zoom level so generate new image from the original image
+      if ( val->hm_scaled_zoom != val->hm_zoom ) {
+        if ( val->hm_pbf_scaled )
+          g_object_unref ( val->hm_pbf_scaled );
+
+        val->hm_scaled = TRUE;
+        GdkInterpType interp_type = GDK_INTERP_BILINEAR;
+        // When scaling up: use the fastest method (as scaling up is much slower than scaling down)
+        //  especially since this is being performed in the main thread
+        if ( val->hm_scaled_zoom < val->hm_zoom )
+          interp_type = GDK_INTERP_NEAREST;
+        begin = clock();
+        val->hm_pbf_scaled = gdk_pixbuf_scale_simple ( val->hm_pixbuf, ww, hh, interp_type );
+        end = clock();
+        double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+        // Last usable zoom-level as the next one is going to be an order of magnitude worse or more
+        if ( interp_type == GDK_INTERP_NEAREST && time_spent > 0.05 )
+          val->hm_zoom_max = zz;
+        g_debug ( "%s: time %f scaling to %d, %d", __FUNCTION__, time_spent, ww, hh );
+      } else {
+        // Use original image
+        val->hm_scaled = FALSE;
+      }
+    }
+    gint xx, yy;
+    gdouble mf = mercator_factor ( val->hm_scaled_zoom, val->hm_scale );
+    coord_to_screen ( val->hm_width, val->hm_height, mf, (struct LatLon*)val->hm_center, &val->hm_tl, &xx, &yy);
+    vik_viewport_draw_pixbuf ( vp, val->hm_scaled ? val->hm_pbf_scaled : val->hm_pixbuf, 0, 0, xx, yy, ww, hh );
+  }
+}
+
 /* Draw the aggregate layer. If vik viewport is in half_drawn mode, this means we are only
  * to draw the layers above and including the trigger layer.
  * To do this we don't draw any layers if in half drawn mode, unless we find the
@@ -751,6 +967,10 @@ void vik_aggregate_layer_draw ( VikAggregateLayer *val, VikViewport *vp )
   // Make coverage to be drawn last (i.e. over the top of any maps)
   if ( val->on[BASIC] ) {
     tac_draw ( val, vp );
+  }
+
+  if ( !val->hm_calculating && val->hm_pixbuf ) {
+    hm_draw ( val, vp );
   }
 }
 
@@ -1620,6 +1840,166 @@ static void tac_calculate ( VikAggregateLayer *val )
                         ct->num_of_tracks + extras );
 }
 
+static void rhomboidal (float *values, unsigned d, unsigned r)
+{
+  for (guint y = 0 ; y < d ; ++y) {
+    for (guint x = 0 ; x < d ; ++x) {
+      values[y*d+x] = 1.0 - fmin(1.0, (float)(fabs(x-(long)r)+fabs(y-(long)r))/(r+1));
+    }
+  }
+}
+
+/**
+ *
+ */
+static void hm_track ( VikAggregateLayer *val, vik_trw_and_track_t *vtlist, gdouble mf, heatmap_t* hm, heatmap_stamp_t *stamp )
+{
+  int xx, yy;
+  VikTrack *trk = vtlist->trk;
+  GList *iter = trk->trackpoints;
+  while ( iter ) {
+    // Only do trackpoints with timestamps
+    // - i.e. hopefully to avoid artificial tracks
+    if ( !isnan(VIK_TRACKPOINT(iter->data)->timestamp) ) {
+      coord_to_screen (val->hm_width, val->hm_height, mf, (struct LatLon*)val->hm_center, &VIK_TRACKPOINT(iter->data)->coord, &xx, &yy);
+      /*
+      struct LatLon *ll = (struct LatLon *)&VIK_TRACKPOINT(iter->data)->coord;
+      xx = (int)(val->hm_width/2 + ( mf * (ll->lon - center->lon) ));
+      yy = (int)(val->hm_height/2 + ( mf * ( MERCLAT(center->lat) - MERCLAT(ll->lat) ) ));
+      */
+      //heatmap_add_point ( hm, xx, yy );
+      heatmap_add_point_with_stamp ( hm, xx, yy, stamp );
+      //hm_point ( val, &VIK_TRACKPOINT(iter->data)->coord, hm );
+    }
+    iter = iter->next;
+  }
+}
+
+static void hm_img_free ( guchar *pixels, gpointer data )
+{
+  g_free ( pixels );
+}
+
+/**
+ *
+ */
+static gint hm_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
+{
+  VikAggregateLayer *val = ct->val;
+
+  clock_t begin = clock();
+
+  // Generate a stamp with a size relative to the zoom level
+  unsigned radius = map_utils_mpp_to_zoom_level ( val->hm_zoom ) *
+    (gdouble)val->hm_stamp_factor/(gdouble)width_default().u;
+  unsigned d = 2*radius + 1;
+  float pts[d * d];
+  rhomboidal ( pts, d, radius );
+  heatmap_stamp_t *stamp = heatmap_stamp_load ( d, d, pts );
+  heatmap_t* hm = heatmap_new ( val->hm_width, val->hm_height );
+
+  int ww = val->hm_width;
+  int hh = val->hm_height;
+
+  // Only needs calculating once
+  gdouble mf = mercator_factor ( val->hm_zoom, val->hm_scale );
+
+  guint tracks_processed = 0;
+  ct->tracks_and_layers = g_list_first ( ct->tracks_and_layers );
+  while ( ct->tracks_and_layers ) {
+    gdouble percent = (gdouble)tracks_processed/(gdouble)(ct->num_of_tracks);
+    gint res = a_background_thread_progress ( threaddata, percent );
+    if ( res != 0 ) return -1;
+
+    vik_trw_and_track_t *vtlist = ct->tracks_and_layers->data;
+    if ( BBOX_INTERSECT ( vtlist->trk->bbox, val->hm_bbox ) )
+      hm_track ( ct->val, vtlist, mf, hm, stamp );
+
+    tracks_processed++;
+    ct->tracks_and_layers = g_list_next ( ct->tracks_and_layers );
+  }
+
+  // Would be better if testing for any tracks actually used
+  if ( tracks_processed > 0 ) {
+    unsigned char *image = g_malloc ( ww*hh*4 );
+
+    if ( val->hm_style > 0 && val->hm_style < 4 )
+      heatmap_render_to ( hm, hm_colorschemes[val->hm_style-1], image );
+    else
+      heatmap_render_default_to ( hm, image );
+
+    val->hm_pixbuf = gdk_pixbuf_new_from_data ( image, GDK_COLORSPACE_RGB, TRUE, 8, ww, hh, 4*ww, hm_img_free, NULL );
+    val->hm_pixbuf = ui_pixbuf_set_alpha ( val->hm_pixbuf, val->hm_alpha );
+  }
+
+  heatmap_free ( hm );
+  heatmap_stamp_free ( stamp );
+
+  // Timing
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  g_debug ( "%s: %f", __FUNCTION__, time_spent );
+
+  ct->val->hm_calculating = FALSE;
+  vik_layer_emit_update ( VIK_LAYER(ct->val) ); // NB update display from background
+
+  return 0;
+}
+
+/**
+ *
+ */
+static void hm_calculate ( VikAggregateLayer *val )
+{
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
+  VikViewport *vvp = vik_window_viewport ( vw );
+
+  val->hm_width = vik_viewport_get_width ( vvp );
+  val->hm_height = vik_viewport_get_height ( vvp );
+  val->hm_bbox = vik_viewport_get_bbox ( vvp );
+  val->hm_zoom = (gint)vik_viewport_get_zoom ( vvp );
+  val->hm_scaled_zoom = val->hm_zoom;
+  val->hm_center = vik_viewport_get_center ( vvp );
+  vik_viewport_screen_to_coord ( vvp, 0, 0, &val->hm_tl );
+  val->hm_scale = vik_viewport_get_scale ( vvp );
+  val->hm_scaled = FALSE;
+  val->hm_zoom_max = 0;
+  if ( val->hm_zoom == 0 ) {
+    g_warning ( "%s: Zoom invalid", __FUNCTION__ );
+    return;
+  }
+
+  hm_clear ( val );
+  val->hm_calculating = TRUE;
+
+  GList *layers = NULL;
+  layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, TRUE );
+
+  // For each TRW layers keep adding the tracks to build a list of all of them
+  GList *tracks_and_layers = NULL; // A list of #vik_trw_track_list_t
+  layers = g_list_first ( layers );
+  while ( layers ) {
+    GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) );
+    tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layers->data), tracks ) );
+    layers = g_list_next ( layers );
+  }
+  g_list_free ( layers );
+
+  CalculateThreadT *ct = g_malloc ( sizeof(CalculateThreadT) );
+  ct->tracks_and_layers = tracks_and_layers;
+  ct->val = val;
+  ct->num_of_tracks = g_list_length ( tracks_and_layers );
+
+  a_background_thread ( BACKGROUND_POOL_LOCAL,
+                        VIK_GTK_WINDOW_FROM_LAYER(val),
+                        _("Heatmap generation"),
+                        (vik_thr_func)hm_calculate_thread,
+                        ct,
+                        (vik_thr_free_func)ct_free,
+                        (vik_thr_free_func)ct_cancel,
+                        ct->num_of_tracks );
+}
+
 /**
  * Ensure TAC values calculated if needed
  */
@@ -1877,6 +2257,23 @@ static void tac_calculate_cb ( menu_array_values values )
   tac_calculate ( val );
 }
 
+// This shouldn't be called when already running
+static void hm_calculate_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
+  if ( val->hm_calculating ) {
+    return;
+  }
+  hm_calculate ( val );
+}
+
+static void hm_clear_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
+  hm_clear ( val );
+  vik_layer_emit_update ( VIK_LAYER(val) );
+}
+
 static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp )
 {
   // Data to pass on in menu functions
@@ -1943,6 +2340,21 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
     if ( !val->calculating )
       (void)vu_menu_add_item ( tac_submenu, _("_Export as MBTiles"), GTK_STOCK_CONVERT, G_CALLBACK(tac_generate_mbtiles_cb), values );
 #endif
+
+  // ATM heatmap only in this mode
+  VikViewport *vvp = vik_window_viewport ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
+  if ( vik_viewport_get_drawmode(vvp) == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {
+    gboolean hm_available = !val->hm_calculating;
+    GtkMenu *hm_submenu = GTK_MENU(gtk_menu_new());
+    GtkWidget *itemhm = vu_menu_add_item ( menu, _("Tracks Heat_map"), GTK_STOCK_EXECUTE, NULL, NULL );
+    gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemhm), GTK_WIDGET(hm_submenu) );
+
+    GtkWidget *itemhmc = vu_menu_add_item ( hm_submenu, _("_Calculate"), GTK_STOCK_REFRESH, G_CALLBACK(hm_calculate_cb), values );
+    gtk_widget_set_sensitive ( itemhmc, hm_available );
+
+    GtkWidget *itemhmlr = vu_menu_add_item ( hm_submenu, _("_Remove"), GTK_STOCK_DELETE, G_CALLBACK(hm_clear_cb), values );
+    gtk_widget_set_sensitive ( itemhmlr, (val->hm_pixbuf != NULL) );
+  }
 }
 
 static void disconnect_layer_signal ( VikLayer *vl, VikAggregateLayer *val )
@@ -1968,6 +2380,11 @@ void vik_aggregate_layer_free ( VikAggregateLayer *val )
   if ( val->pixbuf[CONTIG] )
     g_object_unref ( val->pixbuf[CONTIG] );
   g_hash_table_destroy ( val->tiles_clust );
+
+  if ( val->hm_pixbuf )
+    g_object_unref ( val->hm_pixbuf );
+  if ( val->hm_pbf_scaled )
+    g_object_unref ( val->hm_pbf_scaled );
 }
 
 static void delete_layer_iter ( VikLayer *vl )

@@ -151,6 +151,7 @@ libviking_a_SOURCES = \
 	viklayer_defaults.c viklayer_defaults.h \
 	settings.c settings.h \
 	preferences.c preferences.h \
+	misc/heatmap.c misc/heatmap.h \
 	misc/fpconv.c misc/fpconv.h misc/powers.h \
 	misc/strtod.c misc/strtod.h \
 	misc/kdtree.c misc/kdtree.h \

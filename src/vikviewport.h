@@ -186,6 +186,7 @@ void vik_viewport_draw_layout ( VikViewport *vvp, GdkGC *gc, gint x, gint y, Pan
 
 /* Utilities */
 void vik_viewport_compute_bearing ( VikViewport *vp, gint x1, gint y1, gint x2, gint y2, gdouble *angle, gdouble *baseangle );
+gdouble mercator_factor ( gdouble x, guint scale );
 
 G_END_DECLS
 

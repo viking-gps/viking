@@ -51,7 +51,7 @@
 #include "settings.h"
 #include "dialog.h"
 
-static gdouble mercator_factor ( gdouble x, guint scale )
+gdouble mercator_factor ( gdouble x, guint scale )
 {
   return (65536.0 / 180 / x) * 256.0 * scale;
 }

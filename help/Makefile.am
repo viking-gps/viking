@@ -18,6 +18,7 @@ HELP_EXTRA = legal.xml \
     mapnik_rendering_layer.xml \
     recommends.xml
 HELP_MEDIA = \
+    figures/Aggregate_heatmap.png \
     figures/Aggregate_statistics.png \
     figures/Aggregate_statistics_years.png \
     figures/addtr_18.png \

@@ -124,6 +124,16 @@ OF SUCH DAMAGE.
 	<para>Files used: <filename>gtkhtml.c + gtkhtml-private.h</filename></para>
 </section>
 
+
+<section>
+	<title>libheatmap</title>
+	<para>A heatmap generation library.</para>
+	<para>Source: <ulink url="https://github.com/lucasb-eyer/libheatmap"></ulink></para>
+	<para>Available under <ulink url="https://opensource.org/licenses/MIT">MIT license</ulink></para>
+	<para>Files used: <filename>heatmap.c + heatmap.h</filename></para>
+        <para>Version SHA:0e22cbdaf4b4790beca2313c329db2332f2609eb (Nov 2017)</para>
+</section>
+
 <section>
 	<title>Data: cities15000.txt</title>
 	<para>Source: <ulink url="https://download.geonames.org/export/dump/"></ulink></para>
