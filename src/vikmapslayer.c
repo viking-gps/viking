@@ -419,11 +419,11 @@ guint vik_maps_layer_get_map_type(VikMapsLayer *vml)
  */
 void vik_maps_layer_set_map_type(VikMapsLayer *vml, guint map_type)
 {
-   gint maptype = map_uniq_id_to_index(map_type);
-   if ( maptype == NUM_MAP_TYPES )
-      g_warning(_("Unknown map type"));
-   else
-      vml->maptype = maptype;
+  guint maptype = map_uniq_id_to_index ( map_type );
+  if ( maptype == NUM_MAP_TYPES )
+    g_warning ( _("%s: Unknown map type %d"), __FUNCTION__, map_type );
+  else
+    vml->maptype = maptype;
 }
 
 /**
@@ -585,7 +585,7 @@ static guint map_index_to_uniq_id (guint16 index)
 
 static guint map_uniq_id_to_index ( guint uniq_id )
 {
-  gint i;
+  guint i;
   for ( i = 0; i < NUM_MAP_TYPES; i++ )
     if ( vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(i)) == uniq_id )
       return i;
@@ -613,9 +613,9 @@ static gboolean maps_layer_set_param ( VikMapsLayer *vml, VikLayerSetParam *vlsp
     case PARAM_CACHE_LAYOUT: if ( vlsp->data.u < VIK_MAPS_CACHE_LAYOUT_NUM ) vml->cache_layout = vlsp->data.u; break;
     case PARAM_FILE: maps_layer_set_file ( vml, vlsp->data.s ); break;
     case PARAM_MAPTYPE: {
-      gint maptype = map_uniq_id_to_index(vlsp->data.u);
+      guint maptype = map_uniq_id_to_index(vlsp->data.u);
       if ( maptype == NUM_MAP_TYPES )
-        g_warning(_("Unknown map type"));
+        g_warning ( _("%s: Unknown map type %d"), __FUNCTION__, vlsp->data.u );
       else {
         vml->maptype = maptype;
 
