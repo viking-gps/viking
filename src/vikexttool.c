@@ -42,11 +42,8 @@ struct _VikExtToolPrivate
   gchar *label;
 };
 
-#define EXT_TOOL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
-                                VIK_EXT_TOOL_TYPE,          \
-                                VikExtToolPrivate))
-
-G_DEFINE_ABSTRACT_TYPE (VikExtTool, vik_ext_tool, G_TYPE_OBJECT)
+G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (VikExtTool, vik_ext_tool, G_TYPE_OBJECT)
+#define EXT_TOOL_GET_PRIVATE(o) (vik_ext_tool_get_instance_private (VIK_EXT_TOOL(o)))
 
 enum
 {
@@ -62,8 +59,7 @@ ext_tool_set_property (GObject      *object,
                       const GValue *value,
                       GParamSpec   *pspec)
 {
-  VikExtTool *self = VIK_EXT_TOOL (object);
-  VikExtToolPrivate *priv = EXT_TOOL_GET_PRIVATE (self);
+  VikExtToolPrivate *priv = EXT_TOOL_GET_PRIVATE (object);
 
   switch (property_id)
     {
@@ -91,8 +87,7 @@ ext_tool_get_property (GObject    *object,
                       GValue     *value,
                       GParamSpec *pspec)
 {
-  VikExtTool *self = VIK_EXT_TOOL (object);
-  VikExtToolPrivate *priv = EXT_TOOL_GET_PRIVATE (self);
+  VikExtToolPrivate *priv = EXT_TOOL_GET_PRIVATE (object);
 
   switch (property_id)
     {
@@ -144,8 +139,6 @@ static void vik_ext_tool_class_init ( VikExtToolClass *klass )
   klass->get_label = ext_tool_get_label;
 
   parent_class = g_type_class_peek_parent (klass);
-
-  g_type_class_add_private (klass, sizeof (VikExtToolPrivate));
 }
 
 static void vik_ext_tool_init ( VikExtTool *self )
@@ -163,8 +156,7 @@ static void ext_tool_finalize ( GObject *gob )
 
 static gchar *ext_tool_get_label ( VikExtTool *self )
 {
-  VikExtToolPrivate *priv = NULL;
-  priv = EXT_TOOL_GET_PRIVATE (self);
+  VikExtToolPrivate *priv = EXT_TOOL_GET_PRIVATE (self);
   return g_strdup ( priv->label );
 }
 

@@ -85,7 +85,8 @@ struct _BingMapSourcePrivate
 /* The pixbuf to store the logo */
 static GdkPixbuf *pixbuf = NULL;
 
-#define BING_MAP_SOURCE_GET_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), BING_TYPE_MAP_SOURCE, BingMapSourcePrivate))
+G_DEFINE_TYPE_WITH_PRIVATE (BingMapSource, bing_map_source, VIK_TYPE_SLIPPY_MAP_SOURCE)
+#define BING_MAP_SOURCE_GET_PRIVATE(o)  (bing_map_source_get_instance_private (BING_MAP_SOURCE(o)))
 
 /* properties */
 enum
@@ -97,13 +98,11 @@ enum
 	PROP_API_KEY,
 };
 
-G_DEFINE_TYPE (BingMapSource, bing_map_source, VIK_TYPE_SLIPPY_MAP_SOURCE);
-
 static void
 bing_map_source_init (BingMapSource *self)
 {
 	/* initialize the object here */
-	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE (self);
+	BingMapSourcePrivate *priv = bing_map_source_get_instance_private (self);
 
 	priv->hostname = NULL;
 	priv->url = NULL;
@@ -117,7 +116,7 @@ static void
 bing_map_source_finalize (GObject *object)
 {
 	BingMapSource *self = BING_MAP_SOURCE (object);
-	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE (self);
+	BingMapSourcePrivate *priv = bing_map_source_get_instance_private (self);
 
 	g_free (priv->hostname);
 	priv->hostname = NULL;
@@ -136,7 +135,7 @@ _set_property (GObject      *object,
                GParamSpec   *pspec)
 {
 	BingMapSource *self = BING_MAP_SOURCE (object);
-	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE (self);
+	BingMapSourcePrivate *priv = bing_map_source_get_instance_private (self);
 
 	switch (property_id)
 	{
@@ -168,7 +167,7 @@ _get_property (GObject    *object,
                GParamSpec *pspec)
 {
 	BingMapSource *self = BING_MAP_SOURCE (object);
-	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE (self);
+	BingMapSourcePrivate *priv = bing_map_source_get_instance_private (self);
 
 	switch (property_id)
 	{
@@ -229,8 +228,6 @@ bing_map_source_class_init (BingMapSourceClass *klass)
                                      G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_API_KEY, pspec);
 
-	g_type_class_add_private (klass, sizeof (BingMapSourcePrivate));
-	
 	object_class->finalize = bing_map_source_finalize;
 
 	pixbuf = gdk_pixbuf_from_pixdata ( &bing_maps_pixbuf, TRUE, NULL );
@@ -327,8 +324,7 @@ bstart_element (GMarkupParseContext *context,
                 gpointer             user_data,
                 GError             **error)
 {
-	BingMapSource *self = BING_MAP_SOURCE (user_data);
-	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE (self);
+	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE (user_data);
 	const gchar *element = g_markup_parse_context_get_element (context);
 	if (strcmp (element, "CoverageArea") == 0) {
 		/* New Attribution */
@@ -347,8 +343,7 @@ btext (GMarkupParseContext *context,
        gpointer             user_data,
        GError             **error)
 {
-	BingMapSource *self = BING_MAP_SOURCE (user_data);
-	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE (self);
+	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE (user_data);
 
 	struct _Attribution *attribution = priv->attributions == NULL ? NULL : g_list_last (priv->attributions)->data;
 	const gchar *element = g_markup_parse_context_get_element (context);

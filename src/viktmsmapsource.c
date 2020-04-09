@@ -76,7 +76,8 @@ struct _VikTmsMapSourcePrivate
   gdouble lon_max; // Degrees
 };
 
-#define VIK_TMS_MAP_SOURCE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_TMS_MAP_SOURCE, VikTmsMapSourcePrivate))
+G_DEFINE_TYPE_WITH_PRIVATE (VikTmsMapSource, vik_tms_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
+#define VIK_TMS_MAP_SOURCE_PRIVATE(o)  (vik_tms_map_source_get_instance_private (VIK_TMS_MAP_SOURCE(o)))
 
 /* properties */
 enum
@@ -95,8 +96,6 @@ enum
   PROP_LON_MIN,
   PROP_LON_MAX,
 };
-
-G_DEFINE_TYPE (VikTmsMapSource, vik_tms_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
 
 static void
 vik_tms_map_source_init (VikTmsMapSource *self)
@@ -127,8 +126,7 @@ vik_tms_map_source_init (VikTmsMapSource *self)
 static void
 vik_tms_map_source_finalize (GObject *object)
 {
-  VikTmsMapSource *self = VIK_TMS_MAP_SOURCE (object);
-  VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE (self);
+  VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE (object);
 
   g_free (priv->hostname);
   priv->hostname = NULL;
@@ -146,8 +144,7 @@ vik_tms_map_source_set_property (GObject      *object,
                                     const GValue *value,
                                     GParamSpec   *pspec)
 {
-  VikTmsMapSource *self = VIK_TMS_MAP_SOURCE (object);
-  VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE (self);
+  VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE (object);
 
   switch (property_id)
     {
@@ -211,8 +208,7 @@ vik_tms_map_source_get_property (GObject    *object,
                                     GValue     *value,
                                     GParamSpec *pspec)
 {
-  VikTmsMapSource *self = VIK_TMS_MAP_SOURCE (object);
-  VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE (self);
+  VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE (object);
 
   switch (property_id)
     {
@@ -387,8 +383,6 @@ vik_tms_map_source_class_init (VikTmsMapSourceClass *klass)
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_LON_MAX, pspec);
 
-	g_type_class_add_private (klass, sizeof (VikTmsMapSourcePrivate));
-	
 	object_class->finalize = vik_tms_map_source_finalize;
 }
 

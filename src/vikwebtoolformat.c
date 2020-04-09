@@ -49,11 +49,8 @@ struct _VikWebtoolFormatPrivate
 	gchar *url_format_code;
 };
 
-#define WEBTOOL_FORMAT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
-                                       VIK_WEBTOOL_FORMAT_TYPE,          \
-                                       VikWebtoolFormatPrivate))
-
-G_DEFINE_TYPE (VikWebtoolFormat, vik_webtool_format, VIK_WEBTOOL_TYPE)
+G_DEFINE_TYPE_WITH_PRIVATE (VikWebtoolFormat, vik_webtool_format, VIK_WEBTOOL_TYPE)
+#define WEBTOOL_FORMAT_GET_PRIVATE(o) (vik_webtool_format_get_instance_private (VIK_WEBTOOL_FORMAT(o)))
 
 enum
 {
@@ -69,8 +66,7 @@ webtool_format_set_property (GObject      *object,
                              const GValue *value,
                              GParamSpec   *pspec)
 {
-	VikWebtoolFormat *self = VIK_WEBTOOL_FORMAT (object);
-	VikWebtoolFormatPrivate *priv = WEBTOOL_FORMAT_GET_PRIVATE (self);
+	VikWebtoolFormatPrivate *priv = WEBTOOL_FORMAT_GET_PRIVATE (object);
 
 	switch (property_id) {
 	case PROP_URL:
@@ -97,8 +93,7 @@ webtool_format_get_property (GObject    *object,
                              GValue     *value,
                              GParamSpec *pspec)
 {
-	VikWebtoolFormat *self = VIK_WEBTOOL_FORMAT (object);
-	VikWebtoolFormatPrivate *priv = WEBTOOL_FORMAT_GET_PRIVATE (self);
+	VikWebtoolFormatPrivate *priv = WEBTOOL_FORMAT_GET_PRIVATE (object);
 
 	switch (property_id) {
 	case PROP_URL:
@@ -154,8 +149,6 @@ vik_webtool_format_class_init ( VikWebtoolFormatClass *klass )
 	base_class->get_url_at_position = webtool_format_get_url_at_position;
 
 	klass->mpp_to_zoom = webtool_format_mpp_to_zoom;
-
-	g_type_class_add_private (klass, sizeof (VikWebtoolFormatPrivate));
 }
 
 VikWebtoolFormat *vik_webtool_format_new ()
@@ -200,9 +193,7 @@ static guint8 webtool_format_mpp_to_zoom ( VikWebtool *self, gdouble mpp ) {
 
 static gchar *webtool_format_get_url_at_position ( VikWebtool *self, VikWindow *vw, VikCoord *vc )
 {
-	VikWebtoolFormatPrivate *priv = NULL;
-	priv = WEBTOOL_FORMAT_GET_PRIVATE (self);
-
+	VikWebtoolFormatPrivate *priv = WEBTOOL_FORMAT_GET_PRIVATE (self);
 	VikViewport *viewport = vik_window_viewport ( vw );
 
 	// Get top left and bottom right lat/lon pairs from the viewport

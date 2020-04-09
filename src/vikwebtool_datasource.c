@@ -58,11 +58,8 @@ struct _VikWebtoolDatasourcePrivate
 	gchar *user_string;
 };
 
-#define WEBTOOL_DATASOURCE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
-                                           VIK_WEBTOOL_DATASOURCE_TYPE,      \
-                                           VikWebtoolDatasourcePrivate))
-
-G_DEFINE_TYPE (VikWebtoolDatasource, vik_webtool_datasource, VIK_WEBTOOL_TYPE)
+G_DEFINE_TYPE_WITH_PRIVATE (VikWebtoolDatasource, vik_webtool_datasource, VIK_WEBTOOL_TYPE)
+#define WEBTOOL_DATASOURCE_GET_PRIVATE(o) (vik_webtool_datasource_get_instance_private (VIK_WEBTOOL_DATASOURCE(o)))
 
 enum
 {
@@ -79,8 +76,7 @@ static void webtool_datasource_set_property (GObject      *object,
                                              const GValue *value,
                                              GParamSpec   *pspec)
 {
-	VikWebtoolDatasource *self = VIK_WEBTOOL_DATASOURCE ( object );
-	VikWebtoolDatasourcePrivate *priv = WEBTOOL_DATASOURCE_GET_PRIVATE ( self );
+	VikWebtoolDatasourcePrivate *priv = WEBTOOL_DATASOURCE_GET_PRIVATE ( object );
 
 	switch ( property_id ) {
 	
@@ -126,8 +122,7 @@ static void webtool_datasource_get_property (GObject    *object,
                                              GValue     *value,
                                              GParamSpec *pspec)
 {
-	VikWebtoolDatasource *self = VIK_WEBTOOL_DATASOURCE ( object );
-	VikWebtoolDatasourcePrivate *priv = WEBTOOL_DATASOURCE_GET_PRIVATE ( self );
+	VikWebtoolDatasourcePrivate *priv = WEBTOOL_DATASOURCE_GET_PRIVATE ( object );
 
 	switch ( property_id ) {
 
@@ -363,8 +358,6 @@ static void vik_webtool_datasource_class_init ( VikWebtoolDatasourceClass *klass
 	// Override default open function here:
 	VikExtToolClass *ext_tool_class = VIK_EXT_TOOL_CLASS ( klass );
 	ext_tool_class->open = webtool_datasource_open;
-
-	g_type_class_add_private (klass, sizeof (VikWebtoolDatasourcePrivate));
 }
 
 VikWebtoolDatasource *vik_webtool_datasource_new ()

@@ -48,11 +48,8 @@ struct _VikGotoXmlToolPrivate
   GList **candidates;
 };
 
-#define GOTO_XML_TOOL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
-                                        VIK_GOTO_XML_TOOL_TYPE,          \
-                                        VikGotoXmlToolPrivate))
-
-G_DEFINE_TYPE (VikGotoXmlTool, vik_goto_xml_tool, VIK_GOTO_TOOL_TYPE)
+G_DEFINE_TYPE_WITH_PRIVATE (VikGotoXmlTool, vik_goto_xml_tool, VIK_GOTO_TOOL_TYPE)
+#define GOTO_XML_TOOL_GET_PRIVATE(o) (vik_goto_xml_tool_get_instance_private (VIK_GOTO_XML_TOOL(o)))
 
 enum
 {
@@ -73,8 +70,7 @@ vik_goto_xml_tool_set_property (GObject      *object,
                                 const GValue *value,
                                 GParamSpec   *pspec)
 {
-  VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (object);
-  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
+  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (object);
   gchar **splitted = NULL;
 
   switch (property_id)
@@ -172,8 +168,7 @@ vik_goto_xml_tool_get_property (GObject    *object,
                                 GValue     *value,
                                 GParamSpec *pspec)
 {
-  VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (object);
-  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
+  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (object);
 
   switch (property_id)
     {
@@ -294,8 +289,6 @@ vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
   parent_class->get_url_format = vik_goto_xml_tool_get_url_format;
   parent_class->parse_file_for_latlon = vik_goto_xml_tool_parse_file_for_latlon;
   parent_class->parse_file_for_candidates = vik_goto_xml_tool_parse_file_for_candidates;
-
-  g_type_class_add_private (klass, sizeof (VikGotoXmlToolPrivate));
 }
 
 VikGotoXmlTool *
@@ -388,8 +381,7 @@ _start_element (GMarkupParseContext *context,
                 gpointer             user_data,
                 GError             **error)
 {
-  VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (user_data);
-  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
+  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (user_data);
   const GSList *stack = g_markup_parse_context_get_element_stack (context);
   /* Longitude */
   if (priv->lon_attr != NULL && isnan(priv->ll.lon) && stack_is_path (stack, priv->lon_path))
@@ -443,8 +435,7 @@ _text (GMarkupParseContext *context,
        gpointer             user_data,
        GError             **error)
 {
-  VikGotoXmlTool *self = VIK_GOTO_XML_TOOL (user_data);
-  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
+  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (user_data);
   const GSList *stack = g_markup_parse_context_get_element_stack (context);
   gchar *textl = g_strndup(text, text_len);
   /* Store only first result */

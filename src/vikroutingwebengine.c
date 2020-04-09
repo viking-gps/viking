@@ -66,7 +66,8 @@ struct _VikRoutingWebEnginePrivate
 	DownloadFileOptions options;
 };
 
-#define VIK_ROUTING_WEB_ENGINE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_ROUTING_WEB_ENGINE_TYPE, VikRoutingWebEnginePrivate))
+G_DEFINE_TYPE_WITH_PRIVATE (VikRoutingWebEngine, vik_routing_web_engine, VIK_ROUTING_ENGINE_TYPE)
+#define VIK_ROUTING_WEB_ENGINE_PRIVATE(o)  (vik_routing_web_engine_get_instance_private (VIK_ROUTING_WEB_ENGINE(o)))
 
 /* properties */
 enum
@@ -88,8 +89,6 @@ enum
   PROP_REFERER,
   PROP_FOLLOW_LOCATION,
 };
-
-G_DEFINE_TYPE (VikRoutingWebEngine, vik_routing_web_engine, VIK_ROUTING_ENGINE_TYPE)
 
 static void
 vik_routing_web_engine_set_property (GObject      *object,
@@ -341,8 +340,6 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
                              2  /* default value */,
                              G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_FOLLOW_LOCATION, pspec);
-
-  g_type_class_add_private (klass, sizeof (VikRoutingWebEnginePrivate));
 }
 
 static void vik_routing_web_engine_init ( VikRoutingWebEngine *self )

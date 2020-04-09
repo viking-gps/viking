@@ -86,7 +86,8 @@ struct _VikSlippyMapSourcePrivate
   gboolean switch_xy;
 };
 
-#define VIK_SLIPPY_MAP_SOURCE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_SLIPPY_MAP_SOURCE, VikSlippyMapSourcePrivate))
+G_DEFINE_TYPE_WITH_PRIVATE (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
+#define VIK_SLIPPY_MAP_SOURCE_PRIVATE(o)  (vik_slippy_map_source_get_instance_private (VIK_SLIPPY_MAP_SOURCE(o)))
 
 /* properties */
 enum
@@ -110,8 +111,6 @@ enum
   PROP_IS_OSM_META_TILES,
   PROP_SWITCH_XY,
 };
-
-G_DEFINE_TYPE (VikSlippyMapSource, vik_slippy_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
 
 static void
 vik_slippy_map_source_init (VikSlippyMapSource *self)
@@ -148,8 +147,7 @@ vik_slippy_map_source_init (VikSlippyMapSource *self)
 static void
 vik_slippy_map_source_finalize (GObject *object)
 {
-  VikSlippyMapSource *self = VIK_SLIPPY_MAP_SOURCE (object);
-  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE (self);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE (object);
 
   g_free (priv->hostname);
   priv->hostname = NULL;
@@ -167,8 +165,7 @@ vik_slippy_map_source_set_property (GObject      *object,
                                     const GValue *value,
                                     GParamSpec   *pspec)
 {
-  VikSlippyMapSource *self = VIK_SLIPPY_MAP_SOURCE (object);
-  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE (self);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE (object);
 
   switch (property_id)
     {
@@ -252,8 +249,7 @@ vik_slippy_map_source_get_property (GObject    *object,
                                     GValue     *value,
                                     GParamSpec *pspec)
 {
-  VikSlippyMapSource *self = VIK_SLIPPY_MAP_SOURCE (object);
-  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE (self);
+  VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE (object);
 
   switch (property_id)
     {
@@ -483,8 +479,6 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	                              G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_SWITCH_XY, pspec);
 
-	g_type_class_add_private (klass, sizeof (VikSlippyMapSourcePrivate));
-	
 	object_class->finalize = vik_slippy_map_source_finalize;
 }
 

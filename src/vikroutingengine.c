@@ -41,15 +41,16 @@
 static void vik_routing_engine_finalize ( GObject *gob );
 static GObjectClass *parent_class;
 
-typedef struct _VikRoutingPrivate VikRoutingPrivate;
-struct _VikRoutingPrivate
+typedef struct _VikRoutingEnginePrivate VikRoutingEnginePrivate;
+struct _VikRoutingEnginePrivate
 {
 	gchar *id;
 	gchar *label;
 	gchar *format;
 };
 
-#define VIK_ROUTING_ENGINE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_ROUTING_ENGINE_TYPE, VikRoutingPrivate))
+G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (VikRoutingEngine, vik_routing_engine, G_TYPE_OBJECT)
+#define VIK_ROUTING_ENGINE_PRIVATE(o)  (vik_routing_engine_get_instance_private (VIK_ROUTING_ENGINE(o)))
 
 /* properties */
 enum
@@ -61,15 +62,13 @@ enum
   PROP_FORMAT,
 };
 
-G_DEFINE_ABSTRACT_TYPE (VikRoutingEngine, vik_routing_engine, G_TYPE_OBJECT)
-
 static void
 vik_routing_engine_set_property (GObject      *object,
                           guint         property_id,
                           const GValue *value,
                           GParamSpec   *pspec)
 {
-  VikRoutingPrivate *priv = VIK_ROUTING_ENGINE_PRIVATE ( object );
+  VikRoutingEnginePrivate *priv = VIK_ROUTING_ENGINE_PRIVATE ( object );
 
   switch (property_id)
     {
@@ -101,7 +100,7 @@ vik_routing_engine_get_property (GObject    *object,
                           GValue     *value,
                           GParamSpec *pspec)
 {
-  VikRoutingPrivate *priv = VIK_ROUTING_ENGINE_PRIVATE ( object );
+  VikRoutingEnginePrivate *priv = VIK_ROUTING_ENGINE_PRIVATE ( object );
 
   switch (property_id)
     {
@@ -168,14 +167,12 @@ vik_routing_engine_class_init ( VikRoutingEngineClass *klass )
                                "<no-set>" /* default value */,
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_FORMAT, pspec);
-
-  g_type_class_add_private (klass, sizeof (VikRoutingPrivate));
 }
 
 static void
 vik_routing_engine_init ( VikRoutingEngine *self )
 {
-  VikRoutingPrivate *priv = VIK_ROUTING_ENGINE_PRIVATE (self);
+  VikRoutingEnginePrivate *priv = VIK_ROUTING_ENGINE_PRIVATE (self);
 
   priv->id = NULL;
   priv->label = NULL;
@@ -185,7 +182,7 @@ vik_routing_engine_init ( VikRoutingEngine *self )
 static void
 vik_routing_engine_finalize ( GObject *self )
 {
-  VikRoutingPrivate *priv = VIK_ROUTING_ENGINE_PRIVATE (self);
+  VikRoutingEnginePrivate *priv = VIK_ROUTING_ENGINE_PRIVATE (self);
 
   g_free (priv->id);
   priv->id = NULL;
@@ -230,7 +227,7 @@ vik_routing_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLo
 gchar *
 vik_routing_engine_get_id ( VikRoutingEngine *self )
 {
-  VikRoutingPrivate *priv = VIK_ROUTING_ENGINE_PRIVATE (self);
+  VikRoutingEnginePrivate *priv = VIK_ROUTING_ENGINE_PRIVATE (self);
 
   return priv->id;
 }
@@ -243,7 +240,7 @@ vik_routing_engine_get_id ( VikRoutingEngine *self )
 gchar *
 vik_routing_engine_get_label ( VikRoutingEngine *self )
 {
-  VikRoutingPrivate *priv = VIK_ROUTING_ENGINE_PRIVATE (self);
+  VikRoutingEnginePrivate *priv = VIK_ROUTING_ENGINE_PRIVATE (self);
 
   return priv->label;
 }
@@ -258,7 +255,7 @@ vik_routing_engine_get_label ( VikRoutingEngine *self )
 gchar *
 vik_routing_engine_get_format ( VikRoutingEngine *self )
 {
-  VikRoutingPrivate *priv = VIK_ROUTING_ENGINE_PRIVATE (self);
+  VikRoutingEnginePrivate *priv = VIK_ROUTING_ENGINE_PRIVATE (self);
 
   return priv->format;
 }

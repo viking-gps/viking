@@ -49,11 +49,8 @@ struct _VikWebtoolCenterPrivate
   gchar *url;
 };
 
-#define WEBTOOL_CENTER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
-                                       VIK_WEBTOOL_CENTER_TYPE,          \
-                                       VikWebtoolCenterPrivate))
-
-G_DEFINE_TYPE (VikWebtoolCenter, vik_webtool_center, VIK_WEBTOOL_TYPE)
+G_DEFINE_TYPE_WITH_PRIVATE (VikWebtoolCenter, vik_webtool_center, VIK_WEBTOOL_TYPE)
+#define WEBTOOL_CENTER_GET_PRIVATE(o) (vik_webtool_center_get_instance_private (VIK_WEBTOOL_CENTER(o)))
 
 enum
 {
@@ -68,8 +65,7 @@ webtool_center_set_property (GObject      *object,
                              const GValue *value,
                              GParamSpec   *pspec)
 {
-  VikWebtoolCenter *self = VIK_WEBTOOL_CENTER (object);
-  VikWebtoolCenterPrivate *priv = WEBTOOL_CENTER_GET_PRIVATE (self);
+  VikWebtoolCenterPrivate *priv = WEBTOOL_CENTER_GET_PRIVATE (object);
 
   switch (property_id)
     {
@@ -92,8 +88,7 @@ webtool_center_get_property (GObject    *object,
                              GValue     *value,
                              GParamSpec *pspec)
 {
-  VikWebtoolCenter *self = VIK_WEBTOOL_CENTER (object);
-  VikWebtoolCenterPrivate *priv = WEBTOOL_CENTER_GET_PRIVATE (self);
+  VikWebtoolCenterPrivate *priv = WEBTOOL_CENTER_GET_PRIVATE (object);
 
   switch (property_id)
     {
@@ -137,8 +132,6 @@ vik_webtool_center_class_init ( VikWebtoolCenterClass *klass )
   base_class->get_url_at_position = webtool_center_get_url_at_position;
 
   klass->mpp_to_zoom = webtool_center_mpp_to_zoom;
-
-  g_type_class_add_private (klass, sizeof (VikWebtoolCenterPrivate));
 }
 
 VikWebtoolCenter *vik_webtool_center_new ()
@@ -176,14 +169,12 @@ static guint8 webtool_center_mpp_to_zoom ( VikWebtool *self, gdouble mpp ) {
 
 static gchar *webtool_center_get_url_at_position ( VikWebtool *self, VikWindow *vwindow, VikCoord *vc )
 {
-  VikWebtoolCenterPrivate *priv = NULL;
-  VikViewport *viewport = NULL;
+  VikWebtoolCenterPrivate *priv = WEBTOOL_CENTER_GET_PRIVATE (self);
+  VikViewport *viewport = vik_window_viewport ( vwindow );
   guint8 zoom = 17;
   struct LatLon ll;
   gchar strlat[G_ASCII_DTOSTR_BUF_SIZE], strlon[G_ASCII_DTOSTR_BUF_SIZE];
 
-  priv = WEBTOOL_CENTER_GET_PRIVATE (self);
-  viewport = vik_window_viewport ( vwindow );
   // Coords
   // Use the provided position otherwise use center of the viewport
   if ( vc )

@@ -69,7 +69,8 @@ struct _VikWmscMapSourcePrivate
   gdouble lon_max; // Degrees
 };
 
-#define VIK_WMSC_MAP_SOURCE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_WMSC_MAP_SOURCE, VikWmscMapSourcePrivate))
+G_DEFINE_TYPE_WITH_PRIVATE (VikWmscMapSource, vik_wmsc_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
+#define VIK_WMSC_MAP_SOURCE_PRIVATE(o)  (vik_wmsc_map_source_get_instance_private (VIK_WMSC_MAP_SOURCE(o)))
 
 /* properties */
 enum
@@ -88,8 +89,6 @@ enum
   PROP_LON_MIN,
   PROP_LON_MAX,
 };
-
-G_DEFINE_TYPE (VikWmscMapSource, vik_wmsc_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
 
 static void
 vik_wmsc_map_source_init (VikWmscMapSource *self)
@@ -120,8 +119,7 @@ vik_wmsc_map_source_init (VikWmscMapSource *self)
 static void
 vik_wmsc_map_source_finalize (GObject *object)
 {
-  VikWmscMapSource *self = VIK_WMSC_MAP_SOURCE (object);
-  VikWmscMapSourcePrivate *priv = VIK_WMSC_MAP_SOURCE_PRIVATE (self);
+  VikWmscMapSourcePrivate *priv = VIK_WMSC_MAP_SOURCE_PRIVATE (object);
 
   g_free (priv->hostname);
   priv->hostname = NULL;
@@ -139,8 +137,7 @@ vik_wmsc_map_source_set_property (GObject      *object,
                                     const GValue *value,
                                     GParamSpec   *pspec)
 {
-  VikWmscMapSource *self = VIK_WMSC_MAP_SOURCE (object);
-  VikWmscMapSourcePrivate *priv = VIK_WMSC_MAP_SOURCE_PRIVATE (self);
+  VikWmscMapSourcePrivate *priv = VIK_WMSC_MAP_SOURCE_PRIVATE (object);
 
   switch (property_id)
     {
@@ -204,8 +201,7 @@ vik_wmsc_map_source_get_property (GObject    *object,
                                     GValue     *value,
                                     GParamSpec *pspec)
 {
-  VikWmscMapSource *self = VIK_WMSC_MAP_SOURCE (object);
-  VikWmscMapSourcePrivate *priv = VIK_WMSC_MAP_SOURCE_PRIVATE (self);
+  VikWmscMapSourcePrivate *priv = VIK_WMSC_MAP_SOURCE_PRIVATE (object);
 
   switch (property_id)
     {
@@ -380,8 +376,6 @@ vik_wmsc_map_source_class_init (VikWmscMapSourceClass *klass)
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_LON_MAX, pspec);
 
-	g_type_class_add_private (klass, sizeof (VikWmscMapSourcePrivate));
-	
 	object_class->finalize = vik_wmsc_map_source_finalize;
 }
 

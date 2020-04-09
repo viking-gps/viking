@@ -53,10 +53,8 @@ struct _VikMapTypePrivate
 	VikMapsLayer_MapType map_type;
 };
 
-#define VIK_MAP_TYPE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_MAP_TYPE, VikMapTypePrivate))
-
-
-G_DEFINE_TYPE (VikMapType, vik_map_type, VIK_TYPE_MAP_SOURCE);
+G_DEFINE_TYPE_WITH_PRIVATE (VikMapType, vik_map_type, VIK_TYPE_MAP_SOURCE);
+#define VIK_MAP_TYPE_PRIVATE(o)  (vik_map_type_get_instance_private (VIK_MAP_TYPE(o)))
 
 static void
 vik_map_type_init (VikMapType *object)
@@ -104,8 +102,6 @@ vik_map_type_class_init (VikMapTypeClass *klass)
 	parent_class->download =                 map_type_download;
 	parent_class->download_handle_init =    map_type_download_handle_init;
 	parent_class->download_handle_cleanup =     map_type_download_handle_cleanup;
-
-	g_type_class_add_private (klass, sizeof (VikMapTypePrivate));
 
 	object_class->finalize = vik_map_type_finalize;
 }

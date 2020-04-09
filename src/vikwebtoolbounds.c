@@ -46,11 +46,8 @@ struct _VikWebtoolBoundsPrivate
   gchar *url;
 };
 
-#define WEBTOOL_BOUNDS_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
-                                       VIK_WEBTOOL_BOUNDS_TYPE,          \
-                                       VikWebtoolBoundsPrivate))
-
-G_DEFINE_TYPE (VikWebtoolBounds, vik_webtool_bounds, VIK_WEBTOOL_TYPE)
+G_DEFINE_TYPE_WITH_PRIVATE (VikWebtoolBounds, vik_webtool_bounds, VIK_WEBTOOL_TYPE)
+#define WEBTOOL_BOUNDS_GET_PRIVATE(o) (vik_webtool_bounds_get_instance_private (VIK_WEBTOOL_BOUNDS(o)))
 
 enum
 {
@@ -65,8 +62,7 @@ webtool_bounds_set_property (GObject      *object,
                              const GValue *value,
                              GParamSpec   *pspec)
 {
-  VikWebtoolBounds *self = VIK_WEBTOOL_BOUNDS (object);
-  VikWebtoolBoundsPrivate *priv = WEBTOOL_BOUNDS_GET_PRIVATE (self);
+  VikWebtoolBoundsPrivate *priv = WEBTOOL_BOUNDS_GET_PRIVATE (object);
 
   switch (property_id)
     {
@@ -89,8 +85,7 @@ webtool_bounds_get_property (GObject    *object,
                              GValue     *value,
                              GParamSpec *pspec)
 {
-  VikWebtoolBounds *self = VIK_WEBTOOL_BOUNDS (object);
-  VikWebtoolBoundsPrivate *priv = WEBTOOL_BOUNDS_GET_PRIVATE (self);
+  VikWebtoolBoundsPrivate *priv = WEBTOOL_BOUNDS_GET_PRIVATE (object);
 
   switch (property_id)
     {
@@ -132,8 +127,6 @@ vik_webtool_bounds_class_init ( VikWebtoolBoundsClass *klass )
   base_class = VIK_WEBTOOL_CLASS ( klass );
   base_class->get_url = webtool_bounds_get_url;
   base_class->get_url_at_position = webtool_bounds_get_url_at_position;
-
-  g_type_class_add_private (klass, sizeof (VikWebtoolBoundsPrivate));
 }
 
 VikWebtoolBounds *vik_webtool_bounds_new ()
@@ -167,11 +160,8 @@ static void webtool_bounds_finalize ( GObject *gob )
 
 static gchar *webtool_bounds_get_url ( VikWebtool *self, VikWindow *vwindow )
 {
-  VikWebtoolBoundsPrivate *priv = NULL;
-  VikViewport *viewport = NULL;
-
-  priv = WEBTOOL_BOUNDS_GET_PRIVATE (self);
-  viewport = vik_window_viewport ( vwindow );
+  VikWebtoolBoundsPrivate *priv = WEBTOOL_BOUNDS_GET_PRIVATE (self);
+  VikViewport *viewport = vik_window_viewport ( vwindow );
 
   // Get top left and bottom right lat/lon pairs from the viewport
   gdouble min_lat, max_lat, min_lon, max_lon;

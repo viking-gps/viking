@@ -68,7 +68,8 @@ struct _VikMapSourceDefaultPrivate
 	gchar *file_extension;
 };
 
-#define VIK_MAP_SOURCE_DEFAULT_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), VIK_TYPE_MAP_SOURCE_DEFAULT, VikMapSourceDefaultPrivate))
+G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (VikMapSourceDefault, vik_map_source_default, VIK_TYPE_MAP_SOURCE);
+#define VIK_MAP_SOURCE_DEFAULT_PRIVATE(o)  (vik_map_source_default_get_instance_private (VIK_MAP_SOURCE_DEFAULT(o)))
 
 /* properties */
 enum
@@ -88,13 +89,10 @@ enum
   PROP_FILE_EXTENSION,
 };
 
-G_DEFINE_ABSTRACT_TYPE (VikMapSourceDefault, vik_map_source_default, VIK_TYPE_MAP_SOURCE);
-
 static void
 vik_map_source_default_init (VikMapSourceDefault *object)
 {
-  VikMapSourceDefault *self = VIK_MAP_SOURCE_DEFAULT (object);
-  VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE (self);
+  VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE (object);
 
   priv->label = NULL;
   priv->copyright = NULL;
@@ -108,8 +106,7 @@ vik_map_source_default_init (VikMapSourceDefault *object)
 static void
 vik_map_source_default_finalize (GObject *object)
 {
-  VikMapSourceDefault *self = VIK_MAP_SOURCE_DEFAULT (object);
-  VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE (self);
+  VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE (object);
 
   g_free (priv->label);
   priv->label = NULL;
@@ -135,8 +132,7 @@ vik_map_source_default_set_property (GObject      *object,
                                      const GValue *value,
                                      GParamSpec   *pspec)
 {
-  VikMapSourceDefault *self = VIK_MAP_SOURCE_DEFAULT (object);
-  VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE (self);
+  VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE (object);
 
   switch (property_id)
     {
@@ -206,8 +202,7 @@ vik_map_source_default_get_property (GObject    *object,
                                      GValue     *value,
                                      GParamSpec *pspec)
 {
-  VikMapSourceDefault *self = VIK_MAP_SOURCE_DEFAULT (object);
-  VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE (self);
+  VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE (object);
 
   switch (property_id)
     {
@@ -379,8 +374,6 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	                             ".png" /* default value */,
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FILE_EXTENSION, pspec);
-
-	g_type_class_add_private (klass, sizeof (VikMapSourceDefaultPrivate));
 
 	object_class->finalize = vik_map_source_default_finalize;
 }

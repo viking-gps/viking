@@ -46,11 +46,9 @@ struct _VikGotoToolPrivate
   gchar *label;
 };
 
-#define GOTO_TOOL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), \
-                                    VIK_GOTO_TOOL_TYPE,          \
-                                    VikGotoToolPrivate))
+G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (VikGotoTool, vik_goto_tool, G_TYPE_OBJECT)
+#define GOTO_TOOL_GET_PRIVATE(o) (vik_goto_tool_get_instance_private (VIK_GOTO_TOOL(o)))
 
-G_DEFINE_ABSTRACT_TYPE (VikGotoTool, vik_goto_tool, G_TYPE_OBJECT)
 
 enum
 {
@@ -66,8 +64,7 @@ goto_tool_set_property (GObject      *object,
                           const GValue *value,
                           GParamSpec   *pspec)
 {
-  VikGotoTool *self = VIK_GOTO_TOOL (object);
-  VikGotoToolPrivate *priv = GOTO_TOOL_GET_PRIVATE (self);
+  VikGotoToolPrivate *priv = GOTO_TOOL_GET_PRIVATE (object);
 
   switch (property_id)
     {
@@ -95,8 +92,7 @@ goto_tool_get_property (GObject    *object,
                           GValue     *value,
                           GParamSpec *pspec)
 {
-  VikGotoTool *self = VIK_GOTO_TOOL (object);
-  VikGotoToolPrivate *priv = GOTO_TOOL_GET_PRIVATE (self);
+  VikGotoToolPrivate *priv = GOTO_TOOL_GET_PRIVATE (object);
 
   switch (property_id)
     {
@@ -149,8 +145,6 @@ static void vik_goto_tool_class_init ( VikGotoToolClass *klass )
   klass->get_download_options = goto_tool_get_download_options;
 
   parent_class = g_type_class_peek_parent (klass);
-
-  g_type_class_add_private (klass, sizeof (VikGotoToolPrivate));
 }
 
 VikGotoTool *vik_goto_tool_new ()
@@ -160,7 +154,7 @@ VikGotoTool *vik_goto_tool_new ()
 
 static void vik_goto_tool_init ( VikGotoTool *self )
 {
-  VikGotoToolPrivate *priv = GOTO_TOOL_GET_PRIVATE (self);
+  VikGotoToolPrivate *priv = vik_goto_tool_get_instance_private (self);
   priv->label = NULL;
 }
 
@@ -173,8 +167,7 @@ static void goto_tool_finalize ( GObject *gob )
 
 static gchar *goto_tool_get_label ( VikGotoTool *self )
 {
-  VikGotoToolPrivate *priv = NULL;
-  priv = GOTO_TOOL_GET_PRIVATE (self);
+  VikGotoToolPrivate *priv = vik_goto_tool_get_instance_private (self);
   return g_strdup ( priv->label );
 }
 

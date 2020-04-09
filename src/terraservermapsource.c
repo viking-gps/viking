@@ -45,7 +45,8 @@ struct _TerraserverMapSourcePrivate
   guint8 type;
 };
 
-#define TERRASERVER_MAP_SOURCE_PRIVATE(o)  (G_TYPE_INSTANCE_GET_PRIVATE ((o), TERRASERVER_TYPE_MAP_SOURCE, TerraserverMapSourcePrivate))
+G_DEFINE_TYPE_WITH_PRIVATE (TerraserverMapSource, terraserver_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT)
+#define TERRASERVER_MAP_SOURCE_PRIVATE(o)  (terraserver_map_source_get_instance_private (TERRASERVER_MAP_SOURCE(o)))
 
 /* properties */
 enum
@@ -54,8 +55,6 @@ enum
 
   PROP_TYPE,
 };
-
-G_DEFINE_TYPE (TerraserverMapSource, terraserver_map_source, VIK_TYPE_MAP_SOURCE_DEFAULT);
 
 static void
 terraserver_map_source_init (TerraserverMapSource *self)
@@ -82,8 +81,7 @@ terraserver_map_source_set_property (GObject      *object,
                                      const GValue *value,
                                      GParamSpec   *pspec)
 {
-  TerraserverMapSource *self = TERRASERVER_MAP_SOURCE (object);
-  TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE (self);
+  TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE (object);
 
   switch (property_id)
     {
@@ -104,8 +102,7 @@ terraserver_map_source_get_property (GObject    *object,
                                      GValue     *value,
                                      GParamSpec *pspec)
 {
-  TerraserverMapSource *self = TERRASERVER_MAP_SOURCE (object);
-  TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE (self);
+  TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE (object);
 
   switch (property_id)
     {
@@ -150,8 +147,6 @@ terraserver_map_source_class_init (TerraserverMapSourceClass *klass)
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_TYPE, pspec);
 
-	g_type_class_add_private (klass, sizeof (TerraserverMapSourcePrivate));
-	
 	object_class->finalize = terraserver_map_source_finalize;
 }
 
