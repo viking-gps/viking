@@ -49,11 +49,6 @@
 #include "coords.h"
 #include "fileutils.h"
 
-/* Compatibility */
-#if ! GLIB_CHECK_VERSION(2,22,0)
-#define g_mapped_file_unref g_mapped_file_free
-#endif
-
 #define DEM_BLOCK_SIZE 1024
 #define GET_COLUMN(dem,n) ((VikDEMColumn *)g_ptr_array_index( (dem)->columns, (n) ))
 

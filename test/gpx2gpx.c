@@ -8,9 +8,6 @@
 
 int main(int argc, char *argv[])
 {
-#if !GLIB_CHECK_VERSION (2, 36, 0)
-  g_type_init();
-#endif
   // Some stuff must be initialized as it gets auto used
   a_settings_init ();
   a_preferences_init ();

@@ -427,19 +427,11 @@ static void trw_layer_waypoint_list_add ( vik_trw_waypoint_list_t *vtdl,
 	gchar time_buf[32];
 	time_buf[0] = '\0';
 	if ( !isnan(wpt->timestamp) ) {
-
-#if GLIB_CHECK_VERSION(2,26,0)
 		GDateTime* gdt = g_date_time_new_from_unix_utc ( wpt->timestamp );
 		gchar *time = g_date_time_format ( gdt, date_format );
 		g_strlcpy ( time_buf, time, sizeof(time_buf) );
 		g_free ( time );
 		g_date_time_unref ( gdt);
-#else
-		GDate* gdate_start = g_date_new ();
-		g_date_set_time_t ( gdate_start, wpt->timestamp );
-		g_date_strftime ( time_buf, sizeof(time_buf), date_format, gdate_start );
-		g_date_free ( gdate_start );
-#endif
 	}
 
 	// NB: doesn't include aggegrate visibility

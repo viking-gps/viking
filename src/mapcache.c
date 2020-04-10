@@ -88,13 +88,7 @@ static void cache_add(gchar *key, GdkPixbuf *pixbuf, mapcache_extra_t extra)
   cache_item_t *ci = g_malloc ( sizeof(cache_item_t) );
   ci->pixbuf = pixbuf;
   ci->extra = extra;
-#if !GLIB_CHECK_VERSION(2,26,0)
-  // Only later versions of GLib actually return a value for this function
-  // Annoyingly the documentation doesn't say anything about this interface change :(
   if ( g_hash_table_insert ( cache, key, ci ) )
-#else
-  g_hash_table_insert ( cache, key, ci );
-#endif
   {
     cache_size += gdk_pixbuf_get_rowstride(pixbuf) * gdk_pixbuf_get_height(pixbuf);
     // ATM size of 'extra' data hardly worth trying to count (compared to pixbuf sizes)

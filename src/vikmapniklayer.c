@@ -499,17 +499,11 @@ gboolean carto_load ( VikMapnikLayer *vml, VikViewport *vvp )
 		g_free ( msg );
 	}
 
-	gint64 tt1 = 0;
+	gint64 tt1 = g_get_real_time ();
 	gint64 tt2 = 0;
-	// You won't get a sensible timing measurement if running too old a GLIB
-#if GLIB_CHECK_VERSION (2, 28, 0)
-	tt1 = g_get_real_time ();
-#endif
 
 	if ( g_spawn_command_line_sync ( command, &mystdout, &mystderr, NULL, &error ) ) {
-#if GLIB_CHECK_VERSION (2, 28, 0)
 		tt2 = g_get_real_time ();
-#endif
 		if ( mystderr )
 			if ( strlen(mystderr) > 1 ) {
 				a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vvp), _("Error running carto command:\n%s"), mystderr );

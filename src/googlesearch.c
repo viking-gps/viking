@@ -23,11 +23,6 @@
 
 #include "googlesearch.h"
 
-/* Compatibility */
-#if ! GLIB_CHECK_VERSION(2,22,0)
-#define g_mapped_file_unref g_mapped_file_free
-#endif
-
 #define GOOGLE_GOTO_URL_FMT "http://maps.google.com/maps?q=%s&output=js"
 #define GOOGLE_GOTO_PATTERN_1 "{center:{lat:"
 #define GOOGLE_GOTO_PATTERN_2 ",lng:"

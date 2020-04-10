@@ -418,11 +418,7 @@ void vu_check_latest_version ( GtkWindow *window )
 	g_date_free ( gdate_now );
 
 	if ( do_check ) {
-#if GLIB_CHECK_VERSION (2, 32, 0)
 		g_thread_try_new ( "latest_version_thread", (GThreadFunc)latest_version_thread, window, NULL );
-#else
-		g_thread_create ( (GThreadFunc)latest_version_thread, window, FALSE, NULL );
-#endif
 	}
 }
 

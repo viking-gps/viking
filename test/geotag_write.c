@@ -8,10 +8,6 @@
  
 int main(int argc, char *argv[])
 {
-#if !GLIB_CHECK_VERSION(2,36,0)
-  g_type_init ();
-#endif
-
   int answer = 0;
   if ( argv[1] ) {
     struct LatLon ll = { 51.179489, -1.826217 };

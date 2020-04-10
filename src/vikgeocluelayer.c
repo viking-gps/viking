@@ -422,12 +422,10 @@ static void disconnect_layer_signal ( VikLayer *vl, VikGeoclueLayer *vgl )
 
 static void vik_geoclue_layer_free ( VikGeoclueLayer *vgl )
 {
-#if GLIB_CHECK_VERSION(2,28,0)
     if ( vgl->client )
 		g_clear_object ( &vgl->client );
     if ( vgl->simple )
 		g_clear_object ( &vgl->simple );
-#endif
 	if ( vgl->vl.realized )
 		disconnect_layer_signal ( VIK_LAYER(vgl->trw), vgl );
 	g_object_unref ( vgl->trw );
@@ -724,12 +722,10 @@ static void geoclue_start_stop_tracking_cb ( menu_array_layer values )
 	else {
 		// stop tracking
 		vgl->tracking = FALSE;
-#if GLIB_CHECK_VERSION(2,28,0)
 		if ( vgl->client )
 			g_clear_object ( &vgl->client );
 		if ( vgl->simple )
 			g_clear_object ( &vgl->simple );
-#endif
 		vgl->first_trackpoint = FALSE;
 		vgl->trkpt = NULL;
 	}

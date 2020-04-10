@@ -72,10 +72,9 @@ on_simple_ready (GObject      *source_object,
 	clue->ll.lon = gclue_location_get_longitude ( location );
 	clue->accuracy = gclue_location_get_accuracy ( location );
 
-#if GLIB_CHECK_VERSION(2,28,0)
 	g_clear_object ( &simple );
-#endif
-finish:
+
+ finish:
 	clue->func(clue->vw, clue->ll, clue->accuracy);
 	g_free ( clue );
 }

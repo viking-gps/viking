@@ -52,7 +52,6 @@
 #include "X11/Xlib.h"
 #endif
 
-#if GLIB_CHECK_VERSION (2, 32, 0)
 /* Callback to log message */
 static void log_debug(const gchar *log_domain,
                       GLogLevelFlags log_level,
@@ -61,16 +60,6 @@ static void log_debug(const gchar *log_domain,
 {
   g_print("** (viking): DEBUG: %s\n", message);
 }
-#else
-/* Callback to mute log message */
-static void mute_log(const gchar *log_domain,
-                     GLogLevelFlags log_level,
-                     const gchar *message,
-                     gpointer user_data)
-{
-  /* Nothing to do, we just want to mute */
-}
-#endif
 
 #if HAVE_X11_XLIB_H
 static int myXErrorHandler(Display *display, XErrorEvent *theEvent)
@@ -120,10 +109,6 @@ int main( int argc, char *argv[] )
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
   textdomain (GETTEXT_PACKAGE);
 
-#if ! GLIB_CHECK_VERSION (2, 32, 0)
-  g_thread_init ( NULL );
-#endif
-
   gui_initialized = gtk_init_with_args (&argc, &argv, "files+", entries, NULL, &error);
   if (!gui_initialized)
   {
@@ -150,13 +135,8 @@ int main( int argc, char *argv[] )
     return EXIT_SUCCESS;
   }
 
-#if GLIB_CHECK_VERSION (2, 32, 0)
   if (vik_debug)
     g_log_set_handler (NULL, G_LOG_LEVEL_DEBUG, log_debug, NULL);
-#else
-  if (!vik_debug)
-    g_log_set_handler (NULL, G_LOG_LEVEL_DEBUG, mute_log, NULL);
-#endif
 
 #if HAVE_X11_XLIB_H
   XSetErrorHandler(myXErrorHandler);

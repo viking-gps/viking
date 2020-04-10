@@ -22,11 +22,6 @@
 #include "viking.h"
 #include "geonamessearch.h"
 
-/* Compatibility */
-#if ! GLIB_CHECK_VERSION(2,22,0)
-#define g_mapped_file_unref g_mapped_file_free
-#endif
-
 // TODO - offer configuration of this value somewhere
 //  ATM decided it's not essential enough to warrant putting in the preferences
 #define GEONAMES_MAX_ENTRIES 20

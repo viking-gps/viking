@@ -36,31 +36,9 @@
 #include "globals.h"
 #include "fileutils.h"
 
-#ifdef WINDOWS
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
-
 guint util_get_number_of_cpus ()
 {
-#if GLIB_CHECK_VERSION (2, 36, 0)
   return g_get_num_processors();
-#else
-  long nprocs = 1;
-#ifdef WINDOWS
-  SYSTEM_INFO info;
-  GetSystemInfo(&info);
-  nprocs = info.dwNumberOfProcessors;
-#else
-#ifdef _SC_NPROCESSORS_ONLN
-  nprocs = sysconf(_SC_NPROCESSORS_ONLN);
-  if (nprocs < 1)
-    nprocs = 1;
-#endif
-#endif
-  return nprocs;
-#endif
 }
 
 /**
@@ -197,25 +175,8 @@ gchar* util_write_tmp_file_from_bytes ( const void *buffer, gsize count )
 {
 	GFileIOStream *gios;
 	GError *error = NULL;
-	gchar *tmpname = NULL;
-
-#if GLIB_CHECK_VERSION(2,32,0)
 	GFile *gf = g_file_new_tmp ( "vik-tmp.XXXXXX", &gios, &error );
-	tmpname = g_file_get_path (gf);
-#else
-	gint fd = g_file_open_tmp ( "vik-tmp.XXXXXX", &tmpname, &error );
-	if ( error ) {
-		g_warning ( "%s", error->message );
-		g_error_free ( error );
-		return NULL;
-	}
-	gios = g_file_open_readwrite ( g_file_new_for_path (tmpname), NULL, &error );
-	if ( error ) {
-		g_warning ( "%s", error->message );
-		g_error_free ( error );
-		return NULL;
-	}
-#endif
+	gchar *tmpname = g_file_get_path (gf);
 
 	gios = g_file_open_readwrite ( g_file_new_for_path (tmpname), NULL, &error );
 	if ( error ) {

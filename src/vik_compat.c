@@ -24,21 +24,13 @@
 
 GMutex * vik_mutex_new ()
 {
-#if GLIB_CHECK_VERSION (2, 32, 0)
 	GMutex *mutex = g_new (GMutex, 1);
 	g_mutex_init(mutex);
-#else
-	GMutex *mutex = g_mutex_new();
-#endif
 	return mutex;
 }
 
 void vik_mutex_free (GMutex *mutex)
 {
-#if GLIB_CHECK_VERSION (2, 32, 0)
   g_mutex_clear (mutex);
   g_free (mutex);
-#else
-  g_mutex_free (mutex);
-#endif
 }

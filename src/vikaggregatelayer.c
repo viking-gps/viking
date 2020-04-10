@@ -519,15 +519,9 @@ void vik_aggregate_layer_move_layer ( VikAggregateLayer *val, GtkTreeIter *child
 static gboolean is_tile_occupied ( GHashTable *ght, gint x, gint y )
 {
   gchar *key = g_strdup_printf ( "%d:%d", x, y );
-#if !GLIB_CHECK_VERSION(2,26,0)
-  gpointer gp = g_hash_table_lookup ( ght, key );
-  g_free ( key );
-  return gp ? TRUE : FALSE;
-#else
   gboolean ans = g_hash_table_contains ( ght, key );
   g_free ( key );
   return ans;
-#endif
 }
 
 static guint tile_label ( GHashTable *ght, gint x, gint y )

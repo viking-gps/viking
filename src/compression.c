@@ -293,24 +293,8 @@ gchar* uncompress_bzip2 ( const gchar *name )
 
 	GFileIOStream *gios;
 	GError *error = NULL;
-	gchar *tmpname = NULL;
-#if GLIB_CHECK_VERSION(2,32,0)
 	GFile *gf = g_file_new_tmp ( "vik-bz2-tmp.XXXXXX", &gios, &error );
-	tmpname = g_file_get_path (gf);
-#else
-	gint fd = g_file_open_tmp ( "vik-bz2-tmp.XXXXXX", &tmpname, &error );
-	if ( error ) {
-		g_warning ( error->message );
-		g_error_free ( error );
-		return NULL;
-	}
-	gios = g_file_open_readwrite ( g_file_new_for_path (tmpname), NULL, &error );
-	if ( error ) {
-		g_warning ( error->message );
-		g_error_free ( error );
-		return NULL;
-	}
-#endif
+	gchar *tmpname = g_file_get_path (gf);
 
 	GOutputStream *gos = g_io_stream_get_output_stream ( G_IO_STREAM(gios) );
 

@@ -23,11 +23,6 @@
 #include "vikgototool.h"
 #include "vikgoto.h"
 
-/* Compatibility */
-#if ! GLIB_CHECK_VERSION(2,22,0)
-#define g_mapped_file_unref g_mapped_file_free
-#endif
-
 static gchar *last_goto_str = NULL;
 static VikCoord *last_coord = NULL;
 static gchar *last_successful_goto_str = NULL;
