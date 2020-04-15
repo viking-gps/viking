@@ -65,6 +65,7 @@ gchar *vik_treeview_item_get_name ( VikTreeview *vt, GtkTreeIter *iter );
 gpointer vik_treeview_item_get_pointer ( VikTreeview *vt, GtkTreeIter *iter );
 void vik_treeview_item_set_pointer ( VikTreeview *vt, GtkTreeIter *iter, gpointer pointer );
 void vik_treeview_item_set_timestamp ( VikTreeview *vt, GtkTreeIter *iter, gdouble timestamp );
+void vik_treeview_item_set_number ( VikTreeview *vt, GtkTreeIter *iter, guint number );
 
 gpointer vik_treeview_item_get_parent ( VikTreeview *vt, GtkTreeIter *iter );
 gboolean vik_treeview_item_get_visible_tree ( VikTreeview *vt, GtkTreeIter *iter );
@@ -95,7 +96,7 @@ void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTree
 void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gboolean above,
                               gpointer item, gint data, VikLayerTypeEnum layer_type, GtkTreeIter *sibling, gdouble timestamp );
 void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gpointer item,
-                                 gint data, GdkPixbuf *icon, gboolean editable, gdouble timestamp );
+                                 gint data, GdkPixbuf *icon, gboolean editable, gdouble timestamp, guint number );
 
 gboolean vik_treeview_get_iter_with_name ( VikTreeview *vt, GtkTreeIter *iter, GtkTreeIter *parent_iter, const gchar *name );
 

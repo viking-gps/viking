@@ -78,6 +78,7 @@ struct _VikTrack {
   gchar *comment;
   gchar *description;
   gchar *source;
+  guint number;
   gchar *type;
   guint8 ref_count;
   gchar *name;

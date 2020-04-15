@@ -64,6 +64,7 @@ static gchar *line_name;
 static gchar *line_comment;
 static gchar *line_description;
 static gchar *line_source;
+static guint line_number = 0;
 static gchar *line_xtype;
 static gchar *line_color;
 static gint line_name_label = 0;
@@ -316,6 +317,9 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       if ( line_source )
         vik_track_set_source ( pl, line_source );
 
+      if ( line_number )
+        pl->number = line_number;
+
       if ( line_xtype )
         vik_track_set_type ( pl, line_xtype );
 
@@ -410,6 +414,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     line_dgpsid = 0;
     line_name_label = 0;
     line_dist_label = 0;
+    line_number = 0;
   }
 
   // Handle a badly formatted file in case of missing explicit track/route end (this shouldn't happen)
@@ -535,6 +540,10 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   {
     if (line_source == NULL)
       line_source = deslashndup ( value, value_len );
+  }
+  else if (key_len == 6 && strncasecmp( key, "number", key_len ) == 0 && value != NULL)
+  {
+    line_number = atoi(value);
   }
   // NB using 'xtype' to differentiate from our own 'type' key
   else if (key_len == 5 && strncasecmp( key, "xtype", key_len ) == 0 && value != NULL)
@@ -798,6 +807,7 @@ static void a_gpspoint_write_track ( const VikTrack *trk, FILE *f )
   write_string ( f, "comment", trk->comment );
   write_string ( f, "description", trk->description );
   write_string ( f, "source", trk->source );
+  write_positive_uint ( f, "number", trk->number );
   write_string ( f, "xtype", trk->type );
 
   if ( trk->has_color ) {

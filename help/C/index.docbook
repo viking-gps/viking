@@ -1180,7 +1180,7 @@ Opens a new dialog with the list. As described in the Aggregate layer <xref link
 <variablelist>
 <varlistentry>
 <term><guilabel>Sort</guilabel></term>
-<listitem><para>Gives the ability to sort the items in the treeview alphabetically or by date.</para></listitem>
+<listitem><para>Gives the ability to sort the items in the treeview alphabetically, by date or track/route number.</para></listitem>
 </varlistentry>
 <varlistentry>
 <term><guilabel>Visibility</guilabel></term>

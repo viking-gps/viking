@@ -122,6 +122,7 @@ typedef struct _propwidgets {
   GtkWidget *w_comment;
   GtkWidget *w_description;
   GtkWidget *w_source;
+  GtkWidget *w_number;
   GtkWidget *w_type;
   GtkWidget *w_track_length;
   GtkWidget *w_tp_count;
@@ -3126,6 +3127,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
   VikTrack *tr = widgets->tr;
   VikTrwLayer *vtl = widgets->vtl;
   gboolean keep_dialog = FALSE;
+  guint old_number = tr->number;
 
   /* FIXME: check and make sure the track still exists before doing anything to it */
   /* Note: destroying diaglog (eg, parent window exit) won't give "response" */
@@ -3141,7 +3143,8 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
       gtk_color_button_get_color ( GTK_COLOR_BUTTON(widgets->w_color), &(tr->color) );
       tr->draw_name_mode = gtk_combo_box_get_active ( GTK_COMBO_BOX(widgets->w_namelabel) );
       tr->max_number_dist_labels = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->w_number_distlabels) );
-      trw_layer_update_treeview ( widgets->vtl, widgets->tr );
+      tr->number = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->w_number) );
+      trw_layer_update_treeview ( widgets->vtl, widgets->tr, (old_number != tr->number) );
       vik_layer_emit_update ( VIK_LAYER(vtl) );
       break;
     case VIK_TRW_LAYER_PROPWIN_REVERSE:
@@ -3838,7 +3841,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   if ( bool_pref_get(TPW_PREFS_NS"tabs_on_side") )
     gtk_notebook_set_tab_pos ( GTK_NOTEBOOK(graphs), GTK_POS_LEFT );
 
-  GtkWidget *content_prop[4];
+  GtkWidget *content_prop[5];
   int cnt_prop = 0;
 
   static gchar *label_texts[] = {
@@ -3846,6 +3849,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     N_("<b>Description:</b>"),
     N_("<b>Source:</b>"),
     N_("<b>Type:</b>"),
+    N_("<b>Number:</b>"),
   };
 
   // Properties
@@ -3868,6 +3872,9 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   if ( tr->type )
     gtk_entry_set_text ( GTK_ENTRY(widgets->w_type), tr->type );
   content_prop[cnt_prop++] = widgets->w_type;
+
+  widgets->w_number = ui_spin_button_new ( (GtkAdjustment*)gtk_adjustment_new(tr->number,0,9999,1,10,0), 10.0, 0 );
+  content_prop[cnt_prop++] = widgets->w_number;
 
   GtkWidget *content_draw[3];
   guint cnt_draw = 0;

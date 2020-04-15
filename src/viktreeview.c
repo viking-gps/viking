@@ -46,6 +46,7 @@ enum
   ITEM_DATA_COLUMN,
   EDITABLE_COLUMN,
   ITEM_TIMESTAMP_COLUMN, // Date timestamp stored in tree model to enable sorting on this value
+  ITEM_NUMBER_COLUMN,    // Stored in tree model to enable sorting on this value
   NUM_COLUMNS
 };
 
@@ -277,6 +278,11 @@ void vik_treeview_item_set_timestamp ( VikTreeview *vt, GtkTreeIter *iter, gdoub
   gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, ITEM_TIMESTAMP_COLUMN, timestamp, -1 );
 }
 
+void vik_treeview_item_set_number ( VikTreeview *vt, GtkTreeIter *iter, guint number )
+{
+  gtk_tree_store_set ( GTK_TREE_STORE(vt->model), iter, ITEM_NUMBER_COLUMN, number, -1 );
+}
+
 gpointer vik_treeview_item_get_parent ( VikTreeview *vt, GtkTreeIter *iter )
 {
   gpointer rv;
@@ -504,7 +510,8 @@ void vik_treeview_init ( VikTreeview *vt )
                                                   G_TYPE_POINTER, // pointer to the layer or sublayer
                                                   G_TYPE_INT,     // type of the sublayer
                                                   G_TYPE_BOOLEAN, // Editable
-                                                  G_TYPE_DOUBLE )); // Timestamp
+                                                  G_TYPE_DOUBLE,  // Timestamp
+                                                  G_TYPE_INT ));  // 'Track' Number (sublayers only)
 
   /* create tree view */
   gtk_tree_selection_set_select_function(gtk_tree_view_get_selection (GTK_TREE_VIEW(vt)), vik_treeview_selection_filter, vt, NULL);
@@ -700,6 +707,7 @@ void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTree
     EDITABLE_COLUMN, parent == NULL ? FALSE : TRUE,
     ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL,
     ITEM_TIMESTAMP_COLUMN, timestamp,
+    ITEM_NUMBER_COLUMN, 0,
     -1 );
 }
 
@@ -729,11 +737,12 @@ void vik_treeview_insert_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
                        EDITABLE_COLUMN, TRUE,
                        ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL,
                        ITEM_TIMESTAMP_COLUMN, timestamp,
+                       ITEM_NUMBER_COLUMN, 0,
                        -1 );
 }
 
 void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTreeIter *iter, const gchar *name, gpointer parent, gpointer item,
-                                 gint data, GdkPixbuf *icon, gboolean editable, gdouble timestamp )
+                                 gint data, GdkPixbuf *icon, gboolean editable, gdouble timestamp, guint number )
 {
   g_assert ( iter != NULL );
 
@@ -748,6 +757,7 @@ void vik_treeview_add_sublayer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkT
                        EDITABLE_COLUMN, editable,
                        ICON_COLUMN, icon,
                        ITEM_TIMESTAMP_COLUMN, timestamp,
+                       ITEM_NUMBER_COLUMN, number,
                        -1 );
 }
 
@@ -757,6 +767,7 @@ typedef struct _SortTuple
   gint offset;
   gchar *name;
   gdouble timestamp;
+  guint number;
 } SortTuple;
 
 /**
@@ -776,13 +787,21 @@ static gint sort_tuple_compare ( gconstpointer a, gconstpointer b, gpointer orde
     if ( GPOINTER_TO_INT(order) == VL_SO_ALPHABETICAL_DESCENDING )
       answer = -answer;
   }
-  else {
+  else if ( GPOINTER_TO_INT(order) < VL_SO_NUMBER_ASCENDING ) {
     // Date comparison
     gboolean ans = ( sa->timestamp > sb->timestamp );
     if ( ans )
       answer = 1;
     // Invert sort order for descending order
     if ( GPOINTER_TO_INT(order) == VL_SO_DATE_DESCENDING )
+      answer = -answer;
+  } else {
+    // Number comparison
+    gboolean ans = ( sa->number > sb->number );
+    if ( ans )
+      answer = 1;
+    // Invert sort order for descending order
+    if ( GPOINTER_TO_INT(order) == VL_SO_NUMBER_DESCENDING )
       answer = -answer;
   }
   return answer;
@@ -830,6 +849,7 @@ void vik_treeview_sort_children ( VikTreeview *vt, GtkTreeIter *parent, vik_laye
     sort_array[ii].offset = ii;
     gtk_tree_model_get ( model, &child, NAME_COLUMN, &(sort_array[ii].name), -1 );
     gtk_tree_model_get ( model, &child, ITEM_TIMESTAMP_COLUMN, &(sort_array[ii].timestamp), -1 );
+    gtk_tree_model_get ( model, &child, ITEM_NUMBER_COLUMN, &(sort_array[ii].number), -1 );
     ii++;
   } while ( gtk_tree_model_iter_next (model, &child) );
 

@@ -1242,13 +1242,21 @@ static int sort_hash_compare ( gconstpointer aa, gconstpointer bb, gpointer orde
 		if ( GPOINTER_TO_INT(order) == VL_SO_ALPHABETICAL_DESCENDING )
 			answer = -answer;
 	}
-	else {
+	else if ( GPOINTER_TO_INT(order) < VL_SO_NUMBER_ASCENDING ) {
 		// Date comparison
 		gboolean ans = ( sa->timestamp > sb->timestamp );
 		if ( ans )
 			answer = 1;
 		// Invert sort order for descending order
 		if ( GPOINTER_TO_INT(order) == VL_SO_DATE_DESCENDING )
+			answer = -answer;
+	} else {
+		// Number comparison
+		gboolean ans = ( sa->number > sb->number );
+		if ( ans )
+			answer = 1;
+		// Invert sort order for descending order
+		if ( GPOINTER_TO_INT(order) == VL_SO_NUMBER_DESCENDING )
 			answer = -answer;
 	}
 	return answer;

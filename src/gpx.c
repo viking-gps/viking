@@ -66,11 +66,12 @@ typedef enum {
         tt_wpt_dgpsid,
 
         tt_trk,
+        tt_trk_name,
         tt_trk_cmt,
         tt_trk_desc,
         tt_trk_src,
+        tt_trk_number,
         tt_trk_type,
-        tt_trk_name,
 
         tt_rte,
 
@@ -162,6 +163,7 @@ static tag_mapping tag_path_map[] = {
         { tt_trk_cmt, "/gpx/trk/cmt" },
         { tt_trk_desc, "/gpx/trk/desc" },
         { tt_trk_src, "/gpx/trk/src" },
+        { tt_trk_number, "/gpx/trk/number" },
         { tt_trk_type, "/gpx/trk/type" },
         { tt_trk_trkseg, "/gpx/trk/trkseg" },
         { tt_trk_trkseg_trkpt, "/gpx/trk/trkseg/trkpt" },
@@ -184,6 +186,7 @@ static tag_mapping tag_path_map[] = {
         { tt_trk_cmt, "/gpx/rte/cmt" },
         { tt_trk_desc, "/gpx/rte/desc" },
         { tt_trk_src, "/gpx/rte/src" },
+        { tt_trk_number, "/gpx/rte/number" },
         { tt_trk_type, "/gpx/rte/type" },  // NB 'Proposed' in GPX 1.0 and properly in 1.1
         { tt_trk_trkseg_trkpt, "/gpx/rte/rtept" },
         { tt_trk_trkseg_trkpt_name, "/gpx/rte/rtept/name" },
@@ -344,6 +347,7 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
      case tt_trk_cmt:
      case tt_trk_desc:
      case tt_trk_src:
+     case tt_trk_number:
      case tt_trk_type:
      case tt_trk_name:
        g_string_erase ( c_cdata, 0, -1 ); /* clear the cdata buffer */
@@ -633,6 +637,11 @@ static void gpx_end(UserDataT *ud, const char *el)
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
+     case tt_trk_number:
+       c_tr->number = atoi ( c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
      case tt_trk_type:
        vik_track_set_type ( c_tr, c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
@@ -750,6 +759,7 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_trk_cmt:
     case tt_trk_desc:
     case tt_trk_src:
+    case tt_trk_number:
     case tt_trk_type:
     case tt_trk_trkseg_trkpt_time:
     case tt_wpt_time:
@@ -1218,6 +1228,7 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
   write_string ( f, TRK_SPACES, "cmt", t->comment );
   write_string ( f, TRK_SPACES, "desc", t->description );
   write_string ( f, TRK_SPACES, "src", t->source );
+  write_positive_uint ( f, TRK_SPACES, "number", t->number );
   write_string ( f, TRK_SPACES, "type", t->type );
 
   /* No such thing as a rteseg! */

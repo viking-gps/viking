@@ -84,6 +84,7 @@ typedef struct SortTRWHash
 	guint uuid;
 	gchar *name;
 	gdouble timestamp;
+	guint number;  // Generally only for tracks
 	VikTRWDataTypeT type;
 	gpointer data; // VikWaypoint or VikTrack
 } SortTRWHashT;

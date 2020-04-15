@@ -180,6 +180,7 @@ VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
   VikTrack *new_tr = vik_track_new();
   new_tr->visible = tr->visible;
   new_tr->is_route = tr->is_route;
+  new_tr->number = tr->number;
   new_tr->draw_name_mode = tr->draw_name_mode;
   new_tr->max_number_dist_labels = tr->max_number_dist_labels;
   new_tr->has_color = tr->has_color;
@@ -1614,6 +1615,7 @@ VikTrack *vik_track_unmarshall (const guint8 *data_in, guint datalen)
   new_tr->has_color = ((VikTrack *)data)->has_color;
   new_tr->color = ((VikTrack *)data)->color;
   new_tr->bbox = ((VikTrack *)data)->bbox;
+  new_tr->number = ((VikTrack *)data)->number;
 
   data += sizeof(*new_tr);
 
