@@ -5,7 +5,7 @@
  * Copyright (C) 2007, Quy Tonthat <qtonthat@gmail.com>
  * Copyright (C) 2008, Hein Ragas <viking@ragas.nl>
  * Copyright (C) 2009, Tal B <tal.bav@gmail.com>
- * Copyright (c) 2012-2014, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (c) 2012-2020, Rob Norris <rw_norris@hotmail.com>
  *
  * Some of the code adapted from GPSBabel 1.2.7
  * http://gpsbabel.sf.net/
@@ -38,8 +38,11 @@ typedef enum {
         tt_gpx_name,
         tt_gpx_desc,
         tt_gpx_author,
+        tt_gpx_url,
         tt_gpx_time,
         tt_gpx_keywords,
+        tt_gpx_extensions,      // GPX 1.1
+        tt_gpx_an_extension,    // Generic GPX 1.1 extensions
 
         tt_wpt,
         tt_wpt_cmt,
@@ -65,6 +68,9 @@ typedef enum {
         tt_wpt_ageofdgpsdata,
         tt_wpt_dgpsid,
 
+        tt_wpt_extensions,      // GPX 1.1
+        tt_wpt_an_extension,    // Generic GPX 1.1 extensions
+
         tt_trk,
         tt_trk_name,
         tt_trk_cmt,
@@ -72,6 +78,9 @@ typedef enum {
         tt_trk_src,
         tt_trk_number,
         tt_trk_type,
+
+        tt_trk_extensions,      // GPX 1.1
+        tt_trk_an_extension,    // Generic GPX 1.1 extensions
 
         tt_rte,
 
@@ -81,14 +90,17 @@ typedef enum {
         tt_trk_trkseg_trkpt_time,
         tt_trk_trkseg_trkpt_name,
         /* extended */
-        tt_trk_trkseg_trkpt_course,
-        tt_trk_trkseg_trkpt_speed,
+        tt_trk_trkseg_trkpt_course,        // Not in GPX 1.1 (although can be in extensions in 1.1)
+        tt_trk_trkseg_trkpt_speed,         // Not in GPX 1.1 (although can be in extensions in 1.1)
         tt_trk_trkseg_trkpt_fix,
         tt_trk_trkseg_trkpt_sat,
 
         tt_trk_trkseg_trkpt_hdop,
         tt_trk_trkseg_trkpt_vdop,
         tt_trk_trkseg_trkpt_pdop,
+
+        tt_trk_trkseg_trkpt_extensions,    // GPX 1.1
+        tt_trk_trkseg_trkpt_an_extension,  // Generic GPX 1.1 extensions
 
         tt_waypoint,
         tt_waypoint_coord,
@@ -117,15 +129,17 @@ static tag_mapping tag_path_map[] = {
         { tt_gpx, "/gpx" },
         { tt_gpx_name, "/gpx/name" },
         { tt_gpx_desc, "/gpx/desc" },
-        { tt_gpx_time, "/gpx/time" },
         { tt_gpx_author, "/gpx/author" },
+        { tt_gpx_url, "/gpx/url" },
+        { tt_gpx_time, "/gpx/time" },
         { tt_gpx_keywords, "/gpx/keywords" },
 
         // GPX 1.1 variant - basic properties moved into metadata namespace
         { tt_gpx_name, "/gpx/metadata/name" },
         { tt_gpx_desc, "/gpx/metadata/desc" },
-        { tt_gpx_time, "/gpx/metadata/time" },
         { tt_gpx_author, "/gpx/metadata/author/name" },
+        { tt_gpx_time, "/gpx/metadata/time" },
+        { tt_gpx_url, "/gpx/metadata/link" },
         { tt_gpx_keywords, "/gpx/metadata/keywords" },
 
         { tt_wpt, "/gpx/wpt" },
@@ -195,6 +209,28 @@ static tag_mapping tag_path_map[] = {
         {0}
 };
 
+
+static tag_mapping extention_tag_path_map[] = {
+  { tt_trk_trkseg_trkpt_an_extension, "/gpx/trk/trkseg/trkpt/extensions/" }, // Anything in this namespace
+  { tt_trk_trkseg_trkpt_extensions, "/gpx/trk/trkseg/trkpt/extensions" },
+  { tt_trk_an_extension, "/gpx/trk/extensions/" }, // Anything in this namespace
+  { tt_trk_extensions, "/gpx/trk/extensions" },
+  { tt_wpt_an_extension, "/gpx/wpt/extensions/" }, // Anything in this namespace
+  { tt_wpt_extensions, "/gpx/wpt/extensions" },
+  { tt_gpx_an_extension, "/gpx/extensions/" }, // Anything in this namespace
+  { tt_gpx_extensions, "/gpx/extensions" },
+  { 0 }
+};
+
+static tag_type get_tag_extension ( const char *tt )
+{
+  tag_mapping *tm;
+  for ( tm = extention_tag_path_map; tm->tag_type != 0; tm++ )
+    if ( 0 == g_ascii_strncasecmp(tm->tag_name, tt, strlen(tm->tag_name)) )
+      return tm->tag_type;
+  return tt_unknown;
+}
+
 static tag_type get_tag(const char *t)
 {
         tag_mapping *tm;
@@ -208,13 +244,15 @@ static tag_type get_tag(const char *t)
 
 static tag_type current_tag = tt_unknown;
 static GString *xpath = NULL;
-static GString *c_cdata = NULL;
 
 /* current ("c_") objects */
 static VikTrackpoint *c_tp = NULL;
 static VikWaypoint *c_wp = NULL;
 static VikTrack *c_tr = NULL;
 static VikTRWMetadata *c_md = NULL;
+static GString *c_cdata = NULL;
+static GString *c_ext = NULL;
+static GString *c_trkpt_ext = NULL;
 
 static gchar *c_wp_name = NULL;
 static gchar *c_tr_name = NULL;
@@ -245,6 +283,38 @@ static const char *get_attr ( const char **attr, const char *key )
   return NULL;
 }
 
+/**
+ * Get the full gpx header,
+ *  except for some attributes that we handle separately
+ */
+static GString *get_header ( const char **attr )
+{
+  // Rebuild the header per attribute
+  GString *gs = g_string_new ( NULL );
+
+  guint count = 0;
+  while ( *attr ) {
+    // Skip parts the we handle separately
+    if ( g_strcmp0(*attr, "version") == 0 ) {
+      attr += 2;
+      continue;
+    }
+    if ( g_strcmp0(*attr, "creator") == 0 ) {
+      attr += 2;
+      continue;
+    }
+
+    if ( count % 2 )
+      g_string_append_printf ( gs, "\"%s\"", *attr );
+    else
+      g_string_append_printf ( gs, " %s=", *attr );
+
+    count++;
+    attr += 1;
+  }
+  return gs;
+}
+
 static gboolean set_c_ll ( const char **attr )
 {
   if ( (c_slat = get_attr ( attr, "lat" )) && (c_slon = get_attr ( attr, "lon" )) ) {
@@ -255,6 +325,21 @@ static gboolean set_c_ll ( const char **attr )
   return FALSE;
 }
 
+static void extension_append_attributions ( GString *gs, const char *el, const char **attr )
+{
+  guint count = 0;
+  g_string_append_printf ( gs, "<%s", el );
+  while ( *attr ) {
+    if ( count % 2 )
+      g_string_append_printf ( gs, "\"%s\"", *attr );
+    else
+      g_string_append_printf ( gs, " %s=", *attr );
+    count++;
+    attr += 1;
+  }
+  g_string_append_c ( gs, '>' );
+}
+
 static void gpx_start(UserDataT *ud, const char *el, const char **attr)
 {
   static const gchar *tmp;
@@ -263,19 +348,29 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
   g_string_append_c ( xpath, '/' );
   g_string_append ( xpath, el );
   current_tag = get_tag ( xpath->str );
+  if ( current_tag == tt_unknown )
+    current_tag = get_tag_extension ( xpath->str );
 
   switch ( current_tag ) {
 
      case tt_gpx:
-       c_md = vik_trw_metadata_new();
-       // Store creator information if possible
-       const gchar *crt = get_attr ( attr, "creator" );
-       if ( crt ) {
-         // If there is an actual description field it will overwrite this value
-         c_md->description = g_strdup_printf ( _("Created by: %s"), crt );
+       {
+         c_md = vik_trw_metadata_new();
+         // Store creator information if possible
+         const gchar *crt = get_attr ( attr, "creator" );
+         if ( crt ) {
+           // If there is an actual description field it will overwrite this value
+           c_md->description = g_strdup_printf ( _("Created by: %s"), crt );
+         }
+         const gchar *version = get_attr ( attr, "version" );
+         if ( g_strcmp0(version, "1.1") == 0 ) {
+	   vik_trw_layer_set_gpx_version ( vtl, GPX_V1_1 );
+	 }
+	 GString *gs = get_header ( attr );
+	 vik_trw_layer_set_gpx_header ( vtl, gs->str );
+	 g_string_free ( gs, FALSE ); // NB string now owned by vtl
        }
        break;
-
      case tt_wpt:
        if ( set_c_ll( attr ) ) {
          c_wp = vik_waypoint_new ();
@@ -313,6 +408,7 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
        }
        break;
 
+     case tt_gpx_url:
      case tt_wpt_link:
        c_link = get_attr ( attr, "href" );
        break;
@@ -372,6 +468,23 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
        g_string_erase ( c_cdata, 0, -1 ); /* clear the cdata buffer for description */
        break;
         
+     case tt_gpx_extensions:
+     case tt_wpt_extensions:
+     case tt_trk_extensions:
+       g_string_erase ( c_ext, 0, -1 ); // clear the buffer
+       break;      
+     case tt_trk_trkseg_trkpt_extensions:
+       g_string_erase ( c_trkpt_ext, 0, -1 ); // clear the buffer
+       break;
+     case tt_gpx_an_extension:
+     case tt_wpt_an_extension:
+     case tt_trk_an_extension:
+       extension_append_attributions ( c_ext, el, attr );
+       break;
+     case tt_trk_trkseg_trkpt_an_extension:
+       extension_append_attributions ( c_trkpt_ext, el, attr );
+       break;
+
      default: break;
   }
 }
@@ -456,6 +569,19 @@ static void gpx_end(UserDataT *ud, const char *el)
          g_free ( c_md->timestamp );
        c_md->timestamp = g_strdup ( c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_gpx_url:
+       if ( c_md->url )
+         g_free ( c_md->url );
+       if ( c_cdata->len > 0 ) {
+         c_md->url = g_strdup ( c_cdata->str );
+         g_string_erase ( c_cdata, 0, -1 );
+       }
+       else if ( c_link ) {
+         c_md->url = g_strdup ( c_link );
+         c_link = NULL;
+       }
        break;
 
      case tt_waypoint:
@@ -719,10 +845,41 @@ static void gpx_end(UserDataT *ud, const char *el)
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
+     case tt_gpx_an_extension:
+     case tt_wpt_an_extension:
+     case tt_trk_an_extension:
+       g_string_append_printf ( c_ext, "</%s>", el );
+       break;
+     case tt_trk_trkseg_trkpt_an_extension:
+       g_string_append_printf ( c_trkpt_ext, "</%s>", el );
+       break;
+
+     case tt_trk_extensions:
+       vik_track_set_extensions ( c_tr, c_ext->str );
+       g_string_erase ( c_ext, 0, -1 );
+       break;
+
+     case tt_gpx_extensions:
+       vik_trw_layer_set_gpx_extensions ( vtl, c_ext->str );
+       g_string_erase ( c_ext, 0, -1 );
+       break;
+
+     case tt_wpt_extensions:
+       vik_waypoint_set_extensions ( c_wp, c_ext->str );
+       g_string_erase ( c_ext, 0, -1 );
+       break;
+
+     case tt_trk_trkseg_trkpt_extensions:
+       vik_trackpoint_set_extensions ( c_tp, c_trkpt_ext->str );
+       g_string_erase ( c_trkpt_ext, 0, -1 );
+       break;
+
      default: break;
   }
 
   current_tag = get_tag ( xpath->str );
+  if ( current_tag == tt_unknown )
+    current_tag = get_tag_extension ( xpath->str );
 }
 
 static void gpx_cdata(void *dta, const XML_Char *s, int len)
@@ -733,6 +890,7 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_gpx_desc:
     case tt_gpx_keywords:
     case tt_gpx_time:
+    case tt_gpx_url:
     case tt_wpt_name:
     case tt_trk_name:
     case tt_wpt_ele:
@@ -775,6 +933,19 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
       g_string_append_len ( c_cdata, s, len );
       break;
 
+    case tt_trk_trkseg_trkpt_an_extension:
+    case tt_trk_trkseg_trkpt_extensions:
+      g_string_append_len ( c_trkpt_ext, s, len );
+      break;
+    case tt_trk_an_extension:
+    case tt_trk_extensions:
+    case tt_wpt_an_extension:
+    case tt_wpt_extensions:
+    case tt_gpx_an_extension:
+    case tt_gpx_extensions:
+      g_string_append_len ( c_ext, s, len );
+      break;
+
     default: break;  /* ignore cdata from other things */
   }
 }
@@ -801,6 +972,8 @@ gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath ) {
 
   xpath = g_string_new ( "" );
   c_cdata = g_string_new ( "" );
+  c_ext = g_string_new ( NULL );
+  c_trkpt_ext = g_string_new ( NULL );
 
   unnamed_waypoints = 1;
   unnamed_tracks = 1;
@@ -1013,8 +1186,15 @@ static void write_string ( FILE *ff, guint spaces, const gchar *tag, const gchar
 {
   if ( value && strlen(value) ) {
     gchar *tmp = entitize ( value );
-    fprintf ( ff, "%*s<%s>%s</%s>\n", spaces, "", tag, value, tag );
+    fprintf ( ff, "%*s<%s>%s</%s>\n", spaces, "", tag, tmp, tag );
     g_free ( tmp );
+  }
+}
+
+static void write_string_as_is ( FILE *ff, guint spaces, const gchar *tag, const gchar *value )
+{
+  if ( value && strlen(value) ) {
+    fprintf ( ff, "%*s<%s>%s</%s>\n", spaces, "", tag, value, tag );
   }
 }
 
@@ -1055,8 +1235,10 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
     g_free ( time_iso8601 );
   }
 
-  write_double ( f, WPT_SPACES, "course", wp->course );
-  write_double ( f, WPT_SPACES, "speed", wp->speed );
+  if ( !context->options || (context->options && context->options->version == GPX_V1_0) ) {
+    write_double ( f, WPT_SPACES, "course", wp->course );
+    write_double ( f, WPT_SPACES, "speed", wp->speed );
+  }
   write_double ( f, WPT_SPACES, "magvar", wp->magvar );
   write_double ( f, WPT_SPACES, "geoidheight", wp->geoidheight );
 
@@ -1073,8 +1255,12 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   write_string ( f, WPT_SPACES, "desc", wp->description );
   write_string ( f, WPT_SPACES, "src", wp->source );
 
-  write_string ( f, WPT_SPACES, "url", wp->url );
-  write_string ( f, WPT_SPACES, "urlname", wp->url_name );
+  if ( wp->url && context->options && context->options->version == GPX_V1_1 ) {
+    fprintf ( f, "  <link href=\"%s\"></link>\n", wp->url );
+  } else {
+    write_string ( f, WPT_SPACES, "url", wp->url );
+    write_string ( f, WPT_SPACES, "urlname", wp->url_name );
+  }
 
   if ( wp->image )
   {
@@ -1092,6 +1278,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
     fprintf ( f, "  <link href=\"%s\"></link>\n", tmp );
     g_free ( tmp );
   }
+
   if ( wp->symbol ) 
   {
     tmp = entitize(wp->symbol);
@@ -1122,6 +1309,8 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   write_double ( f, WPT_SPACES, "pdop", wp->pdop );
   write_double ( f, WPT_SPACES, "ageofdgpsdata", wp->ageofdgpsdata );
   write_positive_uint ( f, WPT_SPACES, "dgpsid", wp->dgpsid );
+
+  write_string_as_is ( f, WPT_SPACES, "extensions", wp->extensions );
 
   fprintf ( f, "</wpt>\n" );
 }
@@ -1177,9 +1366,11 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
     fprintf ( f, "    <time>%s</time>\n", time_iso8601 );
   g_free(time_iso8601);
   time_iso8601 = NULL;
-  
-  write_double ( f, TRKPT_SPACES, "course", tp->course );
-  write_double ( f, TRKPT_SPACES, "speed", tp->speed );
+
+  if ( !context->options || (context->options && context->options->version == GPX_V1_0) ) {
+    write_double ( f, TRKPT_SPACES, "course", tp->course );
+    write_double ( f, TRKPT_SPACES, "speed", tp->speed );
+  }
   write_string ( f, TRKPT_SPACES, "name", tp->name );
 
   if (tp->fix_mode == VIK_GPS_MODE_2D)
@@ -1195,6 +1386,8 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   write_double ( f, TRKPT_SPACES, "hdop", tp->hdop );
   write_double ( f, TRKPT_SPACES, "vdop", tp->vdop );
   write_double ( f, TRKPT_SPACES, "pdop", tp->pdop );
+
+  write_string_as_is ( f, TRKPT_SPACES, "extensions", tp->extensions );
 
   fprintf ( f, "  </%spt>\n", (context->options && context->options->is_route) ? "rte" : "trk" );
 }
@@ -1230,6 +1423,7 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
   write_string ( f, TRK_SPACES, "src", t->source );
   write_positive_uint ( f, TRK_SPACES, "number", t->number );
   write_string ( f, TRK_SPACES, "type", t->type );
+  write_string_as_is ( f, TRK_SPACES, "extensions", t->extensions );
 
   /* No such thing as a rteseg! */
   if ( !t->is_route )
@@ -1245,11 +1439,10 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
   /* NB apparently no such thing as a rteseg! */
   if (!t->is_route)
     fprintf ( f, "  </trkseg>\n");
-
   fprintf ( f, "</%s>\n", t->is_route ? "rte" : "trk" );
 }
 
-static void gpx_write_header( FILE *f )
+static void gpx_write_header( FILE *f, VikTrwLayer *vtl )
 {
   // Allow overriding the creator value
   // E.g. if something actually cares about it, see for example:
@@ -1260,12 +1453,31 @@ static void gpx_write_header( FILE *f )
     creator = g_strdup_printf("Viking %s -- %s", PACKAGE_VERSION, PACKAGE_URL);
   }
 
-  fprintf(f, "<?xml version=\"1.0\"?>\n"
-             "<gpx version=\"1.0\"\n");
-  fprintf(f, "creator=\"%s\"\n", creator);
-  fprintf(f,"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-            "xmlns=\"http://www.topografix.com/GPX/1/0\"\n"
-            "xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">\n");
+  fprintf(f, "<?xml version=\"1.0\"?>\n");
+  // if ( option_export_as() == GPX_V1_1 || ...
+  if ( vtl && vik_trw_layer_get_gpx_version(vtl) == GPX_V1_1 ) {
+    fprintf(f, "<gpx version=\"1.1\"\n");
+    fprintf(f, "creator=\"%s\"\n", creator);
+    gchar *header = vik_trw_layer_get_gpx_header(vtl);
+    if ( header ) {
+      fprintf(f, header);
+      fprintf(f, ">\n");
+    }
+    else {
+      // TODO determine if all these and/or more/others are necessary
+      fprintf(f, "xmlns=\"http://www.topografix.com/GPX/1/1\" "
+                 "xmlns:gpxx=\"http://www.garmin.com/xmlschemas/GpxExtensions/v3\" "
+                 "xmlns:wptx1=\"http://www.garmin.com/xmlschemas/WaypointExtension/v1\" "
+                 "xmlns:gpxtpx=\"http://www.garmin.com/xmlschemas/TrackPointExtension/v1\" "
+                 "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd\">\n");
+    }
+  } else {
+    fprintf(f, "<gpx version=\"1.0\"\n");
+    fprintf(f, "creator=\"%s\"\n", creator);
+    fprintf(f,"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+              "xmlns=\"http://www.topografix.com/GPX/1/0\"\n"
+              "xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">\n");
+}
   g_free(creator);
 }
 
@@ -1292,7 +1504,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
 {
   GpxWritingContext context = { options, f, dirpath };
 
-  gpx_write_header ( f );
+  gpx_write_header ( f, vtl );
 
   //gchar *tmp;
   const gchar *name = vik_layer_get_name(VIK_LAYER(vtl));
@@ -1300,10 +1512,23 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
 
   VikTRWMetadata *md = vik_trw_layer_get_metadata (vtl);
   if ( md ) {
-    write_string ( f, TRK_SPACES, "author", md->author );
-    write_string ( f, TRK_SPACES, "desc", md->description );
-    write_string ( f, TRK_SPACES, "time", md->timestamp );
-    write_string ( f, TRK_SPACES, "keywords", md->keywords );
+    if ( options && options->version == GPX_V1_1 ) {
+      fprintf ( f, "  <metadata>\n" );
+      if ( md->author )
+        fprintf ( f, "    <author><name>%s</author></name>\n", md->author );
+      write_string ( f, 4, "desc", md->description );
+      if ( md->url )
+        fprintf ( f, "    <link href=\"%s\"></link>\n", md->url );
+      write_string ( f, 4, "keywords", md->keywords );
+      fprintf ( f, "  </metadata>\n" );
+    }
+    else {
+      write_string ( f, TRK_SPACES, "author", md->author );
+      write_string ( f, TRK_SPACES, "desc", md->description );
+      write_string ( f, TRK_SPACES, "url", md->url );
+      write_string ( f, TRK_SPACES, "time", md->timestamp );
+      write_string ( f, TRK_SPACES, "keywords", md->keywords );
+    }
   }
 
   if ( vik_trw_layer_get_waypoints_visibility(vtl) || (options && options->hidden) ) {
@@ -1347,7 +1572,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
   // so process each list separately
 
   GpxWritingContext context_tmp = context;
-  GpxWritingOptions opt_tmp = { FALSE, FALSE, FALSE, FALSE };
+  GpxWritingOptions opt_tmp = { FALSE, FALSE, FALSE, FALSE, vik_trw_layer_get_gpx_version(vtl) };
   // Force trackpoints on tracks
   if ( !context.options )
     context_tmp.options = &opt_tmp;
@@ -1367,13 +1592,17 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
   g_list_free ( gl );
   g_list_free ( glrte );
 
+  gchar *ext = vik_trw_layer_get_gpx_extensions ( vtl );
+  if ( ext )
+    write_string_as_is ( f, 0, "extensions", ext );
+
   gpx_write_footer ( f );
 }
 
 void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options )
 {
   GpxWritingContext context = {options, f};
-  gpx_write_header ( f );
+  gpx_write_header ( f, NULL );
   gpx_write_track ( trk, &context );
   gpx_write_footer ( f );
 }

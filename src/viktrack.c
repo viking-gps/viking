@@ -126,6 +126,17 @@ void vik_track_set_type(VikTrack *tr, const gchar *type)
     tr->type = NULL;
 }
 
+void vik_track_set_extensions ( VikTrack *tr, const gchar *value )
+{
+  if ( tr->extensions )
+    g_free ( tr->extensions );
+
+  if ( value && value[0] != '\0' )
+    tr->extensions = g_strdup ( value );
+  else
+    tr->extensions = NULL;
+}
+
 void vik_track_ref(VikTrack *tr)
 {
   tr->ref_count++;
@@ -157,6 +168,8 @@ void vik_track_free(VikTrack *tr)
     g_free ( tr->source );
   if ( tr->type )
     g_free ( tr->type );
+  if ( tr->extensions )
+    g_free ( tr->extensions );
   g_list_foreach ( tr->trackpoints, (GFunc) vik_trackpoint_free, NULL );
   g_list_free( tr->trackpoints );
   if (tr->property_dialog)
@@ -204,6 +217,7 @@ VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
   vik_track_set_description(new_tr,tr->description);
   vik_track_set_source(new_tr,tr->source);
   vik_track_set_type(new_tr,tr->type);
+  vik_track_set_extensions(new_tr,tr->extensions);
   return new_tr;
 }
 
@@ -223,6 +237,7 @@ VikTrackpoint *vik_trackpoint_new()
 void vik_trackpoint_free(VikTrackpoint *tp)
 {
   g_free(tp->name);
+  g_free(tp->extensions);
   g_free(tp);
 }
 
@@ -240,12 +255,26 @@ void vik_trackpoint_set_name(VikTrackpoint *tp, const gchar *name)
     tp->name = NULL;
 }
 
+void vik_trackpoint_set_extensions(VikTrackpoint *tp, const gchar *value)
+{
+  if ( tp->extensions )
+    g_free ( tp->extensions );
+  if ( value && value[0] == '\0' )
+    tp->extensions = NULL;
+  else if ( value )
+    tp->extensions = g_strdup ( value );
+  else
+    tp->extensions = NULL;
+}
+
 VikTrackpoint *vik_trackpoint_copy(VikTrackpoint *tp)
 {
   VikTrackpoint *new_tp = vik_trackpoint_new();
   memcpy ( new_tp, tp, sizeof(VikTrackpoint) );
   if ( tp->name )
     new_tp->name = g_strdup (tp->name);
+  if ( tp->extensions )
+    new_tp->extensions = g_strdup (tp->extensions);
   return new_tp;
 }
 
@@ -513,6 +542,7 @@ gboolean vik_track_remove_dodgy_first_point ( VikTrack *vt, guint speed, gboolea
 /*
  * Deletes all 'extra' trackpoint information
  *  such as time stamps, speed, course etc...
+ *  also any GPX extension values are wiped
  */
 void vik_track_to_routepoints ( VikTrack *tr )
 {
@@ -520,7 +550,6 @@ void vik_track_to_routepoints ( VikTrack *tr )
   while ( iter ) {
 
     // c.f. with vik_trackpoint_new()
-
     VIK_TRACKPOINT(iter->data)->timestamp = NAN;
     VIK_TRACKPOINT(iter->data)->speed = NAN;
     VIK_TRACKPOINT(iter->data)->course = NAN;
@@ -529,6 +558,8 @@ void vik_track_to_routepoints ( VikTrack *tr )
     VIK_TRACKPOINT(iter->data)->pdop = NAN;
     VIK_TRACKPOINT(iter->data)->nsats = 0;
     VIK_TRACKPOINT(iter->data)->fix_mode = VIK_GPS_MODE_NOT_SEEN;
+    g_free ( VIK_TRACKPOINT(iter->data)->extensions );
+    VIK_TRACKPOINT(iter->data)->extensions = NULL;
 
     iter = iter->next;
   }
@@ -1594,6 +1625,7 @@ void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *datalen)
   vtm_append(tr->description);
   vtm_append(tr->source);
   vtm_append(tr->type);
+  vtm_append(tr->extensions);
 
   *data = b->data;
   *datalen = b->len;
@@ -1652,6 +1684,7 @@ VikTrack *vik_track_unmarshall (const guint8 *data_in, guint datalen)
   vtu_get(new_tr->description);
   vtu_get(new_tr->source);
   vtu_get(new_tr->type);
+  vtu_get(new_tr->extensions);
 
   return new_tr;
 }

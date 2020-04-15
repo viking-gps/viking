@@ -471,7 +471,8 @@ Besides it's own file type, &appname; can open (and save to via export methods) 
 </para>
 <note>
 <para>
-&appname; does not handle GPX 1.1 particularly well - it prefers GPX 1.0
+&appname; operates primarily on GPX 1.0 files. Extensions from GPX 1.1 are supported in a read/write only fashion;
+ with only viewing of the raw data (i.e. no editing). Extension information is not saved in .vik format files.
 </para>
 </note>
 <para>

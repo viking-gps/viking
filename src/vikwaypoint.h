@@ -70,6 +70,7 @@ struct _VikWaypoint {
   guint8 image_width;
   guint8 image_height;
   gchar *symbol;
+  gchar *extensions;         // GPX 1.1
   // Only for GUI display
   GdkPixbuf *symbol_pixbuf;
 };
@@ -85,6 +86,7 @@ void vik_waypoint_set_url_name(VikWaypoint *wp, const gchar *url_name);
 void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image);
 void vik_waypoint_set_image_direction_info(VikWaypoint *wp, gdouble direction, VikWaypointImageDirectionRef direction_ref);
 void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname);
+void vik_waypoint_set_extensions(VikWaypoint *wp, const gchar *value);
 void vik_waypoint_free(VikWaypoint * wp);
 VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp);
 void vik_waypoint_set_comment_no_copy(VikWaypoint *wp, gchar *comment);

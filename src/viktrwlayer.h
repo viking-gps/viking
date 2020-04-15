@@ -57,18 +57,33 @@ GType vik_trw_layer_get_type ();
 
 typedef struct _VikTrwLayer VikTrwLayer;
 
+typedef enum {
+  GPX_V1_0 = 0,
+  GPX_V1_1,
+  // ATM V1.1 is implicitly Garmin...
+  //GPX_V1_1_GARMIN,
+} gpx_version_t;
+
 typedef struct {
   gchar *description;
   gchar *author;
   //gboolean has_time;
   gchar *timestamp; // TODO: Consider storing as proper time_t.
   gchar *keywords; // TODO: handling/storing a GList of individual tags?
+  gchar *url;
 } VikTRWMetadata;
 
 VikTRWMetadata *vik_trw_metadata_new();
-void vik_trw_metadata_free ( VikTRWMetadata *metadata);
+void vik_trw_metadata_free ( VikTRWMetadata *metadata );
 VikTRWMetadata *vik_trw_layer_get_metadata ( VikTrwLayer *vtl );
-void vik_trw_layer_set_metadata ( VikTrwLayer *vtl, VikTRWMetadata *metadata);
+void vik_trw_layer_set_metadata ( VikTrwLayer *vtl, VikTRWMetadata *metadata );
+
+gpx_version_t vik_trw_layer_get_gpx_version ( VikTrwLayer *vtl );
+void vik_trw_layer_set_gpx_version ( VikTrwLayer *vtl, gpx_version_t value );
+gchar *vik_trw_layer_get_gpx_header ( VikTrwLayer *vtl );
+void vik_trw_layer_set_gpx_header ( VikTrwLayer *vtl, gchar* value );
+gchar *vik_trw_layer_get_gpx_extensions ( VikTrwLayer *vtl );
+void vik_trw_layer_set_gpx_extensions ( VikTrwLayer *vtl, gchar *value);
 
 void vik_trwlayer_uninit ();
 

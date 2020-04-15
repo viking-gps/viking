@@ -208,7 +208,7 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
 void vik_trw_layer_export_external_gpx ( VikTrwLayer *vtl, const gchar* external_program )
 {
   // Don't Export invisible items
-  static GpxWritingOptions options = { TRUE, TRUE, FALSE, FALSE };
+  GpxWritingOptions options = { TRUE, TRUE, FALSE, FALSE, vik_trw_layer_get_gpx_version(vtl) };
   gchar *name_used = a_gpx_write_tmp_file ( vtl, &options );
 
   if ( name_used ) {

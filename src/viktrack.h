@@ -50,6 +50,7 @@ struct _VikTrackpoint {
   gdouble hdop;     /* NAN if data unavailable */
   gdouble vdop;     /* NAN if data unavailable */
   gdouble pdop;     /* NAN if data unavailable */
+  gchar *extensions; // GPX 1.1 extensions - currently uneditable
 };
 
 typedef enum {
@@ -82,6 +83,7 @@ struct _VikTrack {
   gchar *type;
   guint8 ref_count;
   gchar *name;
+  gchar *extensions; // GPX 1.1 extensions - currently uneditable
   GtkWidget *property_dialog;
   gboolean has_color;
   GdkColor color;
@@ -103,6 +105,7 @@ void vik_track_set_comment(VikTrack *tr, const gchar *comment);
 void vik_track_set_description(VikTrack *tr, const gchar *description);
 void vik_track_set_source(VikTrack *tr, const gchar *source);
 void vik_track_set_type(VikTrack *tr, const gchar *type);
+void vik_track_set_extensions(VikTrack *tr, const gchar *value);
 void vik_track_ref(VikTrack *tr);
 void vik_track_free(VikTrack *tr);
 VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points );
@@ -111,6 +114,7 @@ VikTrackpoint *vik_trackpoint_new();
 void vik_trackpoint_free(VikTrackpoint *tp);
 VikTrackpoint *vik_trackpoint_copy(VikTrackpoint *tp);
 void vik_trackpoint_set_name(VikTrackpoint *tp, const gchar *name);
+void vik_trackpoint_set_extensions(VikTrackpoint *tp, const gchar *value);
 gboolean vik_trackpoint_apply_dem_data(VikTrackpoint *tp);
 
 void vik_track_add_trackpoint(VikTrack *tr, VikTrackpoint *tp, gboolean recalculate);

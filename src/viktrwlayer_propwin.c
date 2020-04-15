@@ -2829,6 +2829,15 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   gtk_notebook_append_page ( GTK_NOTEBOOK(props), table, gtk_label_new(_("General")));
   gtk_notebook_append_page ( GTK_NOTEBOOK(props), table_draw, gtk_label_new(_("Drawing")));
 
+  if ( widgets->tr->extensions ) {
+    GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
+    gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+    GtkWidget *ext = ui_label_new_selectable ( widgets->tr->extensions );
+    gtk_widget_set_can_focus ( GTK_WIDGET(ext), FALSE ); // Don't let notebook autofocus on it
+    gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(sw), ext );
+    gtk_notebook_append_page ( GTK_NOTEBOOK(props), sw, gtk_label_new(_("GPX Extensions")) );
+  }
+
   gtk_notebook_append_page ( GTK_NOTEBOOK(graphs), GTK_WIDGET(props), gtk_label_new(_("Properties")) );
   gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_statistics_page(widgets, widgets->tr), gtk_label_new(_("Statistics")));
 

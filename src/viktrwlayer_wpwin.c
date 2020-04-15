@@ -547,6 +547,14 @@ gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *
 
   gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), GTK_WIDGET(basic), gtk_label_new(_("Basic")) );
   gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), GTK_WIDGET(extra), gtk_label_new(_("Extra")) );
+
+  if ( wp->extensions ) {
+    GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
+    gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+    GtkWidget *ext = ui_label_new_selectable ( wp->extensions );
+    gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(sw), ext );
+    gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), sw, gtk_label_new(_("GPX Extensions")) );
+  }
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(tabs), FALSE, FALSE, 0);
 
   gtk_widget_show_all ( gtk_dialog_get_content_area(GTK_DIALOG(dialog)) );

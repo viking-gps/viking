@@ -892,7 +892,10 @@ gboolean a_file_check_ext ( const gchar *filename, const gchar *fileext )
  */
 gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t file_type, VikTrack *trk, gboolean write_hidden )
 {
-  GpxWritingOptions options = { FALSE, FALSE, write_hidden, FALSE };
+  gpx_version_t version = GPX_V1_0;
+  if ( vtl )
+    version = vik_trw_layer_get_gpx_version ( vtl );
+  GpxWritingOptions options = { FALSE, FALSE, write_hidden, FALSE, version };
   FILE *f = g_fopen ( filename, "w" );
   if ( f )
   {

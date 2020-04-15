@@ -173,6 +173,17 @@ void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname)
   }
 }
 
+void vik_waypoint_set_extensions(VikWaypoint *wp, const gchar *value)
+{
+  if ( wp->extensions )
+    g_free ( wp->extensions );
+
+  if ( value && value[0] != '\0' )
+    wp->extensions = g_strdup(value);
+  else
+    wp->extensions = NULL;
+}
+
 void vik_waypoint_free(VikWaypoint *wp)
 {
   if ( wp->name )
@@ -193,6 +204,8 @@ void vik_waypoint_free(VikWaypoint *wp)
     g_free ( wp->image );
   if ( wp->symbol )
     g_free ( wp->symbol );
+  if ( wp->extensions )
+    g_free ( wp->extensions );
   g_free ( wp );
 }
 
@@ -223,6 +236,7 @@ VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp)
   vik_waypoint_set_type(new_wp,wp->type);
   vik_waypoint_set_image(new_wp,wp->image);
   vik_waypoint_set_symbol(new_wp,wp->symbol);
+  vik_waypoint_set_extensions(new_wp,wp->extensions);
   new_wp->image_direction = wp->image_direction;
   new_wp->image_direction_ref = wp->image_direction_ref;
   return new_wp;
@@ -278,6 +292,7 @@ void vik_waypoint_marshall ( VikWaypoint *wp, guint8 **data, guint *datalen)
   vwm_append(wp->type);
   vwm_append(wp->image);
   vwm_append(wp->symbol);
+  vwm_append(wp->extensions);
 
   *data = b->data;
   *datalen = b->len;
@@ -317,6 +332,7 @@ VikWaypoint *vik_waypoint_unmarshall (const guint8 *data_in, guint datalen)
   vwu_get(new_wp->type);
   vwu_get(new_wp->image); 
   vwu_get(new_wp->symbol);
+  vwu_get(new_wp->extensions);
   // Different Viking instances need their seperate versions
   //  copying to itself will get the same reference
   new_wp->symbol_pixbuf = a_get_wp_sym(new_wp->symbol);

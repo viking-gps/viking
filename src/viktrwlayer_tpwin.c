@@ -34,6 +34,9 @@ struct _VikTrwLayerTpwin {
   GtkWidget *trkpt_name;
   GtkWidget *time;
   GtkLabel *course, *diff_dist, *diff_time, *diff_speed, *speed, *hdop, *vdop, *pdop, *sat;
+  GtkWidget *tabs;
+  GtkWidget *extsw;
+  GtkLabel *extlab;
   // Previously these buttons were in a glist, however I think the ordering behaviour is implicit
   //  thus control manually to ensure operating on the correct button
   GtkWidget *button_close;
@@ -350,7 +353,17 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   gtk_box_pack_start ( GTK_BOX(main_hbox), diff_left_vbox, FALSE, FALSE, TPWIN_PAD );
   gtk_box_pack_start ( GTK_BOX(main_hbox), diff_right_vbox, FALSE, FALSE, TPWIN_PAD );
 
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(tpwin))), main_hbox, FALSE, FALSE, 0 );
+  tpwin->extsw = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(tpwin->extsw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  tpwin->extlab = GTK_LABEL(ui_label_new_selectable ( NULL ));
+  gtk_widget_set_can_focus ( GTK_WIDGET(tpwin->extlab), FALSE ); // Don't let notebook autofocus on it
+  gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(tpwin->extsw), GTK_WIDGET(tpwin->extlab) );
+
+  tpwin->tabs = gtk_notebook_new();
+  gtk_notebook_append_page ( GTK_NOTEBOOK(tpwin->tabs), main_hbox, gtk_label_new(_("General")) );
+  gtk_notebook_append_page ( GTK_NOTEBOOK(tpwin->tabs), tpwin->extsw, gtk_label_new(_("GPX Extensions")) );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(tpwin))), tpwin->tabs, FALSE, FALSE, 0 );
+  gtk_notebook_set_show_tabs ( GTK_NOTEBOOK(tpwin->tabs), FALSE ); // Hide the tabs until really needed
 
   tpwin->cur_tp = NULL;
 
@@ -406,6 +419,8 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
   gtk_label_set_text ( tpwin->hdop, NULL );
   gtk_label_set_text ( tpwin->pdop, NULL );
   gtk_label_set_text ( tpwin->sat, NULL );
+
+  gtk_label_set_text ( tpwin->extlab, NULL );
 
   gtk_window_set_title ( GTK_WINDOW(tpwin), _("Trackpoint") );
 }
@@ -576,6 +591,12 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
 
   g_snprintf ( tmp_str, sizeof(tmp_str), "%d / %d", tp->nsats, tp->fix_mode );
   gtk_label_set_text ( tpwin->sat, tmp_str );
+
+  gtk_label_set_text ( tpwin->extlab, tp->extensions );
+  GtkWidget *ext_tab = gtk_notebook_get_tab_label ( GTK_NOTEBOOK(tpwin->tabs), tpwin->extsw );
+  gtk_widget_set_sensitive ( ext_tab, tp->extensions ? TRUE : FALSE );
+  if ( tp->extensions )
+    gtk_notebook_set_show_tabs ( GTK_NOTEBOOK(tpwin->tabs), TRUE );
 
   tpwin->cur_tp = tp;
 }

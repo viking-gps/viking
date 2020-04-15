@@ -141,6 +141,9 @@ struct _VikTrwLayer {
 
   // Metadata
   VikTRWMetadata *metadata;
+  gpx_version_t gpx_version;
+  gchar *gpx_header;
+  gchar *gpx_extensions;
 
   PangoLayout *tracklabellayout;
   font_size_t track_font_size;
@@ -690,6 +693,7 @@ VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "metadataauthor", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Author"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
   { VIK_LAYER_TRW, "metadatatime", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Creation Time"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
   { VIK_LAYER_TRW, "metadatakeywords", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Keywords"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
+  { VIK_LAYER_TRW, "metadataurl", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("URL"), VIK_LAYER_WIDGET_ENTRY_URL, NULL, NULL, NULL, string_default, NULL, NULL },
 
   { VIK_LAYER_TRW, "external_layer", VIK_LAYER_PARAM_UINT, GROUP_FILESYSTEM, N_("External layer:"), VIK_LAYER_WIDGET_COMBOBOX, params_external_type, NULL, N_("Layer data stored in the Viking file, in an external file, or in an external file but changes are not written to the file (file only loaded at startup)"), external_layer_default, NULL, NULL },
   { VIK_LAYER_TRW, "external_file", VIK_LAYER_PARAM_STRING, GROUP_FILESYSTEM, N_("Save layer as:"), VIK_LAYER_WIDGET_FILESAVE, GINT_TO_POINTER(VF_FILTER_GPX), NULL, N_("Specify where layer should be saved.  Overwrites file if it exists."), string_default, NULL, NULL },
@@ -743,6 +747,7 @@ enum {
   PARAM_MDAUTH,
   PARAM_MDTIME,
   PARAM_MDKEYS,
+  PARAM_MDURL,
   PARAM_EXTL,
   PARAM_EXTF,
   NUM_PARAMS
@@ -1021,6 +1026,7 @@ void vik_trw_metadata_free ( VikTRWMetadata *metadata)
   g_free (metadata->author);
   g_free (metadata->timestamp);
   g_free (metadata->keywords);
+  g_free (metadata->url);
   g_free (metadata);
 }
 
@@ -1029,12 +1035,45 @@ VikTRWMetadata *vik_trw_layer_get_metadata ( VikTrwLayer *vtl )
   return vtl->metadata;
 }
 
-void vik_trw_layer_set_metadata ( VikTrwLayer *vtl, VikTRWMetadata *metadata)
+void vik_trw_layer_set_metadata ( VikTrwLayer *vtl, VikTRWMetadata *metadata )
 {
   if ( vtl->metadata )
     vik_trw_metadata_free ( vtl->metadata );
   vtl->metadata = metadata;
 }
+
+gpx_version_t vik_trw_layer_get_gpx_version ( VikTrwLayer *vtl )
+{
+  return vtl->gpx_version;
+}
+
+void vik_trw_layer_set_gpx_version ( VikTrwLayer *vtl, gpx_version_t value )
+{
+  vtl->gpx_version = value;
+}
+
+gchar *vik_trw_layer_get_gpx_header ( VikTrwLayer *vtl )
+{
+  return vtl->gpx_header;
+}
+
+void vik_trw_layer_set_gpx_header ( VikTrwLayer *vtl, gchar* value )
+{
+  vtl->gpx_header = value;
+}
+
+gchar *vik_trw_layer_get_gpx_extensions ( VikTrwLayer *vtl )
+{
+  return vtl->gpx_extensions;
+}
+
+void vik_trw_layer_set_gpx_extensions ( VikTrwLayer *vtl, gchar *value)
+{
+  if ( vtl->gpx_extensions )
+    g_free ( vtl->gpx_extensions );
+  vtl->gpx_extensions = g_strdup ( value );
+}
+
 
 typedef struct {
   gboolean found;
@@ -1474,6 +1513,12 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
         vtl->metadata->keywords = g_strdup (vlsp->data.s);
       }
       break;
+    case PARAM_MDURL:
+      if ( vlsp->data.s && vtl->metadata ) {
+        g_free (vtl->metadata->url);
+        vtl->metadata->url = g_strdup (vlsp->data.s);
+      }
+      break;
     case PARAM_EXTL:
       if ( vlsp->data.u < VIK_EXTERNAL_TYPE_LAST ) {
           vtl->external_layer = vlsp->data.u;
@@ -1538,6 +1583,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_MDAUTH: if (vtl->metadata) { rv.s = vtl->metadata->author; } break;
     case PARAM_MDTIME: if (vtl->metadata) { rv.s = vtl->metadata->timestamp; } break;
     case PARAM_MDKEYS: if (vtl->metadata) { rv.s = vtl->metadata->keywords; } break;
+    case PARAM_MDURL:  if (vtl->metadata) { rv.s = vtl->metadata->url; } break;
     case PARAM_EXTL: rv.u = vtl->external_layer; break;
     case PARAM_EXTF: rv.s = vtl->external_file; break;
     default: break;
@@ -1907,6 +1953,8 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
   }
 
   vik_trw_metadata_free ( trwlayer->metadata );
+  g_free ( trwlayer->gpx_header );
+  g_free ( trwlayer->gpx_extensions );
 }
 
 static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp, gboolean highlight )
@@ -4387,6 +4435,12 @@ static void trw_layer_auto_waypoints_view ( menu_array_layer values )
   vik_layers_panel_emit_update ( vlp );
 }
 
+static void trw_layer_view_extensions ( menu_array_layer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+  a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->gpx_extensions );
+}
+
 static void trw_layer_visibility_tree ( menu_array_layer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
@@ -4443,6 +4497,8 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   (void)vu_menu_add_item ( view_submenu, _("View All _Routes"), NULL, G_CALLBACK(trw_layer_auto_routes_view), data );
   (void)vu_menu_add_item ( view_submenu, _("View All _Waypoints"), NULL, G_CALLBACK(trw_layer_auto_waypoints_view), data );
   (void)vu_menu_add_item ( view_submenu, _("_Ensure Visibility On"), NULL, G_CALLBACK(trw_layer_visibility_tree), data );
+  if ( vtl->gpx_extensions )
+    (void)vu_menu_add_item ( view_submenu, _("View _GPX Extensions"), NULL, G_CALLBACK(trw_layer_view_extensions), data );
 
   (void)vu_menu_add_item ( menu, _("_Goto Center of Layer"), GTK_STOCK_JUMP_TO, G_CALLBACK(trw_layer_centerize), data );
   (void)vu_menu_add_item ( menu, _("Goto _Waypoint..."), NULL, G_CALLBACK(trw_layer_goto_wp), data );
