@@ -4379,18 +4379,20 @@ static void trw_layer_visibility_tree ( menu_array_layer values )
   vik_layers_panel_emit_update ( vlp );
 }
 
-void trw_layer_osm_traces_upload_cb ( menu_array_layer values )
+#ifdef VIK_CONFIG_OPENSTREETMAP
+static void trw_layer_osm_traces_upload_cb ( menu_array_layer values )
 {
   osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(values[MA_VTL]), NULL);
 }
 
-void trw_layer_osm_traces_upload_track_cb ( menu_array_sublayer values )
+static void trw_layer_osm_traces_upload_track_cb ( menu_array_sublayer values )
 {
   if ( values[MA_MISC] ) {
     VikTrack *trk = VIK_TRACK(values[MA_MISC]);
     osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(values[MA_VTL]), trk);
   }
 }
+#endif
 
 static GtkMenu* create_external_submenu ( GtkMenu *menu )
 {
