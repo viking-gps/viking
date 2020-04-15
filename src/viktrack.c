@@ -202,6 +202,7 @@ VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
   vik_track_set_comment(new_tr,tr->comment);
   vik_track_set_description(new_tr,tr->description);
   vik_track_set_source(new_tr,tr->source);
+  vik_track_set_type(new_tr,tr->type);
   return new_tr;
 }
 
@@ -1586,6 +1587,7 @@ void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *datalen)
   vtm_append(tr->comment);
   vtm_append(tr->description);
   vtm_append(tr->source);
+  vtm_append(tr->type);
 
   *data = b->data;
   *datalen = b->len;
@@ -1642,6 +1644,7 @@ VikTrack *vik_track_unmarshall (const guint8 *data_in, guint datalen)
   vtu_get(new_tr->comment);
   vtu_get(new_tr->description);
   vtu_get(new_tr->source);
+  vtu_get(new_tr->type);
 
   return new_tr;
 }
