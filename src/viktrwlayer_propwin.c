@@ -3818,7 +3818,6 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   g_signal_connect( G_OBJECT(dialog), "response", G_CALLBACK(propwin_response_cb), widgets);
 
   g_free(title);
-  GtkWidget *table;
 
   gboolean DEM_available = a_dems_overlaps_bbox (tr->bbox);
 
@@ -3839,7 +3838,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   if ( bool_pref_get(TPW_PREFS_NS"tabs_on_side") )
     gtk_notebook_set_tab_pos ( GTK_NOTEBOOK(graphs), GTK_POS_LEFT );
 
-  GtkWidget *content_prop[20];
+  GtkWidget *content_prop[4];
   int cnt_prop = 0;
 
   static gchar *label_texts[] = {
@@ -3847,9 +3846,6 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     N_("<b>Description:</b>"),
     N_("<b>Source:</b>"),
     N_("<b>Type:</b>"),
-    N_("<b>Color:</b>"),
-    N_("<b>Draw Name:</b>"),
-    N_("<b>Distance Labels:</b>"),
   };
 
   // Properties
@@ -3873,7 +3869,16 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     gtk_entry_set_text ( GTK_ENTRY(widgets->w_type), tr->type );
   content_prop[cnt_prop++] = widgets->w_type;
 
-  widgets->w_color = content_prop[cnt_prop++] = gtk_color_button_new_with_color ( &(tr->color) );
+  GtkWidget *content_draw[3];
+  guint cnt_draw = 0;
+
+  static gchar *draw_texts[] = {
+    N_("<b>Color:</b>"),
+    N_("<b>Draw Name:</b>"),
+    N_("<b>Distance Labels:</b>"),
+  };
+
+  widgets->w_color = content_draw[cnt_draw++] = gtk_color_button_new_with_color ( &(tr->color) );
 
   static gchar *draw_name_labels[] = {
     N_("No"),
@@ -3885,20 +3890,23 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     NULL
   };
 
-  widgets->w_namelabel = content_prop[cnt_prop++] = vik_combo_box_text_new ();
+  widgets->w_namelabel = content_draw[cnt_draw++] = vik_combo_box_text_new ();
   gchar **pstr = draw_name_labels;
   while ( *pstr )
     vik_combo_box_text_append ( widgets->w_namelabel, *(pstr++) );
   gtk_combo_box_set_active ( GTK_COMBO_BOX(widgets->w_namelabel), tr->draw_name_mode );
 
-  widgets->w_number_distlabels = content_prop[cnt_prop++] =
+  widgets->w_number_distlabels = content_draw[cnt_draw++] =
    gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new(tr->max_number_dist_labels, 0, 100, 1, 1, 0)), 1, 0 );
   gtk_widget_set_tooltip_text ( GTK_WIDGET(widgets->w_number_distlabels), _("Maximum number of distance labels to be shown") );
 
-  table = create_table (cnt_prop, label_texts, content_prop);
+  GtkWidget *table = create_table ( cnt_prop, label_texts, content_prop );
+  GtkWidget *table_draw = create_table ( cnt_draw, draw_texts, content_draw );
+  GtkWidget *props = gtk_notebook_new();
+  gtk_notebook_append_page ( GTK_NOTEBOOK(props), table, gtk_label_new(_("General")));
+  gtk_notebook_append_page ( GTK_NOTEBOOK(props), table_draw, gtk_label_new(_("Drawing")));
 
-  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), GTK_WIDGET(table), gtk_label_new(_("Properties")));
-
+  gtk_notebook_append_page ( GTK_NOTEBOOK(graphs), GTK_WIDGET(props), gtk_label_new(_("Properties")) );
   gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_statistics_page(widgets, widgets->tr), gtk_label_new(_("Statistics")));
 
   // TODO: One day might be nice to have bar chart equivalent of the simple table values.
