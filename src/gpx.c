@@ -184,6 +184,7 @@ static tag_mapping tag_path_map[] = {
         { tt_trk_cmt, "/gpx/rte/cmt" },
         { tt_trk_desc, "/gpx/rte/desc" },
         { tt_trk_src, "/gpx/rte/src" },
+        { tt_trk_type, "/gpx/rte/type" },  // NB 'Proposed' in GPX 1.0 and properly in 1.1
         { tt_trk_trkseg_trkpt, "/gpx/rte/rtept" },
         { tt_trk_trkseg_trkpt_name, "/gpx/rte/rtept/name" },
         { tt_trk_trkseg_trkpt_ele, "/gpx/rte/rtept/ele" },
