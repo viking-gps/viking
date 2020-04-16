@@ -357,6 +357,7 @@ static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean b
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
 static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response );
 
+static void trw_layer_sort_order_specified ( VikTrwLayer *vtl, guint sublayer_type, vik_layer_sort_order_t order );
 static void trw_layer_sort_all ( VikTrwLayer *vtl );
 
 static gpointer tool_edit_trackpoint_create ( VikWindow *vw, VikViewport *vvp);
@@ -1352,7 +1353,17 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
         gdk_gc_set_rgb_fg_color(vtl->track_bg_gc, &(vtl->track_bg_color));
       break;
     case PARAM_TDSF: vtl->track_draw_speed_factor = vlsp->data.d; break;
-    case PARAM_TSO: if ( vlsp->data.u < VL_SO_LAST ) vtl->track_sort_order = vlsp->data.u; break;
+    case PARAM_TSO:
+      if ( vlsp->data.u < VL_SO_LAST ) {
+        vik_layer_sort_order_t old = vtl->track_sort_order;
+        vtl->track_sort_order = vlsp->data.u;
+        if ( vtl->track_sort_order != old )
+          if ( !vlsp->is_file_operation ) {
+            trw_layer_sort_order_specified ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACKS, vtl->track_sort_order );
+            trw_layer_sort_order_specified ( vtl, VIK_TRW_LAYER_SUBLAYER_ROUTES, vtl->track_sort_order );
+          }
+      }
+      break;
     case PARAM_TADEM: vtl->auto_dem = vlsp->data.b; break;
     case PARAM_TRDUP: vtl->auto_dedupl = vlsp->data.b; break;
     case PARAM_DLA: vtl->drawlabels = vlsp->data.b; break;
@@ -1413,7 +1424,15 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
         }
       }
       break;
-    case PARAM_WPSO: if ( vlsp->data.u < VL_SO_LAST ) vtl->wp_sort_order = vlsp->data.u; break;
+    case PARAM_WPSO:
+      if ( vlsp->data.u < VL_SO_LAST ) {
+        vik_layer_sort_order_t old = vtl->wp_sort_order;
+        vtl->wp_sort_order = vlsp->data.u;
+        if ( vtl->wp_sort_order != old )
+          if ( !vlsp->is_file_operation )
+            trw_layer_sort_order_specified ( vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, vtl->wp_sort_order );
+      }
+      break;
     // Metadata
     case PARAM_MDDESC:
       if ( vlsp->data.s && vtl->metadata ) {
