@@ -1211,7 +1211,7 @@ static gboolean should_start_autodownload(VikMapsLayer *vml, VikViewport *vvp)
  *
  */
 gboolean try_draw_scale_down (VikMapsLayer *vml, VikViewport *vvp, guint vp_scale, MapCoord ulm, gint xx, gint yy, gint tilesize_x_ceil, gint tilesize_y_ceil,
-                              gdouble xshrinkfactor, gdouble yshrinkfactor, guint id, const gchar *mapname, gchar *path_buf, guint max_path_len)
+                              gdouble xshrinkfactor, gdouble yshrinkfactor, guint id, const gchar *mapname, gchar *path_buf, guint max_path_len, gdouble off_x, gdouble off_y)
 {
   GdkPixbuf *pixbuf;
   int scale_inc;
@@ -1226,7 +1226,9 @@ gboolean try_draw_scale_down (VikMapsLayer *vml, VikViewport *vvp, guint vp_scal
     if ( pixbuf ) {
       gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
       gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
-      vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
+      gint xa = off_x / scale_factor;
+      gint ya = off_y / scale_factor;
+      vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx+xa, yy+ya, tilesize_x_ceil, tilesize_y_ceil );
       g_object_unref(pixbuf);
       return TRUE;
     }
@@ -1238,7 +1240,7 @@ gboolean try_draw_scale_down (VikMapsLayer *vml, VikViewport *vvp, guint vp_scal
  *
  */
 gboolean try_draw_scale_up (VikMapsLayer *vml, VikViewport *vvp, guint vp_scale, MapCoord ulm, gint xx, gint yy, gint tilesize_x_ceil, gint tilesize_y_ceil,
-                            gdouble xshrinkfactor, gdouble yshrinkfactor, guint id, const gchar *mapname, gchar *path_buf, guint max_path_len)
+                            gdouble xshrinkfactor, gdouble yshrinkfactor, guint id, const gchar *mapname, gchar *path_buf, guint max_path_len, gdouble off_x, gdouble off_y)
 {
   GdkPixbuf *pixbuf;
   gboolean ans = FALSE;
@@ -1260,7 +1262,9 @@ gboolean try_draw_scale_up (VikMapsLayer *vml, VikViewport *vvp, guint vp_scale,
         if ( pixbuf ) {
           gint dest_x = xx + pict_x * (tilesize_x_ceil / scale_factor);
           gint dest_y = yy + pict_y * (tilesize_y_ceil / scale_factor);
-          vik_viewport_draw_pixbuf ( vvp, pixbuf, 0, 0, dest_x, dest_y, tilesize_y_ceil / scale_factor, tilesize_y_ceil / scale_factor );
+          gint xa = off_x / scale_factor;
+          gint ya = off_y / scale_factor;
+          vik_viewport_draw_pixbuf ( vvp, pixbuf, 0, 0, dest_x+xa, dest_y+ya, tilesize_y_ceil / scale_factor, tilesize_y_ceil / scale_factor );
           g_object_unref(pixbuf);
           ans = TRUE;
         }
@@ -1341,6 +1345,11 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
         start_download_thread ( vml, vvp, ul, br, REDOWNLOAD_NONE );
     }
 
+    // Get drawing offset (ATM a single value that applies to all zoom levels)
+    // Convert from metres to pixels at this zoom level
+    gdouble xa = vik_map_source_get_offset_x ( map ) / xzoom;
+    gdouble ya = -vik_map_source_get_offset_y ( map ) / yzoom;
+
     if ( vik_map_source_get_tilesize_x(map) == 0 && !existence_only ) {
       for ( x = xmin; x <= xmax; x++ ) {
         for ( y = ymin; y <= ymax; y++ ) {
@@ -1356,7 +1365,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
             xx -= (width/2);
             yy -= (height/2);
 
-            vik_viewport_draw_pixbuf ( vvp, pixbuf, 0, 0, xx, yy, width, height );
+            vik_viewport_draw_pixbuf ( vvp, pixbuf, 0, 0, xx+xa, yy+ya, width, height );
             g_object_unref(pixbuf);
           }
         }
@@ -1408,19 +1417,19 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
             if ( pixbuf ) {
               gint src_x = (ulm.x % scale_factor) * tilesize_x_ceil;
               gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
-              vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx, yy, tilesize_x_ceil, tilesize_y_ceil );
+              vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx+xa, yy+ya, tilesize_x_ceil, tilesize_y_ceil );
               g_object_unref(pixbuf);
             }
             else {
               // Otherwise try different scales
               if ( SCALE_SMALLER_ZOOM_FIRST ) {
-                if ( !try_draw_scale_down(vml,vvp,vp_scale,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len) ) {
-                  try_draw_scale_up(vml,vvp,vp_scale,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len);
+                if ( !try_draw_scale_down(vml,vvp,vp_scale,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len, xa, ya) ) {
+                  try_draw_scale_up(vml,vvp,vp_scale,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len, xa, ya);
                 }
               }
               else {
-                if ( !try_draw_scale_up(vml,vvp,vp_scale,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len) ) {
-                  try_draw_scale_down(vml,vvp,vp_scale,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len);
+                if ( !try_draw_scale_up(vml,vvp,vp_scale,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len, xa, ya) ) {
+                  try_draw_scale_down(vml,vvp,vp_scale,ulm,xx,yy,tilesize_x_ceil,tilesize_y_ceil,xshrinkfactor,yshrinkfactor,id,mapname,path_buf,max_path_len, xa, ya);
                 }
               }
             }

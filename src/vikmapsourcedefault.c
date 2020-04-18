@@ -44,6 +44,8 @@ static guint16 map_source_get_tilesize_y (VikMapSource *self);
 static gdouble map_source_get_scale (VikMapSource *self);
 static VikViewportDrawMode map_source_get_drawmode (VikMapSource *self);
 static const gchar *map_source_get_file_extension (VikMapSource *self);
+static gdouble map_source_get_offset_x (VikMapSource *self);
+static gdouble map_source_get_offset_y (VikMapSource *self);
 
 static DownloadResult_t _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handle );
 static void * _download_handle_init ( VikMapSource *self );
@@ -66,6 +68,8 @@ struct _VikMapSourceDefaultPrivate
 	gdouble scale;
 	VikViewportDrawMode drawmode;
 	gchar *file_extension;
+	gdouble offset_x;
+	gdouble offset_y;
 };
 
 G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (VikMapSourceDefault, vik_map_source_default, VIK_TYPE_MAP_SOURCE);
@@ -87,6 +91,8 @@ enum
   PROP_LICENSE,
   PROP_LICENSE_URL,
   PROP_FILE_EXTENSION,
+  PROP_OFFSET_X,
+  PROP_OFFSET_Y,
 };
 
 static void
@@ -189,6 +195,14 @@ vik_map_source_default_set_property (GObject      *object,
       priv->file_extension = g_strdup(g_value_get_string(value));
       break;
 
+    case PROP_OFFSET_X:
+      priv->offset_x = g_value_get_double (value);
+      break;
+
+    case PROP_OFFSET_Y:
+      priv->offset_y = g_value_get_double (value);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -250,6 +264,14 @@ vik_map_source_default_get_property (GObject    *object,
       g_value_set_string (value, priv->file_extension);
       break;
 
+    case PROP_OFFSET_X:
+      g_value_set_double (value, priv->offset_x);
+      break;
+
+    case PROP_OFFSET_Y:
+      g_value_set_double (value, priv->offset_y);
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -280,6 +302,8 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	parent_class->get_scale =      map_source_get_scale;
 	parent_class->get_drawmode =   map_source_get_drawmode;
 	parent_class->get_file_extension = map_source_get_file_extension;
+	parent_class->get_offset_x = map_source_get_offset_x;
+	parent_class->get_offset_y = map_source_get_offset_y;
 	parent_class->download =                 _download;
 	parent_class->download_handle_init =     _download_handle_init;
 	parent_class->download_handle_cleanup =  _download_handle_cleanup;
@@ -374,6 +398,24 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	                             ".png" /* default value */,
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FILE_EXTENSION, pspec);
+
+	pspec = g_param_spec_double ("offset-x",
+	                             "Offset X",
+	                             "The offset of a tile (x) in metres",
+	                             -G_MAXDOUBLE, // minimum value
+	                             G_MAXDOUBLE, // maximum value
+	                             0.0, // default value
+	                             G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_OFFSET_X, pspec);
+
+	pspec = g_param_spec_double ("offset-y",
+	                             "Offset Y",
+	                             "The offset of a tile (y) in metres",
+	                             -G_MAXDOUBLE, // minimum value
+	                             G_MAXDOUBLE, // maximum value
+	                             0.0, // default value
+	                             G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_OFFSET_Y, pspec);
 
 	object_class->finalize = vik_map_source_default_finalize;
 }
@@ -505,6 +547,22 @@ map_source_get_file_extension (VikMapSource *self)
     g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
     VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
     return priv->file_extension;
+}
+
+static gdouble
+map_source_get_offset_x (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), (gdouble)0.0);
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+	return priv->offset_x;
+}
+
+static gdouble
+map_source_get_offset_y (VikMapSource *self)
+{
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), (gdouble)0.0);
+	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
+	return priv->offset_y;
 }
 
 static void *

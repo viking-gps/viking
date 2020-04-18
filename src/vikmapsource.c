@@ -81,6 +81,8 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	klass->get_lat_max = NULL;
 	klass->get_lon_min = NULL;
 	klass->get_lon_max = NULL;
+	klass->get_offset_x = NULL;
+	klass->get_offset_y = NULL;
 	klass->coord_to_mapcoord = NULL;
 	klass->mapcoord_to_center_coord = NULL;
 	klass->download = NULL;
@@ -426,6 +428,32 @@ vik_map_source_get_file_extension (VikMapSource * self)
 	g_return_val_if_fail (klass->get_file_extension != NULL, NULL);
 
 	return (*klass->get_file_extension)(self);
+}
+
+gdouble
+vik_map_source_get_offset_x (VikMapSource *self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, (gdouble)0.0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), (gdouble)0.0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_offset_x != NULL, (gdouble)0.0);
+
+	return (*klass->get_offset_x)(self);
+}
+
+gdouble
+vik_map_source_get_offset_y (VikMapSource *self)
+{
+	VikMapSourceClass *klass;
+	g_return_val_if_fail (self != NULL, (gdouble)0.0);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), (gdouble)0.0);
+	klass = VIK_MAP_SOURCE_GET_CLASS(self);
+
+	g_return_val_if_fail (klass->get_offset_y != NULL, (gdouble)0.0);
+
+	return (*klass->get_offset_y)(self);
 }
 
 gboolean

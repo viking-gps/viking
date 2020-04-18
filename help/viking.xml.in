@@ -329,6 +329,22 @@ and docbook-xsl in your Build-Depends control field.
               </listitem>
             </varlistentry>
             <varlistentry>
+              <term>offset-x (optional)</term>
+              <listitem>
+                <para>The offset of the map in the x plane (towards east) in metres. The default is 0.0 if not specified.</para>
+                <para>Use negative numbers to adjust in a westerly direction.</para>
+                <para>Typical usage would be aligning differing maps, e.g. aerial imagery may be offset from cadastral maps.</para>
+                <para>Currently this is a single value that applies to all zoom levels.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>offset-y (optional)</term>
+              <listitem>
+                <para>The offset of the map in the y plane (towards north) in metres. The default is 0.0 if not specified.</para>
+                <para>Use negative numbers to adjust in a southerly direction.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
               <term>switch-xy (optional)</term>
               <listitem>
                 <para>Swap the X,Y values around in the URL parametrized ordering.</para>
