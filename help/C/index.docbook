@@ -3686,6 +3686,14 @@ Accept: */*
               </listitem>
             </varlistentry>
             <varlistentry>
+              <term>referer (optional)</term>
+              <listitem><para>A URL to serve as referer for the HTTP request (eg. "http://hostname/")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term>
+              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+            </varlistentry>
+            <varlistentry>
               <term>tilesize-x (optional)</term>
               <listitem><para>The tile x size. The default is 256 pixels if not specified.</para></listitem>
             </varlistentry>
@@ -3720,6 +3728,12 @@ Accept: */*
             </varlistentry>
             <varlistentry>
               <term>check-file-server-time (optional)</term><listitem><para></para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term><listitem><para></para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>referer (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
               <term>zoom-min (optional)</term><listitem><para></para></listitem>
@@ -3757,6 +3771,12 @@ Accept: */*
             </varlistentry>
             <varlistentry>
               <term>check-file-server-time (optional)</term><listitem><para></para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term><listitem><para></para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>referer (optional)</term><listitem><para></para></listitem>
             </varlistentry>
             <varlistentry>
               <term>zoom-min (optional)</term><listitem><para></para></listitem>
@@ -3905,7 +3925,7 @@ Accept: */*
             </varlistentry>
             <varlistentry>
               <term>follow-location (optional)</term>
-              <listitem><para>the max depth of recursive redirections</para></listitem>
+              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
             </varlistentry>
           </variablelist>
         </para>

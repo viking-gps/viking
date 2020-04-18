@@ -366,6 +366,14 @@ and docbook-xsl in your Build-Depends control field.
               </listitem>
             </varlistentry>
             <varlistentry>
+              <term>referer (optional)</term>
+              <listitem><para>A URL to serve as referer for the HTTP request (eg. "http://hostname/")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term>
+              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+            </varlistentry>
+            <varlistentry>
               <term>tilesize-x (optional)</term>
               <listitem><para>The tile x size. The default is 256 pixels if not specified.</para></listitem>
             </varlistentry>
@@ -400,6 +408,12 @@ and docbook-xsl in your Build-Depends control field.
             </varlistentry>
             <varlistentry>
               <term>check-file-server-time (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>referer (optional)</term>
             </varlistentry>
             <varlistentry>
               <term>zoom-min (optional)</term>
@@ -437,6 +451,12 @@ and docbook-xsl in your Build-Depends control field.
             </varlistentry>
             <varlistentry>
               <term>check-file-server-time (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term>
+            </varlistentry>
+            <varlistentry>
+              <term>referer (optional)</term>
             </varlistentry>
             <varlistentry>
               <term>zoom-min (optional)</term>
@@ -585,7 +605,7 @@ and docbook-xsl in your Build-Depends control field.
             </varlistentry>
             <varlistentry>
               <term>follow-location (optional)</term>
-              <listitem><para>the max depth of recursive redirections</para></listitem>
+              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
             </varlistentry>
           </variablelist>
         </para>

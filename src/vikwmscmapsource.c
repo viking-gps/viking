@@ -309,7 +309,7 @@ vik_wmsc_map_source_class_init (VikWmscMapSourceClass *klass)
 	pspec = g_param_spec_long ("follow-location",
 	                           "Follow location",
                                "Specifies the number of retries to follow a redirect while downloading a page",
-                               0  /* minimum value */,
+	                           -1, // minimum value (unlimited)
                                G_MAXLONG /* maximum value */,
                                0  /* default value */,
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);

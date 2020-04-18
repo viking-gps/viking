@@ -335,7 +335,7 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
   pspec = g_param_spec_long ("follow-location",
                              "Follow location",
                              "Specifies the number of retries to follow a redirect while downloading a page",
-                             0  /* minimum value */,
+                             -1,  // minimum value (unlimited)
                              G_MAXLONG /* maximum value */,
                              2  /* default value */,
                              G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
