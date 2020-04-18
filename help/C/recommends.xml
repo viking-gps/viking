@@ -5,7 +5,7 @@
    <!ENTITY gpsbabel         "<ulink url='https://gpsbabel.org/'>GPSBabel</ulink>">
 ]>
 
-<section id="recommeds">
+<section id="recommends">
 <title>Recommended Programs</title>
 
 <formalpara><title>gpsbabel</title>

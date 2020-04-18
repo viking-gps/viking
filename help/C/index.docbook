@@ -101,8 +101,7 @@
     <primary>&app;</primary>
   </indexterm>
 <!-- ============= Document Body ============================= -->
-<section id="introduction">
-  <title>Introduction</title>
+<section id="Introduction"><title>Introduction</title>
 <para>
 &appname; aims to be easy to use, yet powerful in accomplishing a wide
 variety of tasks. Some of the things you can use &appname; for are:
@@ -202,7 +201,7 @@ View, create and update Geotagged Images (using EXIF data).
 </note>
 </section>
 
-<section><title>General Concepts</title>
+<section id="GeneralConcepts"><title>General Concepts</title>
 <section id="gc_layers" xreflabel="Layers"><title>Layers</title>
 <para>
 <emphasis>Layers</emphasis> is concept one may know from powerful graphics editors such as <application>Photoshop</application> or <application>GIMP</application>.
@@ -452,7 +451,7 @@ The number of track points is normally alot higher (e.g. 500 or typically with l
 
 </section><!--General Concepts End-->
 
-<section><title>File Types and the Main Window</title>
+<section id="FileTypes" ><title>File Types and the Main Window</title>
 
 <para>
 &appname; has it's own file type traditionally marked by the <emphasis>.vik</emphasis> file extension.
@@ -809,7 +808,7 @@ Note that Garmin GPSr devices have limits in using images if they are too large 
 
 </section> <!-- End File Types -->
 
-<section><title>Layers</title>
+<section id="Layers"><title>Layers</title>
 
 <para>
 Layers supported by &appname; are:
@@ -3016,7 +3015,7 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 </section>
 
 <!-- HOWTOS-->
-<section><title>Howto's</title>
+<section id="Howto"><title>Howto's</title>
 <section id="howto_start"><title>Getting Started</title>
 <para>
 &appname; from version 1.5 has several features to ease the start up process.
