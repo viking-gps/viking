@@ -3550,7 +3550,7 @@ Accept: */*
 <section id="extend_viking" xreflabel="Extending Viking">
     <title>Extending Viking</title>
 
-      <para>Currently, &app; has some extention points based on configuration files. The file format is heavily inspired by the GtkBuilder file format: you specify the class of the GObject to build and set its properties. Technically, it is a XML file containing a "objects" root element. Inside this element, you set a collection of "object".</para>
+      <para>Currently, &app; has some extension points based on configuration files. The file format is heavily inspired by the GtkBuilder file format: you specify the class of the GObject to build and set its properties. Technically, it is a XML file containing a "objects" root element. Inside this element, you set a collection of "object".</para>
       <para>Here is an example:
 <programlisting><![CDATA[
 <objects>
@@ -3563,7 +3563,7 @@ Accept: */*
 ]]>
 </programlisting>
 </para>
-      <para>You can find more examples in the documentation part of the distribution.</para>
+      <para>You can find more examples as installed on your system and in the documentation part of the distribution. Typically these will be installed into one of the $XDG_DATA_DIR locations, such as <filename>/usr/share/viking/</filename> or <filename>C:\Program Files\Viking\data</filename> depending on the Operating System.</para>
       <para>
 	It is also possible to override the internal defaults e.g. to update any parameters should they change over time,
 	by adding the values into your configuration file.
@@ -3571,10 +3571,10 @@ Accept: */*
       </para>
       <section id="map_source" xreflabel="Map Source Extensions">
         <title>Map Source</title>
-        <para>It is possible to add new map's sources. The file is <filename>~/.viking/maps.xml</filename> for <trademark>UNIX</trademark> like systems, <filename>C:\Documents and Settings\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows XP</trademark> or <filename>C:\Users\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows 7</trademark> onwards.</para>
+        <para>It is possible to add new map sources. The file is <filename>~/.viking/maps.xml</filename> for <trademark>UNIX</trademark> like systems, <filename>C:\Documents and Settings\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows XP</trademark> or <filename>C:\Users\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows 7</trademark> onwards.</para>
         <para>An example of the file is in the distribution <filename>doc/examples/maps.xml</filename>. Further examples and values are online in the <ulink url="https://sourceforge.net/p/viking/wikiallura/Maps/">Maps Wiki</ulink></para>
 
-        <para>The <classname>VikSlippyMapSource</classname> allows to declare any map's source working like OpenStreetMap. It supports the following properties:
+        <para>The <classname>VikSlippyMapSource</classname> allows declaration of any map source working like OpenStreetMap. It supports the following properties:
           <variablelist>
             <varlistentry>
               <term>id</term>
@@ -3601,6 +3601,18 @@ Accept: */*
 		  <para>e.g. "https://tile.openstreetmap.org/%d/%d/%d.png"</para>
 		</note>
 	      </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>copyright (optional)</term>
+              <listitem><para>The copyright of the map source.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>license (optional)</term>
+              <listitem><para>The license of the map source.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>license-url (optional)</term>
+              <listitem><para>The URL of the license of the map source.</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>zoom-min (optional)</term>
@@ -3712,91 +3724,61 @@ Accept: */*
             </varlistentry>
           </variablelist>
         </para>
-        <para>The <classname>VikTmsMapSource</classname> allows to declare any TMS service. It supports the following properties (as per VikSlippyMapSource above):
-          <variablelist>
-            <varlistentry>
-              <term>id</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>label</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>hostname</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>url</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>check-file-server-time (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>follow-location (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>referer (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>zoom-min (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>zoom-max (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>lat-min (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>lat-max (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>lon-min (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>lon-max (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-          </variablelist>
+        <para></para>
+        <para>The <classname>VikTmsMapSource</classname> allows declaration of any TMS service. A TMS (Tile Map Service) is defined in <ulink url="https://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">Tile Map Service Specification</ulink>. The configuration supports the following properties (as per <classname>VikSlippyMapSource</classname> above):</para>
+        <para>
+          <simplelist>
+              <member>id</member>
+              <member>label</member>
+              <member>hostname</member>
+              <member>url</member>
+              <member>copyright (optional)</member>
+              <member>license (optional)</member>
+              <member>license-url (optional)</member>
+              <member>check-file-server-time (optional)</member>
+              <member>follow-location (optional)</member>
+              <member>referer (optional)</member>
+              <member>zoom-min (optional)</member>
+              <member>zoom-max (optional)</member>
+              <member>lat-min (optional)</member>
+              <member>lat-max (optional)</member>
+              <member>lon-min (optional)</member>
+              <member>lon-max (optional)</member>
+              <member>file-extension (optional)</member>
+              <member>scale (optional)</member>
+              <member>tilesize-x (optional)</member>
+              <member>tilesize-y (optional)</member>
+              <member>offset-x (optional)</member>
+              <member>offset-y (optional)</member>
+          </simplelist>
         </para>
-        <para>The <classname>VikWmscMapSource</classname> allows to declare any WMS or WMS-C service. It supports the following properties  (as per VikSlippyMapSource above):
-          <variablelist>
-            <varlistentry>
-              <term>id</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>label</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>hostname</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>url</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>check-file-server-time (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>follow-location (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>referer (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>zoom-min (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>zoom-max (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>lat-min (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>lat-max (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>lon-min (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-            <varlistentry>
-              <term>lon-max (optional)</term><listitem><para></para></listitem>
-            </varlistentry>
-          </variablelist>
+        <para></para>
+        <para>The <classname>VikWmscMapSource</classname> allows declaration of any WMS or WMS-C service. A WMS (Web Map Service) is defined in <ulink url="https://wiki.osgeo.org/wiki/WMS_Tile_Caching">WMS Tile Caching</ulink>. The configuration supports the following properties (as per <classname>VikSlippyMapSource</classname> above):</para>
+        <para>
+          <simplelist>
+              <member>id</member>
+              <member>label</member>
+              <member>hostname</member>
+              <member>url</member>
+              <member>copyright (optional)</member>
+              <member>license (optional)</member>
+              <member>license-url (optional)</member>
+              <member>check-file-server-time (optional)</member>
+              <member>follow-location (optional)</member>
+              <member>referer (optional)</member>
+              <member>zoom-min (optional)</member>
+              <member>zoom-max (optional)</member>
+              <member>lat-min (optional)</member>
+              <member>lat-max (optional)</member>
+              <member>lon-min (optional)</member>
+              <member>lon-max (optional)</member>
+              <member>file-extension (optional)</member>
+              <member>scale (optional)</member>
+              <member>tilesize-x (optional)</member>
+              <member>tilesize-y (optional)</member>
+              <member>offset-x (optional)</member>
+              <member>offset-y (optional)</member>
+          </simplelist>
         </para>
       </section>
 
