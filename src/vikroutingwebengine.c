@@ -363,6 +363,7 @@ static void vik_routing_web_engine_init ( VikRoutingWebEngine *self )
   priv->options.check_file = NULL;
   priv->options.check_file_server_time = FALSE;
   priv->options.use_etag = FALSE;
+  priv->options.custom_http_headers = NULL;
 }
 
 static void vik_routing_web_engine_finalize ( GObject *gob )

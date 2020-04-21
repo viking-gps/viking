@@ -458,7 +458,7 @@ _load_attributions ( BingMapSource *self )
 	priv->loading_attributions = TRUE;
 	gchar *uri = g_strdup_printf(URL_ATTR_FMT, priv->api_key);
 
-	gchar *tmpname = a_download_uri_to_tmp_file ( uri, vik_map_source_default_get_download_options(VIK_MAP_SOURCE_DEFAULT(self)) );
+	gchar *tmpname = a_download_uri_to_tmp_file ( uri, vik_map_source_default_get_download_options(VIK_MAP_SOURCE_DEFAULT(self),NULL) );
 	if ( !tmpname ) {
 		ret = -1;
 		goto done;

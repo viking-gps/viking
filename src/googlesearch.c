@@ -28,7 +28,7 @@
 #define GOOGLE_GOTO_PATTERN_2 ",lng:"
 #define GOOGLE_GOTO_NOT_FOUND "not understand the location"
 
-static DownloadFileOptions googlesearch_options = { FALSE, FALSE, "http://maps.google.com/", 2, a_check_map_file, NULL, NULL };
+static DownloadFileOptions googlesearch_options = { FALSE, FALSE, "http://maps.google.com/", 2, NULL, a_check_map_file, NULL, NULL };
 
 static void google_goto_tool_finalize ( GObject *gob );
 

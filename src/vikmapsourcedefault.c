@@ -534,7 +534,7 @@ _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handl
 {
    gchar *uri = vik_map_source_default_get_uri(VIK_MAP_SOURCE_DEFAULT(self), src);
    gchar *host = vik_map_source_default_get_hostname(VIK_MAP_SOURCE_DEFAULT(self));
-   DownloadFileOptions *options = vik_map_source_default_get_download_options(VIK_MAP_SOURCE_DEFAULT(self));
+   DownloadFileOptions *options = vik_map_source_default_get_download_options(VIK_MAP_SOURCE_DEFAULT(self), src);
    DownloadResult_t res = a_http_download_get_url ( host, uri, dest_fn, options, handle );
    g_free ( uri );
    g_free ( host );
@@ -605,7 +605,7 @@ vik_map_source_default_get_hostname( VikMapSourceDefault *self )
 }
 
 DownloadFileOptions *
-vik_map_source_default_get_download_options( VikMapSourceDefault *self )
+vik_map_source_default_get_download_options( VikMapSourceDefault *self, MapCoord *src )
 {
 	VikMapSourceDefaultClass *klass;
 	g_return_val_if_fail (self != NULL, 0);
@@ -614,7 +614,7 @@ vik_map_source_default_get_download_options( VikMapSourceDefault *self )
 
 	g_return_val_if_fail (klass->get_download_options != NULL, 0);
 
-	return (*klass->get_download_options)(self);
+	return (*klass->get_download_options)(self, src);
 }
 
 gchar *

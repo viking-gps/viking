@@ -61,6 +61,12 @@ typedef struct {
   glong follow_location;
   
   /**
+   * Custom http headers in the send request.
+   * Separate multiple requests with '\n'
+   */
+  gchar *custom_http_headers;
+
+  /**
    * File content checker.
    */
   VikFileContentCheckerFunc check_file;

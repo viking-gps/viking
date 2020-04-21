@@ -3603,6 +3603,15 @@ Accept: */*
 	      </listitem>
             </varlistentry>
             <varlistentry>
+              <term>custom-http-headers (optional)</term>
+              <listitem>
+                <para>Custom HTTP headers to be added to the download request. The default is none.</para>
+                <para>Multiple headers can be specified by separating each part with an '\n'.</para>
+                <para>The header allows of substition of values of the positional Z, X and Y (in that order) values, as per the <emphasis>url</emphasis> option above. Using multiple and/or different ordered values can be acheived via printf() positional argument specifiers. For example:</para>
+                <para><literal>DNT: 1\nLine2: %d %d %d\nReordered: %3$d %1$d %2$d</literal></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
               <term>copyright (optional)</term>
               <listitem><para>The copyright of the map source.</para></listitem>
             </varlistentry>
@@ -3732,6 +3741,7 @@ Accept: */*
               <member>label</member>
               <member>hostname</member>
               <member>url</member>
+              <member>custom-http-headers (optional)</member>
               <member>copyright (optional)</member>
               <member>license (optional)</member>
               <member>license-url (optional)</member>
@@ -3760,6 +3770,7 @@ Accept: */*
               <member>label</member>
               <member>hostname</member>
               <member>url</member>
+              <member>custom-http-headers (optional)</member>
               <member>copyright (optional)</member>
               <member>license (optional)</member>
               <member>license-url (optional)</member>

@@ -173,12 +173,17 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
           char str[60];
           g_snprintf(str, 60, "If-None-Match: %s", cdo->etag);
           curl_send_headers = curl_slist_append(curl_send_headers, str);
-          curl_easy_setopt ( curl, CURLOPT_HTTPHEADER , curl_send_headers);
         }
         /* store the new etag from the server in an option value */
         curl_easy_setopt ( curl, CURLOPT_WRITEHEADER, cdo);
         curl_easy_setopt ( curl, CURLOPT_HEADERFUNCTION, curl_get_etag_func);
       }
+    }
+    if ( options->custom_http_headers) {
+      gchar **headers = g_strsplit ( options->custom_http_headers, "\n", -1 );
+      for (int ii = 0; ii < g_strv_length(headers); ii++)
+          curl_send_headers = curl_slist_append ( curl_send_headers, headers[ii] );
+      g_strfreev ( headers );
     }
   }
   curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
@@ -186,6 +191,9 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
   curl_easy_setopt ( curl, CURLOPT_SSL_VERIFYPEER, curl_ssl_verifypeer );
   if ( curl_cainfo )
      curl_easy_setopt ( curl, CURLOPT_CAINFO, curl_cainfo );
+
+  if ( curl_send_headers )
+    curl_easy_setopt ( curl, CURLOPT_HTTPHEADER , curl_send_headers );
 
   res = curl_easy_perform ( curl );
 

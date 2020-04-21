@@ -565,7 +565,7 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOpti
 #endif
 
 	// Support .zip + bzip2 files directly
-	DownloadFileOptions options = { FALSE, FALSE, NULL, 2, NULL, user_pass, a_try_decompress_file }; // Allow a couple of redirects
+	DownloadFileOptions options = { FALSE, FALSE, NULL, 2, NULL, NULL, user_pass, a_try_decompress_file }; // Allow a couple of redirects
 
 	gchar *tmpname = a_download_uri_to_tmp_file ( uri, &options );
 	g_free ( uri );

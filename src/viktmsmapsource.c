@@ -60,13 +60,14 @@ static gdouble _get_lon_max(VikMapSource *self );
 
 static gchar *_get_uri( VikMapSourceDefault *self, MapCoord *src );
 static gchar *_get_hostname( VikMapSourceDefault *self );
-static DownloadFileOptions *_get_download_options( VikMapSourceDefault *self );
+static DownloadFileOptions *_get_download_options( VikMapSourceDefault *self, MapCoord *src );
 
 typedef struct _VikTmsMapSourcePrivate VikTmsMapSourcePrivate;
 struct _VikTmsMapSourcePrivate
 {
   gchar *hostname;
   gchar *url;
+  gchar *custom_http_headers;
   DownloadFileOptions options;
   guint zoom_min; // TMS Zoom level: 0 = Whole World // http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
   guint zoom_max; // TMS Zoom level: Often 18 for zoomed in.
@@ -86,6 +87,7 @@ enum
 
   PROP_HOSTNAME,
   PROP_URL,
+  PROP_CUSTOM_HTTP_HEADERS,
   PROP_REFERER,
   PROP_FOLLOW_LOCATION,
   PROP_CHECK_FILE_SERVER_TIME,
@@ -105,10 +107,12 @@ vik_tms_map_source_init (VikTmsMapSource *self)
 
   priv->hostname = NULL;
   priv->url = NULL;
+  priv->custom_http_headers = NULL;
   priv->options.referer = NULL;
   priv->options.follow_location = 0;
   priv->options.check_file = a_check_map_file;
   priv->options.check_file_server_time = FALSE;
+  priv->options.custom_http_headers = NULL;
   priv->zoom_min = 0;
   priv->zoom_max = 18;
   priv->lat_min = -90.0;
@@ -132,8 +136,12 @@ vik_tms_map_source_finalize (GObject *object)
   priv->hostname = NULL;
   g_free (priv->url);
   priv->url = NULL;
+  g_free (priv->custom_http_headers);
+  priv->custom_http_headers = NULL;
   g_free (priv->options.referer);
   priv->options.referer = NULL;
+  g_free (priv->options.custom_http_headers);
+  priv->options.custom_http_headers = NULL;
 
   G_OBJECT_CLASS (vik_tms_map_source_parent_class)->finalize (object);
 }
@@ -156,6 +164,18 @@ vik_tms_map_source_set_property (GObject      *object,
     case PROP_URL:
       g_free (priv->url);
       priv->url = g_value_dup_string (value);
+      break;
+
+    case PROP_CUSTOM_HTTP_HEADERS:
+      {
+      g_free (priv->custom_http_headers);
+      const gchar *str = g_value_get_string ( value );
+      // Convert the literal characters '\'+'n' into actual newlines '\n'
+      if ( str )
+        priv->custom_http_headers = g_strcompress ( str );
+      else
+        priv->custom_http_headers = NULL;
+      }
       break;
 
     case PROP_REFERER:
@@ -219,6 +239,10 @@ vik_tms_map_source_get_property (GObject    *object,
     case PROP_URL:
       g_value_set_string (value, priv->url);
       break;
+
+    case PROP_CUSTOM_HTTP_HEADERS:
+      g_value_set_string (value, priv->custom_http_headers);
+	  break;
 
     case PROP_REFERER:
       g_value_set_string (value, priv->options.referer);
@@ -305,6 +329,13 @@ vik_tms_map_source_class_init (VikTmsMapSourceClass *klass)
 	                             "<no-set>" /* default value */,
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_URL, pspec);
+
+	pspec = g_param_spec_string ("custom-http-headers",
+	                             "Custom HTTP Headers",
+	                             "Custom HTTP Headers, use '\n' to separate multiple headers",
+	                             NULL /* default value */,
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_CUSTOM_HTTP_HEADERS, pspec);
 
 	pspec = g_param_spec_string ("referer",
 	                             "Referer",
@@ -486,11 +517,15 @@ _get_hostname( VikMapSourceDefault *self )
 }
 
 static DownloadFileOptions *
-_get_download_options( VikMapSourceDefault *self )
+_get_download_options( VikMapSourceDefault *self, MapCoord *src )
 {
 	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), NULL);
-	
 	VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
+	g_free ( priv->options.custom_http_headers );
+	if ( src )
+		priv->options.custom_http_headers = g_strdup_printf ( priv->custom_http_headers, 17-src->scale, src->x, src->y);
+	else
+		priv->options.custom_http_headers = g_strdup ( priv->custom_http_headers );
 	return &(priv->options);
 }
 
