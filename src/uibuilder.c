@@ -178,6 +178,7 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
       }
     break;
     case VIK_LAYER_WIDGET_ENTRY:
+    case VIK_LAYER_WIDGET_ENTRY_URL:
       if ( param->type == VIK_LAYER_PARAM_STRING )
       {
         rv = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
@@ -313,6 +314,7 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
         rv.d = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(widget) );
       break;
     case VIK_LAYER_WIDGET_ENTRY:
+    case VIK_LAYER_WIDGET_ENTRY_URL:
     case VIK_LAYER_WIDGET_PASSWORD:
       rv.s = gtk_entry_get_text ( GTK_ENTRY(widget) );
       break;
@@ -455,10 +457,14 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
         if ( tables )
           table = tables[MAX(0, params[i].group)]; /* round up NOT_IN_GROUP, that's not reasonable here */
 
-        widgets[j] = a_uibuilder_new_widget ( &(params[i]), getparam ( pass_along_getparam, i, FALSE ) );
+        VikLayerParamData data = getparam ( pass_along_getparam, i, FALSE );
+        widgets[j] = a_uibuilder_new_widget ( &(params[i]), data );
 
         if ( widgets[j] ) {
-          labels[j] = gtk_label_new(_(params[i].title));
+          if ( params[i].widget_type == VIK_LAYER_WIDGET_ENTRY_URL && data.s )
+            labels[j] = gtk_link_button_new_with_label ( data.s, _(params[i].title));
+          else
+            labels[j] = gtk_label_new(_(params[i].title));
           gtk_table_attach ( GTK_TABLE(table), labels[j], 0, 1, j, j+1, 0, 0, 0, 0 );
           gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL,
                              params[i].type == VIK_LAYER_PARAM_STRING_LIST ? GTK_EXPAND | GTK_FILL : 0, 2, 2 );
