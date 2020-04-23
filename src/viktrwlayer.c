@@ -8667,7 +8667,8 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     // Routes don't have speeds or dates
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
       (void)vu_menu_add_item ( goto_submenu, _("_Maximum Speed"), GTK_STOCK_MEDIA_FORWARD, G_CALLBACK(trw_layer_goto_track_max_speed), data );
-      (void)vu_menu_add_item ( goto_submenu, _("_Date"), GTK_STOCK_JUMP_TO, G_CALLBACK(trw_layer_goto_track_date), data );
+      if ( vlp )
+        (void)vu_menu_add_item ( goto_submenu, _("_Date"), GTK_STOCK_JUMP_TO, G_CALLBACK(trw_layer_goto_track_date), data );
     }
 
     (void)vu_menu_add_item ( goto_submenu, _("_Previous point"), GTK_STOCK_GO_BACK, G_CALLBACK(trw_layer_goto_track_prev_point), data );
