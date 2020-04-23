@@ -1073,6 +1073,13 @@ static void aggregate_layer_load_external_layers_click ( menu_array_values value
   vik_layers_panel_calendar_update ( values[MA_VLP] );
 }
 
+static void aggregate_layer_save_layer_as_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
+  (void)vik_window_save_file_as ( vw, val );
+}
+
 /**
  * aggregate_layer_file_load:
  *
@@ -1928,6 +1935,8 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   gtk_widget_set_tooltip_text ( itemd, _("Find the first item with a specified date") );
 
   (void)vu_menu_add_item ( menu, _("Load E_xternal Layers"), NULL, G_CALLBACK(aggregate_layer_load_external_layers_click), values );
+
+  (void)vu_menu_add_item ( menu, _("Save _Layer As..."), GTK_STOCK_SAVE, G_CALLBACK(aggregate_layer_save_layer_as_cb), values );
 
   (void)vu_menu_add_item ( menu, _("_Append File..."), GTK_STOCK_ADD, G_CALLBACK(aggregate_layer_file_load), values );
 

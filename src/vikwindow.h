@@ -71,6 +71,8 @@ struct _VikLayersPanel * vik_window_layers_panel(VikWindow *vw);
 struct _VikStatusbar * vik_window_get_statusbar(VikWindow *vw);
 const gchar *vik_window_get_filename(VikWindow *vw);
 
+gboolean vik_window_save_file_as ( VikWindow *vw, gpointer val ); // gpointer is a VikAggregateLayer
+
 void vik_window_statusbar_update (VikWindow *vw, const gchar* message, vik_statusbar_type_t vs_type);
 
 void vik_window_set_redraw_trigger(struct _VikLayer *vl);

@@ -150,7 +150,7 @@ static void load_file ( GtkAction *a, VikWindow *vw );
 static gboolean save_file_as ( GtkAction *a, VikWindow *vw );
 static gboolean save_file ( GtkAction *a, VikWindow *vw );
 static gboolean save_file_and_exit ( GtkAction *a, VikWindow *vw );
-static gboolean window_save ( VikWindow *vw );
+static gboolean window_save ( VikWindow *vw, VikAggregateLayer *agg, gchar *filename );
 
 struct _VikWindow {
   GtkWindow gtkwindow;
@@ -3897,7 +3897,7 @@ static void load_file ( GtkAction *a, VikWindow *vw )
   }
 }
 
-static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
+static gboolean window_save_file_as ( VikWindow *vw, VikAggregateLayer *agg, gboolean set_name )
 {
   gboolean rv = FALSE;
   gchar *fn = NULL;
@@ -3929,7 +3929,12 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
   gtk_window_set_destroy_with_parent ( GTK_WINDOW(dialog), TRUE );
 
   // Auto append / replace extension with '.vik' to the suggested file name as it's going to be a Viking File
-  gchar* auto_save_name = g_strdup ( window_get_filename ( vw ) );
+  gchar* auto_save_name = NULL;
+  if ( set_name )
+    auto_save_name = g_strdup ( window_get_filename ( vw ) );
+  else
+    auto_save_name = VIK_LAYER(agg)->name;
+
   if ( ! a_file_check_ext ( auto_save_name, ".vik" ) )
     auto_save_name = g_strconcat ( auto_save_name, ".vik", NULL );
 
@@ -3940,8 +3945,9 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
     fn = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(dialog) );
     if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == FALSE || a_dialog_yes_or_no ( GTK_WINDOW(dialog), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
     {
-      window_set_filename ( vw, fn );
-      rv = window_save ( vw );
+      if ( set_name )
+        window_set_filename ( vw, fn );
+      rv = window_save ( vw, agg, fn );
       if ( rv ) {
         vw->modified = FALSE;
         vu_set_last_folder_files_uri ( gtk_file_chooser_get_current_folder_uri(GTK_FILE_CHOOSER(dialog)) );
@@ -3956,14 +3962,24 @@ static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
   return rv;
 }
 
-static gboolean window_save ( VikWindow *vw )
+gboolean vik_window_save_file_as ( VikWindow *vw, gpointer val )
+{
+  return window_save_file_as ( vw, (VikAggregateLayer*)val, FALSE );
+}
+
+static gboolean save_file_as ( GtkAction *a, VikWindow *vw )
+{
+  return window_save_file_as ( vw, vik_layers_panel_get_top_layer(vw->viking_vlp), TRUE );
+}
+
+ static gboolean window_save ( VikWindow *vw, VikAggregateLayer *agg, gchar *filename )
 {
   vik_window_set_busy_cursor ( vw );
   gboolean success = TRUE;
 
-  if ( a_file_save ( vik_layers_panel_get_top_layer ( vw->viking_vlp ), vw->viking_vvp, vw->filename ) )
+  if ( a_file_save(agg, vw->viking_vvp, filename) )
   {
-    update_recently_used_document ( vw, vw->filename );
+    update_recently_used_document ( vw, filename );
   }
   else
   {
@@ -3981,7 +3997,7 @@ static gboolean save_file ( GtkAction *a, VikWindow *vw )
   else
   {
     vw->modified = FALSE;
-    return window_save ( vw );
+    return window_save ( vw, vik_layers_panel_get_top_layer(vw->viking_vlp), vw->filename );
   }
 }
 
