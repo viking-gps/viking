@@ -1,6 +1,7 @@
 <objects>
 <!-- Built in
   <object class="VikSlippyMapSource">
+    <property name="name">OSM-Mapnik</property>
     <property name="label">OpenStreetMap (Mapnik)</property>
     <property name="hostname">tile.openstreetmap.org</property>
     <property name="url">/%d/%d/%d.png</property>
@@ -12,10 +13,12 @@
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
     <property name="use-etag">TRUE</property>
+    <property name="follow-location">2</property>
   </object>
 -->
 <!-- Built in
   <object class="VikSlippyMapSource">
+    <property name="name">OSM-Cycle</property>
     <property name="label">OpenStreetMap (Cycle)</property>
     <property name="hostname">b.tile.opencyclemap.org</property>
     <property name="url">/cycle/%d/%d/%d.png</property>
@@ -27,12 +30,15 @@
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
     <property name="check-file-server-time">TRUE</property>
+    <property name="follow-location">2</property>
   </object>
 -->
   <object class="VikSlippyMapSource">
+    <property name="name">OSM GPS Traces</property>
     <property name="label">OSM GPS Traces</property>
     <property name="hostname">https://gps-c.tile.openstreetmap.org</property>
     <property name="url">/lines/%d/%d/%d.png</property>
+    <property name="follow-location">2</property>
     <property name="zoom-min">0</property>
     <property name="zoom-max">18</property>
     <property name="id">33</property>
@@ -48,6 +54,7 @@
     <property name="label">CalTopo USGS 7.5" Topos</property>
     <property name="hostname">s3-us-west-1.amazonaws.com</property>
     <property name="url">/caltopo/topo/%d/%d/%d.png?v=1</property>
+    <property name="follow-location">2</property>
     <property name="zoom-min">0</property>
     <property name="zoom-max">16</property>
     <property name="lat-min">18.76</property>
@@ -59,9 +66,11 @@
     <property name="license-url">http://caltopo.com/</property>
   </object>
   <object class="VikSlippyMapSource">
-    <property name="label">Public Transport Map </property>
+    <property name="name">Public Transport Map</property>
+    <property name="label">Public Transport Map</property>
     <property name="hostname">tile.xn--pnvkarte-m4a.de</property>
     <property name="url">/tilegen/%0d/%d/%d.png</property>
+    <property name="follow-location">2</property>
     <property name="zoom-min">0</property>
     <property name="zoom-max">18</property>
     <property name="id">101</property>
@@ -71,53 +80,65 @@
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
   <object class="VikSlippyMapSource">
+    <property name="name">OpenSeaMap</property>
     <property name="label">OpenSeaMap</property>
     <property name="hostname">tiles.openseamap.org</property>
     <property name="url">/seamark/%d/%d/%d.png</property>
     <property name="zoom-min">8</property>
     <property name="zoom-max">18</property>
     <property name="id">600</property>
+    <property name="follow-location">2</property>
     <property name="name">OpenSeaMap</property>
     <property name="copyright">© OpenStreetMap contributors</property>
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
   </object>
   <object class="VikSlippyMapSource">
+    <property name="name">Waymarked Trails Hiking</property>
     <property name="label">Waymarked Trails Hiking</property>
     <property name="hostname">tile.waymarkedtrails.org</property>
     <property name="url">/hiking/%d/%d/%d.png</property>
     <property name="id">701</property>
+    <property name="follow-location">2</property>
     <property name="license">CC-by-SA 3.0 / ODBl</property>
     <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
   </object>
   <object class="VikSlippyMapSource">
+    <property name="name">Waymarked Trails Cycling</property>
     <property name="label">Waymarked Trails Cycling</property>
     <property name="hostname">tile.waymarkedtrails.org</property>
     <property name="url">/cycling/%d/%d/%d.png</property>
+    <property name="follow-location">2</property>
     <property name="id">702</property>
     <property name="license">CC-by-SA 3.0 / ODBl</property>
     <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
   </object>
   <object class="VikSlippyMapSource">
+    <property name="name">Waymarked Trails MTB</property>
     <property name="label">Waymarked Trails MTB</property>
     <property name="hostname">tile.waymarkedtrails.org</property>
     <property name="url">/mtb/%d/%d/%d.png</property>
+    <property name="follow-location">2</property>
     <property name="id">703</property>
     <property name="license">CC-by-SA 3.0 / ODBl</property>
     <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
   </object>
   <object class="VikSlippyMapSource">
+    <property name="name">Waymarked Trails Inline Skating</property>
     <property name="label">Waymarked Trails Inline Skating</property>
     <property name="hostname">tile.waymarkedtrails.org</property>
     <property name="url">/skating/%d/%d/%d.png</property>
+    <property name="follow-location">2</property>
     <property name="id">704</property>
     <property name="license">CC-by-SA 3.0 / ODBl</property>
     <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
   </object>
   <object class="VikSlippyMapSource">
+    <property name="name">Waymarked Trails Riding</property>
     <property name="label">Waymarked Trails Riding</property>
     <property name="hostname">tile.waymarkedtrails.org</property>
     <property name="url">/riding/%d/%d/%d.png</property>
+    <property name="follow-location">2</property>
     <property name="id">705</property>
     <property name="license">CC-by-SA 3.0 / ODBl</property>
     <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
@@ -126,11 +147,13 @@
     <property name="label">Waymarked Trails Winter Sport Slopes</property>
     <property name="hostname">tile.waymarkedtrails.org</property>
     <property name="url">/slopes/%d/%d/%d.png</property>
+    <property name="follow-location">2</property>
     <property name="id">706</property>
     <property name="license">CC-by-SA 3.0 / ODBl</property>
     <property name="license-url">http://creativecommons.org/licenses/by-sa/3.0/de/deed.en</property>
   </object>
   <object class="VikSlippyMapSource">
+    <property name="name">4UMaps</property>
     <property name="label">4UMaps</property>
     <property name="hostname">tileserver.4umaps.eu</property>
     <property name="url">/%d/%d/%d.png</property>
@@ -140,6 +163,7 @@
     <property name="id">801</property>
   </object>
   <object class="VikSlippyMapSource">
+    <property name="name">OpenTopoMap</property>
     <property name="label">OpenTopoMap</property>
     <property name="hostname">a.tile.opentopomap.org</property>
     <property name="url">/%d/%d/%d.png</property>

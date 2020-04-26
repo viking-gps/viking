@@ -11,8 +11,9 @@
     <property name="name">OSM-Mapnik</property>
     <property name="copyright">© OpenStreetMap contributors</property>
     <property name="license">CC-BY-SA</property>
-    <property name="license-url">http://www.openstreetmap.org/copyright</property>
+    <property name="license-url">https://www.openstreetmap.org/copyright</property>
     <property name="file-extension">.png</property>
+    <property name="follow-location">2</property>
   </object>
   <!-- The VikTmsMapSource allows to declare any TMS service. -->
   <!-- Note this service is no longer working

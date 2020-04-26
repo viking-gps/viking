@@ -147,7 +147,8 @@ vik_map_source_default_set_property (GObject      *object,
       // A simple check just to prevent containing slashes ATM
       g_free (priv->name);
       priv->name = g_strdup(g_value_get_string (value));
-      g_strdelimit (priv->name, "\\/", 'x' );
+      if ( priv->name )
+        g_strdelimit (priv->name, "\\/", '_' );
       break;
 
     case PROP_ID:
@@ -316,7 +317,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	pspec = g_param_spec_string ("name",
 	                             "Name",
 	                             "The name of the map that may be used as the file cache directory",
-	                             "Unknown" /* default value */,
+	                             NULL, // default value
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_NAME, pspec);
 
@@ -332,7 +333,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	pspec = g_param_spec_string ("label",
 	                             "Label",
 	                             "The label of the map source",
-	                             "<no-set>" /* default value */,
+	                             "Unknown", // default value
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_LABEL, pspec);
 
@@ -466,7 +467,14 @@ map_source_get_name (VikMapSource *self)
 {
 	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
 	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
-	return priv->name;
+	if ( priv->name )
+		return priv->name;
+	else {
+		// Fallback if not set
+		priv->name = g_strdup ( priv->label );
+		g_strdelimit ( priv->name, "\\/", '_' );
+		return priv->name;
+	}
 }
 
 static guint16
