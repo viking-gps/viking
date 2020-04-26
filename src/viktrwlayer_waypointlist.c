@@ -170,16 +170,7 @@ static void trw_layer_waypoint_properties ( menu_array_values values )
 		GtkWidget *gw = gtk_widget_get_toplevel ( values[MA_TREEVIEW] );
 		waypoint_close_cb ( gw, 0, values[MA_WPTS_LIST] );
 
-		gboolean updated = FALSE;
-		gchar *new_name = a_dialog_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), wpt->name, vtl, wpt, vik_trw_layer_get_coord_mode(vtl), FALSE, &updated );
-		if ( new_name )
-			trw_layer_waypoint_rename ( vtl, wpt, new_name );
-
-		if ( updated )
-			trw_layer_waypoint_reset_icon ( vtl, wpt );
-
-		if ( updated && VIK_LAYER(vtl)->visible )
-			vik_layer_emit_update ( VIK_LAYER(vtl) );
+		trw_layer_wpwin_set ( vtl, wpt, vik_trw_layer_wpwin_show ( VIK_GTK_WINDOW_FROM_LAYER(vtl), NULL, wpt->name, vtl, wpt, vik_trw_layer_get_coord_mode(vtl), FALSE ) );
 	}
 }
 

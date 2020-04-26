@@ -326,6 +326,19 @@ GtkWidget *ui_entry_new ( const gchar *str, GtkEntryIconPosition position )
 }
 
 /**
+ * Set the entry field text
+ *
+ * Handles NULL, unlike gtk_entry_set_text() which complains
+ */
+void ui_entry_set_text ( GtkWidget *widget, const gchar *str )
+{
+	if ( str )
+		gtk_entry_set_text ( GTK_ENTRY(widget), str );
+	else
+		gtk_entry_set_text ( GTK_ENTRY(widget), "" );
+}
+
+/**
  * Create a spinbutton with an icon to clear the entry
  *
  * Ideal for entries used for getting user entered transitory data,

@@ -28,12 +28,11 @@
 
 G_BEGIN_DECLS
 
-/* Specify if a new waypoint or not */
-/* If a new waypoint then it uses the default_name for the suggested name allowing the user to change it.
-    The name to use is returned
-   When an existing waypoint the name is shown but is not allowed to be changed and NULL is returned
- */
-gchar *a_dialog_waypoint ( GtkWindow *parent, gchar *default_name, VikTrwLayer *vtl, VikWaypoint *wp, VikCoordMode coord_mode, gboolean is_new, gboolean *updated );
+typedef struct _VikTrwLayerWpwin VikTrwLayerWpwin;
+
+VikTrwLayerWpwin *vik_trw_layer_wpwin_show ( GtkWindow *parent, VikTrwLayerWpwin *cur_wpwin, gchar *default_name, VikTrwLayer *vtl, VikWaypoint *wp, VikCoordMode coord_mode, gboolean is_new );
+
+void vik_trw_layer_wpwin_destroy ( VikTrwLayerWpwin *wpwin );
 
 G_END_DECLS
 

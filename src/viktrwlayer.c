@@ -178,6 +178,9 @@ struct _VikTrwLayer {
 
   VikCoordMode coord_mode;
 
+  VikTrwLayerWpwin *wpwin;
+  VikWaypoint *wpwin_wpt; // Similar to current_wp
+
   /* wp editing tool */
   VikWaypoint *current_wp;
   gpointer current_wp_id;
@@ -1791,9 +1794,7 @@ static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, guint len, Vik
       }
       if ( pl == VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
         VikWaypoint *wp = vik_waypoint_unmarshall ( data + sizeof_len_and_subtype, 0 );
-        gchar *name = g_strdup ( wp->name );
-        vik_trw_layer_add_waypoint ( vtl, name, wp );
-        g_free ( name );
+        vik_trw_layer_add_waypoint ( vtl, NULL, wp );
         waypoint_convert (NULL, wp, &vtl->coord_mode);
       }
       if ( pl == VIK_TRW_LAYER_SUBLAYER_ROUTE ) {
@@ -1937,6 +1938,9 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
 
   if ( trwlayer->tpwin != NULL )
     gtk_widget_destroy ( GTK_WIDGET(trwlayer->tpwin) );
+
+  if ( trwlayer->wpwin != NULL )
+    vik_trw_layer_wpwin_destroy ( trwlayer->wpwin );
 
   if ( trwlayer->tracks_analysis_dialog != NULL )
     gtk_widget_destroy ( GTK_WIDGET(trwlayer->tracks_analysis_dialog) );
@@ -4009,21 +4013,17 @@ gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikC
 {
   gchar *default_name = highest_wp_number_get(vtl);
   VikWaypoint *wp = vik_waypoint_new();
-  gchar *returned_name;
-  gboolean updated;
   wp->coord = *def_coord;
   
   // Attempt to auto set height if DEM data is available
   vik_waypoint_apply_dem_data ( wp, TRUE );
 
-  returned_name = a_dialog_waypoint ( w, default_name, vtl, wp, vtl->coord_mode, TRUE, &updated );
+  gboolean is_created = GPOINTER_TO_UINT(vik_trw_layer_wpwin_show ( w, NULL, default_name, vtl, wp, vtl->coord_mode, TRUE ));
 
-  if ( returned_name )
-  {
+  if ( is_created ) {
     wp->visible = TRUE;
-    vik_trw_layer_add_waypoint ( vtl, returned_name, wp );
+    vik_trw_layer_add_waypoint ( vtl, NULL, wp );
     g_free (default_name);
-    g_free (returned_name);
     return TRUE;
   }
   g_free (default_name);
@@ -4648,11 +4648,17 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
 // Fake Waypoint UUIDs vi simple increasing integer
 static guint wp_uuid = 0;
 
+/**
+ * vik_trw_layer_add_waypoint:
+ * @name: New name for the waypoint, maybe NULL.
+ *        If NULL then the wp must already have a name
+ */
 void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp )
 {
   wp_uuid++;
 
-  vik_waypoint_set_name (wp, name);
+  if ( name )
+    vik_waypoint_set_name (wp, name);
 
   if ( VIK_LAYER(vtl)->realized )
   {
@@ -4668,7 +4674,7 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
       timestamp = wp->timestamp;
 
     // Visibility column always needed for waypoints
-    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, get_wp_sym_small (wp->symbol), TRUE, timestamp, 0 );
+    vik_treeview_add_sublayer ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), iter, wp->name, vtl, GUINT_TO_POINTER(wp_uuid), VIK_TRW_LAYER_SUBLAYER_WAYPOINT, get_wp_sym_small (wp->symbol), TRUE, timestamp, 0 );
 
     // Actual setting of visibility dependent on the waypoint
     vik_treeview_item_set_visible ( VIK_LAYER(vtl)->vt, iter, wp->visible );
@@ -4679,7 +4685,7 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
     vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), vtl->wp_sort_order );
   }
 
-  highest_wp_number_add_wp(vtl, name);
+  highest_wp_number_add_wp(vtl, wp->name);
   g_hash_table_insert ( vtl->waypoints, GUINT_TO_POINTER(wp_uuid), wp );
  
 }
@@ -5094,6 +5100,11 @@ gboolean vik_trw_layer_delete_route ( VikTrwLayer *vtl, VikTrack *trk )
 
 static void delete_waypoint_low_level ( VikTrwLayer *vtl, VikWaypoint *wp, gpointer uuid, GtkTreeIter *it )
 {
+  if ( vtl->wpwin && wp == vtl->wpwin_wpt ) {
+    vik_trw_layer_wpwin_destroy ( vtl->wpwin );
+    vtl->wpwin = NULL;
+  }
+
   vik_treeview_item_delete ( VIK_LAYER(vtl)->vt, it );
   g_hash_table_remove ( vtl->waypoints_iters, uuid );
 
@@ -5106,12 +5117,6 @@ static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp )
   gboolean was_visible = FALSE;
 
   if ( wp && wp->name ) {
-
-    if ( wp == vtl->current_wp ) {
-      vtl->current_wp = NULL;
-      vtl->current_wp_id = NULL;
-      vtl->moving_wp = FALSE;
-    }
 
     was_visible = wp->visible;
     
@@ -5127,6 +5132,12 @@ static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp )
     
       if ( it ) {
         delete_waypoint_low_level ( vtl, wp, udata.uuid, it );
+
+        if ( wp == vtl->current_wp ) {
+          vtl->current_wp = NULL;
+          vtl->current_wp_id = NULL;
+          vtl->moving_wp = FALSE;
+        }
 
 	// If last sublayer, then remove sublayer container
 	if ( g_hash_table_size (vtl->waypoints) == 0 ) {
@@ -5268,6 +5279,12 @@ void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl )
 
 void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl )
 {
+  if ( vtl->wpwin ) {
+    vik_trw_layer_wpwin_destroy ( vtl->wpwin );
+    vtl->wpwin = NULL;
+  }
+  vtl->wpwin_wpt = NULL;
+
   vtl->current_wp = NULL;
   vtl->current_wp_id = NULL;
   vtl->moving_wp = FALSE;
@@ -5439,31 +5456,48 @@ void trw_layer_waypoint_reset_icon ( VikTrwLayer *vtl, VikWaypoint *wp )
   }
 }
 
+void trw_layer_waypoint_properties_changed ( VikTrwLayer *vtl, VikWaypoint *wp )
+{
+  // Find in treeview
+  wpu_udata udataU;
+  udataU.wp   = wp;
+  udataU.uuid = NULL;
+  gpointer wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc)trw_layer_waypoint_find_uuid, &udataU );
+
+  if ( wpf && udataU.uuid ) {
+    GtkTreeIter *iter = g_hash_table_lookup ( vtl->waypoints_iters, udataU.uuid );
+    if ( iter ) {
+      // Update treeview data
+      vik_treeview_item_set_name ( VIK_LAYER(vtl)->vt, iter, wp->name );
+      vik_treeview_item_set_icon ( VIK_LAYER(vtl)->vt, iter, get_wp_sym_small (wp->symbol) );
+      vik_treeview_item_set_timestamp ( VIK_LAYER(vtl)->vt, iter, wp->timestamp );
+      vik_treeview_sort_children ( VIK_LAYER(vtl)->vt, &(vtl->waypoints_iter), vtl->wp_sort_order );
+    }
+  }
+  // Position may have changed
+  trw_layer_calculate_bounds_waypoints ( vtl );
+
+  if ( wp->visible && vik_treeview_item_get_visible_tree(VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter)) )
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+void trw_layer_wpwin_set ( VikTrwLayer *vtl, VikWaypoint *wp, gpointer wpwin )
+{
+  vtl->wpwin = wpwin;
+  vtl->wpwin_wpt = wp;
+}
+
 static void trw_layer_properties_item ( menu_array_sublayer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
   if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_WAYPOINT )
   {
     VikWaypoint *wp = g_hash_table_lookup ( vtl->waypoints, values[MA_SUBLAYER_ID] );
-
-    if ( wp && wp->name )
-    {
-      gboolean updated = FALSE;
-      gchar *new_name = a_dialog_waypoint ( VIK_GTK_WINDOW_FROM_LAYER(vtl), wp->name, vtl, wp, vtl->coord_mode, FALSE, &updated );
-      if ( new_name )
-        trw_layer_waypoint_rename ( vtl, wp, new_name );
-
-      if ( updated && values[MA_TV_ITER] )
-        vik_treeview_item_set_icon ( VIK_LAYER(vtl)->vt, values[MA_TV_ITER], get_wp_sym_small (wp->symbol) );
-
-      if ( updated && VIK_LAYER(vtl)->visible )
-	vik_layer_emit_update ( VIK_LAYER(vtl) );
-
-      // Time & Position could have changed
-      if ( updated ) {
-        trw_layer_calculate_bounds_waypoints ( vtl );
-        trw_layer_treeview_waypoint_align_time ( vtl, wp );
-      }
+    if ( wp && wp->name ) {
+      if ( vtl->wpwin )
+	vik_trw_layer_wpwin_destroy ( vtl->wpwin );
+      vtl->wpwin_wpt = wp;
+      vtl->wpwin = vik_trw_layer_wpwin_show ( VIK_GTK_WINDOW_FROM_LAYER(vtl), NULL, wp->name, vtl, wp, vtl->coord_mode, FALSE );
     }
   }
   else
@@ -9580,6 +9614,12 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
           values[MA_MISC] = vtl->current_wp->image;
           trw_layer_show_picture ( values );
         }
+      }
+
+      // Change waypoint in dialog
+      if ( vtl->wpwin ) {
+        vtl->wpwin_wpt = vtl->current_wp;
+        vtl->wpwin = vik_trw_layer_wpwin_show ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->wpwin, vtl->wpwin_wpt->name, vtl, vtl->wpwin_wpt, vtl->coord_mode, FALSE );
       }
 
       // Selection change only (no change to the layer)

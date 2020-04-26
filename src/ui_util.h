@@ -37,6 +37,7 @@ gint ui_get_gtk_settings_integer(const gchar *property_name, gint default_value)
 GtkWidget *ui_lookup_widget(GtkWidget *widget, const gchar *widget_name);
 GtkWidget* ui_label_new_selectable ( const gchar* text );
 GtkWidget *ui_entry_new ( const gchar *str, GtkEntryIconPosition position );
+void ui_entry_set_text ( GtkWidget *widget, const gchar *str );
 GtkWidget *ui_spin_button_new ( GtkAdjustment *adjustment,
                                 gdouble climb_rate,
                                 guint digits );
