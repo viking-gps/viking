@@ -181,7 +181,7 @@ static gboolean vik_goto_search_list_select ( GtkTreeSelection *sel, GtkTreeMode
 
     if ( last_successful_goto_str )
       g_free ( last_successful_goto_str );
-    last_successful_goto_str = g_strdup ( last_goto_str );
+    gtk_tree_model_get ( model, &iter, VIK_GOTO_SEARCH_DESC_COL, &last_successful_goto_str, -1 );
 
     vik_viewport_set_center_coord( data->vvp, last_coord, TRUE );
     vik_layers_panel_emit_update ( vik_window_layers_panel(data->vw) );
@@ -232,7 +232,7 @@ static void vik_goto_search_response ( struct VikGotoSearchWinData *data, gint r
         struct VikGotoCandidate *cand = (struct VikGotoCandidate *) l->data;
         gtk_list_store_append ( results_store, &results_iter );
         gtk_list_store_set ( results_store, &results_iter,
-                             VIK_GOTO_SEARCH_DESC_COL, cand->description,//cand->description,
+                             VIK_GOTO_SEARCH_DESC_COL, cand->description,
                              VIK_GOTO_SEARCH_LAT_COL, cand->ll.lat,
                              VIK_GOTO_SEARCH_LON_COL, cand->ll.lon,
                              -1 );
