@@ -42,6 +42,8 @@ void map_utils_iTMS_to_center_vikcoord ( const MapCoord *src, VikCoord *dest );
 
 void map_utils_iTMS_to_vikcoord ( const MapCoord *src, VikCoord *dest );
 
+void map_utils_iTMS_to_vikcoords ( const MapCoord *src, VikCoord *tl, VikCoord *br );
+
 G_BEGIN_DECLS
 
 #endif

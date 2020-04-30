@@ -154,3 +154,18 @@ void map_utils_iTMS_to_vikcoord ( const MapCoord *src, VikCoord *dest )
 {
 	_to_vikcoord_with_offset ( src, dest, 0.0 );
 }
+
+/**
+ * map_utils_iTMS_to_vikcoords:
+ * @src:   Original #MapCoord in Inverse TMS format
+ * @tl:    The Top Left Spherical Mercator coordinates in #VikCoord
+ * @br:    The Bottom Right Spherical Mercator coordinates in #VikCoord
+ *
+ * Convert a #MapCoord in Inverse TMS format into a pair Spherical Mercator coordinates
+ *  covering the bounds of that TMS (TL: Top Left and BR: Bottom Right)
+ */
+void map_utils_iTMS_to_vikcoords ( const MapCoord *src, VikCoord *tl, VikCoord *br )
+{
+	_to_vikcoord_with_offset ( src, tl, 0.0 );
+	_to_vikcoord_with_offset ( src, br, 1.0 );
+}

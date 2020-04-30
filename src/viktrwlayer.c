@@ -794,7 +794,7 @@ static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl
 static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t *t );
 static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventMotion *event, VikViewport *vvp, tool_ed_t *t );
 static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t *t );
-static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, guint button, VikViewport *vvp );
+static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static void trw_write_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
 static gboolean trw_read_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
 static void trw_write_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
@@ -9720,7 +9720,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
   return FALSE;
 }
 
-static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, guint button, VikViewport *vvp )
+static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
     return FALSE;
@@ -9768,7 +9768,7 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, guint 
                                             vvp );
       }
 
-      gtk_menu_popup ( vtl->track_right_click_menu, NULL, NULL, NULL, NULL, button, gtk_get_current_event_time() );
+      gtk_menu_popup ( vtl->track_right_click_menu, NULL, NULL, NULL, NULL, event->button, event->time );
 	
       return TRUE;
     }
@@ -9801,7 +9801,7 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, guint 
                                             iter,
                                             vvp );
       }
-      gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, button, gtk_get_current_event_time() );
+      gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, event->button, event->time );
 
       return TRUE;
     }

@@ -43,6 +43,8 @@ static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetP
 static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, guint16 id, gboolean is_file_operation );
 static void aggregate_layer_change_param ( GtkWidget *widget, ui_change_values values );
 static void aggregate_layer_post_read ( VikAggregateLayer *val, VikViewport *vvp, gboolean from_file );
+static gboolean aggregate_layer_selected_viewport_menu ( VikAggregateLayer *val, GdkEventButton *event, VikViewport *vvp );
+
 static void tac_calculate ( VikAggregateLayer *val );
 static void hm_calculate ( VikAggregateLayer *val );
 
@@ -194,7 +196,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncSelectClick)             NULL,
   (VikLayerFuncSelectMove)              NULL,
   (VikLayerFuncSelectRelease)           NULL,
-  (VikLayerFuncSelectedViewportMenu)    NULL,
+  (VikLayerFuncSelectedViewportMenu)    aggregate_layer_selected_viewport_menu,
 
   (VikLayerFuncRefresh)                 NULL,
 };
@@ -246,6 +248,8 @@ struct _VikAggregateLayer {
   guint8 hm_stamp_factor;
   guint hm_style;
   GdkColor hm_color;
+
+  MapCoord rc_menu_mc; // Position of Right Click menu
 };
 
 GType vik_aggregate_layer_get_type ()
@@ -2246,6 +2250,40 @@ static void aggregate_view_all_trw ( menu_array_values values )
   }
 }
 
+static void tac_on_off_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
+  //tac_on_off ( val );
+    val->on[BASIC] = !val->on[BASIC];
+  if ( val->on[BASIC] ) {
+    if ( !val->calculating )
+      tac_calculate ( val );
+  }
+  else
+    // Redraw to clear previous display
+    vik_layer_emit_update ( VIK_LAYER(val) );
+
+}
+
+static void tac_increase_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
+  if ( val->zoom_level < 4097 )
+    val->zoom_level = val->zoom_level * 2;
+  if ( val->on[BASIC] )
+    if ( !val->calculating )
+      tac_calculate ( val );
+}
+
+static void tac_decrease_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
+  if ( val->zoom_level > 4.1 )
+    val->zoom_level = val->zoom_level / 2;
+  if ( val->on[BASIC] )
+    if ( !val->calculating )
+      tac_calculate ( val );
+}
 
 // This shouldn't be called when already running
 static void tac_calculate_cb ( menu_array_values values )
@@ -2272,6 +2310,169 @@ static void hm_clear_cb ( menu_array_values values )
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
   hm_clear ( val );
   vik_layer_emit_update ( VIK_LAYER(val) );
+}
+
+/**
+ * Returns the submenu, so the caller can append menuitems if desired
+ */
+static GtkMenu* aggregate_build_submenu_tac ( VikAggregateLayer *val, GtkMenu *menu, menu_array_values values )
+{
+  gboolean available = val->on[BASIC] && !val->calculating;
+  GtkMenu *tac_submenu = GTK_MENU(gtk_menu_new());
+  GtkWidget *itemt = vu_menu_add_item ( menu, _("_Tracks Area Coverage"), GTK_STOCK_EXECUTE, NULL, NULL );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemt), GTK_WIDGET(tac_submenu) );
+  GtkWidget *itemtoo = vu_menu_add_item ( tac_submenu, val->on[BASIC] ? _("_Off") : _("_On"), GTK_STOCK_EXECUTE, G_CALLBACK(tac_on_off_cb), values );
+  gtk_widget_set_sensitive ( itemtoo, !val->calculating );
+
+  GtkWidget *itemtac = vu_menu_add_item ( tac_submenu, _("_Calculate"), GTK_STOCK_REFRESH, G_CALLBACK(tac_calculate_cb), values );
+  gtk_widget_set_sensitive ( itemtac, available );
+
+  GtkWidget *itemti = vu_menu_add_item ( tac_submenu, _("_Increase Tile Area"), GTK_STOCK_GO_UP, G_CALLBACK(tac_increase_cb), values );
+  gtk_widget_set_sensitive ( itemti, available );
+
+  GtkWidget *itemtd = vu_menu_add_item ( tac_submenu, _("_Decrease Tile Area"), GTK_STOCK_GO_DOWN, G_CALLBACK(tac_decrease_cb), values );
+  gtk_widget_set_sensitive ( itemtd, available );
+
+  GtkWidget *itemtclr = vu_menu_add_item ( tac_submenu, _("_Remove"), GTK_STOCK_DELETE, G_CALLBACK(tac_clear_cb), values );
+  gtk_widget_set_sensitive ( itemtclr, available );
+
+#ifdef HAVE_SQLITE3_H
+  if ( val->on[BASIC] )
+    if ( !val->calculating )
+      (void)vu_menu_add_item ( tac_submenu, _("_Export as MBTiles"), GTK_STOCK_CONVERT, G_CALLBACK(tac_generate_mbtiles_cb), values );
+#endif
+
+  return tac_submenu;
+}
+
+static void aggregate_build_submenu_hm ( VikAggregateLayer *val, GtkMenu *menu, menu_array_values values, VikViewport *vvp )
+{
+  // ATM heatmap only in this mode
+  if ( vik_viewport_get_drawmode(vvp) == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {
+    gboolean hm_available = !val->hm_calculating;
+    GtkMenu *hm_submenu = GTK_MENU(gtk_menu_new());
+    GtkWidget *itemhm = vu_menu_add_item ( menu, _("Tracks Heat_map"), GTK_STOCK_EXECUTE, NULL, NULL );
+    gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemhm), GTK_WIDGET(hm_submenu) );
+
+    GtkWidget *itemhmc = vu_menu_add_item ( hm_submenu, _("_Calculate"), GTK_STOCK_REFRESH, G_CALLBACK(hm_calculate_cb), values );
+    gtk_widget_set_sensitive ( itemhmc, hm_available );
+
+    GtkWidget *itemhmlr = vu_menu_add_item ( hm_submenu, _("_Remove"), GTK_STOCK_DELETE, G_CALLBACK(hm_clear_cb), values );
+    gtk_widget_set_sensitive ( itemhmlr, (val->hm_pixbuf != NULL) );
+  }
+}
+
+/**
+ * Find tracks from this list of tracks that go through this MapCoord tile
+ */
+GList *build_tac_track_list ( VikTrwLayer *vtl, GList *tracks, MapCoord *mc )
+{
+  GList *tracks_and_layers = NULL;
+  // build tracks_and_layers list
+  while ( tracks ) {
+    VikTrack *trk = VIK_TRACK(tracks->data);
+
+    VikCoord tl, br;
+    // Get the tile bounds
+    map_utils_iTMS_to_vikcoords ( mc, &tl, &br );
+    LatLonBBox bbox;
+    bbox.north = tl.north_south;
+    bbox.east  = br.east_west;
+    bbox.south = br.north_south;
+    bbox.west  = tl.east_west;
+
+    // First a quick check to see if the track bounds covers this tile
+    if ( BBOX_INTERSECT ( bbox, trk->bbox ) ) {
+      // Now check each point to see if actually in the tile bounds
+      GList *iter = trk->trackpoints;
+      while ( iter ) {
+        if ( !isnan(VIK_TRACKPOINT(iter->data)->timestamp) ) {
+          if ( vik_coord_inside ( &(VIK_TRACKPOINT(iter->data)->coord), &tl, &br ) ) {
+            vik_trw_and_track_t *vtdl = g_malloc(sizeof(vik_trw_and_track_t));
+            vtdl->trk = trk;
+            vtdl->vtl = vtl;
+            tracks_and_layers = g_list_prepend ( tracks_and_layers, vtdl );
+            break;
+          }
+        }
+        iter = iter->next;
+      }
+    }
+    tracks = g_list_next ( tracks );
+  }
+  return tracks_and_layers;
+}
+
+/**
+ * aggregate_layer_tac_tracks_list:
+ * @vl:        The layer that should create the track and layers list
+ * @user_data: The tile in #MapCoord
+ *
+ * Returns: A list of #vik_trw_and_track_t
+ */
+static GList* aggregate_layer_tac_tracks_list ( VikLayer *vl, gpointer user_data )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(vl);
+  MapCoord *mc = (MapCoord*)user_data;
+
+  // Get all TRW layers
+  GList *layers = NULL;
+  layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, TRUE );
+
+  // For each TRW layers keep adding the tracks the match our criteria
+  GList *tracks_and_layers = NULL;
+  layers = g_list_first ( layers );
+  while ( layers ) {
+    GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) );
+    tracks_and_layers = g_list_concat ( tracks_and_layers, build_tac_track_list(VIK_TRW_LAYER(layers->data), tracks, mc) );
+    layers = g_list_next ( layers );
+  }
+  g_list_free ( layers );
+
+  return tracks_and_layers;
+}
+
+static void tac_track_list_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
+  gchar *title = g_strdup_printf ( _("%s: Tracks in tile %d %d, %d"), VIK_LAYER(val)->name, (17-val->rc_menu_mc.scale), val->rc_menu_mc.x, val->rc_menu_mc.y );
+  vik_trw_layer_track_list_show_dialog ( title, VIK_LAYER(val), &val->rc_menu_mc, aggregate_layer_tac_tracks_list, TRUE );
+  g_free ( title );
+}
+
+static gboolean aggregate_layer_selected_viewport_menu ( VikAggregateLayer *val, GdkEventButton *event, VikViewport *vvp )
+{
+  static menu_array_values values;
+  values[MA_VAL] = val;
+  values[MA_VLP] = NULL;
+
+  if ( event->button == 3 ) {
+    VikCoord coord;
+    vik_viewport_screen_to_coord ( vvp, MAX(0, event->x), MAX(0, event->y), &coord );
+
+    GtkMenu *menu = GTK_MENU(gtk_menu_new ());
+    GtkWidget *name = vu_menu_add_item ( menu, VIK_LAYER(val)->name, NULL, NULL, NULL ); // Say which layer this is
+    gtk_widget_set_sensitive ( name, FALSE ); // Prevent useless clicking on the name
+    (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
+
+    gboolean available = val->on[BASIC] && !val->calculating;
+    GtkMenu *sm = aggregate_build_submenu_tac ( val, menu, values );
+
+    if ( map_utils_vikcoord_to_iTMS(&coord, val->zoom_level, val->zoom_level, &val->rc_menu_mc) ) {
+      GtkWidget *itemtt = vu_menu_add_item ( sm, _("_Tracks in this Tile"), GTK_STOCK_INFO, G_CALLBACK(tac_track_list_cb), values );
+      available = available && is_tile_occupied ( val->tiles, val->rc_menu_mc.x, val->rc_menu_mc.y );
+      gtk_widget_set_sensitive ( itemtt, available );
+    }
+
+    aggregate_build_submenu_hm ( val, menu, values, vvp );
+
+    gtk_widget_show_all ( GTK_WIDGET(menu) );
+    // Unclear why using '0' is more reliable for activating submenu items than using 'event->button'!
+    // Possibly https://bugzilla.gnome.org/show_bug.cgi?id=695488
+    gtk_menu_popup ( menu, NULL, NULL, NULL, NULL, 0, event->time );
+  }
+
+  return FALSE;
 }
 
 static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp )
@@ -2324,37 +2525,9 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
 
   (void)vu_menu_add_item ( menu, _("_Append File..."), GTK_STOCK_ADD, G_CALLBACK(aggregate_layer_file_load), values );
 
-  GtkMenu *tac_submenu = GTK_MENU(gtk_menu_new());
-  GtkWidget *itemt = vu_menu_add_item ( menu, _("_Tracks Area Coverage"), GTK_STOCK_EXECUTE, NULL, NULL );
-  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemt), GTK_WIDGET(tac_submenu) );
+  (void)aggregate_build_submenu_tac ( val, menu, values );
 
-  gboolean available = val->on[BASIC] && !val->calculating;
-  GtkWidget *itemtac = vu_menu_add_item ( tac_submenu, _("_Calculate"), GTK_STOCK_REFRESH, G_CALLBACK(tac_calculate_cb), values );
-  gtk_widget_set_sensitive ( itemtac, available );
-
-  GtkWidget *itemtclr = vu_menu_add_item ( tac_submenu, _("_Remove"), GTK_STOCK_DELETE, G_CALLBACK(tac_clear_cb), values );
-  gtk_widget_set_sensitive ( itemtclr, available );
-
-#ifdef HAVE_SQLITE3_H
-  if ( val->on[BASIC] )
-    if ( !val->calculating )
-      (void)vu_menu_add_item ( tac_submenu, _("_Export as MBTiles"), GTK_STOCK_CONVERT, G_CALLBACK(tac_generate_mbtiles_cb), values );
-#endif
-
-  // ATM heatmap only in this mode
-  VikViewport *vvp = vik_window_viewport ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
-  if ( vik_viewport_get_drawmode(vvp) == VIK_VIEWPORT_DRAWMODE_MERCATOR ) {
-    gboolean hm_available = !val->hm_calculating;
-    GtkMenu *hm_submenu = GTK_MENU(gtk_menu_new());
-    GtkWidget *itemhm = vu_menu_add_item ( menu, _("Tracks Heat_map"), GTK_STOCK_EXECUTE, NULL, NULL );
-    gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemhm), GTK_WIDGET(hm_submenu) );
-
-    GtkWidget *itemhmc = vu_menu_add_item ( hm_submenu, _("_Calculate"), GTK_STOCK_REFRESH, G_CALLBACK(hm_calculate_cb), values );
-    gtk_widget_set_sensitive ( itemhmc, hm_available );
-
-    GtkWidget *itemhmlr = vu_menu_add_item ( hm_submenu, _("_Remove"), GTK_STOCK_DELETE, G_CALLBACK(hm_clear_cb), values );
-    gtk_widget_set_sensitive ( itemhmlr, (val->hm_pixbuf != NULL) );
-  }
+  aggregate_build_submenu_hm ( val, menu, values, vik_window_viewport(VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val))) );
 }
 
 static void disconnect_layer_signal ( VikLayer *vl, VikAggregateLayer *val )

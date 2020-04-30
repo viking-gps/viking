@@ -2589,12 +2589,12 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
       }
     }
   }
-  else if ( ( event->button == 3 ) && ( vl && ( vl->type == VIK_LAYER_TRW ) ) ) {
+  else if ( ( event->button == 3 ) && ( vl && (vl->type == VIK_LAYER_TRW || vl->type == VIK_LAYER_AGGREGATE) ) ) {
     if ( vl->visible )
       /* Act on currently selected item to show menu */
-      if ( t->vw->selected_track || t->vw->selected_waypoint )
+      if ( t->vw->selected_track || t->vw->selected_waypoint || vl->type == VIK_LAYER_AGGREGATE )
 	if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
-	  (void)vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, event->button, t->vw->viking_vvp );
+	  (void)vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, event, t->vw->viking_vvp );
   }
 
   return VIK_LAYER_TOOL_ACK;
