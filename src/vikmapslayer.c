@@ -355,12 +355,8 @@ void _add_map_source ( guint16 id, const char *label, VikMapSource *map )
      We have to ensure the mode LayerParam references the up-to-date
      GLists.
   */
-  /*
-  memcpy(&maps_layer_params[0].widget_data, &params_maptypes, sizeof(gpointer));
-  memcpy(&maps_layer_params[0].extra_widget_data, &params_maptypes_ids, sizeof(gpointer));
-  */
-  maps_layer_params[0].widget_data = params_maptypes;
-  maps_layer_params[0].extra_widget_data = params_maptypes_ids;
+  maps_layer_params[PARAM_MAPTYPE].widget_data = params_maptypes;
+  maps_layer_params[PARAM_MAPTYPE].extra_widget_data = params_maptypes_ids;
 }
 
 void _update_map_source ( const char *label, VikMapSource *map, int index )
