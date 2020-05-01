@@ -20,6 +20,7 @@
  */
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
+#include <time.h> // For at least strftime
 #include <string.h>
 #include <stdio.h>
 #include <glib/gstdio.h>
@@ -145,21 +146,13 @@ static VikLayerParamData preferences_run_getparam ( gpointer notused, guint16 i,
   return val->data;
 }
 
-/**
- * a_preferences_save_to_file:
- * 
- * Returns: TRUE on success
- */
-gboolean a_preferences_save_to_file()
+static gboolean preferences_save_to_file ( gchar *fn )
 {
-  gchar *fn = g_build_filename(a_get_viking_dir(), VIKING_PREFS_FILE, NULL);
-
   FILE *f = g_fopen(fn, "w");
   // Since preferences file may contain sensitive information,
   //  it'll be better to store it so it can only be read by the user
   if ( g_chmod(fn, 0600) != 0 )
     g_warning ( "%s: Failed to set permissions on %s", __FUNCTION__, fn );
-  g_free ( fn );
 
   if ( f ) {
     VikLayerParam *param;
@@ -178,6 +171,19 @@ gboolean a_preferences_save_to_file()
   }
 
   return FALSE;
+}
+
+/**
+ * a_preferences_save_to_file:
+ *
+ * Returns: TRUE on success
+ */
+gboolean a_preferences_save_to_file()
+{
+  gchar *fn = g_build_filename(a_get_viking_dir(), VIKING_PREFS_FILE, NULL);
+  gboolean ans = preferences_save_to_file ( fn );
+  g_free ( fn );
+  return ans;
 }
 
 
@@ -204,6 +210,12 @@ void a_preferences_show_window(GtkWindow *parent) {
     g_free ( contiguous_params );
 }
 
+/**
+ * For most preferences the defaultval is now redundant,
+ *  as it will get reset by applying the param's default_value() later on;
+ *  except for VIK_LAYER_PARAM_PTR, which must be set once and then retains that very first value
+ *  (since that will never change during a program run)
+ */
 void a_preferences_register(VikLayerParam *pref, VikLayerParamData defaultval, const gchar *group_key )
 {
   // All preferences should be registered before loading
@@ -317,4 +329,56 @@ gboolean a_preferences_lookup(const gchar *key)
     fclose(f);
   }
   return ans;
+}
+
+/**
+ * Set all preferences to defaults
+ *  Uses the preferences own default value function
+ */
+static void a_preferences_set_defaults_all ( void )
+{
+  VikLayerParamData tmp;
+  tmp.s = NULL; // Ensure entire union set blank
+  for ( guint ii = 0; ii < params->len; ii++ ) {
+    VikLayerParam *param = (VikLayerParam*)g_ptr_array_index ( params, ii );
+    // Use default function to set value of self
+    if ( param->default_value )
+      a_preferences_run_setparam ( param->default_value(), param );
+    else
+      a_preferences_run_setparam ( tmp, param ); // i.e. a NULL, 0 or FALSE default
+  }
+}
+
+/**
+ * Call this once all preferences have been registered
+ */
+void a_preferences_finished_registering ( void )
+{
+  // Apply all defaults in one go
+  a_preferences_set_defaults_all();
+}
+
+/**
+ * a_preferences_reset_all_defaults:
+ *
+ * returns: The name of file used for the backup. Free after use.
+ *   May return NULL if backup of current values failed (and preferences not reset)
+ */
+gchar *a_preferences_reset_all_defaults ( void )
+{
+  // Backup previous preferences using a file with a unambiguous timestamp in the name
+  gchar buf[32];
+  time_t ts = time(NULL);
+  strftime (buf, sizeof(buf), "%Y%m%d_%H%M%S", gmtime(&ts));
+  gchar *name = g_strdup_printf ( "%s.%s.txt", VIKING_PREFS_FILE, buf );
+  gchar *fn = g_build_filename ( a_get_viking_dir(), name, NULL );
+  g_free ( name );
+  if ( preferences_save_to_file ( fn ) ) {
+    // Only reset if backup worked
+    a_preferences_set_defaults_all();
+  } else {
+    g_free ( fn );
+    fn = NULL;
+  }
+  return fn;
 }

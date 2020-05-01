@@ -55,6 +55,9 @@ void a_preferences_run_setparam ( VikLayerParamData data, VikLayerParam *vlparam
 
 gboolean a_preferences_save_to_file();
 
+gchar *a_preferences_reset_all_defaults ( void );
+
+void a_preferences_finished_registering ( void );
 
 G_END_DECLS
 

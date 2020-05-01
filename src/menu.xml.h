@@ -59,6 +59,7 @@ static const char *menu_xml =
 	"      <menuitem action='MapCacheFlush'/>"
 	"      <menuitem action='SetDefaultLocation'/>"
 	"      <menuitem action='Preferences'/>"
+	"      <menuitem action='PreferencesReset'/>"
 	"      <menu action='LayerDefaults'/>"
 	"    </menu>"
 	"    <menu action='View'>"

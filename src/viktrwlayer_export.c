@@ -38,14 +38,12 @@ static gchar *last_folder_uri = NULL;
 
 static VikLayerParam io_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIK_PREFS_EXPORT_DEVICE_SIMPLIFY, VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Auto Device GPX Simplify:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
-     N_("GPX saves to certain devices will be simplified for device compatibility."), NULL, NULL, NULL },
+     N_("GPX saves to certain devices will be simplified for device compatibility."), vik_lpd_false_default, NULL, NULL },
 };
 
 void vik_trw_layer_export_init ()
 {
-  VikLayerParamData tmp;
-  tmp.b = FALSE;
-  a_preferences_register(&io_prefs[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+  a_preferences_register ( &io_prefs[0], (VikLayerParamData){0}, VIKING_PREFERENCES_IO_GROUP_KEY );
 }
 
 static gboolean gpx_export_simplify_layer ( VikTrwLayer *vtl, const gchar *fn, VikTrack* trk )

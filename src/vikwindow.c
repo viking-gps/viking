@@ -4310,6 +4310,21 @@ static void preferences_cb ( GtkAction *a, VikWindow *vw )
   vik_layers_panel_set_preferences ( vw->viking_vlp );
 }
 
+static void preferences_reset_cb ( GtkAction *a, VikWindow *vw )
+{
+  if ( a_dialog_yes_or_no ( GTK_WINDOW(vw), _("Are you sure you wish to reset all preferences back to the defaults?"), NULL ) ) {
+    gchar *filename = a_preferences_reset_all_defaults();
+    if ( filename ) {
+      a_dialog_info_msg_extra ( GTK_WINDOW(vw), _("A backup of the previous preferences was saved to: %s"), filename );
+      toolbar_apply_settings ( vw->viking_vtb, vw->main_vbox, vw->menu_hbox, TRUE );
+      vik_layers_panel_set_preferences ( vw->viking_vlp );
+    } else {
+      a_dialog_error_msg ( GTK_WINDOW(vw), _("Preferences not reset as backup of current preferences failed") );
+    }
+    g_free ( filename );
+  }
+}
+
 static void default_location_cb ( GtkAction *a, VikWindow *vw )
 {
   // Get relevant preferences - these should always be available
@@ -5167,6 +5182,7 @@ static GtkActionEntry entries[] = {
   { "MapCacheFlush",NULL,                N_("_Flush Map Cache"),              NULL,         NULL,                                           (GCallback)mapcache_flush_cb     },
   { "SetDefaultLocation", GTK_STOCK_GO_FORWARD, N_("_Set the Default Location"), NULL, N_("Set the Default Location to the current position"),(GCallback)default_location_cb },
   { "Preferences",GTK_STOCK_PREFERENCES, N_("_Preferences"),                  NULL,         N_("Program Preferences"),                      (GCallback)preferences_cb },
+  { "PreferencesReset",GTK_STOCK_REFRESH, N_("Preferences Reset All"),        NULL,         N_("Reset All Program Preferences"),            (GCallback)preferences_reset_cb },
   { "LayerDefaults",GTK_STOCK_PROPERTIES, N_("_Layer Defaults"),             NULL,         NULL,                                           NULL },
   { "Properties",GTK_STOCK_PROPERTIES,   N_("_Properties"),                   NULL,         N_("Layer Properties"),                         (GCallback)menu_properties_cb },
 

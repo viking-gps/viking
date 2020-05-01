@@ -184,31 +184,21 @@ static void prop_widgets_free(PropWidgets *widgets)
 #define TPW_PREFS_NS "track.propwin."
 
 static VikLayerParam prefs[] = {
-  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"tabs_on_side", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Tabs on the side:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
-  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_splits", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show splits tab:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
-  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_elev_dist", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Elevation-distance graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
-  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_elev_time", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Elevation-time graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
-  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_grad_dist", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Gradient-distance graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
-  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_speed_time", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Speed-time graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
-  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_speed_dist", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Speed-distance graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
-  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_dist_time", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Distance-time graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"tabs_on_side", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Tabs on the side:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_false_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_splits", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show splits tab:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_elev_dist", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Elevation-distance graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_elev_time", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Elevation-time graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_grad_dist", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Gradient-distance graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_speed_time", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Speed-time graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_speed_dist", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Speed-distance graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_dist_time", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Distance-time graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
 };
 
 void vik_trw_layer_propwin_init ()
 {
   a_preferences_register_group ( TPW_PREFS_GROUP_KEY, _("Track Properties Dialog") );
-
-  VikLayerParamData tmp;
-  tmp.b = FALSE;
-  a_preferences_register ( &prefs[0], tmp, TPW_PREFS_GROUP_KEY );
-  tmp.b = TRUE; // Each graph set to being shown (if possible) by default
-  a_preferences_register ( &prefs[1], tmp, TPW_PREFS_GROUP_KEY );
-  a_preferences_register ( &prefs[2], tmp, TPW_PREFS_GROUP_KEY );
-  a_preferences_register ( &prefs[3], tmp, TPW_PREFS_GROUP_KEY );
-  a_preferences_register ( &prefs[4], tmp, TPW_PREFS_GROUP_KEY );
-  a_preferences_register ( &prefs[5], tmp, TPW_PREFS_GROUP_KEY );
-  a_preferences_register ( &prefs[6], tmp, TPW_PREFS_GROUP_KEY );
-  a_preferences_register ( &prefs[7], tmp, TPW_PREFS_GROUP_KEY );
+  for ( guint ii = 0; ii < G_N_ELEMENTS(prefs); ii++ )
+    a_preferences_register ( &prefs[ii], (VikLayerParamData){0}, TPW_PREFS_GROUP_KEY );
 }
 
 static void minmax_array(const gdouble *array, gdouble *min, gdouble *max, gboolean NO_ALT_TEST, gint PROFILE_WIDTH)

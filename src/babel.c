@@ -627,9 +627,24 @@ static gboolean load_feature ()
   return ret;
 }
 
+static VikLayerParamData gb_default ( void ) {
+  VikLayerParamData vlpd;
+#ifdef WINDOWS
+  // Basic guesses - could use %ProgramFiles% but this is simpler:
+  if ( g_file_test ( "C:\\Program Files (x86)\\GPSBabel\\gpsbabel.exe", G_FILE_TEST_EXISTS ) )
+    // 32 bit location on a 64 bit system
+    vlpd.s = g_strdup ( "C:\\Program Files (x86)\\GPSBabel\\gpsbabel.exe" );
+  else
+    vlpd.s = g_strdup ( "C:\\Program Files\\GPSBabel\\gpsbabel.exe" );
+#else
+  vlpd.s = g_strdup ( "gpsbabel" );
+#endif
+  return vlpd;
+}
+
 static VikLayerParam prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "gpsbabel", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("GPSBabel:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL,
-      N_("Allow setting the specific instance of GPSBabel. You must restart Viking for this value to take effect."), NULL, NULL, NULL },
+      N_("Allow setting the specific instance of GPSBabel. You must restart Viking for this value to take effect."), gb_default, NULL, NULL },
 };
 
 /**
@@ -639,19 +654,7 @@ static VikLayerParam prefs[] = {
  */
 void a_babel_init ()
 {
-  // Set the defaults
-  VikLayerParamData vlpd;
-#ifdef WINDOWS
-  // Basic guesses - could use %ProgramFiles% but this is simpler:
-  if ( g_file_test ( "C:\\Program Files (x86)\\GPSBabel\\gpsbabel.exe", G_FILE_TEST_EXISTS ) )
-    // 32 bit location on a 64 bit system
-    vlpd.s = "C:\\Program Files (x86)\\GPSBabel\\gpsbabel.exe";
-  else
-    vlpd.s = "C:\\Program Files\\GPSBabel\\gpsbabel.exe";
-#else
-  vlpd.s = "gpsbabel";
-#endif
-  a_preferences_register(&prefs[0], vlpd, VIKING_PREFERENCES_IO_GROUP_KEY);
+  a_preferences_register ( &prefs[0], (VikLayerParamData){0}, VIKING_PREFERENCES_IO_GROUP_KEY );
 }
 
 /**

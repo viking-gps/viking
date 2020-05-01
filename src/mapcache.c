@@ -63,8 +63,10 @@ static VikLayerParamScale params_scales[] = {
  { 1, 1024, 1, 0 },
 };
 
+static VikLayerParamData mcs_default ( void ) { return VIK_LPD_UINT(VIK_CONFIG_MAPCACHE_SIZE); }
+
 static VikLayerParam prefs[] = {
-  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "mapcache_size", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map cache memory size (MB):"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "mapcache_size", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map cache memory size (MB):"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL, NULL, mcs_default, NULL, NULL },
 };
 
 static void cache_item_free (cache_item_t *ci)
@@ -75,9 +77,7 @@ static void cache_item_free (cache_item_t *ci)
 
 void a_mapcache_init ()
 {
-  VikLayerParamData tmp;
-  tmp.u = VIK_CONFIG_MAPCACHE_SIZE;
-  a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
+  a_preferences_register ( prefs, (VikLayerParamData){0}, VIKING_PREFERENCES_GROUP_KEY );
 
   mc_mutex = vik_mutex_new ();
   cache = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, (GDestroyNotify) cache_item_free );

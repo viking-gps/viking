@@ -119,6 +119,9 @@ gboolean a_vik_very_first_run ();
 /* Global preferences */
 void a_vik_preferences_init ();
 
+/* Reset global preferences */
+void a_vik_preferences_reset_defaults ();
+
 /* Coord display preferences */
 typedef enum {
   VIK_DEGREE_FORMAT_DDD,

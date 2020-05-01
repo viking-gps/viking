@@ -370,18 +370,16 @@ void osm_traces_init () {
 #ifdef HAVE_OAUTH_H
   tmp.ptr = new_access_token_cb;
   a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
-  tmp.s = "";
+  tmp.s = NULL;
   a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
-  tmp.s = "";
   a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
 #endif
   // Only register depreciated preferences if they already exist
   //  or being forced to use the basic method
   if ( osm_use_basic_auth() ||
        (a_preferences_lookup("OSM_USERNAME") && a_preferences_lookup(OSM_PASSWORD)) ) {
-    tmp.s = "";
+    tmp.s = NULL;
     a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
-    tmp.s = "";
     a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
   }
 

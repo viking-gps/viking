@@ -182,6 +182,9 @@ int main( int argc, char *argv[] )
   vik_trw_layer_export_init();
   vik_trw_layer_propwin_init();
 
+  // Registration of preferences has now been done
+  a_preferences_finished_registering();
+
   /*
    * Second stage initialization
    *

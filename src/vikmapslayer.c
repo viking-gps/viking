@@ -289,15 +289,17 @@ enum { REDOWNLOAD_NONE = 0,    /* download only missing maps */
        REDOWNLOAD_ALL,         /* download all maps */
        DOWNLOAD_OR_REFRESH };  /* download missing maps and refresh cache */
 
+static VikLayerParamData mpl_dir_default ( void ) {
+  VikLayerParamData data; data.s = maps_layer_default_dir(); return data;
+}
+
 static VikLayerParam prefs[] = {
-  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Default map layer directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, N_("Choose a directory to store cached Map tiles for this layer"), NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Default map layer directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, N_("Choose a directory to store cached Map tiles for this layer"), mpl_dir_default, NULL, NULL },
 };
 
 void maps_layer_init ()
 {
-  VikLayerParamData tmp;
-  tmp.s = maps_layer_default_dir();
-  a_preferences_register(prefs, tmp, VIKING_PREFERENCES_GROUP_KEY);
+  a_preferences_register ( prefs, (VikLayerParamData){0}, VIKING_PREFERENCES_GROUP_KEY );
 
   gint max_tiles = MAX_TILES;
   if ( a_settings_get_integer ( VIK_SETTINGS_MAP_MAX_TILES, &max_tiles ) )

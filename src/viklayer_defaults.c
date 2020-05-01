@@ -119,7 +119,8 @@ static void set_default_data ( VikLayerParamData data, const gchar *group, const
 		g_key_file_set_boolean ( keyfile, group, name, data.b );
 		break;
 	case VIK_LAYER_PARAM_STRING:
-		g_key_file_set_string ( keyfile, group, name, data.s );
+		if ( data.s )
+			g_key_file_set_string ( keyfile, group, name, data.s );
 		break;
 	case VIK_LAYER_PARAM_COLOR: {
 		gchar *str = g_strdup_printf ( "#%.2x%.2x%.2x", (int)(data.c.red/256),(int)(data.c.green/256),(int)(data.c.blue/256));

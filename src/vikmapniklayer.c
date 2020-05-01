@@ -242,14 +242,22 @@ static VikLayerParamData fonts_default ( void )
 	return data;
 }
 
+static VikLayerParamData carto_default ( void ) {
+  VikLayerParamData data;
+  data.s = g_strdup ( "carto" );
+  return data;
+}
+
+static VikLayerParamData rr_to_default ( void ) { return VIK_LPD_UINT(168); } // One week in hours
+
 static VikLayerParam prefs[] = {
 	// Changing these values only applies before first mapnik layer is 'created'
 	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"plugins_directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Plugins Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, N_("You need to restart Viking for a change to this value to be used"), plugins_default, NULL, NULL },
 	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"fonts_directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Fonts Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, N_("You need to restart Viking for a change to this value to be used"), fonts_default, NULL, NULL },
 	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"recurse_fonts_directory", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Recurse Fonts Directory:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("You need to restart Viking for a change to this value to be used"), vik_lpd_true_default, NULL, NULL },
-	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"rerender_after", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Rerender Timeout (hours):"), VIK_LAYER_WIDGET_SPINBUTTON, &scales[2], NULL, N_("You need to restart Viking for a change to this value to be used"), NULL, NULL, NULL },
+	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"rerender_after", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Rerender Timeout (hours):"), VIK_LAYER_WIDGET_SPINBUTTON, &scales[2], NULL, N_("You need to restart Viking for a change to this value to be used"), rr_to_default, NULL, NULL },
 	// Changeable any time
-	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"carto", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("CartoCSS:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL,  N_("The program to convert CartoCSS files into Mapnik XML"), NULL, NULL, NULL },
+	{ VIK_LAYER_NUM_TYPES, MAPNIK_PREFS_NAMESPACE"carto", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("CartoCSS:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL,  N_("The program to convert CartoCSS files into Mapnik XML"), carto_default, NULL, NULL },
 };
 
 static time_t planet_import_time;
@@ -266,21 +274,8 @@ void vik_mapnik_layer_init (void)
 {
 	a_preferences_register_group ( MAPNIK_PREFS_GROUP_KEY, _("Mapnik") );
 
-	guint i = 0;
-	VikLayerParamData tmp = plugins_default();
-	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
-
-	tmp = fonts_default();
-	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
-
-	tmp.b = TRUE;
-	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
-
-	tmp.u = 168; // One week
-	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
-
-	tmp.s = "carto";
-	a_preferences_register(&prefs[i++], tmp, MAPNIK_PREFS_GROUP_KEY);
+	for ( guint ii = 0; ii < G_N_ELEMENTS(prefs); ii++ )
+	  a_preferences_register ( &prefs[ii], (VikLayerParamData){0}, MAPNIK_PREFS_GROUP_KEY );
 }
 
 /**

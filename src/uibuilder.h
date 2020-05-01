@@ -151,12 +151,14 @@ typedef struct {
 #define VIK_LPD_UINT(X)        (VikLayerParamData) { .i = (X) }
 #define VIK_LPD_COLOR(X,Y,Z,A) (VikLayerParamData) { .c = (GdkColor){ (X), (Y), (Z), (A) } }
 #define VIK_LPD_DOUBLE(X)      (VikLayerParamData) { .d = (X) }
+#define VIK_LPD_PTR(X)         (VikLayerParamData) { .ptr = (X) }
 #else
 #define VIK_LPD_BOOLEAN(X)     (VikLayerParamData) { (X) }
 #define VIK_LPD_INT(X)         (VikLayerParamData) { (X) }
 #define VIK_LPD_UINT(X)        (VikLayerParamData) { (X) }
 #define VIK_LPD_COLOR(X,Y,Z,A) (VikLayerParamData) { (X), (Y), (Z), (A) }
 #define VIK_LPD_DOUBLE(X)      (VikLayerParamData) { (X) }
+#define VIK_LPD_PTR(X)         (VikLayerParamData) { (X) }
 #endif
 
 VikLayerParamData vik_lpd_true_default ( void );

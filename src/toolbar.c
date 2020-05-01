@@ -102,13 +102,23 @@ typedef struct {
 
 static config_t extra_widget_data;
 
+static VikLayerParamData icon_style_default ( void ) {
+	VikLayerParamData tmp;
+#ifdef WINDOWS
+	tmp.u = 1; // Icons only for Windows by default as 'System Defaults' is more GNOME Theme driven.
+#else
+	tmp.u = 0;
+#endif
+	return tmp;
+}
+
 static VikLayerParam prefs[] = {
 	{ VIK_LAYER_NUM_TYPES, TOOLBAR_PARAMS_NAMESPACE "append_to_menu", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Append to Menu:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
-	  N_("Pack the toolbar to the main menu to save vertical space"), NULL, NULL, NULL },
+	  N_("Pack the toolbar to the main menu to save vertical space"), vik_lpd_false_default, NULL, NULL },
 	{ VIK_LAYER_NUM_TYPES, TOOLBAR_PARAMS_NAMESPACE "icon_size", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Icon Size:"), VIK_LAYER_WIDGET_COMBOBOX, params_icon_size, NULL,
 	  NULL, NULL, NULL, NULL },
 	{ VIK_LAYER_NUM_TYPES, TOOLBAR_PARAMS_NAMESPACE "icon_style", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Icon Style:"), VIK_LAYER_WIDGET_COMBOBOX, params_icon_style, NULL,
-	  NULL, NULL, NULL, NULL },
+	  NULL, icon_style_default, NULL, NULL },
 	{ VIK_LAYER_NUM_TYPES, TOOLBAR_PARAMS_NAMESPACE "NOTSAVED1", VIK_LAYER_PARAM_PTR, VIK_LAYER_GROUP_NONE, N_("Customize:"), VIK_LAYER_WIDGET_BUTTON, N_("Customize Buttons"), NULL,
 	  NULL, NULL, NULL, NULL },
 };
@@ -144,20 +154,10 @@ void a_toolbar_init (void)
 	// Preferences
 	a_preferences_register_group ( TOOLBAR_PARAMS_GROUP_KEY, _("Toolbar") );
 
-	guint i = 0;
-	VikLayerParamData tmp;
-	tmp.b = FALSE;
-	a_preferences_register (&prefs[i++], tmp, TOOLBAR_PARAMS_GROUP_KEY);
-	tmp.u = 0;
-	a_preferences_register (&prefs[i++], tmp, TOOLBAR_PARAMS_GROUP_KEY);
-#ifdef WINDOWS
-	tmp.u = 1; // Small Icons for Windows by default as 'System Defaults' is more GNOME Theme driven.
-#else
-	tmp.u = 0;
-#endif
-	a_preferences_register (&prefs[i++], tmp, TOOLBAR_PARAMS_GROUP_KEY);
-	tmp.ptr = toolbar_configure_cb;
-	a_preferences_register (&prefs[i++], tmp, TOOLBAR_PARAMS_GROUP_KEY);
+	for ( guint ii = 0; ii < G_N_ELEMENTS(prefs)-1; ii++ )
+		a_preferences_register ( &prefs[ii], (VikLayerParamData){0}, TOOLBAR_PARAMS_GROUP_KEY );
+	// The last one is a button cb, which needs registering with the cb value
+	a_preferences_register ( &prefs[G_N_ELEMENTS(prefs)-1], VIK_LPD_PTR(toolbar_configure_cb), TOOLBAR_PARAMS_GROUP_KEY );
 
 	// Signal data hash
 	signal_data = g_hash_table_new_full ( g_direct_hash, g_direct_equal, NULL, g_free );

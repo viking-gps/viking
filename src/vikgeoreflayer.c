@@ -202,14 +202,12 @@ struct _VikGeorefLayer {
 
 static VikLayerParam io_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "georef_auto_read_world_file", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Auto Read World Files:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
-    N_("Automatically attempt to read associated world file of a new image for a GeoRef layer"), NULL, NULL, NULL}
+    N_("Automatically attempt to read associated world file of a new image for a GeoRef layer"), vik_lpd_true_default, NULL, NULL}
 };
 
 void vik_georef_layer_init (void)
 {
-  VikLayerParamData tmp;
-  tmp.b = TRUE;
-  a_preferences_register(&io_prefs[0], tmp, VIKING_PREFERENCES_IO_GROUP_KEY);
+  a_preferences_register ( &io_prefs[0], (VikLayerParamData){0}, VIKING_PREFERENCES_IO_GROUP_KEY );
 }
 
 GType vik_georef_layer_get_type ()
