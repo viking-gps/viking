@@ -27,6 +27,7 @@
 #include <glib/gi18n.h>
 
 #include "vikfileentry.h"
+#include "ui_util.h"
 
 struct _VikFileEntry {
   GtkHBox parent;
@@ -91,7 +92,7 @@ const gchar *vik_file_entry_get_filename ( VikFileEntry *vfe )
 
 void vik_file_entry_set_filename ( VikFileEntry *vfe, const gchar *filename )
 {
-  gtk_entry_set_text ( GTK_ENTRY(vfe->entry), filename );
+  ui_entry_set_text ( vfe->entry, filename );
 }
 
 void choose_file ( VikFileEntry *vfe )

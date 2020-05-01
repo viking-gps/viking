@@ -38,6 +38,130 @@ VikLayerParamData vik_lpd_true_default ( void ) { return VIK_LPD_BOOLEAN ( TRUE 
 VikLayerParamData vik_lpd_false_default ( void ) { return VIK_LPD_BOOLEAN ( FALSE ); }
 static gboolean file_save_cb ( VikFileEntry *vfe, gpointer user_data );
 
+
+static void refresh_widget ( GtkWidget *widget, VikLayerParam *param, VikLayerParamData data )
+{
+  // Perform pre conversion if necessary
+  VikLayerParamData vlpd = data;
+  if ( param->convert_to_display )
+    vlpd = param->convert_to_display ( data );
+
+  switch ( param->widget_type )
+  {
+    case VIK_LAYER_WIDGET_COLOR:
+      gtk_color_button_set_color ( GTK_COLOR_BUTTON(widget), &(vlpd.c) );
+      break;
+    case VIK_LAYER_WIDGET_CHECKBUTTON:
+      gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widget), vlpd.b );
+      break;
+    case VIK_LAYER_WIDGET_COMBOBOX:
+      if ( param->type == VIK_LAYER_PARAM_UINT ) {
+        gtk_combo_box_set_active ( GTK_COMBO_BOX(widget), 0 ); // In case value not found
+        // map of alternate uint values for options
+        if ( param->extra_widget_data ) {
+          // Set the effective default value
+          for ( int i = 0; ((const char **)param->widget_data)[i]; i++ )
+            if ( ((guint *)param->extra_widget_data)[i] == vlpd.u ) {
+              // Match default value
+              gtk_combo_box_set_active ( GTK_COMBO_BOX(widget), i );
+              break;
+            }
+        }
+	else {
+	  gtk_combo_box_set_active ( GTK_COMBO_BOX(widget), vlpd.u );
+	}
+      }
+      else if ( param->type == VIK_LAYER_PARAM_STRING && param->widget_data && !param->extra_widget_data )
+      {
+	gtk_combo_box_set_active ( GTK_COMBO_BOX(widget), 0 );
+        gchar **pstr = param->widget_data;
+        guint ii = 0;
+        while ( *pstr ) {
+          if ( g_strcmp0(vlpd.s, *pstr) == 0 )
+            gtk_combo_box_set_active ( GTK_COMBO_BOX(widget), ii );
+          ii++;
+          pstr++;
+	}
+      }
+      else if ( param->type == VIK_LAYER_PARAM_STRING && param->widget_data && param->extra_widget_data) {
+	gtk_combo_box_set_active ( GTK_COMBO_BOX(widget), 0 );
+        if ( vlpd.s ) {
+          // Set the effective default value
+          // In case of value does not exist, set the first value
+          for ( int i = 0; ((const char **)param->widget_data)[i]; i++ )
+            if ( strcmp(((const char **)param->extra_widget_data)[i], vlpd.s) == 0 ) {
+              gtk_combo_box_set_active ( GTK_COMBO_BOX(widget), i );
+              break;
+            }
+        }
+      }
+      break;
+    case VIK_LAYER_WIDGET_RADIOGROUP:
+      // widget_data and extra_widget_data are GList
+      if ( param->type == VIK_LAYER_PARAM_UINT && param->widget_data ) {
+        if ( param->extra_widget_data ) {
+          int nb_elem = g_list_length(param->widget_data);
+          for ( int i = 0; i < nb_elem; i++ )
+            if ( GPOINTER_TO_UINT ( g_list_nth_data(param->extra_widget_data, i) ) == vlpd.u ) {
+              vik_radio_group_set_selected ( VIK_RADIO_GROUP(widget), i );
+              break;
+            }
+        }
+        else
+          vik_radio_group_set_selected ( VIK_RADIO_GROUP(widget), vlpd.u );
+      }
+      break;
+    case VIK_LAYER_WIDGET_RADIOGROUP_STATIC:
+      if ( param->type == VIK_LAYER_PARAM_UINT && param->widget_data ) {
+	// map of alternate uint values for options
+        if ( param->extra_widget_data ) {
+          for ( int i = 0; ((const char **)param->widget_data)[i]; i++ )
+            if ( ((guint *)param->extra_widget_data)[i] == vlpd.u ) {
+              vik_radio_group_set_selected ( VIK_RADIO_GROUP(widget), i );
+              break;
+            }
+        }
+        else
+          vik_radio_group_set_selected ( VIK_RADIO_GROUP(widget), vlpd.u );
+      }
+      break;
+    case VIK_LAYER_WIDGET_SPINBUTTON:
+      if ( (param->type == VIK_LAYER_PARAM_DOUBLE || param->type == VIK_LAYER_PARAM_UINT
+           || param->type == VIK_LAYER_PARAM_INT) ) {
+        gdouble init_val = (param->type == VIK_LAYER_PARAM_DOUBLE) ? vlpd.d : (param->type == VIK_LAYER_PARAM_UINT ? vlpd.u : vlpd.i);
+        gtk_spin_button_set_value ( GTK_SPIN_BUTTON(widget), init_val );
+      }
+    break;
+    case VIK_LAYER_WIDGET_ENTRY:
+    case VIK_LAYER_WIDGET_ENTRY_URL:
+    case VIK_LAYER_WIDGET_PASSWORD:
+      ui_entry_set_text ( widget, vlpd.s );
+      break;
+    case VIK_LAYER_WIDGET_FILEENTRY:
+    case VIK_LAYER_WIDGET_FILESAVE:
+    case VIK_LAYER_WIDGET_FOLDERENTRY:
+      vik_file_entry_set_filename ( VIK_FILE_ENTRY(widget), vlpd.s );
+      break;
+    case VIK_LAYER_WIDGET_FILELIST:
+      if ( param->type == VIK_LAYER_PARAM_STRING_LIST ) {
+        vik_file_list_set_files ( VIK_FILE_LIST(widget), vlpd.sl );
+      }
+      break;
+
+    case VIK_LAYER_WIDGET_HSCALE:
+      if ( (param->type == VIK_LAYER_PARAM_DOUBLE || param->type == VIK_LAYER_PARAM_UINT || param->type == VIK_LAYER_PARAM_INT) ) {
+        gdouble init_val = (param->type == VIK_LAYER_PARAM_DOUBLE) ? vlpd.d : (param->type == VIK_LAYER_PARAM_UINT ? vlpd.u : vlpd.i);
+        gtk_range_set_value ( GTK_RANGE(widget), init_val );
+      }
+      break;
+
+      // Nothing to change
+    case VIK_LAYER_WIDGET_BUTTON: break;
+
+    default: break;
+  }
+}
+
 /** i18n note
  * Since UI builder often uses static structures, the text is marked with N_()
  *  however to actually get it to apply the widget (e.g. to a label) then
@@ -346,6 +470,7 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
 }
 
 static GtkWidget *dialog = NULL;
+static GtkWidget **RefreshWidgets = NULL;
 
 /**
  * Hacky method to enable closing the dialog within preference code
@@ -353,7 +478,34 @@ static GtkWidget *dialog = NULL;
 void a_uibuilder_factory_close ( gint response_id )
 {
   if ( dialog ) {
+    RefreshWidgets = NULL;
     gtk_dialog_response ( GTK_DIALOG(dialog), response_id );
+  }
+}
+
+/**
+ * Another hacky method to update the widgets of a specified group
+ * Must only be used whilst the properties_factory is open
+ */
+void a_uibuilder_factory_refresh ( VikLayerParam *params,
+                                   guint16 params_count,
+                                   gint16 group,
+                                   VikLayerParamData (*getparam) (gpointer,guint16,gboolean) )
+{
+  if ( !RefreshWidgets ) {
+    g_critical ( __FUNCTION__ );
+    return;
+  }
+
+  guint i, j;
+  for ( i = 0, j = 0; i < params_count; i++ ) {
+    if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES ) {
+      if ( params[i].group == group ) {
+        VikLayerParamData data = getparam ( NULL, i, FALSE );
+        refresh_widget ( RefreshWidgets[j], &(params[i]), data );
+      }
+      j++;
+    }
   }
 }
 
@@ -420,6 +572,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
     GtkWidget **labels = g_malloc ( sizeof(GtkWidget *) * widget_count );
     GtkWidget **widgets = g_malloc ( sizeof(GtkWidget *) * widget_count );
     ui_change_values *change_values = g_malloc ( sizeof(ui_change_values) * widget_count );
+    RefreshWidgets = widgets; // Update value to enable refresh mechanism to work
 
     if ( groups && groups_count > 1 )
     {
@@ -469,13 +622,19 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
         widgets[j] = a_uibuilder_new_widget ( &(params[i]), data );
 
         if ( widgets[j] ) {
-          if ( params[i].widget_type == VIK_LAYER_WIDGET_ENTRY_URL && data.s )
-            labels[j] = gtk_link_button_new_with_label ( data.s, _(params[i].title));
-          else
-            labels[j] = gtk_label_new(_(params[i].title));
-          gtk_table_attach ( GTK_TABLE(table), labels[j], 0, 1, j, j+1, 0, 0, 0, 0 );
-          gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL,
-                             params[i].type == VIK_LAYER_PARAM_STRING_LIST ? GTK_EXPAND | GTK_FILL : 0, 2, 2 );
+          if ( params[i].type == VIK_LAYER_PARAM_PTR_DEFAULT ) {
+            // For the restore defaults button placed it centrally
+            //   (i.e. don't use a label, thus making it appear different to the normal settings values)
+            gtk_table_attach ( GTK_TABLE(table), widgets[j], 0, 2, j, j+1, GTK_SHRINK, 0, 2, 2 );
+	  } else {
+            if ( params[i].widget_type == VIK_LAYER_WIDGET_ENTRY_URL && data.s )
+              labels[j] = gtk_link_button_new_with_label ( data.s, _(params[i].title));
+            else
+              labels[j] = gtk_label_new(_(params[i].title));
+            gtk_table_attach ( GTK_TABLE(table), labels[j], 0, 1, j, j+1, 0, 0, 0, 0 );
+            gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL,
+                               params[i].type == VIK_LAYER_PARAM_STRING_LIST ? GTK_EXPAND | GTK_FILL : 0, 2, 2 );
+	  }
 
           if ( changeparam )
           {
@@ -561,6 +720,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
     gtk_widget_destroy ( dialog );
     dialog = NULL;
 
+    RefreshWidgets = NULL;
     return answer;
   }
 }

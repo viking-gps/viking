@@ -104,7 +104,7 @@ void file_write_layer_param ( FILE *f, const gchar *name, VikLayerParamType type
             iter = iter->next;
           }
         }
-      } else {
+      } else if ( type != VIK_LAYER_PARAM_PTR && type != VIK_LAYER_PARAM_PTR_DEFAULT ) {
         fprintf ( f, "%s=", name );
         switch ( type )
         {

@@ -44,6 +44,8 @@ gboolean loaded;
 static GPtrArray *groups_names;
 static GHashTable *groups_keys_to_indices; // contains gint, NULL (0) is not found, instead 1 is used for 0, 2 for 1, etc.
 
+static GList *pref_names = NULL;
+
 static void preferences_groups_init()
 {
   groups_names = g_ptr_array_new();
@@ -55,6 +57,7 @@ static void preferences_groups_uninit()
   g_ptr_array_foreach ( groups_names, (GFunc)g_free, NULL );
   g_ptr_array_free ( groups_names, TRUE );
   g_hash_table_destroy ( groups_keys_to_indices );
+  g_list_free_full ( pref_names, g_free );
 }
 
 void a_preferences_register_group ( const gchar *key, const gchar *name )
@@ -124,7 +127,7 @@ static gboolean preferences_load_from_file()
 static void preferences_run_setparam ( gpointer notused, guint16 i, VikLayerParamData data, VikLayerParam *vlparams )
 {
   // Don't change stored pointer values
-  if ( vlparams[i].type == VIK_LAYER_PARAM_PTR )
+  if ( vlparams[i].type == VIK_LAYER_PARAM_PTR || vlparams[i].type == VIK_LAYER_PARAM_PTR_DEFAULT )
     return;
   if ( vlparams[i].type == VIK_LAYER_PARAM_STRING_LIST )
     g_critical ( "Param strings not implemented in preferences"); //fake it
@@ -162,7 +165,7 @@ static gboolean preferences_save_to_file ( gchar *fn )
       param = (VikLayerParam *) g_ptr_array_index(params,i);
       val = (VikLayerTypedParamData *) g_hash_table_lookup ( values, param->name );
       if ( val )
-        if ( val->type != VIK_LAYER_PARAM_PTR )
+        if ( val->type != VIK_LAYER_PARAM_PTR && val->type != VIK_LAYER_PARAM_PTR_DEFAULT )
           file_write_layer_param ( f, param->name, val->type, val->data );
     }
     fclose(f);
@@ -213,7 +216,7 @@ void a_preferences_show_window(GtkWindow *parent) {
 /**
  * For most preferences the defaultval is now redundant,
  *  as it will get reset by applying the param's default_value() later on;
- *  except for VIK_LAYER_PARAM_PTR, which must be set once and then retains that very first value
+ *  except for VIK_LAYER_PARAM_PTR / VIK_LAYER_PARAM_PTR_DEFAULT, which must be set once and then retains that very first value
  *  (since that will never change during a program run)
  */
 void a_preferences_register(VikLayerParam *pref, VikLayerParamData defaultval, const gchar *group_key )
@@ -350,10 +353,74 @@ static void a_preferences_set_defaults_all ( void )
 }
 
 /**
+ * Set preferences to defaults for the specified group
+ *  (very similiar method to the ..._all() version above)
+ */
+static void a_preferences_set_defaults ( const gchar *group_key )
+{
+  gint16 group = preferences_groups_key_to_index(group_key);
+  if ( group == VIK_LAYER_GROUP_NONE ) {
+    g_critical ( "%s: Group not found for %s", __FUNCTION__, group_key );
+    return;
+  }
+
+  VikLayerParamData tmp;
+  tmp.s = NULL; // Ensure entire union set blank
+
+  for ( guint ii = 0; ii < params->len; ii++ ) {
+    VikLayerParam *param = (VikLayerParam*)g_ptr_array_index ( params, ii );
+    // Only reset for the specified group
+    if ( param->group == group ) {
+      // Use default function to set value of self
+      if ( param->default_value )
+        a_preferences_run_setparam ( param->default_value(), param );
+      else
+        a_preferences_run_setparam ( tmp, param ); // i.e. a NULL, 0 or FALSE default
+    }
+  }
+}
+
+/**
+ * Should be run whilst preferences window is shown
+ */
+void a_preferences_refresh ( const gchar *group )
+{
+  // Now redraw the ui_factory widgets on display
+  gint params_count = params->len;
+  // ATM seems rather unnecessary to copy all the parameters again...
+  VikLayerParam *contiguous_params = g_new(VikLayerParam,params_count);
+  for (int i = 0; i < params->len; i++ ) {
+    contiguous_params[i] = *((VikLayerParam*)(g_ptr_array_index(params,i)));
+  }
+  a_uibuilder_factory_refresh ( contiguous_params, params_count, preferences_groups_key_to_index(group), preferences_run_getparam );
+  g_free ( contiguous_params );
+}
+
+static void reset_cb ( GtkWidget *widget, const gchar *group )
+{
+  a_preferences_set_defaults ( group );
+  a_preferences_refresh ( group );
+}
+
+/**
  * Call this once all preferences have been registered
  */
 void a_preferences_finished_registering ( void )
 {
+  GHashTableIter iter;
+  gpointer key, value;
+  g_hash_table_iter_init ( &iter, groups_keys_to_indices );
+  while ( g_hash_table_iter_next (&iter, &key, &value) ) {
+    g_debug ( "%s: group found %s", __FUNCTION__, (gchar*)key );
+    gchar *group_name = (gchar*)key;
+    gchar *pref_name = g_strdup_printf ( "%s.ResetDefault", (gchar*)key );
+    VikLayerParam pref =
+      { VIK_LAYER_NUM_TYPES, pref_name, VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
+        VIK_LAYER_WIDGET_BUTTON, N_("Reset This Tab to Defaults"), group_name, NULL, NULL, NULL, NULL };
+    a_preferences_register ( &pref, VIK_LPD_PTR(reset_cb), group_name );
+    pref_names = g_list_prepend ( pref_names, pref_name ); // Can't free pref_name yet, so store for now and free on program end
+  }
+
   // Apply all defaults in one go
   a_preferences_set_defaults_all();
 }

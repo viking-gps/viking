@@ -86,6 +86,7 @@ VIK_LAYER_PARAM_COLOR,
 
 VIK_LAYER_PARAM_STRING_LIST,
 VIK_LAYER_PARAM_PTR, // Not really a 'parameter' but useful to route to extended configuration (e.g. toolbar order)
+VIK_LAYER_PARAM_PTR_DEFAULT, // Specialized 'parameter' for reset button
 } VikLayerParamType;
 
 typedef enum {
@@ -195,6 +196,11 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       gpointer redraw_param ); // Normally VikLayer*
 
 void a_uibuilder_factory_close ( gint response_id );
+
+void a_uibuilder_factory_refresh ( VikLayerParam *params,
+                                   guint16 params_count,
+                                   gint16 group,
+                                   VikLayerParamData (*getparam) (gpointer,guint16,gboolean) ); // AKA VikLayerFuncGetParam in viklayer.h
 
 VikLayerParamData *a_uibuilder_run_dialog ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
                         guint16 params_count, gchar **groups, guint8 groups_count,

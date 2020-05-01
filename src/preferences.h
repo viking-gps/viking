@@ -59,6 +59,8 @@ gchar *a_preferences_reset_all_defaults ( void );
 
 void a_preferences_finished_registering ( void );
 
+void a_preferences_refresh ( const gchar *group );
+
 G_END_DECLS
 
 #endif
