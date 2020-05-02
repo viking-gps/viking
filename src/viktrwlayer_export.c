@@ -263,14 +263,10 @@ void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const
   GtkWidget *hbox = gtk_hbox_new(FALSE, 0);
   gtk_box_pack_start ( GTK_BOX(hbox), label, TRUE, TRUE, 0 );
   gtk_box_pack_start ( GTK_BOX(hbox), babel_selector, TRUE, TRUE, 0 );
-  gtk_widget_show (babel_selector);
-  gtk_widget_show (label);
-  gtk_widget_show_all (hbox);
 
   gtk_widget_set_tooltip_text( babel_selector, _("Select the file format.") );
 
   GtkWidget *babel_modes = a_babel_ui_modes_new(mode.tracksWrite, mode.routesWrite, mode.waypointsWrite);
-  gtk_widget_show (babel_modes);
 
   gtk_widget_set_tooltip_text( babel_modes, _("Select the information to process.\n"
       "Warning: the behavior of these switches is highly dependent of the file format selected.\n"
@@ -279,7 +275,6 @@ void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const
   GtkWidget *vbox = gtk_vbox_new(FALSE, 0);
   gtk_box_pack_start ( GTK_BOX(vbox), hbox, TRUE, TRUE, 0 );
   gtk_box_pack_start ( GTK_BOX(vbox), babel_modes, TRUE, TRUE, 0 );
-  gtk_widget_show_all (vbox);
 
   gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(file_selector), vbox);
 
@@ -290,6 +285,8 @@ void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const
 
   /* Set possible name of the file */
   gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER(file_selector), default_name);
+
+  gtk_widget_show_all ( file_selector );
 
   while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_ACCEPT )
   {
