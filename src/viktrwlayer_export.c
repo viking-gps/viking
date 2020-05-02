@@ -229,6 +229,19 @@ void vik_trw_layer_export_external_gpx ( VikTrwLayer *vtl, const gchar* external
     a_dialog_error_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not create temporary file for export.") );
 }
 
+static guint last_mode_index = 0;
+static BabelMode last_mode = { 0, 0, 0, 0, 0, 0 };
+static gchar* last_suboptions = NULL;
+
+gboolean BabelMode_is_equal ( BabelMode left, BabelMode right )
+{
+  return ( left.waypointsRead == right.waypointsRead &&
+           left.waypointsWrite == right.waypointsWrite &&
+           left.tracksRead == right.tracksRead &&
+           left.tracksWrite == right.tracksWrite &&
+           left.routesRead == right.routesRead &&
+           left.routesWrite == right.routesWrite );
+}
 
 void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name )
 {
@@ -261,8 +274,8 @@ void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const
   GtkWidget *babel_selector = a_babel_ui_file_type_selector_new ( mode );
   GtkWidget *label = gtk_label_new(_("File format:"));
   GtkWidget *hbox = gtk_hbox_new(FALSE, 0);
-  gtk_box_pack_start ( GTK_BOX(hbox), label, TRUE, TRUE, 0 );
-  gtk_box_pack_start ( GTK_BOX(hbox), babel_selector, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(hbox), label, TRUE, TRUE, 2 );
+  gtk_box_pack_start ( GTK_BOX(hbox), babel_selector, TRUE, TRUE, 2 );
 
   gtk_widget_set_tooltip_text( babel_selector, _("Select the file format.") );
 
@@ -272,14 +285,24 @@ void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const
       "Warning: the behavior of these switches is highly dependent of the file format selected.\n"
       "Please, refer to GPSbabel if unsure.") );
 
+  GtkWidget *hbox2 = gtk_hbox_new(FALSE, 0);
+  GtkWidget *link = gtk_link_button_new_with_label ( "https://www.gpsbabel.org/capabilities.html", _("GPSBabel suboptions") );
+  GtkWidget *entry = ui_entry_new ( BabelMode_is_equal(mode, last_mode) ? last_suboptions : NULL, GTK_ENTRY_ICON_SECONDARY );
+  gtk_box_pack_start ( GTK_BOX(hbox2), link, FALSE, FALSE, 2 );
+  gtk_box_pack_start ( GTK_BOX(hbox2), entry, TRUE, TRUE, 2 );
+
   GtkWidget *vbox = gtk_vbox_new(FALSE, 0);
-  gtk_box_pack_start ( GTK_BOX(vbox), hbox, TRUE, TRUE, 0 );
-  gtk_box_pack_start ( GTK_BOX(vbox), babel_modes, TRUE, TRUE, 0 );
+  gtk_box_pack_start ( GTK_BOX(vbox), hbox, TRUE, TRUE, 2 );
+  gtk_box_pack_start ( GTK_BOX(vbox), babel_modes, TRUE, TRUE, 2 );
+  gtk_box_pack_start ( GTK_BOX(vbox), hbox2, TRUE, TRUE, 2 );
 
   gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(file_selector), vbox);
 
   /* Add some dynamic: only allow dialog's validation when format selection is done */
   g_signal_connect (babel_selector, "changed", G_CALLBACK(a_babel_ui_type_selector_dialog_sensitivity_cb), file_selector);
+  // NB the selection list changes according to available modes, so only restore selection index if the same mode
+  if ( BabelMode_is_equal(mode, last_mode) )
+    gtk_combo_box_set_active ( GTK_COMBO_BOX(babel_selector), last_mode_index );
   /* Manually call the callback to fix the state */
   a_babel_ui_type_selector_dialog_sensitivity_cb ( GTK_COMBO_BOX(babel_selector), file_selector);
 
@@ -302,9 +325,15 @@ void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const
         vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
         gboolean tracks, routes, waypoints;
         a_babel_ui_modes_get( babel_modes, &tracks, &routes, &waypoints );
-        failed = ! a_file_export_babel ( vtl, fn, active->name, tracks, routes, waypoints );
+        failed = ! a_file_export_babel ( vtl, fn, active->name, tracks, routes, waypoints, gtk_entry_get_text(GTK_ENTRY(entry)) );
         vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
-	g_free ( fn );
+        g_free ( fn );
+        // Save selections for usage next time
+        last_mode_index = gtk_combo_box_get_active ( GTK_COMBO_BOX(babel_selector) );
+	last_mode = mode;
+        if ( last_suboptions )
+          g_free ( last_suboptions );
+        last_suboptions = g_strdup ( gtk_entry_get_text(GTK_ENTRY(entry)) );
         break;
       }
     }

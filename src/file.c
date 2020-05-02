@@ -953,14 +953,25 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
  * a_file_export_babel:
  */
 gboolean a_file_export_babel ( VikTrwLayer *vtl, const gchar *filename, const gchar *format,
-                               gboolean tracks, gboolean routes, gboolean waypoints )
+                               gboolean tracks, gboolean routes, gboolean waypoints, const gchar *suboptions )
 {
-  gchar *args = g_strdup_printf("%s %s %s -o %s",
+  gchar *sopts = NULL;
+  if ( suboptions && strlen(suboptions) > 0 ) {
+    // Ensure there is a starting comma
+    if ( suboptions[0] != ',' )
+      sopts = g_strdup_printf ( ",%s", suboptions );
+    else
+      sopts = g_strdup ( ",%s" );
+  } else
+    sopts = g_strdup ( "" );
+
+  gchar *args = g_strdup_printf("%s %s %s -o %s%s",
                                 tracks ? "-t" : "",
                                 routes ? "-r" : "",
                                 waypoints ? "-w" : "",
-                                format);
+                                format, sopts);
   gboolean result = a_babel_convert_to ( vtl, NULL, args, filename, NULL, NULL );
+  g_free(sopts);
   g_free(args);
   return result;
 }
