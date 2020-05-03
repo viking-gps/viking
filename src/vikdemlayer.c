@@ -38,6 +38,7 @@
 #include "icons/icons.h"
 #include "bbox.h"
 
+#define DEM_FIXED_NAME "DEM"
 #define MAPS_CACHE_DIR maps_layer_default_dir()
 #define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%s%c%02d%c%03d.hgt.zip"
 
@@ -107,6 +108,13 @@ static VikLayerParamData type_default ( void ) { return VIK_LPD_UINT ( DEM_TYPE_
 static VikLayerParamData min_elev_default ( void ) { return VIK_LPD_DOUBLE ( 0.0 ); }
 static VikLayerParamData max_elev_default ( void ) { return VIK_LPD_DOUBLE ( 1000.0 ); }
 
+static void reset_cb ( GtkWidget *widget, gpointer ptr )
+{
+  a_layer_defaults_reset_show ( DEM_FIXED_NAME, ptr, VIK_LAYER_GROUP_NONE );
+}
+
+static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(reset_cb); }
+
 static VikLayerParam dem_layer_params[] = {
   { VIK_LAYER_DEM, "files", VIK_LAYER_PARAM_STRING_LIST, VIK_LAYER_GROUP_NONE, N_("DEM Files:"), VIK_LAYER_WIDGET_FILELIST, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_DEM, "source", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Download Source:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_source, NULL, NULL, source_default, NULL, NULL },
@@ -114,10 +122,12 @@ static VikLayerParam dem_layer_params[] = {
   { VIK_LAYER_DEM, "type", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Type:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_type, NULL, NULL, type_default, NULL, NULL },
   { VIK_LAYER_DEM, "min_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Min Elev:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0, NULL, NULL, min_elev_default, NULL, NULL },
   { VIK_LAYER_DEM, "max_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Max Elev:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0, NULL, NULL, max_elev_default, NULL, NULL },
+  { VIK_LAYER_DEM, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
+    VIK_LAYER_WIDGET_BUTTON, N_("Reset to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
 
 
-enum { PARAM_FILES=0, PARAM_SOURCE, PARAM_COLOR, PARAM_TYPE, PARAM_MIN_ELEV, PARAM_MAX_ELEV, NUM_PARAMS };
+enum { PARAM_FILES=0, PARAM_SOURCE, PARAM_COLOR, PARAM_TYPE, PARAM_MIN_ELEV, PARAM_MAX_ELEV, PARAM_RESET, NUM_PARAMS };
 
 static gpointer dem_layer_download_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
@@ -179,7 +189,7 @@ static const guint DEM_N_GRADIENT_COLORS = sizeof(dem_gradient_colors)/sizeof(de
 
 
 VikLayerInterface vik_dem_layer_interface = {
-  "DEM",
+  DEM_FIXED_NAME,
   N_("DEM"),
   "<control><shift>D",
   &vikdemlayer_pixbuf,

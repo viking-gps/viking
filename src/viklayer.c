@@ -609,7 +609,8 @@ static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp, gb
 					    (gpointer) vik_layer_interfaces[vl->type]->change_param,
 					    have_apply,
 					    layer_emit_update_internal,
-					    (gpointer)vl) ) {
+					    (gpointer)vl,
+					    FALSE) ) {
     case 0:
     case 3:
       return FALSE;

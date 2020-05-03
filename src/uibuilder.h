@@ -176,7 +176,6 @@ typedef enum {
 
 typedef gpointer ui_change_values[UI_CHG_LAST];
 
-GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data );
 VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerParam *param );
 gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       GtkWindow *parent,
@@ -193,14 +192,16 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       void (*changeparam) (GtkWidget*, ui_change_values), // AKA VikLayerFuncChangeParam in viklayer.h
                                       gboolean have_apply_button,
                                       void (*redraw) (gpointer), // Normally vik_layer_emit_update()
-                                      gpointer redraw_param ); // Normally VikLayer*
+                                      gpointer redraw_param, // Normally VikLayer*
+                                      gboolean show_reset_buttons );
 
 void a_uibuilder_factory_close ( gint response_id );
 
 void a_uibuilder_factory_refresh ( VikLayerParam *params,
                                    guint16 params_count,
                                    gint16 group,
-                                   VikLayerParamData (*getparam) (gpointer,guint16,gboolean) ); // AKA VikLayerFuncGetParam in viklayer.h
+                                   VikLayerParamData (*getparam) (gpointer,guint16,gboolean), // AKA VikLayerFuncGetParam in viklayer.h
+                                   gpointer getparam1 ); // Passed ^^^^^ into above for parameter 1. A VikLayer* or NULL on prefs
 
 VikLayerParamData *a_uibuilder_run_dialog ( const gchar *dialog_name, GtkWindow *parent, VikLayerParam *params,
                         guint16 params_count, gchar **groups, guint8 groups_count,

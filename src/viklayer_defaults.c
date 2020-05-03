@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2013-2020, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,9 @@ static GPtrArray *paramsVD;
 static GKeyFile *keyfile;
 
 static gboolean loaded;
+
+// Reset callback functions stored here
+static GHashTable *pointers;
 
 static VikLayerParamData get_default_data_answer ( const gchar *group, const gchar *name, VikLayerParamType ptype, gpointer *success )
 {
@@ -84,6 +87,13 @@ static VikLayerParamData get_default_data_answer ( const gchar *group, const gch
 		g_free ( str );
 		break;
 	}
+	case VIK_LAYER_PARAM_PTR:
+	case VIK_LAYER_PARAM_PTR_DEFAULT: {
+		gchar *key = g_strdup_printf ( "%s.%s", group, name );
+		data.ptr = g_hash_table_lookup ( pointers, key );
+		g_free ( key );
+		break;
+	}
 	default: break;
 	}
 	*success = GINT_TO_POINTER (TRUE);
@@ -128,6 +138,12 @@ static void set_default_data ( VikLayerParamData data, const gchar *group, const
 		g_free ( str );
 		break;
 	}
+	case VIK_LAYER_PARAM_PTR:
+	case VIK_LAYER_PARAM_PTR_DEFAULT: {
+		gchar *key = g_strdup_printf ( "%s.%s", group, name );
+		g_hash_table_insert ( pointers, key, data.ptr );
+		break;
+	}
 	default: break;
 	}
 }
@@ -148,6 +164,19 @@ static VikLayerParamData defaults_run_getparam ( gpointer index_ptr, guint16 i, 
 	VikLayerParam *vlp = (VikLayerParam *)g_ptr_array_index(paramsVD,index+i);
 
 	return get_default_data ( vik_layer_get_interface(vlp->layer)->fixed_layer_name, vlp->name, vlp->type );
+}
+
+// Return default value of a parameter (rather than from the layer defaults themselves)
+static VikLayerParamData getparam_default_value ( gpointer index_ptr, guint16 i, gboolean notused2 )
+{
+	// Index is only an index into values from this layer
+	gint index = GPOINTER_TO_INT ( index_ptr );
+	VikLayerParam *vlp = (VikLayerParam *)g_ptr_array_index(paramsVD,index+i);
+	VikLayerParamData data;
+	data.s = NULL;
+	if ( vlp->default_value )
+		data = vlp->default_value();
+	return data;
 }
 
 static void use_internal_defaults_if_missing_default ( VikLayerTypeEnum type )
@@ -253,6 +282,41 @@ tidy:
 }
 
 /**
+ * Free returned array after use if anything was created
+ */
+VikLayerParam* allocate_params_for_layer ( VikLayerTypeEnum layer, guint *layer_params_count_return, gint *indexer )
+{
+	// Need to know where the params start and they finish for this layer
+
+	// 1. inspect every registered param - see if it has the layer value required to determine overall size
+	//    [they are contiguous from the start index]
+	// 2. copy the these params from the main list into a tmp array
+	//
+	// Return this tmp array for use in passing on to uibuilder for display
+	guint layer_params_count = 0;
+	gboolean found_first = FALSE;
+	gint index = 0;
+	int i;
+	for ( i = 0; i < paramsVD->len; i++ ) {
+		VikLayerParam *param = (VikLayerParam*)(g_ptr_array_index(paramsVD,i));
+		if ( param->layer == layer ) {
+			layer_params_count++;
+			if ( !found_first ) {
+				index = i;
+				found_first = TRUE;
+			}
+		}
+	}
+	VikLayerParam *params = g_new(VikLayerParam,layer_params_count);
+	for ( i = 0; i < layer_params_count; i++ ) {
+		params[i] = *((VikLayerParam*)(g_ptr_array_index(paramsVD,i+index)));
+	}
+	*layer_params_count_return = layer_params_count;
+	*indexer = index;
+	return params;
+}
+
+/**
  * a_layer_defaults_show_window:
  * @parent:     The Window
  * @layername:  The layer
@@ -270,41 +334,15 @@ gboolean a_layer_defaults_show_window ( GtkWindow *parent, const gchar *layernam
 		defaults_load_from_file();
 		loaded = TRUE;
 	}
-  
-    VikLayerTypeEnum layer = vik_layer_type_from_string ( layername );
-    
-    // Need to know where the params start and they finish for this layer
 
-    // 1. inspect every registered param - see if it has the layer value required to determine overall size
-    //    [they are contiguous from the start index]
-    // 2. copy the these params from the main list into a tmp struct
-    // 
-    // Then pass this tmp struct to uibuilder for display
-
-    guint layer_params_count = 0;
-    
-    gboolean found_first = FALSE;
-    gint index = 0;
-    int i;
-    for ( i = 0; i < paramsVD->len; i++ ) {
-		VikLayerParam *param = (VikLayerParam*)(g_ptr_array_index(paramsVD,i));
-		if ( param->layer == layer ) {
-			layer_params_count++;
-			if ( !found_first ) {
-				index = i;
-				found_first = TRUE;
-			}
-		}
-    }
+	VikLayerTypeEnum layer = vik_layer_type_from_string ( layername );
+	guint layer_params_count = 0;
+	gint index = 0;
+	VikLayerParam *params = allocate_params_for_layer ( layer, &layer_params_count, &index );
 
 	// Have we any parameters to show!
-    if ( !layer_params_count )
+	if ( !layer_params_count )
 		return FALSE;
-
-    VikLayerParam *params = g_new(VikLayerParam,layer_params_count);
-    for ( i = 0; i < layer_params_count; i++ ) {
-      params[i] = *((VikLayerParam*)(g_ptr_array_index(paramsVD,i+index)));
-    }
 
     gchar *title = g_strconcat ( layername, ": ", _("Layer Defaults"), NULL );
     
@@ -323,7 +361,8 @@ gboolean a_layer_defaults_show_window ( GtkWindow *parent, const gchar *layernam
 	                                      NULL,
 	                                      FALSE,
 	                                      NULL,
-	                                      NULL) ) {
+	                                      NULL,
+	                                      TRUE) ) {
 		// Save
 		layer_defaults_save_to_file();
     }
@@ -366,6 +405,8 @@ void a_layer_defaults_init()
 	paramsVD = g_ptr_array_new ();
 
 	loaded = FALSE;
+
+	pointers = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
 }
 
 /**
@@ -378,6 +419,7 @@ void a_layer_defaults_uninit()
 	g_key_file_free ( keyfile );	
 	g_ptr_array_foreach ( paramsVD, (GFunc)g_free, NULL );
 	g_ptr_array_free ( paramsVD, TRUE );
+	g_hash_table_destroy ( pointers );
 }
 
 /**
@@ -420,4 +462,25 @@ gboolean a_layer_defaults_save ()
 	}
 
 	return layer_defaults_save_to_file();
+}
+
+/**
+ * a_layer_defaults_reset_show
+ *
+ * Update displayed properties with the default values for the specified layer
+ */
+void a_layer_defaults_reset_show ( const gchar *layername, gpointer index_ptr, gint16 group )
+{
+	VikLayerTypeEnum layer = vik_layer_type_from_string ( layername );
+	guint layer_params_count = 0;
+	gint unused = 0;
+	VikLayerParam *params = allocate_params_for_layer ( layer, &layer_params_count, &unused );
+	// No parameters!
+	if ( !layer_params_count )
+		return;
+
+	// Refresh view - with defaults values for the params on display
+	a_uibuilder_factory_refresh ( params, layer_params_count, group, getparam_default_value, index_ptr );
+
+	g_free ( params );
 }

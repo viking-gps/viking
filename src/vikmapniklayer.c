@@ -33,6 +33,8 @@
 
 #include "vikmapslayer.h"
 
+#define MAPNIK_FIXED_NAME "Mapnik Rendering"
+
 struct _VikMapnikLayerClass
 {
 	VikLayerClass object_class;
@@ -61,6 +63,13 @@ static VikLayerParamScale scales[] = {
 	{ 0, 1024, 12, 0 }, // Rerender timeout hours
 };
 
+static void reset_cb ( GtkWidget *widget, gpointer ptr )
+{
+	a_layer_defaults_reset_show ( MAPNIK_FIXED_NAME, ptr, VIK_LAYER_GROUP_NONE );
+}
+
+static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(reset_cb); }
+
 VikLayerParam mapnik_layer_params[] = {
   { VIK_LAYER_MAPNIK, "config-file-mml", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("CSS (MML) Config File:"), VIK_LAYER_WIDGET_FILEENTRY, GINT_TO_POINTER(VF_FILTER_CARTO), NULL,
     N_("CartoCSS configuration file"), file_default, NULL, NULL },
@@ -72,6 +81,8 @@ VikLayerParam mapnik_layer_params[] = {
     NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_MAPNIK, "file-cache-dir", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("File Cache Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL,
     NULL, cache_dir_default, NULL, NULL },
+  { VIK_LAYER_MAPNIK, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
+    VIK_LAYER_WIDGET_BUTTON, N_("Reset to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
 
 enum {
@@ -80,6 +91,7 @@ enum {
   PARAM_ALPHA,
   PARAM_USE_FILE_CACHE,
   PARAM_FILE_CACHE_DIR,
+  PARAM_RESET,
   NUM_PARAMS };
 
 static const gchar* mapnik_layer_tooltip ( VikMapnikLayer *vml );
@@ -123,7 +135,7 @@ static VikToolInterface mapnik_tools[] = {
 static void mapnik_layer_post_read (VikLayer *vl, VikViewport *vvp, gboolean from_file);
 
 VikLayerInterface vik_mapnik_layer_interface = {
-	"Mapnik Rendering",
+	MAPNIK_FIXED_NAME,
 	N_("Mapnik Rendering"),
 	NULL,
 	&vikmapniklayer_pixbuf, // icon

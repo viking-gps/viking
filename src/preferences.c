@@ -207,7 +207,7 @@ void a_preferences_show_window(GtkWindow *parent) {
                                           (gboolean (*) (gpointer,guint16,VikLayerParamData,gpointer)) preferences_run_setparam,
                                           NULL /* not used */, contiguous_params,
                                           preferences_run_getparam, NULL, NULL, // not used
-                                          FALSE, NULL, NULL ) ) {
+                                          FALSE, NULL, NULL, TRUE ) ) {
       a_preferences_save_to_file();
     }
     g_free ( contiguous_params );
@@ -392,7 +392,7 @@ void a_preferences_refresh ( const gchar *group )
   for (int i = 0; i < params->len; i++ ) {
     contiguous_params[i] = *((VikLayerParam*)(g_ptr_array_index(params,i)));
   }
-  a_uibuilder_factory_refresh ( contiguous_params, params_count, preferences_groups_key_to_index(group), preferences_run_getparam );
+  a_uibuilder_factory_refresh ( contiguous_params, params_count, preferences_groups_key_to_index(group), preferences_run_getparam, NULL );
   g_free ( contiguous_params );
 }
 

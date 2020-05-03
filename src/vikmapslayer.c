@@ -46,6 +46,8 @@
 #include <gio/gio.h>
 #endif
 
+#define MAP_FIXED_NAME "Map"
+
 #define VIK_SETTINGS_MAP_MAX_TILES "maps_max_tiles"
 static gint MAX_TILES = 1000;
 
@@ -132,6 +134,13 @@ static gchar *cache_types[] = { "Viking", N_("OSM"), NULL };
 static VikMapsCacheLayout cache_layout_default_value = VIK_MAPS_CACHE_LAYOUT_OSM;
 static VikLayerParamData cache_layout_default ( void ) { return VIK_LPD_UINT ( cache_layout_default_value ); }
 
+static void reset_cb ( GtkWidget *widget, gpointer ptr )
+{
+  a_layer_defaults_reset_show ( MAP_FIXED_NAME, ptr, VIK_LAYER_GROUP_NONE );
+}
+
+static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(reset_cb); }
+
 VikLayerParam maps_layer_params[] = {
   // NB mode => id - But can't break file format just to rename something better
   { VIK_LAYER_MAPS, "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL, NULL, id_default, NULL, NULL },
@@ -148,6 +157,8 @@ VikLayerParam maps_layer_params[] = {
   { VIK_LAYER_MAPS, "mapzoom", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Zoom Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_mapzooms, NULL,
     N_("Determines the method of displaying map tiles for the current zoom level. 'Viking Zoom Level' uses the best matching level, otherwise setting a fixed value will always use map tiles of the specified value regardless of the actual zoom level."),
     mapzoom_default, NULL, NULL },
+  { VIK_LAYER_MAPS, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
+    VIK_LAYER_WIDGET_BUTTON, N_("Reset to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
 
 enum {
@@ -159,6 +170,7 @@ enum {
   PARAM_AUTODOWNLOAD,
   PARAM_ONLYMISSING,
   PARAM_MAPZOOM,
+  PARAM_RESET,
   NUM_PARAMS
 };
 
@@ -194,7 +206,7 @@ static VikToolInterface maps_tools[] = {
 };
 
 VikLayerInterface vik_maps_layer_interface = {
-  "Map",
+  MAP_FIXED_NAME,
   N_("Map"),
   "<control><shift>M",
   &vikmapslayer_pixbuf,

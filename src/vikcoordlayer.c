@@ -22,6 +22,8 @@
 #include "vikcoordlayer.h"
 #include "icons/icons.h"
 
+#define COORD_FIXED_NAME "Coord"
+
 static VikCoordLayer *coord_layer_new ( VikViewport *vp );
 static void coord_layer_draw ( VikCoordLayer *vcl, VikViewport *vp );
 static void coord_layer_free ( VikCoordLayer *vcl );
@@ -45,16 +47,25 @@ static VikLayerParamData color_default ( void ) {
 static VikLayerParamData min_inc_default ( void ) { return VIK_LPD_DOUBLE ( 1.0 ); }
 static VikLayerParamData line_thickness_default ( void ) { return VIK_LPD_UINT ( 3 ); }
 
+static void reset_cb ( GtkWidget *widget, gpointer ptr )
+{
+  a_layer_defaults_reset_show ( COORD_FIXED_NAME, ptr, VIK_LAYER_GROUP_NONE );
+}
+
+static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(reset_cb); }
+
 static VikLayerParam coord_layer_params[] = {
   { VIK_LAYER_COORD, "color", VIK_LAYER_PARAM_COLOR, VIK_LAYER_GROUP_NONE, N_("Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_default, NULL, NULL },
   { VIK_LAYER_COORD, "min_inc", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Minutes Width:"), VIK_LAYER_WIDGET_SPINBUTTON, &param_scales[0], NULL, NULL, min_inc_default, NULL, NULL },
   { VIK_LAYER_COORD, "line_thickness", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Line Thickness:"), VIK_LAYER_WIDGET_SPINBUTTON, &param_scales[1], NULL, NULL, line_thickness_default, NULL, NULL },
+  { VIK_LAYER_COORD, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
+    VIK_LAYER_WIDGET_BUTTON, N_("Reset to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
 
-enum { PARAM_COLOR = 0, PARAM_MIN_INC, PARAM_LINE_THICKNESS, NUM_PARAMS };
+enum { PARAM_COLOR = 0, PARAM_MIN_INC, PARAM_LINE_THICKNESS, PARAM_RESET, NUM_PARAMS };
 
 VikLayerInterface vik_coord_layer_interface = {
-  "Coord",
+  COORD_FIXED_NAME,
   N_("Coordinate"),
   NULL,
   &vikcoordlayer_pixbuf,

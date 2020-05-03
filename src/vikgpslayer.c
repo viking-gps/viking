@@ -33,6 +33,8 @@
 #include <gps.h>
 #endif
 
+#define GPS_FIXED_NAME "GPS"
+
 static VikGpsLayer *vik_gps_layer_create (VikViewport *vp);
 static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter );
 static void vik_gps_layer_free ( VikGpsLayer *vgl );
@@ -195,6 +197,16 @@ static VikLayerParamData gpsd_retry_interval_default ( void )
 
 #endif
 
+static void reset_cb ( GtkWidget *widget, gpointer ptr )
+{
+  a_layer_defaults_reset_show ( GPS_FIXED_NAME, ptr, GROUP_DATA_MODE );
+#if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
+  a_layer_defaults_reset_show ( GPS_FIXED_NAME, ptr, GROUP_REALTIME_MODE );
+#endif
+}
+
+static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(reset_cb); }
+
 static VikLayerParam gps_layer_params[] = {
  //	NB gps_layer_inst_init() is performed after parameter registeration
  //  thus to give the protocols some potential values use the old static list
@@ -217,6 +229,8 @@ static VikLayerParam gps_layer_params[] = {
   { VIK_LAYER_GPS, "gpsd_port", VIK_LAYER_PARAM_STRING, GROUP_REALTIME_MODE, N_("Gpsd Port:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, gpsd_port_default, NULL, NULL },
   { VIK_LAYER_GPS, "gpsd_retry_interval", VIK_LAYER_PARAM_STRING, GROUP_REALTIME_MODE, N_("Gpsd Retry Interval (seconds):"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, gpsd_retry_interval_default, NULL, NULL },
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
+  { VIK_LAYER_GPS, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
+    VIK_LAYER_WIDGET_BUTTON, N_("Reset to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
 enum {
   PARAM_PROTOCOL=0, PARAM_PORT,
@@ -233,10 +247,11 @@ enum {
   PARAM_GPSD_PORT,
   PARAM_GPSD_RETRY_INTERVAL,
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
+  PARAM_RESET,
   NUM_PARAMS};
 
 VikLayerInterface vik_gps_layer_interface = {
-  "GPS",
+  GPS_FIXED_NAME,
   N_("GPS"),
   NULL,
   &vikgpslayer_pixbuf,

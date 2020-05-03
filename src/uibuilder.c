@@ -162,13 +162,15 @@ static void refresh_widget ( GtkWidget *widget, VikLayerParam *param, VikLayerPa
   }
 }
 
+static GtkWidget *dialog = NULL;
+static GtkWidget **RefreshWidgets = NULL;
+
 /** i18n note
  * Since UI builder often uses static structures, the text is marked with N_()
  *  however to actually get it to apply the widget (e.g. to a label) then
  *  an additional call to _() needs to occur on that string
  **/
-
-GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data )
+GtkWidget *new_widget ( VikLayerParam *param, VikLayerParamData data, gboolean show_reset_buttons, gpointer pass_along_getparam )
 {
   // Perform pre conversion if necessary
   VikLayerParamData vlpd = data;
@@ -280,9 +282,20 @@ GtkWidget *a_uibuilder_new_widget ( VikLayerParam *param, VikLayerParamData data
       break;
 
     case VIK_LAYER_WIDGET_BUTTON:
-      if ( (param->type == VIK_LAYER_PARAM_PTR || param->type == VIK_LAYER_PARAM_PTR_DEFAULT) && param->widget_data ) {
+      if ( (param->type == VIK_LAYER_PARAM_PTR && param->widget_data) ) {
         rv = gtk_button_new_with_label ( _(param->widget_data) );
         g_signal_connect ( G_OBJECT(rv), "clicked", G_CALLBACK (vlpd.ptr), param->extra_widget_data );
+      } else if	(param->type == VIK_LAYER_PARAM_PTR_DEFAULT && param->widget_data && show_reset_buttons) {	
+        if ( param->extra_widget_data ) {
+          // For preferences use a button on each tab - using static extra_widget_data
+          rv = gtk_button_new_with_label ( _(param->widget_data) );
+          g_signal_connect ( G_OBJECT(rv), "clicked", G_CALLBACK (vlpd.ptr), param->extra_widget_data );
+        } else {
+          // Otherwise put in a runtime value (normally a VikLayer*) for Layer properties defaults
+          //  and make this button part of the outer dialog as it will reset all tabs
+          GtkWidget *wgt = gtk_dialog_add_button ( GTK_DIALOG(dialog), _(param->widget_data), GTK_RESPONSE_NONE );
+          g_signal_connect ( G_OBJECT(wgt), "clicked", G_CALLBACK (vlpd.ptr), pass_along_getparam );
+        }
       }
       break;
 
@@ -387,9 +400,6 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
   return rv;
 }
 
-static GtkWidget *dialog = NULL;
-static GtkWidget **RefreshWidgets = NULL;
-
 /**
  * Hacky method to enable closing the dialog within preference code
  */
@@ -408,7 +418,8 @@ void a_uibuilder_factory_close ( gint response_id )
 void a_uibuilder_factory_refresh ( VikLayerParam *params,
                                    guint16 params_count,
                                    gint16 group,
-                                   VikLayerParamData (*getparam) (gpointer,guint16,gboolean) )
+                                   VikLayerParamData (*getparam) (gpointer,guint16,gboolean),
+                                   gpointer getparam1 )
 {
   if ( !RefreshWidgets ) {
     g_critical ( __FUNCTION__ );
@@ -419,7 +430,7 @@ void a_uibuilder_factory_refresh ( VikLayerParam *params,
   for ( i = 0, j = 0; i < params_count; i++ ) {
     if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES ) {
       if ( params[i].group == group ) {
-        VikLayerParamData data = getparam ( NULL, i, FALSE );
+        VikLayerParamData data = getparam ( getparam1, i, FALSE );
         refresh_widget ( RefreshWidgets[j], &(params[i]), data );
       }
       j++;
@@ -454,7 +465,8 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       void (*changeparam) (GtkWidget*, ui_change_values),
                                       gboolean have_apply_button,
                                       void (*redraw) (gpointer),
-                                      gpointer redraw_param )
+                                      gpointer redraw_param,
+                                      gboolean show_reset_buttons )
 {
   guint16 i, j, widget_count = 0;
   gboolean must_redraw = FALSE;
@@ -472,12 +484,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
   {
     /* create widgets and titles; place in table */
     dialog = gtk_dialog_new_with_buttons ( dialog_name, parent,
-                                           GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                           GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
-    if ( have_apply_button )
-      gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY );
-    gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_OK, GTK_RESPONSE_ACCEPT );
-
+                                           GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, NULL );
     gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
     GtkWidget *response_w = NULL;
 #if GTK_CHECK_VERSION (2, 20, 0)
@@ -537,7 +544,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
           table = tables[MAX(0, params[i].group)]; /* round up NOT_IN_GROUP, that's not reasonable here */
 
         VikLayerParamData data = getparam ( pass_along_getparam, i, FALSE );
-        widgets[j] = a_uibuilder_new_widget ( &(params[i]), data );
+        widgets[j] = new_widget ( &(params[i]), data, show_reset_buttons, pass_along_getparam );
 
         if ( widgets[j] ) {
           if ( params[i].type == VIK_LAYER_PARAM_PTR_DEFAULT ) {
@@ -592,6 +599,13 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
       }
     }
 
+    // Adding buttons performed after new_widget(),
+    //  since that now has the option to insert a button in the dialog controls
+    (void)gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT );
+    if ( have_apply_button )
+      (void)gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_APPLY, GTK_RESPONSE_APPLY );
+    (void)gtk_dialog_add_button ( GTK_DIALOG(dialog), GTK_STOCK_OK, GTK_RESPONSE_ACCEPT );
+
     if ( response_w )
       gtk_widget_grab_focus ( response_w );
 
@@ -599,7 +613,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
 
     gint resp = GTK_RESPONSE_APPLY;
     gint answer = 0;
-    while ( resp == GTK_RESPONSE_APPLY ) {
+    while ( resp == GTK_RESPONSE_APPLY || resp == GTK_RESPONSE_NONE ) {
       resp = gtk_dialog_run (GTK_DIALOG (dialog));
       if ( resp == GTK_RESPONSE_ACCEPT || resp == GTK_RESPONSE_APPLY ) {
 	VikLayerSetParam vlsp;
@@ -681,8 +695,8 @@ VikLayerParamData *a_uibuilder_run_dialog (  const gchar *dialog_name, GtkWindow
 					  NULL,
 					  FALSE,
 					  NULL,
-					  NULL) > 0 ) {
-
+					  NULL,
+					  FALSE) > 0 ) {
       return paramdatas;
     }
     g_free ( paramdatas );

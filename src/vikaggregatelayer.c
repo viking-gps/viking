@@ -33,6 +33,8 @@
 #endif
 #include "misc/heatmap.h"
 
+#define AGGREGATE_FIXED_NAME "Aggregate"
+
 static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, guint *len );
 static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );
 static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoordMode mode );
@@ -87,6 +89,15 @@ static gchar * params_styles[] =
 static gchar *params_groups[] = { N_("Tracks Area Coverage"), N_("TAC Advanced"), N_("Tracks Heatmap") };
 enum { GROUP_TAC, GROUP_TAC_ADV, GROUP_THM };
 
+static void aggregate_reset_cb ( GtkWidget *widget, gpointer ptr )
+{
+  a_layer_defaults_reset_show ( AGGREGATE_FIXED_NAME, ptr, GROUP_TAC );
+  a_layer_defaults_reset_show ( AGGREGATE_FIXED_NAME, ptr, GROUP_TAC_ADV );
+  a_layer_defaults_reset_show ( AGGREGATE_FIXED_NAME, ptr, GROUP_THM );
+}
+
+static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(aggregate_reset_cb); }
+
 VikLayerParam aggregate_layer_params[] = {
   { VIK_LAYER_AGGREGATE, "tac_on", VIK_LAYER_PARAM_BOOLEAN, GROUP_TAC, N_("On:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_false_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "alpha", VIK_LAYER_PARAM_UINT, GROUP_TAC, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
@@ -112,6 +123,8 @@ VikLayerParam aggregate_layer_params[] = {
   { VIK_LAYER_AGGREGATE, "hm_factor", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Width Factor:"), VIK_LAYER_WIDGET_HSCALE, &params_scales[1], NULL,
     N_("Note higher values means the heatmap takes longer to generate"), width_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "hm_style", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Color Style:"), VIK_LAYER_WIDGET_COMBOBOX, params_styles, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
+    VIK_LAYER_WIDGET_BUTTON, N_("Reset All to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
 
 typedef enum { BASIC, MAX_SQR, CONTIG, CLUSTER, CP_NUM } common_property_types;
@@ -134,11 +147,12 @@ enum {
       PARAM_HM_ALPHA,
       PARAM_HM_STAMP_FACTOR,
       PARAM_HM_STYLE,
+      PARAM_RESET,
       NUM_PARAMS
 };
 
 VikLayerInterface vik_aggregate_layer_interface = {
-  "Aggregate",
+  AGGREGATE_FIXED_NAME,
   N_("Aggregate"),
   "<control><shift>A",
   &vikaggregatelayer_pixbuf,

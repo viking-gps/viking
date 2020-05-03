@@ -37,6 +37,8 @@ VikLayerParamData a_layer_defaults_get ( const gchar *layername, const gchar *pa
 
 gboolean a_layer_defaults_save ();
 
+void a_layer_defaults_reset_show ( const gchar *layername, gpointer index_ptr, gint16 group );
+
 G_END_DECLS
 
 #endif

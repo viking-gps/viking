@@ -24,6 +24,8 @@
 #include "libgeoclue.h"
 #include "icons/icons.h"
 
+#define GEOCLUE_FIXED_NAME "GeoClue"
+
 static VikGeoclueLayer *vik_geoclue_layer_create ( VikViewport *vp);
 static void vik_geoclue_layer_realize ( VikGeoclueLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter );
 static void vik_geoclue_layer_post_read ( VikGeoclueLayer *vgl, VikViewport *vp, gboolean from_file );
@@ -64,6 +66,13 @@ static VikLayerParamData color_default ( void ) {
 	VikLayerParamData data; gdk_color_parse ( "purple", &data.c ); return data;
 }
 
+static void reset_cb ( GtkWidget *widget, gpointer ptr )
+{
+	a_layer_defaults_reset_show ( GEOCLUE_FIXED_NAME, ptr, VIK_LAYER_GROUP_NONE );
+}
+
+static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(reset_cb); }
+
 static VikLayerParam geoclue_layer_params[] = {
 	{ VIK_LAYER_GEOCLUE, "auto_connect", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Auto Connect"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("Automatically connect to GeoClue"), vik_lpd_true_default, NULL, NULL },
 	{ VIK_LAYER_GEOCLUE, "record_tracking", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Recording tracks"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
@@ -71,6 +80,8 @@ static VikLayerParam geoclue_layer_params[] = {
 	{ VIK_LAYER_GEOCLUE, "moving_map_method", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Moving Map Method:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_position, NULL, NULL, moving_map_method_default, NULL, NULL },
 	{ VIK_LAYER_GEOCLUE, "update_statusbar", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Update Statusbar:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("Display information in the statusbar on GeoClue updates"), vik_lpd_true_default, NULL, NULL },
 	{ VIK_LAYER_GEOCLUE, "color", VIK_LAYER_PARAM_COLOR, VIK_LAYER_GROUP_NONE, N_("Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_default, NULL, NULL },
+	{ VIK_LAYER_GEOCLUE, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
+	  VIK_LAYER_WIDGET_BUTTON, N_("Reset to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
 
 typedef enum {
@@ -80,11 +91,12 @@ typedef enum {
 	PARAM_POSITION,
 	PARAM_UPDATE_STATUSBAR,
 	PARAM_COLOR,
+	PARAM_RESET,
 	NUM_PARAMS
 } geoclue_param_t;
 
 VikLayerInterface vik_geoclue_layer_interface = {
-  "GeoClue",
+  GEOCLUE_FIXED_NAME,
   N_("GeoClue"),
   NULL,
   &vikgeocluelayer_pixbuf,

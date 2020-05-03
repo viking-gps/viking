@@ -62,6 +62,8 @@
 #include <ctype.h>
 #include <gdk/gdkkeysyms.h>
 
+#define TRACKWAYPOINT_FIXED_NAME "TrackWaypoint"
+
 #define VIK_TRW_LAYER_TRACK_GC 6
 #define VIK_TRW_LAYER_TRACK_GCS 10
 #define VIK_TRW_LAYER_TRACK_GC_BLACK 0
@@ -643,6 +645,18 @@ static VikLayerParamData string_default ( void )
 
 static VikLayerParamData external_layer_default ( void ) { return VIK_LPD_UINT ( VIK_TRW_LAYER_INTERNAL ); }
 
+static void reset_cb ( GtkWidget *widget, gpointer ptr )
+{
+  a_layer_defaults_reset_show ( TRACKWAYPOINT_FIXED_NAME, ptr, GROUP_TRACKS );
+  a_layer_defaults_reset_show ( TRACKWAYPOINT_FIXED_NAME, ptr, GROUP_TRACKS_ADV );
+  a_layer_defaults_reset_show ( TRACKWAYPOINT_FIXED_NAME, ptr, GROUP_WAYPOINTS );
+  a_layer_defaults_reset_show ( TRACKWAYPOINT_FIXED_NAME, ptr, GROUP_IMAGES );
+  a_layer_defaults_reset_show ( TRACKWAYPOINT_FIXED_NAME, ptr, GROUP_METADATA );
+  a_layer_defaults_reset_show ( TRACKWAYPOINT_FIXED_NAME, ptr, GROUP_FILESYSTEM );
+}
+
+static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(reset_cb); }
+
 VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "tracks_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_TRW, "waypoints_visible", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
@@ -700,6 +714,8 @@ VikLayerParam trw_layer_params[] = {
 
   { VIK_LAYER_TRW, "external_layer", VIK_LAYER_PARAM_UINT, GROUP_FILESYSTEM, N_("External layer:"), VIK_LAYER_WIDGET_COMBOBOX, params_external_type, NULL, N_("Layer data stored in the Viking file, in an external file, or in an external file but changes are not written to the file (file only loaded at startup)"), external_layer_default, NULL, NULL },
   { VIK_LAYER_TRW, "external_file", VIK_LAYER_PARAM_STRING, GROUP_FILESYSTEM, N_("Save layer as:"), VIK_LAYER_WIDGET_FILESAVE, GINT_TO_POINTER(VF_FILTER_GPX), NULL, N_("Specify where layer should be saved.  Overwrites file if it exists."), string_default, NULL, NULL },
+  { VIK_LAYER_TRW, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
+    VIK_LAYER_WIDGET_BUTTON, N_("Reset to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
 
 // ENUMERATION MUST BE IN THE SAME ORDER AS THE NAMED PARAMS ABOVE
@@ -753,6 +769,7 @@ enum {
   PARAM_MDURL,
   PARAM_EXTL,
   PARAM_EXTF,
+  PARAM_RESET,
   NUM_PARAMS
 };
 
@@ -805,7 +822,7 @@ static void trw_update_layer_icon ( VikTrwLayer *trw );
 /* End Layer Interface function definitions */
 
 VikLayerInterface vik_trw_layer_interface = {
-  "TrackWaypoint",
+  TRACKWAYPOINT_FIXED_NAME,
   N_("TrackWaypoint"),
   "<control><shift>Y",
   &viktrwlayer_pixbuf,
