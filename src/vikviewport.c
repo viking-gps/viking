@@ -278,11 +278,8 @@ vik_viewport_init ( VikViewport *vvp )
 
   g_signal_connect (G_OBJECT(vvp), "configure_event", G_CALLBACK(vik_viewport_configure), NULL);
 
-#if GTK_CHECK_VERSION (2,18,0)
+  // allow VVP to have focus -- enabling key events, etc...
   gtk_widget_set_can_focus ( GTK_WIDGET(vvp), TRUE );
-#else
-  GTK_WIDGET_SET_FLAGS(vvp, GTK_CAN_FOCUS); /* allow VVP to have focus -- enabling key events, etc */
-#endif
 
   default_vvp = vvp;
 }

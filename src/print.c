@@ -344,11 +344,7 @@ static void page_setup_cb (GtkWidget *widget, CustomWidgetInfo *info)
   GtkWidget         *toplevel;
 
   toplevel = gtk_widget_get_toplevel (widget);
-#if GTK_CHECK_VERSION (2,18,0)
   if (! gtk_widget_is_toplevel (toplevel))
-#else
-  if (! GTK_WIDGET_TOPLEVEL (toplevel))
-#endif
     toplevel = NULL;
 
   settings = gtk_print_operation_get_print_settings (operation);
