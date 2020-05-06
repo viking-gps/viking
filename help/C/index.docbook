@@ -254,7 +254,7 @@ A right click menu offers controls of the drawing options, a subset of track ope
 <itemizedlist>
 <listitem><para>The currently selected (mouse pointer) tool</para></listitem>
 <listitem><para>The number of items to process in the background - normally this the number in the map tile download queue</para></listitem>
-<listitem><para>The zoom factor</para></listitem>
+<listitem><para>The zoom level</para></listitem>
 <listitem><para>The location of the mouse pointer (and potentially height information if DEM data is available)</para></listitem>
 </itemizedlist>
 <para>When creating a track/route, the statusbar also displays some information about the track/route.</para>
@@ -271,7 +271,7 @@ A right click menu offers controls of the drawing options, a subset of track ope
 <listitem><para>The distance of the currently edited segment.</para></listitem>
 </itemizedlist>
 </para>
-<para>For convenience, a zoom selector can be opened from the status bar. Simply left-click on the zoom factor.</para>
+<para>For convenience, a zoom selector can be opened from the status bar. Simply left-click on the zoom level.</para>
 <figure>
   <title>The zoom selector available from status bar</title>
   <screenshot>
@@ -301,6 +301,15 @@ A right click menu offers controls of the drawing options, a subset of track ope
 <para>Mercator (also called Spherical Mercator)</para>
 </listitem>
 </itemizedlist>
+</para>
+</section>
+
+<section id="zoom" xreflabel="Zoom Level"><title>Zoom Level</title>
+<para>
+&appname; uses a zoom level measured as a pixel factor in Metres Per Pixel (MPP), hence this may also be referred to as a zoom factor. By default in this document the zoom level refers to &appname;'s MPP definition unless otherwise stated.
+</para>
+<para>
+This is in contrast to Tiled Web Map systems such as OpenStreetMap which use the <ulink url="https://wiki.openstreetmap.org/wiki/Zoom_levels">Zoom Level</ulink> as a measure of how much of the world is visible on the map.
 </para>
 </section>
 
@@ -778,7 +787,7 @@ A <ulink url="https://developers.google.com/kml/documentation/kmzarchives">KMZ f
 A <ulink url="https://garminbasecamp.wikispaces.com/Custom+Maps">KMZ Map file</ulink> is a KMZ file with an image overlay often for use as a Custom Map on Garmin GPSr devices.
 </para>
 <para>
-&appname; only supports basic properties in KMZ Map files, primarily intended for use with Garmin GPSr devices although KMZ exports are known to be work with Google Earth.
+&appname; only supports basic properties in KMZ Map files, primarily intended for use with Garmin GPSr devices although KMZ exports are known to work with <application>Google Earth</application>.
 </para>
 </section>
 
@@ -1968,7 +1977,7 @@ Force a refresh of all visible map tiles.
 
 <section><title>Download Maps in Zoom Levels</title>
 <para>
-This opens a dialog to enable requesting the download of maps for the region in the viewport over a specified number of zoom levels.
+This opens a dialog to enable requesting the download of maps for the region in the viewport over a specified number of Tiled Web Map zoom levels.
 The download method type can be specified to help limit the number of requests.
 </para>
 <warning>
@@ -3625,13 +3634,12 @@ Accept: */*
             </varlistentry>
             <varlistentry>
               <term>zoom-min (optional)</term>
-              <listitem><para>The minimum zoom value supported by the tile server. The Default is 0 if not specified.</para></listitem>
+              <listitem><para>The minimum Tiled Web Map zoom value supported by the tile server. The Default is 0 if not specified.</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>zoom-max (optional)</term>
               <listitem>
-                 <para>The maximum zoom value supported by the tile server. The Default is 18 if not specified.</para>
-                 <para>See <ulink url="https://wiki.openstreetmap.org/wiki/Zoom_levels">Zoom Levels</ulink></para>
+                 <para>The maximum Tiled Web Map zoom value supported by the tile server. The Default is 18 if not specified.</para>
               </listitem>
             </varlistentry>
             <varlistentry>
@@ -3734,7 +3742,7 @@ Accept: */*
           </variablelist>
         </para>
         <para></para>
-        <para>The <classname>VikTmsMapSource</classname> allows declaration of any TMS service. A TMS (Tile Map Service) is defined in <ulink url="https://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">Tile Map Service Specification</ulink>. The configuration supports the following properties (as per <classname>VikSlippyMapSource</classname> above):</para>
+        <para>The <classname>VikTmsMapSource</classname> allows declaration of any TMS service. A TMS (Tile Map Service)TMS (Tile Map Service) is defined in <ulink url="https://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">Tile Map Service Specification</ulink>. The configuration supports the following properties (as per <classname>VikSlippyMapSource</classname> above):</para>
         <para>
           <simplelist>
               <member>id</member>
