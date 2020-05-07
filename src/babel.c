@@ -563,7 +563,8 @@ static void load_feature_parse_line (gchar *line)
         device->name = g_strdup (tokens[2]);
         device->label = g_strndup (tokens[4], 50); // Limit really long label text
         a_babel_device_list = g_list_append (a_babel_device_list, device);
-        g_debug ("New gpsbabel device: %s, %d%d%d%d%d%d(%s)",
+        if ( vik_verbose )
+          g_debug ("New gpsbabel device: %s, %d%d%d%d%d%d(%s)",
         		device->name,
         		device->mode.waypointsRead, device->mode.waypointsWrite,
         		device->mode.tracksRead, device->mode.tracksWrite,
@@ -583,7 +584,8 @@ static void load_feature_parse_line (gchar *line)
         file->ext = g_strdup (tokens[3]);
         file->label = g_strdup (tokens[4]);
         a_babel_file_list = g_list_append (a_babel_file_list, file);
-        g_debug ("New gpsbabel file: %s, %d%d%d%d%d%d(%s)",
+        if ( vik_verbose )
+          g_debug ("New gpsbabel file: %s, %d%d%d%d%d%d(%s)",
 			file->name,
 			file->mode.waypointsRead, file->mode.waypointsWrite,
 			file->mode.tracksRead, file->mode.tracksWrite,

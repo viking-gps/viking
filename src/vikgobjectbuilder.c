@@ -32,6 +32,7 @@
 #include <gtk/gtk.h>
 
 #include "vikgobjectbuilder.h"
+#include "globals.h"
 
 /* FIXME use private fields */
 GType gtype = 0;
@@ -199,8 +200,9 @@ _text (GMarkupParseContext *context,
 		if (G_IS_VALUE (&gvalue) && found == TRUE)
 		{
 			/* store new parameter */
-			g_debug("VikGobjectBuilder: store new GParameter for %s: (%s)%s=%*s",
-			        g_type_name(gtype), g_type_name(G_VALUE_TYPE(&gvalue)), property_name, (gint)text_len, text);
+			if ( vik_verbose )
+				g_debug("VikGobjectBuilder: store new GParameter for %s: (%s)%s=%*s",
+						g_type_name(gtype), g_type_name(G_VALUE_TYPE(&gvalue)), property_name, (gint)text_len, text);
 			nb_parameters++;
 			parameters = g_realloc(parameters, sizeof(GParameter)*nb_parameters);
 			/* parameter name */
