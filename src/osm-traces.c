@@ -601,6 +601,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   if (ret != 0) {
     g_critical(_("failed to unlink temporary file: %s"), strerror(errno));
   }
+  g_free ( filename );
 }
 
 /**
