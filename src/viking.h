@@ -43,6 +43,7 @@
 #include "config.h"
 
 #include "globals.h"
+#include "preferences.h"
 #include "coords.h"
 #include "vikcoord.h"
 #include "vik_compat.h"

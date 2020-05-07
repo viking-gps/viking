@@ -27,7 +27,6 @@
 #include "babel.h"
 #include "gpx.h"
 #include "acquire.h"
-#include "preferences.h"
 
 // Could have an array of programs instead...
 #define GC_PROGRAM1 "geo-nearest"

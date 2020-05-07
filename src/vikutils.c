@@ -26,7 +26,6 @@
 #include "viking.h"
 #include "compression.h"
 #include "download.h"
-#include "preferences.h"
 #include "vikmapslayer.h"
 #include "settings.h"
 #include "dir.h"

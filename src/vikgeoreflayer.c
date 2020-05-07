@@ -23,7 +23,6 @@
 #include "vikgeoreflayer.h"
 #include <ctype.h>
 
-#include "preferences.h"
 #include "icons/icons.h"
 #include "vikmapslayer.h"
 

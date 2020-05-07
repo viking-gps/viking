@@ -29,7 +29,6 @@
 #include "dems.h"
 #include "mapcache.h"
 #include "print.h"
-#include "preferences.h"
 #include "toolbar.h"
 #include "viklayer_defaults.h"
 #include "icons/icons.h"

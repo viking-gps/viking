@@ -27,7 +27,6 @@
 #include "mapcoord.h"
 #include "mapcache.h"
 #include "dir.h"
-#include "preferences.h"
 #include "icons/icons.h"
 #include "mapnik_interface.h"
 #include "background.h"

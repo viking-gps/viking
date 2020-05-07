@@ -27,7 +27,6 @@
 #include "viking.h"
 #include "viktrwlayer_export.h"
 #include "gpx.h"
-#include "preferences.h"
 
 static gchar *last_folder_uri = NULL;
 

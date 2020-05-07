@@ -24,7 +24,6 @@
 #include "viking.h"
 #include "viktrwlayer_propwin.h"
 #include "dems.h"
-#include "preferences.h"
 
 #define BLOB_SIZE 6
 

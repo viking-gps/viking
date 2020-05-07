@@ -28,7 +28,6 @@
 #include "osm-traces.h"
 #include "gpx.h"
 #include "background.h"
-#include "preferences.h"
 #include "curl_download.h"
 #ifdef HAVE_OAUTH_H
 #include <oauth.h>

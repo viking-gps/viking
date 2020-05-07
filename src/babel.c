@@ -33,7 +33,6 @@
 #include "viking.h"
 #include "gpx.h"
 #include "babel.h"
-#include "preferences.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif

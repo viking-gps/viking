@@ -30,7 +30,6 @@
 #include "dems.h"
 #include "babel.h"
 #include "curl_download.h"
-#include "preferences.h"
 #include "vikmapslayer.h"
 #include "vikgeoreflayer.h"
 #include "viktrwlayer_propwin.h"

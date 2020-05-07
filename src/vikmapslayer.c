@@ -36,7 +36,6 @@
 #include "maputils.h"
 #include "mapcache.h"
 #include "background.h"
-#include "preferences.h"
 #include "vikmapslayer.h"
 #include "icons/icons.h"
 #include "metatile.h"
