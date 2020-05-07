@@ -312,25 +312,16 @@ static void new_access_token_cb ( )
     return;
   }
 
-  // Unfortunately since the callback mechanism in preferences only allows a function call with no parameters
-  //  we have no way of accessing the dialog to effect any updates, other than closing it
-  a_uibuilder_factory_close ( GTK_RESPONSE_REJECT );
-  // Note since we are in an event handler already, using GTK_RESPONSE_ACCEPT means this signal
-  //  is processed after this current function finishes.
-  // This then in turn means it would save the values from the dialog,
-  //  overwriting the values set here :(
-  // The current side effect is that any other preferences the user has modified in the dialog are lost
-
   // Now apply the new values
   vlp_data.s = access_token_key;
   a_preferences_run_setparam ( vlp_data, pref_key );
   vlp_data.s = access_token_secret;
   a_preferences_run_setparam ( vlp_data, pref_secret );
 
-  a_preferences_save_to_file ();
-
   g_free ( access_token_key );
   g_free ( access_token_secret );
+
+  a_preferences_refresh ( VIKING_OSM_TRACES_PARAMS_GROUP_KEY );
 
   // On success mention can remove username/password if they already exist
   VikLayerParamData *pref_user = a_preferences_get ( OSM_USERNAME );
