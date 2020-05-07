@@ -11,7 +11,7 @@ The source code used in this product is available on the project website <ulink 
 
 <section>
 	<title>coords.c + coords.h</title>
-	<para> Available under license:</para>
+	<para>Available under license:</para>
 <screen>
 ** Copyright © 2001 by Jef Poskanzer <email>jef@acme.com</email>.
 ** All rights reserved.
@@ -42,7 +42,8 @@ The source code used in this product is available on the project website <ulink 
 <section>
 	<title>strtod.c</title>
 	<para>Source: <ulink url="http://www.jbox.dk/sanos/"></ulink></para>
-	<para> Available under license:</para>
+        <para>Version: Sanos 1.3.2</para>
+	<para>Available under license:</para>
 <screen>
 // Copyright (C) 2002 Michael Ringgaard. All rights reserved.
 //
@@ -74,9 +75,11 @@ The source code used in this product is available on the project website <ulink 
 </section>
 
 <section>
-	<title>kdtree.c + kdtree.h - 0.5.6</title>
-	<para>Source: <ulink url="https://code.google.com/p/kdtree/"></ulink></para>
-	<para> Available under license:</para>
+	<title>kdtree - 0.5.6</title>
+        <para>A simple C library for working with KD-Trees.</para>
+	<para>Source: <ulink url="https://github.com/jtsiomb/kdtree"></ulink></para>
+	<para>Files used: <filename>kdtree.c + kdtree.h</filename></para>
+	<para>Available under license:</para>
 <screen>
 Copyright (C) 2007-2011 John Tsiombikas  <email>nuclear@member.fsf.org</email>
 
@@ -105,11 +108,28 @@ OF SUCH DAMAGE.
 </section>
 
 <section>
+	<title>fpconv</title>
+	<para>Converts floating point numbers to an optimal decimal string representation without loss of precision.</para>
+	<para>Source: <ulink url="https://github.com/night-shift/fpconv"></ulink></para>
+	<para>Available under <ulink url="https://opensource.org/licenses/MIT">MIT license</ulink></para>
+	<para>Files used: <filename>fpconv.c + fpconv.h</filename></para>
+	<para>Version SHA:dfeb7e938fb85fb5eca130b84f856705ced75012 (August 2013)</para>
+</section>
+
+<section>
+	<title>GtkHTML 4.10.0</title>
+	<para>An extract from GtkHTML for URI functions.</para>
+	<para>Source: <ulink url="https://git.gnome.org/browse/gtkhtml"></ulink></para>
+	<para>Available under <ulink url="https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html">GPL2</ulink> or later.</para>
+	<para>Files used: <filename>gtkhtml.c + gtkhtml-private.h</filename></para>
+</section>
+
+<section>
 	<title>Data: cities15000.txt</title>
 	<para>Source: <ulink url="https://download.geonames.org/export/dump/"></ulink></para>
 	<para>This is used in a lookup of positions to timezones.</para>
 	<para>Unneccesary fields in the dataset (for Viking) have been removed and the resultant file is <filename>data/latlontz.txt</filename></para>
-	<para> Available under license:</para>
+	<para>Available under license:</para>
 <screen>
 This work is licensed under a Creative Commons Attribution 3.0 License,
 see <ulink url="http://creativecommons.org/licenses/by/3.0/"></ulink>
