@@ -571,7 +571,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
   timeinfo = localtime ( &timenow );
   gchar timestr[80];
   // Compact time only - as days/date isn't very useful here
-  strftime ( timestr, sizeof(timestr), "%X)", timeinfo );
+  strftime ( timestr, sizeof(timestr), "%X", timeinfo );
 
   //
   // Test to see if window it was invoked on is still valid
