@@ -78,6 +78,8 @@ gchar* util_formatd ( const gchar *format, gdouble dd );
 
 gboolean util_is_url ( const gchar *str );
 
+gchar* util_frob ( gchar *str, guint ii );
+
 G_END_DECLS
 
 #endif

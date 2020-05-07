@@ -153,7 +153,8 @@ gchar *osm_get_login()
 // https://wiki.openstreetmap.org/wiki/OAuth
 //
 static const gchar *viking_consumer_key = "bAUxFBhGSzwXo9R43gJ1JXqx8cVphItXLo0PsRV3";
-static const gchar *viking_consumer_secret = "DKWT1ydfZUF9VpiUVkMn3p7faIaUB2cBawh86a0z"; // Not exactly a secret as publically viewable right here!
+#define VSC_INIT "QXJG6lqsMHS4IcvHIxZa8c2snVnHO7pOnju31n5m"
+static gchar *viking_consumer_secret = NULL;
 
 /**
  * split and parse URL parameters replied by the server
@@ -385,11 +386,16 @@ void osm_traces_init () {
   }
 
   login_mutex = vik_mutex_new();
+
+  // Not that secret; but as least not in total plain sight anymore
+  viking_consumer_secret = g_strdup ( VSC_INIT );
+  viking_consumer_secret = util_frob ( viking_consumer_secret, strlen(viking_consumer_secret) );
 }
 
 void osm_traces_uninit()
 {
   vik_mutex_free(login_mutex);
+  g_free ( viking_consumer_secret );
 }
 
 #define OSM_GPX_UPLOAD_URL "https://www.openstreetmap.org/api/0.6/gpx/create"

@@ -31,6 +31,7 @@
 #include <glib/gprintf.h>
 #include <gio/gio.h>
 #include <math.h>
+#include <ctype.h> // For isalpha() etc...
 
 #include "util.h"
 #include "globals.h"
@@ -325,4 +326,26 @@ gboolean util_is_url ( const gchar *str )
 		return TRUE;
 	}
 	return FALSE;
+}
+
+// 'Hide' a string
+gchar* util_frob ( gchar *str, guint ii )
+{
+	gchar *ptr = str;
+	while ( ptr && (ii-- > 0) ) {
+		if ( isalpha(*ptr) ) {
+			if ( tolower(*ptr) < 'n' )
+				*ptr += 13;
+			else
+				*ptr -= 13;
+		}
+		else if ( isdigit(*ptr) ) {
+			if ( *ptr < '5' )
+				*ptr += 5;
+			else
+				*ptr -= 5;
+		}
+		ptr++;
+	}
+	return str;
 }
