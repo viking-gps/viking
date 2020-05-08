@@ -767,6 +767,9 @@ void vik_track_convert ( VikTrack *tr, VikCoordMode dest_mode )
   }
 }
 
+// Prevention of crazy array maps
+#define MAX_NUM_CHUNKS 16000
+
 /* I understood this when I wrote it ... maybe ... Basically it eats up the
  * proper amounts of length on the track and averages elevation over that. */
 gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
@@ -781,6 +784,7 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
 
   if (!iter || !iter->next) /* zero- or one-point track */
 	  return NULL;
+  g_return_val_if_fail ( num_chunks < MAX_NUM_CHUNKS, NULL );
 
   { /* test if there's anything worth calculating */
     gboolean okay = FALSE;
@@ -801,8 +805,6 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
   }
 
   iter = tr->trackpoints;
-
-  g_assert ( num_chunks < 16000 );
 
   pts = g_malloc ( sizeof(gdouble) * num_chunks );
 
@@ -934,7 +936,7 @@ gdouble *vik_track_make_gradient_map ( const VikTrack *tr, guint16 num_chunks )
   gdouble altitude1, altitude2;
   guint16 current_chunk;
 
-  g_assert ( num_chunks < 16000 );
+  g_return_val_if_fail ( num_chunks < MAX_NUM_CHUNKS, NULL );
 
   total_length = vik_track_get_length_including_gaps ( tr );
   chunk_length = total_length / num_chunks;
@@ -977,7 +979,7 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
   if ( ! tr->trackpoints )
     return NULL;
 
-  g_assert ( num_chunks < 16000 );
+  g_return_val_if_fail ( num_chunks < MAX_NUM_CHUNKS, NULL );
 
   gdouble t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   gdouble t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
@@ -1051,6 +1053,7 @@ gdouble *vik_track_make_distance_map ( const VikTrack *tr, guint16 num_chunks )
 
   if ( ! tr->trackpoints )
     return NULL;
+  g_return_val_if_fail ( num_chunks < MAX_NUM_CHUNKS, NULL );
 
   gdouble t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   gdouble t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
@@ -1125,6 +1128,7 @@ gdouble *vik_track_make_elevation_time_map ( const VikTrack *tr, guint16 num_chu
 
   if (!iter || !iter->next) /* zero- or one-point track */
     return NULL;
+  g_return_val_if_fail ( num_chunks < MAX_NUM_CHUNKS, NULL );
 
   /* test if there's anything worth calculating */
   gboolean okay = FALSE;
@@ -1213,6 +1217,7 @@ gdouble *vik_track_make_speed_dist_map ( const VikTrack *tr, guint16 num_chunks 
 
   if ( ! tr->trackpoints )
     return NULL;
+  g_return_val_if_fail ( num_chunks < MAX_NUM_CHUNKS, NULL );
 
   gdouble t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   gdouble t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
