@@ -1371,8 +1371,10 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
         vtl->track_sort_order = vlsp->data.u;
         if ( vtl->track_sort_order != old )
           if ( !vlsp->is_file_operation ) {
-            trw_layer_sort_order_specified ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACKS, vtl->track_sort_order );
-            trw_layer_sort_order_specified ( vtl, VIK_TRW_LAYER_SUBLAYER_ROUTES, vtl->track_sort_order );
+            if ( g_hash_table_size(vtl->tracks) )
+              trw_layer_sort_order_specified ( vtl, VIK_TRW_LAYER_SUBLAYER_TRACKS, vtl->track_sort_order );
+            if ( g_hash_table_size(vtl->routes) )
+              trw_layer_sort_order_specified ( vtl, VIK_TRW_LAYER_SUBLAYER_ROUTES, vtl->track_sort_order );
           }
       }
       break;
@@ -1442,7 +1444,8 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
         vtl->wp_sort_order = vlsp->data.u;
         if ( vtl->wp_sort_order != old )
           if ( !vlsp->is_file_operation )
-            trw_layer_sort_order_specified ( vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, vtl->wp_sort_order );
+            if ( g_hash_table_size(vtl->waypoints) )
+              trw_layer_sort_order_specified ( vtl, VIK_TRW_LAYER_SUBLAYER_WAYPOINTS, vtl->wp_sort_order );
       }
       break;
     // Metadata
