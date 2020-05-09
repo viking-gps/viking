@@ -240,8 +240,9 @@ static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, V
       height = event->height;
 
     // Allow sizing back down to the minimum
+    // Possibly because last row contains a button, using BASE_SIZE rather than MIN_SIZE hint is better
     GdkGeometry geom = { event->width, event->height, 0, 0, 0, 0, 0, 0, 0, 0, GDK_GRAVITY_STATIC };
-    gtk_window_set_geometry_hints ( GTK_WINDOW(widget), widget, &geom, GDK_HINT_MIN_SIZE );
+    gtk_window_set_geometry_hints ( GTK_WINDOW(widget), widget, &geom, GDK_HINT_BASE_SIZE );
 
     // Restore previous size (if one was set)
     gtk_window_resize ( GTK_WINDOW(widget), width, height );
