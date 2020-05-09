@@ -268,6 +268,7 @@ static void trw_layer_free_track_gcs ( VikTrwLayer *vtl );
 static void trw_layer_draw_track_cb ( const gpointer id, VikTrack *track, struct DrawingParams *dp );
 static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct DrawingParams *dp );
 
+static void trw_layer_select_trackpoint ( VikTrwLayer *vtl, VikTrack *trk, VikTrackpoint *tpt, gboolean draw_graph_blob );
 static void goto_coord ( gpointer *vlp, gpointer vvp, gpointer vl, const VikCoord *coord );
 static void trw_layer_goto_track_startpoint ( menu_array_sublayer values );
 static void trw_layer_goto_track_endpoint ( menu_array_sublayer values );
@@ -5526,8 +5527,10 @@ static void trw_layer_goto_track_startpoint ( menu_array_sublayer values )
   else
     track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
 
-  if ( track && track->trackpoints )
+  if ( track && track->trackpoints ) {
+    trw_layer_select_trackpoint ( vtl, track, vik_track_get_tp_first(track), TRUE );
     goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vik_track_get_tp_first(track)->coord) );
+  }
 }
 
 static void trw_layer_goto_track_center ( menu_array_sublayer values )
@@ -5579,6 +5582,19 @@ static void trw_layer_graph_draw_tp ( VikTrwLayer *vtl )
     gpointer gw = vik_window_get_graphs_widgets ( vw );
     if ( gw )
       vik_trw_layer_propwin_main_draw_blob ( gw, VIK_TRACKPOINT(vtl->current_tpl->data) );
+  }
+}
+
+static void trw_layer_select_trackpoint ( VikTrwLayer *vtl, VikTrack *trk, VikTrackpoint *tpt, gboolean draw_graph_blob )
+{
+  GList *tpl = g_list_find ( trk->trackpoints, tpt );
+  if ( tpl ) {
+    vtl->current_tpl = tpl;
+    vtl->current_tp_track = trk;
+  }
+  if ( draw_graph_blob ) {
+    trw_layer_graph_draw_tp ( vtl );
+    set_statusbar_msg_info_trkpt ( vtl, tpt );
   }
 }
 
@@ -6066,7 +6082,10 @@ static void trw_layer_goto_track_endpoint ( menu_array_sublayer values )
     return;
   if ( !track->trackpoints )
     return;
-  goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vik_track_get_tp_last(track)->coord));
+
+  VikTrackpoint *tp = vik_track_get_tp_last (track );
+  trw_layer_select_trackpoint ( vtl, track, tp, TRUE );
+  goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(tp->coord) );
 }
 
 static void trw_layer_goto_track_max_speed ( menu_array_sublayer values )
@@ -6084,6 +6103,7 @@ static void trw_layer_goto_track_max_speed ( menu_array_sublayer values )
   VikTrackpoint* vtp = vik_track_get_tp_by_max_speed ( track );
   if ( !vtp )
     return;
+  trw_layer_select_trackpoint ( vtl, track, vtp, TRUE );
   goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vtp->coord));
 }
 
@@ -6102,6 +6122,7 @@ static void trw_layer_goto_track_max_alt ( menu_array_sublayer values )
   VikTrackpoint* vtp = vik_track_get_tp_by_max_alt ( track );
   if ( !vtp )
     return;
+  trw_layer_select_trackpoint ( vtl, track, vtp, TRUE );
   goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vtp->coord));
 }
 
@@ -6120,6 +6141,7 @@ static void trw_layer_goto_track_min_alt ( menu_array_sublayer values )
   VikTrackpoint* vtp = vik_track_get_tp_by_min_alt ( track );
   if ( !vtp )
     return;
+  trw_layer_select_trackpoint ( vtl, track, vtp, TRUE );
   goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vtp->coord));
 }
 
@@ -10015,11 +10037,7 @@ void vik_trw_layer_trackpoint_draw ( VikTrwLayer *vtl, VikViewport *vvp, VikTrac
   //  or if configured not to change that trackpoint
   if ( !vtl->tpwin &&
        a_vik_get_auto_trackpoint_select() ) {
-    GList *tpl = g_list_find ( trk->trackpoints, tpt );
-    if ( tpl ) {
-      vtl->current_tpl = tpl;
-      vtl->current_tp_track = trk;
-    }
+    trw_layer_select_trackpoint ( vtl, trk, tpt, FALSE );
   }
 
   // draw pixmap when we have time to
