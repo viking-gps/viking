@@ -31,6 +31,7 @@
 #include "vikradiogroup.h"
 #include "vikfileentry.h"
 #include "vikfilelist.h"
+#include "vikviewport.h"
 #include "ui_util.h"
 
 VikLayerParamData vik_lpd_true_default ( void ) { return VIK_LPD_BOOLEAN ( TRUE ); }
@@ -437,10 +438,17 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
           if ( params[j].group == current_group )
             tab_widget_count++;
 
-        if ( tab_widget_count )
-        {
+        if ( tab_widget_count ) {
+          // Obviously lots of options so enable scrolling vertically
+          //  especially for Preferences & TrackWaypoint Layer Properties;
+          //  also makes it easier to add more options without making the dialog massive
           tables[current_group] = gtk_table_new ( tab_widget_count, 1, FALSE );
-          gtk_notebook_append_page ( GTK_NOTEBOOK(notebook), tables[current_group], gtk_label_new(groups[current_group]) );
+          GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
+          gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
+          gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(sw), tables[current_group] );
+          // Ensure it doesn't start off too small
+          gtk_widget_set_size_request ( sw, -1, 200 * vik_viewport_get_scale(NULL) );
+          gtk_notebook_append_page ( GTK_NOTEBOOK(notebook), sw, gtk_label_new(groups[current_group]) );
         }
       }
     }
