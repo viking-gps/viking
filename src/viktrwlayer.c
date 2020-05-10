@@ -8441,7 +8441,7 @@ static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gc
     vik_trw_layer_propwin_update ( trk );
 
     vik_treeview_item_set_name ( VIK_LAYER(l)->vt, iter, newname );
-    vik_treeview_sort_children ( VIK_LAYER(l)->vt, &(l->tracks_iter), l->track_sort_order );
+    vik_treeview_sort_children ( VIK_LAYER(l)->vt, &(l->routes_iter), l->track_sort_order );
 
     vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(vlp) );
 
