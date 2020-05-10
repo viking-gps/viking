@@ -434,9 +434,8 @@ static void trw_layer_waypoint_list_add ( vik_trw_waypoint_list_t *vtdl,
 		g_date_time_unref ( gdt);
 	}
 
-	// NB: doesn't include aggegrate visibility
-	gboolean visible = VIK_LAYER(vtl)->visible && wpt->visible;
-	visible = visible && vik_trw_layer_get_waypoints_visibility(vtl);
+	gboolean visible = wpt->visible && vik_trw_layer_get_waypoints_visibility ( vtl );
+	visible = visible && vik_treeview_item_get_visible_tree ( VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter) );
 
 	gdouble alt = wpt->altitude;
 	if ( isnan(alt) ) {

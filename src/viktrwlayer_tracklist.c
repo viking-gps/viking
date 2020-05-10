@@ -414,9 +414,8 @@ static void trw_layer_track_list_add ( vik_trw_and_track_t *vtt,
 		g_date_time_unref ( gdt);
 	}
 
-	// NB: doesn't include aggegrate visibility
-	gboolean visible = VIK_LAYER(vtl)->visible && trk->visible;
-	visible = visible && (trk->is_route ? vik_trw_layer_get_routes_visibility(vtl) : vik_trw_layer_get_tracks_visibility(vtl));
+	gboolean visible = trk->visible && (trk->is_route ? vik_trw_layer_get_routes_visibility(vtl) : vik_trw_layer_get_tracks_visibility(vtl));
+	visible = visible && vik_treeview_item_get_visible_tree ( VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter) );
 
 	guint trk_len_time = 0; // In minutes
 	if ( trk->trackpoints ) {
