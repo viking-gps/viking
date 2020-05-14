@@ -7044,6 +7044,8 @@ static void trw_layer_split_segments ( menu_array_sublayer values )
     // Remove original track
     vik_trw_layer_delete_track ( vtl, trk );
     vik_layer_emit_update ( VIK_LAYER(vtl) );
+    if ( values[MA_VLP] )
+      vik_layers_panel_calendar_update ( VIK_LAYERS_PANEL(values[MA_VLP]) );
   }
   else {
     a_dialog_error_msg (VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Can not split track as it has no segments"));
