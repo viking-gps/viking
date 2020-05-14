@@ -79,6 +79,7 @@ static gboolean line_newsegment = FALSE;
 static gdouble line_timestamp = NAN;
 static gdouble line_altitude = NAN;
 static gboolean line_visible = TRUE;
+static gboolean line_hide_name = FALSE;
 
 static gboolean line_extended = FALSE;
 static gdouble line_speed = NAN;
@@ -241,6 +242,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       have_read_something = TRUE;
       VikWaypoint *wp = vik_waypoint_new();
       wp->visible = line_visible;
+      wp->hide_name = line_hide_name;
       wp->altitude = line_altitude;
       wp->timestamp = line_timestamp;
       wp->speed = line_speed;
@@ -397,6 +399,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     line_timestamp = NAN;
     line_altitude = NAN;
     line_visible = TRUE;
+    line_hide_name = FALSE;
     line_url = NULL;
     line_url_name = NULL;
     line_magvar = NAN;
@@ -645,6 +648,10 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   {
     line_dgpsid = (guint)atoi(value);
   }
+  else if (key_len == 9 && strncasecmp( key, "hide_name", key_len ) == 0 && value != NULL && (value[0] == 'y' || value[0] == 'Y' || value[0] == 't' || value[0] == 'T'))
+  {
+    line_hide_name = TRUE;
+  }
 }
 
 typedef struct {
@@ -755,6 +762,8 @@ static void a_gpspoint_write_waypoint ( const VikWaypoint *wp, WritingContext *w
   }
   if ( ! wp->visible )
     fprintf ( f, " visible=\"n\"" );
+  if ( wp->hide_name )
+    fprintf ( f, " hide_name=\"yes\"" );
   fprintf ( f, "\n" );
 }
 

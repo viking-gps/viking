@@ -167,7 +167,7 @@ struct _VikTrwLayerWpwin {
   VikWaypoint *wpt;
   VikCoordMode coord_mode;
   GtkWidget *tabs;
-  GtkWidget *latentry, *lonentry, *nameentry, *altentry;
+  GtkWidget *latentry, *lonentry, *nameentry, *nameshowcb, *altentry;
   GtkWidget *commentlabel, *commententry, *descriptionlabel, *descriptionentry, *imagelabel, *imageentry, *symbolentry;
   GtkWidget *sourcelabel, *sourceentry, *typeentry;
   GtkWidget *timevaluebutton;
@@ -321,7 +321,11 @@ VikTrwLayerWpwin *vik_trw_layer_wpwin_show ( GtkWindow *parent, VikTrwLayerWpwin
     GtkWidget *basic = gtk_vbox_new ( FALSE, 0 );
 
     GtkWidget *namelabel = gtk_label_new (_("Name:"));
-    gtk_box_pack_start (GTK_BOX(basic), namelabel, FALSE, FALSE, 0);
+    GtkWidget *namehb = gtk_hbox_new ( FALSE, 0 );
+    ww->nameshowcb = gtk_check_button_new_with_label ( _("Show Name") );
+    gtk_box_pack_start ( GTK_BOX(namehb), namelabel, TRUE, TRUE, 0 );
+    gtk_box_pack_start ( GTK_BOX(namehb), ww->nameshowcb, TRUE, TRUE, 0 );
+    gtk_box_pack_start ( GTK_BOX(basic), namehb, FALSE, FALSE, 0 );
     // Name is now always changeable
     ww->nameentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
     g_signal_connect_swapped ( ww->nameentry, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
@@ -547,6 +551,7 @@ VikTrwLayerWpwin *vik_trw_layer_wpwin_show ( GtkWindow *parent, VikTrwLayerWpwin
   g_free ( alt );
 
   ui_entry_set_text ( ww->nameentry, default_name );
+  gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(ww->nameshowcb), !wp->hide_name );
 
   if ( is_new ) {
     // Auto put in some kind of 'name' as a comment if one previously 'goto'ed this exact location
@@ -749,6 +754,7 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
         wp->altitude = NAN;
       }
       vik_waypoint_set_name ( wp, gtk_entry_get_text ( GTK_ENTRY(ww->nameentry) ) );
+      wp->hide_name = !gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(ww->nameshowcb) );
       if ( g_strcmp0 ( wp->comment, gtk_entry_get_text ( GTK_ENTRY(ww->commententry) ) ) )
         vik_waypoint_set_comment ( wp, gtk_entry_get_text ( GTK_ENTRY(ww->commententry) ) );
       if ( g_strcmp0 ( wp->description, gtk_entry_get_text ( GTK_ENTRY(ww->descriptionentry) ) ) )

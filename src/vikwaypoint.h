@@ -46,6 +46,7 @@ struct _VikWaypoint {
   gdouble speed;             /* NAN if data unavailable */
   gdouble magvar;            /* NAN if data unavailable */
   gdouble geoidheight;       /* NAN if data unavailable */
+  gboolean hide_name;
   gchar *name;
   gchar *comment;
   gchar *description;

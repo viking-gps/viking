@@ -2724,7 +2724,7 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
       }
     }
 
-    if ( dp->vtl->drawlabels )
+    if ( dp->vtl->drawlabels && !wp->hide_name )
     {
       /* thanks to the GPSDrive people (Fritz Ganter et al.) for hints on this part ... yah, I'm too lazy to study documentation */
       gint label_x, label_y;
