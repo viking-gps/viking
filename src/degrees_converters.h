@@ -26,6 +26,8 @@
 
 G_BEGIN_DECLS
 
+#define DEGREE_SYMBOL "\302\260"
+
 gchar *convert_lat_dec_to_ddd(gdouble lat);
 gchar *convert_lon_dec_to_ddd(gdouble lon);
 

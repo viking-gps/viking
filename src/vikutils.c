@@ -29,6 +29,7 @@
 #include "vikmapslayer.h"
 #include "settings.h"
 #include "dir.h"
+#include "degrees_converters.h"
 #include "misc/kdtree.h"
 #include "misc/gtkhtml-private.h"
 
@@ -148,7 +149,7 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 
 		case 'C': {
 			gint heading = isnan(trkpt->course) ? 0 : (gint)round(trkpt->course);
-			values[i] = g_strdup_printf ( _("%sCourse %03d\302\260" ), separator, heading );
+			values[i] = g_strdup_printf ( _("%sCourse %03d%s" ), separator, heading, DEGREE_SYMBOL );
 			break;
 		}
 

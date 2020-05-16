@@ -22,6 +22,7 @@
 #include "viking.h"
 #include "viktrwlayer_tpwin.h"
 #include "vikdatetime_edit_dialog.h"
+#include "degrees_converters.h"
 
 // For simplicity these are global values
 //  (i.e. would get shared between multiple windows)
@@ -527,7 +528,7 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
   if ( isnan(tp->course) )
     g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
   else
-    g_snprintf ( tmp_str, sizeof(tmp_str), "%05.1f\302\260", tp->course );
+    g_snprintf ( tmp_str, sizeof(tmp_str), "%05.1f%s", tp->course, DEGREE_SYMBOL );
   gtk_label_set_text ( tpwin->course, tmp_str );
 
   vu_speed_text ( tmp_str, sizeof(tmp_str), speed_units, tp->speed, TRUE, "%.2f", FALSE );

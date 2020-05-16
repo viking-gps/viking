@@ -28,8 +28,6 @@
 #include <string.h>
 #include "degrees_converters.h"
 
-#define DEGREE_SYMBOL "\302\260"
-
 /**
  * @param pos_c char for positive value
  * @param neg_c char for negative value
