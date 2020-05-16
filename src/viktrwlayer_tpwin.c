@@ -250,6 +250,8 @@ static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, V
   return FALSE;
 }
 
+#define TPWIN_PAD 1
+
 VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
 {
   static gchar *left_label_texts[] = { N_("<b>Name:</b>"),
@@ -282,20 +284,8 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   tpwin->button_back = gtk_dialog_add_button ( GTK_DIALOG(tpwin), GTK_STOCK_GO_BACK, VIK_TRW_LAYER_TPWIN_BACK);
   tpwin->button_forward = gtk_dialog_add_button ( GTK_DIALOG(tpwin), GTK_STOCK_GO_FORWARD, VIK_TRW_LAYER_TPWIN_FORWARD);
 
-  /*
-  gtk_dialog_add_buttons ( GTK_DIALOG(tpwin),
-      GTK_STOCK_CLOSE, VIK_TRW_LAYER_TPWIN_CLOSE,
-      _("_Insert After"), VIK_TRW_LAYER_TPWIN_INSERT,
-      GTK_STOCK_DELETE, VIK_TRW_LAYER_TPWIN_DELETE,
-      _("Split Here"), VIK_TRW_LAYER_TPWIN_SPLIT,
-      GTK_STOCK_GO_BACK, VIK_TRW_LAYER_TPWIN_BACK,
-      GTK_STOCK_GO_FORWARD, VIK_TRW_LAYER_TPWIN_FORWARD,
-      NULL );
-  tpwin->buttons = gtk_container_get_children(GTK_CONTAINER(GTK_DIALOG(tpwin)->action_area));
-  */
-
   /* main track info */
-  left_vbox = a_dialog_create_label_vbox ( left_label_texts, G_N_ELEMENTS(left_label_texts), 1, 3 );
+  left_vbox = a_dialog_create_label_vbox ( left_label_texts, G_N_ELEMENTS(left_label_texts), 1, TPWIN_PAD );
 
   tpwin->trkpt_name = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
   g_signal_connect_swapped ( G_OBJECT(tpwin->trkpt_name), "focus-out-event", G_CALLBACK(tpwin_set_name), tpwin );
@@ -322,16 +312,16 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   g_signal_connect_swapped ( G_OBJECT(tpwin->ts), "value-changed", G_CALLBACK(tpwin_sync_ts_to_tp), tpwin );
 
   right_vbox = gtk_vbox_new ( TRUE, 1 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->trkpt_name), TRUE, TRUE, 3 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->lat), TRUE, TRUE, 3 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->lon), TRUE, TRUE, 3 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->alt), TRUE, TRUE, 3 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->course), TRUE, TRUE, 3 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->ts), TRUE, TRUE, 3 );
-  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->time), TRUE, TRUE, 3 );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->trkpt_name), TRUE, TRUE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->lat), TRUE, TRUE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->lon), TRUE, TRUE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->alt), TRUE, TRUE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->course), TRUE, TRUE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->ts), TRUE, TRUE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(right_vbox), GTK_WIDGET(tpwin->time), TRUE, TRUE, TPWIN_PAD );
 
   /* diff info */
-  diff_left_vbox = a_dialog_create_label_vbox ( right_label_texts, G_N_ELEMENTS(right_label_texts), 1, 3 );
+  diff_left_vbox = a_dialog_create_label_vbox ( right_label_texts, G_N_ELEMENTS(right_label_texts), 1, TPWIN_PAD );
 
   tpwin->diff_dist = GTK_LABEL(ui_label_new_selectable(NULL));
   tpwin->diff_time = GTK_LABEL(ui_label_new_selectable(NULL));
@@ -344,21 +334,21 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   tpwin->sat = GTK_LABEL(ui_label_new_selectable(NULL));
 
   diff_right_vbox = gtk_vbox_new ( TRUE, 1 );
-  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->diff_dist), FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->diff_time), FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->diff_speed), FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->speed), FALSE, FALSE, 3 );
+  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->diff_dist), FALSE, FALSE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->diff_time), FALSE, FALSE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->diff_speed), FALSE, FALSE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->speed), FALSE, FALSE, TPWIN_PAD );
 
-  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->vdop), FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->hdop), FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->pdop), FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->sat), FALSE, FALSE, 3 );
+  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->vdop), FALSE, FALSE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->hdop), FALSE, FALSE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->pdop), FALSE, FALSE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(diff_right_vbox), GTK_WIDGET(tpwin->sat), FALSE, FALSE, TPWIN_PAD );
 
   main_hbox = gtk_hbox_new( FALSE, 0 );
-  gtk_box_pack_start ( GTK_BOX(main_hbox), left_vbox, FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(main_hbox), right_vbox, TRUE, TRUE, 3 );
-  gtk_box_pack_start ( GTK_BOX(main_hbox), diff_left_vbox, FALSE, FALSE, 3 );
-  gtk_box_pack_start ( GTK_BOX(main_hbox), diff_right_vbox, FALSE, FALSE, 3 );
+  gtk_box_pack_start ( GTK_BOX(main_hbox), left_vbox, FALSE, FALSE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(main_hbox), right_vbox, TRUE, TRUE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(main_hbox), diff_left_vbox, FALSE, FALSE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(main_hbox), diff_right_vbox, FALSE, FALSE, TPWIN_PAD );
 
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(tpwin))), main_hbox, FALSE, FALSE, 0 );
 
