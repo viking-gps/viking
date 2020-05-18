@@ -48,7 +48,7 @@ static gboolean aggregate_layer_selected_viewport_menu ( VikAggregateLayer *val,
 static void tac_calculate ( VikAggregateLayer *val );
 static void hm_calculate ( VikAggregateLayer *val );
 
-static gchar *params_tile_area_levels[] = { "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", NULL };
+static gchar *params_tile_area_levels[] = { "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", NULL };
 
 static VikLayerParamScale params_scales[] = {
  // min, max, step, digits (decimal places)
@@ -62,7 +62,7 @@ static VikLayerParamData color_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "orange", &data.c ); return data;
 }
 static VikLayerParamData alpha_default ( void ) { return VIK_LPD_UINT ( 100 ); }
-static VikLayerParamData tile_area_level_default ( void ) { return VIK_LPD_UINT ( 1 ); }
+static VikLayerParamData tile_area_level_default ( void ) { return VIK_LPD_UINT ( 2 ); }
 
 static VikLayerParamData color_default_max_sqr ( void ) {
   VikLayerParamData data; gdk_color_parse ( "purple", &data.c ); return data;
@@ -352,7 +352,7 @@ static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetP
     case PARAM_CLUSTER_COLOR: val->color[CLUSTER] = vlsp->data.c; break;
     case PARAM_TILE_AREA_LEVEL:
       if ( vlsp->data.u <= G_N_ELEMENTS(params_tile_area_levels) ) {
-        val->zoom_level = pow ( 2, vlsp->data.u + 2);
+        val->zoom_level = pow ( 2, vlsp->data.u + 1);
         // Ensure when 'apply' button is clicked the TAC is recalculated for the new area value
         if ( !vlsp->is_file_operation ) {
           if ( VIK_LAYER(val)->realized ) {
@@ -414,7 +414,7 @@ static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, gui
     case PARAM_CLUSTER_ON: rv.b = val->on[CLUSTER]; break;
     case PARAM_CLUSTER_ALPHA: rv.u = val->alpha[CLUSTER]; break;
     case PARAM_CLUSTER_COLOR: rv.c = val->color[CLUSTER]; break;
-    case PARAM_TILE_AREA_LEVEL: rv.u = map_utils_mpp_to_scale ( val->zoom_level ) - 2; break;
+    case PARAM_TILE_AREA_LEVEL: rv.u = map_utils_mpp_to_scale ( val->zoom_level ) - 1; break;
     case PARAM_HM_ALPHA: rv.u = val->hm_alpha; break;
     case PARAM_HM_STAMP_FACTOR: rv.u = val->hm_stamp_factor; break;
     case PARAM_HM_STYLE: rv.u = val->hm_style; break;
@@ -2278,7 +2278,7 @@ static void tac_increase_cb ( menu_array_values values )
 static void tac_decrease_cb ( menu_array_values values )
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
-  if ( val->zoom_level > 4.1 )
+  if ( val->zoom_level > 2.1 )
     val->zoom_level = val->zoom_level / 2;
   if ( val->on[BASIC] )
     if ( !val->calculating )
@@ -2815,7 +2815,7 @@ static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val )
     } else {
       g_string_append_printf ( gs,
                    _("\nTAC: Area Level %s\nTotal tiles %d\nMax Square %d\nContiguous count %d\nCluster size %d"),
-                   params_tile_area_levels[map_utils_mpp_to_scale(val->zoom_level)-2], val->num_tiles[BASIC], val->max_square, val->num_tiles[CONTIG], val->num_tiles[CLUSTER] );
+                   params_tile_area_levels[map_utils_mpp_to_scale(val->zoom_level)-1], val->num_tiles[BASIC], val->max_square, val->num_tiles[CONTIG], val->num_tiles[CLUSTER] );
     }
   }
   g_snprintf (tmp_buf, sizeof(tmp_buf), "%s", gs->str );
