@@ -277,9 +277,10 @@ static gchar *label_texts[] = {
 static GtkWidget *create_layout ( GtkWidget *content[], gboolean extended )
 {
 	int cnt = 0;
-	for ( cnt = 0; cnt < G_N_ELEMENTS(label_texts); cnt++ )
+	for ( cnt = 0; cnt < G_N_ELEMENTS(label_texts); cnt++ ) {
 		content[cnt] = ui_label_new_selectable ( NULL );
-
+		gtk_widget_set_can_focus ( content[cnt], FALSE ); // Don't let notebook autofocus on it
+	}
 	if ( !extended )
 		cnt = cnt - 1;
 
