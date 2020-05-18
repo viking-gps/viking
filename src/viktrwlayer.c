@@ -1787,9 +1787,7 @@ static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, guint len, Vik
       // Also remember to (attempt to) convert each coordinate in case this is pasted into a different drawmode
       if ( pl == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
         VikTrack *trk = vik_track_unmarshall ( data + sizeof_len_and_subtype, 0 );
-        gchar *name = g_strdup ( trk->name );
-        vik_trw_layer_add_track ( vtl, name, trk );
-        g_free ( name );
+        vik_trw_layer_add_track ( vtl, NULL, trk );
         vik_track_convert (trk, vtl->coord_mode);
       }
       if ( pl == VIK_TRW_LAYER_SUBLAYER_WAYPOINT ) {
@@ -1799,9 +1797,7 @@ static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, guint len, Vik
       }
       if ( pl == VIK_TRW_LAYER_SUBLAYER_ROUTE ) {
         VikTrack *trk = vik_track_unmarshall ( data + sizeof_len_and_subtype, 0 );
-        gchar *name = g_strdup ( trk->name );
-        vik_trw_layer_add_route ( vtl, name, trk );
-        g_free ( name );
+        vik_trw_layer_add_route ( vtl, NULL, trk );
         vik_track_convert (trk, vtl->coord_mode);
       }
     }
@@ -4697,7 +4693,8 @@ void vik_trw_layer_add_track ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 {
   tr_uuid++;
 
-  vik_track_set_name (t, name);
+  if ( name )
+    vik_track_set_name ( t, name );
 
   if ( VIK_LAYER(vtl)->realized )
   {
@@ -4737,7 +4734,8 @@ void vik_trw_layer_add_route ( VikTrwLayer *vtl, gchar *name, VikTrack *t )
 {
   rt_uuid++;
 
-  vik_track_set_name (t, name);
+  if ( name )
+    vik_track_set_name ( t, name );
 
   if ( VIK_LAYER(vtl)->realized )
   {
@@ -5894,13 +5892,10 @@ static void trw_layer_convert_track_route ( menu_array_sublayer values )
   // Convert
   trk_copy->is_route = !trk_copy->is_route;
 
-  // ATM can't set name to self - so must create temporary copy
-  gchar *name = g_strdup ( trk_copy->name );
-
   // Delete old one and then add new one
   if ( trk->is_route ) {
     vik_trw_layer_delete_route ( vtl, trk );
-    vik_trw_layer_add_track ( vtl, name, trk_copy );
+    vik_trw_layer_add_track ( vtl, NULL, trk_copy );
   }
   else {
     // Extra route conversion bits...
@@ -5908,9 +5903,8 @@ static void trw_layer_convert_track_route ( menu_array_sublayer values )
     vik_track_to_routepoints ( trk_copy );
 
     vik_trw_layer_delete_track ( vtl, trk );
-    vik_trw_layer_add_route ( vtl, name, trk_copy );
+    vik_trw_layer_add_route ( vtl, NULL, trk_copy );
   }
-  g_free ( name );
 
   // Update in case color of track / route changes when moving between sublayers
   vik_layer_emit_update ( VIK_LAYER(vtl) );
