@@ -500,19 +500,10 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
   vik_units_distance_t dist_units = a_vik_get_units_distance ();
   if ( tpwin->cur_tp )
   {
-    switch (dist_units) {
-    case VIK_UNITS_DISTANCE_KILOMETRES:
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f m", vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord)));
-      break;
-    case VIK_UNITS_DISTANCE_MILES:
-    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.2f yards", vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord))*1.0936133);
-      break;
-    default:
-      g_critical("Houston, we've had a problem. distance=%d", dist_units);
-    }
-
+    gdouble diff_dist = vik_coord_diff(&(tp->coord), &(tpwin->cur_tp->coord));
+    vu_distance_text_precision ( tmp_str, sizeof(tmp_str), dist_units, diff_dist, "%.2f" );
     gtk_label_set_text ( tpwin->diff_dist, tmp_str );
+
     if ( !isnan(tp->timestamp) && !isnan(tpwin->cur_tp->timestamp) )
     {
       g_snprintf ( tmp_str, sizeof(tmp_str), "%.3f s", tp->timestamp - tpwin->cur_tp->timestamp);
@@ -542,35 +533,11 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
   vu_speed_text ( tmp_str, sizeof(tmp_str), speed_units, tp->speed, TRUE, "%.2f", FALSE );
   gtk_label_set_text ( tpwin->speed, tmp_str );
 
-  switch (dist_units) {
-  case VIK_UNITS_DISTANCE_KILOMETRES:
-    if ( isnan(tp->hdop) )
-      g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
-    else
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->hdop );
-    gtk_label_set_text ( tpwin->hdop, tmp_str );
-    if ( isnan(tp->pdop) )
-      g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
-    else
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f m", tp->pdop );
-    gtk_label_set_text ( tpwin->pdop, tmp_str );
-    break;
-  case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
-  case VIK_UNITS_DISTANCE_MILES:
-    if ( isnan(tp->hdop) )
-      g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
-    else
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f yards", tp->hdop*1.0936133 );
-    gtk_label_set_text ( tpwin->hdop, tmp_str );
-    if ( isnan(tp->pdop) )
-      g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
-    else
-      g_snprintf ( tmp_str, sizeof(tmp_str), "%.5f yards", tp->pdop*1.0936133 );
-    gtk_label_set_text ( tpwin->pdop, tmp_str );
-    break;
-  default:
-    g_critical("Houston, we've had a problem. distance=%d", dist_units);
-  }
+  vu_distance_text_precision ( tmp_str, sizeof(tmp_str), dist_units, tp->hdop, "%.5f" );
+  gtk_label_set_text ( tpwin->hdop, tmp_str );
+
+  vu_distance_text_precision ( tmp_str, sizeof(tmp_str), dist_units, tp->pdop, "%.5f" );
+  gtk_label_set_text ( tpwin->pdop, tmp_str );
 
   if ( isnan(tp->vdop) )
     g_snprintf ( tmp_str, sizeof(tmp_str), "--" );

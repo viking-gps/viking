@@ -1912,22 +1912,11 @@ static void ruler_click_normal (VikLayer *vl, GdkEventButton *event, tool_ed_t *
     vik_coord_to_latlon ( &coord, &ll );
     a_coords_latlon_to_string ( &ll, &lat, &lon );
     if ( s->has_oldcoord ) {
+      gchar tmp_buf[64];
       vik_units_distance_t dist_units = a_vik_get_units_distance ();
-      switch (dist_units) {
-      case VIK_UNITS_DISTANCE_KILOMETRES:
-        temp = g_strdup_printf ( "%s %s DIFF %f meters", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
-        break;
-      case VIK_UNITS_DISTANCE_MILES:
-        temp = g_strdup_printf ( "%s %s DIFF %f miles", lat, lon, VIK_METERS_TO_MILES(vik_coord_diff( &coord, &(s->oldcoord) )) );
-        break;
-      case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
-        temp = g_strdup_printf ( "%s %s DIFF %f NM", lat, lon, VIK_METERS_TO_NAUTICAL_MILES(vik_coord_diff( &coord, &(s->oldcoord) )) );
-        break;
-      default:
-        temp = g_strdup_printf ("Just to keep the compiler happy");
-        g_critical("Houston, we've had a problem. distance=%d", dist_units);
-      }
-
+      gdouble diff_dist = vik_coord_diff ( &coord, &(s->oldcoord) );
+      vu_distance_text ( tmp_buf, sizeof(tmp_buf), dist_units, diff_dist, TRUE, "%.3f", FALSE );
+      temp = g_strdup_printf ( _("%s %s DIFF %s"), lat, lon, tmp_buf );
       s->has_oldcoord = FALSE;
     }
     else {
@@ -2005,20 +1994,10 @@ static void ruler_move_normal (VikLayer *vl, GdkEventMotion *event, tool_ed_t *s
     }
     a_coords_latlon_to_string(&ll, &lat, &lon);
     vik_units_distance_t dist_units = a_vik_get_units_distance ();
-    switch (dist_units) {
-    case VIK_UNITS_DISTANCE_KILOMETRES:
-      temp = g_strdup_printf ( "%s %s DIFF %f meters", lat, lon, vik_coord_diff( &coord, &(s->oldcoord) ) );
-      break;
-    case VIK_UNITS_DISTANCE_MILES:
-      temp = g_strdup_printf ( "%s %s DIFF %f miles", lat, lon, VIK_METERS_TO_MILES (vik_coord_diff( &coord, &(s->oldcoord) )) );
-      break;
-    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
-      temp = g_strdup_printf ( "%s %s DIFF %f NM", lat, lon, VIK_METERS_TO_NAUTICAL_MILES (vik_coord_diff( &coord, &(s->oldcoord) )) );
-      break;
-    default:
-      temp = g_strdup_printf ("Just to keep the compiler happy");
-      g_critical("Houston, we've had a problem. distance=%d", dist_units);
-    }
+    static gchar tmp_buf[64];
+    gdouble diff_dist = vik_coord_diff ( &coord, &(s->oldcoord) );
+    vu_distance_text ( tmp_buf, sizeof(tmp_buf), dist_units, diff_dist, TRUE, "%.3f", FALSE );
+    temp = g_strdup_printf ( _("%s %s DIFF %s"), lat, lon, tmp_buf );
     vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, temp );
     g_free ( temp );
     g_free ( lat );

@@ -413,19 +413,8 @@ static void trw_layer_track_list_add ( vik_trw_and_track_t *vtt,
 	VikTrack *trk = vtt->trk;
 	VikTrwLayer *vtl = vtt->vtl;
 
-	gdouble trk_dist = vik_track_get_length ( trk );
 	// Store unit converted value
-	switch ( dist_units ) {
-	case VIK_UNITS_DISTANCE_MILES:
-		trk_dist = VIK_METERS_TO_MILES(trk_dist);
-		break;
-	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
-		trk_dist = VIK_METERS_TO_NAUTICAL_MILES(trk_dist);
-		break;
-	default:
-		trk_dist = trk_dist/1000.0;
-		break;
-	}
+	gdouble trk_dist = vu_distance_convert ( dist_units, vik_track_get_length(trk) );
 
 	// Get start date
 	gchar time_buf[32];

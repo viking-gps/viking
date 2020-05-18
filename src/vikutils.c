@@ -1075,6 +1075,121 @@ void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdou
 	g_free ( speed_units_str );
 }
 
+/**
+ * vu_distance_units_text:
+ *
+ * Free the returned string after use
+ */
+gchar* vu_distance_units_text ( vik_units_distance_t distance_units )
+{
+	gchar *units_str = NULL;
+	switch ( distance_units ) {
+	case VIK_UNITS_DISTANCE_MILES:          units_str = g_strdup ( _("miles") ); break;
+	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:	units_str = g_strdup ( _("NM") ); break;
+		// VIK_UNITS_DISTANCE_KILOMETRES:
+	default:                                units_str = g_strdup ( _("km") ); break;
+	}
+	return units_str;
+}
+
+/**
+ * vu_speed_deconvert:
+ *
+ * Convert the distance from the specified units into metres
+ */
+gdouble vu_distance_deconvert ( vik_units_distance_t distance_units, gdouble distance )
+{
+	gdouble my_distance = distance;
+	switch ( distance_units ) {
+	case VIK_UNITS_DISTANCE_MILES:          my_distance = VIK_MILES_TO_METERS(distance); break;
+	case VIK_UNITS_DISTANCE_NAUTICAL_MILES: my_distance = VIK_NAUTICAL_MILES_TO_METERS(distance); break;
+	    //case VIK_UNITS_DISTANCE_KILOMETRES:
+	default:                                my_distance = distance * 1000.0; break;
+	}
+	return my_distance;
+}
+
+/**
+ * vu_distance_convert:
+ *
+ * Convert the distance in metres into the specified units
+ */
+gdouble vu_distance_convert ( vik_units_distance_t distance_units, gdouble distance )
+{
+	gdouble my_distance = distance;
+	switch ( distance_units ) {
+	case VIK_UNITS_DISTANCE_MILES:          my_distance = VIK_METERS_TO_MILES(distance); break;
+	case VIK_UNITS_DISTANCE_NAUTICAL_MILES: my_distance = VIK_METERS_TO_NAUTICAL_MILES(distance); break;
+	    //case VIK_UNITS_DISTANCE_KILOMETRES:
+	default:                                my_distance = distance / 1000.0; break;
+	}
+	return my_distance;
+}
+
+/**
+ * Commonal text for a distance readout
+ */
+void vu_distance_text ( gchar* buf, guint size, vik_units_distance_t distance_units, gdouble distance, gboolean convert, gchar *format, gboolean compact )
+{
+	if ( isnan(distance) ) {
+		g_snprintf ( buf, size, "--" );
+		return;
+	}
+
+	gdouble my_distance = distance;
+	if ( convert )
+		my_distance = vu_distance_convert ( distance_units, distance );
+
+	gchar *units_str = vu_distance_units_text ( distance_units );
+
+    gchar tbuf[32];
+	g_snprintf ( tbuf, sizeof(tbuf), format, my_distance );
+
+	gchar *full_str = NULL;
+	if ( compact )
+		full_str = g_strdup_printf ( "%s%s", tbuf, units_str );
+	else
+		full_str = g_strdup_printf ( "%s %s", tbuf, units_str );
+	g_snprintf ( buf, size, full_str );
+	g_free ( full_str );
+	g_free ( units_str );
+}
+
+/**
+ * Commonal text for a distance readout
+ * This version uses higher precision units
+ *  i.e. metres or yards, rather than miles, kms etc...
+ * So use for distances that are expected to be small
+ */
+void vu_distance_text_precision ( gchar* buf, guint size, vik_units_distance_t distance_units, gdouble distance, gchar *format )
+{
+	if ( isnan(distance) ) {
+		g_snprintf ( buf, size, "--" );
+		return;
+	}
+
+	gdouble my_distance = distance;
+	gchar *units_str = NULL;
+	switch ( distance_units ) {
+	case VIK_UNITS_DISTANCE_MILES:
+	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+		units_str = g_strdup ( _("yards") );
+		my_distance = distance * 1.0936133;
+		break;
+		// VIK_UNITS_DISTANCE_KILOMETRES:
+	default:
+		units_str = g_strdup ( _("m") );
+		break;
+	}
+	gchar tbuf[32];
+	g_snprintf ( tbuf, sizeof(tbuf), format, my_distance );
+
+	gchar *full_str = g_strdup_printf ( "%s %s", tbuf, units_str );
+	g_snprintf ( buf, size, full_str );
+	g_free ( full_str );
+	g_free ( units_str );
+}
+
 // This is in vikutils due to speed units dependency
 // Unfortunatelty can't simply use the .1f format
 //  as want text for minutes per distance speed values

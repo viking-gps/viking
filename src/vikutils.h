@@ -66,6 +66,12 @@ void vu_speed_text_value ( gchar* buf, guint size, vik_units_speed_t speed_units
 
 void vu_speed_text ( gchar* buf, guint size, vik_units_speed_t speed_units, gdouble speed, gboolean convert, gchar *format, gboolean compact );
 
+gchar* vu_distance_units_text ( vik_units_distance_t distance_units );
+gdouble vu_distance_deconvert ( vik_units_distance_t distance_units, gdouble distance );
+gdouble vu_distance_convert ( vik_units_distance_t distance_units, gdouble distance );
+void vu_distance_text ( gchar* buf, guint size, vik_units_distance_t distance_units, gdouble distance, gboolean convert, gchar *format, gboolean compact );
+void vu_distance_text_precision ( gchar* buf, guint size, vik_units_distance_t distance_units, gdouble distance, gchar *format );
+
 GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external );
 
 void vu_format_speed_cell_data_func ( GtkTreeViewColumn *col,
