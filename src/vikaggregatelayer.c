@@ -911,11 +911,8 @@ static GList* aggregate_layer_waypoint_create_list ( VikLayer *vl, gpointer user
   GList *waypoints_and_layers = NULL;
   layers = g_list_first ( layers );
   while ( layers ) {
-    GList *waypoints = NULL;
-    waypoints = g_list_concat ( waypoints, g_hash_table_get_values ( vik_trw_layer_get_waypoints( VIK_TRW_LAYER(layers->data) ) ) );
-
+    GList *waypoints = g_hash_table_get_values ( vik_trw_layer_get_waypoints( VIK_TRW_LAYER(layers->data) ) );
     waypoints_and_layers = g_list_concat ( waypoints_and_layers, vik_trw_layer_build_waypoint_list_t ( VIK_TRW_LAYER(layers->data), waypoints ) );
-
     layers = g_list_next ( layers );
   }
   g_list_free ( layers );
@@ -997,12 +994,9 @@ static GList* aggregate_layer_track_create_list ( VikLayer *vl, gpointer user_da
   GList *tracks_and_layers = NULL;
   layers = g_list_first ( layers );
   while ( layers ) {
-    GList *tracks = NULL;
-    tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) ) );
+    GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) );
     tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_routes( VIK_TRW_LAYER(layers->data) ) ) );
-
     tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layers->data), tracks ) );
-
     layers = g_list_next ( layers );
   }
   g_list_free ( layers );
@@ -1604,8 +1598,7 @@ static void tac_calculate ( VikAggregateLayer *val )
   GList *tracks_and_layers = NULL; // A list of #vik_trw_track_list_t
   layers = g_list_first ( layers );
   while ( layers ) {
-    GList *tracks = NULL;
-    tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) ) );
+    GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) );
     tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layers->data), tracks ) );
     layers = g_list_next ( layers );
   }

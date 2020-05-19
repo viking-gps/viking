@@ -11712,8 +11712,7 @@ static gchar *highest_wp_number_get(VikTrwLayer *vtl)
 static GList* trw_layer_create_track_list_both ( VikLayer *vl, gpointer user_data )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(vl);
-  GList *tracks = NULL;
-  tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) ) );
+  GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks ( vtl ) );
   tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_routes ( vtl ) ) );
 
   return vik_trw_layer_build_track_list_t ( vtl, tracks );
