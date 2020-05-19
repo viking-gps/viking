@@ -301,8 +301,6 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       trackpoints_end ();
       have_read_something = TRUE;
       VikTrack *pl = vik_track_new();
-      // NB don't set defaults here as all properties are stored in the GPS_POINT format
-      //vik_track_set_defaults ( pl );
 
       /* Thanks to Peter Jones for this Fix */
       if (!line_name) line_name = g_strdup("UNK");

@@ -4017,7 +4017,6 @@ gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikC
   gboolean is_created = GPOINTER_TO_UINT(vik_trw_layer_wpwin_show ( w, NULL, default_name, vtl, wp, vtl->coord_mode, TRUE ));
 
   if ( is_created ) {
-    wp->visible = TRUE;
     vik_trw_layer_add_waypoint ( vtl, NULL, wp );
     g_free (default_name);
     return TRUE;
@@ -4319,8 +4318,6 @@ static void trw_layer_new_wp ( menu_array_layer values )
 static void edit_track_create_common ( VikTrwLayer *vtl, gchar *name )
 {
   vtl->current_track = vik_track_new();
-  vik_track_set_defaults ( vtl->current_track );
-  vtl->current_track->visible = TRUE;
   if ( vtl->drawmode == DRAWMODE_ALL_SAME_COLOR )
     // Create track with the preferred colour from the layer properties
     vtl->current_track->color = vtl->track_color;
@@ -4346,8 +4343,6 @@ static void trw_layer_edit_track ( menu_array_layer values )
 static void edit_route_create_common ( VikTrwLayer *vtl, gchar *name )
 {
   vtl->current_track = vik_track_new();
-  vik_track_set_defaults ( vtl->current_track );
-  vtl->current_track->visible = TRUE;
   vtl->current_track->is_route = TRUE;
   // By default make all routes red
   vtl->current_track->has_color = TRUE;
@@ -5214,7 +5209,7 @@ static gboolean trw_layer_delete_track_by_name ( VikTrwLayer *vtl, const gchar *
   // Fake a track with the given name
   udata.trk   = vik_track_new ();
   vik_track_set_name (udata.trk, name);
-  // Currently only the name is used in this waypoint find function
+  // Currently only the name is used in this track find function
   udata.uuid = NULL;
 
   // Hmmm, want key of it
@@ -5737,8 +5732,6 @@ static void trw_layer_convert_to_track ( menu_array_sublayer values )
 {
   VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
   VikTrack *trk = vik_track_new();
-  vik_track_set_defaults ( trk );
-  trk->visible = TRUE;
   if ( vtl->drawmode == DRAWMODE_ALL_SAME_COLOR )
     // Create track with the preferred colour from the layer properties
     trk->color = vtl->track_color;
@@ -5829,7 +5822,6 @@ static void trw_layer_convert_to_waypoints ( menu_array_sublayer values )
   while ( tp_iter ) {
     VikTrackpoint *tp = VIK_TRACKPOINT(tp_iter->data);
     VikWaypoint *wpt = vik_waypoint_new();
-    wpt->visible   = TRUE;
     wpt->timestamp = tp->timestamp;
     wpt->coord     = tp->coord;
     wpt->altitude  = tp->altitude;

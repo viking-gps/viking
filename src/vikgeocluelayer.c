@@ -656,7 +656,6 @@ on_simple_ready ( GObject      *source_object,
 	if ( vgl->record ) {
 		VikTrwLayer *vtl = vgl->trw;
 		vgl->track = vik_track_new();
-		vgl->track->visible = TRUE;
 		gchar *name = make_track_name ( vtl );
 		vik_trw_layer_add_track ( vtl, name, vgl->track );
 		g_free ( name );

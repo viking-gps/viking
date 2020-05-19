@@ -150,15 +150,12 @@ static void tcx_start ( UserDataT *ud, const char *el, const char **attr )
 
 		case tt_wpt:
 			c_wp = vik_waypoint_new ();
-			c_wp->visible = TRUE;
 			c_ll.lat = NAN;
 			c_ll.lon = NAN;
 			break;
 
 		case tt_trk:
 			c_tr = vik_track_new ();
-			vik_track_set_defaults ( c_tr );
-			c_tr->visible = TRUE;
 			f_tr_newseg = TRUE;
 			break;
 

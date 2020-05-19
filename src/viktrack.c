@@ -43,6 +43,8 @@ VikTrack *vik_track_new()
 {
   VikTrack *tr = g_malloc0 ( sizeof ( VikTrack ) );
   tr->ref_count = 1;
+  tr->visible = TRUE;
+  vik_track_set_defaults ( tr );
   return tr;
 }
 

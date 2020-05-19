@@ -2017,6 +2017,8 @@ static gboolean split_at_marker ( PropWidgets *widgets )
           vik_track_set_comment ( tr_right, tr->comment );
         tr_right->visible = tr->visible;
         tr_right->is_route = tr->is_route;
+        tr_right->draw_name_mode = tr->draw_name_mode;
+        tr_right->max_number_dist_labels = tr->max_number_dist_labels;
         tr_right->trackpoints = iter;
 
         if ( widgets->tr->is_route )

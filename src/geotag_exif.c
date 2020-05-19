@@ -291,7 +291,6 @@ VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoor
 			// Now create Waypoint with acquired information
 			//
 			wp = vik_waypoint_new();
-			wp->visible = TRUE;
 			// Set info from exif values
 			// Location
 			vik_coord_load_from_latlon ( &(wp->coord), vcmode, &ll );
@@ -385,7 +384,6 @@ VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoor
 	// Now create Waypoint with acquired information
 	//
 	wp = vik_waypoint_new();
-	wp->visible = TRUE;
 	// Set info from exif values
 	// Location
 	vik_coord_load_from_latlon ( &(wp->coord), vcmode, &ll );
@@ -424,7 +422,6 @@ VikWaypoint* a_geotag_waypoint_positioned ( const gchar *filename, VikCoord coor
 	if ( wp == NULL ) {
 		// Need to create waypoint
 		wp = vik_waypoint_new();
-		wp->visible = TRUE;
 	}
 	wp->coord = coord;
 	wp->altitude = alt;

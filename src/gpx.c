@@ -374,7 +374,6 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
      case tt_wpt:
        if ( set_c_ll( attr ) ) {
          c_wp = vik_waypoint_new ();
-         c_wp->visible = TRUE;
          if ( get_attr ( attr, "hidden" ) )
            c_wp->visible = FALSE;
 
@@ -385,9 +384,7 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
      case tt_trk:
      case tt_rte:
        c_tr = vik_track_new ();
-       vik_track_set_defaults ( c_tr );
        c_tr->is_route = (current_tag == tt_rte) ? TRUE : FALSE;
-       c_tr->visible = TRUE;
        if ( get_attr ( attr, "hidden" ) )
          c_tr->visible = FALSE;
        break;
@@ -451,7 +448,6 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
 
      case tt_waypoint:
        c_wp = vik_waypoint_new ();
-       c_wp->visible = TRUE;
        break;
 
      case tt_waypoint_coord:

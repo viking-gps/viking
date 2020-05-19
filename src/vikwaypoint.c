@@ -33,6 +33,7 @@
 VikWaypoint *vik_waypoint_new()
 {
   VikWaypoint *wp = g_malloc0 ( sizeof ( VikWaypoint ) );
+  wp->visible = TRUE;
   wp->altitude = NAN;
   wp->name = g_strdup(_("Waypoint"));
   wp->image_direction = NAN;

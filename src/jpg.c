@@ -83,7 +83,6 @@ gboolean a_jpg_load_file ( VikAggregateLayer *top, const gchar *filename, VikVie
 	}
 	else {
 		wp = vik_waypoint_new ();
-		wp->visible = TRUE;
 		vik_trw_layer_filein_add_waypoint ( VIK_TRW_LAYER(vtl), (gchar*) a_file_basename(filename), wp );
 		vik_waypoint_set_image ( wp, filename );
 		// Simply set position to the current center
