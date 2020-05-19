@@ -3720,6 +3720,9 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
     case LOAD_TYPE_TCX_FAILURE:
       a_dialog_error_msg_extra ( GTK_WINDOW(vw), _("Unable to load malformed TCX file %s"), filename );
       break;
+    case LOAD_TYPE_KML_FAILURE:
+      a_dialog_error_msg_extra ( GTK_WINDOW(vw), _("Unable to load malformed KML file %s"), filename );
+      break;
     case LOAD_TYPE_UNSUPPORTED_FAILURE:
       a_dialog_error_msg_extra ( GTK_WINDOW(vw), _("Unsupported file type for %s"), filename );
       break;

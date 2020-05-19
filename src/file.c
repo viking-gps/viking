@@ -24,6 +24,7 @@
 
 #include "jpg.h"
 #include "gpx.h"
+#include "kml.h"
 #include "tcx.h"
 #include "geojson.h"
 #include "babel.h"
@@ -754,10 +755,8 @@ VikLoadType_t a_file_load_stream ( FILE *f,
 
     // In fact both kml & gpx files start the same as they are in xml
     if ( a_file_check_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
-      // Implicit Conversion
-      ProcessOptions po = { "-i kml", (gchar*)filename, NULL, NULL, NULL, NULL };
-      if ( ! ( success = a_babel_convert_from ( vtl, &po, NULL, NULL, NULL ) ) ) {
-        load_answer = LOAD_TYPE_GPSBABEL_FAILURE;
+      if ( ! ( success = a_kml_read_file ( vtl, f ) ) ) {
+        load_answer = LOAD_TYPE_KML_FAILURE;
       }
     }
     // NB use a extension check first, as a GPX file header may have a Byte Order Mark (BOM) in it

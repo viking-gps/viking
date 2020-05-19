@@ -147,6 +147,7 @@ libviking_a_SOURCES = \
 	uibuilder.c uibuilder.h \
 	print-preview.c print-preview.h \
 	print.c print.h \
+	kml.c kml.h \
 	kmz.c kmz.h \
 	viklayer_defaults.c viklayer_defaults.h \
 	settings.c settings.h \
