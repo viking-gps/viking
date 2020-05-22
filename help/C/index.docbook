@@ -3742,7 +3742,7 @@ Accept: */*
           </variablelist>
         </para>
         <para></para>
-        <para>The <classname>VikTmsMapSource</classname> allows declaration of any TMS service. A TMS (Tile Map Service)TMS (Tile Map Service) is defined in <ulink url="https://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">Tile Map Service Specification</ulink>. The configuration supports the following properties (as per <classname>VikSlippyMapSource</classname> above):</para>
+        <para>The <classname>VikTmsMapSource</classname> allows declaration of any TMS service. A TMS (Tile Map Service) is defined in <ulink url="https://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">Tile Map Service Specification</ulink>. The configuration supports the following properties (as per <classname>VikSlippyMapSource</classname> above):</para>
         <para>
           <simplelist>
               <member>id</member>
