@@ -2,7 +2,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (C) 2013-2015, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2013-2020, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,12 @@
 // Long formatted date+basic time - listing this way ensures the string comparison sort works - so no local type format %x or %c here!
 #define WAYPOINT_LIST_DATE_FORMAT "%Y-%m-%d %H:%M"
 
+// For simplicity these are global values
+//  (i.e. would get shared between multiple windows)
+static gint width = 0;
+static gint height = 400;
+static gboolean configured = FALSE;
+
 /**
  * waypoint_close_cb:
  *
@@ -37,6 +43,24 @@ static void waypoint_close_cb ( GtkWidget *dialog, gint resp, GList *data )
 	g_list_free ( data );
 
 	gtk_widget_destroy (dialog);
+}
+
+static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, gpointer notused )
+{
+	if ( !configured ) {
+		configured = TRUE;
+
+		// Allow sizing back down to a minimum
+		GdkGeometry geom = { event->width, event->height, 0, 0, 0, 0, 0, 0, 0, 0, GDK_GRAVITY_STATIC };
+		gtk_window_set_geometry_hints ( GTK_WINDOW(widget), widget, &geom, GDK_HINT_BASE_SIZE );
+
+		// Restore previous size
+		gtk_window_resize ( GTK_WINDOW(widget), width, height );
+	} else {
+		width = event->width;
+		height = event->height;
+	}
+	return FALSE;
 }
 
 #define WPT_LIST_COLS 9
@@ -701,10 +725,6 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 
 	// Set ordering of the initial view by one of the name columns
 	gtk_tree_view_column_clicked ( sort_by_column );
-
-	// Ensure a reasonable number of items are shown
-	//  TODO: may be save window size, column order, sorted by between invocations.
-	gtk_window_set_default_size ( GTK_WINDOW(dialog), show_layer_names ? 700 : 500, 400 );
 }
 
 
@@ -739,9 +759,14 @@ void vik_trw_layer_waypoint_list_show_dialog ( gchar *title,
 	// Use response to close the dialog with tidy up
 	g_signal_connect ( G_OBJECT(dialog), "response", G_CALLBACK(waypoint_close_cb), gl );
 
+	configured = FALSE;
+	g_signal_connect ( G_OBJECT(dialog), "configure-event", G_CALLBACK(configure_event), NULL );
+
 	gtk_widget_show_all ( dialog );
-	// Yes - set the size *AGAIN* - this time widgets are expanded nicely
-	gtk_window_resize ( GTK_WINDOW(dialog), show_layer_names ? 800 : 600, 400 );
+
+	// Ensure a reasonable number of items are shown
+	if ( width == 0 )
+		width = show_layer_names ? 800 : 650;
 
 	// ATM lock out on dialog run - to prevent list contents being manipulated in other parts of the GUI whilst shown here.
 	gtk_dialog_run (GTK_DIALOG (dialog));
