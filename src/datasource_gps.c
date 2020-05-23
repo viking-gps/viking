@@ -140,8 +140,8 @@ gchar* datasource_gps_get_protocol ( gpointer user_data )
   // Uses the list of supported devices
   gps_user_data_t *w = (gps_user_data_t *)user_data;
   last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(w->proto_b));
-  if (a_babel_device_list) {
-    gchar *protocol = ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
+  if ( a_babel_device_list_get() ) {
+    gchar *protocol = ((BabelDevice*)g_list_nth_data(a_babel_device_list_get(), last_active))->name;
     a_settings_set_string ( VIK_SETTINGS_GPS_PROTOCOL, protocol );
     return protocol;
   }
@@ -281,10 +281,10 @@ static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **
     return;
   }
   
-  if (!a_babel_device_list)
+  if (!a_babel_device_list_get())
     return;
   last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(w->proto_b));
-  device = ((BabelDevice*)g_list_nth_data(a_babel_device_list, last_active))->name;
+  device = ((BabelDevice*)g_list_nth_data(a_babel_device_list_get(), last_active))->name;
   if (!strcmp(device, "garmin")) {
     device = "garmin,power_off";
   }
@@ -578,7 +578,7 @@ static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
 
   w->proto_l = gtk_label_new (_("GPS Protocol:"));
   w->proto_b = vik_combo_box_text_new ();
-  g_list_foreach (a_babel_device_list, append_element, w->proto_b);
+  g_list_foreach ( a_babel_device_list_get(), append_element, w->proto_b );
 
   if ( last_active < 0 ) {
     find_entry = -1;
@@ -587,11 +587,11 @@ static void datasource_gps_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
     if ( a_settings_get_string ( VIK_SETTINGS_GPS_PROTOCOL, &protocol ) ) {
       // Use setting
       if ( protocol )
-        g_list_foreach (a_babel_device_list, find_protocol, protocol);
+        g_list_foreach ( a_babel_device_list_get(), find_protocol, protocol );
     }
     else {
       // Attempt to maintain default to Garmin devices (assumed most popular/numerous device)
-      g_list_foreach (a_babel_device_list, find_protocol, "garmin");
+      g_list_foreach ( a_babel_device_list_get(), find_protocol, "garmin" );
     }
     g_free ( protocol );
     // If not found set it to the first entry, otherwise use the entry

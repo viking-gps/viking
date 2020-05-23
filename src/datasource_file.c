@@ -121,7 +121,7 @@ static void datasource_file_add_setup_widgets ( GtkWidget *dialog, VikViewport *
   if (last_folder_uri)
     gtk_file_chooser_set_current_folder_uri ( GTK_FILE_CHOOSER(widgets->file), last_folder_uri);
   /* Add filters */
-  g_list_foreach ( a_babel_file_list, add_file_filter, widgets->file );
+  g_list_foreach ( a_babel_file_list_get(), add_file_filter, widgets->file );
   GtkFileFilter *all_filter = gtk_file_filter_new ();
   gtk_file_filter_add_pattern ( all_filter, "*" );
   gtk_file_filter_set_name ( all_filter, _("All files") );

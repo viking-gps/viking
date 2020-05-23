@@ -378,9 +378,9 @@ static void gps_layer_inst_init ( VikGpsLayer *self )
 {
   gint new_proto = 0;
   // +1 for luck (i.e the NULL terminator)
-  gchar **new_protocols = g_malloc_n(1 + g_list_length(a_babel_device_list), sizeof(gpointer));
+  gchar **new_protocols = g_malloc_n(1 + g_list_length(a_babel_device_list_get()), sizeof(gpointer));
 
-  GList *gl = g_list_first ( a_babel_device_list );
+  GList *gl = g_list_first ( a_babel_device_list_get() );
   while ( gl ) {
     // should be using label property but use name for now
     //  thus don't need to mess around converting label to name later on

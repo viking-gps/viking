@@ -54,12 +54,12 @@ static gchar *unbuffer_loc = NULL;
 /**
  * List of file formats supported by gpsbabel.
  */
-GList *a_babel_file_list;
+static GList *a_babel_file_list = NULL;
 
 /**
- * List of device supported by gpsbabel.
+ * List of devices supported by gpsbabel.
  */
-GList *a_babel_device_list;
+static GList *a_babel_device_list = NULL;
 
 /**
  * Run a function on all file formats supporting a given mode.
@@ -733,4 +733,24 @@ void a_babel_uninit ()
 gboolean a_babel_available ()
 {
   return a_babel_device_list != NULL;
+}
+
+/**
+ * a_babel_file_list_get:
+ *
+ * Returns: String list of babel file formats. Maybe NULL.
+ */
+GList *a_babel_file_list_get ()
+{
+  return a_babel_file_list;
+}
+
+/**
+ * a_babel_device_list_get:
+ *
+ * Returns: String list of babel devices. Maybe NULL.
+ */
+GList *a_babel_device_list_get ()
+{
+  return a_babel_device_list;
 }

@@ -108,11 +108,11 @@ static void datasource_url_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
 		if ( a_settings_get_string ( VIK_SETTINGS_URL_FILE_DL_TYPE, &type ) ) {
 			// Use setting
 			if ( type )
-				g_list_foreach (a_babel_file_list, find_type, type);
+				g_list_foreach ( a_babel_file_list_get(), find_type, type );
 		}
 		else {
 			// Default to GPX if possible
-			g_list_foreach (a_babel_file_list, find_type, "gpx");
+			g_list_foreach ( a_babel_file_list_get(), find_type, "gpx" );
 		}
 		g_free ( type );
 		// If not found set it to the first entry, otherwise use the entry
@@ -121,7 +121,7 @@ static void datasource_url_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
 
 	if ( a_babel_available() ) {
 		widgets->type = vik_combo_box_text_new ();
-		g_list_foreach (a_babel_file_list, fill_combo_box, widgets->type);
+		g_list_foreach ( a_babel_file_list_get(), fill_combo_box, widgets->type );
 		gtk_combo_box_set_active (GTK_COMBO_BOX (widgets->type), last_type);
 	}
 	else {
@@ -148,8 +148,8 @@ static void datasource_url_get_process_options ( datasource_url_widgets_t *widge
 		last_type = gtk_combo_box_get_active ( GTK_COMBO_BOX (widgets->type) );
 
 	po->input_file_type = NULL; // Default to gpx
-	if ( a_babel_file_list )
-		po->input_file_type = g_strdup ( ((BabelFile*)g_list_nth_data (a_babel_file_list, last_type))->name );
+	if ( a_babel_file_list_get() )
+		po->input_file_type = g_strdup ( ((BabelFile*)g_list_nth_data(a_babel_file_list_get(), last_type))->name );
 
 	po->url = g_strdup ( value );
 
