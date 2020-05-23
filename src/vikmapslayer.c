@@ -129,7 +129,7 @@ static VikLayerParamData alpha_default ( void ) { return VIK_LPD_UINT ( 255 ); }
 static VikLayerParamData mapzoom_default ( void ) { return VIK_LPD_UINT ( 0 ); }
 
 static gchar *cache_types[] = { "Viking", N_("OSM"), NULL };
-static VikMapsCacheLayout cache_layout_default_value = VIK_MAPS_CACHE_LAYOUT_VIKING;
+static VikMapsCacheLayout cache_layout_default_value = VIK_MAPS_CACHE_LAYOUT_OSM;
 static VikLayerParamData cache_layout_default ( void ) { return VIK_LPD_UINT ( cache_layout_default_value ); }
 
 VikLayerParam maps_layer_params[] = {
