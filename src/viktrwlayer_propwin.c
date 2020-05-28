@@ -63,8 +63,7 @@ static const gdouble chunkst[] = {
 };
 
 // Local show settings to restore on dialog opening
-static gboolean show_dem      = TRUE;
-static gboolean show_elev_dem = FALSE;
+static gboolean show_dem[PGT_END] = { TRUE, FALSE, FALSE, FALSE, FALSE, FALSE };
  // Each is either Interpolated speed or GPS Speed
 static gboolean show_speed[PGT_END] = { TRUE, TRUE, TRUE, FALSE, FALSE };
 static gboolean main_show_dem = TRUE;
@@ -123,11 +122,10 @@ typedef struct _propwidgets {
   GtkWidget *w_cur_value1[PGT_END];
   GtkWidget *w_cur_value2[PGT_END];
   GtkWidget *w_cur_value3[PGT_END];
-  GtkWidget *w_show_dem;
+  GtkWidget *w_show_dem[PGT_END];
   GtkWidget *w_show_speed[PGT_END];
   gboolean  show_speed[PGT_END];
-  GtkWidget *w_show_elev_dem;
-  gboolean  show_dem;
+  gboolean  show_dem[PGT_END];
   gdouble   track_length;
   gdouble   track_length_inc_gaps;
   PropSaved graph_saved_img[PGT_END];
@@ -469,7 +467,7 @@ static gboolean menu_split_at_marker_cb ( PropWidgets *widgets )
 
 static gboolean menu_show_dem_cb ( PropWidgets *widgets )
 {
-  widgets->show_dem = !widgets->show_dem;
+  widgets->show_dem[PGT_ELEVATION_DISTANCE] = !widgets->show_dem[PGT_ELEVATION_DISTANCE];
   // Force redraw
   draw_all_graphs ( GTK_WIDGET(widgets->graphs), widgets, TRUE );
   return FALSE;
@@ -650,7 +648,7 @@ static void graph_click_menu_popup ( PropWidgets *widgets, VikPropWinGraphType_t
   //  otherwise the callback may be invoked when we set the value!
   if ( graph_type == PGT_ELEVATION_DISTANCE ) {
     GtkWidget *id = gtk_check_menu_item_new_with_mnemonic ( _("_DEM") );
-    gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(id), widgets->show_dem );
+    gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(id), widgets->show_dem[PGT_ELEVATION_DISTANCE] );
     g_signal_connect_swapped ( G_OBJECT(id), "toggled", G_CALLBACK(menu_show_dem_cb), widgets );
     gtk_menu_shell_append ( GTK_MENU_SHELL(show_submenu), id );
     gtk_widget_set_sensitive ( id, a_dems_overlaps_bbox (widgets->tr->bbox) );
@@ -1416,7 +1414,7 @@ static void draw_dem_gps_speed ( PropWidgets *widgets, GtkWidget *window, GdkPix
                             widgets->profile_width,
                             widgets->profile_height,
                             MARGIN_X,
-                            widgets->show_dem,
+                            widgets->show_dem[PGT_ELEVATION_DISTANCE],
                             widgets->show_speed[PGT_ELEVATION_DISTANCE] );
     
   g_object_unref ( G_OBJECT(dem_alt_gc) );
@@ -1447,7 +1445,7 @@ static void evaluate_speeds ( PropWidgets *widgets )
 static void draw_ed_extra ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
 {
   PropWidgets *widgets = (PropWidgets*)ptr;
-  if ( widgets->show_dem || widgets->show_speed[pwgt] ) {
+  if ( widgets->show_dem[pwgt] || widgets->show_speed[pwgt] ) {
     if ( !widgets->speeds_evaluated )
       evaluate_speeds ( widgets );
     draw_dem_gps_speed ( widgets, window, pix );
@@ -1478,20 +1476,10 @@ static void draw_gps_speed_by_dist ( PropWidgets *widgets, GtkWidget *window, Gd
   g_object_unref ( G_OBJECT(gc) );
 }
 
-static void draw_grad_extra ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
+static void draw_gps_speed_extra ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
 {
   PropWidgets *widgets = (PropWidgets*)ptr;
-  if ( gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_speed[pwgt])) ) {
-    if ( !widgets->speeds_evaluated )
-      evaluate_speeds ( widgets );
-    draw_gps_speed_by_dist ( widgets, window, pix );
-  }
-}
-
-static void draw_sd_gps_speed_extra ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
-{
-  PropWidgets *widgets = (PropWidgets*)ptr;
-  if ( gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON(widgets->w_show_speed[pwgt])) ) {
+  if ( widgets->show_speed[pwgt] ) {
     if ( !widgets->speeds_evaluated )
       evaluate_speeds ( widgets );
     draw_gps_speed_by_dist ( widgets, window, pix );
@@ -1515,8 +1503,11 @@ static void draw_speed_indicator ( PropWidgets *widgets, GtkWidget *window, GdkP
   g_object_unref ( G_OBJECT(speed_gc) );
 }
 
-static void draw_gps_speed_by_time ( PropWidgets *widgets, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
+static void draw_gps_speed_by_time ( PropWidgets *widgets, GtkWidget *window, GdkPixmap *pix )
 {
+  // Use speed time graph for determining pixel positions,
+  //  although the drawing is put on whatever the pixmap is passed in
+  VikPropWinGraphType_t pwgt = PGT_SPEED_TIME;
   GdkGC *gps_speed_gc = gdk_gc_new ( gtk_widget_get_window(window) );
   GdkColor color;
   gdk_color_parse ( "red", &color );
@@ -1548,7 +1539,9 @@ static void draw_vt_gps_speed_extra ( gpointer ptr, GtkWidget *window, GdkPixmap
 {
   PropWidgets *widgets = (PropWidgets*)ptr;
   if ( widgets->show_speed[pwgt] ) {
-    draw_gps_speed_by_time ( widgets, window, pix, pwgt );
+    if ( !widgets->speeds_evaluated )
+      evaluate_speeds ( widgets );
+    draw_gps_speed_by_time ( widgets, window, pix );
   }
 }
 
@@ -1655,17 +1648,16 @@ static void draw_it ( GtkWidget *image, VikTrack *trk, PropWidgets *widgets, Gtk
 static void draw_dt_extra ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
 {
   PropWidgets *widgets = (PropWidgets*)ptr;
-  if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_speed[pwgt])) ) {
+  if ( widgets->show_speed[pwgt] ) {
     if ( !widgets->speeds_evaluated )
       evaluate_speeds ( widgets );
     draw_speed_indicator ( widgets, window, pix );
   }
 }
 
+// ATM Only works for PGT_ELEVATION_TIME
 static void draw_dem_by_time ( PropWidgets *widgets, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
 {
-  guint i;
-
   GdkColor color;
   GdkGC *dem_alt_gc = gdk_gc_new ( gtk_widget_get_window(window) );
   gdk_color_parse ( "green", &color );
@@ -1675,8 +1667,10 @@ static void draw_dem_by_time ( PropWidgets *widgets, GtkWidget *window, GdkPixma
   const gdouble chunk = chunks[widgets->ci[pwgt]];
   const guint achunk = chunk*LINES;
   const gdouble mina = widgets->draw_min[pwgt];
+  if ( achunk == 0 )
+    return;
 
-  for ( i = 0; i < widgets->profile_width; i++ ) {
+  for ( guint i = 0; i < widgets->profile_width; i++ ) {
     // This could be slow doing this each time...
     VikTrackpoint *tp = vik_track_get_closest_tp_by_percentage_time ( widgets->tr, ((gdouble)i/(gdouble)widgets->profile_width), NULL );
     if ( tp ) {
@@ -1699,16 +1693,29 @@ static void draw_dem_by_time ( PropWidgets *widgets, GtkWidget *window, GdkPixma
   g_object_unref ( G_OBJECT(dem_alt_gc) );
 }
 
-static void draw_et_extra ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
+static void draw_extra_dem_and_speed ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
 {
   PropWidgets *widgets = (PropWidgets*)ptr;
-  if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_elev_dem)) ) {
-    draw_dem_by_time ( widgets, window, pix, PGT_SPEED_TIME ); // Yes use scale from different graph
-  }
-  if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widgets->w_show_speed[pwgt])) ) {
+  if ( widgets->show_dem[pwgt] )
+    draw_dem_by_time ( widgets, window, pix, PGT_ELEVATION_TIME );
+
+  if ( widgets->show_speed[pwgt] ) {
     if ( !widgets->speeds_evaluated )
       evaluate_speeds ( widgets );
     draw_speed_indicator ( widgets, window, pix );
+  }
+}
+
+static void draw_extra_dem_and_gps_speed ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
+{
+  PropWidgets *widgets = (PropWidgets*)ptr;
+  if ( widgets->show_dem[pwgt] )
+    draw_dem_by_time ( widgets, window, pix, PGT_ELEVATION_TIME );
+
+  if ( widgets->show_speed[pwgt] ) {
+    if ( !widgets->speeds_evaluated )
+      evaluate_speeds ( widgets );
+    draw_gps_speed_by_time ( widgets, window, pix );
   }
 }
 
@@ -1823,9 +1830,9 @@ static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, P
     return FALSE;
 
   // These widgets are only on the dialog
-  if ( widgets->w_show_dem )
-    widgets->show_dem = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dem) );
   for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ ) {
+    if ( widgets->w_show_dem[pwgt] )
+      widgets->show_dem[pwgt] = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dem[pwgt]) );
     if ( widgets->w_show_speed[pwgt] )
       widgets->show_speed[pwgt] = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_speed[pwgt]) );
   }
@@ -1887,7 +1894,7 @@ GtkWidget *vik_trw_layer_create_gradient ( GtkWidget *window, PropWidgets *widge
   widgets->make_map[pwgt] = vik_track_make_gradient_map;
   widgets->convert_values[pwgt] = NULL;
   widgets->get_y_text[pwgt] = pct_y_text;
-  widgets->draw_extra[pwgt] = draw_grad_extra;
+  widgets->draw_extra[pwgt] = draw_gps_speed_extra;
   widgets->button_update[pwgt] = update_gradient_buttons;
   return create_event_box ( window, widgets, pwgt );
 }
@@ -1939,7 +1946,7 @@ GtkWidget *vik_trw_layer_create_etdiag ( GtkWidget *window, PropWidgets *widgets
   widgets->make_map[pwgt] = vik_track_make_elevation_time_map;
   widgets->convert_values[pwgt] = elev_convert;
   widgets->get_y_text[pwgt] = elev_y_text;
-  widgets->draw_extra[pwgt] = draw_et_extra;
+  widgets->draw_extra[pwgt] = draw_extra_dem_and_speed;
   widgets->button_update[pwgt] = update_elevation_time_buttons;
   return create_event_box ( window, widgets, pwgt );
 }
@@ -1956,7 +1963,7 @@ GtkWidget *vik_trw_layer_create_sddiag ( GtkWidget *window, PropWidgets *widgets
   widgets->make_map[pwgt] = vik_track_make_speed_dist_map;
   widgets->convert_values[pwgt] = speed_convert;
   widgets->get_y_text[pwgt] = speed_y_text;
-  widgets->draw_extra[pwgt] = draw_sd_gps_speed_extra;
+  widgets->draw_extra[pwgt] = draw_gps_speed_extra;
   widgets->button_update[pwgt] = update_speed_distance_buttons;
   return create_event_box ( window, widgets, pwgt );
 }
@@ -1971,12 +1978,9 @@ static void save_values ( PropWidgets *widgets )
   a_settings_set_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, widgets->profile_height );
 
   // Just for this session ATM
-  if ( widgets->w_show_dem )
-    show_dem                = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dem) );
-  if ( widgets->w_show_elev_dem )
-    show_elev_dem           = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_elev_dem) );
-
   for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ ) {
+    if ( widgets->w_show_dem[pwgt] )
+      show_dem[pwgt] = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dem[pwgt]) );
     if ( widgets->w_show_speed[pwgt] )
       show_speed[pwgt] = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_speed[pwgt]) );
   }
@@ -2132,10 +2136,9 @@ static void checkbutton_toggle_cb ( GtkToggleButton *togglebutton, PropWidgets *
 {
   // Even though not resized, we'll pretend it is -
   //  as this invalidates the saved images (since the image may have changed)
-  if ( widgets->w_show_dem )
-    widgets->show_dem = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dem) );
-
   for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ ) {
+    if ( widgets->w_show_dem[pwgt] )
+      widgets->show_dem[pwgt] = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dem[pwgt]) );
     if ( widgets->w_show_speed[pwgt] )
       widgets->show_speed[pwgt] = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_speed[pwgt]) );
   }
@@ -2150,14 +2153,16 @@ static GtkWidget *create_graph_page ( PropWidgets *widgets,
 				      const gchar *markup,
 				      const gchar *markup2,
 				      const gchar *markup3,
-				      GtkWidget *checkbutton1,
-				      gboolean checkbutton1_default,
+				      gboolean checkbutton1,
+                                      gboolean DEM_available,
                                       const gchar *show_speed_mnemonic )
 {
   GtkWidget *graph = widgets->event_box[pwgt];
   // Every graph has two value labels
   widgets->w_cur_value1[pwgt] = ui_label_new_selectable ( _("No Data") );
   widgets->w_cur_value2[pwgt] = ui_label_new_selectable ( _("No Data") );
+  gtk_widget_set_can_focus ( widgets->w_cur_value1[pwgt], FALSE ); // Don't let notebook autofocus on it
+  gtk_widget_set_can_focus ( widgets->w_cur_value2[pwgt], FALSE ); // Don't let notebook autofocus on it
   GtkWidget *hbox = gtk_hbox_new ( FALSE, 10 );
   GtkWidget *vbox = gtk_vbox_new ( FALSE, 10 );
   GtkWidget *label = gtk_label_new (NULL);
@@ -2173,6 +2178,7 @@ static GtkWidget *create_graph_page ( PropWidgets *widgets,
     GtkWidget *label3 = gtk_label_new (NULL);
     gtk_label_set_markup ( GTK_LABEL(label3), markup3 );
     widgets->w_cur_value3[pwgt] = ui_label_new_selectable(_("No Data"));
+    gtk_widget_set_can_focus ( widgets->w_cur_value3[pwgt], FALSE ); // Don't let notebook autofocus on it
     gtk_box_pack_start (GTK_BOX(hbox), label3, FALSE, FALSE, 0);
     gtk_box_pack_start (GTK_BOX(hbox), widgets->w_cur_value3[pwgt], FALSE, FALSE, 0);
   }
@@ -2182,8 +2188,10 @@ static GtkWidget *create_graph_page ( PropWidgets *widgets,
     gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->w_show_speed[pwgt]), show_speed[pwgt] );
   }
   if (checkbutton1) {
-    gtk_box_pack_end (GTK_BOX(hbox), checkbutton1, FALSE, FALSE, 0);
-    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(checkbutton1), checkbutton1_default);
+    widgets->w_show_dem[pwgt] = gtk_check_button_new_with_mnemonic ( _("Show D_EM") );
+    gtk_widget_set_sensitive ( widgets->w_show_dem[pwgt], DEM_available );
+    gtk_box_pack_end (GTK_BOX(hbox), widgets->w_show_dem[pwgt], FALSE, FALSE, 0);
+    gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dem[pwgt]), show_dem[pwgt] );
   }
   gtk_box_pack_start (GTK_BOX(vbox), hbox, FALSE, FALSE, 0);
 
@@ -2850,15 +2858,12 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
       gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_splits_tables(tr), gtk_label_new(_("Splits")));
 
   if ( widgets->event_box[PGT_ELEVATION_DISTANCE] ) {
-    widgets->w_show_dem = gtk_check_button_new_with_mnemonic(_("Show D_EM"));
-    gtk_widget_set_sensitive ( widgets->w_show_dem, DEM_available );
     GtkWidget *page = create_graph_page ( widgets, PGT_ELEVATION_DISTANCE,
                                           _("<b>Track Distance:</b>"),
                                           _("<b>Track Height:</b>"),
                                           NULL,
-                                          widgets->w_show_dem, show_dem,
+                                          TRUE, DEM_available,
                                           _("Show _GPS Speed") );
-    g_signal_connect (widgets->w_show_dem, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-distance")));
   }
 
@@ -2867,7 +2872,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                                           _("<b>Track Distance:</b>"),
                                           _("<b>Track Gradient:</b>"),
                                           NULL,
-                                          NULL, FALSE,
+                                          FALSE, FALSE,
                                           _("Show _GPS Speed") );
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Gradient-distance")));
   }
@@ -2877,7 +2882,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                                           _("<b>Track Time:</b>"),
                                           _("<b>Track Speed:</b>"),
                                           _("<b>Time/Date:</b>"),
-                                          NULL, FALSE,
+                                          FALSE, FALSE,
                                           _("Show _GPS Speed") );
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-time")));
   }
@@ -2887,21 +2892,18 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                                           _("<b>Track Distance:</b>"),
                                           _("<b>Track Time:</b>"),
                                           _("<b>Time/Date:</b>"),
-                                         NULL, FALSE,
+                                         FALSE, FALSE,
                                          _("Show S_peed") );
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Distance-time")));
   }
 
   if ( widgets->event_box[PGT_ELEVATION_TIME] ) {
-    widgets->w_show_elev_dem = gtk_check_button_new_with_mnemonic(_("Show D_EM"));
-    gtk_widget_set_sensitive ( widgets->w_show_elev_dem, DEM_available );
     GtkWidget *page = create_graph_page ( widgets, PGT_ELEVATION_TIME,
                                           _("<b>Track Time:</b>"),
                                           _("<b>Track Height:</b>"),
                                           _("<b>Time/Date:</b>"),
-                                          widgets->w_show_elev_dem, show_elev_dem,
+                                          TRUE, DEM_available,
                                           _("Show S_peed") );
-    g_signal_connect (widgets->w_show_elev_dem, "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets);
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-time")));
   }
 
@@ -2910,15 +2912,18 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                                           _("<b>Track Distance:</b>"),
                                           _("<b>Track Speed:</b>"),
                                           NULL,
-                                          NULL, FALSE,
+                                          FALSE, FALSE,
                                          _("Show _GPS Speed") );
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-distance")));
   }
 
-  // All speed checkboxes goto the same callback
-  for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ )
+  // All checkboxes goto the same callback
+  for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ ) {
+    if ( widgets->w_show_dem[pwgt] )
+      g_signal_connect ( widgets->w_show_dem[pwgt], "toggled", G_CALLBACK (checkbutton_toggle_cb), widgets );
     if ( widgets->w_show_speed[pwgt] )
       g_signal_connect ( widgets->w_show_speed[pwgt], "toggled", G_CALLBACK(checkbutton_toggle_cb), widgets );
+  }
 
   gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), graphs, FALSE, FALSE, 0);
 
@@ -3239,7 +3244,7 @@ gpointer vik_trw_layer_propwin_main ( GtkWindow *parent,
   widgets->profile_height = 100;
 
   widgets->track_length_inc_gaps = vik_track_get_length_including_gaps ( tr );
-  widgets->show_dem = main_show_dem;
+  widgets->show_dem[PGT_ELEVATION_DISTANCE] = main_show_dem;
   widgets->show_speed[PGT_SPEED_TIME] = main_show_gps_speed;
 
   GtkWidget *graphs = gtk_notebook_new ( );
@@ -3302,7 +3307,7 @@ void vik_trw_layer_propwin_main_close ( gpointer self )
   PropWidgets *widgets = (PropWidgets*)self;
 
   // Specific save values for embedded graphs (different from dialog method)
-  main_show_dem = widgets->show_dem;
+  main_show_dem = widgets->show_dem[PGT_ELEVATION_DISTANCE];
   main_show_gps_speed = widgets->show_speed[PGT_SPEED_TIME];
 
   gint page = gtk_notebook_get_current_page ( GTK_NOTEBOOK(widgets->graphs) );
