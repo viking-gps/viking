@@ -65,7 +65,7 @@ static gboolean gpx_export_simplify_layer ( VikTrwLayer *vtl, const gchar *fn, V
   if ( trk )
     got_route = trk->is_route;
 
-  if ( !got_route ) {
+  if ( got_route ) {
     if ( g_hash_table_size (vik_trw_layer_get_routes(vtl)) ) {
       gint tmp;
       if ( a_settings_get_integer ( VIK_SETTINGS_EXPORT_DEVICE_SIMPLIFY_ROUTEPOINT_LIMIT, &tmp ) )
