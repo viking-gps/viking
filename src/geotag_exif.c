@@ -779,7 +779,12 @@ gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble al
 	if ( gexiv2_metadata_open_path ( gemd, filename, NULL ) ) {
 		struct LatLon ll;
 		vik_coord_to_latlon ( &coord, &ll );
+		// Use update method if available
+#if GEXIV2_CHECK_VERSION(0,12,1)
+		if ( ! gexiv2_metadata_update_gps_info ( gemd, ll.lon, ll.lat, alt ) ) {
+#else
 		if ( ! gexiv2_metadata_set_gps_info ( gemd, ll.lon, ll.lat, alt ) ) {
+#endif
 			result = 1; // Failed
 		}
 		else {
