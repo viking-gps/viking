@@ -201,6 +201,10 @@ typedef enum {
 
 vik_kml_export_units_t a_vik_get_kml_export_units ( );
 
+gboolean a_vik_get_kml_export_track ( );
+
+gboolean a_vik_get_kml_export_points ( );
+
 typedef enum {
   VIK_GPX_EXPORT_TRK_SORT_ALPHA,
   VIK_GPX_EXPORT_TRK_SORT_TIME,

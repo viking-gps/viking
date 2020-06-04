@@ -896,6 +896,21 @@ gboolean a_file_check_ext ( const gchar *filename, const gchar *fileext )
   return FALSE;
 }
 
+gboolean kml_export ( VikTrwLayer *vtl, const gchar *filename )
+{
+  gchar *ustr = NULL;
+  switch ( a_vik_get_kml_export_units () ) {
+  case VIK_KML_EXPORT_UNITS_STATUTE:  ustr = ""; break;
+  case VIK_KML_EXPORT_UNITS_NAUTICAL: ustr = ",units=n"; break;
+  default: ustr = ",units=m"; break;
+  }
+  gchar *babelargs = g_strdup_printf ("-o kml%s,track=%d,points=%d",
+                                      ustr, a_vik_get_kml_export_track(), a_vik_get_kml_export_points() );
+  gboolean ans = a_babel_convert_to ( vtl, NULL, babelargs, filename, NULL, NULL );
+  g_free ( babelargs );
+  return ans;
+}
+
 /**
  * a_file_export:
  * @vtl: The TrackWaypoint to export data from
@@ -943,20 +958,9 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
           result = a_geojson_write_file ( vtl, f );
           break;
         case FILE_TYPE_KML:
-	  fclose ( f );
-	  switch ( a_vik_get_kml_export_units () ) {
-	    case VIK_KML_EXPORT_UNITS_STATUTE:
-	      return a_babel_convert_to ( vtl, NULL, "-o kml", filename, NULL, NULL );
-	      break;
-	    case VIK_KML_EXPORT_UNITS_NAUTICAL:
-	      return a_babel_convert_to ( vtl, NULL, "-o kml,units=n", filename, NULL, NULL );
-	      break;
-	    default:
-	      // VIK_KML_EXPORT_UNITS_METRIC:
-	      return a_babel_convert_to ( vtl, NULL, "-o kml,units=m", filename, NULL, NULL );
-	      break;
-	  }
-	  break;
+          fclose ( f );
+          return kml_export ( vtl, filename );
+          break;
         default:
           g_critical("Houston, we've had a problem. file_type=%d", file_type);
       }

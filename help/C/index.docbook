@@ -991,6 +991,7 @@ The layer (all tracks, routes and waypoints) can be exported to following file f
 	</listitem>
 	<listitem>
 		<para>Any GPSBabel <ulink url="https://www.gpsbabel.org/capabilities.html">File Formats</ulink></para>
+		<para>If necessary you can specify any additional format save options as required.</para>
 	</listitem>
 	<listitem>
 		<para>GeoJSON. Via the program <ulink url="https://github.com/mapbox/togeojson">togeojson</ulink></para>
@@ -2863,6 +2864,13 @@ Generally if you have a system with lots of memory it's recommended to increase 
 <section id="prefs_external" xreflabel="Export/External Preferences"><title>Export/External</title>
 <section><title>KML Export Units</title>
 <para>Allows setting the units used when saved as the KML file type, such as Metric or Statue units</para>
+</section>
+<section><title>KML Export Track</title>
+<para>Controls the whether the &lt;Track&gt; tag is used in the KML file. If not on then tracks are only saved as LineStrings.</para>
+</section>
+<section><title>KML Export Points</title>
+<para>Controls the whether placemarks are created for every track or route point.</para>
+<tip><para>If more control is required over the export then use <menuchoice><guimenu>Export Layer</guimenu><guisubmenu>Export via GPSBabel</guisubmenu></menuchoice> to manually specify the save options</para></tip>
 </section>
 <section><title>GPX Track Order</title>
 <para>

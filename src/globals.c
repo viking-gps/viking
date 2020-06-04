@@ -109,6 +109,10 @@ static VikLayerParamData img_viewer_default ( void ) {
 
 static VikLayerParam io_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "kml_export_units", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("KML File Export Units:"), VIK_LAYER_WIDGET_COMBOBOX, params_kml_export_units, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "kml_export_track", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("KML File Export Track:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Controls whether the <Track> tag is created"), vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "kml_export_points", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("KML File Export Points:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Controls whether placemarks are created for every trackpoint"), vik_lpd_false_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_track_sort", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("GPX Track Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_gpx_export_trk_sort, NULL, NULL, trk_sort_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_wpt_sym_names", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("GPX Waypoint Symbols:"), VIK_LAYER_WIDGET_COMBOBOX, params_gpx_export_wpt_symbols, NULL,
       N_("Save GPX Waypoint Symbol names in the specified case. May be useful for compatibility with various devices"), NULL, NULL, NULL },
@@ -278,6 +282,16 @@ vik_kml_export_units_t a_vik_get_kml_export_units ( )
   vik_kml_export_units_t units;
   units = a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "kml_export_units")->u;
   return units;
+}
+
+gboolean a_vik_get_kml_export_track ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "kml_export_track")->b;
+}
+
+gboolean a_vik_get_kml_export_points ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "kml_export_points")->b;
 }
 
 vik_gpx_export_trk_sort_t a_vik_get_gpx_export_trk_sort ( )
