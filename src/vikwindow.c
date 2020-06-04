@@ -190,6 +190,10 @@ struct _VikWindow {
   gboolean show_side_panel_calendar;
 
   gboolean select_move;
+  gboolean select_double_click;
+  gboolean select_pan;
+  guint deselect_id;
+  gboolean pan_move_middle;
   gboolean pan_move;
   gint pan_x, pan_y;
   gint delayed_pan_x, delayed_pan_y; // Temporary storage
@@ -818,11 +822,11 @@ static void default_tool_enable ( VikWindow *vw )
       vw->current_tool = TOOL_SELECT;
     else {
       g_warning ("%s: Couldn't understand '%s' for the default tool", __FUNCTION__, tool_str);
-      vw->current_tool = TOOL_PAN;
+      vw->current_tool = TOOL_SELECT;
     }
   }
   else
-    vw->current_tool = TOOL_PAN;
+    vw->current_tool = TOOL_SELECT;
 
   switch ( vw->current_tool ) {
   case TOOL_ZOOM:
@@ -875,8 +879,11 @@ static void vik_window_init ( VikWindow *vw )
   vw->modified = FALSE;
   vw->only_updating_coord_mode_ui = FALSE;
 
+  vw->select_double_click = FALSE;
   vw->select_move = FALSE;
-  vw->pan_move = FALSE; 
+  vw->select_pan = FALSE;
+  vw->pan_move_middle = FALSE;
+  vw->pan_move = FALSE;
   vw->pan_x = vw->pan_y = -1;
   vw->single_click_pending = FALSE;
 
@@ -1459,6 +1466,7 @@ static void draw_click (VikWindow *vw, GdkEventButton *event)
     if ( vw->vt->tools[vw->vt->active_tool].ti.pan_handler )
       // Tool still may need to do something (such as disable something)
       toolbox_click(vw->vt, event);
+    vw->pan_move_middle = TRUE;
     vik_window_pan_click ( vw, event );
   } 
   else {
@@ -1549,7 +1557,9 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   lon = NULL;
   vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_POSITION, pointer_buf );
 
-  vik_window_pan_move ( vw, event );
+  // Middle button moving only
+  if ( vw->pan_move_middle )
+    vik_window_pan_move ( vw, event );
 
   /* This is recommended by the GTK+ documentation, but does not work properly.
    * Use deprecated way until GTK+ gets a solution for correct motion hint handling:
@@ -1598,7 +1608,7 @@ static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
       g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &dct );
       // Give chance for a double click to occur
       gint timer = g_value_get_int ( &dct ) + 50;
-      g_timeout_add ( timer, (GSourceFunc)vik_window_pan_timeout, vw );
+      (void)g_timeout_add ( timer, (GSourceFunc)vik_window_pan_timeout, vw );
       do_draw = FALSE;
     }
     else {
@@ -1606,8 +1616,8 @@ static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
     }
   }
   else {
-     vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
-                                      vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
+    vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
+                                     vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
   }
 
   vw->pan_move = FALSE;
@@ -1624,6 +1634,7 @@ static void draw_release ( VikWindow *vw, GdkEventButton *event )
     if ( vw->vt->tools[vw->vt->active_tool].ti.pan_handler )
       // Tool still may need to do something (such as reenable something)
       toolbox_release(vw->vt, event);
+    vw->pan_move_middle = FALSE;
     vik_window_pan_release ( vw, event );
   }
   else {
@@ -2525,9 +2536,34 @@ static void click_layer_selected (VikLayer *vl, clicker *ck)
 #define VIK_MOVE_MODIFIER GDK_MOD5_MASK
 #endif
 
+static gboolean vik_window_deselect_timeout (VikWindow *vw)
+{
+  GtkTreeIter iter;
+  VikTreeview *vtv = vik_layers_panel_get_treeview ( vw->viking_vlp );
+  if ( vik_treeview_get_selected_iter ( vtv, &iter ) ) {
+    // Only clear if selected thing is a TrackWaypoint layer or a sublayer
+    gint type = vik_treeview_item_get_type ( vtv, &iter );
+    if ( type == VIK_TREEVIEW_TYPE_SUBLAYER ||
+         VIK_LAYER(vik_treeview_item_get_pointer ( vtv, &iter ))->type == VIK_LAYER_TRW ) {
+
+      vik_treeview_item_unselect ( vtv, &iter );
+      if ( vik_window_clear_selected(vw) )
+        draw_update ( vw );
+    }
+  }
+  vw->deselect_id = 0;
+  return FALSE;
+}
+
 static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *event, tool_ed_t *t)
 {
+  t->vw->select_double_click = (event->type == GDK_2BUTTON_PRESS);
+  // Don't process these any further
+  if ( event->type == GDK_2BUTTON_PRESS || event->type == GDK_3BUTTON_PRESS )
+      return VIK_LAYER_TOOL_ACK;
+
   t->vw->select_move = FALSE;
+  t->vw->select_pan = FALSE;
   /* Only allow selection on primary button */
   if ( event->button == 1 ) {
 
@@ -2551,16 +2587,22 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
         VikTreeview *vtv = vik_layers_panel_get_treeview ( t->vw->viking_vlp );
 
         if ( vik_treeview_get_selected_iter ( vtv, &iter ) ) {
-          // Only clear if selected thing is a TrackWaypoint layer or a sublayer
-          gint type = vik_treeview_item_get_type ( vtv, &iter );
-          if ( type == VIK_TREEVIEW_TYPE_SUBLAYER ||
-            VIK_LAYER(vik_treeview_item_get_pointer ( vtv, &iter ))->type == VIK_LAYER_TRW ) {
-   
-            vik_treeview_item_unselect ( vtv, &iter );
-            if ( vik_window_clear_selected ( t->vw ) )
-              draw_update ( t->vw );
+          // Only have one pending deselection timeout
+          if ( !t->vw->deselect_id ) {
+            // Best if slightly longer than the double click time,
+            //  otherwise timeout would get removed, only to be recreated again by the second GTK_BUTTON_PRESS
+            GtkSettings *gs = gtk_widget_get_settings ( GTK_WIDGET(t->vw) );
+            GValue gto = G_VALUE_INIT;
+            g_value_init ( &gto, G_TYPE_INT );
+            g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &gto );
+            gint timer = g_value_get_int ( &gto ) + 50;
+            t->vw->deselect_id = g_timeout_add ( timer, (GSourceFunc)vik_window_deselect_timeout, t->vw );
           }
         }
+
+        // Go into pan mode as nothing found
+        t->vw->select_pan = TRUE;
+        vik_window_pan_click ( t->vw, event );
       }
       else {
         // Something found - so enable movement
@@ -2589,8 +2631,14 @@ static VikLayerToolFuncStatus selecttool_move (VikLayer *vl, GdkEventMotion *eve
   }
   else
     // Optional Panning
-    if ( event->state & VIK_MOVE_MODIFIER )
+    if ( t->vw->select_pan || event->state & VIK_MOVE_MODIFIER ) {
+      // Abort deselection
+      if ( t->vw->deselect_id ) {
+        g_source_remove ( t->vw->deselect_id );
+        t->vw->deselect_id = 0;
+      }
       vik_window_pan_move ( t->vw, event );
+    }
 
   return VIK_LAYER_TOOL_ACK;
 }
@@ -2602,12 +2650,25 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
     if ( t->vtl )
       if ( vik_layer_get_interface(VIK_LAYER_TRW)->select_release )
         (void)vik_layer_get_interface(VIK_LAYER_TRW)->select_release ( (VikLayer*)t->vtl, event, t->vvp, t );
+  } else {
+    if ( event->button == 1 && event->state & VIK_MOVE_MODIFIER )
+      vik_window_pan_release ( t->vw, event );
+    else {
+      if ( t->vw->select_double_click ) {
+        // Turn off otherwise pending deselection - as now overridden by the double click
+        if ( t->vw->deselect_id ) {
+          g_source_remove ( t->vw->deselect_id );
+          t->vw->deselect_id = 0;
+        }
+        vik_viewport_set_center_screen ( t->vw->viking_vvp, t->vw->pan_x, t->vw->pan_y );
+        draw_update ( t->vw );
+        t->vw->select_double_click = FALSE;
+      }
+    }
   }
 
-  if ( event->button == 1 && (event->state & VIK_MOVE_MODIFIER) )
-      vik_window_pan_release ( t->vw, event );
-
   // Force pan off incase it was on
+  t->vw->select_pan = FALSE;
   t->vw->pan_move = FALSE;
   t->vw->pan_x = t->vw->pan_y = -1;
 

@@ -239,6 +239,10 @@ The main &appname; area where the layer data is drawn, is called the <emphasis r
 <para>
 This will typically include a <xref linkend="Maps"/> layer with a default map created as standard.
 </para>
+<para>
+Using the mouse (and keyboard) you can move and zoom the viewport or select items on view.
+See the <xref linkend="tools"/> section for further details about different modes and the various control options supported.
+</para>
 </section>
 <section><title>Track Graphs</title>
 <para>
@@ -2406,7 +2410,7 @@ This layer is allows drawing of grid lines on the viewport.
 
 <section id="tools" xreflabel="Tools"><title>Tools</title>
 <para>
-&appname;'s mouse actions on the viewport are controlled by which tool is active. Only one tool can be active at a time. The default mode is pan. You can return to the default mode by pressing <keycap>Escape</keycap>.
+&appname;'s mouse actions on the viewport are controlled by which tool is active. Only one tool can be active at a time. The default mode is <emphasis>Select</emphasis>. You can return to the default mode by pressing <keycap>Escape</keycap>. The default mode can be changed in <xref linkend="misc_settings"/>.
 </para>
 <para>
 You can use the scroll wheel, the middle-click, the middle-click+drag to zoom, center map at position and pan respectively no matter what tool you are using.
@@ -2429,17 +2433,46 @@ You can use the scroll wheel, the middle-click, the middle-click+drag to zoom, c
 <para>
 <keycap>Middle-click</keycap> and drag: pan
 </para>
+<para>
+Also see <xref linkend="prefs_advanced"/> for options that effect the scrolling behaviour.
+</para>
 
-<section><title>Pan</title>
+<section id="select" xreflabel="Select"><title>Select (Version1.9+)</title>
 <para>
 This is the default mode of operation for &appname;.
 </para>
+<para>
+This mode can be entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/select_18.png"/></guiicon>
+</para>
+<para>
+The select tool allows one to choose an item, discard the selection of an existing item or to move the viewport.
+To select an item (waypoint, track or route) left click on it (or reasonably near) in the viewpoint.
+ATM to select a track one must actually click on a trackpoint, which is also selected.
+To deselect an item simply left click away from any item.
+</para>
+<para>
+To move the viewport hold the left mouse button down whilst moving the mouse pointer around (as per the specific Pan mode).
+Also if <keycap>Right Alt</keycap> (or <trademark>Windows</trademark> <keycap>Left Alt</keycap>) is held down then the item selection/deselection is skipped and goes straight into pan mode; this may be useful if the item selection process is noticeably slow (and hence can be bypassed) or avoiding accidental deselection of the item of interest.
+</para>
+<para>
+Once an item (waypoint or trackpoint) is selected it can be moved. The item must be clicked on again in order to start moving the it, this is to prevent accidental movement of item in the initial selection.
+If <keycap>Ctrl</keycap> or <keycap>Shift</keycap> is held down at the same time, it will jump the item position to a nearby existing trackpoint or waypoint respectively.
+Note that whole tracks cannot be moved.
+</para>
+<para>
+Double clicking the left mouse button will center the map at that point.
+</para>
+<para>
+This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+S</keycap>
+</para>
+</section>
+
+<section><title>Pan</title>
 <para>
 This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/mover_22.png"/></guiicon>
 </para>
 <para>
 Pan moves the viewpoint. A single click centers the viewport at that point, whereas click and drag dynamically moves the view around.
-This is the default tool.
 </para>
 <para>
 This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+P</keycap>
@@ -2497,21 +2530,6 @@ The viewport label option is controlled by <xref linkend="prefs_advanced"/>.
 </itemizedlist>
 <para>
 This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+U</keycap>
-</para>
-</section>
-
-<section id="select" xreflabel="Select"><title>Version1.1+: Select</title>
-<para>
-This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/select_18.png"/></guiicon>
-</para>
-<para>
-The select tool allows one to choose any waypoint or track by clicking on it (or reasonably near) in the viewpoint.
-</para>
-<para>
-ATM to select a track one must actually click on a trackpoint, which is also selected.
-</para>
-<para>
-This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+S</keycap>
 </para>
 </section>
 
@@ -4176,7 +4194,7 @@ Accept: */*
 	    <para>background_max_threads_local=<emphasis>Number of CPUs</emphasis></para>
 	  </listitem>
 	  <listitem>
-	    <para>window_default_tool=Pan</para>
+	    <para>window_default_tool=Select</para>
 	    <para>Options are: Pan, Zoom, Ruler or Select</para>
 	  </listitem>
 	  <listitem>
