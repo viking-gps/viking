@@ -165,9 +165,7 @@ msgstr "Vai a UTM"
 
 #: ../src/dialog.c:114
 msgid "Northing:"
-msgstr ""
-"Copy text   \t\r\n"
-"Northing:"
+msgstr "Northing:"
 
 #: ../src/dialog.c:117
 msgid "Easting:"
