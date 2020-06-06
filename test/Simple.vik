@@ -12,6 +12,26 @@ drawscale=t
 drawcentermark=t
 drawhighlight=t
 
+~TopLayer Aggregate
+name=
+tac_on=f
+alpha=100
+color=#ffa500
+max_sqr_on=f
+max_sqr_alpha=100
+max_sqr_color=#800080
+contig_on=t
+contig_alpha=100
+contig_color=#90ee90
+cluster_on=f
+cluster_alpha=100
+cluster_color=#006400
+drawgrid=t
+tilearealevel=1
+hm_alpha=127
+hm_factor=10
+hm_style=0
+
 ~Layer Map
 name=Map
 mode=13
@@ -692,4 +712,6 @@ type="routepoint" latitude="50.784015465950226" longitude="-1.0854015350341797"
 type="routeend"
 ~EndLayerData
 ~EndLayer
+
+~EndTopLayer
 

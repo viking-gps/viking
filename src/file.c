@@ -190,8 +190,8 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp, const gch
       vik_viewport_get_draw_centermark(VIK_VIEWPORT(vp)) ? "t" : "f",
       vik_viewport_get_draw_highlight(VIK_VIEWPORT(vp)) ? "t" : "f" );
 
-  if ( ! VIK_LAYER(top)->visible )
-    fprintf ( f, "visible=f\n" );
+  fprintf ( f, "\n~TopLayer %s\n", vik_layer_get_interface(VIK_LAYER(top)->type)->fixed_layer_name );
+  write_layer_params_and_data ( VIK_LAYER(top), f, dirpath );
 
   while (stack && stack->data)
   {
@@ -223,6 +223,8 @@ static void file_write ( VikAggregateLayer *top, FILE *f, gpointer vp, const gch
       }
     }
   }
+
+  fprintf ( f, "~EndTopLayer\n\n" );
 /*
   get vikaggregatelayer's children (?)
   foreach write ALL params,
@@ -314,6 +316,15 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
       line++; len--;
       if ( *line == '\0' )
         continue;
+      else if ( str_starts_with ( line, "TopLayer ", 9, TRUE ) )
+      {
+        // No need to create the Top Layer, values replace the current
+        push(&stack);
+        stack->data = (gpointer)top;
+        params = vik_layer_get_interface(VIK_LAYER(top)->type)->params;
+        params_count = vik_layer_get_interface(VIK_LAYER(top)->type)->params_count;
+        continue;
+      }
       else if ( str_starts_with ( line, "Layer ", 6, TRUE ) )
       {
         if ( ! stack->data )
@@ -418,6 +429,11 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
           }
           continue;
         }
+      }
+      else if ( str_starts_with ( line, "EndTopLayer", 11, FALSE ) )
+      {
+        if ( stack )
+          pop(&stack);
       }
       else
       {
@@ -569,7 +585,9 @@ name=this
     vik_viewport_set_center_latlon ( VIK_VIEWPORT(vp), &ll, TRUE );
 
   if ( ( ! VIK_LAYER(top)->visible ) && VIK_LAYER(top)->realized )
-    vik_treeview_item_set_visible ( VIK_LAYER(top)->vt, &(VIK_LAYER(top)->iter), FALSE ); 
+    vik_treeview_item_set_visible ( VIK_LAYER(top)->vt, &(VIK_LAYER(top)->iter), FALSE );
+  if ( VIK_LAYER(top)->realized )
+    vik_treeview_item_set_name ( VIK_LAYER(top)->vt, &(VIK_LAYER(top)->iter), VIK_LAYER(top)->name );
 
   /* delete anything we've forgotten about -- should only happen when file ends before an EndLayer */
   g_hash_table_foreach ( string_lists, string_list_delete, NULL );

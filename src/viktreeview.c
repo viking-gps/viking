@@ -704,7 +704,7 @@ void vik_treeview_add_layer ( VikTreeview *vt, GtkTreeIter *parent_iter, GtkTree
     ITEM_PARENT_COLUMN, parent,
     ITEM_POINTER_COLUMN, item,
     ITEM_DATA_COLUMN, data,
-    EDITABLE_COLUMN, parent == NULL ? FALSE : TRUE,
+    EDITABLE_COLUMN, TRUE,
     ICON_COLUMN, layer_type >= 0 ? vt->layer_type_icons[layer_type] : NULL,
     ITEM_TIMESTAMP_COLUMN, timestamp,
     ITEM_NUMBER_COLUMN, 0,
