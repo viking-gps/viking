@@ -824,6 +824,10 @@ static gboolean track_graph_click_cb ( GtkWidget *event_box, GdkEventButton *eve
  */
 static guint blob_y_position ( guint ix, PropWidgets *widgets, VikPropWinGraphType_t pwgt )
 {
+  // Shouldn't really happen but might if deleted all points whilst graph shown
+  if ( !widgets->values[pwgt] )
+    return 0;
+
   gdouble value = widgets->values[pwgt][ix];
   gdouble draw_min = widgets->draw_min[pwgt];
   guint ci = widgets->ci[pwgt];
@@ -1143,8 +1147,8 @@ static void draw_dem_alt_speed_dist ( VikTrack *tr,
 
   gdouble dist = 0;
   gint h2 = height + MARGIN_Y; // Adjust height for x axis labelling offset
-  guint achunk = chunks[cia]*LINES;
-  guint schunk = chunks[cis]*LINES;
+  gdouble achunk = chunks[cia]*LINES;
+  gdouble schunk = chunks[cis]*LINES;
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
 
   for (iter = tr->trackpoints->next; iter; iter = iter->next) {
@@ -1821,7 +1825,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
           pc = tp_percentage_by_distance ( widgets->tr, widgets->marker_tp, widgets->track_length_inc_gaps );
 
         gdouble x_blob = -MARGIN_X - 1.0; // i.e. Don't draw unless we get a valid value
-        gint    y_blob = 0;
+        guint   y_blob = 0;
         if ( widgets->is_blob_drawn ) {
           if ( is_time_graph(pwgt) )
             pc_blob = tp_percentage_by_time ( widgets->tr, widgets->blob_tp );
@@ -3174,7 +3178,7 @@ void vik_trw_layer_propwin_main_draw_blob ( gpointer self, VikTrackpoint *trkpt 
   GtkWidget *image;
   PropSaved saved_img;
   gdouble x_blob = -MARGIN_X - 1.0; // i.e. Don't draw unless we get a valid value
-  gint    y_blob = 0;
+  guint   y_blob = 0;
 
   if ( page == widgets->event_box[PGT_ELEVATION_DISTANCE] ) {
     pc = tp_percentage_by_distance ( widgets->tr, widgets->marker_tp, widgets->track_length_inc_gaps );
