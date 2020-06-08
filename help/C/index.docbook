@@ -2360,6 +2360,30 @@ This opens a dialog to display various statistics about all tracks contained wit
   <graphic format="PNG" fileref="figures/Aggregate_statistics_years.png"/>
 </screenshot>
 </figure>
+<para>
+  Each column can be sorted by clicking on the relevant column header.
+</para>
+<para>
+  The right click menu offers an option to copy all the data as text in a CSV style format (using a tabbed separator).
+</para>
+<para>
+  Selecting a year will update the information in the Months tab.
+</para>
+<figure>
+<title>Statistics Dialog: Months</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Aggregate_statistics_months.png"/>
+</screenshot>
+</figure>
+<para>
+  Each column can be sorted by clicking on the relevant column header.
+</para>
+<para>
+  The right click menu offers an option to copy all the data as text in a CSV style format (using a tabbed separator).
+</para>
+<para>
+  The right click menu offers an option to show the <xref linkend="track_list"/> for the relevant month.
+</para>
 </section>
 
 <section id="agg_append"><title>Append File</title>

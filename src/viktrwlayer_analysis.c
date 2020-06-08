@@ -23,6 +23,7 @@
  */
 #include "viking.h"
 #include "viktrwlayer_analysis.h"
+#include "viktrwlayer_tracklist.h"
 
 // Units of each item are in SI Units
 // (as returned by the appropriate internal viking track functions)
@@ -56,6 +57,7 @@ static track_stats tracks_stats[1];
 #define YEARS_HELD 100
 static track_stats tracks_years[YEARS_HELD];
 static guint current_year = 2020;
+static track_stats tracks_months[12];
 
 // cf with vik_track_get_minmax_alt internals
 #define VIK_VAL_MIN_ALT 25000.0
@@ -98,6 +100,15 @@ static void val_reset_years ( void )
 {
 	for ( guint yi = 0; yi < YEARS_HELD; yi++ )
 		reset_me ( &tracks_years[yi] );
+}
+
+/**
+ * Reset the months info
+ */
+static void val_reset_months ( void )
+{
+	for ( guint ii = 0; ii < 12; ii++ )
+		reset_me ( &tracks_months[ii] );
 }
 
 /**
@@ -223,6 +234,33 @@ static void val_analyse_track ( VikTrack *trk, gboolean include_no_times )
 	}
 	else
 		g_debug ( "%s: %s has no time", __FUNCTION__, trk->name );
+}
+
+/**
+ * @val_analyse_track_by_months:
+ * @trk: The track to be analysed
+ *
+ * Function to collect statistics, using the internal track functions
+ * All tracks passed to this function should be from the same year.
+ */
+static void val_analyse_track_by_months ( VikTrack *trk )
+{
+	// NB Subsecond resolution not needed, as just using the timestamp to get dates
+	if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
+		gdouble t1 = VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data)->timestamp;
+
+		GDate* gdate = g_date_new ();
+		g_date_set_time_t ( gdate, (time_t)t1 );
+		GDateMonth mon = g_date_get_month ( gdate );
+		g_date_free ( gdate );
+
+		if ( mon != G_DATE_BAD_MONTH ) {
+			tracks_months[mon-1].count++;
+			tracks_months[mon-1].length += vik_track_get_length (trk);
+		}
+		else
+			g_warning ("%s: Bad month %s\n", __FUNCTION__, trk->name );
+	}
 }
 
 // Could use GtkGrids but that is Gtk3+
@@ -441,6 +479,7 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 typedef struct {
 	gboolean include_invisible;
 	gboolean include_no_times;
+	guint year; // Only applicable for month analysis
 } track_options_t;
 
 /**
@@ -474,6 +513,49 @@ static void val_analyse_item_maybe ( vik_trw_and_track_t *vtlist, const gpointer
 	}
 
 	val_analyse_track ( trk, tot->include_no_times );
+}
+
+/**
+ * val_analyse_item_by_months:
+ * @vtlist: A track and the associated layer to consider for analysis
+ * @data:   Whether to include invisible items for the specified year
+ *
+ * Analyse this particular track
+ *  considering whether it should be included depending on it's visibility & date
+ */
+static void val_analyse_item_by_months ( vik_trw_and_track_t *vtlist, const gpointer data )
+{
+	track_options_t *tot = (track_options_t*)data;
+	VikTrack *trk = vtlist->trk;
+	VikTrwLayer *vtl = vtlist->vtl;
+
+	// Safety first - items shouldn't be deleted...
+	if ( !IS_VIK_TRW_LAYER(vtl) ) return;
+	if ( !trk ) return;
+
+	if ( !tot->include_invisible ) {
+		// Skip invisible layers or sublayers
+		if ( !VIK_LAYER(vtl)->visible ||
+			 (trk->is_route && !vik_trw_layer_get_routes_visibility(vtl)) ||
+			 (!trk->is_route && !vik_trw_layer_get_tracks_visibility(vtl)) )
+			return;
+
+		// Skip invisible tracks
+		if ( !trk->visible )
+			return;
+	}
+
+	// Is the track of this year?
+	if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
+		gdouble t1 = VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data)->timestamp;
+		GDate* gdate = g_date_new ();
+		g_date_set_time_t ( gdate, (time_t)t1 );
+		guint trk_year = g_date_get_year ( gdate );
+		g_date_free ( gdate );
+
+		if ( trk_year == tot->year )
+			val_analyse_track_by_months ( trk );
+	}
 }
 
 /**
@@ -521,6 +603,28 @@ static void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboole
 	}
 }
 
+// Analyse the specified year
+static void val_analyse_months ( GList *tracks_and_layers, guint year, gboolean include_invisible )
+{
+	val_reset_months ( );
+
+	track_options_t *tot = g_malloc0 (sizeof(track_options_t));
+	tot->include_invisible = include_invisible;
+	tot->year = year;
+	GList *gl = g_list_first ( tracks_and_layers );
+	if ( gl )
+		g_list_foreach ( gl, (GFunc)val_analyse_item_by_months, tot );
+	g_free ( tot );
+
+	// Months info...
+	if ( vik_debug ) {
+		for ( guint mi = 0; mi < 12; mi++ ) {
+			if ( tracks_months[mi].count > 0 )
+				g_printf ( "%s: %d: %d %d %5.2f %5.1f %d\n", __FUNCTION__, year, tracks_months[mi].count, (gint)tracks_months[mi].max_alt, tracks_months[mi].max_speed, tracks_months[mi].length/1000, (gint)tracks_months[mi].elev_gain );
+		}
+	}
+}
+
 typedef struct {
 	GtkWidget **widgets;
 	GtkWidget *layout;
@@ -536,6 +640,11 @@ typedef struct {
 	gboolean include_no_times;
 	VikWindow *vw;
 	GtkTreeStore *store;
+	GtkWidget *tabs;
+	GtkWidget *sw_months;
+	GtkTreeStore *store_months;
+	guint year;
+	guint month; // 0 = Jan, etc...
 } analyse_cb_t;
 
 #define YEARS_COLS 4
@@ -586,14 +695,82 @@ static gboolean years_menu_popup ( GtkWidget *tree_view,
 	return TRUE;
 }
 
+static void months_update_store ( GtkTreeStore *store )
+{
+	// Reset store
+	gtk_tree_store_clear ( store );
+
+	vik_units_distance_t dist_units = a_vik_get_units_distance ();
+	GtkTreeIter t_iter;
+	for ( guint mi = 0; mi < 12; mi++ ) {
+		gdouble distd = vu_distance_convert ( dist_units, tracks_months[mi].length );
+		guint distu = (guint)round(distd);
+		if ( tracks_months[mi].count )
+			distd = distd / tracks_months[mi].count;
+		else
+			distd = 0.0;
+		gtk_tree_store_append ( store, &t_iter, NULL );
+		gchar buf[64];
+		GDate *gdate = g_date_new_dmy ( 1, mi+1, 2000 );
+		g_date_strftime ( buf, sizeof(buf), "%B", gdate );
+		gtk_tree_store_set ( store, &t_iter,
+		                     0, buf,
+		                     1, tracks_months[mi].count,
+		                     2, distu,
+		                     3, distd,
+		                     4, mi,
+		                     -1 );
+		g_date_free ( gdate );
+	}
+}
+
+// Set month data for year selected
+static gboolean years_button_released ( GtkWidget *tree_view,
+                                        GdkEventButton *event,
+                                        gpointer data )
+{
+	// Only on left clicks...
+	if ( !(event->button == 1) )
+		return FALSE;
+
+	analyse_cb_t *acb = (analyse_cb_t*)data;
+	GtkTreeIter iter;
+	GtkTreePath *path;
+	GtkTreeModel *model = gtk_tree_view_get_model ( GTK_TREE_VIEW(tree_view) );
+
+	// All this just to get the iter
+	if ( gtk_tree_view_get_path_at_pos ( GTK_TREE_VIEW(tree_view),
+	                                     (gint)event->x,
+	                                     (gint)event->y,
+	                                     &path, NULL, NULL, NULL) ) {
+		gtk_tree_model_get_iter_from_string ( model, &iter, gtk_tree_path_to_string (path) );
+		gtk_tree_path_free ( path );
+	}
+	else
+		return FALSE;
+
+	gtk_tree_model_get ( model, &iter, 0, &acb->year, -1 );
+	gchar *label = g_strdup_printf ( "%d", acb->year );
+	gtk_notebook_set_tab_label_text ( GTK_NOTEBOOK(acb->tabs), acb->sw_months, label );
+	g_free ( label );
+
+	vik_window_set_busy_cursor ( acb->vw );
+	val_analyse_months ( acb->tracks_and_layers, acb->year, acb->include_invisible );
+	vik_window_clear_busy_cursor ( acb->vw );
+
+	months_update_store ( acb->store_months );
+
+	return FALSE;
+}
+
 static gboolean years_button_pressed ( GtkWidget *tree_view,
                                        GdkEventButton *event,
                                        gpointer data )
 {
 	// Only on right clicks...
-	if ( ! (event->type == GDK_BUTTON_PRESS && event->button == 3) )
-		return FALSE;
-	return years_menu_popup ( tree_view, event, data );
+	if ( event->type == GDK_BUTTON_PRESS && event->button == 3 )
+		return years_menu_popup ( tree_view, event, data );
+	return FALSE;
 }
 
 static void years_update_store ( GtkTreeStore *store )
@@ -657,10 +834,11 @@ static void years_display_build ( analyse_cb_t *acb, GtkWidget* scrolledwindow )
 	gtk_tree_view_column_set_cell_data_func ( column, renderer, ui_format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
 
 	gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(store) );
-	gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_NONE );
+	gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_SINGLE );
 	gtk_tree_view_set_rules_hint ( GTK_TREE_VIEW(view), TRUE );
 
 	g_signal_connect ( view, "button-press-event", G_CALLBACK(years_button_pressed), NULL );
+	g_signal_connect ( view, "button-release-event", G_CALLBACK(years_button_released), acb );
 
 	gtk_container_add ( GTK_CONTAINER(scrolledwindow), view );
 }
@@ -689,10 +867,8 @@ static void include_invisible_toggled_cb ( GtkToggleButton *togglebutton, analys
 		value = TRUE;
 
 	// Delete old list of items
-	if ( acb->tracks_and_layers ) {
-		g_list_foreach ( acb->tracks_and_layers, (GFunc) g_free, NULL );
-		g_list_free ( acb->tracks_and_layers );
-	}
+	if ( acb->tracks_and_layers )
+		g_list_free_full ( acb->tracks_and_layers, g_free );
 
 	// Get the latest list of items to analyse
 	acb->tracks_and_layers = acb->get_tracks_and_layers_cb ( acb->vl, acb->user_data );
@@ -701,12 +877,199 @@ static void include_invisible_toggled_cb ( GtkToggleButton *togglebutton, analys
 
 	vik_window_set_busy_cursor ( acb->vw );
 	val_analyse ( acb->widgets, acb->tracks_and_layers, acb->include_invisible, acb->include_no_times, acb->extended );
+	if ( acb->store_months )
+		val_analyse_months ( acb->tracks_and_layers, acb->year, acb->include_invisible );
 	vik_window_clear_busy_cursor ( acb->vw );
 
 	if ( acb->store )
 		years_update_store ( acb->store );
+	if ( acb->store_months )
+		months_update_store ( acb->store_months );
 
 	gtk_widget_show_all ( acb->layout );
+}
+
+#define MONTHS_COLS 5
+
+static void months_copy_all ( GtkWidget *tree_view )
+{
+	GString *str = g_string_new ( NULL );
+	gchar sep = '\t';
+
+	// Get info from the GTK store
+	//  using this way gets the items in the ordered by the user
+	GtkTreeModel *model = gtk_tree_view_get_model ( GTK_TREE_VIEW(tree_view) );
+	GtkTreeIter iter;
+	if ( !gtk_tree_model_get_iter_first(model, &iter) )
+		return;
+
+	gboolean cont = TRUE;
+	while ( cont ) {
+		gint value;
+		// Note avoid last column - as that is invisible
+		for (guint ii=0; ii<MONTHS_COLS-1; ii++) {
+			switch ( ii ) {
+			case 0: {
+				gchar *month;
+				gtk_tree_model_get ( model, &iter, ii, &month, -1 );
+				g_string_append_printf ( str, "%s%c", month, sep );
+				break;
+			}
+			case 3: {
+				// This is last so no sep added to the end
+				gdouble dvalue;
+				gtk_tree_model_get ( model, &iter, ii, &dvalue, -1 );
+				g_string_append_printf ( str, "%.1f", dvalue );
+				break;
+			}
+			default:
+				gtk_tree_model_get ( model, &iter, ii, &value, -1 );
+				g_string_append_printf ( str, "%d%c", value, sep );
+				break;
+			}
+		}
+		g_string_append_printf ( str, "\n" );
+		cont = gtk_tree_model_iter_next ( model, &iter );
+	}
+
+	a_clipboard_copy ( VIK_CLIPBOARD_DATA_TEXT, 0, 0, 0, str->str, NULL );
+	g_string_free ( str, TRUE );
+}
+
+/**
+ * months_create_track_list:
+ * @vl:        The layer that should create the track and layers list
+ * @user_data: Not used in this function
+ *
+ * Returns: A list of #vik_trw_and_track_t
+ */
+static GList* months_create_track_list ( VikLayer *vl, gpointer user_data )
+{
+	analyse_cb_t *acb = (analyse_cb_t *)user_data;
+	GList *lyr_trks_month = NULL;
+
+	GList *gl = g_list_first ( acb->tracks_and_layers );
+	while ( gl ) {
+		VikTrack *trk = ((vik_trw_and_track_t*)gl->data)->trk;
+
+		// if in the specified month (and/or visible) add to the list
+		if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
+			gdouble	t1 = VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data)->timestamp;
+			GDate* gdate = g_date_new ();
+			g_date_set_time_t ( gdate, (time_t)t1 );
+			GDateMonth mon = g_date_get_month ( gdate ) - 1;
+			guint year     = g_date_get_year ( gdate );
+			g_date_free ( gdate );
+			if ( year == acb->year && mon == acb->month ) {
+				//vik_trw_and_track_t *vtt = (vik_trw_and_track_t*)gl->data;
+				// Not entirely sure if really need to create copy of memory;
+				//  but it seems to crash on second viewing of months if we don't
+				vik_trw_and_track_t *vtt = g_malloc(sizeof(vik_trw_and_track_t));
+				vtt->trk = ((vik_trw_and_track_t*)gl->data)->trk;
+				vtt->vtl = ((vik_trw_and_track_t*)gl->data)->vtl;
+				lyr_trks_month = g_list_prepend ( lyr_trks_month, vtt );
+			}
+		}
+		gl = g_list_next ( gl );
+	}
+	return lyr_trks_month;
+}
+
+static void months_track_list_cb ( analyse_cb_t *acb )
+{
+	GDate *gdate = g_date_new_dmy ( 1, acb->month, acb->year );
+	gchar buf[64];
+	g_date_strftime ( buf, sizeof(buf), "%B", gdate );
+	gchar *title = g_strdup_printf ( _("%d %s: Track List"), acb->year, buf );
+	vik_trw_layer_track_list_show_dialog ( title, acb->vl, acb, months_create_track_list, (acb->vl->type == VIK_LAYER_AGGREGATE) );
+	g_free ( title );
+	g_date_free ( gdate );
+}
+
+
+static gboolean months_menu_popup ( GtkWidget *tree_view,
+                                    GdkEventButton *event,
+                                    analyse_cb_t *acb )
+{
+	GtkWidget *menu = gtk_menu_new();
+	(void)vu_menu_add_item ( GTK_MENU(menu), _("_Copy Data"), GTK_STOCK_COPY, G_CALLBACK(months_copy_all), tree_view );
+	// Easier to get selected month now, rather than in the callback
+	GtkTreeIter iter;
+	GtkTreePath *path;
+	GtkTreeModel *model = gtk_tree_view_get_model ( GTK_TREE_VIEW(tree_view) );
+	if ( gtk_tree_view_get_path_at_pos ( GTK_TREE_VIEW(tree_view),
+	                                     (gint)event->x,
+	                                     (gint)event->y,
+	                                     &path, NULL, NULL, NULL) ) {
+		gtk_tree_model_get_iter_from_string ( model, &iter, gtk_tree_path_to_string (path) );
+		gtk_tree_path_free ( path );
+		gtk_tree_model_get ( model, &iter, MONTHS_COLS-1, &acb->month, -1 );
+		(void)vu_menu_add_item ( GTK_MENU(menu), _("_Track List"), GTK_STOCK_INDEX, G_CALLBACK(months_track_list_cb), acb );
+	}
+
+	gtk_widget_show_all ( menu );
+	gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+	return TRUE;
+}
+
+static gboolean months_button_released ( GtkWidget *tree_view,
+                                         GdkEventButton *event,
+                                         gpointer data )
+{
+	// Only on right clicks...
+	if ( event->button == 3 )
+		return months_menu_popup ( tree_view, event, data );
+	return FALSE;
+}
+
+/**
+ * months_display_build:
+ *
+ * Setup a treeview for a table of output
+ */
+static void months_display_build ( analyse_cb_t *acb, GtkWidget* scrolledwindow )
+{
+	// It's simple storing the gdouble values in the tree store as the sort works automatically
+	// Then apply specific cell data formatting (rather default double is to 6 decimal places!)
+	GtkTreeStore *store = gtk_tree_store_new ( MONTHS_COLS,
+	                                           G_TYPE_STRING,  // 0: Month
+	                                           G_TYPE_UINT,    // 1: Num Tracks
+	                                           G_TYPE_UINT,    // 2: Length
+	                                           G_TYPE_DOUBLE,  // 3: Average Length
+	                                           G_TYPE_UINT);   // 4: [HIDDEN] Month (as a number to support sorting)
+	acb->store_months = store;
+
+	GtkWidget *view = gtk_tree_view_new();
+	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+
+	gint column_runner = 0;
+	GtkTreeViewColumn *colmonth = ui_new_column_text ( _("Month"), renderer, view, column_runner++ );
+	(void)ui_new_column_text ( _("Tracks"), renderer, view, column_runner++ );
+
+	GtkTreeViewColumn *column;
+	vik_units_distance_t dist_units = a_vik_get_units_distance ();
+	gchar *ustr = vu_distance_units_text ( dist_units );
+	gchar *dstr = g_strdup_printf ( _("Distance\n(%s)"), ustr );
+	(void)ui_new_column_text ( dstr, renderer, view, column_runner++ );
+	g_free ( dstr );
+	gchar *astr = g_strdup_printf ( _("Average Dist\n(%s)"), ustr );
+	column = ui_new_column_text ( astr, renderer, view, column_runner++ );
+	g_free ( astr );
+	g_free ( ustr );
+	gtk_tree_view_column_set_cell_data_func ( column, renderer, ui_format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
+
+	gint cm = gtk_tree_view_insert_column_with_attributes ( GTK_TREE_VIEW(view), -1, "", renderer, NULL ) - 1;
+	gtk_tree_view_column_set_visible ( gtk_tree_view_get_column(GTK_TREE_VIEW(view), cm), FALSE );
+	// Sort textual Months by the month as a number (held in the invisible column)
+	gtk_tree_view_column_set_sort_column_id ( colmonth, cm );
+
+	gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(store) );
+	gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view)), GTK_SELECTION_SINGLE );
+	gtk_tree_view_set_rules_hint ( GTK_TREE_VIEW(view), TRUE );
+
+	g_signal_connect ( view, "button-release-event", G_CALLBACK(months_button_released), acb );
+
+	gtk_container_add ( GTK_CONTAINER(scrolledwindow), view );
 }
 
 #define VIK_SETTINGS_ANALYSIS_DO_INVISIBLE "track_analysis_do_invisible"
@@ -729,8 +1092,7 @@ static void analyse_close ( GtkWidget *dialog, gint resp, analyse_cb_t *data )
 
 	//g_free ( data->layout );
 	g_free ( data->widgets );
-	g_list_foreach ( data->tracks_and_layers, (GFunc) g_free, NULL );
-	g_list_free ( data->tracks_and_layers );
+	g_list_free_full ( data->tracks_and_layers, g_free );
 
 	if ( data->store )
 		g_object_unref ( data->store );
@@ -802,28 +1164,58 @@ GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
 	// One day might store stats in the track itself....
 	vik_window_set_busy_cursor ( acb->vw );
 	val_analyse ( acb->widgets, acb->tracks_and_layers, include_invisible, include_no_times, acb->extended );
-	vik_window_clear_busy_cursor ( acb->vw );
 
 	guint num_yrs = 0;
 	for ( guint yi = 0; yi < YEARS_HELD; yi++ )
 		if ( tracks_years[yi].count > 0 )
 			num_yrs++;
 
+	guint num_months = 0;
+	for ( guint mi = 0; mi < 12; mi++ )
+		if ( tracks_months[mi].count > 0 )
+			num_months++;
+
+	acb->year = current_year;
+	if ( num_yrs > 0 ) {
+		// Get latest year with data
+		for ( guint yi = 0; yi < YEARS_HELD; yi++ )
+			if ( tracks_years[yi].count > 0 ) {
+				acb->year = current_year-yi;
+				break;
+			}
+	}
+	val_analyse_months ( acb->tracks_and_layers, acb->year, include_invisible );
+
+	// Years or months to be shown, so put infomation into tabs
+	if ( num_yrs > 1 || num_months > 1 ) {
+		acb->tabs = gtk_notebook_new();
+		gtk_notebook_append_page ( GTK_NOTEBOOK(acb->tabs), acb->layout, gtk_label_new(_("Totals")) );
+		gtk_box_pack_start ( GTK_BOX(content), acb->tabs, TRUE, TRUE, 0 );
+	} else
+		gtk_box_pack_start ( GTK_BOX(content), acb->layout, TRUE, TRUE, 0 );
+
 	if ( num_yrs > 1 ) {
 		// Multiple Years so show per year info as well
-		GtkWidget *tabs = gtk_notebook_new();
-		gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), acb->layout, gtk_label_new(_("Totals")) );
-		gtk_box_pack_start ( GTK_BOX(content), tabs, TRUE, TRUE, 0 );
-
 		GtkWidget *scrolledwindow = gtk_scrolled_window_new ( NULL, NULL );
 		gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-		gtk_notebook_append_page ( GTK_NOTEBOOK(tabs), scrolledwindow, gtk_label_new(_("Years")) );
+		gtk_notebook_append_page ( GTK_NOTEBOOK(acb->tabs), scrolledwindow, gtk_label_new(_("Years")) );
 
 		years_display_build ( acb, scrolledwindow );
 		years_update_store ( acb->store );
 	}
-	else
-		gtk_box_pack_start ( GTK_BOX(content), acb->layout, TRUE, TRUE, 0 );
+
+	if ( num_yrs > 1 || num_months > 1 ) {
+		acb->sw_months = gtk_scrolled_window_new ( NULL, NULL );
+		gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(acb->sw_months), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+		gchar *label = g_strdup_printf ( "%d", acb->year );
+		gtk_notebook_append_page ( GTK_NOTEBOOK(acb->tabs), acb->sw_months, gtk_label_new(label) );
+		g_free ( label );
+
+		months_display_build ( acb, acb->sw_months );
+		months_update_store ( acb->store_months );
+	}
+
+	vik_window_clear_busy_cursor ( acb->vw );
 
 	GtkWidget *cb = gtk_check_button_new_with_label ( _("Include Invisible Items") );
 	gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(cb), include_invisible );
