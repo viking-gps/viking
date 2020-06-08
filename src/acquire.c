@@ -473,7 +473,8 @@ static GtkWidget *acquire_build_menu ( VikWindow *vw, VikLayersPanel *vlp, VikVi
     if ( filters[i]->inputtype == inputtype ) {
       if ( ! menu_item ) { /* do this just once, but return NULL if no filters */
         menu = gtk_menu_new();
-        menu_item = gtk_menu_item_new_with_mnemonic ( menu_title );
+        menu_item = gtk_image_menu_item_new_with_mnemonic ( menu_title );
+        gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menu_item, gtk_image_new_from_stock(VIK_ICON_FILTER, GTK_ICON_SIZE_MENU) );
         gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), menu );
       }
 

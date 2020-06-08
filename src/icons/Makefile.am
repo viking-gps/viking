@@ -238,6 +238,10 @@ ICONS = \
 	splitter_18.png \
 	select_18.png \
 	thumbnails.png \
+	checkbox_32.png \
+	clip_32.png \
+	filter_32.png \
+	globe_32.png \
 	vikaggregatelayer.png \
 	vikcoordlayer.png \
 	vikdemlayer.png \

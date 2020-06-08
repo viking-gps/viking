@@ -132,8 +132,7 @@ static GtkWidget* layers_panel_create_popup ( VikLayersPanel *vlp, gboolean full
   }
 
   GtkWidget *submenu = gtk_menu_new();
-  menuitem = gtk_menu_item_new_with_mnemonic ( _("New Layer") );
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
+  menuitem = vu_menu_add_item ( GTK_MENU(menu), _("New Layer"), GTK_STOCK_NEW, NULL, NULL );
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), submenu );
 
   // Static: so memory accessible yet not continually allocated

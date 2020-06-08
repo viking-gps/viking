@@ -2499,7 +2499,7 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
 
   GtkMenu *vis_submenu = GTK_MENU(gtk_menu_new());
-  GtkWidget *itemv = vu_menu_add_item ( menu, _("_Visibility"), NULL, NULL, NULL );
+  GtkWidget *itemv = vu_menu_add_item ( menu, _("_Visibility"), VIK_ICON_CHECKBOX, NULL, NULL );
   gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemv), GTK_WIDGET(vis_submenu) );
 
   (void)vu_menu_add_item ( vis_submenu, _("_Show All"), GTK_STOCK_APPLY, G_CALLBACK(aggregate_layer_child_visible_on), values );
@@ -2507,7 +2507,7 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   (void)vu_menu_add_item ( vis_submenu, _("_Toggle"), GTK_STOCK_REFRESH, G_CALLBACK(aggregate_layer_child_visible_toggle), values );
 
   GtkMenu *view_submenu = GTK_MENU(gtk_menu_new());
-  GtkWidget *itemvw = vu_menu_add_item ( menu, _("V_iew"), NULL, NULL, NULL );
+  GtkWidget *itemvw = vu_menu_add_item ( menu, _("V_iew"), GTK_STOCK_JUMP_TO, NULL, NULL );
   gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemvw), GTK_WIDGET(view_submenu) );
 
   GtkWidget *itematl = vu_menu_add_item ( view_submenu, _("_All TrackWaypoint Layers"), GTK_STOCK_ZOOM_FIT, G_CALLBACK(aggregate_view_all_trw), values );
@@ -2522,22 +2522,23 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   (void)vu_menu_add_item ( submenu_sort, _("Date Ascending"), GTK_STOCK_SORT_ASCENDING, G_CALLBACK(aggregate_layer_sort_timestamp_ascend), values );
   (void)vu_menu_add_item ( submenu_sort, _("Date Descending"), GTK_STOCK_SORT_DESCENDING, G_CALLBACK(aggregate_layer_sort_timestamp_descend), values );
 
-  (void)vu_menu_add_item ( menu, _("_Statistics"), NULL, G_CALLBACK(aggregate_layer_analyse), values );
+  (void)vu_menu_add_item ( menu, _("_Statistics"), GTK_STOCK_INFO, G_CALLBACK(aggregate_layer_analyse), values );
   (void)vu_menu_add_item ( menu, _("Track _List..."), GTK_STOCK_INDEX, G_CALLBACK(aggregate_layer_track_list_dialog), values );
   (void)vu_menu_add_item ( menu, _("_Waypoint List..."), GTK_STOCK_INDEX, G_CALLBACK(aggregate_layer_waypoint_list_dialog), values );
 
   GtkMenu *search_submenu = GTK_MENU(gtk_menu_new());
-  GtkWidget *itemsr = vu_menu_add_item ( menu, _("Searc_h"), GTK_STOCK_JUMP_TO, NULL, NULL );
+  GtkWidget *itemsr = vu_menu_add_item ( menu, _("Searc_h"), GTK_STOCK_FIND, NULL, NULL );
   gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemsr), GTK_WIDGET(search_submenu) );
 
   GtkWidget *itemd = vu_menu_add_item ( search_submenu, _("By _Date..."), NULL, G_CALLBACK(aggregate_layer_search_date), values );
   gtk_widget_set_tooltip_text ( itemd, _("Find the first item with a specified date") );
 
-  (void)vu_menu_add_item ( menu, _("Load E_xternal Layers"), NULL, G_CALLBACK(aggregate_layer_load_external_layers_click), values );
-
-  (void)vu_menu_add_item ( menu, _("Save _Layer As..."), GTK_STOCK_SAVE, G_CALLBACK(aggregate_layer_save_layer_as_cb), values );
-
-  (void)vu_menu_add_item ( menu, _("_Append File..."), GTK_STOCK_ADD, G_CALLBACK(aggregate_layer_file_load), values );
+  GtkMenu *file_submenu = GTK_MENU(gtk_menu_new());
+  GtkWidget *itemsf = vu_menu_add_item ( menu, _("_File"), GTK_STOCK_FILE, NULL, NULL );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemsf), GTK_WIDGET(file_submenu) );
+  (void)vu_menu_add_item ( file_submenu, _("Load E_xternal Layers"), GTK_STOCK_EXECUTE, G_CALLBACK(aggregate_layer_load_external_layers_click), values );
+  (void)vu_menu_add_item ( file_submenu, _("Save _Layer As..."), GTK_STOCK_SAVE, G_CALLBACK(aggregate_layer_save_layer_as_cb), values );
+  (void)vu_menu_add_item ( file_submenu, _("_Append File..."), GTK_STOCK_ADD, G_CALLBACK(aggregate_layer_file_load), values );
 
   (void)aggregate_build_submenu_tac ( val, menu, values );
 

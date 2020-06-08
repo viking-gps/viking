@@ -4508,8 +4508,12 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   if ( vtl->gpx_extensions )
     (void)vu_menu_add_item ( view_submenu, _("View _GPX Extensions"), NULL, G_CALLBACK(trw_layer_view_extensions), data );
 
-  (void)vu_menu_add_item ( menu, _("_Goto Center of Layer"), GTK_STOCK_JUMP_TO, G_CALLBACK(trw_layer_centerize), data );
-  (void)vu_menu_add_item ( menu, _("Goto _Waypoint..."), NULL, G_CALLBACK(trw_layer_goto_wp), data );
+  GtkMenu *goto_submenu = GTK_MENU(gtk_menu_new());
+  GtkWidget *itemgoto = vu_menu_add_item ( menu, _("_Goto"), GTK_STOCK_JUMP_TO, NULL, NULL );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemgoto), GTK_WIDGET(goto_submenu) );
+
+  (void)vu_menu_add_item ( goto_submenu, _("_Goto Center of Layer"), GTK_STOCK_JUMP_TO, G_CALLBACK(trw_layer_centerize), data );
+  (void)vu_menu_add_item ( goto_submenu, _("Goto _Waypoint..."), NULL, G_CALLBACK(trw_layer_goto_wp), data );
 
   GtkMenu *export_submenu = GTK_MENU(gtk_menu_new());
   GtkWidget *iteme = vu_menu_add_item ( menu, _("_Export Layer"), GTK_STOCK_HARDDISK, NULL, NULL );
@@ -4554,7 +4558,7 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   gtk_widget_set_sensitive ( itemnr, ! (gboolean)GPOINTER_TO_INT(vtl->current_track) );
 
 #ifdef VIK_CONFIG_GEOTAG
-  (void)vu_menu_add_item ( menu, _("Geotag _Images..."), NULL, G_CALLBACK(trw_layer_geotagging), data );
+  (void)vu_menu_add_item ( menu, _("Geotag _Images..."), VIK_ICON_GLOBE, G_CALLBACK(trw_layer_geotagging), data );
 #endif
 
   GtkMenu *acquire_submenu = GTK_MENU(gtk_menu_new());
@@ -8659,7 +8663,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
           (void)vu_menu_add_item ( menu, _("_Visit Geocache Webpage"), NULL, G_CALLBACK(trw_layer_waypoint_gc_webpage), data );
         }
 #ifdef VIK_CONFIG_GEOTAG
-        GtkWidget *itemgi = vu_menu_add_item ( menu, _("_Geotag _Images..."), NULL, G_CALLBACK(trw_layer_geotagging_waypoint), data );
+        GtkWidget *itemgi = vu_menu_add_item ( menu, _("_Geotag _Images..."), VIK_ICON_GLOBE, G_CALLBACK(trw_layer_geotagging_waypoint), data );
         gtk_widget_set_tooltip_text (itemgi, _("Geotag multiple images against this waypoint"));
 #endif
       }
@@ -8716,7 +8720,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     (void)vu_menu_add_item ( menu, _("Delete Duplicate Waypoints"), GTK_STOCK_DELETE, G_CALLBACK(trw_layer_delete_duplicate_waypoints), data );
 
     GtkMenu *vis_submenu = GTK_MENU(gtk_menu_new());
-    GtkWidget *itemvis = vu_menu_add_item ( menu, _("_Visibility"), NULL, NULL, NULL );
+    GtkWidget *itemvis = vu_menu_add_item ( menu, _("_Visibility"), VIK_ICON_CHECKBOX, NULL, NULL );
     gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemvis), GTK_WIDGET(vis_submenu) );
 
     (void)vu_menu_add_item ( vis_submenu, _("_Show All Waypoints"), GTK_STOCK_APPLY, G_CALLBACK(trw_layer_waypoints_visibility_on), data );
@@ -8742,7 +8746,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     (void)vu_menu_add_item ( menu, _("_Delete Tracks From Selection..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_delete_tracks_from_selection), data );
 
     GtkMenu *vis_submenu = GTK_MENU(gtk_menu_new());
-    GtkWidget *itemvis = vu_menu_add_item ( menu, _("_Visibility"), NULL, NULL, NULL );
+    GtkWidget *itemvis = vu_menu_add_item ( menu, _("_Visibility"), VIK_ICON_CHECKBOX, NULL, NULL );
     gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemvis), GTK_WIDGET(vis_submenu) );
 
     (void)vu_menu_add_item ( vis_submenu, _("_Show All Tracks"), GTK_STOCK_APPLY, G_CALLBACK(trw_layer_tracks_visibility_on), data );
@@ -8750,7 +8754,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     (void)vu_menu_add_item ( vis_submenu, _("_Toggle"), GTK_STOCK_REFRESH, G_CALLBACK(trw_layer_tracks_visibility_toggle), data );
 
     (void)vu_menu_add_item ( menu, _("_List Tracks..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_track_list_dialog_single), data );
-    (void)vu_menu_add_item ( menu, _("_Statistics"), NULL, G_CALLBACK(trw_layer_tracks_stats), data );
+    (void)vu_menu_add_item ( menu, _("_Statistics"), GTK_STOCK_INFO, G_CALLBACK(trw_layer_tracks_stats), data );
   }
 
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_ROUTES ) {
@@ -8810,7 +8814,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     (void)vu_menu_add_item ( menu, (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK) ? _("_View Track") : _("_View Route"),
                              GTK_STOCK_ZOOM_FIT, G_CALLBACK(trw_layer_auto_track_view), data );
 
-    (void)vu_menu_add_item ( menu, _("_Statistics"), NULL, G_CALLBACK(trw_layer_track_statistics), data );
+    (void)vu_menu_add_item ( menu, _("_Statistics"), GTK_STOCK_INFO, G_CALLBACK(trw_layer_track_statistics), data );
 
     GtkMenu *goto_submenu = GTK_MENU(gtk_menu_new());
     GtkWidget *itemgoto = vu_menu_add_item ( menu, _("_Goto"), GTK_STOCK_JUMP_TO, NULL, NULL );
@@ -9012,11 +9016,12 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
                                     g_hash_table_lookup ( l->tracks, (gchar *) sublayer ) );
       if ( item ) {
         gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
+        gtk_widget_show ( item );
       }
     }
 
 #ifdef VIK_CONFIG_GEOTAG
-    (void)vu_menu_add_item ( menu, _("Geotag _Images..."), NULL, G_CALLBACK(trw_layer_geotagging_track), data );
+    (void)vu_menu_add_item ( menu, _("Geotag _Images..."), VIK_ICON_GLOBE, G_CALLBACK(trw_layer_geotagging_track), data );
 #endif
   }
 

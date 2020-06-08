@@ -288,6 +288,10 @@ gint a_vik_get_recent_number_files ( );
 #define VIKING_PREFERENCES_STARTUP_NAMESPACE "viking.startup."
 
 // Additions to 'Stock Icons'
+#define VIK_ICON_ATTACH       "vik-icon-attach"
+#define VIK_ICON_CHECKBOX     "vik-icon-checkbox"
+#define VIK_ICON_FILTER       "vik-icon-filter"
+#define VIK_ICON_GLOBE        "vik-icon-globe"
 #define VIK_ICON_SHOW_PICTURE "vik-icon-Show Picture"
 
 G_END_DECLS

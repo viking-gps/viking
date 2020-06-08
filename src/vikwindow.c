@@ -3568,6 +3568,7 @@ static void setup_recent_files (VikWindow *self)
 
   menu_item = gtk_ui_manager_get_widget (self->uim, "/ui/MainMenu/File/OpenRecentFile");
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), menu);
+  gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menu_item, gtk_image_new_from_stock(GTK_STOCK_FILE, GTK_ICON_SIZE_MENU) );
 
   g_signal_connect (G_OBJECT (menu), "item-activated",
                     G_CALLBACK (on_activate_recent_item), (gpointer) self);
@@ -5109,19 +5110,19 @@ static GtkActionEntry entries[] = {
   { "File", NULL, N_("_File"), 0, 0, 0 },
   { "Edit", NULL, N_("_Edit"), 0, 0, 0 },
   { "View", NULL, N_("_View"), 0, 0, 0 },
-  { "SetShow", NULL, N_("_Show"), 0, 0, 0 },
-  { "SetZoom", NULL, N_("_Zoom"), 0, 0, 0 },
-  { "SetPan", NULL, N_("_Pan"), 0, 0, 0 },
+  { "SetShow", VIK_ICON_CHECKBOX, N_("_Show"), 0, 0, 0 },
+  { "SetZoom", "vik-icon-zoom", N_("_Zoom"), 0, 0, 0 },
+  { "SetPan", "vik-icon-pan", N_("_Pan"), 0, 0, 0 },
   { "Layers", NULL, N_("_Layers"), 0, 0, 0 },
   { "Tools", NULL, N_("_Tools"), 0, 0, 0 },
-  { "Exttools", NULL, N_("_Webtools"), 0, 0, 0 },
+  { "Exttools", GTK_STOCK_NETWORK, N_("_Webtools"), 0, 0, 0 },
   { "Help", NULL, N_("_Help"), 0, 0, 0 },
 
   { "New",       GTK_STOCK_NEW,          N_("_New"),                          "<control>N", N_("New file"),                                     (GCallback)newwindow_cb          },
   { "Open",      GTK_STOCK_OPEN,         N_("_Open..."),                         "<control>O", N_("Open a file"),                                  (GCallback)load_file             },
   { "OpenRecentFile", NULL,              N_("Open _Recent File"),         NULL,         NULL,                                               (GCallback)NULL },
   { "Append",    GTK_STOCK_ADD,          N_("Append _File..."),           NULL,         N_("Append data from a different file"),            (GCallback)load_file             },
-  { "OpenExtLayer",  NULL,               N_("Open GPX as External _Layer..."),    NULL,         N_("Open a GPX file as an external layer"), (GCallback)load_file },
+  { "OpenExtLayer", VIK_ICON_ATTACH,     N_("Open GPX as External _Layer..."),    NULL,         N_("Open a GPX file as an external layer"), (GCallback)load_file },
   { "Export",    GTK_STOCK_CONVERT,      N_("_Export All"),               NULL,         N_("Export All TrackWaypoint Layers"),              (GCallback)NULL                  },
   { "ExportGPX", NULL,                   N_("_GPX..."),           	      NULL,         N_("Export as GPX"),                                (GCallback)export_to_gpx         },
   { "Acquire",   GTK_STOCK_GO_DOWN,      N_("A_cquire"),                  NULL,         NULL,                                               (GCallback)NULL },
@@ -5142,7 +5143,7 @@ static GtkActionEntry entries[] = {
 #endif
   { "Save",      GTK_STOCK_SAVE,         N_("_Save"),                         "<control>S", N_("Save the file"),                                (GCallback)save_file             },
   { "SaveAs",    GTK_STOCK_SAVE_AS,      N_("Save _As..."),                      NULL,  N_("Save the file under different name"),           (GCallback)save_file_as          },
-  { "FileProperties", NULL,              N_("Properties..."),                    NULL,  N_("File Properties"),                              (GCallback)file_properties_cb },
+  { "FileProperties", GTK_STOCK_PROPERTIES, N_("Properties..."),                 NULL,  N_("File Properties"),                              (GCallback)file_properties_cb },
 #ifdef HAVE_ZIP_H
   { "ImportKMZ", GTK_STOCK_CONVERT,      N_("Import KMZ _Map File..."),        NULL,  N_("Import a KMZ file"), (GCallback)import_kmz_file_cb },
   { "GenKMZ",    GTK_STOCK_DND,          N_("Generate _KMZ Map File..."),        NULL,  N_("Generate a KMZ file with an overlay of the current view"), (GCallback)draw_to_kmz_file_cb },
@@ -5177,9 +5178,9 @@ static GtkActionEntry entries[] = {
   { "Copy",      GTK_STOCK_COPY,         N_("_Copy"),                         NULL,         N_("Copy selected layer"),                      (GCallback)menu_copy_layer_cb    },
   { "Paste",     GTK_STOCK_PASTE,        N_("_Paste"),                        NULL,         N_("Paste layer into selected container layer or otherwise above selected layer"), (GCallback)menu_paste_layer_cb },
   { "Delete",    GTK_STOCK_DELETE,       N_("_Delete"),                   "<control>Delete",N_("Remove selected layer"),                    (GCallback)menu_delete_layer_cb  },
-  { "DeleteAll", NULL,                   N_("Delete All"),                    NULL,         NULL,                                           (GCallback)clear_cb              },
-  { "CopyCentre",NULL,                   N_("Copy Centre _Location"),     "<control>h",     NULL,                                           (GCallback)menu_copy_centre_cb   },
-  { "MapCacheFlush",NULL,                N_("_Flush Map Cache"),              NULL,         NULL,                                           (GCallback)mapcache_flush_cb     },
+  { "DeleteAll", GTK_STOCK_REMOVE,       N_("Delete All"),                    NULL,         NULL,                                           (GCallback)clear_cb              },
+  { "CopyCentre", GTK_STOCK_COPY,        N_("Copy Centre _Location"),     "<control>h",     NULL,                                           (GCallback)menu_copy_centre_cb   },
+  { "MapCacheFlush", GTK_STOCK_DISCARD,  N_("_Flush Map Cache"),              NULL,         NULL,                                           (GCallback)mapcache_flush_cb     },
   { "SetDefaultLocation", GTK_STOCK_GO_FORWARD, N_("_Set the Default Location"), NULL, N_("Set the Default Location to the current position"),(GCallback)default_location_cb },
   { "Preferences",GTK_STOCK_PREFERENCES, N_("_Preferences"),                  NULL,         N_("Program Preferences"),                      (GCallback)preferences_cb },
   { "PreferencesReset",GTK_STOCK_REFRESH, N_("Preferences Reset All"),        NULL,         N_("Reset All Program Preferences"),            (GCallback)preferences_reset_cb },
@@ -5471,6 +5472,10 @@ static icon_definition_t vik_icons[] = {
   { &ruler_18_pixbuf,		"vik-icon-ruler"    },
   { &select_18_pixbuf,		"vik-icon-select"   },
   // Generic icons for use anywhere:
+  { &clip_32_pixbuf,		VIK_ICON_ATTACH },
+  { &checkbox_32_pixbuf,	VIK_ICON_CHECKBOX },
+  { &filter_32_pixbuf,		VIK_ICON_FILTER },
+  { &globe_32_pixbuf,		VIK_ICON_GLOBE },
   { &showpic_18_pixbuf,		VIK_ICON_SHOW_PICTURE },
 };
 
