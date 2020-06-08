@@ -6267,6 +6267,9 @@ static void trw_layer_auto_track_view ( menu_array_sublayer values )
   else
     trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
 
+  if ( trk->visible )
+    vik_treeview_item_set_visible_tree ( VIK_LAYER(vtl)->vt, &(VIK_LAYER(vtl)->iter) );
+
   vik_trw_layer_center_view_track ( vtl, trk, values[MA_VVP], VIK_LAYERS_PANEL(values[MA_VLP]) );
 }
 
