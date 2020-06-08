@@ -98,7 +98,7 @@ static VikLayerParamData get_default_data_answer ( const gchar *group, const gch
 	}
 	*success = GINT_TO_POINTER (TRUE);
 	if ( error ) {
-		g_warning ( "%s", error->message );
+		g_debug ( "%s", error->message );
 		g_error_free ( error );
 		*success = GINT_TO_POINTER (FALSE);
 	}
