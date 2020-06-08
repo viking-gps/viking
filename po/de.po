@@ -4862,27 +4862,10 @@ msgstr "Sichtbarkeit"
 #: ../src/viktrwlayer_tracklist.c:639
 msgid ""
 "Distance\n"
-"(miles)"
+"(%s)"
 msgstr ""
 "Distanz\n"
-"(Meilen)"
-
-#: ../src/viktrwlayer_tracklist.c:642
-#, fuzzy
-msgid ""
-"Distance\n"
-"(NM)"
-msgstr ""
-"Distanz\n"
-"(km)"
-
-#: ../src/viktrwlayer_tracklist.c:645
-msgid ""
-"Distance\n"
-"(km)"
-msgstr ""
-"Distanz\n"
-"(km)"
+"(%s)"
 
 #: ../src/viktrwlayer_tracklist.c:651
 msgid ""

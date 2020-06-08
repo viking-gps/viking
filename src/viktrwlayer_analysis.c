@@ -538,23 +538,6 @@ typedef struct {
 	GtkTreeStore *store;
 } analyse_cb_t;
 
-static gdouble get_distance_in_units ( vik_units_distance_t dist_units, gdouble dist_in )
-{
-	gdouble dist = dist_in;
-	switch ( dist_units ) {
-	case VIK_UNITS_DISTANCE_MILES:
-		dist = VIK_METERS_TO_MILES(dist);
-		break;
-	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
-		dist = VIK_METERS_TO_NAUTICAL_MILES(dist);
-		break;
-	default:
-		dist = dist/1000.0;
-		break;
-	}
-	return dist;
-}
-
 #define YEARS_COLS 4
 
 static void years_copy_all ( GtkWidget *tree_view )
@@ -624,7 +607,7 @@ static void years_update_store ( GtkTreeStore *store )
 	//  thus for here is it in reverse time
 	for ( guint yi = 0; yi < YEARS_HELD; yi++ ) {
 		if ( tracks_years[yi].count > 0 ) {
-			gdouble distd = get_distance_in_units ( dist_units, tracks_years[yi].length );
+			gdouble distd = vu_distance_convert ( dist_units, tracks_years[yi].length );
 			guint distu = (guint)round(distd);
 			distd = distd / tracks_years[yi].count;
 			gtk_tree_store_append ( store, &t_iter, NULL );
@@ -663,20 +646,14 @@ static void years_display_build ( analyse_cb_t *acb, GtkWidget* scrolledwindow )
 
 	GtkTreeViewColumn *column;
 	vik_units_distance_t dist_units = a_vik_get_units_distance ();
-	switch ( dist_units ) {
-	case VIK_UNITS_DISTANCE_MILES:
-		(void)ui_new_column_text ( _("Distance (miles)"), renderer, view, column_runner++ );
-		column = ui_new_column_text ( _("Average Dist (miles)"), renderer, view, column_runner++ );
-		break;
-	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
-		(void)ui_new_column_text ( _("Distance (NM)"), renderer, view, column_runner++ );
-		column = ui_new_column_text ( _("Average Dist (NM)"), renderer, view, column_runner++ );
-		break;
-	default:
-		(void)ui_new_column_text ( _("Distance (km)"), renderer, view, column_runner++ );
-		column = ui_new_column_text ( _("Average Dist (km)"), renderer, view, column_runner++ );
-		break;
-	}
+	gchar *ustr = vu_distance_units_text ( dist_units );
+	gchar *dstr = g_strdup_printf ( _("Distance\n(%s)"), ustr );
+	(void)ui_new_column_text ( dstr, renderer, view, column_runner++ );
+	g_free ( dstr );
+	gchar *astr = g_strdup_printf ( _("Average Dist\n(%s)"), ustr );
+	column = ui_new_column_text ( astr, renderer, view, column_runner++ );
+	g_free ( astr );
+	g_free ( ustr );
 	gtk_tree_view_column_set_cell_data_func ( column, renderer, ui_format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
 
 	gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(store) );

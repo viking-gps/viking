@@ -4765,27 +4765,10 @@ msgstr "可见"
 #: ../src/viktrwlayer_tracklist.c:639
 msgid ""
 "Distance\n"
-"(miles)"
+"(%s)"
 msgstr ""
 "距离\n"
-"(英里)"
-
-#: ../src/viktrwlayer_tracklist.c:642
-#, fuzzy
-msgid ""
-"Distance\n"
-"(NM)"
-msgstr ""
-"距离\n"
-"(公里)"
-
-#: ../src/viktrwlayer_tracklist.c:645
-msgid ""
-"Distance\n"
-"(km)"
-msgstr ""
-"距离\n"
-"(公里)"
+"(%s)"
 
 #: ../src/viktrwlayer_tracklist.c:651
 msgid ""

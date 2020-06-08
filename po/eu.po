@@ -4867,24 +4867,10 @@ msgstr "Agerian"
 #: ../src/viktrwlayer_tracklist.c:639
 msgid ""
 "Distance\n"
-"(miles)"
+"(%s)"
 msgstr ""
 "Distantzia\n"
-"(miliak)"
-
-#: ../src/viktrwlayer_tracklist.c:642
-msgid ""
-"Distance\n"
-"(NM)"
-msgstr ""
-"Distantzia\n"
-"(NM)"
-
-#: ../src/viktrwlayer_tracklist.c:645
-msgid ""
-"Distance\n"
-"(km)"
-msgstr "Distantzia"
+"(%s)"
 
 #: ../src/viktrwlayer_tracklist.c:651
 msgid ""
