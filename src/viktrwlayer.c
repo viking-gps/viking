@@ -8761,7 +8761,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
           (void)vu_menu_add_item ( menu, _("_Visit Geocache Webpage"), NULL, G_CALLBACK(trw_layer_waypoint_gc_webpage), data );
         }
 #ifdef VIK_CONFIG_GEOTAG
-        GtkWidget *itemgi = vu_menu_add_item ( menu, _("_Geotag _Images..."), VIK_ICON_GLOBE, G_CALLBACK(trw_layer_geotagging_waypoint), data );
+        GtkWidget *itemgi = vu_menu_add_item ( menu, _("Geotag _Images..."), VIK_ICON_GLOBE, G_CALLBACK(trw_layer_geotagging_waypoint), data );
         gtk_widget_set_tooltip_text (itemgi, _("Geotag multiple images against this waypoint"));
 #endif
       }
@@ -8778,7 +8778,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
         gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemg), GTK_WIDGET(geotag_submenu) );
 
         (void)vu_menu_add_item ( geotag_submenu, _("_Update"), NULL, G_CALLBACK(trw_layer_geotagging_waypoint_mtime_update), data );
-        (void)vu_menu_add_item ( geotag_submenu, _("_Update and _Keep File Timestamp"), NULL, G_CALLBACK(trw_layer_geotagging_waypoint_mtime_keep), data );
+        (void)vu_menu_add_item ( geotag_submenu, _("Update and _Keep File Timestamp"), NULL, G_CALLBACK(trw_layer_geotagging_waypoint_mtime_keep), data );
 #endif
       }
 
@@ -8812,7 +8812,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINTS ) {
     (void)vu_menu_add_item ( menu, _("_View All Waypoints"), GTK_STOCK_ZOOM_FIT, G_CALLBACK(trw_layer_auto_waypoints_view), data );
-    (void)vu_menu_add_item ( menu, _("_Goto _Waypoint..."), GTK_STOCK_JUMP_TO, G_CALLBACK(trw_layer_goto_wp), data );
+    (void)vu_menu_add_item ( menu, _("Goto _Waypoint..."), GTK_STOCK_JUMP_TO, G_CALLBACK(trw_layer_goto_wp), data );
     (void)vu_menu_add_item ( menu, _("Delete _All Waypoints"), GTK_STOCK_REMOVE, G_CALLBACK(trw_layer_delete_all_waypoints), data );
     (void)vu_menu_add_item ( menu, _("_Delete Waypoints From Selection..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_delete_waypoints_from_selection), data );
     (void)vu_menu_add_item ( menu, _("Delete Duplicate Waypoints"), GTK_STOCK_DELETE, G_CALLBACK(trw_layer_delete_duplicate_waypoints), data );
@@ -8950,7 +8950,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     // Routes don't have times or segments...
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
       (void)vu_menu_add_item ( combine_submenu, _("_Merge By Time..."), NULL, G_CALLBACK(trw_layer_merge_by_timestamp), data );
-      (void)vu_menu_add_item ( combine_submenu, _("_Merge _Segments"), NULL, G_CALLBACK(trw_layer_merge_by_segment), data );
+      (void)vu_menu_add_item ( combine_submenu, _("Merge _Segments"), NULL, G_CALLBACK(trw_layer_merge_by_segment), data );
       (void)vu_menu_add_item ( combine_submenu, _("Merge _With Other Tracks..."), NULL, G_CALLBACK(trw_layer_merge_with_other), data );
     }
 

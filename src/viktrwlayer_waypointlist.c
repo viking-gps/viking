@@ -293,7 +293,7 @@ static void add_copy_menu_items ( GtkMenu *menu, GtkWidget *tree_view )
 {
 	(void)vu_menu_add_item ( menu, _("_Copy Data"), GTK_STOCK_COPY,
 	                         G_CALLBACK(trw_layer_copy_selected_only_visible_columns), tree_view );
-	(void)vu_menu_add_item ( menu, _("_Copy Data (with _positions)"), GTK_STOCK_COPY,
+	(void)vu_menu_add_item ( menu, _("Copy Data (with _positions)"), GTK_STOCK_COPY,
 	                         G_CALLBACK(trw_layer_copy_selected_with_position), tree_view );
 }
 
