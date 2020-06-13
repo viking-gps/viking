@@ -442,11 +442,10 @@ static void trw_layer_waypoint_list_add ( vik_trw_waypoint_list_t *vtdl,
 	gchar time_buf[32];
 	time_buf[0] = '\0';
 	if ( !isnan(wpt->timestamp) ) {
-		GDateTime* gdt = g_date_time_new_from_unix_utc ( wpt->timestamp );
-		gchar *time = g_date_time_format ( gdt, date_format );
+		time_t tt = wpt->timestamp;
+		gchar *time = vu_get_time_string ( &tt, date_format, &wpt->coord, NULL );
 		g_strlcpy ( time_buf, time, sizeof(time_buf) );
 		g_free ( time );
-		g_date_time_unref ( gdt);
 	}
 
 	gboolean visible = wpt->visible && vik_trw_layer_get_waypoints_visibility ( vtl );

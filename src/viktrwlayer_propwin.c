@@ -160,6 +160,7 @@ typedef struct _propwidgets {
   gboolean  is_blob_drawn;
   gdouble   duration;
   gchar     *tz; // TimeZone at track's location
+  VikCoord  vc;  // Center of track
 } PropWidgets;
 
 // Local functions
@@ -908,16 +909,19 @@ static void time_label_update (GtkWidget *widget, gdouble seconds)
 //
 static void real_time_label_update ( PropWidgets *widgets, GtkWidget *widget, VikTrackpoint *trackpoint )
 {
-  static gchar tmp_buf[64];
   if ( !isnan(trackpoint->timestamp) ) {
     time_t ts = round ( trackpoint->timestamp );
     // Alternatively could use %c format but I prefer a slightly more compact form here
     //  The full date can of course be seen on the Statistics tab
-    strftime (tmp_buf, sizeof(tmp_buf), "%X %x %Z", localtime(&ts));
+    gchar *msg = vu_get_time_string ( &ts, "%X %x %Z", &widgets->vc, widgets->tz );
+    gtk_label_set_text ( GTK_LABEL(widget), msg );
+    g_free ( msg );
   }
-  else
+  else {
+    static gchar tmp_buf[64];
     g_snprintf (tmp_buf, sizeof(tmp_buf), _("No Data"));
-  gtk_label_set_text(GTK_LABEL(widget), tmp_buf);
+    gtk_label_set_text ( GTK_LABEL(widget), tmp_buf );
+  }
 }
 
 static void update_speed_time_buttons ( VikTrackpoint *trackpoint, gpointer ptr, gdouble seconds_from_start, guint ix, VikPropWinGraphType_t pwgt )
@@ -2744,21 +2748,20 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
     gdouble t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
     gdouble t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
 
-    VikCoord vc;
     // Notional center of a track is simply an average of the bounding box extremities
     struct LatLon center = { (tr->bbox.north+tr->bbox.south)/2, (tr->bbox.east+tr->bbox.west)/2 };
-    vik_coord_load_from_latlon ( &vc, vik_trw_layer_get_coord_mode(widgets->vtl), &center );
+    vik_coord_load_from_latlon ( &widgets->vc, vik_trw_layer_get_coord_mode(widgets->vtl), &center );
 
-    widgets->tz = vu_get_tz_at_location ( &vc );
+    widgets->tz = vu_get_tz_at_location ( &widgets->vc );
 
     time_t ts1 = round ( t1 );
     time_t ts2 = round ( t2 );
     gchar *msg;
-    msg = vu_get_time_string ( &ts1, "%c", &vc, widgets->tz );
+    msg = vu_get_time_string ( &ts1, "%c", &widgets->vc, widgets->tz );
     widgets->w_time_start = content[cnt++] = ui_label_new_selectable(msg);
     g_free ( msg );
 
-    msg = vu_get_time_string ( &ts2, "%c", &vc, widgets->tz );
+    msg = vu_get_time_string ( &ts2, "%c", &widgets->vc, widgets->tz );
     widgets->w_time_end = content[cnt++] = ui_label_new_selectable(msg);
     g_free ( msg );
 
@@ -3327,7 +3330,9 @@ static gboolean graph_tooltip_cb ( GtkWidget  *widget,
     if ( !isnan(trackpoint->timestamp) ) {
       time_t ts = round ( trackpoint->timestamp );
       // Alternatively could use %c format but I prefer a slightly more compact form here
-      strftime ( time_buf, sizeof(time_buf), "%X %x %Z", localtime(&ts) );
+      gchar *msg = vu_get_time_string ( &ts, "%X %x %Z", &trackpoint->coord, widgets->tz );
+      g_strlcpy ( time_buf, msg, sizeof(time_buf) );
+      g_free ( msg );
     }
     // NB No newline as this is always the last bit ATM
     g_string_append_printf ( gtip, "%02d:%02d:%02d - %s", h, m, s, time_buf );
@@ -3447,6 +3452,10 @@ gpointer vik_trw_layer_propwin_main ( GtkWindow *parent,
   widgets->track_length_inc_gaps = vik_track_get_length_including_gaps ( tr );
   widgets->show_dem[PGT_ELEVATION_DISTANCE] = main_show_dem;
   widgets->show_speed[PGT_SPEED_TIME] = main_show_gps_speed;
+
+  if ( tr && tr->trackpoints && a_vik_get_time_ref_frame() == VIK_TIME_REF_WORLD ) {
+    widgets->tz = vu_get_tz_at_location ( &VIK_TRACKPOINT(tr->trackpoints->data)->coord );
+  }
 
   GtkWidget *graphs = gtk_notebook_new ( );
   // By storing the graphs here & then deleting on close, means any associated signals also get removed

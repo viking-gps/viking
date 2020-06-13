@@ -420,11 +420,11 @@ static void trw_layer_track_list_add ( vik_trw_and_track_t *vtt,
 	gchar time_buf[32];
 	time_buf[0] = '\0';
 	if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
-		GDateTime* gdt = g_date_time_new_from_unix_utc ( VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
-		gchar *time = g_date_time_format ( gdt, date_format );
+		VikTrackpoint *tp = VIK_TRACKPOINT(trk->trackpoints->data);
+		time_t tt = tp->timestamp;
+		gchar *time = vu_get_time_string ( &tt, date_format, &tp->coord, NULL );
 		g_strlcpy ( time_buf, time, sizeof(time_buf) );
 		g_free ( time );
-		g_date_time_unref ( gdt);
 	}
 
 	gboolean visible = trk->visible && (trk->is_route ? vik_trw_layer_get_routes_visibility(vtl) : vik_trw_layer_get_tracks_visibility(vtl));

@@ -626,13 +626,15 @@ static double dist_sq( double *a1, double *a2, int dims ) {
   return dist_sq;
 }
 
-static gchar* time_string_adjusted ( time_t *time, gint offset_s )
+static gchar* time_string_adjusted ( time_t *time, const gchar *format, gint offset_s )
 {
 	time_t *mytime = time;
 	*mytime = *mytime + offset_s;
 	gchar *str = g_malloc ( 64 );
 	// Append asterisks to indicate use of simplistic model (i.e. no TZ)
-	strftime ( str, 64, "%a %X %x **", gmtime(mytime) );
+	gchar *myformat = g_strdup_printf ( "%s **", format );
+	strftime ( str, 64, myformat, gmtime(mytime) );
+	g_free ( myformat );
 	return str;
 }
 
@@ -736,7 +738,7 @@ gchar* vu_get_time_string ( time_t *time, const gchar *format, const VikCoord* v
 					// Fallback to simplistic method that doesn't take into account Timezones of countries.
 					struct LatLon ll;
 					vik_coord_to_latlon ( vc, &ll );
-					str = time_string_adjusted ( time, round ( ll.lon / 15.0 ) * 3600 );
+					str = time_string_adjusted ( time, format, round ( ll.lon / 15.0 ) * 3600 );
 				}
 			}
 			else {

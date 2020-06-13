@@ -3211,6 +3211,8 @@ typedef struct {
   time_t  start_time;
   time_t  end_time;
   gint    duration;
+  // Single position for the layer used for the potential timezone
+  VikCoord *coord;
 } tooltip_tracks;
 
 /*
@@ -3222,6 +3224,11 @@ static void trw_layer_tracks_tooltip ( const gpointer id, VikTrack *tr, tooltip_
 
   // Ensure times are available
   if ( tr->trackpoints && !isnan(vik_track_get_tp_first(tr)->timestamp) ) {
+    // Position of first trackpoint is good enough for timezone;
+    //  rather than working out the center of the layer, since the tooltip can be called often
+    if ( !tt->coord ) {
+      tt->coord = &vik_track_get_tp_first(tr)->coord;
+    }
     // Get trkpt only once - as using vik_track_get_tp_last() iterates whole track each time
     VikTrackpoint *trkpt_last = vik_track_get_tp_last(tr);
     if ( !isnan(trkpt_last->timestamp) ) {
@@ -3274,25 +3281,59 @@ static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl )
 
   // Safety check - I think these should always be valid
   if ( vtl->tracks && vtl->waypoints ) {
-    tooltip_tracks tt = { 0.0, 0, 0, 0 };
+    tooltip_tracks tt = { 0.0, 0, 0, 0, NULL };
     g_hash_table_foreach ( vtl->tracks, (GHFunc) trw_layer_tracks_tooltip, &tt );
 
-    GDate* gdate_start = g_date_new ();
-    g_date_set_time_t (gdate_start, tt.start_time);
+    GDate* gdate_start = NULL;
+    GDate* gdate_end = NULL;
 
-    GDate* gdate_end = g_date_new ();
-    g_date_set_time_t (gdate_end, tt.end_time);
+    // Put time information into tbuf3
+    // When differing dates - put on separate line
+    switch ( a_vik_get_time_ref_frame() ) {
+    case VIK_TIME_REF_UTC:
+      {
+        strftime ( tbuf1, sizeof(tbuf1), "%x", gmtime(&tt.start_time) );
+        strftime ( tbuf2, sizeof(tbuf2), "%x", gmtime(&tt.end_time) );
+        if ( g_strcmp0 ( tbuf1, tbuf2 ) != 0 )
+          g_snprintf ( tbuf3, sizeof(tbuf3), _("%s to %s\n"), tbuf1, tbuf2 );
+        else
+          g_snprintf ( tbuf3, sizeof(tbuf3), "%s: ", tbuf1 );
+      }
+      break;
+    case VIK_TIME_REF_LOCALE:
+      {
+        gdate_start = g_date_new ();
+        g_date_set_time_t (gdate_start, tt.start_time);
 
-    if ( g_date_compare (gdate_start, gdate_end) ) {
-      // Dates differ so print range on separate line
-      g_date_strftime (tbuf1, sizeof(tbuf1), "%x", gdate_start);
-      g_date_strftime (tbuf2, sizeof(tbuf2), "%x", gdate_end);
-      g_snprintf (tbuf3, sizeof(tbuf3), "%s to %s\n", tbuf1, tbuf2);
-    }
-    else {
-      // Same date so just show it and keep rest of text on the same line - provided it's a valid time!
-      if ( tt.start_time != 0 )
-	g_date_strftime (tbuf3, sizeof(tbuf3), "%x: ", gdate_start);
+        gdate_end = g_date_new ();
+        g_date_set_time_t (gdate_end, tt.end_time);
+
+        if ( g_date_compare (gdate_start, gdate_end) ) {
+          // Dates differ so print range on separate line
+          g_date_strftime (tbuf1, sizeof(tbuf1), "%x", gdate_start);
+          g_date_strftime (tbuf2, sizeof(tbuf2), "%x", gdate_end);
+          g_snprintf ( tbuf3, sizeof(tbuf3), _("%s to %s\n"), tbuf1, tbuf2 );
+        }
+        else {
+          // Same date so just show it and keep rest of text on the same line - provided it's a valid time!
+          if ( tt.start_time != 0 )// {
+            g_date_strftime ( tbuf3, sizeof(tbuf3), "%x: ", gdate_start );
+        }
+      }
+      break;
+      // case VIK_TIME_REF_WORLD:
+    default:
+      {
+        gchar *time1 = vu_get_time_string ( &tt.start_time, "%x", tt.coord, NULL );
+        gchar *time2 = vu_get_time_string ( &tt.end_time, "%x", tt.coord, NULL );
+        if ( g_strcmp0 ( time1, time2 ) != 0 )
+          g_snprintf ( tbuf3, sizeof(tbuf3), _("%s to %s\n"), time1, time2 );
+        else
+          g_snprintf ( tbuf3, sizeof(tbuf3), "%s: ", time1 );
+        g_free ( time1 );
+        g_free ( time2 );
+      }
+      break;
     }
 
     tbuf2[0] = '\0';
@@ -3366,8 +3407,10 @@ static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl )
                 _("Tracks: %d - Waypoints: %d - Routes: %d%s%s"),
                 g_hash_table_size (vtl->tracks), g_hash_table_size (vtl->waypoints), g_hash_table_size (vtl->routes), tbuf2, tbuf1);
 
-    g_date_free (gdate_start);
-    g_date_free (gdate_end);
+    if ( gdate_start )
+      g_date_free ( gdate_start );
+    if ( gdate_end )
+      g_date_free ( gdate_end );
   }
 
   return tmp_buf;
@@ -3418,11 +3461,14 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
 	// Compact info: Short date eg (11/20/99), duration and length
 	// Hopefully these are the things that are most useful and so promoted into the tooltip
 	if ( tr->trackpoints && !isnan(vik_track_get_tp_first(tr)->timestamp) ) {
-	  time_t first = vik_track_get_tp_first(tr)->timestamp;
-	  // %x     The preferred date representation for the current locale without the time.
-	  strftime (time_buf1, sizeof(time_buf1), "%x: ", gmtime(&first));
-	  gdouble dur = vik_track_get_duration ( tr, TRUE );
-	  if ( dur > 0 ) {
+          VikTrackpoint *tp1 = vik_track_get_tp_first ( tr );
+          time_t first = tp1->timestamp;
+          // %x     The preferred date representation for the current locale without the time.
+          gchar *time_str = vu_get_time_string ( &first, "%x: ", &tp1->coord, NULL );
+          g_strlcpy ( time_buf1, time_str, sizeof(time_buf1) );
+          g_free ( time_str );
+          gdouble dur = vik_track_get_duration ( tr, TRUE );
+          if ( dur > 0 ) {
             guint hours, minutes, seconds;
             util_time_decompose ( dur, &hours, &minutes, &seconds );
             // Less than *nearly* an hour, show minutes + seconds
