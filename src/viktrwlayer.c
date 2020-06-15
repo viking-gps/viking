@@ -6889,6 +6889,21 @@ static void trw_layer_merge_by_timestamp ( menu_array_sublayer values )
 }
 
 /**
+ * Split a track at the currently selected trackpoint into a new segment
+ */
+static void trw_layer_split_create_segments ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+
+  if ( vtl->current_tpl && vtl->current_tp_track && !vtl->current_tp_track->is_route ) {
+    if ( vtl->current_tpl->next && vtl->current_tpl->prev ) {
+        VIK_TRACKPOINT(vtl->current_tpl->data)->newsegment = TRUE;
+        vik_layer_emit_update(VIK_LAYER(vtl));
+    }
+  }
+}
+
+/**
  * Split a track at the currently selected trackpoint
  */
 static void trw_layer_split_at_selected_trackpoint ( VikTrwLayer *vtl, gint subtype )
@@ -8867,6 +8882,12 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     GtkWidget *itemsnp = vu_menu_add_item ( split_submenu, _("Split at _Trackpoint"), NULL, G_CALLBACK(trw_layer_split_at_trackpoint), data );
     // Make it available only when a trackpoint is selected.
     gtk_widget_set_sensitive ( itemsnp, (gboolean)GPOINTER_TO_INT(l->current_tpl) );
+
+    if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
+      GtkWidget *itemsns = vu_menu_add_item ( split_submenu, _("_Create Segment at Trackpoint"), NULL, G_CALLBACK(trw_layer_split_create_segments), data );
+      // Make it available only when a trackpoint is selected.
+      gtk_widget_set_sensitive ( itemsns, (gboolean)GPOINTER_TO_INT(l->current_tpl) );
+    }
 
     GtkMenu *insert_submenu = GTK_MENU(gtk_menu_new());
     GtkWidget *iteminsert = vu_menu_add_item ( menu, _("_Insert Points"), GTK_STOCK_ADD, NULL, NULL );

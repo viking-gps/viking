@@ -1413,6 +1413,18 @@ This is only enabled when a trackpoint is selected.
 </para>
 </note>
 </section>
+
+<section><title>Create Segments at Trackpoint</title>
+<para>
+Creates a new track segment starting at the selected trackpoint.
+</para>
+<para>
+This is not available on routes as route segments are not allowed.
+</para>
+<para>
+This is only enabled when a trackpoint is selected.
+</para>
+</section>
 </section>
 
 <section><title>Insert Points</title>
