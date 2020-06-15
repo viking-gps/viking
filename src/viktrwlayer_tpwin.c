@@ -28,6 +28,7 @@
 //  (i.e. would get shared between multiple windows)
 static gint width = 0;
 static gint height = 0;
+static gboolean expanded = FALSE;
 
 struct _VikTrwLayerTpwin {
   GtkDialog parent;
@@ -38,6 +39,8 @@ struct _VikTrwLayerTpwin {
   GtkWidget *tabs;
   GtkWidget *extsw;
   GtkLabel *extlab;
+  GtkWidget *expander;
+  GtkLabel *heart_rate, *cadence, *temp, *power;
   // Previously these buttons were in a glist, however I think the ordering behaviour is implicit
   //  thus control manually to ensure operating on the correct button
   GtkWidget *button_close;
@@ -354,6 +357,34 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   gtk_box_pack_start ( GTK_BOX(main_hbox), diff_left_vbox, FALSE, FALSE, TPWIN_PAD );
   gtk_box_pack_start ( GTK_BOX(main_hbox), diff_right_vbox, FALSE, FALSE, TPWIN_PAD );
 
+  GtkWidget *main_vbox = gtk_vbox_new ( FALSE, 1 );
+  gtk_box_pack_start ( GTK_BOX(main_vbox), main_hbox, FALSE, FALSE, TPWIN_PAD );
+
+  static gchar *ext_texts[] = { N_("<b>Heart Rate:</b>"),
+                                N_("<b>Cadence:</b>"),
+                                N_("<b>Temperature:</b>"),
+                                N_("<b>Power:</b>"), };
+
+  GtkWidget *vbox_ext_values = gtk_vbox_new ( TRUE, 1 );
+  tpwin->heart_rate = GTK_LABEL(ui_label_new_selectable(NULL));
+  tpwin->cadence    = GTK_LABEL(ui_label_new_selectable(NULL));
+  tpwin->temp       = GTK_LABEL(ui_label_new_selectable(NULL));
+  tpwin->power    = GTK_LABEL(ui_label_new_selectable(NULL));
+  gtk_box_pack_start ( GTK_BOX(vbox_ext_values), GTK_WIDGET(tpwin->heart_rate), TRUE, TRUE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(vbox_ext_values), GTK_WIDGET(tpwin->cadence), TRUE, TRUE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(vbox_ext_values), GTK_WIDGET(tpwin->temp), TRUE, TRUE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(vbox_ext_values), GTK_WIDGET(tpwin->power), TRUE, TRUE, TPWIN_PAD );
+
+  tpwin->expander = gtk_expander_new_with_mnemonic ( _("_Additional") );
+  gtk_expander_set_expanded ( GTK_EXPANDER(tpwin->expander), expanded );
+  gtk_box_pack_start ( GTK_BOX(main_vbox), tpwin->expander, FALSE, FALSE, TPWIN_PAD );
+
+  GtkWidget *vbox_ext_texts = a_dialog_create_label_vbox ( ext_texts, G_N_ELEMENTS(ext_texts), 1, TPWIN_PAD );
+  GtkWidget *hbox_ext = gtk_hbox_new ( FALSE, 5 );
+  gtk_container_add ( GTK_CONTAINER(tpwin->expander), hbox_ext );
+  gtk_box_pack_start ( GTK_BOX(hbox_ext), vbox_ext_texts, FALSE, FALSE, TPWIN_PAD );
+  gtk_box_pack_start ( GTK_BOX(hbox_ext), vbox_ext_values, FALSE, FALSE, TPWIN_PAD );
+
   tpwin->extsw = gtk_scrolled_window_new ( NULL, NULL );
   gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(tpwin->extsw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
   tpwin->extlab = GTK_LABEL(ui_label_new_selectable ( NULL ));
@@ -361,7 +392,8 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
   gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(tpwin->extsw), GTK_WIDGET(tpwin->extlab) );
 
   tpwin->tabs = gtk_notebook_new();
-  gtk_notebook_append_page ( GTK_NOTEBOOK(tpwin->tabs), main_hbox, gtk_label_new(_("General")) );
+  //gtk_notebook_append_page ( GTK_NOTEBOOK(tpwin->tabs), main_hbox, gtk_label_new(_("General")) );
+  gtk_notebook_append_page ( GTK_NOTEBOOK(tpwin->tabs), main_vbox, gtk_label_new(_("General")) );
   gtk_notebook_append_page ( GTK_NOTEBOOK(tpwin->tabs), tpwin->extsw, gtk_label_new(_("GPX Extensions")) );
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(tpwin))), tpwin->tabs, FALSE, FALSE, 0 );
   gtk_notebook_set_show_tabs ( GTK_NOTEBOOK(tpwin->tabs), FALSE ); // Hide the tabs until really needed
@@ -386,7 +418,8 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
  */
 void vik_trw_layer_tpwin_destroy ( VikTrwLayerTpwin *tpwin )
 {
-  // Save the size before closing the dialog
+  // Save the size and state before closing the dialog
+  expanded = gtk_expander_get_expanded ( GTK_EXPANDER(tpwin->expander) );
   gtk_window_get_size ( GTK_WINDOW(tpwin), &width, &height );
   gtk_widget_destroy ( GTK_WIDGET(tpwin) );
 }
@@ -422,6 +455,11 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
   gtk_label_set_text ( tpwin->sat, NULL );
 
   gtk_label_set_text ( tpwin->extlab, NULL );
+
+  gtk_label_set_text ( tpwin->heart_rate, NULL );
+  gtk_label_set_text ( tpwin->cadence, NULL );
+  gtk_label_set_text ( tpwin->temp, NULL );
+  gtk_label_set_text ( tpwin->power, NULL );
 
   gtk_window_set_title ( GTK_WINDOW(tpwin), _("Trackpoint") );
 }
@@ -559,6 +597,33 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
 
   g_snprintf ( tmp_str, sizeof(tmp_str), "%d / %d", tp->nsats, tp->fix_mode );
   gtk_label_set_text ( tpwin->sat, tmp_str );
+
+  if ( tp->cadence != VIK_TRKPT_CADENCE_NONE )
+    g_snprintf ( tmp_str, sizeof(tmp_str), _("%d RPM"), tp->cadence );
+  else
+    g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
+  gtk_label_set_text ( tpwin->cadence, tmp_str );
+
+  if ( tp->heart_rate )
+    g_snprintf ( tmp_str, sizeof(tmp_str), _("%d bpm"), tp->heart_rate );
+  else
+    g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
+  gtk_label_set_text ( tpwin->heart_rate, tmp_str );
+
+  if ( !isnan(tp->temp) )
+    if ( a_vik_get_units_temp() == VIK_UNITS_TEMP_CELSIUS )
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%.1f%sC", tp->temp, DEGREE_SYMBOL );
+    else
+      g_snprintf ( tmp_str, sizeof(tmp_str), "%.1f%sF", VIK_CELSIUS_TO_FAHRENHEIT(tp->temp), DEGREE_SYMBOL );
+  else
+    g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
+  gtk_label_set_text ( tpwin->temp, tmp_str );
+
+  if ( tp->power != VIK_TRKPT_POWER_NONE )
+    g_snprintf ( tmp_str, sizeof(tmp_str), _("%d Watts"), tp->power );
+  else
+    g_snprintf ( tmp_str, sizeof(tmp_str), "--" );
+  gtk_label_set_text ( tpwin->power, tmp_str );
 
   gtk_label_set_text ( tpwin->extlab, tp->extensions );
   GtkWidget *ext_tab = gtk_notebook_get_tab_label ( GTK_NOTEBOOK(tpwin->tabs), tpwin->extsw );

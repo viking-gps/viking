@@ -50,6 +50,10 @@ typedef enum {
 	tt_trk_trkseg_trkpt_pos_lon,
 	tt_trk_trkseg_trkpt_ele,
 	tt_trk_trkseg_trkpt_time,
+	tt_trk_trkseg_trkpt_cadence,
+	tt_trk_trkseg_trkpt_hr,
+	tt_trk_trkseg_trkpt_power,
+	tt_trk_trkseg_trkpt_speed,
 } tag_type;
 
 typedef struct tag_mapping {
@@ -85,12 +89,19 @@ static tag_mapping tag_path_map[] = {
 // There are repeats of Track elements but at a different XML layout tree position
 //  currently don't care about various sport types
 	{ tt_tcx,                      "/TrainingCenterDatabase/Activities/Activity/Lap" },
+	{ tt_tcx_cmt,                  "/TrainingCenterDatabase/Activities/Activity/Notes" },
 	{ tt_trk,                      "/TrainingCenterDatabase/Activities/Activity/Lap/Track" },
 	{ tt_trk_trkseg_trkpt,         "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint" },
 	{ tt_trk_trkseg_trkpt_ele,     "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/AltitudeMeters" },
 	{ tt_trk_trkseg_trkpt_time,    "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Time" },
 	{ tt_trk_trkseg_trkpt_pos_lat, "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Position/LatitudeDegrees" },
 	{ tt_trk_trkseg_trkpt_pos_lon, "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Position/LongitudeDegrees" },
+	{ tt_trk_trkseg_trkpt_cadence, "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Cadence" },
+	{ tt_trk_trkseg_trkpt_cadence, "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Extensions/RunCadence" },
+	{ tt_trk_trkseg_trkpt_hr,      "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/HeartRateBpm/Value" },
+	{ tt_trk_trkseg_trkpt_power,   "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Extensions/ns3:TPX/ns3:Watts" },
+	{ tt_trk_trkseg_trkpt_power,   "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Extensions/Watts" },
+	{ tt_trk_trkseg_trkpt_speed,   "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Extensions/ns3:TPX/ns3:Speed" },
 
 	{0}
 };
@@ -144,6 +155,8 @@ static void tcx_start ( UserDataT *ud, const char *el, const char **attr )
 
 		case tt_tcx: {
 			c_vtl = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, ud->vvp, FALSE ));
+			// Always force V1.1, since we may read in 'extended' data like cadence, etc...
+			vik_trw_layer_set_gpx_version ( c_vtl, GPX_V1_1 );
 			c_md = vik_trw_metadata_new();
 			break;
 		}
@@ -172,6 +185,10 @@ static void tcx_start ( UserDataT *ud, const char *el, const char **attr )
 		case tt_trk_trkseg_trkpt_pos_lon:
 		case tt_trk_trkseg_trkpt_ele:
 		case tt_trk_trkseg_trkpt_time:
+		case tt_trk_trkseg_trkpt_cadence:
+		case tt_trk_trkseg_trkpt_hr:
+		case tt_trk_trkseg_trkpt_power:
+		case tt_trk_trkseg_trkpt_speed:
 		case tt_wpt_cmt:
 		case tt_wpt_name:
 		case tt_wpt_ele:
@@ -366,7 +383,27 @@ static void tcx_end ( UserDataT *ud, const char *el )
 			}
 			break;
 
-		default: break;
+		case tt_trk_trkseg_trkpt_cadence:
+			c_tp->cadence = atoi ( c_cdata->str );
+			g_string_erase ( c_cdata, 0, -1 );
+			break;
+
+		case tt_trk_trkseg_trkpt_hr:
+			c_tp->heart_rate = atoi ( c_cdata->str );
+			g_string_erase ( c_cdata, 0, -1 );
+			break;
+
+		case tt_trk_trkseg_trkpt_power:
+			c_tp->power = g_ascii_strtod ( c_cdata->str, NULL );
+			g_string_erase ( c_cdata, 0, -1 );
+			break;
+
+		case tt_trk_trkseg_trkpt_speed:
+			c_tp->speed = g_ascii_strtod ( c_cdata->str, NULL );
+			g_string_erase ( c_cdata, 0, -1 );
+			break;
+
+	        default: break;
 	}
 
 	current_tag = get_tag ( xpath->str );
@@ -388,6 +425,10 @@ static void tcx_cdata ( void *dta, const XML_Char *ss, int len )
 		case tt_trk_trkseg_trkpt_pos_lon:
 		case tt_wpt_pos_lat:
 		case tt_wpt_pos_lon:
+		case tt_trk_trkseg_trkpt_cadence:
+		case tt_trk_trkseg_trkpt_hr:
+		case tt_trk_trkseg_trkpt_power:
+		case tt_trk_trkseg_trkpt_speed:
 			g_string_append_len ( c_cdata, ss, len );
 			break;
 		default: break; // ignore cdata from other things

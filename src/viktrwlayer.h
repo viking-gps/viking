@@ -46,6 +46,13 @@ enum {
   VIK_TRW_LAYER_SUBLAYER_ROUTE
 };
 
+typedef enum {
+  GPX_V1_0 = 0,
+  GPX_V1_1,
+  // ATM V1.1 is implicitly Garmin...
+  //GPX_V1_1_GARMIN,
+} gpx_version_t;
+
 typedef struct _VikTrwLayerClass VikTrwLayerClass;
 struct _VikTrwLayerClass
 {
@@ -56,13 +63,6 @@ struct _VikTrwLayerClass
 GType vik_trw_layer_get_type ();
 
 typedef struct _VikTrwLayer VikTrwLayer;
-
-typedef enum {
-  GPX_V1_0 = 0,
-  GPX_V1_1,
-  // ATM V1.1 is implicitly Garmin...
-  //GPX_V1_1_GARMIN,
-} gpx_version_t;
 
 typedef struct {
   gchar *description;

@@ -516,10 +516,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
 
   /* Due to OSM limits, we have to enforce ele and time fields
    also don't upload invisible tracks */
-  gpx_version_t version = GPX_V1_0;
-  if ( oti->vtl )
-    version = vik_trw_layer_get_gpx_version ( oti->vtl );
-  GpxWritingOptions options = { TRUE, TRUE, FALSE, FALSE, version };
+  GpxWritingOptions options = { TRUE, TRUE, FALSE, FALSE, vik_trw_layer_get_gpx_version(oti->vtl) };
 
   gchar *filename = NULL;
 

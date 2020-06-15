@@ -2,7 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- * Copyright (c) 2012, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (c) 2012-2020, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -233,6 +233,9 @@ VikTrackpoint *vik_trackpoint_new()
   tp->hdop = NAN;
   tp->vdop = NAN;
   tp->pdop = NAN;
+  tp->cadence = VIK_TRKPT_CADENCE_NONE;
+  tp->temp = NAN;
+  tp->power = VIK_TRKPT_POWER_NONE;
   return tp;
 }
 
@@ -562,6 +565,10 @@ void vik_track_to_routepoints ( VikTrack *tr )
     VIK_TRACKPOINT(iter->data)->fix_mode = VIK_GPS_MODE_NOT_SEEN;
     g_free ( VIK_TRACKPOINT(iter->data)->extensions );
     VIK_TRACKPOINT(iter->data)->extensions = NULL;
+    VIK_TRACKPOINT(iter->data)->heart_rate = 0;
+    VIK_TRACKPOINT(iter->data)->cadence = VIK_TRKPT_CADENCE_NONE;
+    VIK_TRACKPOINT(iter->data)->temp = NAN;
+    VIK_TRACKPOINT(iter->data)->power = VIK_TRKPT_POWER_NONE;
 
     iter = iter->next;
   }
@@ -790,6 +797,408 @@ gdouble vik_track_get_max_speed(const VikTrack *tr)
   return maxspeed;
 }
 
+// Returns 0 if not available
+guint vik_track_get_max_heart_rate ( const VikTrack *tr )
+{
+  guint max = 0, val;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->heart_rate;
+      if ( val > max )
+        max = val;
+      iter = iter->next;
+    }
+  }
+  return max;
+}
+
+// "Average comment", for heart rate / cadence / temperature / power
+// NB A more complicated average could attempt to consider time between points/segments
+//  and possibly assume that value applies until the next (or halfway to) the next point
+//  then the weight the average according to those times.
+// Typically tracks will be recorded at least every few seconds, especially with these types of information
+//  such that ATM this is not worth trying to compensate for very low sample rate recordings
+
+// Simple average across those points that have it
+// Returns NAN if not available
+gdouble vik_track_get_avg_heart_rate ( const VikTrack *tr )
+{
+  gdouble avg = 0.0;
+  gulong count = 0;
+  gint val;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->heart_rate;
+      if ( val > 0 ) {
+        avg += VIK_TRACKPOINT(iter->data)->heart_rate;
+        count++;
+      }
+      iter = iter->next;
+    }
+  }
+  if ( count > 0 )
+    return avg / count;
+  return NAN;
+}
+
+VikTrackpoint *vik_track_get_tp_by_max_heart_rate ( const VikTrack *tr )
+{
+  VikTrackpoint *tp = NULL;
+  guint max = 0, val;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->heart_rate;
+      if ( val > max ) {
+        max = val;
+        tp = VIK_TRACKPOINT(iter->data);
+      }
+      iter = iter->next;
+    }
+  }
+  return tp;
+}
+
+// Prevention of crazy array maps
+#define MAX_NUM_CHUNKS 16000
+
+/**
+ * vik_track_make_time_map_for:
+ *
+ * Commonal method to create an array of values for time based graph display for the specified type
+ */
+gdouble *vik_track_make_time_map_for ( const VikTrack *tr, guint16 num_chunks, VikTrackValueType value_type )
+{
+  GList *iter = tr->trackpoints;
+  if ( !iter || !iter->next ) // zero or one-point track
+    return NULL;
+  g_return_val_if_fail ( num_chunks < MAX_NUM_CHUNKS, NULL );
+
+  // test if there's anything worth calculating
+  gboolean okay = FALSE;
+  while ( iter ) {
+    VikTrackpoint *tp = VIK_TRACKPOINT(iter->data);
+    switch ( value_type ) {
+    case TRACK_VALUE_ELEVATION:
+      if ( !isnan(tp->altitude) ) {
+        okay = TRUE; goto done;
+      }
+      break;
+    case TRACK_VALUE_HEART_RATE:
+      if ( tp->heart_rate ) {
+        okay = TRUE; goto done;
+      }
+      break;
+    case TRACK_VALUE_CADENCE:
+      if ( tp->cadence != VIK_TRKPT_CADENCE_NONE ) {
+        okay = TRUE; goto done;
+      }
+      break;
+    case TRACK_VALUE_TEMP:
+      if ( !isnan(tp->temp) ) {
+        okay = TRUE; goto done;
+      }
+      break;
+    case TRACK_VALUE_POWER:
+      if ( tp->power != VIK_TRKPT_POWER_NONE ) {
+        okay = TRUE; goto done;
+      }
+      break;
+    default: break;
+    }
+    iter = iter->next;
+  }
+ done:
+  if ( ! okay )
+    return NULL;
+
+  gdouble t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+  gdouble t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+  gdouble duration = t2 - t1;
+
+  // Best to avoid tracks without times or not with increasing times
+  if ( isnan(t1) || isnan(t2) || duration < 0 )
+    return NULL;
+
+  guint pt_count = vik_track_get_tp_count(tr);
+  gdouble *map = g_malloc0 ( sizeof(gdouble) * num_chunks );
+  gdouble chunk_dur = duration / num_chunks;
+
+  gdouble *tt = g_malloc ( sizeof(double) * pt_count ); // Times
+  gdouble *vals = g_malloc0 ( sizeof(double) * pt_count ); // Values
+  // Get all the times and values in arrays
+  // checking for crazy values - which we'll ignore
+  guint numpts = 0;
+  iter = tr->trackpoints;
+  while (iter) {
+    VikTrackpoint *tp = VIK_TRACKPOINT(iter->data);
+    tt[numpts] = tp->timestamp;
+    switch ( value_type ) {
+    case TRACK_VALUE_ELEVATION:
+      if ( !isnan(tp->altitude) && tp->altitude < 1E9 )
+        vals[numpts] = tp->altitude;
+      break;
+    case TRACK_VALUE_HEART_RATE:
+      if ( tp->heart_rate < 1000 ) 
+        vals[numpts] = tp->heart_rate;
+      break;
+    case TRACK_VALUE_CADENCE:
+      if ( tp->cadence != VIK_TRKPT_CADENCE_NONE && tp->cadence < 25000 )
+        vals[numpts] = tp->cadence;
+      break;
+    case TRACK_VALUE_TEMP:
+      if ( !isnan(tp->temp) )
+        vals[numpts] = tp->temp;
+      break;
+    case TRACK_VALUE_POWER:
+      if ( tp->power != VIK_TRKPT_POWER_NONE && tp->power < 10000 )
+        vals[numpts] = tp->power;
+      break;
+    default: break;
+    }
+    numpts++;
+    iter = iter->next;
+  }
+
+  guint index = 0; // index of the current trackpoint.
+  for (guint ii = 0; ii < num_chunks; ii++) {
+    // Cover the interval from tt[0] + ii*chunk_dur to tt[0] + (ii+1)*chunk_dur.
+    // Find the first trackpoint outside the current interval,
+    //  then average the values within this interval.
+    if ( tt[0] + ii*chunk_dur >= tt[index] ) {
+      gdouble acc_val = 0;
+      guint acc_pts = 0;
+      while ( tt[0] + ii*chunk_dur >= tt[index] ) {
+        acc_val += vals[index];
+	index++;
+        acc_pts++;
+        // Protection for broken timings
+        if ( index > numpts ) break;
+      }
+      if ( acc_pts )
+        map[ii] = acc_val / acc_pts;
+      else
+        map[ii] = 0; // TODO may set to NAN / -1 etc...
+    } else if (ii) {
+      map[ii] = map[ii-1];
+    } else {
+      map[ii] = 0;
+    }
+  }
+  g_free ( tt );
+  g_free ( vals );
+  return map;
+}
+
+// Returns VIK_TRKPT_CADENCE_NONE if not valid
+gint vik_track_get_max_cadence ( const VikTrack *tr )
+{
+  gint max = VIK_TRKPT_CADENCE_NONE, val;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->cadence;
+      if ( val > max )
+        max = val;
+      iter = iter->next;
+    }
+  }
+  return max;
+}
+// Simple average across those points that have it
+// Returns VIK_TRKPT_CADENCE_NONE if not valid
+gdouble vik_track_get_avg_cadence ( const VikTrack *tr )
+{
+  gdouble avg = 0;
+  gint val;
+  gulong count = 0;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->cadence;
+      if ( val != VIK_TRKPT_CADENCE_NONE ) {
+        avg += val;
+        count++;
+      }
+      iter = iter->next;
+    }
+  }
+  if ( count > 0 )
+    return avg / count;
+  return NAN;
+}
+
+VikTrackpoint *vik_track_get_tp_by_max_cadence ( const VikTrack *tr )
+{
+  VikTrackpoint *tp = NULL;
+  gint max = VIK_TRKPT_CADENCE_NONE, val;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->cadence;
+      if ( val > max ) {
+        max = val;
+        tp = VIK_TRACKPOINT(iter->data);
+      }
+      iter = iter->next;
+    }
+  }
+  return tp;
+}
+
+/**
+ * vik_track_get_minmax_temp:
+ *
+ * Finds the minimum and maximum temperatures in the specified track
+ *
+ * Returns: Whether any temperatures where found
+ */
+gboolean vik_track_get_minmax_temp ( const VikTrack *tr, gdouble *min_temp, gdouble *max_temp )
+{
+  gdouble max = -274;
+  gdouble min = 274;
+  gdouble val;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->temp;
+      if ( !isnan(val) ) {
+        if ( val > max )
+          max = val;
+        if ( val < min )
+          min = val;
+      }
+      iter = iter->next;
+    }
+  }
+  gboolean ans = FALSE;
+  if ( max > -273 ) {
+     *max_temp = max;
+     ans = TRUE;
+  }
+  if ( min < 273 ) {
+     *min_temp = min;
+     ans = TRUE;
+  }
+  return ans;
+}
+
+VikTrackpoint *vik_track_get_tp_by_min_temp ( const VikTrack *tr )
+{
+  VikTrackpoint *tp = NULL;
+  gdouble min = 274, val;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->temp;
+      if ( !isnan(val) && val < min ) {
+        min = val;
+        tp = VIK_TRACKPOINT(iter->data);
+      }
+      iter = iter->next;
+    }
+  }
+  return tp;
+}
+
+VikTrackpoint *vik_track_get_tp_by_max_temp ( const VikTrack *tr )
+{
+  VikTrackpoint *tp = NULL;
+  gdouble max = -273, val;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->temp;
+      if ( !isnan(val) && val > max ) {
+        max = val;
+        tp = VIK_TRACKPOINT(iter->data);
+      }
+      iter = iter->next;
+    }
+  }
+  return tp;
+}
+
+// Returns NAN if not available
+gdouble vik_track_get_avg_temp ( const VikTrack *tr )
+{
+  gdouble avg = 0, val;
+  gulong count = 0;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->temp;
+      if ( !isnan(val) ) {
+        avg += val;
+        count++;
+      }
+      iter = iter->next;
+    }
+  }
+  if ( count > 0 )
+    return avg / count;
+  return NAN;
+}
+
+// Returns VIK_TRKPT_POWER_NONE if not valid
+gint vik_track_get_max_power ( const VikTrack *tr )
+{
+  gint max = VIK_TRKPT_POWER_NONE, val;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->power;
+      if ( val > max )
+        max = val;
+      iter = iter->next;
+    }
+  }
+  return max;
+}
+
+// Simple average across those points that have it
+// Returns VIK_TRKPT_POWER_NONE if not valid
+gdouble vik_track_get_avg_power ( const VikTrack *tr )
+{
+  gdouble avg = 0;
+  gint val;
+  gulong count = 0;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->power;
+      if ( val != VIK_TRKPT_POWER_NONE ) {
+        avg += val;
+        count++;
+      }
+      iter = iter->next;
+    }
+  }
+  if ( count > 0 )
+    return avg / count;
+  return NAN;
+}
+
+VikTrackpoint *vik_track_get_tp_by_max_power ( const VikTrack *tr )
+{
+  VikTrackpoint *tp = NULL;
+  gint max = VIK_TRKPT_POWER_NONE, val;
+  if ( tr->trackpoints ) {
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      val = VIK_TRACKPOINT(iter->data)->power;
+      if ( val > max ) {
+        max = val;
+        tp = VIK_TRACKPOINT(iter->data);
+      }
+      iter = iter->next;
+    }
+  }
+  return tp;
+}
+
 void vik_track_convert ( VikTrack *tr, VikCoordMode dest_mode )
 {
   GList *iter = tr->trackpoints;
@@ -799,9 +1208,6 @@ void vik_track_convert ( VikTrack *tr, VikCoordMode dest_mode )
     iter = iter->next;
   }
 }
-
-// Prevention of crazy array maps
-#define MAX_NUM_CHUNKS 16000
 
 /* I understood this when I wrote it ... maybe ... Basically it eats up the
  * proper amounts of length on the track and averages elevation over that. */
@@ -1146,96 +1552,6 @@ gdouble *vik_track_make_distance_map ( const VikTrack *tr, guint16 num_chunks )
   g_free(s);
   g_free(t);
   return v;
-}
-
-/**
- * This uses the 'time' based method to make the graph, (which is a simpler compared to the elevation/distance)
- * This results in a slightly blocky graph when it does not have many trackpoints: <60
- * NB Somehow the elevation/distance applies some kind of smoothing algorithm,
- *   but I don't think any one understands it any more (I certainly don't ATM)
- */
-gdouble *vik_track_make_elevation_time_map ( const VikTrack *tr, guint16 num_chunks )
-{
-  gdouble duration, chunk_dur;
-  GList *iter = tr->trackpoints;
-
-  if (!iter || !iter->next) /* zero- or one-point track */
-    return NULL;
-  g_return_val_if_fail ( num_chunks < MAX_NUM_CHUNKS, NULL );
-
-  /* test if there's anything worth calculating */
-  gboolean okay = FALSE;
-  while ( iter ) {
-    if ( !isnan(VIK_TRACKPOINT(iter->data)->altitude) ) {
-      okay = TRUE;
-      break;
-    }
-    iter = iter->next;
-  }
-  if ( ! okay )
-    return NULL;
-
-  gdouble t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
-  gdouble t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
-  duration = t2 - t1;
-
-  if ( isnan(t1) || isnan(t2) || !duration )
-    return NULL;
-
-  if (duration < 0) {
-    g_warning("negative duration: unsorted trackpoint timestamps?");
-    return NULL;
-  }
-  gint pt_count = vik_track_get_tp_count(tr);
-
-  // Reset iterator back to the beginning
-  iter = tr->trackpoints;
-
-  gdouble *pts = g_malloc ( sizeof(gdouble) * num_chunks ); // The return altitude values
-  gdouble *s = g_malloc(sizeof(double) * pt_count); // calculation altitudes
-  gdouble *t = g_malloc(sizeof(double) * pt_count); // calculation times
-
-  chunk_dur = duration / num_chunks;
-
-  s[0] = VIK_TRACKPOINT(iter->data)->altitude;
-  t[0] = VIK_TRACKPOINT(iter->data)->timestamp;
-  iter = tr->trackpoints->next;
-  gint numpts = 1;
-  while (iter) {
-    s[numpts] = VIK_TRACKPOINT(iter->data)->altitude;
-    t[numpts] = VIK_TRACKPOINT(iter->data)->timestamp;
-    numpts++;
-    iter = iter->next;
-  }
-
- /* In the following computation, we iterate through periods of time of duration chunk_dur.
-   * The first period begins at the beginning of the track.  The last period ends at the end of the track.
-   */
-  gint index = 0; /* index of the current trackpoint. */
-  gint i;
-  for (i = 0; i < num_chunks; i++) {
-    /* we are now covering the interval from t[0] + i*chunk_dur to t[0] + (i+1)*chunk_dur.
-     * find the first trackpoint outside the current interval, averaging the heights between intermediate trackpoints.
-     */
-    if (t[0] + i*chunk_dur >= t[index]) {
-      gdouble acc_s = s[index]; // initialise to first point
-      while (t[0] + i*chunk_dur >= t[index]) {
-	acc_s += (s[index+1]-s[index]);
-	index++;
-      }
-      pts[i] = acc_s;
-    }
-    else if (i) {
-      pts[i] = pts[i-1];
-    }
-    else {
-      pts[i] = 0;
-    }
-  }
-  g_free(s);
-  g_free(t);
-
-  return pts;
 }
 
 /**

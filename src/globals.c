@@ -68,6 +68,7 @@ static gchar * params_degree_formats[] = {N_("DDD"), N_("DMM"), N_("DMS"), N_("R
 static gchar * params_units_distance[] = {N_("Kilometres"), N_("Miles"), N_("Nautical Miles"), NULL};
 static gchar * params_units_speed[] = {N_("km/h"), N_("mph"), N_("m/s"), N_("knots"), N_("s/km"), N_("min/km"), N_("s/mi"), N_("min/mi"), NULL};
 static gchar * params_units_height[] = {N_("Metres"), N_("Feet"), NULL};
+static gchar * params_units_temp[] = {N_("Celsius"), N_("Fahrenheit"), NULL};
 static VikLayerParamScale params_scales_lat[] = { {-90.0, 90.0, 0.05, 2} };
 static VikLayerParamScale params_scales_long[] = { {-180.0, 180.0, 0.05, 2} };
 static gchar * params_time_ref_frame[] = {N_("Locale"), N_("World"), N_("UTC"), NULL};
@@ -82,6 +83,7 @@ static VikLayerParam general_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "units_distance", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Distance units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_distance, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "units_speed", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Speed units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_speed, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "units_height", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Height units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_height, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "units_temperature", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Temperature units:"), VIK_LAYER_WIDGET_COMBOBOX, params_units_temp, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "use_large_waypoint_icons", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Use large waypoint icons:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "default_latitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default latitude:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales_lat, NULL, NULL, lat_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "default_longitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default longitude:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales_long, NULL, NULL, lon_default, NULL, NULL },
@@ -236,6 +238,11 @@ vik_units_height_t a_vik_get_units_height ( )
   vik_units_height_t units;
   units = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "units_height")->u;
   return units;
+}
+
+vik_units_temp_t a_vik_get_units_temp ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_NAMESPACE "units_temperature")->u;
 }
 
 gboolean a_vik_get_use_large_waypoint_icons ( )

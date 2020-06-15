@@ -4,7 +4,7 @@
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2005-2007, Alex Foobarian <foobarian@gmail.com>
  * Copyright (C) 2007-2008, Quy Tonthat <qtonthat@gmail.com>
- * Copyright (C) 2012-2014, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2012-2020, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "viking.h"
 #include "viktrwlayer_propwin.h"
 #include "dems.h"
+#include "degrees_converters.h"
 
 #define BLOB_SIZE 6
 
@@ -36,6 +37,10 @@ typedef enum {
   PGT_DISTANCE_TIME,
   PGT_ELEVATION_TIME,
   PGT_SPEED_DISTANCE,
+  PGT_HEART_RATE, // NB Only doing a time based graph ATM
+  PGT_CADENCE,    // NB Only doing a time based graph ATM
+  PGT_TEMP,       // NB Only doing a time based graph ATM
+  PGT_POWER,      // NB Only doing a time based graph ATM
   PGT_END,
 } VikPropWinGraphType_t;
 
@@ -63,12 +68,13 @@ static const gdouble chunkst[] = {
 };
 
 // Local show settings to restore on dialog opening
-static gboolean show_dem[PGT_END] = { TRUE, FALSE, FALSE, FALSE, FALSE, FALSE };
- // Each is either Interpolated speed or GPS Speed
-static gboolean show_speed[PGT_END] = { TRUE, TRUE, TRUE, FALSE, FALSE };
+static gboolean show_dem[PGT_END] = { TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE };
+// Each is either Interpolated speed or GPS Speed
+static gboolean show_speed[PGT_END] = { TRUE, TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE };
 static gboolean main_show_dem = TRUE;
 static gboolean main_show_gps_speed = TRUE;
 static VikPropWinGraphType_t main_last_graph = PGT_ELEVATION_DISTANCE;
+static gint stats_height = 0;
 
 typedef struct _propsaved {
   gboolean saved;
@@ -98,6 +104,7 @@ typedef struct _propwidgets {
   GtkWidget *dialog;
   GtkWidget *graphs; // When embedded in main window
   GtkWidget *self; // When embedded in main window
+  gboolean  stats_configured;
   GtkWidget *w_comment;
   GtkWidget *w_description;
   GtkWidget *w_source;
@@ -192,6 +199,10 @@ static VikLayerParam prefs[] = {
   { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_speed_time", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Speed-time graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_speed_dist", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Speed-distance graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_dist_time", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Distance-time graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_heart_rate", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Heart Rate graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_cadence", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Cadence graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_temp", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Temperature graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_power", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Power graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
 };
 
 void vik_trw_layer_propwin_init ()
@@ -482,6 +493,30 @@ static gboolean menu_properties_cb ( PropWidgets *widgets )
   return FALSE;
 }
 
+static gboolean stats_configure_event ( GtkWidget *widget, GdkEventConfigure *event, PropWidgets *widgets )
+{
+  if ( !widgets->stats_configured ) {
+    widgets->stats_configured = TRUE;
+
+    // Allow sizing back down to the minimum
+    GdkGeometry geom = { event->width, event->height, 0, 0, 0, 0, 0, 0, 0, 0, GDK_GRAVITY_STATIC };
+    gtk_window_set_geometry_hints ( GTK_WINDOW(widget), widget, &geom, GDK_HINT_MIN_SIZE );
+
+    // As a scrollable window don't start on a too small size
+    // Restore previous size (if one was set) only in vertical direction
+    stats_height = stats_height ? stats_height : 333 * vik_viewport_get_scale(widgets->vvp);
+    gtk_window_resize ( GTK_WINDOW(widget), event->width, stats_height );
+  }
+  stats_height = event->height;
+  return FALSE;
+}
+
+static void stats_destroy_cb ( GtkDialog *dialog, PropWidgets *widgets )
+{
+  // Reset configured to enable new stats dialog instance
+  widgets->stats_configured = FALSE;
+}
+
 static gboolean menu_statistics_cb ( PropWidgets *widgets )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons ( widgets->tr->name,
@@ -499,6 +534,9 @@ static gboolean menu_statistics_cb ( PropWidgets *widgets )
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), nb, TRUE, TRUE, 0 );
 
   gtk_widget_show_all ( dialog );
+
+  g_signal_connect ( G_OBJECT(dialog), "configure-event", G_CALLBACK(stats_configure_event), widgets );
+  g_signal_connect ( G_OBJECT(dialog), "destroy", G_CALLBACK(stats_destroy_cb), widgets );
 
   (void)gtk_dialog_run ( GTK_DIALOG(dialog) );
 
@@ -670,7 +708,11 @@ static gboolean is_time_graph ( VikPropWinGraphType_t pwgt )
 {
   return ( pwgt == PGT_SPEED_TIME ||
            pwgt == PGT_DISTANCE_TIME ||
-           pwgt == PGT_ELEVATION_TIME );
+           pwgt == PGT_ELEVATION_TIME ||
+           pwgt == PGT_HEART_RATE ||
+           pwgt == PGT_CADENCE ||
+           pwgt == PGT_TEMP ||
+           pwgt == PGT_POWER );
 }
 
 static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, PropWidgets *widgets, VikPropWinGraphType_t graph_type )
@@ -760,6 +802,14 @@ static VikPropWinGraphType_t event_box_to_graph_type ( GtkWidget *event_box, Pro
     pwgt = PGT_ELEVATION_TIME;
   else if ( event_box == widgets->event_box[PGT_SPEED_DISTANCE] )
     pwgt = PGT_SPEED_DISTANCE;
+  else if ( event_box == widgets->event_box[PGT_HEART_RATE] )
+    pwgt = PGT_HEART_RATE;
+  else if ( event_box == widgets->event_box[PGT_CADENCE] )
+    pwgt = PGT_CADENCE;
+  else if ( event_box == widgets->event_box[PGT_TEMP] )
+    pwgt = PGT_TEMP;
+  else if ( event_box == widgets->event_box[PGT_POWER] )
+    pwgt = PGT_POWER;
   return pwgt;
 }
 
@@ -941,6 +991,61 @@ static void update_speed_distance_buttons ( VikTrackpoint *trackpoint, gpointer 
     vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, widgets->values[pwgt][ix], FALSE, "%.1f", FALSE );
     gtk_label_set_text ( GTK_LABEL(widgets->w_cur_value2[pwgt]), tmp_buf );
   }
+}
+
+static void update_hr_buttons ( VikTrackpoint *trackpoint, gpointer ptr, gdouble seconds_from_start, guint ix, VikPropWinGraphType_t pwgt )
+{
+  PropWidgets *widgets = (PropWidgets*)ptr;
+  if ( trackpoint && widgets->w_cur_value1[pwgt] ) {
+    gchar tmp_buf[32];
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d bpm"), trackpoint->heart_rate);
+    gtk_label_set_text ( GTK_LABEL(widgets->w_cur_value1[pwgt]), tmp_buf );
+  }
+
+  if ( trackpoint && widgets->w_cur_value2[pwgt] )
+    time_label_update ( widgets->w_cur_value2[pwgt], seconds_from_start );
+}
+
+static void update_cad_buttons ( VikTrackpoint *trackpoint, gpointer ptr, gdouble seconds_from_start, guint ix, VikPropWinGraphType_t pwgt )
+{
+  PropWidgets *widgets = (PropWidgets*)ptr;
+  if ( trackpoint && widgets->w_cur_value1[pwgt] ) {
+    gchar tmp_buf[32];
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d RPM"), trackpoint->cadence);
+    gtk_label_set_text ( GTK_LABEL(widgets->w_cur_value1[pwgt]), tmp_buf );
+  }
+
+  if ( trackpoint && widgets->w_cur_value2[pwgt] )
+    time_label_update ( widgets->w_cur_value2[pwgt], seconds_from_start );
+}
+
+static void update_temp_buttons ( VikTrackpoint *trackpoint, gpointer ptr, gdouble seconds_from_start, guint ix, VikPropWinGraphType_t pwgt )
+{
+  PropWidgets *widgets = (PropWidgets*)ptr;
+  if ( trackpoint && widgets->w_cur_value1[pwgt] ) {
+    gchar tmp_buf[32];
+    if ( a_vik_get_units_temp() == VIK_UNITS_TEMP_CELSIUS )
+      g_snprintf ( tmp_buf, sizeof(tmp_buf), "%.1f%sC", trackpoint->temp, DEGREE_SYMBOL );
+    else
+      g_snprintf ( tmp_buf, sizeof(tmp_buf), "%.1f%sF", VIK_CELSIUS_TO_FAHRENHEIT(trackpoint->temp), DEGREE_SYMBOL );
+    gtk_label_set_text ( GTK_LABEL(widgets->w_cur_value1[pwgt]), tmp_buf );
+  }
+
+  if ( trackpoint && widgets->w_cur_value2[pwgt] )
+    time_label_update ( widgets->w_cur_value2[pwgt], seconds_from_start );
+}
+
+static void update_power_buttons ( VikTrackpoint *trackpoint, gpointer ptr, gdouble seconds_from_start, guint ix, VikPropWinGraphType_t pwgt )
+{
+  PropWidgets *widgets = (PropWidgets*)ptr;
+  if ( trackpoint && widgets->w_cur_value1[pwgt] ) {
+    gchar tmp_buf[32];
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d Watts"), trackpoint->power);
+    gtk_label_set_text ( GTK_LABEL(widgets->w_cur_value1[pwgt]), tmp_buf );
+  }
+
+  if ( trackpoint && widgets->w_cur_value2[pwgt] )
+    time_label_update ( widgets->w_cur_value2[pwgt], seconds_from_start );
 }
 
 static void track_graph_move ( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *widgets )
@@ -1269,6 +1374,13 @@ static void dist_convert ( gdouble *values, guint profile_width )
     values[i] = vu_distance_convert ( dist_units, values[i] );
 }
 
+static void temp_convert ( gdouble *values, guint profile_width )
+{
+  if ( a_vik_get_units_temp() == VIK_UNITS_TEMP_FAHRENHEIT )
+    for ( guint i = 0; i < profile_width; i++ )
+      values[i] = VIK_CELSIUS_TO_FAHRENHEIT(values[i]);
+}
+
 static void elev_y_text ( gchar *ss, guint size, gdouble value )
 {
   vik_units_height_t height_units = a_vik_get_units_height ();
@@ -1298,6 +1410,26 @@ static void speed_y_text ( gchar *ss, guint size, gdouble value )
 {
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
   vu_speed_text ( ss, size, speed_units, value, FALSE, "%.1f", TRUE );
+}
+
+static void hr_y_text ( gchar *ss, guint size, gdouble value )
+{
+  snprintf ( ss, size, _("%d bpm"), (int)round(value) );
+}
+
+static void cad_y_text ( gchar *ss, guint size, gdouble value )
+{
+  snprintf ( ss, size, _("%d RPM"), (int)round(value) );
+}
+
+static void temp_y_text ( gchar *ss, guint size, gdouble value )
+{
+  snprintf ( ss, size, "%d%s%c", (int)round(value), DEGREE_SYMBOL, a_vik_get_units_temp() == VIK_UNITS_TEMP_CELSIUS ? 'C' : 'F' );
+}
+
+static void power_y_text ( gchar *ss, guint size, gdouble value )
+{
+  snprintf ( ss, size, _("%d Watts"), (int)round(value) );
 }
 
 static void draw_dem_gps_speed ( PropWidgets *widgets, GtkWidget *window, GdkPixmap *pix )
@@ -1475,8 +1607,18 @@ static void draw_it ( GtkWidget *image, VikTrack *trk, PropWidgets *widgets, Gtk
 
   if ( widgets->make_map[pwgt] )
     widgets->values[pwgt] = widgets->make_map[pwgt] ( trk, widgets->profile_width );
-  else
-    return;
+  else {
+    VikTrackValueType vtvt;
+    switch ( pwgt ) {
+    case PGT_ELEVATION_TIME: vtvt = TRACK_VALUE_ELEVATION; break;
+    case PGT_HEART_RATE:     vtvt = TRACK_VALUE_HEART_RATE; break;
+    case PGT_CADENCE:        vtvt = TRACK_VALUE_CADENCE; break;
+    case PGT_TEMP:           vtvt = TRACK_VALUE_TEMP; break;
+    case PGT_POWER:          vtvt = TRACK_VALUE_POWER; break;
+    default: return; break;
+    }
+    widgets->values[pwgt] = vik_track_make_time_map_for ( trk, widgets->profile_width, vtvt );
+  }
 
   if ( widgets->values[pwgt] == NULL )
     return;
@@ -1858,10 +2000,9 @@ GtkWidget *vik_trw_layer_create_dtdiag ( GtkWidget *window, PropWidgets *widgets
 GtkWidget *vik_trw_layer_create_etdiag ( GtkWidget *window, PropWidgets *widgets)
 {
   const VikPropWinGraphType_t pwgt = PGT_ELEVATION_TIME;
-  widgets->values[pwgt] = vik_track_make_elevation_time_map ( widgets->tr, widgets->profile_width );
+  widgets->values[pwgt] = vik_track_make_time_map_for ( widgets->tr, widgets->profile_width, TRACK_VALUE_ELEVATION );
   if ( widgets->values[pwgt] == NULL )
     return NULL;
-  widgets->make_map[pwgt] = vik_track_make_elevation_time_map;
   widgets->convert_values[pwgt] = elev_convert;
   widgets->get_y_text[pwgt] = elev_y_text;
   widgets->draw_extra[pwgt] = draw_extra_dem_and_speed;
@@ -1883,6 +2024,70 @@ GtkWidget *vik_trw_layer_create_sddiag ( GtkWidget *window, PropWidgets *widgets
   widgets->get_y_text[pwgt] = speed_y_text;
   widgets->draw_extra[pwgt] = draw_gps_speed_extra;
   widgets->button_update[pwgt] = update_speed_distance_buttons;
+  return create_event_box ( window, widgets, pwgt );
+}
+
+/**
+ * Create heart rate widgets including the image and callbacks
+ */
+GtkWidget *vik_trw_layer_create_hrdiag ( GtkWidget *window, PropWidgets *widgets)
+{
+  const VikPropWinGraphType_t pwgt = PGT_HEART_RATE;
+  widgets->values[pwgt] = vik_track_make_time_map_for ( widgets->tr, widgets->profile_width, TRACK_VALUE_HEART_RATE );
+  if ( widgets->values[pwgt] == NULL )
+    return NULL;
+  widgets->convert_values[pwgt] = NULL;
+  widgets->get_y_text[pwgt] = hr_y_text;
+  widgets->draw_extra[pwgt] = draw_extra_dem_and_gps_speed;
+  widgets->button_update[pwgt] = update_hr_buttons;
+  return create_event_box ( window, widgets, pwgt );
+}
+
+/**
+ * Create cadence widgets including the image and callbacks
+ */
+GtkWidget *vik_trw_layer_create_caddiag ( GtkWidget *window, PropWidgets *widgets)
+{
+  const VikPropWinGraphType_t pwgt = PGT_CADENCE;
+  widgets->values[pwgt] = vik_track_make_time_map_for ( widgets->tr, widgets->profile_width, TRACK_VALUE_CADENCE );
+  if ( widgets->values[pwgt] == NULL )
+    return NULL;
+  widgets->convert_values[pwgt] = NULL;
+  widgets->get_y_text[pwgt] = cad_y_text;
+  widgets->draw_extra[pwgt] = draw_extra_dem_and_gps_speed;
+  widgets->button_update[pwgt] = update_cad_buttons;
+  return create_event_box ( window, widgets, pwgt );
+}
+
+/**
+ * Create temperature widgets including the image and callbacks
+ */
+GtkWidget *vik_trw_layer_create_tempdiag ( GtkWidget *window, PropWidgets *widgets)
+{
+  const VikPropWinGraphType_t pwgt = PGT_TEMP;
+  widgets->values[pwgt] = vik_track_make_time_map_for ( widgets->tr, widgets->profile_width, TRACK_VALUE_TEMP );
+  if ( widgets->values[pwgt] == NULL )
+    return NULL;
+  widgets->convert_values[pwgt] = temp_convert;
+  widgets->get_y_text[pwgt] = temp_y_text;
+  widgets->draw_extra[pwgt] = draw_extra_dem_and_gps_speed;
+  widgets->button_update[pwgt] = update_temp_buttons;
+  return create_event_box ( window, widgets, pwgt );
+}
+
+/**
+ * Create power widgets including the image and callbacks
+ */
+GtkWidget *vik_trw_layer_create_powdiag ( GtkWidget *window, PropWidgets *widgets)
+{
+  const VikPropWinGraphType_t pwgt = PGT_POWER;
+  widgets->values[pwgt] = vik_track_make_time_map_for ( widgets->tr, widgets->profile_width, TRACK_VALUE_POWER );
+  if ( widgets->values[pwgt] == NULL )
+    return NULL;
+  widgets->convert_values[pwgt] = NULL;
+  widgets->get_y_text[pwgt] = power_y_text;
+  widgets->draw_extra[pwgt] = draw_extra_dem_and_gps_speed;
+  widgets->button_update[pwgt] = update_power_buttons;
   return create_event_box ( window, widgets, pwgt );
 }
 
@@ -2117,29 +2322,42 @@ static GtkWidget *create_graph_page ( PropWidgets *widgets,
   return vbox;
 }
 
+static void attach_to_table ( GtkTable *table, int i, char *mylabel, GtkWidget *content )
+{
+  // Settings so the text positioning only moves around vertically when the dialog is resized
+  // This also gives more room to see the track comment
+  GtkWidget *label = gtk_label_new(NULL);
+  gtk_misc_set_alignment ( GTK_MISC(label), 1, 0.5 ); // Position text centrally in vertical plane
+  gtk_label_set_markup ( GTK_LABEL(label), _(mylabel) );
+  gtk_table_attach ( table, label, 0, 1, i, i+1, GTK_FILL, GTK_SHRINK, 0, 0 );
+  if ( GTK_IS_MISC(content) ) {
+    gtk_misc_set_alignment ( GTK_MISC(content), 0, 0.5 );
+  }
+  if ( GTK_IS_COLOR_BUTTON(content) || GTK_IS_COMBO_BOX(content) )
+    // Buttons compressed - otherwise look weird (to me) if vertically massive
+    gtk_table_attach ( table, content, 1, 2, i, i+1, GTK_FILL, GTK_SHRINK, 0, 5 );
+  else {
+     // Expand for comments + descriptions / labels
+     gtk_table_attach_defaults ( table, content, 1, 2, i, i+1 );
+     if ( GTK_IS_LABEL(content) )
+       gtk_widget_set_can_focus ( content, FALSE ); // Prevent notebook auto selecting it
+  }
+}
+
 static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[])
 {
   GtkTable *table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);
-  for (guint i=0; i<cnt; i++) {
-    // Settings so the text positioning only moves around vertically when the dialog is resized
-    // This also gives more room to see the track comment
-    GtkWidget *label = gtk_label_new(NULL);
-    gtk_misc_set_alignment ( GTK_MISC(label), 1, 0.5 ); // Position text centrally in vertical plane
-    gtk_label_set_markup ( GTK_LABEL(label), _(labels[i]) );
-    gtk_table_attach ( table, label, 0, 1, i, i+1, GTK_FILL, GTK_SHRINK, 0, 0 );
-    if (GTK_IS_MISC(contents[i])) {
-      gtk_misc_set_alignment ( GTK_MISC(contents[i]), 0, 0.5 );
-    }
-    if ( GTK_IS_COLOR_BUTTON(contents[i]) || GTK_IS_COMBO_BOX(contents[i]) )
-      // Buttons compressed - otherwise look weird (to me) if vertically massive
-      gtk_table_attach ( table, contents[i], 1, 2, i, i+1, GTK_FILL, GTK_SHRINK, 0, 5 );
-    else
-      // Expand for comments + descriptions / labels
-      gtk_table_attach_defaults ( table, contents[i], 1, 2, i, i+1 );
-  }
+  for (guint i=0; i<cnt; i++)
+    attach_to_table ( table, i, labels[i], contents[i] );
 
   return GTK_WIDGET (table);
+}
+
+static void attach_to_table_extra ( GtkWidget *table, gchar *text, int ii, char *mylabel )
+{
+  GtkWidget *wgt = ui_label_new_selectable ( text );
+  attach_to_table ( GTK_TABLE(table), ii, mylabel, wgt );
 }
 
 #define SPLIT_COLS 5
@@ -2567,9 +2785,71 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
     widgets->w_time_dur = content[cnt++] = gtk_label_new(_("No Data"));
   }
 
+  // ATM just appending extra information at the bottom
+  // TODO only if it's there (i.e. no 'No Data') to keep the dialog from getting too big
+  //  and less need for scrollling...
+  // However if made optional need way to align value to text label...
   table = create_table (cnt, stats_texts, content);
 
-  return table;
+  guint max_cad = vik_track_get_max_cadence ( tr );
+  if ( max_cad != VIK_TRKPT_CADENCE_NONE ) {
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d RPM"), max_cad);
+    attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Max Cadence:</b>") );
+  }
+
+  gdouble avg_cad = vik_track_get_avg_cadence ( tr );
+  if ( !isnan(avg_cad) ) {
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f RPM"), avg_cad);
+    attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Avg. Cadence:</b>") );
+  }
+
+  guint max_hr = vik_track_get_max_heart_rate ( tr );
+  if ( max_hr ) {
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d bpm"), max_hr);
+    attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Max Heart Rate:</b>") );
+  }
+
+  gdouble avg_hr = vik_track_get_avg_heart_rate ( tr );
+  if ( !isnan(avg_hr) ) {
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f bpm"), avg_hr);
+    attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Avg. Heart Rate:</b>") );
+  }
+
+  gdouble min_temp, max_temp;
+  if ( vik_track_get_minmax_temp(tr, &min_temp, &max_temp) ) {
+    if ( a_vik_get_units_temp() == VIK_UNITS_TEMP_CELSIUS )
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f%sC / %.1f%sC"), min_temp, DEGREE_SYMBOL, max_temp, DEGREE_SYMBOL);
+    else
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f%sF / %.1f%sF"), VIK_CELSIUS_TO_FAHRENHEIT(min_temp), DEGREE_SYMBOL, VIK_CELSIUS_TO_FAHRENHEIT(max_temp), DEGREE_SYMBOL);
+    attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Min/Max Temperature:</b>") );
+  }
+
+  gdouble avg_temp = vik_track_get_avg_temp ( tr );
+  if ( !isnan(avg_temp) ) {
+    if ( a_vik_get_units_temp() == VIK_UNITS_TEMP_CELSIUS )
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f%sC"), avg_temp, DEGREE_SYMBOL);
+    else
+      g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f%sF"), VIK_CELSIUS_TO_FAHRENHEIT(avg_temp), DEGREE_SYMBOL);
+    attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Avg. Temperature:</b>") );
+  }
+
+  guint max_pow = vik_track_get_max_power ( tr );
+  if ( max_pow != VIK_TRKPT_POWER_NONE ) {
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d Watts"), max_pow);
+    attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Max Power:</b>") );
+  }
+
+  gdouble avg_pow = vik_track_get_avg_power ( tr );
+  if ( !isnan(avg_pow) ) {
+    g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f Watts"), avg_pow);
+    attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Avg. Power:</b>") );
+  }
+
+  GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
+  gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(sw), table );
+  return sw;
+  //return table;
 }
 
 gboolean bool_pref_get ( const gchar *pref )
@@ -2577,6 +2857,7 @@ gboolean bool_pref_get ( const gchar *pref )
   VikLayerParamData *vlpd = a_preferences_get ( pref );
   return vlpd->b;
 }
+
 /**
  *
  */
@@ -2635,6 +2916,14 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     widgets->event_box[PGT_ELEVATION_TIME] = vik_trw_layer_create_etdiag(GTK_WIDGET(parent), widgets);
   if ( bool_pref_get(TPW_PREFS_NS"show_speed_dist") )
     widgets->event_box[PGT_SPEED_DISTANCE] = vik_trw_layer_create_sddiag(GTK_WIDGET(parent), widgets);
+  if ( bool_pref_get(TPW_PREFS_NS"show_heart_rate") )
+    widgets->event_box[PGT_HEART_RATE] = vik_trw_layer_create_hrdiag(GTK_WIDGET(parent), widgets);
+  if ( bool_pref_get(TPW_PREFS_NS"show_cadence") )
+    widgets->event_box[PGT_CADENCE] = vik_trw_layer_create_caddiag(GTK_WIDGET(parent), widgets);
+  if ( bool_pref_get(TPW_PREFS_NS"show_temp") )
+    widgets->event_box[PGT_TEMP] = vik_trw_layer_create_tempdiag(GTK_WIDGET(parent), widgets);
+  if ( bool_pref_get(TPW_PREFS_NS"show_power") )
+    widgets->event_box[PGT_POWER] = vik_trw_layer_create_powdiag(GTK_WIDGET(parent), widgets);
   GtkWidget *graphs = gtk_notebook_new();
 
   if ( bool_pref_get(TPW_PREFS_NS"tabs_on_side") )
@@ -2788,6 +3077,46 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
                                           FALSE, FALSE,
                                          _("Show _GPS Speed") );
     gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-distance")));
+  }
+
+  if ( widgets->event_box[PGT_HEART_RATE] ) {
+    GtkWidget *page = create_graph_page ( widgets, PGT_HEART_RATE,
+                                          _("<b>Heart Rate:</b>"),
+                                          _("<b>Track Time:</b>"),
+                                          NULL,
+                                          TRUE, DEM_available,
+                                          _("Show _GPS Speed") );
+    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Heart Rate")));
+  }
+
+  if ( widgets->event_box[PGT_CADENCE] ) {
+    GtkWidget *page = create_graph_page ( widgets, PGT_CADENCE,
+                                          _("<b>Cadence:</b>"),
+                                          _("<b>Track Time:</b>"),
+                                          NULL,
+                                          TRUE, DEM_available,
+                                          _("Show _GPS Speed") );
+    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Cadence")));
+  }
+
+  if ( widgets->event_box[PGT_TEMP] ) {
+    GtkWidget *page = create_graph_page ( widgets, PGT_TEMP,
+                                          _("<b>Temperature:</b>"),
+                                          _("<b>Track Time:</b>"),
+                                          NULL,
+                                          TRUE, DEM_available,
+                                          _("Show _GPS Speed") );
+    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Temperature")));
+  }
+
+  if ( widgets->event_box[PGT_POWER] ) {
+    GtkWidget *page = create_graph_page ( widgets, PGT_POWER,
+                                          _("<b>Power:</b>"),
+                                          _("<b>Track Time:</b>"),
+                                          NULL,
+                                          TRUE, DEM_available,
+                                          _("Show _GPS Speed") );
+    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Power")));
   }
 
   // All checkboxes goto the same callback
@@ -3036,11 +3365,6 @@ gboolean vik_trw_layer_propwin_main_refresh ( VikLayer *vl )
     g_free ( widgets->values[PGT_ELEVATION_DISTANCE] );
   widgets->values[PGT_ELEVATION_DISTANCE] = vik_track_make_elevation_map ( widgets->tr, widgets->profile_width );
 
-  /*
-  if ( widgets->values[PGT_SPEED_TIME] )
-    g_free ( widgets->values[PGT_SPEED_TIME] );
-  widgets->values[PGT_SPEED_TIME] = vik_track_make_speed_map ( widgets->tr, widgets->profile_width );
-  */
   evaluate_speeds ( widgets );
 
   // If no current values then clear display of any previous stuff

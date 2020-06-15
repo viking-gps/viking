@@ -33,6 +33,9 @@ G_BEGIN_DECLS
 
 /* todo important: put these in their own header file, maybe.probably also rename */
 
+#define VIK_TRKPT_CADENCE_NONE -1 // Since one can freewheel 0 is a valid value, hence this default
+#define VIK_TRKPT_POWER_NONE -1   // Since one can freewheel 0 is a valid value, hence this default
+
 #define VIK_TRACK(x) ((VikTrack *)(x))
 #define VIK_TRACKPOINT(x) ((VikTrackpoint *)(x))
 
@@ -51,6 +54,10 @@ struct _VikTrackpoint {
   gdouble vdop;     /* NAN if data unavailable */
   gdouble pdop;     /* NAN if data unavailable */
   gchar *extensions; // GPX 1.1 extensions - currently uneditable
+  guint heart_rate;  // Beats per Minute (bpm): 0 if data unavailable
+  gint cadence;      // In Revs Per Minute (RPM): VIK_TRKPT_CADENCE_NONE if data unavailable
+  gdouble temp;      // Temperature is in degrees C: NAN if data unavailable
+  gint power;        // Watts: VIK_TRKPT_POWER_NONE if data unavailable
 };
 
 typedef enum {
@@ -141,6 +148,24 @@ gdouble vik_track_get_max_speed(const VikTrack *tr);
 gdouble vik_track_get_average_speed(const VikTrack *tr);
 gdouble vik_track_get_average_speed_moving ( const VikTrack *tr, int stop_length_seconds );
 
+guint vik_track_get_max_heart_rate ( const VikTrack *tr );
+gdouble vik_track_get_avg_heart_rate ( const VikTrack *tr );
+VikTrackpoint *vik_track_get_tp_by_max_heart_rate ( const VikTrack *tr );
+
+gint vik_track_get_max_cadence ( const VikTrack *tr );
+gdouble vik_track_get_avg_cadence ( const VikTrack *tr );
+VikTrackpoint *vik_track_get_tp_by_max_cadence ( const VikTrack *tr );
+
+gint vik_track_get_max_power ( const VikTrack *tr );
+gdouble vik_track_get_avg_power ( const VikTrack *tr );
+VikTrackpoint *vik_track_get_tp_by_max_power ( const VikTrack *tr );
+
+gboolean vik_track_get_minmax_temp ( const VikTrack *tr, gdouble *min_temp, gdouble *max_temp );
+gdouble vik_track_get_avg_temp ( const VikTrack *tr );
+VikTrackpoint *vik_track_get_tp_by_min_temp ( const VikTrack *tr );
+VikTrackpoint *vik_track_get_tp_by_max_temp ( const VikTrack *tr );
+gdouble *vik_track_make_temp_map ( const VikTrack *tr, guint16 num_chunks );
+
 void vik_track_convert ( VikTrack *tr, VikCoordMode dest_mode );
 gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks );
 void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble *down);
@@ -158,6 +183,15 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks );
 gdouble *vik_track_make_distance_map ( const VikTrack *tr, guint16 num_chunks );
 gdouble *vik_track_make_elevation_time_map ( const VikTrack *tr, guint16 num_chunks );
 gdouble *vik_track_make_speed_dist_map ( const VikTrack *tr, guint16 num_chunks );
+typedef enum {
+  TRACK_VALUE_ELEVATION=0,
+  TRACK_VALUE_HEART_RATE,
+  TRACK_VALUE_CADENCE,
+  TRACK_VALUE_TEMP,
+  TRACK_VALUE_POWER,
+  TRACK_VALUE_END
+} VikTrackValueType;
+gdouble *vik_track_make_time_map_for ( const VikTrack *tr, guint16 num_chunks, VikTrackValueType value_type );
 gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdouble *max_alt );
 void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *len);
 VikTrack *vik_track_unmarshall (const guint8 *data_in, guint datalen);

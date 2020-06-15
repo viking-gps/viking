@@ -239,7 +239,7 @@ static gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb,
     f = g_fopen(name_dst, "r");
     if (f) {
       gchar *dirpath = g_path_get_dirname ( name_dst );
-      ret = a_gpx_read_file ( vt, f, dirpath );
+      ret = a_gpx_read_file ( vt, f, dirpath, FALSE );
       g_free ( dirpath );
       fclose(f);
     }
@@ -416,7 +416,7 @@ gboolean a_babel_convert_from_url_filter ( VikTrwLayer *vt, const char *url, con
         FILE *f = g_fopen(name_src, "r");
         if (f) {
           gchar *dirpath = g_path_get_dirname ( name_src );
-          ret = a_gpx_read_file ( vt, f, dirpath );
+          ret = a_gpx_read_file ( vt, f, dirpath, FALSE );
           g_free ( dirpath );
           fclose(f);
         }

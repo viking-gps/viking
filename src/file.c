@@ -763,7 +763,7 @@ VikLoadType_t a_file_load_stream ( FILE *f,
     // NB use a extension check first, as a GPX file header may have a Byte Order Mark (BOM) in it
     //    - which currently confuses our check_magic function
     else if ( a_file_check_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
-      if ( ! ( success = a_gpx_read_file ( vtl, f, dirpath ) ) ) {
+      if ( ! ( success = a_gpx_read_file ( vtl, f, dirpath, !add_new ) ) ) {
         load_answer = LOAD_TYPE_GPX_FAILURE;
       }
       if ( load_answer == LOAD_TYPE_OTHER_SUCCESS ) {
@@ -910,10 +910,9 @@ gboolean a_file_check_ext ( const gchar *filename, const gchar *fileext )
  */
 gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t file_type, VikTrack *trk, gboolean write_hidden )
 {
-  gpx_version_t version = GPX_V1_0;
-  if ( vtl )
-    version = vik_trw_layer_get_gpx_version ( vtl );
-  GpxWritingOptions options = { FALSE, FALSE, write_hidden, FALSE, version };
+  g_return_val_if_fail ( vtl != NULL, FALSE );
+
+  GpxWritingOptions options = { FALSE, FALSE, write_hidden, FALSE, vik_trw_layer_get_gpx_version(vtl) };
   FILE *f = g_fopen ( filename, "w" );
   if ( f )
   {

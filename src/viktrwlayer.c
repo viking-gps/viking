@@ -589,6 +589,12 @@ static gchar* params_external_type[] = {
   NULL
 };
 
+static gchar* params_gpx_version[] = {
+  N_("1.0"),
+  N_("1.1"),
+  NULL
+};
+
 static VikLayerParamData black_color_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#000000", &data.c ); return data; // Black
 }
@@ -644,6 +650,8 @@ static VikLayerParamData string_default ( void )
 }
 
 static VikLayerParamData external_layer_default ( void ) { return VIK_LPD_UINT ( VIK_TRW_LAYER_INTERNAL ); }
+
+static VikLayerParamData gpx_version_default ( void ) { return VIK_LPD_UINT ( GPX_V1_1 ); }
 
 static void reset_cb ( GtkWidget *widget, gpointer ptr )
 {
@@ -712,6 +720,7 @@ VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "metadatakeywords", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Keywords"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
   { VIK_LAYER_TRW, "metadataurl", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("URL"), VIK_LAYER_WIDGET_ENTRY_URL, NULL, NULL, NULL, string_default, NULL, NULL },
 
+  { VIK_LAYER_TRW, "gpx_version_enum", VIK_LAYER_PARAM_UINT, GROUP_FILESYSTEM, N_("GPX Version"), VIK_LAYER_WIDGET_COMBOBOX, params_gpx_version, NULL, NULL, gpx_version_default, NULL, NULL },
   { VIK_LAYER_TRW, "external_layer", VIK_LAYER_PARAM_UINT, GROUP_FILESYSTEM, N_("External layer:"), VIK_LAYER_WIDGET_COMBOBOX, params_external_type, NULL, N_("Layer data stored in the Viking file, in an external file, or in an external file but changes are not written to the file (file only loaded at startup)"), external_layer_default, NULL, NULL },
   { VIK_LAYER_TRW, "external_file", VIK_LAYER_PARAM_STRING, GROUP_FILESYSTEM, N_("Save layer as:"), VIK_LAYER_WIDGET_FILESAVE, GINT_TO_POINTER(VF_FILTER_GPX), NULL, N_("Specify where layer should be saved.  Overwrites file if it exists."), string_default, NULL, NULL },
   { VIK_LAYER_TRW, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
@@ -767,6 +776,8 @@ enum {
   PARAM_MDTIME,
   PARAM_MDKEYS,
   PARAM_MDURL,
+  // Filesystem
+  PARAM_GPXV,
   PARAM_EXTL,
   PARAM_EXTF,
   PARAM_RESET,
@@ -1539,6 +1550,11 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
         vtl->metadata->url = g_strdup (vlsp->data.s);
       }
       break;
+    // Filesystem
+    case PARAM_GPXV:
+      if ( vlsp->data.u <= GPX_V1_1 )
+        vtl->gpx_version = vlsp->data.u;
+      break;
     case PARAM_EXTL:
       if ( vlsp->data.u < VIK_EXTERNAL_TYPE_LAST ) {
           vtl->external_layer = vlsp->data.u;
@@ -1604,6 +1620,8 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_MDTIME: if (vtl->metadata) { rv.s = vtl->metadata->timestamp; } break;
     case PARAM_MDKEYS: if (vtl->metadata) { rv.s = vtl->metadata->keywords; } break;
     case PARAM_MDURL:  if (vtl->metadata) { rv.s = vtl->metadata->url; } break;
+    // Filesystem
+    case PARAM_GPXV: rv.u = vtl->gpx_version; break;
     case PARAM_EXTL: rv.u = vtl->external_layer; break;
     case PARAM_EXTF: rv.s = vtl->external_file; break;
     default: break;
@@ -6242,6 +6260,70 @@ static void trw_layer_goto_track_min_alt ( menu_array_sublayer values )
   goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vtp->coord));
 }
 
+static void trw_layer_goto_track_max_hr ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  VikTrack *track = (VikTrack *)g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+  if ( track ) {
+    VikTrackpoint* vtp = vik_track_get_tp_by_max_heart_rate ( track );
+    if ( vtp ) {
+      trw_layer_select_trackpoint ( vtl, track, vtp, TRUE );
+      goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vtp->coord) );
+    }
+  }
+}
+
+static void trw_layer_goto_track_max_cad ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  VikTrack *track = (VikTrack *)g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+  if ( track ) {
+    VikTrackpoint* vtp = vik_track_get_tp_by_max_cadence ( track );
+    if ( vtp ) {
+      trw_layer_select_trackpoint ( vtl, track, vtp, TRUE );
+      goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vtp->coord) );
+    }
+  }
+}
+
+static void trw_layer_goto_track_min_temp ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  VikTrack *track = (VikTrack *)g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+  if ( track ) {
+    VikTrackpoint* vtp = vik_track_get_tp_by_min_temp ( track );
+    if ( vtp ) {
+      trw_layer_select_trackpoint ( vtl, track, vtp, TRUE );
+      goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vtp->coord) );
+    }
+  }
+}
+
+static void trw_layer_goto_track_max_temp ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  VikTrack *track = (VikTrack *)g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+  if ( track ) {
+    VikTrackpoint* vtp = vik_track_get_tp_by_max_temp ( track );
+    if ( vtp ) {
+      trw_layer_select_trackpoint ( vtl, track, vtp, TRUE );
+      goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vtp->coord) );
+    }
+  }
+}
+
+static void trw_layer_goto_track_max_power ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  VikTrack *track = (VikTrack *)g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+  if ( track ) {
+    VikTrackpoint* vtp = vik_track_get_tp_by_max_power ( track );
+    if ( vtp ) {
+      trw_layer_select_trackpoint ( vtl, track, vtp, TRUE );
+      goto_coord ( values[MA_VLP], vtl, values[MA_VVP], &(vtp->coord) );
+    }
+  }
+}
 
 /*
  * Automatically change the viewport to center on the track and zoom to see the extent of the track
@@ -8630,6 +8712,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
   static menu_array_sublayer data;
   GtkWidget *item;
   gboolean rv = FALSE;
+  gboolean may_have_extensions = (l->gpx_version != GPX_V1_0);
 
   data[MA_VTL]         = l;
   data[MA_VLP]         = vlp;
@@ -8841,11 +8924,20 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     (void)vu_menu_add_item ( goto_submenu, _("_Highest Altitude"), GTK_STOCK_GOTO_TOP, G_CALLBACK(trw_layer_goto_track_max_alt), data );
     (void)vu_menu_add_item ( goto_submenu, _("_Lowest Altitude"), GTK_STOCK_GOTO_BOTTOM, G_CALLBACK(trw_layer_goto_track_min_alt), data );
 
-    // Routes don't have speeds or dates
+    // Routes don't have speeds or dates or similar
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
       (void)vu_menu_add_item ( goto_submenu, _("_Maximum Speed"), GTK_STOCK_MEDIA_FORWARD, G_CALLBACK(trw_layer_goto_track_max_speed), data );
       if ( vlp )
         (void)vu_menu_add_item ( goto_submenu, _("_Date"), GTK_STOCK_JUMP_TO, G_CALLBACK(trw_layer_goto_track_date), data );
+
+      // Only display if potentially have them
+      if ( may_have_extensions ) {
+        (void)vu_menu_add_item ( goto_submenu, _("Maximum _Heart Rate"), NULL, G_CALLBACK(trw_layer_goto_track_max_hr), data );
+        (void)vu_menu_add_item ( goto_submenu, _("Maximum Cadence"), NULL, G_CALLBACK(trw_layer_goto_track_max_cad), data );
+        (void)vu_menu_add_item ( goto_submenu, _("Maximum Power"), NULL, G_CALLBACK(trw_layer_goto_track_max_power), data );
+        (void)vu_menu_add_item ( goto_submenu, _("Minimum Temperature"), NULL, G_CALLBACK(trw_layer_goto_track_min_temp), data );
+        (void)vu_menu_add_item ( goto_submenu, _("Maximum Temperature"), NULL, G_CALLBACK(trw_layer_goto_track_max_temp), data );
+      }
     }
 
     (void)vu_menu_add_item ( goto_submenu, _("_Previous point"), GTK_STOCK_GO_BACK, G_CALLBACK(trw_layer_goto_track_prev_point), data );
@@ -11947,7 +12039,7 @@ static gboolean trw_load_external_layer ( VikTrwLayer *trw )
     vik_window_set_busy_cursor ( vw );
 
     gchar *dirpath = g_path_get_dirname ( extfile );
-    failed = ! a_gpx_read_file ( trw, ext_f, dirpath );
+    failed = ! a_gpx_read_file ( trw, ext_f, dirpath, FALSE );
     g_free ( dirpath );
     fclose ( ext_f );
 

@@ -470,12 +470,15 @@ The number of track points is normally alot higher (e.g. 500 or typically with l
 This is a plain text file saving all information of the current window including the view location, zoom level, projection type and then all the layer information (aggregates, maps, tracks, waypoints, etc...).
 </para>
 <para>
-Besides it's own file type, &appname; can open (and save to via export methods) GPX and KML file types.
+Besides it's own file type, &appname; can open (and save to via export methods) GPX, TCX and KML file types.
 </para>
 <note>
 <para>
-&appname; operates primarily on GPX 1.0 files. Extensions from GPX 1.1 are supported in a read/write only fashion;
- with only viewing of the raw data (i.e. no editing). Extension information is not saved in .vik format files.
+Extensions from GPX 1.1 are supported in a read/write only fashion; with viewing of the raw data (i.e. no editing).
+The arbitary extension information is not saved in .vik format files.
+</para>
+<para>
+Specific GPX 1.1 extensions such as heart rate, cadence, temperature and power are supported for viewing (including overview graphs) and these values will also be saved in .vik format files.
 </para>
 </note>
 <para>
@@ -1204,7 +1207,7 @@ Opens a new dialog with the list. As described in the Aggregate layer <xref link
 
 <section id='track_properties' xreflabel="Track and Route Properties"><title>Track and Route Properties</title>
 <para>
-This shows several tabs for properties and useful statistics about a track or a route, including elevation-distance and speed-time graphs (if data is available).
+This shows several tabs for properties and useful statistics about a track or a route, including elevation, speed, heart rate, cadence, temperature and power graphs (if the data is available and the graph has not been disabled via <xref linkend="prefs_trackprops"/>).
 Moving the mouse pointer over the graph displays values related to that point along the track.
 You can click on these graphs to jump to the point in the track.
 You can reverse it, delete duplicates, split at marked position or split a track from its component segments (discontinuous breaks in a track) into separate tracks.
@@ -1317,6 +1320,11 @@ This centers the viewport on the selected position on the track:
 <listitem><para>Version1.1+: Highest Altitude</para></listitem>
 <listitem><para>Version1.1+: Lowest Altitude</para></listitem>
 <listitem><para>Version1.1+: Maximum Speed (Not Available on Routes)</para></listitem>
+<listitem><para>Version1.9+: Maximum Heart Rate (Not Available on Routes)</para></listitem>
+<listitem><para>Version1.9+: Maximum Cadence (Not Available on Routes)</para></listitem>
+<listitem><para>Version1.9+: Maximum Power (Not Available on Routes)</para></listitem>
+<listitem><para>Version1.9+: Minimum Temperature (Not Available on Routes)</para></listitem>
+<listitem><para>Version1.9+: Maximum Temperature (Not Available on Routes)</para></listitem>
 <listitem><para>Version1.8+: Previous trackpoint</para></listitem>
 <listitem><para>Version1.8+: Next trackpoint</para></listitem>
 </itemizedlist>
@@ -2866,6 +2874,9 @@ Generally if you have a system with lots of memory it's recommended to increase 
 <para>Some GPS devices require waypoint symbols to be in a particular case.</para>
 <para>E.g. On a Garmin Oregon 450 they must be in <emphasis>Title Case</emphasis> to be recognized.</para>
 </section>
+<section><title>GPX Creator</title>
+<para>If not blank, then this setting overrides the default internal value that is used when writing to a GPX file.</para>
+</section>
 <section><title>Image Viewer (Not Windows)</title>
 <para>Allows setting the program used to view images associated with Waypoints.</para>
 <para>By default this is set to <application>xdg-open</application> which should open the system's default image viewer, however this can be overridden with this setting.</para>
@@ -3079,6 +3090,13 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
   <graphic format="PNG" fileref="figures/customize_toolbar_dialog.png"/>
 </screenshot>
 </figure>
+</section>
+</section>
+
+<section id="prefs_trackprops" xreflabel="Track Properties Dialog Preferences"><title>Track Properties Dialog</title>
+<section><title>Track Properties Dialog</title>
+<para>A setting to control the location of the tabs (either to the side or on top).</para>
+<para>Settings to control displaying any of the individual graph types.</para>
 </section>
 </section>
 

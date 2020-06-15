@@ -93,6 +93,10 @@ static gdouble line_vdop = NAN;
 static gdouble line_pdop = NAN;
 static gdouble line_ageofdgpsdata = NAN;
 static guint line_dgpsid = 0;
+static guint line_hr = 0;
+static gint line_cad = VIK_TRKPT_CADENCE_NONE;
+static gdouble line_temp = NAN;
+static gint line_power = VIK_TRKPT_POWER_NONE;
 /* other possible properties go here */
 
 
@@ -356,6 +360,10 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
         tp->hdop = line_hdop;
         tp->vdop = line_vdop;
         tp->pdop = line_pdop;
+        tp->heart_rate = line_hr;
+        tp->cadence = line_cad;
+        tp->temp = line_temp;
+        tp->power = line_power;
       }
       // Much faster to prepend and then reverse list once all points read in
       // Especially if hunderds of thousands or more trackpoints in a file
@@ -416,6 +424,10 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     line_name_label = 0;
     line_dist_label = 0;
     line_number = 0;
+    line_hr = 0;
+    line_cad = VIK_TRKPT_CADENCE_NONE;
+    line_temp = NAN;
+    line_power = VIK_TRKPT_POWER_NONE;
   }
 
   // Handle a badly formatted file in case of missing explicit track/route end (this shouldn't happen)
@@ -622,6 +634,22 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   {
     line_pdop = g_ascii_strtod(value, NULL);
   }
+  else if (key_len == 2 && strncasecmp( key, "hr", key_len ) == 0 && value != NULL)
+  {
+    line_hr = (guint)atoi(value);
+  }
+  else if (key_len == 3 && strncasecmp( key, "cad", key_len ) == 0 && value != NULL)
+  {
+    line_cad = (guint)atoi(value);
+  }
+  else if (key_len == 4 && strncasecmp( key, "temp", key_len ) == 0 && value != NULL)
+  {
+    line_temp = g_ascii_strtod(value, NULL);
+  }
+  else if (key_len == 3 && strncasecmp( key, "pow", key_len ) == 0 && value != NULL)
+  {
+    line_power = (guint)atoi(value);
+  }
   else if (key_len == 6 && strncasecmp( key, "magvar", key_len ) == 0 && value != NULL)
   {
     line_magvar = g_ascii_strtod(value, NULL);
@@ -785,7 +813,8 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
   if ( tp->newsegment )
     fprintf ( f, " newsegment=\"yes\"" );
 
-  if (!isnan(tp->speed) || !isnan(tp->course) || tp->nsats > 0) {
+  if ( !isnan(tp->speed) || !isnan(tp->course) || tp->nsats > 0 ||
+       !isnan(tp->temp) || tp->heart_rate || tp->cadence != VIK_TRKPT_CADENCE_NONE || tp->cadence != VIK_TRKPT_POWER_NONE ) {
     fprintf ( f, " extended=\"yes\"" );
     write_double ( f, "speed", tp->speed );
     write_double ( f, "course", tp->course );
@@ -794,6 +823,14 @@ static void a_gpspoint_write_trackpoint ( VikTrackpoint *tp, TP_write_info_type 
     write_double ( f, "hdop", tp->hdop );
     write_double ( f, "vdop", tp->vdop );
     write_double ( f, "pdop", tp->pdop );
+    // Note that in general these use shortened strings as there may be many thousands of points,
+    //  thus helping keep the filesize down.
+    write_positive_uint ( f, "hr", tp->heart_rate );
+    if ( tp->cadence != VIK_TRKPT_CADENCE_NONE )
+      fprintf ( f, " cad=\"%d\"", tp->cadence );
+    write_double ( f, "temp", tp->temp );
+    if ( tp->power != VIK_TRKPT_POWER_NONE )
+      fprintf ( f, " pow=\"%d\"", tp->power );
   }
   fprintf ( f, "\n" );
 }

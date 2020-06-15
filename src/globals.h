@@ -98,6 +98,8 @@ a cutting at 60s/km or equivalent (in other units) has been set*/
 #define MERCLAT(x) (RAD2DEG(log(tan((0.25 * M_PI) + (0.5 * DEG2RAD(x))))))
 #define DEMERCLAT(x) (RAD2DEG(atan(sinh(DEG2RAD(x)))))
 
+#define VIK_CELSIUS_TO_FAHRENHEIT(x) (((x)*9.0/5.0)+32.0)
+
 #define VIK_GPS_MODE_NOT_SEEN	0	/* mode update not seen yet */
 #define VIK_GPS_MODE_NO_FIX	1	/* none */
 #define VIK_GPS_MODE_2D  	2	/* good for latitude/longitude */
@@ -162,6 +164,13 @@ typedef enum {
 } vik_units_height_t;
 
 vik_units_height_t a_vik_get_units_height ( );
+
+typedef enum {
+  VIK_UNITS_TEMP_CELSIUS = 0,
+  VIK_UNITS_TEMP_FAHRENHEIT,
+} vik_units_temp_t;
+
+vik_units_temp_t a_vik_get_units_temp ( );
 
 gboolean a_vik_get_use_large_waypoint_icons ( );
 

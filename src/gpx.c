@@ -179,6 +179,7 @@ static tag_mapping tag_path_map[] = {
         { tt_trk_src, "/gpx/trk/src" },
         { tt_trk_number, "/gpx/trk/number" },
         { tt_trk_type, "/gpx/trk/type" },
+
         { tt_trk_trkseg, "/gpx/trk/trkseg" },
         { tt_trk_trkseg_trkpt, "/gpx/trk/trkseg/trkpt" },
         { tt_trk_trkseg_trkpt_ele, "/gpx/trk/trkseg/trkpt/ele" },
@@ -210,7 +211,7 @@ static tag_mapping tag_path_map[] = {
 };
 
 
-static tag_mapping extention_tag_path_map[] = {
+static tag_mapping extension_tag_path_map[] = {
   { tt_trk_trkseg_trkpt_an_extension, "/gpx/trk/trkseg/trkpt/extensions/" }, // Anything in this namespace
   { tt_trk_trkseg_trkpt_extensions, "/gpx/trk/trkseg/trkpt/extensions" },
   { tt_trk_an_extension, "/gpx/trk/extensions/" }, // Anything in this namespace
@@ -222,10 +223,13 @@ static tag_mapping extention_tag_path_map[] = {
   { 0 }
 };
 
+// Note in this lookup we just compare the first n characters
+//  enabling to match with anything in that xml tree
+//  since the order of the lookup will find the generic match first
 static tag_type get_tag_extension ( const char *tt )
 {
   tag_mapping *tm;
-  for ( tm = extention_tag_path_map; tm->tag_type != 0; tm++ )
+  for ( tm = extension_tag_path_map; tm->tag_type != 0; tm++ )
     if ( 0 == g_ascii_strncasecmp(tm->tag_name, tt, strlen(tm->tag_name)) )
       return tm->tag_type;
   return tt_unknown;
@@ -271,6 +275,7 @@ static guint unnamed_routes = 0;
 typedef struct {
 	VikTrwLayer *vtl;
 	const gchar *dirpath;
+	gboolean append;
 } UserDataT;
 
 static const char *get_attr ( const char **attr, const char *key )
@@ -325,6 +330,145 @@ static gboolean set_c_ll ( const char **attr )
   return FALSE;
 }
 
+// ATM not bothering with any other potential values one might come across e.g. distance
+//  Presumably distance would be useful for static workouts e.g. on a running machine
+//   but such things aren't the purview of Viking - it is not really a fitness tracker
+// Even if some of these other extension values are more fitness related
+typedef enum {
+  ext_unknown = 0,
+  ext_tp_heart_rate,
+  ext_tp_cadence,
+  ext_tp_speed,
+  ext_tp_course,
+  ext_tp_temp,
+  ext_tp_power,
+  ext_trk_color,
+} tag_type_ext;
+
+typedef struct tag_mapping_ext {
+  tag_type_ext tag_type;
+  const char *tag_name;
+} tag_mapping_ext;
+
+// NB Could use a hashtable for this lookup but there's not many keys
+//  nor is this performed too often, so keep similarily to the rest of this file
+// 'gpxdata:*' is typically from Cluetrust extensions gpxdata10.xsd
+// 'gpxtpx:*; is typically from Garmin extensions TrackPointExtensionv1.xsd
+// gpxx:TrackExtension/gpxx:DisplayColor Garmin GpxExtensionsv3.xsd
+// pwr:PowerInWatts / gpxpx:PowerInWatts Garmin PowerExtensionv1.xsd
+// gpxd:color JOSM gpx-drawing-extensions-1.0.xsd
+static tag_mapping_ext extention_trackpoints_map[] = {
+  { ext_tp_heart_rate, "gpxtpx:hr" },
+  { ext_tp_heart_rate, "gpxdata:hr" },
+  { ext_tp_cadence, "gpxdata:cadence" },
+  { ext_tp_cadence, "gpxtpx:cad" },
+  { ext_tp_speed, "gpxdata:speed" },
+  { ext_tp_speed, "gpxtpx:speed" },
+  { ext_tp_course, "gpxtpx:course" },
+  { ext_tp_course, "gpxdata:course" },
+  { ext_tp_temp, "gpxdata:temp" },
+  { ext_tp_temp, "gpxtpx:atemp" },
+  { ext_tp_power, "gpxdata:power" }, // e.g. openambit2gpx.py
+  { ext_tp_power, "pwr:PowerInWatts" },
+  { ext_tp_power, "gpxpx:PowerInWatts" },
+  { ext_trk_color, "gpxx:DisplayColor" },
+  { ext_trk_color, "gpxd:color" },
+  { ext_trk_color, "color" }, // e.g. OsmAnd?
+};
+
+static tag_type_ext get_tag_ext_specific (const char *tt)
+{
+ tag_mapping_ext *tm;
+ for ( tm = extention_trackpoints_map; tm->tag_type != 0; tm++ )
+   if ( 0 == g_strcmp0(tm->tag_name, tt) )
+     return tm->tag_type;
+ return ext_unknown;
+}
+
+GString *gs_ext;
+
+// Reprocess the extension text to extract tags we handle
+static void ext_start_element ( GMarkupParseContext *context,
+                                const gchar         *element_name,
+                                const gchar        **attribute_names,
+                                const gchar        **attribute_values,
+                                gpointer             user_data,
+                                GError             **error )
+{
+  g_string_erase ( gs_ext, 0, -1 ); // Reset the tmp string buffer
+}
+
+// NB Text is not null terminated
+static void ext_text ( GMarkupParseContext *context,
+                       const gchar         *text,
+                       gsize                text_len,
+                       gpointer             user_data,
+                       GError             **error )
+{
+  // Store tag contents
+  g_string_append_len ( gs_ext, text, text_len );
+}
+
+// Main trackpoint extension processing here
+static void ext_end_element ( GMarkupParseContext *context,
+                              const gchar         *element_name,
+                              gpointer             user_data,
+                              GError             **error )
+{
+  // If it is any of the extended tags we are interested in,
+  //  then use the text stored in the string buffer to set the appropriate track or trackpoint value
+  tag_type tag = get_tag_ext_specific ( element_name );
+  switch ( tag ) {
+  case ext_tp_heart_rate:
+    if ( c_tp ) c_tp->heart_rate = atoi ( gs_ext->str ); // bpm
+    break;
+  case ext_tp_cadence:
+    if ( c_tp ) c_tp->cadence = atoi ( gs_ext->str ); // RPM
+    break;
+  case ext_tp_speed:
+    if ( c_tp ) c_tp->speed = g_ascii_strtod ( gs_ext->str, NULL ); // m/s
+    break;
+  case ext_tp_course:
+    if ( c_tp ) c_tp->course = g_ascii_strtod ( gs_ext->str, NULL ); // Degrees
+    break;
+  case ext_tp_temp:
+    if ( c_tp ) c_tp->temp = g_ascii_strtod ( gs_ext->str, NULL ); // Degrees Celsius
+    break;
+  case ext_tp_power:
+    if ( c_tp ) c_tp->power = atoi ( gs_ext->str ); // Watts
+    break;
+  case ext_trk_color:
+    if ( c_tr ) {
+      GdkColor gclr;
+      if ( gdk_color_parse ( gs_ext->str, &gclr ) ) {
+        c_tr->has_color = TRUE;
+        c_tr->color = gclr;
+      }
+    }
+    break;
+  default:
+    break;
+  }
+  g_string_erase ( gs_ext, 0, -1 );
+}
+
+GMarkupParser gparser;
+GMarkupParseContext *gcontext;
+
+static void track_or_trackpoint_extension_process ( gchar *str )
+{
+  if ( !str )
+    return;
+
+  // Parse xml fragment to extract extension tag values
+  GError *error = NULL;
+  if ( !g_markup_parse_context_parse ( gcontext, str, strlen(str), &error ) )
+    g_warning ( "%s: parse error %s on:\n%s", __FUNCTION__, error ? error->message : "???", str );
+
+  if ( !g_markup_parse_context_end_parse ( gcontext, &error) )
+    g_warning ( "%s: error %s occurred on end of:\n%s", __FUNCTION__, error ? error->message : "???", str );
+}
+
 static void extension_append_attributions ( GString *gs, const char *el, const char **attr )
 {
   guint count = 0;
@@ -362,10 +506,22 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
            // If there is an actual description field it will overwrite this value
            c_md->description = g_strdup_printf ( _("Created by: %s"), crt );
          }
+
          const gchar *version = get_attr ( attr, "version" );
-         if ( g_strcmp0(version, "1.1") == 0 ) {
-	   vik_trw_layer_set_gpx_version ( vtl, GPX_V1_1 );
-	 }
+         // When appending a file to a layer,
+         //  don't downgrade from 1.1 -> 1.0,
+         //  but allow going from 1.0 -> 1.1
+         // For new layers always apply the version
+         gpx_version_t gvt = GPX_V1_1; // Default
+         if ( g_strcmp0(version, "1.0") == 0 )
+           gvt = GPX_V1_0;
+         if ( ud->append ) {
+           if ( vik_trw_layer_get_gpx_version(vtl) == GPX_V1_0 )
+             vik_trw_layer_set_gpx_version ( vtl, gvt );
+         }
+         else
+           vik_trw_layer_set_gpx_version ( vtl, gvt );
+
 	 GString *gs = get_header ( attr );
 	 vik_trw_layer_set_gpx_header ( vtl, gs->str );
 	 g_string_free ( gs, FALSE ); // NB string now owned by vtl
@@ -570,13 +726,12 @@ static void gpx_end(UserDataT *ud, const char *el)
      case tt_gpx_url:
        if ( c_md->url )
          g_free ( c_md->url );
-       if ( c_cdata->len > 0 ) {
-         c_md->url = g_strdup ( c_cdata->str );
-         g_string_erase ( c_cdata, 0, -1 );
-       }
-       else if ( c_link ) {
+       if ( c_link ) {
          c_md->url = g_strdup ( c_link );
          c_link = NULL;
+       } else if ( c_cdata->len > 0 ) {
+         c_md->url = g_strdup ( c_cdata->str );
+         g_string_erase ( c_cdata, 0, -1 );
        }
        break;
 
@@ -851,6 +1006,8 @@ static void gpx_end(UserDataT *ud, const char *el)
        break;
 
      case tt_trk_extensions:
+       if ( current_tag == tt_trk_extensions )
+         track_or_trackpoint_extension_process ( c_ext->str );
        vik_track_set_extensions ( c_tr, c_ext->str );
        g_string_erase ( c_ext, 0, -1 );
        break;
@@ -867,6 +1024,7 @@ static void gpx_end(UserDataT *ud, const char *el)
 
      case tt_trk_trkseg_trkpt_extensions:
        vik_trackpoint_set_extensions ( c_tp, c_trkpt_ext->str );
+       track_or_trackpoint_extension_process ( c_trkpt_ext->str );
        g_string_erase ( c_trkpt_ext, 0, -1 );
        break;
 
@@ -948,8 +1106,9 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
 
 // make like a "stack" of tag names
 // like gpspoint's separated like /gpx/wpt/whatever
-
-gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath ) {
+// @append: Whether the read is to append to the vtl (or otherwise a new layer)
+//  i.e. primarily to decide what to do regarding appending files with different GPX versions
+gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath, gboolean append ) {
   XML_Parser parser = XML_ParserCreate(NULL);
   int done=0, len;
   enum XML_Status status = XML_STATUS_ERROR;
@@ -957,10 +1116,22 @@ gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath ) {
   UserDataT *ud = g_malloc (sizeof(UserDataT));
   ud->vtl     = vtl;
   ud->dirpath = dirpath;
+  ud->append  = append;
 
   XML_SetElementHandler(parser, (XML_StartElementHandler) gpx_start, (XML_EndElementHandler) gpx_end);
   XML_SetUserData(parser, ud);
   XML_SetCharacterDataHandler(parser, (XML_CharacterDataHandler) gpx_cdata);
+
+  // Secondary parser for trackpoint extension fragments
+  //  seems to work better on xml fragments compared to expat,
+  //  and also we can reuse a single parser,
+  //  rather than having to create an expat parser each time on each <extension> tag group
+  gparser.start_element = &ext_start_element;
+  gparser.end_element = &ext_end_element;
+  gparser.text = &ext_text;
+  gparser.passthrough = NULL;
+  gparser.error = NULL;
+  gcontext = g_markup_parse_context_new ( &gparser, 0, NULL, NULL );
 
   gchar buf[4096];
 
@@ -970,6 +1141,7 @@ gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath ) {
   c_cdata = g_string_new ( "" );
   c_ext = g_string_new ( NULL );
   c_trkpt_ext = g_string_new ( NULL );
+  gs_ext = g_string_new ( NULL );
 
   unnamed_waypoints = 1;
   unnamed_tracks = 1;
@@ -990,6 +1162,8 @@ gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath ) {
   g_free ( ud );
   g_string_free ( xpath, TRUE );
   g_string_free ( c_cdata, TRUE );
+  g_string_free ( gs_ext, TRUE );
+  g_markup_parse_context_free ( gcontext );
 
   return ans;
 }
@@ -1162,6 +1336,71 @@ entitize(const char * str)
 /**** end GPSBabel code ****/
 
 /* export GPX */
+
+typedef struct {
+  const char *rgb;
+  const char *color_name;
+} allowed_color_names_t;
+
+// Names from GpxExtensionsv3.xsd
+// RGB values taken from gdk_color_parse()
+// Then stored here so we can perform a lookup to find a nearest match given any RGB
+allowed_color_names_t allowed_color_names[] = {
+  { "#000000", "Black" },
+  { "#8B0000", "DarkRed" },
+  { "#013220", "DarkGreen" },
+  { "#9B870C", "DarkYellow" },
+  { "#00008B", "DarkBlue" },
+  { "#8B008B", "DarkMagenta" },
+  { "#008B8B", "DarkCyan" },
+  { "#D3D3D3", "LightGray" },
+  { "#A9A9A9", "DarkGray" },
+  { "#FF0000", "Red" },
+  { "#00FF00", "Green" },
+  { "#FFFF00", "Yellow" },
+  { "#0000FF", "Blue" },
+  { "#FF00FF", "Magenta" },
+  { "#00FFFF", "Cyan" },
+  { "#FFFFFF", "White" },
+  // NB No support for "Transparent"
+  { NULL, NULL }
+};
+
+/**
+ * Currently only Garmin DisplayColor is supported
+ *
+ * Look for a colour that matches by the sum of distance squared for each RGB value
+ */
+static const gchar * nearest_colour_string ( GdkColor color )
+{
+  // Furthest away default value
+  gdouble distance = (255.0 * sqrt ( 3.0 ) );
+
+  guint ii = 0;
+  guint answer = 0;
+  for ( allowed_color_names_t *acn = allowed_color_names; acn->rgb; acn++) {
+    GdkColor ac;
+    if ( gdk_color_parse ( acn->rgb, &ac ) ) {
+      // First check for exact matches
+      if ( (ac.red == color.red) && (ac.green == color.green) && (ac.blue == color.blue) ) {
+        answer = ii;
+        break;
+      }
+      else {
+        gdouble newdist = sqrt ( pow ((ac.red/256 - color.red/256), 2 ) +
+                                 pow ((ac.green/256 - color.green/256), 2 ) +
+                                 pow ((ac.blue/256 - color.blue/256), 2 ) );
+        if ( newdist < distance ) {
+          answer = ii;
+          distance = newdist;
+        }
+      }
+    }
+    ii++;
+  }
+  return allowed_color_names[answer].color_name;
+}
+
 static void write_double ( FILE *ff, guint spaces, const gchar *tag, gdouble value )
 {
   if ( !isnan(value) ) {
@@ -1312,6 +1551,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
 }
 
 #define TRKPT_SPACES 4
+#define TRKPT_EXT_SPACES 8
 /**
  * Note that elements are written in the schema specification order
  */
@@ -1383,12 +1623,36 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   write_double ( f, TRKPT_SPACES, "vdop", tp->vdop );
   write_double ( f, TRKPT_SPACES, "pdop", tp->pdop );
 
-  write_string_as_is ( f, TRKPT_SPACES, "extensions", tp->extensions );
-
+  // If have the raw extensions - then save that (which should include all of the individual values we use)
+  if ( tp->extensions )
+    write_string_as_is ( f, TRKPT_SPACES, "extensions", tp->extensions );
+  else {
+    // Otherwise write the individual values we are supporting (in Garmin TrackPointExtension/v2 format)
+    if ( context->options && context->options->version == GPX_V1_1 ) {
+      if ( !isnan(tp->speed) || !isnan(tp->course) ||
+           !isnan(tp->temp) || tp->heart_rate || tp->cadence != VIK_TRKPT_CADENCE_NONE ) {
+        fprintf ( f, "    <extensions>\n");
+        fprintf ( f, "      <gpxtpx:TrackPointExtension>\n");
+        write_double ( f, TRKPT_EXT_SPACES, "gpxtpx:atemp", tp->temp );
+        write_positive_uint ( f, TRKPT_EXT_SPACES, "gpxtpx:hr", tp->heart_rate );
+        if ( tp->cadence != VIK_TRKPT_CADENCE_NONE )
+          fprintf ( f, "%*s<%s>%d</%s>\n", TRKPT_EXT_SPACES, "", "gpxtpx:cad", tp->cadence, "gpxtpx:cad" );
+        write_double ( f, TRKPT_EXT_SPACES, "gpxtpx:speed", tp->speed );
+        write_double ( f, TRKPT_EXT_SPACES, "gpxtpx:course", tp->course );
+        fprintf ( f, "      </gpxtpx:TrackPointExtension>\n");
+        fprintf ( f, "    </extensions>\n");
+      }
+    }
+  }
   fprintf ( f, "  </%spt>\n", (context->options && context->options->is_route) ? "rte" : "trk" );
 }
 
 #define TRK_SPACES 2
+
+static void write_track_extension_color_only ( FILE *ff, VikTrack *trk )
+{
+  fprintf ( ff, "  <extensions><gpxx:TrackExtension><gpxx:DisplayColor>%s</gpxx:DisplayColor></gpxx:TrackExtension></extensions>\n", nearest_colour_string(trk->color) );
+}
 
 static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
 {
@@ -1419,7 +1683,33 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
   write_string ( f, TRK_SPACES, "src", t->source );
   write_positive_uint ( f, TRK_SPACES, "number", t->number );
   write_string ( f, TRK_SPACES, "type", t->type );
-  write_string_as_is ( f, TRK_SPACES, "extensions", t->extensions );
+
+  // ATM Track Colour is the only extension Viking supports editing
+  //  thus if there is some other track extension Viking will not add in the color,
+  //  but will add it if there is no current track extension.
+  if ( t->extensions ) {
+    gboolean write_as_is = !t->has_color;
+    if ( !write_as_is ) {
+      gchar* text = g_strdup ( t->extensions );
+      g_strstrip ( text );
+      if ( g_str_has_prefix(text, "<gpxx:TrackExtension><gpxx:DisplayColor>") ) {
+        if ( g_str_has_suffix(text, "</gpxx:DisplayColor></gpxx:TrackExtension>") )
+          write_track_extension_color_only ( f, t );
+        else
+          write_as_is = TRUE;
+      }
+      else
+        write_as_is = TRUE;
+      g_free ( text );
+    }
+    if ( write_as_is )
+      write_string_as_is ( f, TRK_SPACES, "extensions", t->extensions );
+  }
+  else {
+    if ( context->options && context->options->version == GPX_V1_1 )
+      if ( t->has_color )
+        write_track_extension_color_only ( f, t );
+  }
 
   /* No such thing as a rteseg! */
   if ( !t->is_route )
@@ -1438,7 +1728,7 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
   fprintf ( f, "</%s>\n", t->is_route ? "rte" : "trk" );
 }
 
-static void gpx_write_header( FILE *f, VikTrwLayer *vtl )
+static void gpx_write_header( FILE *f, VikTrwLayer *vtl, GpxWritingContext *context )
 {
   // Allow overriding the creator value
   // E.g. if something actually cares about it, see for example:
@@ -1450,30 +1740,31 @@ static void gpx_write_header( FILE *f, VikTrwLayer *vtl )
   }
 
   fprintf(f, "<?xml version=\"1.0\"?>\n");
-  // if ( option_export_as() == GPX_V1_1 || ...
-  if ( vtl && vik_trw_layer_get_gpx_version(vtl) == GPX_V1_1 ) {
+  if ( context->options && context->options->version == GPX_V1_1 ) {
     fprintf(f, "<gpx version=\"1.1\"\n");
     fprintf(f, "creator=\"%s\"\n", creator);
-    gchar *header = vik_trw_layer_get_gpx_header(vtl);
-    if ( header ) {
-      fprintf(f, header);
-      fprintf(f, ">\n");
-    }
-    else {
-      // TODO determine if all these and/or more/others are necessary
+    // If we already have a ready to use header then use that
+    gchar *header = NULL;
+    if ( vtl )
+      header = vik_trw_layer_get_gpx_header ( vtl );
+    if ( header )
+      fprintf(f, "%s%s", header, ">\n");
+    else
+      // Otherwise write a load of xmlns stuff, even if we don't actually end up using any extensions
       fprintf(f, "xmlns=\"http://www.topografix.com/GPX/1/1\" "
                  "xmlns:gpxx=\"http://www.garmin.com/xmlschemas/GpxExtensions/v3\" "
                  "xmlns:wptx1=\"http://www.garmin.com/xmlschemas/WaypointExtension/v1\" "
-                 "xmlns:gpxtpx=\"http://www.garmin.com/xmlschemas/TrackPointExtension/v1\" "
-                 "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v1 http://www.garmin.com/xmlschemas/TrackPointExtensionv1.xsd\">\n");
-    }
+                 "xmlns:gpxtpx=\"http://www.garmin.com/xmlschemas/TrackPointExtension/v2\" "
+                 "xmlns:gpxpx=\"http://www.garmin.com/xmlschemas/PowerExtension/v1\" "
+                 "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                 "xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v2 http://www.garmin.com/xmlschemas/TrackPointExtensionv2.xsd http://www.garmin.com/xmlschemas/PowerExtensionv1.xsd\">\n");
   } else {
     fprintf(f, "<gpx version=\"1.0\"\n");
     fprintf(f, "creator=\"%s\"\n", creator);
     fprintf(f,"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
               "xmlns=\"http://www.topografix.com/GPX/1/0\"\n"
               "xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">\n");
-}
+  }
   g_free(creator);
 }
 
@@ -1500,7 +1791,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
 {
   GpxWritingContext context = { options, f, dirpath };
 
-  gpx_write_header ( f, vtl );
+  gpx_write_header ( f, vtl, &context );
 
   //gchar *tmp;
   const gchar *name = vik_layer_get_name(VIK_LAYER(vtl));
@@ -1510,10 +1801,10 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
   if ( md ) {
     if ( options && options->version == GPX_V1_1 ) {
       fprintf ( f, "  <metadata>\n" );
-      if ( md->author )
-        fprintf ( f, "    <author><name>%s</author></name>\n", md->author );
+      if ( md->author && strlen(md->author) > 0 )
+        fprintf ( f, "    <author><name>%s</name></author>\n", md->author );
       write_string ( f, 4, "desc", md->description );
-      if ( md->url )
+      if ( md->url && strlen(md->url) > 0 )
         fprintf ( f, "    <link href=\"%s\"></link>\n", md->url );
       write_string ( f, 4, "keywords", md->keywords );
       fprintf ( f, "  </metadata>\n" );
@@ -1588,9 +1879,11 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
   g_list_free ( gl );
   g_list_free ( glrte );
 
-  gchar *ext = vik_trw_layer_get_gpx_extensions ( vtl );
-  if ( ext )
-    write_string_as_is ( f, 0, "extensions", ext );
+  if ( opt_tmp.version == GPX_V1_1 ) {
+    gchar *ext = vik_trw_layer_get_gpx_extensions ( vtl );
+    if ( ext )
+      write_string_as_is ( f, 0, "extensions", ext );
+  }
 
   gpx_write_footer ( f );
 }
@@ -1598,7 +1891,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
 void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options )
 {
   GpxWritingContext context = {options, f};
-  gpx_write_header ( f, NULL );
+  gpx_write_header ( f, NULL, &context );
   gpx_write_track ( trk, &context );
   gpx_write_footer ( f );
 }

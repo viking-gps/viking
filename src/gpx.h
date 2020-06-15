@@ -38,7 +38,7 @@ typedef struct {
 	gpx_version_t version;  /// For internal convenience
 } GpxWritingOptions;
 
-gboolean a_gpx_read_file ( VikTrwLayer *trw, FILE *f, const gchar* dirpath );
+gboolean a_gpx_read_file ( VikTrwLayer *trw, FILE *f, const gchar* dirpath, gboolean append );
 void a_gpx_write_file ( VikTrwLayer *trw, FILE *f, GpxWritingOptions *options, const gchar *dirpath );
 void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options );
 
