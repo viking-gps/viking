@@ -225,7 +225,6 @@ static void set_button_url ( GtkWidget *widget, gchar *str )
     }
     g_free ( scheme );
   }
-  gtk_widget_set_sensitive ( widget, is_url );
   g_object_set ( widget, "has-tooltip", is_url, NULL );
 }
 
