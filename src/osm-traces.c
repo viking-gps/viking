@@ -497,7 +497,6 @@ static gint osm_traces_upload_file(const char *user,
   }
 
   /* Memory */
-  g_free(base_url);
   g_free(user_pass); user_pass = NULL;
   g_free(base_url);
 
