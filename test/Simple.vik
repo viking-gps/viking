@@ -13,7 +13,7 @@ drawcentermark=t
 drawhighlight=t
 
 ~TopLayer Aggregate
-name=
+name=Top Layer
 tac_on=f
 alpha=100
 color=#ffa500
