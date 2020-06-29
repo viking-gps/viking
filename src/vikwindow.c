@@ -191,6 +191,7 @@ struct _VikWindow {
 
   gboolean select_move;
   gboolean select_double_click;
+  guint select_double_click_button;
   gboolean select_pan;
   guint deselect_id;
   gboolean pan_move_middle;
@@ -2558,9 +2559,13 @@ static gboolean vik_window_deselect_timeout (VikWindow *vw)
 static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *event, tool_ed_t *t)
 {
   t->vw->select_double_click = (event->type == GDK_2BUTTON_PRESS);
+  t->vw->select_double_click_button = event->button;
+
   // Don't process these any further
-  if ( event->type == GDK_2BUTTON_PRESS || event->type == GDK_3BUTTON_PRESS )
-      return VIK_LAYER_TOOL_ACK;
+  if ( event->type == GDK_2BUTTON_PRESS || event->type == GDK_3BUTTON_PRESS ) {
+    vik_window_pan_click ( t->vw, event );
+    return VIK_LAYER_TOOL_ACK;
+  }
 
   t->vw->select_move = FALSE;
   t->vw->select_pan = FALSE;
@@ -2660,7 +2665,14 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
           g_source_remove ( t->vw->deselect_id );
           t->vw->deselect_id = 0;
         }
+
         vik_viewport_set_center_screen ( t->vw->viking_vvp, t->vw->pan_x, t->vw->pan_y );
+
+        if ( t->vw->select_double_click_button == 1 )
+          vik_viewport_zoom_in ( t->vw->viking_vvp );
+        else if ( t->vw->select_double_click_button == 3 )
+          vik_viewport_zoom_out ( t->vw->viking_vvp );
+
         draw_update ( t->vw );
         t->vw->select_double_click = FALSE;
       }

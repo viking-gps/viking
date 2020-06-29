@@ -2460,7 +2460,7 @@ If <keycap>Ctrl</keycap> or <keycap>Shift</keycap> is held down at the same time
 Note that whole tracks cannot be moved.
 </para>
 <para>
-Double clicking the left mouse button will center the map at that point.
+Double clicking the left (or right) mouse button will center the map at that point and zoom in (or out).
 </para>
 <para>
 This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+S</keycap>
