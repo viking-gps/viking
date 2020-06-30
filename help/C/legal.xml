@@ -9,22 +9,7 @@
            url="help:fdl">link</ulink> or in the file COPYING-DOCS
            distributed with this manual.
           </para>
-          <para> This manual is part of a collection of GNOME manuals
-           distributed under the GFDL.  If you want to distribute this
-           manual separately from the collection, you can do so by
-           adding a copy of the license to the manual, as described in
-           section 6 of the license.
-         </para>
- 
-         <para>
-           Many of the names used by companies to distinguish their
-           products and services are claimed as trademarks. Where those
-           names appear in any GNOME documentation, and the members of
-           the GNOME Documentation Project are made aware of those
-           trademarks, then the names are in capital letters or initial
-           capital letters.
-         </para>
- 
+
          <para>
            Document and modified versions of the document are provided
            under the terms of the <emphasis role="bold">GNU Free Documentation License</emphasis>

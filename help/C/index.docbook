@@ -8,14 +8,6 @@
   <!ENTITY date "February 2020">
   <!ENTITY extfiles    "<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>, <filename>datasources.xml</filename>, <filename>external_tools.xml</filename>, <filename>routing.xml</filename>">
 ]>
-<!--
-      (Do not remove this comment block.)
-  Maintained by the GNOME Documentation Project
-  http://live.gnome.org/DocumentationProject
-  Template version: 3.0 beta
-  Template last modified 2006-11-21
-
--->
 <!-- =============Document Header ============================= -->
 <article id="index" lang="en">
   <articleinfo>
@@ -25,14 +17,14 @@
     </abstract>
 
     <copyright>
-      <year>2013</year>
+      <year>2020</year>
       <holder>Guilhem Bonnefille</holder>
       <holder>Rob Norris</holder>
     </copyright>
 
     <!-- An address can be added to the publisher information. -->
     <publisher role="maintainer">
-      <publishername>GNOME Documentation Project</publishername>
+      <publishername>Viking Project</publishername>
     </publisher>
 
     <xi:include href="legal.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
@@ -92,7 +84,7 @@
       <title>Feedback</title>
       <para>To report a bug or make a suggestion regarding the &app; application or
       this manual, follow the directions in the
-      <ulink url="help:user-guide?feedback-bugs" type="help">Feedback section of the GNOME User Guide</ulink>.
+      <ulink url="https://sourceforge.net/projects/viking/">Project Website</ulink>.
       </para>
     </legalnotice>
   </articleinfo>
