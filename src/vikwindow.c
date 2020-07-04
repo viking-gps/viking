@@ -1688,6 +1688,29 @@ static void scroll_move_viewport ( VikWindow *vw, GdkEventScroll *event )
   }
 }
 
+/**
+ * Zoom on specified point in screen x,y pixels
+ *  Whether to zoom in or out is dependent on the either the mouse button pressed or scroll type
+ */
+static void zoom_at_xy ( VikWindow *vw, guint point_x, guint point_y, gboolean scroll_event, GdkScrollDirection direction, gint event_button )
+{
+  VikCoord coord;
+  gint x, y;
+  gint center_x = vik_viewport_get_width ( vw->viking_vvp ) / 2;
+  gint center_y = vik_viewport_get_height ( vw->viking_vvp ) / 2;
+  vik_viewport_screen_to_coord ( vw->viking_vvp, point_x, point_y, &coord );
+  if ( scroll_event )
+    scroll_zoom_direction ( vw, direction );
+  else {
+    if ( event_button == 1 )
+      vik_viewport_zoom_in ( vw->viking_vvp );
+    else if ( event_button == 3 )
+      vik_viewport_zoom_out ( vw->viking_vvp );
+  }
+  vik_viewport_coord_to_screen ( vw->viking_vvp, &coord, &x, &y );
+  vik_viewport_set_center_screen ( vw->viking_vvp, center_x + (x - point_x), center_y + (y - point_y) );
+}
+
 static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
 {
   if ( !a_vik_get_scroll_to_zoom() ) {
@@ -1713,15 +1736,7 @@ static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
     scroll_zoom_direction ( vw, event->direction );
   } else {
     /* make sure mouse is still over the same point on the map when we zoom */
-    VikCoord coord;
-    gint x, y;
-    gint center_x = vik_viewport_get_width ( vw->viking_vvp ) / 2;
-    gint center_y = vik_viewport_get_height ( vw->viking_vvp ) / 2;
-    vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
-    scroll_zoom_direction ( vw, event->direction );
-    vik_viewport_coord_to_screen ( vw->viking_vvp, &coord, &x, &y );
-    vik_viewport_set_center_screen ( vw->viking_vvp, center_x + (x - event->x),
-                                     center_y + (y - event->y) );
+    zoom_at_xy ( vw, event->x, event->y, TRUE, event->direction, 0 );
   }
 
   draw_update(vw);
@@ -2249,8 +2264,6 @@ static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *even
   te->vw->modified = TRUE;
   guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
 
-  VikCoord coord;
-  gint x, y;
   gint center_x = vik_viewport_get_width ( te->vw->viking_vvp ) / 2;
   gint center_y = vik_viewport_get_height ( te->vw->viking_vvp ) / 2;
 
@@ -2285,15 +2298,7 @@ static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *even
   }
   else {
     /* make sure mouse is still over the same point on the map when we zoom */
-    vik_viewport_screen_to_coord ( te->vw->viking_vvp, event->x, event->y, &coord );
-    if ( event->button == 1 )
-      vik_viewport_zoom_in (te->vw->viking_vvp);
-    else if ( event->button == 3 )
-      vik_viewport_zoom_out(te->vw->viking_vvp);
-    vik_viewport_coord_to_screen ( te->vw->viking_vvp, &coord, &x, &y );
-    vik_viewport_set_center_screen ( te->vw->viking_vvp,
-                                     center_x + (x - event->x),
-                                     center_y + (y - event->y) );
+    zoom_at_xy ( te->vw, event->x, event->y, FALSE, GDK_SCROLL_UP, event->button );
   }
 
   if ( !skip_update )
