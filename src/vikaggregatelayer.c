@@ -260,7 +260,7 @@ struct _VikAggregateLayer {
   GdkPixbuf *hm_pbf_scaled;
   gboolean hm_scaled;
   guint8 hm_stamp_factor;
-  guint hm_style;
+  guint8 hm_style;
   GdkColor hm_color;
 
   MapCoord rc_menu_mc; // Position of Right Click menu
