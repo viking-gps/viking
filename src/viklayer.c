@@ -507,6 +507,14 @@ gboolean vik_layer_selected ( VikLayer *l, gint subtype, gpointer sublayer, gint
   return vik_window_clear_selected ( (VikWindow *)VIK_GTK_WINDOW_FROM_LAYER(l) );
 }
 
+// NB the layer->visible value has already been modified
+// This function acts to notify the layer of this event
+void vik_layer_layer_toggle_visible ( VikLayer *l )
+{
+  if ( vik_layer_interfaces[l->type]->layer_toggle_visible )
+    vik_layer_interfaces[l->type]->layer_toggle_visible ( l );
+}
+
 void vik_layer_realize ( VikLayer *l, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
   l->vt = vt;

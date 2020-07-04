@@ -226,6 +226,7 @@ VikLayerInterface vik_dem_layer_interface = {
   (VikLayerFuncSublayerTooltip)         NULL,
   (VikLayerFuncLayerTooltip)            dem_layer_tooltip,
   (VikLayerFuncLayerSelected)           NULL,
+  (VikLayerFuncLayerToggleVisible)      NULL,
 
   (VikLayerFuncMarshall)		dem_layer_marshall,
   (VikLayerFuncUnmarshall)		dem_layer_unmarshall,

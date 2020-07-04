@@ -172,6 +172,7 @@ VikLayerInterface vik_mapnik_layer_interface = {
 	(VikLayerFuncSublayerTooltip)         NULL,
 	(VikLayerFuncLayerTooltip)            mapnik_layer_tooltip,
 	(VikLayerFuncLayerSelected)           NULL,
+	(VikLayerFuncLayerToggleVisible)      NULL,
 
 	(VikLayerFuncMarshall)                mapnik_layer_marshall,
 	(VikLayerFuncUnmarshall)              mapnik_layer_unmarshall,

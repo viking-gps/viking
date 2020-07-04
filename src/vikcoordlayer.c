@@ -102,6 +102,7 @@ VikLayerInterface vik_coord_layer_interface = {
   (VikLayerFuncSublayerTooltip)         NULL,
   (VikLayerFuncLayerTooltip)            NULL,
   (VikLayerFuncLayerSelected)           NULL,
+  (VikLayerFuncLayerToggleVisible)      NULL,
 
   (VikLayerFuncMarshall)		coord_layer_marshall,
   (VikLayerFuncUnmarshall)		coord_layer_unmarshall,

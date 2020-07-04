@@ -808,6 +808,7 @@ static gboolean trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype
 static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl );
 static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, gpointer sublayer );
 static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp );
+static void trw_layer_layer_toggle_visible ( VikTrwLayer *vtl );
 static void trw_layer_marshall ( VikTrwLayer *vtl, guint8 **data, guint *len );
 static VikTrwLayer *trw_layer_unmarshall ( const guint8 *data_in, guint len, VikViewport *vvp );
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp );
@@ -869,6 +870,7 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncSublayerTooltip)         trw_layer_sublayer_tooltip,
   (VikLayerFuncLayerTooltip)            trw_layer_layer_tooltip,
   (VikLayerFuncLayerSelected)           trw_layer_selected,
+  (VikLayerFuncLayerToggleVisible)      trw_layer_layer_toggle_visible,
 
   (VikLayerFuncMarshall)                trw_layer_marshall,
   (VikLayerFuncUnmarshall)              trw_layer_unmarshall,
@@ -3121,6 +3123,7 @@ static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *
   trw_update_layer_icon ( vtl );
 }
 
+// Overload subtype with -1 to close for a layer (no matter which specific track shown)
 static void close_graphs_of_specific_track_or_type ( VikTrwLayer *vtl, VikTrack *trk, gint subtype )
 {
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
@@ -3132,6 +3135,8 @@ static void close_graphs_of_specific_track_or_type ( VikTrwLayer *vtl, VikTrack 
     }
     if ( vt.trk && ((vt.trk->is_route && subtype == VIK_TRW_LAYER_SUBLAYER_ROUTES) ||
 		    (!vt.trk->is_route && subtype == VIK_TRW_LAYER_SUBLAYER_TRACKS)) )
+      vik_window_close_graphs ( vw );
+    if ( subtype < 0 && vt.vtl == vtl )
       vik_window_close_graphs ( vw );
   }
 }
@@ -3175,6 +3180,13 @@ static gboolean trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype
     close_graphs_of_specific_track_or_type ( l, t, subtype );
   }
   return answer;
+}
+
+static void trw_layer_layer_toggle_visible ( VikTrwLayer *vtl )
+{
+  // Is it no longer visible?
+  if ( !VIK_LAYER(vtl)->visible )
+    close_graphs_of_specific_track_or_type ( vtl, NULL, -1 );
 }
 
 /*

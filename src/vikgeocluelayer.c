@@ -133,6 +133,7 @@ VikLayerInterface vik_geoclue_layer_interface = {
   (VikLayerFuncSublayerTooltip)         NULL,
   (VikLayerFuncLayerTooltip)            geoclue_layer_tooltip,
   (VikLayerFuncLayerSelected)           NULL,
+  (VikLayerFuncLayerToggleVisible)      NULL,
 
   (VikLayerFuncMarshall)                geoclue_layer_marshall,
   (VikLayerFuncUnmarshall)              geoclue_layer_unmarshall,
