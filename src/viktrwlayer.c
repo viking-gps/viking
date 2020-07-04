@@ -5731,6 +5731,7 @@ void vik_trw_layer_goto_track_prev_point ( VikTrwLayer *vtl )
     vtl->current_tpl = vtl->current_tpl->prev;
     if ( vtl->tpwin )
       my_tpwin_set_tp ( vtl );
+    set_statusbar_msg_info_trkpt ( vtl, vtl->current_tpl->data );
   }
   vik_layer_emit_update(VIK_LAYER(vtl));
   trw_layer_graph_draw_tp ( vtl );
@@ -5752,6 +5753,7 @@ void vik_trw_layer_goto_track_next_point ( VikTrwLayer *vtl )
     vtl->current_tpl = vtl->current_tpl->next;
     if ( vtl->tpwin )
       my_tpwin_set_tp ( vtl );
+    set_statusbar_msg_info_trkpt ( vtl, vtl->current_tpl->data );
   }
   vik_layer_emit_update(VIK_LAYER(vtl));
   trw_layer_graph_draw_tp ( vtl );
