@@ -51,6 +51,34 @@ static void tac_calculate ( VikAggregateLayer *val );
 static void hm_calculate ( VikAggregateLayer *val );
 
 static gchar *params_tile_area_levels[] = { "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", NULL };
+static gchar *params_tac_time_ranges[] = { N_("All Time"), "1", "2", "3", "5", "7", "10", "15", "20", "25", NULL };
+
+static VikLayerParamData tac_time_to_internal ( VikLayerParamData value )
+{
+  // From array index into the year value
+  if ( value.u && value.u < G_N_ELEMENTS(params_tac_time_ranges) )
+    return VIK_LPD_UINT(atoi(params_tac_time_ranges[value.u]));
+  return VIK_LPD_UINT(0);
+}
+
+static VikLayerParamData tac_time_to_display ( VikLayerParamData value )
+{
+  VikLayerParamData ans = VIK_LPD_UINT(0);
+  // From the year value into array index
+  switch ( value.u ) {
+  case 1:  ans = VIK_LPD_UINT(1); break;
+  case 2:  ans = VIK_LPD_UINT(2); break;
+  case 3:  ans = VIK_LPD_UINT(3); break;
+  case 5:  ans = VIK_LPD_UINT(4); break;
+  case 7:  ans = VIK_LPD_UINT(5); break;
+  case 10: ans = VIK_LPD_UINT(6); break;
+  case 15: ans = VIK_LPD_UINT(7); break;
+  case 20: ans = VIK_LPD_UINT(8); break;
+  case 25: ans = VIK_LPD_UINT(9); break;
+  default: break;
+  }
+  return ans;
+}
 
 static VikLayerParamScale params_scales[] = {
  // min, max, step, digits (decimal places)
@@ -118,6 +146,8 @@ VikLayerParam aggregate_layer_params[] = {
   { VIK_LAYER_AGGREGATE, "drawgrid", VIK_LAYER_PARAM_BOOLEAN, GROUP_TAC, N_("Draw Grid:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "tilearealevel", VIK_LAYER_PARAM_UINT, GROUP_TAC, N_("Tile Area Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_tile_area_levels, NULL,
     N_("Area size. A higher level means a smaller grid."), tile_area_level_default, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "tileareatimerange", VIK_LAYER_PARAM_UINT, GROUP_TAC, N_("Within Years:"), VIK_LAYER_WIDGET_COMBOBOX, params_tac_time_ranges, NULL,
+    N_("Only include tracks that are within this time range."), NULL, tac_time_to_display, tac_time_to_internal },
   { VIK_LAYER_AGGREGATE, "hm_alpha", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
     N_("Control the Alpha value for transparency effects"), hm_alpha_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "hm_factor", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Width Factor:"), VIK_LAYER_WIDGET_HSCALE, &params_scales[1], NULL,
@@ -144,6 +174,7 @@ enum {
       PARAM_CLUSTER_COLOR,
       PARAM_DRAW_GRID,
       PARAM_TILE_AREA_LEVEL,
+      PARAM_TAC_TIME_RANGE,
       PARAM_HM_ALPHA,
       PARAM_HM_STAMP_FACTOR,
       PARAM_HM_STYLE,
@@ -237,6 +268,7 @@ struct _VikAggregateLayer {
   guint max_square;
   gint xx,yy; // Location of top left max square tile
 
+  guint8 tac_time_range; // Years
   // Maybe a sparse table would be more efficient
   //  but this seems to work OK at least if all tracks are confined within a not too diverse area
   GHashTable *tiles;
@@ -348,6 +380,19 @@ static void hm_apply ( VikAggregateLayer *val )
       hm_calculate ( val );
 }
 
+static void tac_apply ( VikAggregateLayer *val, VikLayerSetParam *vlsp )
+{
+  if ( !vlsp->is_file_operation ) {
+    if ( VIK_LAYER(val)->realized ) {
+      if ( val->on[BASIC] ) {
+        if ( !val->calculating ) {
+          tac_calculate ( val );
+        }
+      }
+    }
+  }
+}
+
 static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetParam *vlsp )
 {
   switch ( vlsp->id ) {
@@ -366,17 +411,19 @@ static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetP
     case PARAM_CLUSTER_COLOR: val->color[CLUSTER] = vlsp->data.c; break;
     case PARAM_TILE_AREA_LEVEL:
       if ( vlsp->data.u <= G_N_ELEMENTS(params_tile_area_levels) ) {
+        guint old = val->zoom_level;
         val->zoom_level = pow ( 2, vlsp->data.u + 1);
         // Ensure when 'apply' button is clicked the TAC is recalculated for the new area value
-        if ( !vlsp->is_file_operation ) {
-          if ( VIK_LAYER(val)->realized ) {
-            if ( val->on[BASIC] ) {
-              if ( !val->calculating ) {
-                tac_calculate ( val );
-              }
-            }
-          }
-        }
+        if ( val->zoom_level != old )
+          tac_apply ( val, vlsp );
+      }
+      break;
+    case PARAM_TAC_TIME_RANGE:
+      {
+	guint8 old = val->tac_time_range;
+        val->tac_time_range = vlsp->data.u;
+        if ( val->tac_time_range != old )
+          tac_apply ( val, vlsp );
       }
       break;
     case PARAM_HM_ALPHA:
@@ -429,6 +476,7 @@ static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, gui
     case PARAM_CLUSTER_ALPHA: rv.u = val->alpha[CLUSTER]; break;
     case PARAM_CLUSTER_COLOR: rv.c = val->color[CLUSTER]; break;
     case PARAM_TILE_AREA_LEVEL: rv.u = map_utils_mpp_to_scale ( val->zoom_level ) - 1; break;
+    case PARAM_TAC_TIME_RANGE: rv.u = val->tac_time_range; break;
     case PARAM_HM_ALPHA: rv.u = val->hm_alpha; break;
     case PARAM_HM_STAMP_FACTOR: rv.u = val->hm_stamp_factor; break;
     case PARAM_HM_STYLE: rv.u = val->hm_style; break;
@@ -444,7 +492,7 @@ static void aggregate_layer_change_param ( GtkWidget *widget, ui_change_values v
     GtkWidget **ww1 = values[UI_CHG_WIDGETS];
     GtkWidget **ww2 = values[UI_CHG_LABELS];
     // Sensitize all the other coverage widgets setting according the very first 'On' one
-    for ( guint xx = PARAM_ALPHA; xx <= PARAM_TILE_AREA_LEVEL; xx++ ) {
+    for ( guint xx = PARAM_ALPHA; xx <= PARAM_TAC_TIME_RANGE; xx++ ) {
       GtkWidget *w1 = ww1[xx];
       GtkWidget *w2 = ww2[xx];
       if ( w1 ) gtk_widget_set_sensitive ( w1, vlpd.b );
@@ -1829,6 +1877,9 @@ static void tac_calculate ( VikAggregateLayer *val )
   tac_clear ( val );
   val->calculating = TRUE;
 
+  GDate *now = g_date_new ();
+  g_date_set_time_t ( now, time(NULL) );
+
   GList *layers = NULL;
   layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, TRUE );
 
@@ -1837,7 +1888,30 @@ static void tac_calculate ( VikAggregateLayer *val )
   layers = g_list_first ( layers );
   while ( layers ) {
     GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) );
-    tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layers->data), tracks ) );
+    if ( !val->tac_time_range )
+      // All
+      tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layers->data), tracks ) );
+    else {
+      // Only those within specified time period
+      while ( tracks ) {
+        VikTrack *trk = VIK_TRACK(tracks->data);
+        gdouble ts = VIK_TRACKPOINT(trk->trackpoints->data)->timestamp;
+        if ( trk->trackpoints && !isnan(ts) ) {
+          GDate* gdate = g_date_new ();
+          g_date_set_time_t ( gdate, (time_t)ts );
+          gint diff = g_date_days_between ( gdate, now );
+          // NB this doesn't get the year date range exact
+          //  however this generally should be good/close enough for practical purposes
+          if ( diff > 0 && diff < (365.25*val->tac_time_range) ) {
+            vik_trw_and_track_t *vtdl = g_malloc (sizeof(vik_trw_and_track_t));
+            vtdl->trk = trk;
+            vtdl->vtl = VIK_TRW_LAYER(layers->data);
+            tracks_and_layers = g_list_prepend ( tracks_and_layers, vtdl );
+          }
+        }
+        tracks = g_list_next ( tracks );
+      }
+    }
     layers = g_list_next ( layers );
   }
   g_list_free ( layers );
