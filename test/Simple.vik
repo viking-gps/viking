@@ -28,6 +28,7 @@ cluster_alpha=100
 cluster_color=#006400
 drawgrid=t
 tilearealevel=1
+tileareatimerange=0
 hm_alpha=127
 hm_factor=10
 hm_style=0
