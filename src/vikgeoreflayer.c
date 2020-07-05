@@ -138,6 +138,7 @@ VikLayerInterface vik_georef_layer_interface = {
   (VikLayerFuncSublayerTooltip)         NULL,
   (VikLayerFuncLayerTooltip)            georef_layer_tooltip,
   (VikLayerFuncLayerSelected)           NULL,
+  (VikLayerFuncLayerToggleVisible)      NULL,
 
   (VikLayerFuncMarshall)		georef_layer_marshall,
   (VikLayerFuncUnmarshall)		georef_layer_unmarshall,
