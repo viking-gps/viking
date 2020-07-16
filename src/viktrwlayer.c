@@ -9951,9 +9951,9 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
                                             iter,
                                             vvp );
       }
+      // Using '0' is more reliable for activating submenu items than using 'event->button' anyway.
+      gtk_menu_popup ( vtl->track_right_click_menu, NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time() );
 
-      gtk_menu_popup ( vtl->track_right_click_menu, NULL, NULL, NULL, NULL, event->button, event->time );
-	
       return TRUE;
     }
   }
@@ -9985,7 +9985,8 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
                                             iter,
                                             vvp );
       }
-      gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, event->button, event->time );
+      // Using '0' is more reliable for activating submenu items than using 'event->button' anyway.
+      gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time() );
 
       return TRUE;
     }
@@ -10211,7 +10212,9 @@ static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *e
     if ( vtl->current_wp ) {
       vtl->wp_right_click_menu = GTK_MENU ( gtk_menu_new () );
       trw_layer_sublayer_add_menu_items ( vtl, vtl->wp_right_click_menu, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, vtl->current_wp_id, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_id ), vvp );
-      gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+      // Using '0' is more reliable for activating submenu items than using 'event->button'.
+      // Possibly https://bugzilla.gnome.org/show_bug.cgi?id=695488
+      gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time() );
     }
     vtl->waypoint_rightclick = FALSE;
   }

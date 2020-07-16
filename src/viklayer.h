@@ -180,7 +180,7 @@ typedef void 	      (*VikLayerFuncDragDropRequest)       (VikLayer *, VikLayer *
 typedef gboolean      (*VikLayerFuncSelectClick)           (VikLayer *, GdkEventButton *, VikViewport *, tool_ed_t*);
 typedef gboolean      (*VikLayerFuncSelectMove)            (VikLayer *, GdkEventMotion *, VikViewport *, tool_ed_t*);
 typedef gboolean      (*VikLayerFuncSelectRelease)         (VikLayer *, GdkEventButton *, VikViewport *, tool_ed_t*);
-typedef gboolean      (*VikLayerFuncSelectedViewportMenu)  (VikLayer *, GdkEventButton *, VikViewport *);
+typedef gboolean      (*VikLayerFuncSelectedViewportMenu)  (VikLayer *, GdkEventButton *, VikViewport *); // GdkEventButton may be NULL
 
 typedef double        (*VikLayerFuncGetTimestamp)          (VikLayer *);
 

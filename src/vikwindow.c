@@ -2696,7 +2696,7 @@ static gboolean selecttool_key_release (VikLayer *vl, GdkEventKey *event, tool_e
         /* Act on currently selected item to show menu */
         if ( t->vw->selected_track || t->vw->selected_waypoint )
           if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
-            return vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, 0, t->vw->viking_vvp );
+            return vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, NULL, t->vw->viking_vvp );
       } else if ( event->keyval == GDK_Left ) {
 	if ( t->vw->containing_vtl ) {
           vik_trw_layer_goto_track_prev_point ( t->vw->containing_vtl );

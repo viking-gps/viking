@@ -2535,7 +2535,7 @@ static gboolean aggregate_layer_selected_viewport_menu ( VikAggregateLayer *val,
   values[MA_VAL] = val;
   values[MA_VLP] = NULL;
 
-  if ( event->button == 3 ) {
+  if ( event && event->button == 3 ) {
     VikCoord coord;
     vik_viewport_screen_to_coord ( vvp, MAX(0, event->x), MAX(0, event->y), &coord );
 
