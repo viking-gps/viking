@@ -1399,7 +1399,12 @@ static void draw_redraw ( VikWindow *vw )
   vw->trigger_center = *(vik_viewport_get_center(vw->viking_vvp));
   VikLayer *new_trigger = vw->trigger;
   vw->trigger = NULL;
-  VikLayer *old_trigger = VIK_LAYER(vik_viewport_get_trigger(vw->viking_vvp));
+  gpointer gp = vik_viewport_get_trigger ( vw->viking_vvp );
+  VikLayer *old_trigger = NULL;
+  if ( !gp )
+    vik_viewport_set_trigger ( vw->viking_vvp, new_trigger );
+  else
+    old_trigger = VIK_LAYER(gp);
 
   if ( ! new_trigger )
     ; /* do nothing -- have to redraw everything. */
