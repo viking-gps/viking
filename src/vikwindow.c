@@ -191,8 +191,11 @@ struct _VikWindow {
 
   gboolean select_move;
   gboolean select_double_click;
+  guint select_double_click_button;
   gboolean select_pan;
   guint deselect_id;
+  guint show_menu_id;
+  GdkEventButton select_event;
   gboolean pan_move_middle;
   gboolean pan_move;
   gint pan_x, pan_y;
@@ -2546,7 +2549,7 @@ static void click_layer_selected (VikLayer *vl, clicker *ck)
 #define VIK_MOVE_MODIFIER GDK_MOD5_MASK
 #endif
 
-static gboolean vik_window_deselect_timeout (VikWindow *vw)
+static gboolean window_deselect_timeout (VikWindow *vw)
 {
   GtkTreeIter iter;
   VikTreeview *vtv = vik_layers_panel_get_treeview ( vw->viking_vlp );
@@ -2565,12 +2568,30 @@ static gboolean vik_window_deselect_timeout (VikWindow *vw)
   return FALSE;
 }
 
+static gboolean window_show_menu_timeout (VikWindow *vw)
+{
+  VikLayer *vl = vik_layers_panel_get_selected ( vw->viking_vlp );
+  if ( vl )
+    if ( vl->visible )
+      // Act on currently selected item to show menu
+      if ( vw->selected_track || vw->selected_waypoint || vl->type == VIK_LAYER_AGGREGATE )
+        if ( vik_layer_get_interface(vl->type)->show_viewport_menu ) {
+          (void)vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, &vw->select_event, vw->viking_vvp );
+        }
+  vw->show_menu_id = 0;
+  return FALSE;
+}
+
 static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *event, tool_ed_t *t)
 {
   t->vw->select_double_click = (event->type == GDK_2BUTTON_PRESS);
+  t->vw->select_double_click_button = event->button;
+
   // Don't process these any further
-  if ( event->type == GDK_2BUTTON_PRESS || event->type == GDK_3BUTTON_PRESS )
-      return VIK_LAYER_TOOL_ACK;
+  if ( event->type == GDK_2BUTTON_PRESS || event->type == GDK_3BUTTON_PRESS ) {
+    vik_window_pan_click ( t->vw, event );
+    return VIK_LAYER_TOOL_ACK;
+  }
 
   t->vw->select_move = FALSE;
   t->vw->select_pan = FALSE;
@@ -2606,7 +2627,7 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
             g_value_init ( &gto, G_TYPE_INT );
             g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &gto );
             gint timer = g_value_get_int ( &gto ) + 50;
-            t->vw->deselect_id = g_timeout_add ( timer, (GSourceFunc)vik_window_deselect_timeout, t->vw );
+            t->vw->deselect_id = g_timeout_add ( timer, (GSourceFunc)window_deselect_timeout, t->vw );
           }
         }
 
@@ -2621,11 +2642,17 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
     }
   }
   else if ( ( event->button == 3 ) && ( vl && (vl->type == VIK_LAYER_TRW || vl->type == VIK_LAYER_AGGREGATE) ) ) {
-    if ( vl->visible )
-      /* Act on currently selected item to show menu */
-      if ( t->vw->selected_track || t->vw->selected_waypoint || vl->type == VIK_LAYER_AGGREGATE )
-	if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
-	  (void)vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, event, t->vw->viking_vvp );
+    if ( !t->vw->show_menu_id ) {
+      t->vw->select_event = *event;
+      // Best if slightly longer than the double click time,
+      //  otherwise timeout would get removed, only to be recreated again by the second GTK_BUTTON_PRESS
+      GtkSettings *gs = gtk_widget_get_settings ( GTK_WIDGET(t->vw) );
+      GValue gto = G_VALUE_INIT;
+      g_value_init ( &gto, G_TYPE_INT );
+      g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &gto );
+      gint timer = g_value_get_int ( &gto ) + 50;
+      t->vw->show_menu_id = g_timeout_add ( timer, (GSourceFunc)window_show_menu_timeout, t->vw );
+    }
   }
 
   return VIK_LAYER_TOOL_ACK;
@@ -2670,7 +2697,19 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
           g_source_remove ( t->vw->deselect_id );
           t->vw->deselect_id = 0;
         }
-        vik_viewport_set_center_screen ( t->vw->viking_vvp, t->vw->pan_x, t->vw->pan_y );
+        // Turn off otherwise pending show menu - as now overridden by the double click
+        if ( t->vw->show_menu_id ) {
+          g_source_remove ( t->vw->show_menu_id );
+          t->vw->show_menu_id = 0;
+        }
+
+        // Invert the zoom direction if necessary
+        guint modifier = event->state & GDK_SHIFT_MASK;
+        if ( modifier && (t->vw->select_double_click_button == 1) ) {
+          t->vw->select_double_click_button = 3;
+        }
+        zoom_at_xy ( t->vw, t->vw->pan_x, t->vw->pan_y, FALSE, GDK_SCROLL_UP, t->vw->select_double_click_button );
+
         draw_update ( t->vw );
         t->vw->select_double_click = FALSE;
       }

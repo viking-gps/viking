@@ -2476,7 +2476,9 @@ If <keycap>Ctrl</keycap> or <keycap>Shift</keycap> is held down at the same time
 Note that whole tracks cannot be moved.
 </para>
 <para>
-Double clicking the left mouse button will center the map at that point.
+Double clicking the left mouse button will zoom the map in.
+<keycap>Shift</keycap> + double clicking the left mouse button will zoom the map out.
+Double clicking the right mouse button will also zoom the map out.
 </para>
 <para>
 This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+S</keycap>
@@ -2494,9 +2496,7 @@ Pan moves the viewpoint. A single click centers the viewport at that point, wher
 This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+P</keycap>
 </para>
 <para>
-Double clicking the left mouse button will zoom the map in.
-<keycap>Shift</keycap> + double clicking the left mouse button will zoom the map out.
-Double clicking the right mouse button will also zoom the map out.
+The double click behaviour is the same as in the Select mode described above (i.e. zooms in or out).
 </para>
 </section>
 
