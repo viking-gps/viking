@@ -54,6 +54,12 @@ void ui_format_1f_cell_data_func ( GtkTreeViewColumn *col,
 
 GtkTreeViewColumn *ui_new_column_text ( const gchar *title, GtkCellRenderer *renderer, GtkWidget *view, gint column_runner );
 
+gboolean ui_tree_model_number_tooltip_cb ( GtkWidget    *widget,
+                                           gint          x,
+                                           gint          y,
+                                           gboolean      keyboard_mode,
+                                           GtkTooltip   *tooltip,
+                                           GtkTreeModel *tree_model );
 G_END_DECLS
 
 #endif

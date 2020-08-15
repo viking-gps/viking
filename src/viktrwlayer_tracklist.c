@@ -713,6 +713,8 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	gtk_tree_model_filter_set_visible_func ( model, filter_tracks_cb, filter_entry, NULL );
 
 	GtkWidget *filter_label = gtk_label_new ( _("Filter") );
+	g_object_set ( filter_label, "has-tooltip", TRUE, NULL );
+	g_signal_connect ( filter_label, "query-tooltip", G_CALLBACK(ui_tree_model_number_tooltip_cb), model );
 
 	GtkWidget *filter_box = gtk_hbox_new( FALSE, 10 );
 	gtk_box_pack_start (GTK_BOX(filter_box), filter_label, FALSE, TRUE, 10);

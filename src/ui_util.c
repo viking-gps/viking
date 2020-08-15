@@ -388,3 +388,25 @@ GtkTreeViewColumn *ui_new_column_text ( const gchar *title, GtkCellRenderer *ren
 	gtk_tree_view_column_set_resizable ( column, TRUE );
 	return column;
 }
+
+/**
+ * ui_tree_model_number_tooltip_cb:
+ *
+ * A simple tooltip on a widget for showing number of items displayed in the tree model
+ *
+ */
+gboolean ui_tree_model_number_tooltip_cb ( GtkWidget    *widget,
+                                           gint          x,
+                                           gint          y,
+                                           gboolean      keyboard_mode,
+                                           GtkTooltip   *tooltip,
+                                           GtkTreeModel *tree_model )
+{
+	gint num = gtk_tree_model_iter_n_children ( tree_model, NULL );
+	if ( num ) {
+		gchar *text = g_strdup_printf ( _("Items: %d"), num );
+		gtk_tooltip_set_text ( tooltip, text );
+		g_free ( text );
+	}
+	return (num != 0);
+}

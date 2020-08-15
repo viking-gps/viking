@@ -598,7 +598,6 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	// It's simple storing the gdouble values in the tree store as the sort works automatically
 	// Then apply specific cell data formatting (rather default double is to 6 decimal places!)
 	// However not storing any doubles for waypoints ATM
-	// TODO: Consider adding the waypoint icon into this store for display in the list
 	GtkTreeStore *store = gtk_tree_store_new ( WPT_LIST_COLS,
 	                                           G_TYPE_STRING,    // 0: Layer Name
 	                                           G_TYPE_STRING,    // 1: Waypoint Name
@@ -705,6 +704,8 @@ static void vik_trw_layer_waypoint_list_internal ( GtkWidget *dialog,
 	gtk_tree_model_filter_set_visible_func ( model, filter_waypoints_cb, filter_entry, NULL );
 
 	GtkWidget *filter_label = gtk_label_new ( _("Filter") );
+	g_object_set ( filter_label, "has-tooltip", TRUE, NULL );
+	g_signal_connect ( filter_label, "query-tooltip", G_CALLBACK(ui_tree_model_number_tooltip_cb), model );
 
 	GtkWidget *filter_box = gtk_hbox_new( FALSE, 10 );
 	gtk_box_pack_start (GTK_BOX(filter_box), filter_label, FALSE, TRUE, 10);
