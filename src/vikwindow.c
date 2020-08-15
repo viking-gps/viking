@@ -2971,6 +2971,16 @@ static void help_help_cb ( GtkAction *a, VikWindow *vw )
 #endif /* WINDOWS */
 }
 
+static void toggle_debug_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean state = !vik_debug;
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/Help/HelpDebug" );
+  if ( !check_box )
+    return;
+  gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), state );
+  vik_debug = state;
+}
+
 static void toggle_side_panel ( VikWindow *vw )
 {
   vw->show_side_panel = !vw->show_side_panel;
@@ -5328,6 +5338,10 @@ static GtkActionEntry entries_geojson[] = {
   { "AcquireGeoJSON",   NULL,            N_("Import Geo_JSON File..."),   NULL,         N_("Import GeoJSON file"),                          (GCallback)acquire_from_geojson },
 };
 
+static GtkToggleActionEntry toggle_debug[] = {
+  { "HelpDebug", NULL, N_("Debug Mode"), NULL, N_("Toggle debug mode"), (GCallback)toggle_debug_cb, FALSE },
+};
+
 /* Radio items */
 static GtkRadioActionEntry mode_entries[] = {
   { "ModeUTM",         NULL,         N_("_UTM Mode"),               "<control>u", NULL, VIK_VIEWPORT_DRAWMODE_UTM },
@@ -5411,6 +5425,14 @@ static void window_create_ui( VikWindow *window )
          -1, NULL ) ) {
       gtk_action_group_add_actions (action_group, debug_entries, G_N_ELEMENTS (debug_entries), window);
     }
+  }
+  if ( gtk_ui_manager_add_ui_from_string ( uim,
+       "<ui><menubar name='MainMenu'><menu action='Help'>"
+       "<menuitem action='HelpDebug'/>"
+       "</menu></menubar></ui>",
+       -1, NULL ) ) {
+    toggle_debug[0].is_active = vik_debug;
+    gtk_action_group_add_toggle_actions ( action_group, toggle_debug, G_N_ELEMENTS(toggle_debug), window );
   }
 
   for ( i=0; i < G_N_ELEMENTS (entries); i++ ) {
