@@ -369,15 +369,8 @@ void a_background_show_window ()
   gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolled_window), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
 
   bgwindow = gtk_dialog_new_with_buttons ( _("Viking Background Jobs"), NULL, 0, GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE, GTK_STOCK_DELETE, 1, GTK_STOCK_CLEAR, 2, NULL );
-  gtk_dialog_set_default_response ( GTK_DIALOG(bgwindow), GTK_RESPONSE_ACCEPT );
-  GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(bgwindow), GTK_RESPONSE_ACCEPT );
-#endif
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(bgwindow))), scrolled_window, TRUE, TRUE, 0 );
   gtk_window_set_default_size ( GTK_WINDOW(bgwindow), 400, 400 );
-  if ( response_w )
-    gtk_widget_grab_focus ( response_w );
 
   g_signal_connect ( G_OBJECT(bgwindow), "response", G_CALLBACK(bgwindow_response), GTK_TREE_VIEW(bgtreeview) );
 
