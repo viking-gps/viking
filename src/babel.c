@@ -170,10 +170,12 @@ static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointe
   gint babel_stdout;
 
   if ( vik_debug ) {
-    (void)g_printf ( "%s:", __FUNCTION__ );
+    GString *gstr = g_string_new ( NULL );
+    g_string_append_printf ( gstr, "%s:", __FUNCTION__ );
     for ( guint i=0; args[i]; i++ )
-      (void)g_printf ( " %s", args[i] );
-    (void)g_printf ( "\n" );
+      g_string_append_printf ( gstr, " %s", args[i] );
+    g_message ( gstr->str );
+    g_string_free ( gstr, TRUE );
   }
 
   if (!g_spawn_async_with_pipes (NULL, args, NULL, G_SPAWN_DO_NOT_REAP_CHILD, NULL, NULL, &pid, NULL, &babel_stdout, NULL, &error)) {

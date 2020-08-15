@@ -250,7 +250,7 @@ static void datasource_gps_get_process_options ( gpointer user_data, ProcessOpti
 
   po->filename = g_strdup(datasource_gps_get_descriptor(user_data));
 
-  g_debug(_("using cmd '%s' and file '%s'\n"), po->babelargs, po->filename);
+  g_debug(_("using cmd '%s' and file '%s'"), po->babelargs, po->filename);
 }
 
 /**

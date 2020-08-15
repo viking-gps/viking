@@ -696,7 +696,8 @@ gchar* vu_get_tz_at_location ( const VikCoord* vc )
 		}
 		kd_res_next ( presults );
 	}
-	g_debug ( "TZ lookup found %d results - picked %s", kd_res_size(presults), tz );
+	if ( vik_verbose )
+		g_debug ( "TZ lookup found %d results - picked %s", kd_res_size(presults), tz );
 	kd_res_free ( presults );
 
 	return tz;

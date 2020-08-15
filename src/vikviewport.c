@@ -198,10 +198,10 @@ void init_scale ( VikViewport *vvp )
   // Further note the scale can change during runtime
   // ATM Just initialize only
   gint res = gdk_screen_get_resolution ( gdk_screen_get_default() );
-  g_debug ( "%s: Screen Resolution is '%d'\n", __FUNCTION__, res );
+  g_debug ( "%s: Screen Resolution is '%d'", __FUNCTION__, res );
   if ( res > 50 ) {
     vvp->scale = round (res / 96.0);
-    g_debug ( "%s: Scale set to '%d'\n", __FUNCTION__, vvp->scale );
+    g_debug ( "%s: Scale set to '%d'", __FUNCTION__, vvp->scale );
   }
   // Allow override by user
   gint tmp = vvp->scale;

@@ -213,7 +213,7 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
       else
         res = CURL_DOWNLOAD_NO_ERROR;
     } else {
-      g_warning("%s: http response: %ld for uri %s\n", __FUNCTION__, response, uri);
+      g_warning("%s: http response: %ld for uri %s", __FUNCTION__, response, uri);
       res = CURL_DOWNLOAD_ERROR;
     }
   } else {
@@ -311,7 +311,7 @@ char* curl_download_get_ptr ( const char *uri, DownloadFileOptions *options )
   curl_easy_cleanup ( curl );
 
   if ( result != CURLE_OK ) {
-    g_warning ( "%s: curl error: %d for uri %s\n", __FUNCTION__, result, uri );
+    g_warning ( "%s: curl error: %d for uri %s", __FUNCTION__, result, uri );
     return NULL;
   }
   else if ( vik_debug ) {

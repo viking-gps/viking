@@ -758,7 +758,7 @@ static void drag_data_received_cb ( GtkWidget *widget,
     switch (target_type) {
     case TARGET_URIS: {
       gchar *str = (gchar*)gtk_selection_data_get_data(selection_data);
-      g_debug ("drag received string:%s \n", str);
+      g_debug ("drag received string:%s", str);
 
       // Convert string into GSList of individual entries for use with our open signal
       gchar **entries = g_strsplit(str, "\r\n", 0);

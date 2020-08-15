@@ -1788,7 +1788,7 @@ static void tac_square_calc ( VikAggregateLayer *val )
   
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-  g_debug ( "%s: %f\n", __FUNCTION__, time_spent );
+  g_debug ( "%s: %f", __FUNCTION__, time_spent );
 }
 
 /**

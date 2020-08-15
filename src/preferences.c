@@ -262,7 +262,7 @@ void a_preferences_uninit()
 VikLayerParamData *a_preferences_get(const gchar *key)
 {
   if ( ! loaded ) {
-    g_debug ( "%s: First time: %s\n", __FUNCTION__, key );
+    g_debug ( "%s: First time: %s", __FUNCTION__, key );
     /* since we can't load the file in a_preferences_init (no params registered yet),
      * do it once before we get the first key. */
     preferences_load_from_file();
@@ -281,7 +281,7 @@ VikLayerParamData *a_preferences_get(const gchar *key)
 VikLayerParam *a_preferences_get_param(const gchar *key)
 {
   if ( ! loaded ) {
-    g_debug ( "%s: First time: %s\n", __FUNCTION__, key );
+    g_debug ( "%s: First time: %s", __FUNCTION__, key );
     preferences_load_from_file();
     loaded = TRUE;
   }

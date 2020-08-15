@@ -652,11 +652,11 @@ static void convert_to_entry (const char *set_value, gdouble gdvalue, ExifEntry 
 
 		if ( use_string ) {
 			if (!value_p) {
-				g_warning (_("Too few components specified (need %d, found %d)\n"), numcomponents, i);
+				g_warning (_("Too few components specified (need %d, found %d)"), numcomponents, i);
 				return;
 			}
 			if (!isdigit(*value_p) && (*value_p != '+') && (*value_p != '-')) {
-				g_warning (_("Numeric value expected\n"));
+				g_warning (_("Numeric value expected"));
 				return;
 			}
 		}

@@ -259,7 +259,7 @@ static void val_analyse_track_by_months ( VikTrack *trk )
 			tracks_months[mon-1].length += vik_track_get_length (trk);
 		}
 		else
-			g_warning ("%s: Bad month %s\n", __FUNCTION__, trk->name );
+			g_warning ("%s: Bad month %s", __FUNCTION__, trk->name );
 	}
 }
 

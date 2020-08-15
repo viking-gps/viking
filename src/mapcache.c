@@ -182,7 +182,7 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, mapcache_extra_t extra, gint x, gint y,
   g_mutex_unlock(mc_mutex);
 
   static int tmp = 0;
-  if ( (++tmp == 100 )) { g_debug("DEBUG: cache count=%d size=%u list count=%d\n", g_hash_table_size(cache), cache_size, queue_count ); tmp=0; }
+  if ( (++tmp == 100 )) { g_debug("DEBUG: cache count=%d size=%u list count=%d", g_hash_table_size(cache), cache_size, queue_count ); tmp=0; }
 }
 
 /**

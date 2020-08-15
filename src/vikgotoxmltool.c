@@ -460,7 +460,7 @@ _text (GMarkupParseContext *context,
 static gboolean
 vik_goto_xml_tool_parse_file(VikGotoTool *self, gchar *filename)
 {
-    g_debug("Parse %s\n", filename);
+	g_debug("Parse %s", filename);
 	GMarkupParser xml_parser;
 	GMarkupParseContext *xml_context = NULL;
 	GError *error = NULL;

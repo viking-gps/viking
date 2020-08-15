@@ -216,7 +216,7 @@ static void tcx_end ( UserDataT *ud, const char *el )
 			if ( c_vtl ) {
 				if ( vik_trw_layer_is_empty(c_vtl) ) {
 					// free up layer
-					g_warning ( "%s: No useable geo data found in %s\n", __FUNCTION__, vik_layer_get_name(VIK_LAYER(c_vtl)) );
+					g_warning ( "%s: No useable geo data found in %s", __FUNCTION__, vik_layer_get_name(VIK_LAYER(c_vtl)) );
 					g_object_unref ( c_vtl );
 				} else {
 					// Add it
@@ -272,7 +272,7 @@ static void tcx_end ( UserDataT *ud, const char *el )
 				vik_coord_load_from_latlon ( &(c_wp->coord), vik_trw_layer_get_coord_mode(vtl), &c_ll );
 				vik_trw_layer_filein_add_waypoint ( vtl, c_wp_name, c_wp );
 			} else {
-				g_warning ( "%s: Missing a coordinate value for %s\n", __FUNCTION__, c_wp_name );
+				g_warning ( "%s: Missing a coordinate value for %s", __FUNCTION__, c_wp_name );
 				vik_waypoint_free ( c_wp ); 
 			}
 
@@ -335,7 +335,7 @@ static void tcx_end ( UserDataT *ud, const char *el )
 		case tt_trk_trkseg_trkpt_pos_lat: {
 			gdouble dd = g_ascii_strtod ( c_cdata->str, NULL );
 			if ( dd < -90.0 || dd > 90.0 )
-				g_warning ( "%s: Invalid trkpt latitude value %.6f\n", __FUNCTION__, dd ); 
+				g_warning ( "%s: Invalid trkpt latitude value %.6f", __FUNCTION__, dd );
 			else
 				c_ll.lat = dd;
 			}
@@ -344,7 +344,7 @@ static void tcx_end ( UserDataT *ud, const char *el )
 		case tt_trk_trkseg_trkpt_pos_lon: {
 			gdouble dd = g_ascii_strtod ( c_cdata->str, NULL );
 			if ( dd < -180.0 || dd > 180.0 )
-				g_warning ( "%s: Invalid trkpt longitude value %.6f\n", __FUNCTION__, dd ); 
+				g_warning ( "%s: Invalid trkpt longitude value %.6f", __FUNCTION__, dd );
 			else
 				c_ll.lon = dd;
 			}
@@ -359,7 +359,7 @@ static void tcx_end ( UserDataT *ud, const char *el )
 				}
 				c_tr->trackpoints = g_list_prepend ( c_tr->trackpoints, c_tp );
 			} else {
-				g_warning ( "%s: Missing a coordinate value\n", __FUNCTION__ ); 
+				g_warning ( "%s: Missing a coordinate value", __FUNCTION__ );
 				vik_trackpoint_free ( c_tp );
 			}
 			c_tp = NULL;
@@ -368,7 +368,7 @@ static void tcx_end ( UserDataT *ud, const char *el )
 		case tt_wpt_pos_lat: {
 			gdouble dd = g_ascii_strtod ( c_cdata->str, NULL );
 			if ( dd < -90.0 || dd > 90.0 )
-				g_warning ( "%s: Invalid wpt latitude value %.6f\n", __FUNCTION__, dd ); 
+				g_warning ( "%s: Invalid wpt latitude value %.6f", __FUNCTION__, dd );
 			else
 				c_ll.lat = dd;
 			}
@@ -377,7 +377,7 @@ static void tcx_end ( UserDataT *ud, const char *el )
 		case tt_wpt_pos_lon: {
 			gdouble dd = g_ascii_strtod ( c_cdata->str, NULL );
 			if ( dd < -180.0 || dd > 180.0 )
-				g_warning ( "%s: Invalid wpt longitude value %.6f\n", __FUNCTION__, dd ); 
+				g_warning ( "%s: Invalid wpt longitude value %.6f", __FUNCTION__, dd );
 			else
 				c_ll.lon = dd;
 			}
@@ -473,7 +473,7 @@ gboolean a_tcx_read_file ( VikAggregateLayer *val, VikViewport *vvp, FILE *ff, c
 
 	gboolean ans = (status != XML_STATUS_ERROR);
 	if ( !ans ) {
-		g_warning ( "%s: XML error %s at line %ld\n", __FUNCTION__, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
+		g_warning ( "%s: XML error %s at line %ld", __FUNCTION__, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
 	}
 
 	XML_ParserFree (parser);

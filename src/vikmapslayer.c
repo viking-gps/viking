@@ -1026,7 +1026,7 @@ static GdkPixbuf *get_pixbuf_from_metatile ( VikMapsLayer *vml, gint xx, gint yy
   if (len > 0) {
     if (compressed) {
       // Not handled yet - I don't think this is used often - so implement later if necessary
-      g_warning ( "Compressed metatiles not implemented:%s\n", __FUNCTION__);
+      g_warning ( "Compressed metatiles not implemented:%s", __FUNCTION__);
       g_free(buf);
       return NULL;
     }
@@ -1654,7 +1654,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
               break;
 
             default:
-              g_warning ( "redownload state %d unknown\n", mdi->redownload);
+              g_warning ( "redownload state %d unknown", mdi->redownload);
           }
         }
 

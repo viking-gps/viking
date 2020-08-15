@@ -463,10 +463,10 @@ static void track_or_trackpoint_extension_process ( gchar *str )
   // Parse xml fragment to extract extension tag values
   GError *error = NULL;
   if ( !g_markup_parse_context_parse ( gcontext, str, strlen(str), &error ) )
-    g_warning ( "%s: parse error %s on:\n%s", __FUNCTION__, error ? error->message : "???", str );
+    g_warning ( "%s: parse error %s on:%s", __FUNCTION__, error ? error->message : "???", str );
 
   if ( !g_markup_parse_context_end_parse ( gcontext, &error) )
-    g_warning ( "%s: error %s occurred on end of:\n%s", __FUNCTION__, error ? error->message : "???", str );
+    g_warning ( "%s: error %s occurred on end of:%s", __FUNCTION__, error ? error->message : "???", str );
 }
 
 static void extension_append_attributions ( GString *gs, const char *el, const char **attr )
@@ -1155,7 +1155,7 @@ gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath, gbool
 
   gboolean ans = (status != XML_STATUS_ERROR);
   if ( !ans ) {
-    g_warning ( "%s: XML error %s at line %ld\n", __FUNCTION__, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
+    g_warning ( "%s: XML error %s at line %ld", __FUNCTION__, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
   }
 
   XML_ParserFree (parser);

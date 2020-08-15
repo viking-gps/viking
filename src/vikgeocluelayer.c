@@ -622,7 +622,7 @@ notify_active ( GClueClient *client,
 	if ( gclue_client_get_active (client) )
 		return;
 
-	g_warning ( "%s: geoclue no longer active\n", __FUNCTION__ );
+	g_warning ( "%s: geoclue no longer active", __FUNCTION__ );
 	// Deactivate
 	VikGeoclueLayer *vgl = (VikGeoclueLayer*)user_data;
 	vgl->tracking = FALSE;

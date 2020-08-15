@@ -149,13 +149,13 @@ static void set_vc_to_ll ( xml_data *xd, VikCoord *vc, VikTrwLayer *vtl, gdouble
 	// Remember KML coordinates are the 'lon,lat(,alt)' order
 	struct LatLon c_ll;
 	if ( lat < -90.0 || lat > 90.0 ) {
-		g_warning ( "%s: Invalid latitude value %f at line %ld\n", G_STRLOC, lat, XML_GetCurrentLineNumber(xd->parser) );
+		g_warning ( "%s: Invalid latitude value %f at line %ld", G_STRLOC, lat, XML_GetCurrentLineNumber(xd->parser) );
 		c_ll.lat = 0.0;
 	} else
 		c_ll.lat = lat;
 
 	if ( lon < -180.0 || lon > 180.0 ) {
-		g_warning ( "%s: Invalid longitude value %f at line %ld\n", G_STRLOC, lon, XML_GetCurrentLineNumber(xd->parser) );
+		g_warning ( "%s: Invalid longitude value %f at line %ld", G_STRLOC, lon, XML_GetCurrentLineNumber(xd->parser) );
 		c_ll.lon = 0.0;
 	} else
 		c_ll.lon = lon;
@@ -169,7 +169,7 @@ static void point_coordinates_end ( xml_data *xd, const char *el )
 		gchar **vals = g_strsplit ( xd->c_cdata->str, ",", -1 );
 		guint nn = g_strv_length ( vals );
 		if ( nn < 2 || nn > 3  )
-			g_warning ( "%s: expected 2 or 3 coordinate parts but got %d at line %ld\n", G_STRLOC, nn, XML_GetCurrentLineNumber(xd->parser) );
+			g_warning ( "%s: expected 2 or 3 coordinate parts but got %d at line %ld", G_STRLOC, nn, XML_GetCurrentLineNumber(xd->parser) );
 		else {
 			// Remember KML coordinates are the 'lon,lat(,alt)' order
 			gdouble lat = g_ascii_strtod ( vals[1], NULL );
@@ -182,7 +182,7 @@ static void point_coordinates_end ( xml_data *xd, const char *el )
 		g_strfreev ( vals );
 	}
 	else
-		g_warning ( "%s: no waypoint\n", G_STRLOC );
+		g_warning ( "%s: no waypoint", G_STRLOC );
 
 	end_leaf_tag ( xd );
 }
@@ -278,7 +278,7 @@ static void linestring_coordinates_end ( xml_data *xd, const char *el )
 		}
 	}
 	else
-		g_warning ( "%s: no track\n", G_STRLOC );
+		g_warning ( "%s: no track", G_STRLOC );
 
 end:
 	end_leaf_tag ( xd );
@@ -367,7 +367,7 @@ static void track_coordinates_end ( xml_data *xd, const char *el )
 		gchar **vals = g_strsplit ( xd->c_cdata->str, " ", -1 );
 		guint nn = g_strv_length ( vals );
 		if ( nn < 2 || nn > 3  )
-			g_warning ( "%s: expected 2 or 3 coordinate parts but got %d at line %ld\n", G_STRLOC, nn, XML_GetCurrentLineNumber(xd->parser) );
+			g_warning ( "%s: expected 2 or 3 coordinate parts but got %d at line %ld", G_STRLOC, nn, XML_GetCurrentLineNumber(xd->parser) );
 		else {
 			// Remember KML coordinates are the 'lon,lat(,alt)' order
 			gdouble lat = g_ascii_strtod ( vals[1], NULL );
@@ -384,7 +384,7 @@ static void track_coordinates_end ( xml_data *xd, const char *el )
 		g_strfreev ( vals );
 	}
 	else
-		g_warning ( "%s: no trackpoint\n", G_STRLOC );
+		g_warning ( "%s: no trackpoint", G_STRLOC );
 
 	end_leaf_tag ( xd );
 }
@@ -426,7 +426,7 @@ static void track_end ( xml_data *xd, const char *el )
 						lts = lts->next;
 					}
 				} else
-					g_warning ( "%s: trackpoint count vs timestamp count differ %ld vs %ld at line %ld\n",
+					g_warning ( "%s: trackpoint count vs timestamp count differ %ld vs %ld at line %ld",
 					            G_STRLOC, num_points, ntimes, XML_GetCurrentLineNumber(xd->parser) );
 			}
 			g_list_free_full ( xd->timestamps, g_free );
@@ -442,7 +442,7 @@ static void track_end ( xml_data *xd, const char *el )
 						lts = lts->next;
 					}
 				} else
-					g_warning ( "%s: trackpoint count vs heart rate count differ %ld vs %ld at line %ld\n",
+					g_warning ( "%s: trackpoint count vs heart rate count differ %ld vs %ld at line %ld",
 					            G_STRLOC, num_points, nhrs, XML_GetCurrentLineNumber(xd->parser) );
 			}
 			g_list_free ( xd->hrs ); // NB no data in list has been allocated
@@ -457,7 +457,7 @@ static void track_end ( xml_data *xd, const char *el )
 						lts = lts->next;
 					}
 				} else
-					g_warning ( "%s: trackpoint count vs cadence count differ %ld vs %ld at line %ld\n",
+					g_warning ( "%s: trackpoint count vs cadence count differ %ld vs %ld at line %ld",
 					            G_STRLOC, num_points, ncads, XML_GetCurrentLineNumber(xd->parser) );
 			}
 			g_list_free ( xd->cads ); // NB no data in list has been allocated
@@ -473,7 +473,7 @@ static void track_end ( xml_data *xd, const char *el )
 						lts = lts->next;
 					}
 				} else
-					g_warning ( "%s: trackpoint count vs temp count differ %ld vs %ld at line %ld\n",
+					g_warning ( "%s: trackpoint count vs temp count differ %ld vs %ld at line %ld",
 					            G_STRLOC, num_points, ntemps, XML_GetCurrentLineNumber(xd->parser) );
 			}
 			g_list_free_full ( xd->temps, g_free );
@@ -759,7 +759,7 @@ gboolean a_kml_read_file ( VikTrwLayer *vtl, FILE *ff )
 
 	gboolean ans = (status != XML_STATUS_ERROR);
 	if ( !ans ) {
-		g_warning ( "%s: XML error %s at line %ld\n", G_STRLOC, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
+		g_warning ( "%s: XML error %s at line %ld", G_STRLOC, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
 	}
 
 	XML_ParserFree ( parser );

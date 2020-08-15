@@ -366,7 +366,7 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
   tmpfilename = g_strdup_printf("%s.tmp", fn);
   if (!lock_file ( tmpfilename ) )
   {
-    g_debug("%s: Couldn't take lock on temporary file \"%s\"\n", __FUNCTION__, tmpfilename);
+    g_debug("%s: Couldn't take lock on temporary file \"%s\"", __FUNCTION__, tmpfilename);
     g_free ( tmpfilename );
     if (options->use_etag)
       g_free ( cdo.etag );

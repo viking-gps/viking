@@ -420,7 +420,7 @@ static gboolean parse_kml ( const char* buffer, int len, VikViewport *vvp, VikLa
 
 	gboolean ans = (status != XML_STATUS_ERROR);
 	if ( !ans ) {
-		g_warning ( "%s: XML error %s at line %ld\n", __FUNCTION__, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
+		g_warning ( "%s: XML error %s at line %ld", __FUNCTION__, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
 	}
 
 	XML_ParserFree (parser);
