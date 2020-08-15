@@ -101,6 +101,7 @@ libviking_a_SOURCES = \
 	thumbnails.c thumbnails.h \
 	md5_hash.c md5_hash.h \
 	background.c background.h \
+	logging.c logging.h \
 	vikradiogroup.c vikradiogroup.h \
 	vikcoord.c vikcoord.h \
 	mapcache.c mapcache.h \

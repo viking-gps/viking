@@ -31,6 +31,7 @@
 
 #include "vikstatus.h"
 #include "background.h"
+#include "logging.h"
 
 enum
 {
@@ -57,6 +58,8 @@ forward_signal (GObject *object, gpointer user_data)
     // Clicking on the items field will bring up the background jobs window
     if ( item == VIK_STATUSBAR_ITEMS )
       a_background_show_window();
+    else if ( item == VIK_STATUSBAR_LOG )
+      a_logging_show_window();
     else if ( item == VIK_STATUSBAR_INFO )
       // Clear current info message
       vik_statusbar_set_message ( vs, VIK_STATUSBAR_INFO, "" );
@@ -112,7 +115,7 @@ vik_statusbar_init (VikStatusbar *vs)
   for ( i = 0; i < VIK_STATUSBAR_NUM_TYPES; i++ ) {
     vs->empty[i] = TRUE;
     
-    if (i == VIK_STATUSBAR_ITEMS || i == VIK_STATUSBAR_ZOOM || i == VIK_STATUSBAR_INFO )
+    if (i == VIK_STATUSBAR_ITEMS || i == VIK_STATUSBAR_ZOOM || i == VIK_STATUSBAR_INFO || i == VIK_STATUSBAR_LOG )
       vs->status[i] = gtk_button_new();
     else
     {
@@ -135,6 +138,10 @@ vik_statusbar_init (VikStatusbar *vs)
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_ZOOM], FALSE, FALSE, 1);
 
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_POSITION], FALSE, FALSE, 1);
+
+  g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_LOG]), "clicked", G_CALLBACK (forward_signal), vs );
+  gtk_widget_set_tooltip_text (GTK_WIDGET (vs->status[VIK_STATUSBAR_LOG]), _("Current number of log messages. Click to see them."));
+  gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_LOG], FALSE, FALSE, 1 );
 
   g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_INFO]), "button-release-event", G_CALLBACK (button_release_event), vs);
   g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_INFO]), "clicked", G_CALLBACK (forward_signal), vs);
@@ -159,6 +166,7 @@ vik_statusbar_new (guint scale)
   gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_ITEMS], 100*scale, -1 );
   gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_ZOOM], 100*scale, -1 );
   gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_POSITION], 275*scale, -1 );
+  gtk_widget_set_size_request ( vs->status[VIK_STATUSBAR_LOG], 40*scale, -1 );
   // Set minimum overall size
   //  otherwise the individual size_requests above create an implicit overall size,
   //  and so one can't downsize horizontally as much as may be desired when the statusbar is on
@@ -180,7 +188,7 @@ vik_statusbar_set_message ( VikStatusbar *vs, vik_statusbar_type_t field, const 
 {
   if ( field >= 0 && field < VIK_STATUSBAR_NUM_TYPES )
   {
-    if ( field == VIK_STATUSBAR_ITEMS || field == VIK_STATUSBAR_ZOOM || field == VIK_STATUSBAR_INFO )
+    if ( field == VIK_STATUSBAR_ITEMS || field == VIK_STATUSBAR_ZOOM || field == VIK_STATUSBAR_INFO || field == VIK_STATUSBAR_LOG )
     {
       gtk_button_set_label ( GTK_BUTTON(vs->status[field]), message);
     }

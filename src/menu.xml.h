@@ -111,6 +111,7 @@ static const char *menu_xml =
 	"      </menu>"
 	"      <separator/>"
 	"      <menuitem action='BGJobs'/>"
+	"      <menuitem action='Log'/>"
 	"    </menu>"
 	"    <menu action='Layers'>"
 	"      <menuitem action='Properties'/>"

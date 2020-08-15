@@ -255,8 +255,10 @@ A right click menu offers controls of the drawing options, a subset of track ope
 <listitem><para>The number of items to process in the background - normally this the number in the map tile download queue</para></listitem>
 <listitem><para>The zoom level</para></listitem>
 <listitem><para>The location of the mouse pointer (and potentially height information if DEM data is available)</para></listitem>
+<listitem><para>The number of log messages</para></listitem>
+<listitem><para>A general feedback area, such as the result of an operation or information about the selected item</para></listitem>
 </itemizedlist>
-<para>When creating a track/route, the statusbar also displays some information about the track/route.</para>
+<para>E.g. when creating a track/route, the general feedback area displays some information about the track/route.</para>
 <figure>
 <title>Statusbar</title>
 <screenshot>
@@ -270,6 +272,9 @@ A right click menu offers controls of the drawing options, a subset of track ope
 <listitem><para>The distance of the currently edited segment.</para></listitem>
 </itemizedlist>
 </para>
+<para>Left clicking on the number of background processes opens a dialog from which the processes can be inspected and cancelled.</para>
+<para>Left clicking on the number of log messages opens a dialog from which the messages can be viewed, filtered, copied and cleared.
+Newest messages are put at the top of the list.</para>
 <para>For convenience, a zoom selector can be opened from the status bar. Simply left-click on the zoom level.</para>
 <figure>
   <title>The zoom selector available from status bar</title>

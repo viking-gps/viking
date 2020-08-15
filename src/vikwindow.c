@@ -22,6 +22,7 @@
  */
 #include "viking.h"
 #include "background.h"
+#include "logging.h"
 #include "acquire.h"
 #include "datasources.h"
 #include "geojson.h"
@@ -617,6 +618,7 @@ static void window_finalize ( GObject *gob )
   g_return_if_fail ( vw != NULL );
 
   a_background_remove_window ( vw );
+  a_logging_remove_window ( vw );
 
   window_list = g_slist_remove ( window_list, vw );
 
@@ -977,6 +979,7 @@ static void vik_window_init ( VikWindow *vw )
   gtk_box_pack_end (GTK_BOX(vw->main_vbox), GTK_WIDGET(vw->viking_vs), FALSE, TRUE, 0);
 
   a_background_add_window ( vw );
+  a_logging_add_window ( vw );
 
   window_list = g_slist_prepend ( window_list, vw);
 
@@ -5286,6 +5289,7 @@ static GtkActionEntry entries[] = {
   { "PanSouth",  GTK_STOCK_GO_DOWN,      N_("Pan _South"),                "<control>Down",  NULL,                                           (GCallback)draw_pan_cb },
   { "PanWest",   GTK_STOCK_GO_FORWARD,   N_("Pan _West"),                 "<control>Left",  NULL,                                           (GCallback)draw_pan_cb },
   { "BGJobs",    GTK_STOCK_EXECUTE,      N_("Background _Jobs"),              NULL,         N_("Background Jobs"),                          (GCallback)a_background_show_window },
+  { "Log",       GTK_STOCK_INFO,         N_("Log"),                           NULL,         N_("Logged messages"),                          (GCallback)a_logging_show_window },
 
   { "Cut",       GTK_STOCK_CUT,          N_("Cu_t"),                          NULL,         N_("Cut selected layer"),                       (GCallback)menu_cut_layer_cb     },
   { "Copy",      GTK_STOCK_COPY,         N_("_Copy"),                         NULL,         N_("Copy selected layer"),                      (GCallback)menu_copy_layer_cb    },

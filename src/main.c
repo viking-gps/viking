@@ -30,6 +30,7 @@
 #include "dems.h"
 #include "babel.h"
 #include "curl_download.h"
+#include "logging.h"
 #include "vikmapslayer.h"
 #include "vikgeoreflayer.h"
 #include "viktrwlayer_propwin.h"
@@ -45,33 +46,6 @@
 #ifdef WINDOWS
 #undef LOCALEDIR
 #define LOCALEDIR "locale"
-#endif
-
-#ifdef HAVE_X11_XLIB_H
-#include "X11/Xlib.h"
-#endif
-
-/* Callback to log message */
-static void log_debug(const gchar *log_domain,
-                      GLogLevelFlags log_level,
-                      const gchar *message,
-                      gpointer user_data)
-{
-  g_print("** (viking): DEBUG: %s\n", message);
-}
-
-#if HAVE_X11_XLIB_H
-static int myXErrorHandler(Display *display, XErrorEvent *theEvent)
-{
-  (void)g_fprintf (stderr,
-                   _("Ignoring Xlib error: error code %d request code %d\n"),
-                   theEvent->error_code,
-                   theEvent->request_code);
-  // No exit on X errors!
-  //  mainly to handle out of memory error when requesting large pixbuf from user request
-  //  see vikwindow.c::save_image_file ()
-  return 0;
-}
 #endif
 
 // Default values that won't actually get applied unless changed by command line parameter values
@@ -134,15 +108,10 @@ int main( int argc, char *argv[] )
     return EXIT_SUCCESS;
   }
 
-  if (vik_debug)
-    g_log_set_handler (NULL, G_LOG_LEVEL_DEBUG, log_debug, NULL);
-
-#if HAVE_X11_XLIB_H
-  XSetErrorHandler(myXErrorHandler);
-#endif
-
   // Ensure correct capitalization of the program name
   g_set_application_name ("Viking");
+
+  a_logging_init ();
 
   // Discover if this is the very first run
   a_vik_very_first_run ();
@@ -207,6 +176,8 @@ int main( int argc, char *argv[] )
 
   /* Create the first window */
   first_window = vik_window_new_window();
+
+  a_logging_update();
 
   vu_check_latest_version ( GTK_WINDOW(first_window) );
 

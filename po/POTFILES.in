@@ -36,6 +36,7 @@ src/print.c
 src/ui_util.c
 src/util.c
 src/vikcoordlayer.c
+src/logging.c
 src/main.c
 src/osm.c
 src/osm-traces.c
