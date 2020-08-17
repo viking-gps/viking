@@ -337,7 +337,7 @@ static void tracking_draw ( VikGeoclueLayer *vgl, VikViewport *vp )
 		vik_coord_to_latlon ( &nw, &lnw );
 		vik_coord_to_latlon ( &se, &lse );
 
-		vik_coord_load_from_latlon ( &vgl->coord, vik_viewport_get_coord_mode(vp), &ll );
+		vik_coord_to_latlon ( &vgl->coord, &ll );
 
 		// If it is in the viewport then draw something
 		if ( ll.lat > lse.lat &&
