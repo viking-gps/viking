@@ -8277,7 +8277,7 @@ static gboolean waypoint_change_time_from_comment ( VikWaypoint *wp )
 /**
  *
  */
-static void trw_layer_waypoints_set_time_from_comment ( menu_array_layer values )
+static void trw_layer_waypoints_set_time_from_comment ( menu_array_sublayer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
   VikWaypoint *wp;
