@@ -60,7 +60,7 @@ static GMutex *mc_mutex = NULL;
 
 static VikLayerParamScale params_scales[] = {
   /* min, max, step, digits (decimal places) */
- { 1, 1024, 1, 0 },
+ { 1, 4096, 4, 0 },
 };
 
 static VikLayerParamData mcs_default ( void ) { return VIK_LPD_UINT(VIK_CONFIG_MAPCACHE_SIZE); }
