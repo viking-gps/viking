@@ -364,6 +364,9 @@ void osm_traces_init () {
   tmp.s = NULL;
   a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
   a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
+  // Not that secret; but as least not in total plain sight anymore
+  viking_consumer_secret = g_strdup ( VSC_INIT );
+  viking_consumer_secret = util_frob ( viking_consumer_secret, strlen(viking_consumer_secret) );
 #endif
   // Only register depreciated preferences if they already exist
   //  or being forced to use the basic method
@@ -375,16 +378,14 @@ void osm_traces_init () {
   }
 
   login_mutex = vik_mutex_new();
-
-  // Not that secret; but as least not in total plain sight anymore
-  viking_consumer_secret = g_strdup ( VSC_INIT );
-  viking_consumer_secret = util_frob ( viking_consumer_secret, strlen(viking_consumer_secret) );
 }
 
 void osm_traces_uninit()
 {
   vik_mutex_free(login_mutex);
+#ifdef HAVE_OAUTH_H
   g_free ( viking_consumer_secret );
+#endif
 }
 
 #define OSM_GPX_UPLOAD_URL "https://www.openstreetmap.org/api/0.6/gpx/create"
