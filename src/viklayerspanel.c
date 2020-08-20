@@ -272,6 +272,10 @@ gboolean layers_calendar_forward ( VikLayersPanel *vlp )
     gtk_calendar_select_day ( GTK_CALENDAR(vlp->calendar), day );
     gtk_calendar_select_month ( GTK_CALENDAR(vlp->calendar), month-1, year );
   } else {
+    if ( !date_str ) {
+      date_str = g_malloc0_n ( sizeof(gchar*), 64 );
+      (void)g_date_strftime ( date_str, 64, "%x", gd_now );
+    }
     a_dialog_info_msg_extra ( GTK_WINDOW(VIK_WINDOW_FROM_WIDGET(vlp)), _("Nothing found up to %s"), date_str );
   }
   g_debug ( "%s: %s %d", __FUNCTION__, date_str, found );
