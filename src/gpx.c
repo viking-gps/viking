@@ -357,7 +357,7 @@ typedef struct tag_mapping_ext {
 // gpxx:TrackExtension/gpxx:DisplayColor Garmin GpxExtensionsv3.xsd
 // pwr:PowerInWatts / gpxpx:PowerInWatts Garmin PowerExtensionv1.xsd
 // gpxd:color JOSM gpx-drawing-extensions-1.0.xsd
-static tag_mapping_ext extention_trackpoints_map[] = {
+static tag_mapping_ext extension_trackpoints_map[] = {
   { ext_tp_heart_rate, "gpxtpx:hr" },
   { ext_tp_heart_rate, "gpxdata:hr" },
   { ext_tp_cadence, "gpxdata:cadence" },
@@ -379,7 +379,7 @@ static tag_mapping_ext extention_trackpoints_map[] = {
 static tag_type_ext get_tag_ext_specific (const char *tt)
 {
  tag_mapping_ext *tm;
- for ( tm = extention_trackpoints_map; tm->tag_type != 0; tm++ )
+ for ( tm = extension_trackpoints_map; tm->tag_type != 0; tm++ )
    if ( 0 == g_strcmp0(tm->tag_name, tt) )
      return tm->tag_type;
  return ext_unknown;
