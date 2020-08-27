@@ -357,17 +357,21 @@ typedef struct tag_mapping_ext {
 // gpxx:TrackExtension/gpxx:DisplayColor Garmin GpxExtensionsv3.xsd
 // pwr:PowerInWatts / gpxpx:PowerInWatts Garmin PowerExtensionv1.xsd
 // gpxd:color JOSM gpx-drawing-extensions-1.0.xsd
+// 'ns3:*'; is typically from Garmin Connect
 static tag_mapping_ext extension_trackpoints_map[] = {
   { ext_tp_heart_rate, "gpxtpx:hr" },
   { ext_tp_heart_rate, "gpxdata:hr" },
+  { ext_tp_heart_rate, "ns3:hr" },
   { ext_tp_cadence, "gpxdata:cadence" },
   { ext_tp_cadence, "gpxtpx:cad" },
+  { ext_tp_cadence, "ns3:cad" },
   { ext_tp_speed, "gpxdata:speed" },
   { ext_tp_speed, "gpxtpx:speed" },
   { ext_tp_course, "gpxtpx:course" },
   { ext_tp_course, "gpxdata:course" },
   { ext_tp_temp, "gpxdata:temp" },
   { ext_tp_temp, "gpxtpx:atemp" },
+  { ext_tp_temp, "ns3:atemp" },
   { ext_tp_power, "gpxdata:power" }, // e.g. openambit2gpx.py
   { ext_tp_power, "pwr:PowerInWatts" },
   { ext_tp_power, "gpxpx:PowerInWatts" },
