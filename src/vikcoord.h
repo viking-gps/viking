@@ -61,7 +61,10 @@ void vik_coord_set_area(const VikCoord *coord, const struct LatLon *wh, VikCoord
 gboolean vik_coord_inside(const VikCoord *coord, const VikCoord *tl, const VikCoord *br);
 /* all coord operations MUST BE ABSTRACTED!!! */
 
-gdouble vik_coord_angle (const VikCoord *vc1, const VikCoord *vc2);
+gdouble vik_coord_angle(const VikCoord *vc1, const VikCoord *vc2);
+gdouble vik_coord_angle_end(const VikCoord *vc1, const VikCoord *vc2);
+
+void vik_coord_geodesic_coord(const VikCoord *vc1, const VikCoord *vc2, gdouble n, VikCoord *rvc);
 
 G_END_DECLS
 

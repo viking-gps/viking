@@ -1754,49 +1754,100 @@ static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
   return TRUE;
 }
 
-
-
 /********************************************************************************
  ** Ruler tool code
  ********************************************************************************/
-static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gint y1, gint x2, gint y2, gdouble distance)
+static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoord *start, VikCoord *end)
 {
   PangoLayout *pl;
   gchar str[128];
   GdkGC *labgc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
   GdkGC *thickgc = gdk_gc_new(d);
-  
-  gdouble len = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
-  gdouble dx = (x2-x1)/len*10; 
-  gdouble dy = (y2-y1)/len*10;
-  gdouble c = cos(DEG2RAD(15.0));
-  gdouble s = sin(DEG2RAD(15.0));
-  gdouble angle;
-  gdouble baseangle = 0;
+
+  gint x1, y1, x2, y2;
+  vik_viewport_coord_to_screen ( vvp, start, &x1, &y1 );
+
+  /* normalize end position in case the mouse pointer was moved out of the map */
+  if (end->mode == VIK_COORD_LATLON) {
+    end->east_west = fmod(end->east_west + 360, 360);
+    if (end->east_west > 180) {
+      end->east_west -= 360;
+    }
+  }
+  vik_viewport_coord_to_screen ( vvp, end, &x2, &y2 );
+
+
+  gdouble len, dx, dy, c, s, angle, angle_end, display_angle, baseangle;
   gint i;
 
-  /* draw line with arrow ends */
-  {
-    gint tmp_x1=x1, tmp_y1=y1, tmp_x2=x2, tmp_y2=y2;
-    a_viewport_clip_line(&tmp_x1, &tmp_y1, &tmp_x2, &tmp_y2);
-    gdk_draw_line(d, gc, tmp_x1, tmp_y1, tmp_x2, tmp_y2);
+  vik_viewport_compute_bearing ( vvp, x1, y1, x2, y2, &display_angle, &baseangle );
+  angle = fmod(baseangle  + DEG2RAD(vik_coord_angle ( start, end )), 2*M_PI);
+  angle_end = fmod(baseangle + DEG2RAD(vik_coord_angle_end ( start, end )), 2*M_PI);
+
+  gdouble distance = vik_coord_diff (start, end);
+
+  len = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+  dx = (x2-x1)/len*10;
+  dy = (y2-y1)/len*10;
+  c = cos(DEG2RAD(15.0));
+  s = sin(DEG2RAD(15.0));
+
+  /* if the distance is less than 10km, the curvature definitely won't be visible */
+  if (distance < 10e3) {
+    /* draw line with arrow ends */
+    a_viewport_clip_line(&x1, &y1, &x2, &y2);
+    gdk_draw_line(d, gc, x1, y1, x2, y2);
+
+    /* orthogonal bars */
+    gdk_draw_line(d, gc, x1 - dy, y1 + dx, x1 + dy, y1 - dx);
+    gdk_draw_line(d, gc, x2 - dy, y2 + dx, x2 + dy, y2 - dx);
+    /* arrow components */
+    gdk_draw_line(d, gc, x2, y2, x2 - (dx * c + dy * s), y2 - (dy * c - dx * s));
+    gdk_draw_line(d, gc, x2, y2, x2 - (dx * c - dy * s), y2 - (dy * c + dx * s));
+    gdk_draw_line(d, gc, x1, y1, x1 + (dx * c + dy * s), y1 + (dy * c - dx * s));
+    gdk_draw_line(d, gc, x1, y1, x1 + (dx * c - dy * s), y1 + (dy * c + dx * s));
   }
 
-  a_viewport_clip_line(&x1, &y1, &x2, &y2);
-  gdk_draw_line(d, gc, x1, y1, x2, y2);
+  else {
+    gint last_x = x1;
+    gint last_y = y1;
+    gint x, y;
 
-  gdk_draw_line(d, gc, x1 - dy, y1 + dx, x1 + dy, y1 - dx);
-  gdk_draw_line(d, gc, x2 - dy, y2 + dx, x2 + dy, y2 - dx);
-  gdk_draw_line(d, gc, x2, y2, x2 - (dx * c + dy * s), y2 - (dy * c - dx * s));
-  gdk_draw_line(d, gc, x2, y2, x2 - (dx * c - dy * s), y2 - (dy * c + dx * s));
-  gdk_draw_line(d, gc, x1, y1, x1 + (dx * c + dy * s), y1 + (dy * c - dx * s));
-  gdk_draw_line(d, gc, x1, y1, x1 + (dx * c - dy * s), y1 + (dy * c + dx * s));
+    /* draw geodesic */
+    for (gdouble step=0;step<=1;step+=0.01) {
+      VikCoord coord;
+      vik_coord_geodesic_coord ( start, end, step, &coord );
+      vik_viewport_coord_to_screen ( vvp, &coord, &x, &y );
+
+      struct LatLon ll;
+      vik_coord_to_latlon ( &coord, &ll) ;
+
+      if (sqrt(pow(last_x-x, 2) + pow(last_y-y, 2)) < 100) {;
+        gdk_draw_line(d, gc, last_x, last_y, x, y);
+      }
+      last_x = x;
+      last_y = y;
+    }
+
+    gdouble dx1 = 10 * cos(angle);
+    gdouble dy1 = 10 * sin(angle);
+    gdouble dx2 = 10 * cos(angle_end);
+    gdouble dy2 = 10 * sin(angle_end);
+
+    /* orthogonal bars */
+    gdk_draw_line(d, gc, x1 - dx1, y1 - dy1, x1 + dx1, y1 + dy1);
+    gdk_draw_line(d, gc, x2 - dx2, y2 - dy2, x2 + dx2, y2 + dy2);
+    /* arrow components */
+    gdk_draw_line(d, gc, x2, y2, x2 + (-dy2 * c + dx2 * s), y2 + (+dx2 * c + dy2 * s));
+    gdk_draw_line(d, gc, x2, y2, x2 + (-dy2 * c - dx2 * s), y2 + (+dx2 * c - dy2 * s));
+    gdk_draw_line(d, gc, x1, y1, x1 + (+dy1 * c + dx1 * s), y1 + (-dx1 * c + dy1 * s));
+    gdk_draw_line(d, gc, x1, y1, x1 + (+dy1 * c - dx1 * s), y1 + (-dx1 * c - dy1 * s));
+  }
+
 
   /* draw compass */
 #define CR 80
 #define CW 4
-
-  vik_viewport_compute_bearing ( vvp, x1, y1, x2, y2, &angle, &baseangle );
 
   {
     GdkColor color;
@@ -1879,14 +1930,19 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gin
     }
 
     pango_layout_set_text(pl, str, -1);
-
     pango_layout_get_pixel_size ( pl, &wd, &hd );
+
+    gint mx, my;
+    VikCoord midpoint;
+    vik_coord_geodesic_coord ( start, end, 0.5, &midpoint );
+    vik_viewport_coord_to_screen ( vvp, &midpoint, &mx, &my );
+
     if (dy>0) {
-      xd = (x1+x2)/2 + dy;
-      yd = (y1+y2)/2 - hd/2 - dx;
+      xd = mx + dy;
+      yd = my - hd/2 - dx;
     } else {
-      xd = (x1+x2)/2 - dy;
-      yd = (y1+y2)/2 - hd/2 + dx;
+      xd = mx - dy;
+      yd = my - hd/2 + dx;
     }
 
     if ( xd < -5 || yd < -5 || xd > vik_viewport_get_width(vvp)+5 || yd > vik_viewport_get_height(vvp)+5 ) {
@@ -2001,7 +2057,7 @@ static void ruler_move_normal (VikLayer *vl, GdkEventMotion *event, tool_ed_t *s
   gchar *temp;
 
   if ( s->has_oldcoord ) {
-    int oldx, oldy, w1, h1, w2, h2;
+    int w1, h1, w2, h2;
     static GdkPixmap *buf = NULL;
     gchar *lat=NULL, *lon=NULL;
     w1 = vik_viewport_get_width(vvp); 
@@ -2017,10 +2073,9 @@ static void ruler_move_normal (VikLayer *vl, GdkEventMotion *event, tool_ed_t *s
 
     vik_viewport_screen_to_coord ( vvp, (gint) event->x, (gint) event->y, &coord );
     vik_coord_to_latlon ( &coord, &ll );
-    vik_viewport_coord_to_screen ( vvp, &s->oldcoord, &oldx, &oldy );
 
     gdk_draw_drawable (buf, vik_viewport_get_black_gc(vvp), vik_viewport_get_pixmap(vvp), 0, 0, 0, 0, -1, -1);
-    draw_ruler(vvp, buf, vik_viewport_get_black_gc(vvp), oldx, oldy, event->x, event->y, vik_coord_diff( &coord, &(s->oldcoord)) );
+    draw_ruler(vvp, buf, vik_viewport_get_black_gc(vvp), &s->oldcoord, &coord );
     if (draw_buf_done) {
       static gpointer pass_along[3];
       pass_along[0] = gtk_widget_get_window(GTK_WIDGET(vvp));
