@@ -3565,13 +3565,17 @@ static void set_statusbar_msg_info_trkpt ( VikTrwLayer *vtl, VikTrackpoint *trkp
 static void set_statusbar_msg_info_wpt ( VikTrwLayer *vtl, VikWaypoint *wpt )
 {
   gchar tmp_buf1[64];
-  switch (a_vik_get_units_height ()) {
-  case VIK_UNITS_HEIGHT_FEET:
-    g_snprintf(tmp_buf1, sizeof(tmp_buf1), _("Wpt: Alt %dft"), (int)round(VIK_METERS_TO_FEET(wpt->altitude)));
-    break;
-  default:
-    //VIK_UNITS_HEIGHT_METRES:
-    g_snprintf(tmp_buf1, sizeof(tmp_buf1), _("Wpt: Alt %dm"), (int)round(wpt->altitude));
+  if ( isnan(wpt->altitude) ) {
+    g_snprintf ( tmp_buf1, sizeof(tmp_buf1), _("Wpt: Alt --") );
+  } else {
+    switch (a_vik_get_units_height ()) {
+    case VIK_UNITS_HEIGHT_FEET:
+      g_snprintf(tmp_buf1, sizeof(tmp_buf1), _("Wpt: Alt %dft"), (int)round(VIK_METERS_TO_FEET(wpt->altitude)));
+      break;
+    default:
+      //VIK_UNITS_HEIGHT_METRES:
+      g_snprintf(tmp_buf1, sizeof(tmp_buf1), _("Wpt: Alt %dm"), (int)round(wpt->altitude));
+    }
   }
   
   // Position part
