@@ -580,7 +580,7 @@ VikTrwLayerWpwin *vik_trw_layer_wpwin_show ( GtkWindow *parent, VikTrwLayerWpwin
     GtkTreeIter iter;
     for (ok = gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(ww->store), &iter ); ok; ok = gtk_tree_model_iter_next ( GTK_TREE_MODEL(ww->store), &iter)) {
       gtk_tree_model_get ( GTK_TREE_MODEL(ww->store), &iter, 0, (void *)&sym, -1 );
-      if (sym && (!g_strcmp0(sym, wp->symbol) || !g_strcmp0(sym, last_sym)) ) {
+      if (sym && ((!is_new && !g_strcmp0(sym, wp->symbol)) || (is_new && !g_strcmp0(sym, last_sym))) ) {
         g_free(sym);
         break;
       } else {
