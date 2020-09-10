@@ -39,6 +39,7 @@ check_SCRIPTS = check_degrees_conversions.sh \
 	check_decimal_output.sh \
 	check_vik2vik.sh \
 	check_gpx.sh \
+	check_help_xml.sh \
 	check_metatile.sh
 if GEOTAG
 check_SCRIPTS += check_geotag.sh
@@ -51,6 +52,7 @@ endif
 EXTRA_DIST = check_degrees_conversions.sh \
 	check_decimal_output.sh \
 	check_babel.sh \
+	check_help_xml.sh \
 	check_vik2vik.sh \
 	Simple.vik \
 	check_gpx.sh \

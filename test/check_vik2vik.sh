@@ -5,7 +5,7 @@ if [ -z "$srcdir" ]; then
   srcdir=.
 fi
 
-outfile=$srcdir/testout-$$.vik
+outfile=./testout-$$.vik
 result=$(./vik2vik < $srcdir/Simple.vik $outfile)
 if [ $? != 0 ]; then
   echo "vik2vik command failure"
