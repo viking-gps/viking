@@ -64,7 +64,7 @@ gboolean vik_coord_inside(const VikCoord *coord, const VikCoord *tl, const VikCo
 gdouble vik_coord_angle(const VikCoord *vc1, const VikCoord *vc2);
 gdouble vik_coord_angle_end(const VikCoord *vc1, const VikCoord *vc2);
 
-void vik_coord_geodesic_waypoint(const VikCoord *vc1, const VikCoord *vc2, gdouble n, VikCoord *wpt);
+void vik_coord_geodesic_coord(const VikCoord *vc1, const VikCoord *vc2, gdouble n, VikCoord *wpt);
 
 G_END_DECLS
 

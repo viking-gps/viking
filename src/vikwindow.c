@@ -1781,7 +1781,7 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
   c = cos(DEG2RAD(15.0));
   s = sin(DEG2RAD(15.0));
 
-  /* if the distance is less than 10km, the curvature definetely won't be visible */
+  /* if the distance is less than 10km, the curvature definitely won't be visible */
   if (distance < 10e3) {
     /* draw line with arrow ends */
     a_viewport_clip_line(&x1, &y1, &x2, &y2);
@@ -1803,9 +1803,9 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
     gint x, y;
 
     /* draw geodesic */
-    for (gdouble step=0;step<=1;step+=0.001) {
+    for (gdouble step=0;step<=1;step+=0.01) {
       VikCoord coord;
-      vik_coord_geodesic_waypoint ( start, end, step, &coord );
+      vik_coord_geodesic_coord ( start, end, step, &coord );
       vik_viewport_coord_to_screen ( vvp, &coord, &x, &y );
 
       struct LatLon ll;
@@ -1923,7 +1923,7 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
 
     gint mx, my;
     VikCoord midpoint;
-    vik_coord_geodesic_waypoint ( start, end, 0.5, &midpoint );
+    vik_coord_geodesic_coord ( start, end, 0.5, &midpoint );
     vik_viewport_coord_to_screen ( vvp, &midpoint, &mx, &my );
 
     if (dy>0) {

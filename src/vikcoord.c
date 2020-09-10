@@ -258,14 +258,14 @@ gdouble vik_coord_angle_end (const VikCoord *vc1, const VikCoord *vc2)
 }
 
 /**
- * vik_coord_geodesic_waypoint:
+ * vik_coord_geodesic_coord:
  *
- * Calculate the waypoint at angular distance ratio n between vc1 and vc2. n = 0 returns vc1, n = 1 returns vc2.
+ * Calculate the geodesic coordinate at angular distance ratio n between vc1 and vc2. n = 0 returns vc1, n = 1 returns vc2.
  * Used for drawing great circles for the ruler tool.
  * For the relevant formulas, refer to https://en.wikipedia.org/wiki/Great-circle_navigation
  *
  */
-void vik_coord_geodesic_waypoint (const VikCoord *vc1, const VikCoord *vc2, gdouble n, VikCoord *wpt)
+void vik_coord_geodesic_coord (const VikCoord *vc1, const VikCoord *vc2, gdouble n, VikCoord *rvc)
 {
   struct LatLon ll, ll1, ll2;
   vik_coord_to_latlon ( vc1, &ll1 );
@@ -301,5 +301,5 @@ void vik_coord_geodesic_waypoint (const VikCoord *vc1, const VikCoord *vc2, gdou
   coord.north_south = RAD2DEG(ll.lat);
   coord.east_west = RAD2DEG(ll.lon);
   coord.mode = VIK_COORD_LATLON;
-  vik_coord_copy_convert ( &coord, vc1->mode, wpt );
+  vik_coord_copy_convert ( &coord, vc1->mode, rvc );
 }
