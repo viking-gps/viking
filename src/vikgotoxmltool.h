@@ -24,8 +24,6 @@
 
 #include <glib.h>
 
-#include "vikwindow.h"
-
 #include "vikgototool.h"
 
 G_BEGIN_DECLS
@@ -51,8 +49,6 @@ GType vik_goto_xml_tool_get_type ();
 struct _VikGotoXmlTool {
   VikGotoTool obj;
 };
-
-VikGotoXmlTool *vik_goto_xml_tool_new ();
 
 G_END_DECLS
 

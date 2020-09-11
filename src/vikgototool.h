@@ -23,7 +23,7 @@
 
 #include <glib.h>
 
-#include "vikwindow.h"
+#include "vikviewport.h"
 #include "download.h"
 
 G_BEGIN_DECLS
@@ -61,11 +61,9 @@ struct VikGotoCandidate {
 };
 
 gchar *vik_goto_tool_get_label ( VikGotoTool *self );
-gchar *vik_goto_tool_get_url_format ( VikGotoTool *self );
-DownloadFileOptions *vik_goto_tool_get_download_options ( VikGotoTool *self );
-gboolean vik_goto_tool_parse_file_for_latlon ( VikGotoTool *self, gchar *filename, struct LatLon *ll );
-int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord );
-int vik_goto_tool_get_candidates ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, GList **candidates );
+gboolean vik_goto_tool_parse_file_for_latlon (VikGotoTool *self, gchar *filename, struct LatLon *ll);
+int vik_goto_tool_get_coord ( VikGotoTool *self, VikViewport *vvp, gchar *srch_str, VikCoord *coord );
+int vik_goto_tool_get_candidates ( VikGotoTool *self, gchar *srch_str, GList **candidates );
 void vik_goto_tool_free_candidate ( gpointer candidate );
 
 G_END_DECLS

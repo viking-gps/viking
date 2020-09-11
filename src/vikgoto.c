@@ -136,7 +136,7 @@ text_changed_cb (GtkEntry   *entry,
  *
  * Returns: %TRUE if a successful lookup
  */
-static gboolean vik_goto_place ( VikWindow *vw, VikViewport *vvp, gchar* name, VikCoord *vcoord )
+static gboolean vik_goto_place ( VikViewport *vvp, gchar* name, VikCoord *vcoord )
 {
   // Ensure last_goto_tool is given a value
   get_provider ();
@@ -144,7 +144,7 @@ static gboolean vik_goto_place ( VikWindow *vw, VikViewport *vvp, gchar* name, V
   if ( goto_tools_list ) {
     VikGotoTool *gototool = g_list_nth_data ( goto_tools_list, last_goto_tool );
     if ( gototool ) {
-      if ( vik_goto_tool_get_coord ( gototool, vw, vvp, name, vcoord ) == 0 )
+      if ( vik_goto_tool_get_coord ( gototool, vvp, name, vcoord ) == 0 )
         return TRUE;
     }
   }
@@ -207,7 +207,7 @@ static void vik_goto_search_response ( struct VikGotoSearchWinData *data, gint r
     GList *candidates = NULL;
 
     vik_window_set_busy_cursor_widget ( data->dialog, data->vw );
-    int ans = vik_goto_tool_get_candidates ( tool, data->vw, data->vvp, goto_str, &candidates );
+    int ans = vik_goto_tool_get_candidates ( tool, goto_str, &candidates );
     vik_window_clear_busy_cursor_widget ( data->dialog, data->vw );
 
     if ( ans == 0 ) {
@@ -483,7 +483,7 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
       g_debug ( "%s: found city %s", __FUNCTION__, city );
       if ( strcmp ( city, "(Unknown city)" ) != 0 ) {
         VikCoord new_center;
-        if ( vik_goto_place ( NULL, vvp, city, &new_center ) ) {
+        if ( vik_goto_place ( vvp, city, &new_center ) ) {
           // Got something
           vik_coord_to_latlon ( &new_center, ll );
           result = 2;
@@ -498,7 +498,7 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
       g_debug ( "%s: found country %s", __FUNCTION__, country );
       if ( strcmp ( country, "(Unknown Country)" ) != 0 ) {
         VikCoord new_center;
-        if ( vik_goto_place ( NULL, vvp, country, &new_center ) ) {
+        if ( vik_goto_place ( vvp, country, &new_center ) ) {
           // Finally got something
           vik_coord_to_latlon ( &new_center, ll );
           result = 3;

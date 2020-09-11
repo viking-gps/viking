@@ -291,12 +291,6 @@ vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
   parent_class->parse_file_for_candidates = vik_goto_xml_tool_parse_file_for_candidates;
 }
 
-VikGotoXmlTool *
-vik_goto_xml_tool_new ()
-{
-  return VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "Google", NULL ) );
-}
-
 static void
 vik_goto_xml_tool_init ( VikGotoXmlTool *self )
 {

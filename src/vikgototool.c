@@ -35,7 +35,7 @@
 static GObjectClass *parent_class;
 
 static void goto_tool_finalize ( GObject *gob );
-static gchar *goto_tool_get_label ( VikGotoTool *vw );
+static gchar *goto_tool_get_label ( VikGotoTool *self );
 static DownloadFileOptions *goto_tool_get_download_options ( VikGotoTool *self );
 
 typedef struct _VikGotoToolPrivate VikGotoToolPrivate;
@@ -147,10 +147,12 @@ static void vik_goto_tool_class_init ( VikGotoToolClass *klass )
   parent_class = g_type_class_peek_parent (klass);
 }
 
-VikGotoTool *vik_goto_tool_new ()
+/*
+static VikGotoTool *vik_goto_tool_new ()
 {
   return VIK_GOTO_TOOL ( g_object_new ( VIK_GOTO_TOOL_TYPE, NULL ) );
 }
+*/
 
 static void vik_goto_tool_init ( VikGotoTool *self )
 {
@@ -182,12 +184,12 @@ gchar *vik_goto_tool_get_label ( VikGotoTool *self )
   return VIK_GOTO_TOOL_GET_CLASS( self )->get_label( self );
 }
 
-gchar *vik_goto_tool_get_url_format ( VikGotoTool *self )
+static gchar *vik_goto_tool_get_url_format ( VikGotoTool *self )
 {
   return VIK_GOTO_TOOL_GET_CLASS( self )->get_url_format( self );
 }
 
-DownloadFileOptions *vik_goto_tool_get_download_options ( VikGotoTool *self )
+static DownloadFileOptions *vik_goto_tool_get_download_options ( VikGotoTool *self )
 {
   return VIK_GOTO_TOOL_GET_CLASS( self )->get_download_options( self );
 }
@@ -197,7 +199,7 @@ gboolean vik_goto_tool_parse_file_for_latlon (VikGotoTool *self, gchar *filename
   return VIK_GOTO_TOOL_GET_CLASS( self )->parse_file_for_latlon( self, filename, ll );
 }
 
-gboolean vik_goto_tool_parse_file_for_candidates (VikGotoTool *self, gchar *filename, GList **candidates)
+static gboolean vik_goto_tool_parse_file_for_candidates (VikGotoTool *self, gchar *filename, GList **candidates)
 {
   return VIK_GOTO_TOOL_GET_CLASS( self )->parse_file_for_candidates( self, filename, candidates );
 }
@@ -216,7 +218,7 @@ gboolean vik_goto_tool_parse_file_for_candidates (VikGotoTool *self, gchar *file
  *  1  = search unavailable in the #VikGotoTool due to communication issue
  *
  */
-int vik_goto_tool_get_coord ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, VikCoord *coord )
+int vik_goto_tool_get_coord ( VikGotoTool *self, VikViewport *vvp, gchar *srch_str, VikCoord *coord )
 {
   gchar *tmpname;
   gchar *uri;
@@ -255,17 +257,16 @@ done_no_file:
  * vik_goto_tool_get_candidates
  *
  * @self:       The #VikGotoTool
- * @vvp:        The #VikViewport
  * @srch_str:   The string to search with
  * @candidates: Returns a list of matches
  *
  * Returns: An integer value indicating:
- *  0  = search found something
- *  -1 = search place not found by the #VikGotoTool
+ *  0  = search 'successful' (result can be empty)
+ *  -1 = parsing downloaded file failed
  *  1  = search unavailable in the #VikGotoTool due to communication issue
  *
  */
-int vik_goto_tool_get_candidates ( VikGotoTool *self, VikWindow *vw, VikViewport *vvp, gchar *srch_str, GList **candidates )
+int vik_goto_tool_get_candidates ( VikGotoTool *self, gchar *srch_str, GList **candidates )
 {
   gchar *tmpname;
   gchar *uri;
