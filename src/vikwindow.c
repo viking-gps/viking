@@ -1803,9 +1803,10 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
     gint x, y;
 
     /* draw geodesic */
-    for (gdouble step=0;step<=1;step+=0.01) {
+    for (gint step=0;step<=100;step++) {
+      gdouble n = (gdouble) step / 100;
       VikCoord coord;
-      vik_coord_geodesic_coord ( start, end, step, &coord );
+      vik_coord_geodesic_coord ( start, end, n, &coord );
       vik_viewport_coord_to_screen ( vvp, &coord, &x, &y );
 
       struct LatLon ll;
