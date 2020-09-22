@@ -6009,6 +6009,101 @@ static void trw_layer_interpolate_times ( menu_array_sublayer values )
     vik_track_interpolate_times ( track );
 }
 
+/**
+ * trw_layer_rotate:
+ *
+ * Shift start/end points around.
+ * Particularly intended for circular routes were you want to adjust where the start/end point is.
+ * Would be easier for the user to select positionally where they want
+ *  the new start/end point, but this is more effort to program.
+ * So here at least you can repeatedly try shifting it around by various values,
+ *  until you get the start/end point where you want it.
+ *
+ * ATM Only on routes and tracks without timestamps,
+ *  otherwise things get messy if there's timestamps as the implicit ordering by time would get broken.
+ */
+static void trw_layer_rotate ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  VikTrack *track;
+  if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    track = (VikTrack *) g_hash_table_lookup ( vtl->routes, values[MA_SUBLAYER_ID] );
+  else
+    track = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+
+  if ( track ) {
+
+    guint count = (guint)vik_track_get_tp_count ( track );
+    if ( count < 2 ) {
+      g_warning ( "%s: Not enough points", __FUNCTION__ );
+    }
+
+    // Check first and last points are 'reasonably' close,
+    // otherwise warn about not being a 'circular route'
+    GList *seg;
+    VikTrackpoint *tp;
+    seg = g_list_first ( track->trackpoints );
+    tp = VIK_TRACKPOINT(seg->data);
+
+    if ( !isnan(tp->timestamp) ) {
+      a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("This track has timestamps, so this operation is not allowed") );
+      return;
+    }
+
+    GList *end = g_list_last ( track->trackpoints );
+    VikTrackpoint *tp2 = VIK_TRACKPOINT(end->data);
+    gdouble diff = vik_coord_diff ( &tp->coord, &(tp2->coord) );
+
+    if ( diff > 1000.0 ) {
+      if ( !a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                 _("The first and last points are quite far apart, this operation is intended for 'circular' routes.\n"
+                                   "Do you wish to continue?"), NULL ) ) {
+        return;
+      }
+    }
+    
+    gint shifts = a_dialog_get_non_zero_number ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                                 _("Rotate"),
+                                                 _("Shift by N points:"),
+                                                 0,      // Default value
+                                                 -count, // Min
+                                                 count,  // Max
+                                                 count/50 ? count/50 : 1);    // Step
+
+    if ( !shifts )
+      return;
+
+    // Maintain the first segment
+    // remove marker
+    tp->newsegment = FALSE;
+    
+    if ( shifts > 0 ) {
+      for ( gint shift = 0; shift < shifts; shift++ ) {
+        // Repeatly move first point to last position
+        GList *first = g_list_first ( track->trackpoints );
+        gpointer tp = first->data;
+        track->trackpoints = g_list_remove_link ( track->trackpoints, first );
+        track->trackpoints = g_list_append ( track->trackpoints, tp );
+      }
+    } else {
+      for ( gint shift = 0; shift > shifts; shift-- ) {
+        // Repeatly move last point to first position
+        GList *last = g_list_last ( track->trackpoints );
+        gpointer tp = last->data;
+        track->trackpoints = g_list_remove_link ( track->trackpoints, last );
+        track->trackpoints = g_list_prepend ( track->trackpoints, tp );
+      }
+    }
+
+    // Restore segment
+    seg = g_list_first ( track->trackpoints );
+    tp = VIK_TRACKPOINT(seg->data);
+    tp->newsegment = TRUE;
+    
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+  }
+}
+
 static void trw_layer_extend_track_end ( menu_array_sublayer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
@@ -7173,13 +7268,13 @@ static void trw_layer_split_by_n_points ( menu_array_sublayer values )
   if ( !trps )
     return;
 
-  gint points = a_dialog_get_positive_number(VIK_GTK_WINDOW_FROM_LAYER(vtl),
-					     _("Split Every Nth Point"),
-					     _("Split on every Nth point:"),
-					     250,   // Default value as per typical limited track capacity of various GPS devices
-					     2,     // Min
-					     65536, // Max
-					     5);    // Step
+  guint points = a_dialog_get_positive_number ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                                _("Split Every Nth Point"),
+                                                _("Split on every Nth point:"),
+                                                250,   // Default value as per typical limited track capacity of various GPS devices
+                                                2,     // Min
+                                                65536, // Max
+                                                5 );    // Step
   // Was a valid number returned?
   if (!points)
     return;
@@ -7188,7 +7283,7 @@ static void trw_layer_split_by_n_points ( menu_array_sublayer values )
   GList *iter;
   GList *newlists = NULL;
   GList *newtps = NULL;
-  gint count = 0;
+  guint count = 0;
   iter = trps;
 
   while (iter) {
@@ -9081,7 +9176,9 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
       GtkWidget *itemit = vu_menu_add_item ( transform_submenu, _("_Interpolate Times"), NULL, G_CALLBACK(trw_layer_interpolate_times), data );
       gtk_widget_set_tooltip_text ( itemit, _("Reset trackpoint timestamps between the first and last points such that track is traveled at equal speed") );
-    }
+    } 
+    GtkWidget *itemro = vu_menu_add_item ( transform_submenu, _("_Rotate..."), NULL, G_CALLBACK(trw_layer_rotate), data );
+    gtk_widget_set_tooltip_text ( itemro, _("Shift trackpoints to move the first points to the end") );
 
     (void)vu_menu_add_item ( menu, (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK) ? _("_Reverse Track") : _("_Reverse Route"),
                              GTK_STOCK_GO_BACK, G_CALLBACK(trw_layer_reverse), data );

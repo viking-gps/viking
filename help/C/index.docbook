@@ -1563,6 +1563,16 @@ This is not available for routes, as they have no timestamps.
 </para>
 </note>
 </section>
+<section>
+<title>Rotate</title>
+<para>
+"Rotate" the track or route by shifting the specified number of points from the start to end
+(or if a negative number it moves end points to the start).
+This is particularly intended for circular routes were you want to adjust where the start/end point is.
+If the start and end points are considered to be far apart, you are required to confirm you want to apply this.
+If a track has timestamps then rotating the track is not allowed as it would otherwise break trackpoint time ordering.
+</para>
+</section>
 </section>
 
 <section><title>Export Track as GPX</title>
