@@ -249,7 +249,7 @@ static void vik_goto_search_response ( struct VikGotoSearchWinData *data, gint r
     }
     else
     {
-      a_dialog_error_msg ( GTK_WINDOW(data->vw), "Service request failure." );
+      a_dialog_error_msg ( GTK_WINDOW(data->vw), _("Service request failure.") );
     }
   }
   else if ( response == GTK_RESPONSE_CLOSE )
