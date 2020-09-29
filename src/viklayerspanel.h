@@ -70,6 +70,7 @@ void vik_layers_panel_change_coord_mode ( VikLayersPanel *vlp, VikCoordMode mode
 GList *vik_layers_panel_get_all_layers_of_type(VikLayersPanel *vlp, gint type, gboolean include_invisible);
 VikTreeview *vik_layers_panel_get_treeview ( VikLayersPanel *vlp );
 void vik_layers_panel_show_buttons ( VikLayersPanel *vlp, gboolean show );
+void vik_layers_panel_show_tabs ( VikLayersPanel *vlp, gboolean show );
 void vik_layers_panel_show_calendar ( VikLayersPanel *vlp, gboolean show );
 void vik_layers_panel_calendar_update ( VikLayersPanel *vlp );
 void vik_layers_panel_calendar_today ( VikLayersPanel *vlp );

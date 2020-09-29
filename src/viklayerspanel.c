@@ -44,6 +44,8 @@ static GObjectClass *parent_class;
 struct _VikLayersPanel {
   GtkVBox vbox;
   GtkWidget *hbox;
+  GtkWidget *vpaned;
+  GtkWidget *tabs;
   GtkWidget *calendar;
   // Could use gtk_widget_get_visible () instead, but needs Gtk2.18
   // ATM still using Gtk2.16 - so manually track the state for now
@@ -418,6 +420,7 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
 }
 
 #define VIK_SETTINGS_CAL_MUM "layers_panel_calendar_markup_mode"
+#define VIK_SETTINGS_LP_VPANE_POS "layers_panel_vpane_position"
 
 static void vik_layers_panel_init ( VikLayersPanel *vlp )
 {
@@ -530,8 +533,15 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   gtk_calendar_set_detail_func ( GTK_CALENDAR(vlp->calendar), calendar_detail, vlp, NULL );
   vik_layers_panel_set_preferences ( vlp );
   
-  gtk_box_pack_start ( GTK_BOX(vlp), scrolledwindow, TRUE, TRUE, 0 );
-  gtk_box_pack_start ( GTK_BOX(vlp), vlp->calendar, FALSE, FALSE, 0 );
+  vlp->vpaned = gtk_vpaned_new ();
+  vlp->tabs = gtk_notebook_new();
+
+  gtk_notebook_append_page ( GTK_NOTEBOOK(vlp->tabs), vlp->calendar, gtk_label_new(_("Calendar")) );
+
+  gtk_paned_pack1 ( GTK_PANED(vlp->vpaned), scrolledwindow, TRUE, TRUE );
+  gtk_paned_pack2 ( GTK_PANED(vlp->vpaned), vlp->tabs, FALSE, TRUE );
+
+  gtk_box_pack_start ( GTK_BOX(vlp), vlp->vpaned, TRUE, TRUE, 0 );
   gtk_box_pack_start ( GTK_BOX(vlp), vlp->hbox, FALSE, FALSE, 0 );
 }
 
@@ -1056,6 +1066,17 @@ void vik_layers_panel_show_buttons ( VikLayersPanel *vlp, gboolean show )
     gtk_widget_show ( vlp->hbox );
   else
     gtk_widget_hide ( vlp->hbox );
+}
+
+void vik_layers_panel_show_tabs ( VikLayersPanel *vlp, gboolean show )
+{
+  if ( show ) {
+    vik_layers_panel_calendar_update ( vlp );
+    gtk_widget_show ( vlp->tabs );
+  }
+  else {
+    gtk_widget_hide ( vlp->tabs );
+  }
 }
 
 void vik_layers_panel_show_calendar ( VikLayersPanel *vlp, gboolean show )
