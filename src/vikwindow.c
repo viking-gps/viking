@@ -2813,7 +2813,7 @@ static gboolean selecttool_key_release (VikLayer *vl, GdkEventKey *event, tool_e
 
 static VikToolInterface select_tool =
   { &select_18_pixbuf,
-    { "Select", "vik-icon-select", N_("_Select"), "<control><shift>S", N_("Select Tool"), TOOL_SELECT },
+    { "Select", "vik-icon-select", N_("_Select"), "<control><shift>C", N_("Select Tool"), TOOL_SELECT },
     (VikToolConstructorFunc) selecttool_create,
     (VikToolDestructorFunc) selecttool_destroy,
     (VikToolActivationFunc) NULL,
@@ -5324,7 +5324,7 @@ static GtkActionEntry entries[] = {
   { "AcquireWikipedia", NULL,            N_("From _Wikipedia Waypoints"), NULL,         N_("Create waypoints from Wikipedia items in the current view"), (GCallback)acquire_from_wikipedia },
 #endif
   { "Save",      GTK_STOCK_SAVE,         N_("_Save"),                         "<control>S", N_("Save the file"),                                (GCallback)save_file             },
-  { "SaveAs",    GTK_STOCK_SAVE_AS,      N_("Save _As..."),                      NULL,  N_("Save the file under different name"),           (GCallback)save_file_as          },
+  { "SaveAs",    GTK_STOCK_SAVE_AS,      N_("Save _As..."),                   "<control><shift>S",  N_("Save the file under different name"),           (GCallback)save_file_as          },
   { "FileProperties", GTK_STOCK_PROPERTIES, N_("Properties..."),                 NULL,  N_("File Properties"),                              (GCallback)file_properties_cb },
 #ifdef HAVE_ZIP_H
   { "ImportKMZ", GTK_STOCK_CONVERT,      N_("Import KMZ _Map File..."),        NULL,  N_("Import a KMZ file"), (GCallback)import_kmz_file_cb },
