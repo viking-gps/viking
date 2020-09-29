@@ -82,10 +82,6 @@
 #define POINTS 1
 #define LINES 2
 
-/* this is how it knows when you click if you are clicking close to a trackpoint. */
-#define TRACKPOINT_SIZE_APPROX 5
-#define WAYPOINT_SIZE_APPROX 5
-
 #define MIN_STOP_LENGTH 15
 #define MAX_STOP_LENGTH 86400
 #define DRAW_ELEVATION_FACTOR 30 /* height of elevation plotting, sort of relative to zoom level ("mpp" that isn't mpp necessarily) */
@@ -397,8 +393,8 @@ static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEven
 static gpointer tool_splitter_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean tool_splitter_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 
-static VikTrackpoint *closest_tp_in_five_pixel_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y );
-static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y );
+static VikTrackpoint *closest_tp_in_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y );
+static VikWaypoint *closest_wp_in_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y );
 
 static void waypoint_convert ( const gpointer id, VikWaypoint *wp, VikCoordMode *dest_mode );
 static void track_convert ( const gpointer id, VikTrack *tr, VikCoordMode *dest_mode );
@@ -9605,7 +9601,9 @@ gboolean trw_layer_tpwin_is_shown ( VikTrwLayer *vtl )
 typedef struct {
   gint x, y;
   gint closest_x, closest_y;
+  guint size;
   gboolean draw_images;
+  gboolean draw_symbols;
   gpointer closest_wp_id;
   VikWaypoint *closest_wp;
   VikViewport *vvp;
@@ -9614,6 +9612,7 @@ typedef struct {
 typedef struct {
   gint x, y;
   gint closest_x, closest_y;
+  guint size;
   gpointer closest_track_id;
   VikTrackpoint *closest_tp;
   VikViewport *vvp;
@@ -9643,7 +9642,18 @@ static void waypoint_search_closest_tp ( gpointer id, VikWaypoint *wp, WPSearchP
       params->closest_y = y;
     }
   }
-  else if ( abs (x - params->x) <= WAYPOINT_SIZE_APPROX && abs (y - params->y) <= WAYPOINT_SIZE_APPROX &&
+  else if ( params->draw_symbols && wp->symbol && wp->symbol_pixbuf ) {
+    if ( abs(x-params->x) <= gdk_pixbuf_get_width(wp->symbol_pixbuf)/2 && abs(y-params->y) <= gdk_pixbuf_get_height(wp->symbol_pixbuf)/2 &&
+         ((!params->closest_wp) ||        /* was the old waypoint we already found closer than this one? */
+	     abs(x - params->x)+abs(y - params->y) < abs(x - params->closest_x)+abs(y - params->closest_y)) )
+    {
+      params->closest_wp_id = id;
+      params->closest_wp = wp;
+      params->closest_x = x;
+      params->closest_y = y;
+    }
+  }
+  else if ( abs (x - params->x) <= params->size && abs (y - params->y) <= params->size &&
 	    ((!params->closest_wp) ||        /* was the old waypoint we already found closer than this one? */
 	     abs(x - params->x)+abs(y - params->y) < abs(x - params->closest_x)+abs(y - params->closest_y)))
     {
@@ -9672,7 +9682,7 @@ static void track_search_closest_tp ( gpointer id, VikTrack *t, TPSearchParams *
 
     vik_viewport_coord_to_screen ( params->vvp, &(tp->coord), &x, &y );
  
-    if ( abs (x - params->x) <= TRACKPOINT_SIZE_APPROX && abs (y - params->y) <= TRACKPOINT_SIZE_APPROX &&
+    if ( abs (x - params->x) <= params->size && abs (y - params->y) <= params->size &&
         ((!params->closest_tp) ||        /* was the old trackpoint we already found closer than this one? */
           abs(x - params->x)+abs(y - params->y) < abs(x - params->closest_x)+abs(y - params->closest_y)))
     {
@@ -9688,11 +9698,12 @@ static void track_search_closest_tp ( gpointer id, VikTrack *t, TPSearchParams *
 
 // ATM: Leave this as 'Track' only.
 //  Not overly bothered about having a snap to route trackpoint capability
-static VikTrackpoint *closest_tp_in_five_pixel_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y )
+static VikTrackpoint *closest_tp_in_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y )
 {
   TPSearchParams params;
   params.x = x;
   params.y = y;
+  params.size = MAX(5, vtl->drawpoints_size*2);
   params.vvp = vvp;
   params.closest_track_id = NULL;
   params.closest_tp = NULL;
@@ -9701,13 +9712,15 @@ static VikTrackpoint *closest_tp_in_five_pixel_interval ( VikTrwLayer *vtl, VikV
   return params.closest_tp;
 }
 
-static VikWaypoint *closest_wp_in_five_pixel_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y )
+static VikWaypoint *closest_wp_in_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y )
 {
   WPSearchParams params;
   params.x = x;
   params.y = y;
+  params.size = MAX(5, vtl->wp_size*2);
   params.vvp = vvp;
   params.draw_images = vtl->drawimages;
+  params.draw_symbols = vtl->wp_draw_symbols;
   params.closest_wp = NULL;
   params.closest_wp_id = NULL;
   g_hash_table_foreach ( vtl->waypoints, (GHFunc) waypoint_search_closest_tp, &params);
@@ -9734,7 +9747,7 @@ static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventMotion *event,
     // snap to TP
     if ( event->state & GDK_CONTROL_MASK )
     {
-      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      VikTrackpoint *tp = closest_tp_in_interval ( vtl, vvp, event->x, event->y );
       if ( tp )
         new_coord = tp->coord;
     }
@@ -9742,7 +9755,7 @@ static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventMotion *event,
     // snap to WP
     if ( event->state & GDK_SHIFT_MASK )
     {
-      VikWaypoint *wp = closest_wp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      VikWaypoint *wp = closest_wp_in_interval ( vtl, vvp, event->x, event->y );
       if ( wp )
         new_coord = wp->coord;
     }
@@ -9772,7 +9785,7 @@ static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *eve
     // snap to TP
     if ( event->state & GDK_CONTROL_MASK )
     {
-      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      VikTrackpoint *tp = closest_tp_in_interval ( vtl, vvp, event->x, event->y );
       if ( tp )
         new_coord = tp->coord;
     }
@@ -9780,7 +9793,7 @@ static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *eve
     // snap to WP
     if ( event->state & GDK_SHIFT_MASK )
     {
-      VikWaypoint *wp = closest_wp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      VikWaypoint *wp = closest_wp_in_interval ( vtl, vvp, event->x, event->y );
       if ( wp )
         new_coord = wp->coord;
     }
@@ -9841,10 +9854,12 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
 
   if ( vtl->waypoints_visible && BBOX_INTERSECT (vtl->waypoints_bbox, bbox ) ) {
     WPSearchParams wp_params;
+    wp_params.size = MAX(5, vtl->wp_size*2);
     wp_params.vvp = vvp;
     wp_params.x = event->x;
     wp_params.y = event->y;
     wp_params.draw_images = vtl->drawimages;
+    wp_params.draw_symbols = vtl->wp_draw_symbols;
     wp_params.closest_wp_id = NULL;
     wp_params.closest_wp = NULL;
 
@@ -9893,6 +9908,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
 
   // Used for both track and route lists
   TPSearchParams tp_params;
+  tp_params.size = MAX(5, vtl->drawpoints_size*2);
   tp_params.vvp = vvp;
   tp_params.x = event->x;
   tp_params.y = event->y;
@@ -10156,8 +10172,8 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
     gint x, y;
     vik_viewport_coord_to_screen ( vvp, &(vtl->current_wp->coord), &x, &y );
 
-    if ( abs(x - (int)round(event->x)) <= WAYPOINT_SIZE_APPROX &&
-         abs(y - (int)round(event->y)) <= WAYPOINT_SIZE_APPROX )
+    if ( abs(x - (int)round(event->x)) <= (vtl->wp_size*2) &&
+         abs(y - (int)round(event->y)) <= (vtl->wp_size*2) )
     {
       if ( event->button == 3 )
         vtl->waypoint_rightclick = TRUE; /* remember that we're clicking; other layers will ignore release signal */
@@ -10168,10 +10184,12 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
     }
   }
 
+  params.size = MAX(5, vtl->wp_size*2);
   params.vvp = vvp;
   params.x = event->x;
   params.y = event->y;
   params.draw_images = vtl->drawimages;
+  params.draw_symbols = vtl->wp_draw_symbols;
   params.closest_wp_id = NULL;
   params.closest_wp = NULL;
   g_hash_table_foreach ( vtl->waypoints, (GHFunc) waypoint_search_closest_tp, &params);
@@ -10222,7 +10240,7 @@ static gboolean tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEventMotion *even
     /* snap to TP */
     if ( event->state & GDK_CONTROL_MASK )
     {
-      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      VikTrackpoint *tp = closest_tp_in_interval ( vtl, vvp, event->x, event->y );
       if ( tp )
         new_coord = tp->coord;
     }
@@ -10230,7 +10248,7 @@ static gboolean tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEventMotion *even
     /* snap to WP */
     if ( event->state & GDK_SHIFT_MASK )
     {
-      VikWaypoint *wp = closest_wp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      VikWaypoint *wp = closest_wp_in_interval ( vtl, vvp, event->x, event->y );
       if ( wp && wp != vtl->current_wp )
         new_coord = wp->coord;
     }
@@ -10262,7 +10280,7 @@ static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *e
     /* snap to TP */
     if ( event->state & GDK_CONTROL_MASK )
     {
-      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      VikTrackpoint *tp = closest_tp_in_interval ( vtl, vvp, event->x, event->y );
       if ( tp )
         new_coord = tp->coord;
     }
@@ -10270,7 +10288,7 @@ static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *e
     /* snap to WP */
     if ( event->state & GDK_SHIFT_MASK )
     {
-      VikWaypoint *wp = closest_wp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      VikWaypoint *wp = closest_wp_in_interval ( vtl, vvp, event->x, event->y );
       if ( wp && wp != vtl->current_wp )
         new_coord = wp->coord;
     }
@@ -10852,7 +10870,7 @@ static gboolean tool_edit_track_or_route_click ( VikTrwLayer *vtl, GdkEventButto
   /* snap to other TP */
   if ( event->state & GDK_CONTROL_MASK )
   {
-    VikTrackpoint *other_tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+    VikTrackpoint *other_tp = closest_tp_in_interval ( vtl, vvp, event->x, event->y );
     if ( other_tp )
       tp->coord = other_tp->coord;
   }
@@ -11002,6 +11020,7 @@ static gboolean tool_edit_track_or_route_click_dispatch ( VikTrwLayer *vtl, GdkE
   }
 
   TPSearchParams params;
+  params.size = MAX(5, vtl->drawpoints_size*2);
   params.vvp = vvp;
   params.x = event->x;
   params.y = event->y;
@@ -11125,6 +11144,7 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
   tool_ed_t *t = data;
   VikViewport *vvp = t->vvp;
   TPSearchParams params;
+  params.size = MAX(5, vtl->drawpoints_size*2);
   params.vvp = vvp;
   params.x = event->x;
   params.y = event->y;
@@ -11154,8 +11174,8 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
     vik_viewport_coord_to_screen ( vvp, &(tp->coord), &x, &y );
 
     if ( current_tr->visible && 
-         abs(x - (int)round(event->x)) < TRACKPOINT_SIZE_APPROX &&
-         abs(y - (int)round(event->y)) < TRACKPOINT_SIZE_APPROX ) {
+         abs(x - (int)round(event->x)) < (vtl->drawpoints_size*2) &&
+         abs(y - (int)round(event->y)) < (vtl->drawpoints_size*2) ) {
       marker_begin_move ( t, event->x, event->y );
       return TRUE;
     }
@@ -11188,7 +11208,7 @@ static gboolean tool_edit_trackpoint_move ( VikTrwLayer *vtl, GdkEventMotion *ev
     /* snap to TP */
     if ( event->state & GDK_CONTROL_MASK )
     {
-      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      VikTrackpoint *tp = closest_tp_in_interval ( vtl, vvp, event->x, event->y );
       if ( tp && tp != vtl->current_tpl->data )
         new_coord = tp->coord;
     }
@@ -11221,7 +11241,7 @@ static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton 
     /* snap to TP */
     if ( event->state & GDK_CONTROL_MASK )
     {
-      VikTrackpoint *tp = closest_tp_in_five_pixel_interval ( vtl, vvp, event->x, event->y );
+      VikTrackpoint *tp = closest_tp_in_interval ( vtl, vvp, event->x, event->y );
       if ( tp && tp != vtl->current_tpl->data )
         new_coord = tp->coord;
     }
@@ -11289,6 +11309,7 @@ static gboolean tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventBut
     if ( event->state & GDK_SHIFT_MASK )
     {
       TPSearchParams params;
+      params.size = MAX(5, vtl->drawpoints_size*2);
       params.vvp = vvp;
       params.x = event->x;
       params.y = event->y;
@@ -12252,6 +12273,7 @@ static gpointer tool_splitter_create ( VikWindow *vw, VikViewport *vvp)
 static gboolean tool_splitter_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   TPSearchParams params;
+  params.size = MAX(5, vtl->drawpoints_size*2);
   params.vvp = vvp;
   params.x = event->x;
   params.y = event->y;
