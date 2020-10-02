@@ -1060,13 +1060,12 @@ void vik_layers_panel_show_buttons ( VikLayersPanel *vlp, gboolean show )
 
 void vik_layers_panel_show_calendar ( VikLayersPanel *vlp, gboolean show )
 {
+  vlp->cal_shown = show;
   if ( show ) {
-    vlp->cal_shown = TRUE;
     vik_layers_panel_calendar_update ( vlp );
     gtk_widget_show ( vlp->calendar );
   }
   else {
-    vlp->cal_shown = FALSE;
     gtk_widget_hide ( vlp->calendar );
   }
 }
