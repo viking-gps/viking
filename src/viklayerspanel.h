@@ -50,7 +50,6 @@ struct _VikLayersPanelClass
 
 GType vik_layers_panel_get_type ();
 VikLayersPanel *vik_layers_panel_new ();
-void vik_layers_panel_free ( VikLayersPanel *vlp );
 void vik_layers_panel_add_layer ( VikLayersPanel *vlp, VikLayer *l );
 void vik_layers_panel_draw_all ( VikLayersPanel *vlp );
 VikLayer *vik_layers_panel_get_selected ( VikLayersPanel *vlp );
