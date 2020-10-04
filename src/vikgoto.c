@@ -156,9 +156,6 @@ static gboolean vik_goto_search_list_select ( GtkTreeSelection *sel, GtkTreeMode
   struct VikGotoSearchWinData *data = (struct VikGotoSearchWinData *) pdata;
   GtkTreeIter iter;
 
-  if ( path_currently_selected )
-    return TRUE;
-
   if ( gtk_tree_model_get_iter ( model, &iter, path ) )
   {
     gdouble lat;
@@ -178,7 +175,7 @@ static gboolean vik_goto_search_list_select ( GtkTreeSelection *sel, GtkTreeMode
       g_free ( last_successful_goto_str );
     gtk_tree_model_get ( model, &iter, VIK_GOTO_SEARCH_DESC_COL, &last_successful_goto_str, -1 );
 
-    vik_viewport_set_center_coord( data->vvp, last_coord, TRUE );
+    vik_viewport_set_center_coord( data->vvp, last_coord, !path_currently_selected );
     vik_layers_panel_emit_update ( vik_window_layers_panel(data->vw) );
   }
 
