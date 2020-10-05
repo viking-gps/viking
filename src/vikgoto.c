@@ -34,7 +34,8 @@ int last_goto_tool = -1;
 
 struct VikGotoSearchWinData {
   VikWindow *vw;
-  VikViewport * vvp;
+  VikViewport *vvp;
+  VikLayersPanel *vlp;
   GtkWidget *dialog;
   GtkEntry *goto_entry;
   GtkWidget *tool_list;
@@ -153,7 +154,7 @@ static gboolean vik_goto_place ( VikViewport *vvp, gchar* name, VikCoord *vcoord
 
 static gboolean vik_goto_search_list_select ( GtkTreeSelection *sel, GtkTreeModel *model, GtkTreePath *path, gboolean path_currently_selected, gpointer pdata )
 {
-  struct VikGotoSearchWinData *data = (struct VikGotoSearchWinData *) pdata;
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(pdata);
   GtkTreeIter iter;
 
   if ( gtk_tree_model_get_iter ( model, &iter, path ) )
@@ -175,8 +176,8 @@ static gboolean vik_goto_search_list_select ( GtkTreeSelection *sel, GtkTreeMode
       g_free ( last_successful_goto_str );
     gtk_tree_model_get ( model, &iter, VIK_GOTO_SEARCH_DESC_COL, &last_successful_goto_str, -1 );
 
-    vik_viewport_set_center_coord( data->vvp, last_coord, !path_currently_selected );
-    vik_layers_panel_emit_update ( vik_window_layers_panel(data->vw) );
+    vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), last_coord, !path_currently_selected );
+    vik_layers_panel_emit_update ( vlp );
   }
 
   return TRUE;
@@ -257,6 +258,36 @@ static void vik_goto_search_response ( struct VikGotoSearchWinData *data, gint r
   }
 }
 
+static void setup_columns ( GtkWidget *results_view, GtkWidget *scroll_view )
+{
+  gtk_container_add ( GTK_CONTAINER(scroll_view), results_view );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scroll_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+
+  GtkCellRenderer *desc_renderer = gtk_cell_renderer_text_new ();
+  gtk_tree_view_insert_column_with_attributes ( GTK_TREE_VIEW(results_view),
+                                                -1,
+                                                _("Description"),
+                                                desc_renderer,
+                                                "text", VIK_GOTO_SEARCH_DESC_COL,
+                                                NULL );
+
+  GtkTreeViewColumn *lat_col;
+  lat_col = gtk_tree_view_column_new_with_attributes ( "Latitude",
+                                                       gtk_cell_renderer_text_new (),
+                                                       "text", VIK_GOTO_SEARCH_LAT_COL,
+                                                       NULL );
+  gtk_tree_view_column_set_visible ( lat_col, FALSE );
+  gtk_tree_view_append_column ( GTK_TREE_VIEW(results_view), lat_col );
+
+  GtkTreeViewColumn *lon_col;
+  lon_col = gtk_tree_view_column_new_with_attributes ( "Longitude",
+                                                       gtk_cell_renderer_text_new (),
+                                                       "text", VIK_GOTO_SEARCH_LON_COL,
+                                                       NULL );
+  gtk_tree_view_column_set_visible ( lon_col, FALSE );
+  gtk_tree_view_append_column ( GTK_TREE_VIEW(results_view), lon_col );
+}
+
 void a_vik_goto ( VikWindow *vw, VikViewport *vvp )
 {
   GtkWidget *dialog = NULL;
@@ -302,38 +333,14 @@ void a_vik_goto ( VikWindow *vw, VikViewport *vvp )
   GtkWidget *results_view = gtk_tree_view_new ();
   GtkWidget *scroll_view = gtk_scrolled_window_new ( NULL, NULL );
 
+  setup_columns ( results_view, scroll_view );
+
   gtk_widget_set_size_request( GTK_WIDGET(scroll_view), 0, 0 );
-
-  gtk_container_add ( GTK_CONTAINER(scroll_view), results_view );
-  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scroll_view), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-  
-  GtkCellRenderer *desc_renderer = gtk_cell_renderer_text_new ();
-  gtk_tree_view_insert_column_with_attributes ( GTK_TREE_VIEW(results_view),
-                                                -1,
-                                                "Description",
-                                                desc_renderer,
-                                                "text", VIK_GOTO_SEARCH_DESC_COL,
-                                                NULL );
-
-  GtkTreeViewColumn *lat_col;
-  lat_col = gtk_tree_view_column_new_with_attributes ( "Latitude",
-                                                       gtk_cell_renderer_text_new (),
-                                                       "text", VIK_GOTO_SEARCH_LAT_COL,
-                                                       NULL );
-  gtk_tree_view_column_set_visible ( lat_col, FALSE );
-  gtk_tree_view_append_column ( GTK_TREE_VIEW(results_view), lat_col );
-
-  GtkTreeViewColumn *lon_col;
-  lon_col = gtk_tree_view_column_new_with_attributes ( "Longitude",
-                                                       gtk_cell_renderer_text_new (),
-                                                       "text", VIK_GOTO_SEARCH_LON_COL,
-                                                       NULL );
-  gtk_tree_view_column_set_visible ( lon_col, FALSE );
-  gtk_tree_view_append_column ( GTK_TREE_VIEW(results_view), lon_col );
 
   struct VikGotoSearchWinData *win_data = g_malloc ( sizeof(struct VikGotoSearchWinData) );
   win_data->vw = vw;
   win_data->vvp = vvp;
+  win_data->vlp = vik_window_layers_panel(vw);
   win_data->dialog = dialog;
   win_data->goto_entry = GTK_ENTRY(goto_entry);
   win_data->scroll_view = scroll_view;
@@ -341,7 +348,7 @@ void a_vik_goto ( VikWindow *vw, VikViewport *vvp )
   win_data->tool_list = tool_list;
 
   GtkTreeSelection *selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW(results_view) );
-  gtk_tree_selection_set_select_function ( selection, vik_goto_search_list_select, win_data, NULL );
+  gtk_tree_selection_set_select_function ( selection, vik_goto_search_list_select, win_data->vlp, NULL );
 
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), tool_label, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), tool_list, FALSE, FALSE, 5 );
