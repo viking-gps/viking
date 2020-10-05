@@ -1079,7 +1079,7 @@ static void months_display_build ( analyse_cb_t *acb, GtkWidget* scrolledwindow 
  * analyse_close:
  *
  * Multi stage closure - as we need to clear allocations made here
- *  before passing on to the callee so they know then the dialog is closed too
+ *  before passing on to the callee so they know when the dialog is closed too
  */
 static void analyse_close ( GtkWidget *dialog, gint resp, analyse_cb_t *data )
 {
