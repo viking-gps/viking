@@ -518,7 +518,12 @@ vik_goto_xml_tool_parse_file(VikGotoTool *self, gchar *filename)
 		g_markup_parse_context_free(xml_context);
 	xml_context = NULL;
 	fclose (file);
-  
+
+    // As candidates are individually prepended,
+    //  the list is reversed to preserve the ordering
+    if ( priv->candidates )
+      *priv->candidates = g_list_reverse ( *priv->candidates );
+
     return TRUE;
 }
 
