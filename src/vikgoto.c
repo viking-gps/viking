@@ -3,6 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+ * Copyright (C) 2020, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +23,7 @@
 #include "viking.h"
 #include "vikgototool.h"
 #include "vikgoto.h"
+#include "background.h"
 
 static gchar *last_goto_str = NULL;
 static VikCoord *last_coord = NULL;
@@ -366,6 +368,277 @@ void a_vik_goto ( VikWindow *vw, VikViewport *vvp )
   gtk_widget_grab_focus ( goto_entry );
 
   gtk_widget_show ( dialog );
+}
+
+//
+
+#define VIK_GOTO_PANEL_TYPE            (vik_goto_panel_get_type ())
+#define VIK_GOTO_PANEL(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), VIK_GOTO_PANEL_TYPE, VikGotoPanel))
+#define VIK_GOTO_PANEL_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass), VIK_GOTO_PANEL_TYPE, VikGotoPanelClass))
+#define IS_VIK_GOTO_PANEL(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), VIK_GOTO_PANEL_TYPE))
+#define IS_VIK_GOTO_PANEL_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), VIK_GOTO_PANEL_TYPE))
+
+typedef struct _VikGotoPanel VikGotoPanel;
+typedef struct _VikGotoPanelClass VikGotoPanelClass;
+
+struct _VikGotoPanelClass
+{
+  GtkVBoxClass vbox_class;
+};
+
+GType vik_goto_panel_get_type ();
+
+static GObjectClass *parent_class;
+
+struct _VikGotoPanel {
+  GtkVBox vb;
+  GtkWidget *goto_entry;
+  GtkWidget *tool_list;
+  GtkWidget *find_button;
+  GtkWidget *scroll_view;
+  GtkTreeView *results_view;
+  GtkListStore *results_store;
+  VikLayersPanel *vlp;
+};
+
+static void vik_goto_panel_init ( VikGotoPanel *vgp )
+{
+}
+
+static void goto_panel_finalize ( GObject *gob )
+{
+  VikGotoPanel *vgp = VIK_GOTO_PANEL ( gob );
+  g_object_unref ( vgp->results_store );
+  G_OBJECT_CLASS(parent_class)->finalize(gob);
+}
+
+G_DEFINE_TYPE (VikGotoPanel, vik_goto_panel, GTK_TYPE_VBOX)
+
+static void vik_goto_panel_class_init ( VikGotoPanelClass *klass )
+{
+  GObjectClass *object_class;
+  object_class = G_OBJECT_CLASS (klass);
+  object_class->finalize = goto_panel_finalize;
+  parent_class = g_type_class_peek_parent (klass);
+}
+
+VikGotoPanel *vik_goto_panel_new ()
+{
+  // Equivalent to gtk_vbox_new ( FALSE, 0 );
+  return VIK_GOTO_PANEL ( g_object_new ( VIK_GOTO_PANEL_TYPE, "homogeneous", FALSE, "spacing", 0, NULL ) );
+}
+
+typedef struct {
+  VikGotoTool *tool;
+  int answer;
+  GList *candidates;
+  gchar *goto_str;
+  VikViewport *vvp;
+  VikGotoPanel *vgp;
+  // Protection in case owning window is closed whilst thread is in progress
+  // c.f. weak refs used in vikmapslayer.c
+  gboolean alive;
+  GMutex *mutex;
+} SearchThreadT;
+
+static void stt_free ( SearchThreadT *stt )
+{
+  vik_mutex_free ( stt->mutex );
+  g_list_free_full ( stt->candidates, vik_goto_tool_free_candidate );
+  g_free ( stt->goto_str );
+  g_free ( stt );
+}
+
+static void weak_ref_cb ( gpointer ptr, GObject *obj )
+{
+  SearchThreadT *stt = ptr;
+  g_mutex_lock ( stt->mutex );
+  stt->alive = FALSE;
+  g_mutex_unlock ( stt->mutex );
+}
+
+static void goto_panel_search_clear ( VikGotoPanel *vgp )
+{
+  if ( vgp->results_store )
+    gtk_list_store_clear ( vgp->results_store );
+  // Just incase find button is in a disabled state
+  gtk_widget_set_sensitive ( vgp->find_button, TRUE );
+}
+
+static gboolean _idle_update ( gpointer user_data )
+{
+  SearchThreadT *stt = (SearchThreadT*)user_data;
+  VikGotoPanel *vgp = stt->vgp;
+
+  gtk_list_store_clear ( vgp->results_store );
+
+  GtkTreeViewColumn *desc_col = gtk_tree_view_get_column ( GTK_TREE_VIEW(vgp->results_view), VIK_GOTO_SEARCH_DESC_COL );
+
+  GtkTreeIter results_iter;
+  for ( GList *gl = stt->candidates; gl != NULL; gl = gl->next ) {
+    struct VikGotoCandidate *cand = (struct VikGotoCandidate *) gl->data;
+    gtk_list_store_append ( vgp->results_store, &results_iter );
+    gtk_list_store_set ( vgp->results_store, &results_iter,
+                         VIK_GOTO_SEARCH_DESC_COL, cand->description,
+                         VIK_GOTO_SEARCH_LAT_COL, cand->ll.lat,
+                         VIK_GOTO_SEARCH_LON_COL, cand->ll.lon,
+                         -1 );
+  }
+
+  if ( g_list_length( stt->candidates ) > 0 ) {
+    gtk_tree_view_column_set_title ( desc_col, _("Description") );
+    GtkTreeIter first_iter;
+    gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(vgp->results_store), &first_iter);
+    GtkTreeSelection *selection = gtk_tree_view_get_selection( vgp->results_view );
+    gtk_tree_selection_select_iter ( selection, &first_iter );
+  }
+  else
+    gtk_tree_view_column_set_title ( desc_col, _("No results") );
+
+  if ( stt->answer != 0 )
+    gtk_tree_view_column_set_title ( desc_col, _("Service request failure") );
+
+  gtk_widget_set_sensitive ( vgp->find_button, TRUE );
+
+  stt_free ( stt );
+
+  return FALSE;
+}
+
+/**
+ * get_locations_thread:
+ * @threaddata: Data used by our background thread mechanism
+ *
+ */
+static int get_locations_thread ( SearchThreadT *stt, gpointer threaddata )
+{
+  // As only one event; no practical chance to request stop before it is started so ignore the answer
+  (void)a_background_thread_progress ( threaddata, 0.0 );
+
+  stt->answer = vik_goto_tool_get_candidates ( stt->tool, stt->goto_str, &(stt->candidates) );
+
+  // Confirm window is still available
+  g_mutex_lock ( stt->mutex );
+  if ( stt->alive ) {
+    // Since from a background thread
+    (void)gdk_threads_add_idle ( _idle_update, stt );
+
+    g_object_weak_unref ( G_OBJECT(stt->vgp->vlp), weak_ref_cb, stt );
+  }
+  g_mutex_unlock ( stt->mutex );
+
+  return 0;
+}
+
+static void goto_panel_search_response ( VikGotoPanel *vgp )
+{
+  gint atool = gtk_combo_box_get_active ( GTK_COMBO_BOX(vgp->tool_list) );
+  if ( atool < 0 ) {
+    g_critical ( "%s: %s", __FUNCTION__, "No goto provider" );
+    return;
+  }
+
+  // Use column title for status reporting
+  GtkTreeViewColumn *desc_col = gtk_tree_view_get_column ( GTK_TREE_VIEW(vgp->results_view), VIK_GOTO_SEARCH_DESC_COL );
+  gtk_tree_view_column_set_title ( desc_col, _("Searching...") );
+
+  // Prevent further requests
+  gtk_widget_set_sensitive ( vgp->find_button, FALSE );
+
+  VikGotoTool *tool = g_list_nth_data ( goto_tools_list, atool );
+  gchar *provider = vik_goto_tool_get_label ( tool );
+  a_settings_set_string ( VIK_SETTINGS_GOTO_PROVIDER, provider );
+
+  SearchThreadT *stt = g_malloc ( sizeof(SearchThreadT) );
+
+  stt->tool = g_list_nth_data ( goto_tools_list, atool );
+  stt->candidates = NULL;
+  stt->vvp = vik_layers_panel_get_viewport ( vgp->vlp );
+  stt->vgp = vgp;
+  stt->goto_str = g_strdup ( gtk_entry_get_text ( GTK_ENTRY(vgp->goto_entry) ) );
+  stt->alive = TRUE;
+  stt->mutex = vik_mutex_new();
+
+  gchar *msg = g_strdup_printf ( _("Goto request on: %s"), stt->goto_str );
+
+  g_object_weak_ref ( G_OBJECT(vgp->vlp), weak_ref_cb, stt );
+
+  a_background_thread ( BACKGROUND_POOL_REMOTE,
+                        GTK_WINDOW(VIK_WINDOW(VIK_GTK_WINDOW_FROM_WIDGET(vgp->vlp))),
+                        msg,
+                        (vik_thr_func)get_locations_thread,
+                        stt,
+                        NULL, // Don't free, data still needed for idle_upate
+                        NULL, // Nothing to do on thread cancel
+                        1 );
+
+  g_free ( msg );
+}
+
+/**
+ *
+ */
+GtkWidget* vik_goto_panel_widget ( VikLayersPanel *vlp )
+{
+  VikGotoPanel *vgp = vik_goto_panel_new ();
+  vgp->vlp = vlp;
+
+  vgp->tool_list = vik_combo_box_text_new ();
+
+  GList *current = g_list_first ( goto_tools_list );
+  while ( current != NULL ) {
+    VikGotoTool *tool = current->data;
+    vik_combo_box_text_append ( vgp->tool_list, vik_goto_tool_get_label(tool) );
+    current = g_list_next ( current );
+  }
+
+  get_provider ();
+  gtk_combo_box_set_active ( GTK_COMBO_BOX(vgp->tool_list), last_goto_tool );
+
+  vgp->goto_entry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+
+  gtk_widget_set_tooltip_text ( vgp->goto_entry, _("Enter address or place name:") );
+  // 'find' when press return in the entry
+  g_signal_connect_swapped ( vgp->goto_entry, "activate", G_CALLBACK(goto_panel_search_response), vgp );
+
+  vgp->results_store = gtk_list_store_new ( VIK_GOTO_SEARCH_NUM_COLS,
+                                            G_TYPE_STRING,
+                                            G_TYPE_DOUBLE,
+                                            G_TYPE_DOUBLE );
+
+  GtkWidget *results_view = gtk_tree_view_new ();
+  vgp->results_view = GTK_TREE_VIEW(results_view);
+  vgp->scroll_view = gtk_scrolled_window_new ( NULL, NULL );
+
+  setup_columns ( results_view, vgp->scroll_view );
+
+  gtk_tree_view_set_model ( vgp->results_view, GTK_TREE_MODEL(vgp->results_store) );
+
+  GtkTreeSelection *selection = gtk_tree_view_get_selection ( vgp->results_view );
+  gtk_tree_selection_set_select_function ( selection, vik_goto_search_list_select, vlp, NULL );
+
+  GtkWidget *hb = gtk_hbox_new ( TRUE, 5 );
+  vgp->find_button = gtk_button_new_from_stock ( GTK_STOCK_FIND );
+  GtkWidget *clear_button = gtk_button_new_from_stock ( GTK_STOCK_CLEAR );
+  gtk_box_pack_start ( GTK_BOX(hb), vgp->find_button, FALSE, FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(hb), clear_button, FALSE, FALSE, 0 );
+
+#if GTK_CHECK_VERSION (2,20,0)
+  text_changed_cb ( GTK_ENTRY(vgp->goto_entry), NULL, vgp->find_button );
+  g_signal_connect ( GTK_ENTRY(vgp->goto_entry), "notify::text", G_CALLBACK(text_changed_cb), vgp->find_button );
+#endif
+
+  g_signal_connect_swapped ( vgp->find_button, "clicked", G_CALLBACK(goto_panel_search_response), vgp );
+  g_signal_connect_swapped ( clear_button, "clicked", G_CALLBACK(goto_panel_search_clear), vgp );
+
+  // Put the entry first so it is auto selected when the tab is entered,
+  //  and so one can start typing straight away.
+  gtk_box_pack_start ( GTK_BOX(vgp), vgp->goto_entry, FALSE, FALSE, 2 );
+  gtk_box_pack_start ( GTK_BOX(vgp), vgp->tool_list, FALSE, FALSE, 2 );
+  gtk_box_pack_start ( GTK_BOX(vgp), hb, FALSE, FALSE, 2 );
+  gtk_box_pack_start ( GTK_BOX(vgp), vgp->scroll_view, TRUE, TRUE, 2 );
+
+  return GTK_WIDGET(vgp);
 }
 
 #define JSON_LATITUDE_PATTERN "\"geoplugin_latitude\":\""

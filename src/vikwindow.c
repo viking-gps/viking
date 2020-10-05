@@ -190,6 +190,7 @@ struct _VikWindow {
   gboolean show_side_panel_buttons;
   gboolean show_side_panel_tabs;
   gboolean show_side_panel_calendar;
+  gboolean show_side_panel_goto;
 
   gboolean select_move;
   gboolean select_double_click;
@@ -354,6 +355,7 @@ static void destroy_window ( GtkWidget *widget,
 #define VIK_SETTINGS_WIN_SIDEPANEL_BUTTONS "window_sidepanel_buttons"
 #define VIK_SETTINGS_WIN_SIDEPANEL_TABS "window_sidepanel_tabs"
 #define VIK_SETTINGS_WIN_SIDEPANEL_CALENDAR "window_sidepanel_calendar"
+#define VIK_SETTINGS_WIN_SIDEPANEL_GOTO "window_sidepanel_goto"
 
 VikWindow *vik_window_new_window ()
 {
@@ -435,6 +437,14 @@ VikWindow *vik_window_new_window ()
         if ( ! sidepanel_calendar ) {
           vik_layers_panel_show_calendar ( vw->viking_vlp, FALSE );
           GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanelCalendar" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
+
+      gboolean sidepanel_goto;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_GOTO, &sidepanel_goto ) )
+        if ( ! sidepanel_goto ) {
+          vik_layers_panel_show_goto ( vw->viking_vlp, FALSE );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanelGoto" );
           gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
         }
 
@@ -1060,6 +1070,7 @@ static void vik_window_init ( VikWindow *vw )
   vw->show_side_panel_buttons = TRUE;
   vw->show_side_panel_tabs = TRUE;
   vw->show_side_panel_calendar = TRUE;
+  vw->show_side_panel_goto = TRUE;
 
   // Only accept Drag and Drop of files onto the viewport
   gtk_drag_dest_set ( GTK_WIDGET(vw->viking_vvp), GTK_DEST_DEFAULT_ALL, NULL, 0, GDK_ACTION_COPY );
@@ -1272,6 +1283,8 @@ static gboolean delete_event( VikWindow *vw )
       a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_TABS, vw->show_side_panel_tabs );
 
       a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_CALENDAR, vw->show_side_panel_calendar );
+
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_GOTO, vw->show_side_panel_goto );
 
       // If supersized - no need to save the enlarged width+height values
       if ( ! (state_fullscreen || state_max) ) {
@@ -3126,6 +3139,12 @@ static void toggle_side_panel_calendar ( VikWindow *vw )
   vik_layers_panel_show_calendar ( vw->viking_vlp, vw->show_side_panel_calendar );
 }
 
+static void toggle_side_panel_goto ( VikWindow *vw )
+{
+  vw->show_side_panel_goto = !vw->show_side_panel_goto;
+  vik_layers_panel_show_goto ( vw->viking_vlp, vw->show_side_panel_goto );
+}
+
 // Only for 'view' toggle menu widgets ATM.
 GtkWidget *get_show_widget_by_name(VikWindow *vw, const gchar *name)
 {
@@ -3241,6 +3260,17 @@ static void tb_view_side_panel_calendar_cb ( GtkAction *a, VikWindow *vw )
     gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
   else
     toggle_side_panel_calendar ( vw );
+}
+
+static void tb_view_side_panel_goto_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean next_state = !vw->show_side_panel_goto;
+  GtkWidget *check_box = get_show_widget_by_name ( vw, gtk_action_get_name(a) );
+  gboolean menu_state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
+  if ( next_state != menu_state )
+    gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
+  else
+    toggle_side_panel_goto ( vw );
 }
 
 static void tb_set_draw_scale ( GtkAction *a, VikWindow *vw )
@@ -3453,6 +3483,21 @@ static void view_side_panel_calendar_cb ( GtkAction *a, VikWindow *vw )
   }
   else
     toggle_side_panel_calendar ( vw );
+}
+
+static void view_side_panel_goto_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean next_state = !vw->show_side_panel_goto;
+  GtkToggleToolButton *tbutton = (GtkToggleToolButton *)toolbar_get_widget_by_name ( vw->viking_vtb, gtk_action_get_name(a) );
+  if ( tbutton ) {
+    gboolean tb_state = gtk_toggle_tool_button_get_active ( tbutton );
+    if ( next_state != tb_state )
+      gtk_toggle_tool_button_set_active ( tbutton, next_state );
+    else
+      toggle_side_panel_goto ( vw );
+  }
+  else
+    toggle_side_panel_goto ( vw );
 }
 
 /***************************************
@@ -5334,6 +5379,12 @@ a_register_icon ( GtkIconFactory *icon_factory, icon_definition_t icon )
   gtk_icon_set_unref ( icon_set );
 }
 
+// NB Also see GNOME/GTK Standard keys
+// https://developer.gnome.org/hig/stable/keyboard-input.html.en
+// So for example that's why F8 & F10 aren't used.
+//  (some of these are handled externally, thus Viking doesn't get notified anyway)
+// Unfortunately F6 was used (for the 'Show Center Mark') starting back in 2010,
+//  so this is left as is in case anyone is used to it.
 
 static GtkActionEntry entries[] = {
   { "File", NULL, N_("_File"), 0, 0, 0 },
@@ -5465,7 +5516,8 @@ static GtkToggleActionEntry toggle_entries[] = {
   { "ViewMainMenu",   NULL,                 N_("Show _Menu"),                "F4",         N_("Show Menu"),                               (GCallback)view_main_menu_cb, TRUE },
   { "ViewSidePanelButtons",    NULL,        N_("Show Side Panel B_uttons"),  "<shift>F9",  N_("Show Side Panel Buttons"),                 (GCallback)view_side_panel_buttons_cb, TRUE },
   { "ViewSidePanelCalendar",   NULL,        N_("Show Side Panel Ca_lendar"), "<shift>F8",  N_("Show Side Panel Calendar"),                (GCallback)view_side_panel_calendar_cb, TRUE },
-  { "ViewSidePanelTabs",       NULL,        N_("Show Side Panel Tabs"),      "<shift>F7",  N_("Show Side Panel Tabs"),                    (GCallback)view_side_panel_tabs_cb, TRUE },
+  { "ViewSidePanelTabs",       NULL,        N_("Show Side Panel Tabs"),      "<shift>F10",  N_("Show Side Panel Tabs"),                    (GCallback)view_side_panel_tabs_cb, TRUE },
+  { "ViewSidePanelGoto",       NULL,        N_("Show Side Panel Goto"),      "<shift>F7",  N_("Show Side Panel Goto"),                    (GCallback)view_side_panel_goto_cb, TRUE },
 };
 
 // This must match the toggle entries order above
@@ -5482,6 +5534,7 @@ static gpointer toggle_entries_toolbar_cb[] = {
   (GCallback)tb_view_side_panel_buttons_cb,
   (GCallback)tb_view_side_panel_calendar_cb,
   (GCallback)tb_view_side_panel_tabs_cb,
+  (GCallback)tb_view_side_panel_goto_cb,
 };
 
 #include "menu.xml.h"

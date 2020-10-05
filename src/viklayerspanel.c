@@ -21,6 +21,7 @@
  */
 #include "viking.h"
 #include <gdk/gdkkeysyms.h>
+#include "vikgoto.h"
 
 enum {
   VLP_UPDATE_SIGNAL,
@@ -52,6 +53,8 @@ struct _VikLayersPanel {
   // NB Doesn't consider if the layers panel is shown or not.
   gboolean cal_shown;
   calendar_mu_t cal_markup;
+
+  GtkWidget *goto_pane;
 
   VikAggregateLayer *toplayer;
   GtkTreeIter toplayer_iter;
@@ -537,6 +540,9 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   vlp->tabs = gtk_notebook_new();
 
   gtk_notebook_append_page ( GTK_NOTEBOOK(vlp->tabs), vlp->calendar, gtk_label_new(_("Calendar")) );
+
+  vlp->goto_pane = vik_goto_panel_widget ( vlp );
+  gtk_notebook_append_page ( GTK_NOTEBOOK(vlp->tabs), vlp->goto_pane, gtk_label_new(_("Goto")) );
 
   gtk_paned_pack1 ( GTK_PANED(vlp->vpaned), scrolledwindow, TRUE, TRUE );
   gtk_paned_pack2 ( GTK_PANED(vlp->vpaned), vlp->tabs, FALSE, TRUE );
@@ -1088,6 +1094,16 @@ void vik_layers_panel_show_calendar ( VikLayersPanel *vlp, gboolean show )
   }
   else {
     gtk_widget_hide ( vlp->calendar );
+  }
+}
+
+void vik_layers_panel_show_goto ( VikLayersPanel *vlp, gboolean show )
+{
+  if ( show ) {
+    gtk_widget_show ( vlp->goto_pane );
+  }
+  else {
+    gtk_widget_hide ( vlp->goto_pane );
   }
 }
 

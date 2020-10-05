@@ -24,6 +24,7 @@
 
 #include "vikwindow.h"
 #include "vikviewport.h"
+#include "viklayerspanel.h"
 #include "vikgototool.h"
 
 G_BEGIN_DECLS
@@ -34,6 +35,8 @@ void vik_goto_unregister_all (void);
 gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name );
 void a_vik_goto(VikWindow *vw, VikViewport *vvp);
 gchar * a_vik_goto_get_search_string_for_this_place(VikWindow *vw);
+
+GtkWidget* vik_goto_panel_widget ( VikLayersPanel *vlp );
 
 G_END_DECLS
 
