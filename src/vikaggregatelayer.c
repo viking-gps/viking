@@ -2138,6 +2138,8 @@ static gint tac_mbtiles_thread ( MBT_T *mbt, gpointer threaddata  )
 {
   VikAggregateLayer *val = mbt->val;
   clock_t begin = clock();
+  guint num_tiles = 0;
+  gint result = 0;
 
   gchar *msg = NULL;
   sqlite3 *mbtiles;
@@ -2167,14 +2169,12 @@ static gint tac_mbtiles_thread ( MBT_T *mbt, gpointer threaddata  )
     goto cleanup;
   }
 
-  gint result = 0;
   guint zoom = (guint)map_utils_mpp_to_zoom_level(val->zoom_level);
 
   GHashTableIter iter;
   gpointer key, value;
   gint x,y;
   GdkPixbuf *pixbuf = NULL;
-  guint num_tiles = 0;
   guint sz = g_hash_table_size ( val->tiles );
 
   g_hash_table_iter_init ( &iter, val->tiles );

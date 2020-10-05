@@ -3178,7 +3178,7 @@ void vik_trw_layer_propwin_main_draw_blob ( gpointer self, VikTrackpoint *trkpt 
     return;
 
   GtkWidget *window = gtk_widget_get_toplevel ( page );
-  GtkWidget *image;
+  GtkWidget *image = NULL;
   PropSaved saved_img;
   gdouble x_blob = -MARGIN_X - 1.0; // i.e. Don't draw unless we get a valid value
   guint   y_blob = 0;
@@ -3210,17 +3210,18 @@ void vik_trw_layer_propwin_main_draw_blob ( gpointer self, VikTrackpoint *trkpt 
   if ( !isnan(pc) )
     marker_x = (pc * widgets->profile_width) + MARGIN_X;
 
-  save_image_and_draw_graph_marks ( image,
-                                    marker_x,
-                                    gtk_widget_get_style(window)->black_gc,
-                                    x_blob+MARGIN_X,
-                                    y_blob+MARGIN_Y,
-                                    &saved_img,
-                                    widgets->profile_width,
-                                    widgets->profile_height,
-                                    BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
-                                    &widgets->is_marker_drawn,
-                                    &widgets->is_blob_drawn );
+  if ( image )
+    save_image_and_draw_graph_marks ( image,
+                                      marker_x,
+                                      gtk_widget_get_style(window)->black_gc,
+                                      x_blob+MARGIN_X,
+                                      y_blob+MARGIN_Y,
+                                      &saved_img,
+                                      widgets->profile_width,
+                                      widgets->profile_height,
+                                      BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
+                                      &widgets->is_marker_drawn,
+                                      &widgets->is_blob_drawn );
 }
 
 /**

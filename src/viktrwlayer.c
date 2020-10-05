@@ -5844,7 +5844,7 @@ static void trw_layer_convert_to_track ( menu_array_sublayer values )
 
   GList* gl = vu_sorted_list_from_hash_table ( vtl->waypoints, vtl->wp_sort_order, VIKING_WAYPOINT );
 
-  gchar *name;
+  gchar *name = NULL;
   guint count = 1;
   for ( GList *it = g_list_first(gl); it != NULL; it = g_list_next(it) ) {
     VikWaypoint *wpt = VIK_WAYPOINT(((SortTRWHashT*)it->data)->data);
