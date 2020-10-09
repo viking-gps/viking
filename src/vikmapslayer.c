@@ -451,7 +451,7 @@ guint vik_maps_layer_get_default_map_type ()
 
 gchar *vik_maps_layer_get_map_label(VikMapsLayer *vml)
 {
-  return(g_strdup(MAPS_LAYER_NTH_LABEL(vml->maptype)));
+  return MAPS_LAYER_NTH_LABEL(vml->maptype);
 }
 
 /****************************************/
@@ -2047,7 +2047,7 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
   }
 
   a_dialog_list (  VIK_GTK_WINDOW_FROM_LAYER(vml), _("Tile Information"), array, 5 );
-  g_array_free ( array, FALSE );
+  g_array_free ( array, TRUE );
 
   g_free ( timemsg );
   g_free ( filemsg );

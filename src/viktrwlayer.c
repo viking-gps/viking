@@ -12261,6 +12261,7 @@ static void trw_update_layer_icon ( VikTrwLayer *trw )
 
   GdkPixbuf *buf = gdk_pixbuf_from_pixdata ( data, FALSE, NULL );
   vik_treeview_item_set_icon ( VIK_LAYER(trw)->vt, &(VIK_LAYER(trw)->iter), buf );
+  g_object_unref ( buf );
 }
 
 /*** Splitter ***/

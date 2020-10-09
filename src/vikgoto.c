@@ -190,6 +190,7 @@ static void vik_goto_search_response ( struct VikGotoSearchWinData *data, gint r
     last_goto_tool = gtk_combo_box_get_active ( GTK_COMBO_BOX(data->tool_list) );
     gchar *provider = vik_goto_tool_get_label ( g_list_nth_data (goto_tools_list, last_goto_tool) );
     a_settings_set_string ( VIK_SETTINGS_GOTO_PROVIDER, provider );
+    g_free ( provider );
 
     gchar *goto_str = g_strdup ( gtk_entry_get_text ( GTK_ENTRY(data->goto_entry) ) );
 
@@ -277,12 +278,9 @@ void a_vik_goto ( VikWindow *vw, VikViewport *vvp )
   GtkWidget *tool_label = gtk_label_new( _("goto provider:") );
   GtkWidget *tool_list = vik_combo_box_text_new ();
   GList *current = g_list_first ( goto_tools_list );
-  while ( current != NULL )
-  {
-    char *label = NULL;
+  while ( current != NULL ) {
     VikGotoTool *tool = current->data;
-    label = vik_goto_tool_get_label ( tool );
-    vik_combo_box_text_append ( tool_list, label );
+    vik_combo_box_text_append ( tool_list, vik_goto_tool_get_label(tool) );
     current = g_list_next ( current );
   }
 

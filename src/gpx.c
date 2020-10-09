@@ -1166,6 +1166,8 @@ gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath, gbool
   g_free ( ud );
   g_string_free ( xpath, TRUE );
   g_string_free ( c_cdata, TRUE );
+  g_string_free ( c_ext, TRUE );
+  g_string_free ( c_trkpt_ext, TRUE );
   g_string_free ( gs_ext, TRUE );
   g_markup_parse_context_free ( gcontext );
 

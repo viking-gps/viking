@@ -944,7 +944,7 @@ GtkWidget* vu_menu_add_item ( const GtkMenu *menu,
                               const GCallback callback,
                               const gpointer user_data )
 {
-	GtkWidget *menu_item = gtk_menu_item_new();
+	GtkWidget *menu_item;
 	if ( mnemonic && stock_icon ) {
 		menu_item = gtk_image_menu_item_new_with_mnemonic ( mnemonic );
 		gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menu_item, gtk_image_new_from_stock (stock_icon, GTK_ICON_SIZE_MENU) );
@@ -953,6 +953,8 @@ GtkWidget* vu_menu_add_item ( const GtkMenu *menu,
 		menu_item = gtk_menu_item_new_with_mnemonic ( mnemonic );
 	else if ( stock_icon )
 		menu_item = gtk_image_menu_item_new_from_stock ( stock_icon, NULL );
+	else
+		menu_item = gtk_menu_item_new();
 	if ( callback )
 		g_signal_connect_swapped ( G_OBJECT(menu_item), "activate", callback, user_data );
 	gtk_menu_shell_append ( GTK_MENU_SHELL(menu), menu_item );

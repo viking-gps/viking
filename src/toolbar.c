@@ -536,6 +536,7 @@ void toolbar_init (VikToolbar *vtb,
 	}
 	gtk_action_group_add_actions(vtb->group_actions, actions, nn, user_data);
 	gtk_ui_manager_insert_action_group(vtb->uim, vtb->group_actions, 0);
+	g_free ( actions );
 
 	vtb->group_toggles = gtk_action_group_new("UIItems");
 	gtk_action_group_set_translation_domain(vtb->group_toggles, GETTEXT_PACKAGE);
@@ -549,6 +550,7 @@ void toolbar_init (VikToolbar *vtb,
 	}
 	gtk_action_group_add_toggle_actions(vtb->group_toggles, toggle_actions, nn, user_data);
 	gtk_ui_manager_insert_action_group(vtb->uim, vtb->group_toggles, 0);
+	g_free ( toggle_actions );
 
 	vtb->group_tools = gtk_action_group_new("ToolItems");
 	gtk_action_group_set_translation_domain(vtb->group_tools, GETTEXT_PACKAGE);
@@ -564,6 +566,7 @@ void toolbar_init (VikToolbar *vtb,
 	}
 	gtk_action_group_add_radio_actions(vtb->group_tools, tool_actions, nn, 0, G_CALLBACK(tool_cb), user_data);
 	gtk_ui_manager_insert_action_group(vtb->uim, vtb->group_tools, 0);
+	g_free ( tool_actions );
 
 	vtb->group_modes = gtk_action_group_new("ModeItems");
 	gtk_action_group_set_translation_domain(vtb->group_modes, GETTEXT_PACKAGE);
@@ -579,6 +582,7 @@ void toolbar_init (VikToolbar *vtb,
 	}
 	gtk_action_group_add_radio_actions(vtb->group_modes, mode_actions, nn, 0, G_CALLBACK(tool_cb), user_data);
 	gtk_ui_manager_insert_action_group(vtb->uim, vtb->group_modes, 0);
+	g_free ( mode_actions );
 
 	toolbar_reload(vtb, NULL, parent, vbox, hbox, reload_cb, user_data);
 

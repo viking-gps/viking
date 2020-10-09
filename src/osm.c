@@ -154,14 +154,14 @@ void osm_init () {
 
   // NB The first registered map source is the default
   //  (unless the user has specified Map Layer defaults)
-  maps_layer_register_map_source (open_topo_type);
-  maps_layer_register_map_source (mapnik_type);
-  maps_layer_register_map_source (cycle_type);
-  maps_layer_register_map_source (transport_type);
-  maps_layer_register_map_source (hot_type);
-  maps_layer_register_map_source (direct_type);
-  maps_layer_register_map_source (mbtiles_type);
-  maps_layer_register_map_source (metatiles_type);
+  maps_layer_register_map_source (open_topo_type); g_object_unref ( open_topo_type );
+  maps_layer_register_map_source (mapnik_type); g_object_unref ( mapnik_type );
+  maps_layer_register_map_source (cycle_type); g_object_unref ( cycle_type );
+  maps_layer_register_map_source (transport_type); g_object_unref ( transport_type );
+  maps_layer_register_map_source (hot_type); g_object_unref ( hot_type );
+  maps_layer_register_map_source (direct_type); g_object_unref ( direct_type );
+  maps_layer_register_map_source (mbtiles_type); g_object_unref ( mbtiles_type );
+  maps_layer_register_map_source (metatiles_type); g_object_unref ( metatiles_type );
 
   // Webtools
   VikWebtoolCenter *webtool = NULL;

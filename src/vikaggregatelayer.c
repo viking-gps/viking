@@ -1460,7 +1460,7 @@ typedef struct {
 static void ct_free ( CalculateThreadT *ct )
 {
   ct->val->calculating = FALSE;
-  g_list_free ( ct->tracks_and_layers );
+  g_list_free_full ( ct->tracks_and_layers, g_free );
   g_free ( ct );
 }
 
@@ -1650,6 +1650,7 @@ static void tac_contiguous_calc ( VikAggregateLayer *val )
     }
   }
   g_free ( new_labels );
+  g_free ( sizes );
   uf_finish();
   
   clock_t end = clock();
@@ -1746,6 +1747,7 @@ static void tac_cluster_calc ( VikAggregateLayer *val )
     }
   }
   g_free ( new_labels );
+  g_free ( sizes );
   uf_finish();
 
   clock_t end = clock();
@@ -1901,6 +1903,7 @@ static void tac_calculate ( VikAggregateLayer *val )
           GDate* gdate = g_date_new ();
           g_date_set_time_t ( gdate, (time_t)ts );
           gint diff = g_date_days_between ( gdate, now );
+          g_date_free ( gdate );
           // NB this doesn't get the year date range exact
           //  however this generally should be good/close enough for practical purposes
           if ( diff > 0 && diff < (365.25*val->tac_time_range) ) {
@@ -1916,6 +1919,7 @@ static void tac_calculate ( VikAggregateLayer *val )
     layers = g_list_next ( layers );
   }
   g_list_free ( layers );
+  g_date_free ( now );
 
   CalculateThreadT *ct = g_malloc ( sizeof(CalculateThreadT) );
   ct->tracks_and_layers = tracks_and_layers;
@@ -2643,6 +2647,8 @@ void vik_aggregate_layer_free ( VikAggregateLayer *val )
     g_object_unref ( val->pixbuf[MAX_SQR] );
   if ( val->pixbuf[CONTIG] )
     g_object_unref ( val->pixbuf[CONTIG] );
+  if ( val->pixbuf[CLUSTER] )
+    g_object_unref ( val->pixbuf[CLUSTER] );
   g_hash_table_destroy ( val->tiles_clust );
 
   if ( val->hm_pixbuf )

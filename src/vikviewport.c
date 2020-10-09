@@ -456,6 +456,9 @@ static void viewport_finalize ( GObject *gob )
 
   g_return_if_fail ( vvp != NULL );
 
+  vik_viewport_reset_copyrights ( vvp );
+  vik_viewport_reset_logos ( vvp );
+
   if ( a_vik_get_startup_method ( ) == VIK_STARTUP_METHOD_LAST_LOCATION ) {
     struct LatLon ll;
     vik_coord_to_latlon ( &(vvp->center), &ll );
@@ -466,7 +469,7 @@ static void viewport_finalize ( GObject *gob )
   }
 
   if ( vvp->centers )
-   free_centers ( vvp, 0 );
+    g_list_free_full ( vvp->centers, g_free );
 
   if ( vvp->scr_buffer )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );

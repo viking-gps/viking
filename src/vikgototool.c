@@ -170,7 +170,7 @@ static void goto_tool_finalize ( GObject *gob )
 static gchar *goto_tool_get_label ( VikGotoTool *self )
 {
   VikGotoToolPrivate *priv = vik_goto_tool_get_instance_private (self);
-  return g_strdup ( priv->label );
+  return priv->label;
 }
 
 static DownloadFileOptions *goto_tool_get_download_options ( VikGotoTool *self )

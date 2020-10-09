@@ -142,7 +142,9 @@ static GtkWidget* layers_panel_create_popup ( VikLayersPanel *vlp, gboolean full
 
     if ( vik_layer_get_interface(ii)->icon ) {
       menuitem = gtk_image_menu_item_new_with_mnemonic ( _(vik_layer_get_interface(ii)->name) );
-      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menuitem, gtk_image_new_from_pixbuf ( vik_layer_load_icon (ii) ) );
+      GdkPixbuf *pixbuf = vik_layer_load_icon (ii);
+      gtk_image_menu_item_set_image ( (GtkImageMenuItem*)menuitem, gtk_image_new_from_pixbuf ( pixbuf ) );
+      g_object_unref ( pixbuf );
     }
     else
       menuitem = gtk_menu_item_new_with_mnemonic ( _(vik_layer_get_interface(ii)->name) );

@@ -573,6 +573,11 @@ const gchar* vik_layer_layer_tooltip ( VikLayer *l )
   return NULL;
 }
 
+/**
+ * vik_layer_load_icon:
+ *
+ * Unref the returned pixbuf after use
+ */
 GdkPixbuf *vik_layer_load_icon ( VikLayerTypeEnum type )
 {
   g_assert ( type < VIK_LAYER_NUM_TYPES );

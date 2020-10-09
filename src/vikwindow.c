@@ -624,11 +624,15 @@ static void window_finalize ( GObject *gob )
 
   gdk_cursor_unref ( vw->busy_cursor );
   int tt;
-  for (tt = 0; tt < vw->vt->n_tools; tt++ )
+  for (tt = 0; tt < vw->vt->n_tools; tt++ ) {
+    if ( vw->vt->tools[tt].ti.cursor )
+      gdk_cursor_unref ( (GdkCursor*)vw->vt->tools[tt].ti.cursor );
     if ( vw->vt->tools[tt].ti.destroy )
       vw->vt->tools[tt].ti.destroy ( vw->vt->tools[tt].state );
+  }
   g_free ( vw->vt->tools );
   g_free ( vw->vt );
+  g_free ( vw->filename );
 
   vik_toolbar_finalize ( vw->viking_vtb );
 
@@ -5531,11 +5535,13 @@ static void window_create_ui( VikWindow *window )
   }
 
   // GeoJSON import capability
-  if ( g_find_program_in_path ( a_geojson_program_import() ) ) {
+  gchar *gjp = g_find_program_in_path ( a_geojson_program_import() );
+  if ( gjp ) {
     if ( gtk_ui_manager_add_ui_from_string ( uim,
          "<ui><menubar name='MainMenu'><menu action='File'><menu action='Acquire'><menuitem action='AcquireGeoJSON'/></menu></menu></menubar></ui>",
          -1, &error ) )
       gtk_action_group_add_actions ( action_group, entries_geojson, G_N_ELEMENTS (entries_geojson), window );
+    g_free ( gjp );
   }
 
   icon_factory = gtk_icon_factory_new ();

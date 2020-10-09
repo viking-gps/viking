@@ -647,16 +647,19 @@ vik_map_source_default_get_url_display( VikMapSourceDefault *self, MapCoord *src
 		else {
 			newstr = g_strdup ( hostname );
 		}
+		g_free ( hostname );
 	}
 	if ( url && strlen(url)>1 ) {
 		if ( newstr ) {
 			gchar *tmp = g_strdup ( newstr );
-			newstr = g_strdup_printf ( "%s%s", newstr, url );
+			g_free ( newstr );
+			newstr = g_strdup_printf ( "%s%s", tmp, url );
 			g_free ( tmp );
 		}
 		else {
 			newstr = g_strdup ( url );
 		}
+		g_free ( url );
 	}
 
 	return newstr;

@@ -301,9 +301,13 @@ GtkWidget *new_widget ( VikLayerParam *param, VikLayerParamData data, gboolean s
 
     default: break;
   }
-  if ( rv && !gtk_widget_get_tooltip_text ( rv ) ) {
-    if ( param->tooltip )
-      gtk_widget_set_tooltip_text ( rv, _(param->tooltip) );
+  if ( rv ) {
+    gchar* tt = gtk_widget_get_tooltip_text ( rv );
+    if ( !tt ) {
+      if ( param->tooltip )
+        gtk_widget_set_tooltip_text ( rv, _(param->tooltip) );
+    } else
+      g_free ( tt );
   }
 
   // 2nd pass: set the widget value

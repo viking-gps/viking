@@ -153,8 +153,10 @@ int a_background_testcancel ( gpointer callbackdata )
 // Called from the main thread
 static gboolean idle_remove ( gpointer user_data )
 {
-  if ( bgstore && user_data )
+  if ( bgstore && user_data ) {
     gtk_list_store_remove ( bgstore, (GtkTreeIter*)user_data );
+    g_free ( user_data );
+  }
   return FALSE;
 }
 
