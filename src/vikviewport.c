@@ -1006,12 +1006,8 @@ void vik_viewport_show_centers ( VikViewport *vvp, GtkWindow *parent )
                                          FALSE,
                                          "Back/Forward Locations",
                                          "Back/Forward Locations");
-  for (node = ans; node != NULL; node = g_list_next(node))
-    g_free(node->data);
-  g_list_free(ans);
-  for (node = texts; node != NULL; node = g_list_next(node))
-    g_free(node->data);
-  g_list_free(texts);
+  g_list_free_full ( ans, g_free );
+  g_list_free_full ( texts, g_free );
 }
 
 /**
