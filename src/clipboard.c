@@ -265,7 +265,7 @@ static void clip_receive_text (GtkClipboard *c, const gchar *text, gpointer p)
 {
   VikLayersPanel *vlp = p;
 
-  g_debug ( "got text: %s", text );
+  g_debug ( "%s: got text: %s", __FUNCTION__, text );
 
   VikLayer *sel = vik_layers_panel_get_selected ( vlp );
   if ( sel && vik_treeview_get_editing ( sel->vt ) ) {
@@ -299,9 +299,18 @@ static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer 
     return;
   } 
 
-  /* - copying from Mozilla seems to give html in UTF-16. */
-  if (!(s =  g_convert ( (gchar *)gtk_selection_data_get_data(sd), gtk_selection_data_get_length(sd), "UTF-8", "UTF-16", &r, &w, &err))) {
-    return;
+  const guchar *data = gtk_selection_data_get_data(sd);
+  g_debug ( "%s: RAW data: %s", __FUNCTION__, data );
+
+  // Some browsers (e.g. older versions of Mozilla?) seem to give html in UTF-16
+  //  so only attempt to convert if deemed necessary
+  if ( g_strcmp0((gchar*)data, "utf-16") == 0 ) {
+    if (!(s =  g_convert ( (gchar *)data, gtk_selection_data_get_length(sd), "UTF-8", "UTF-16", &r, &w, &err))) {
+      return;
+    }
+  }
+  else {
+    s = g_strdup((gchar*)data);
   }
   //  g_print("html is %d bytes long: %s\n", gtk_selection_data_get_length(sd), s);
 
