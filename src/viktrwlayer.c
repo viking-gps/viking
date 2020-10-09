@@ -5528,28 +5528,6 @@ void trw_layer_waypoint_rename ( VikTrwLayer *vtl, VikWaypoint *wp, const gchar 
   }
 }
 
-/**
- *  Maintain icon of waypoint in the treeview
- */
-void trw_layer_waypoint_reset_icon ( VikTrwLayer *vtl, VikWaypoint *wp )
-{
-  // update the treeview
-  wpu_udata udataU;
-  udataU.wp   = wp;
-  udataU.uuid = NULL;
-
-  // Need key of it for treeview update
-  gpointer wpf = g_hash_table_find ( vtl->waypoints, (GHRFunc) trw_layer_waypoint_find_uuid, &udataU );
-
-  if ( wpf && udataU.uuid ) {
-    GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udataU.uuid );
-
-    if ( it ) {
-      vik_treeview_item_set_icon ( VIK_LAYER(vtl)->vt, it, get_wp_sym_small (wp->symbol) );
-    }
-  }
-}
-
 void trw_layer_waypoint_properties_changed ( VikTrwLayer *vtl, VikWaypoint *wp )
 {
   // Find in treeview

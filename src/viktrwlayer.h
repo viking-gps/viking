@@ -167,7 +167,6 @@ void trw_layer_verify_thumbnails ( VikTrwLayer *vtl );
 // Other functions only for use by other trw_layer subwindows
 gchar *trw_layer_new_unique_sublayer_name ( VikTrwLayer *vtl, gint sublayer_type, const gchar *name );
 void trw_layer_waypoint_rename ( VikTrwLayer *vtl, VikWaypoint *wp, const gchar *new_name );
-void trw_layer_waypoint_reset_icon ( VikTrwLayer *vtl, VikWaypoint *wp );
 void trw_layer_calculate_bounds_waypoints ( VikTrwLayer *vtl );
 void trw_layer_calculate_bounds_tracks ( VikTrwLayer *vtl );
 void trw_layer_waypoint_properties_changed ( VikTrwLayer *vtl, VikWaypoint *wp );
