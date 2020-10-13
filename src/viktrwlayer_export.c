@@ -168,6 +168,31 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
 
   gtk_file_chooser_set_current_name ( GTK_FILE_CHOOSER(file_selector), default_name );
 
+  GtkWidget *dialog = file_selector;
+  GtkFileFilter *filter;
+  switch ( file_type ) {
+  case FILE_TYPE_GPX:
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name( filter, _("GPX") );
+    gtk_file_filter_add_mime_type ( filter, "gpx+xml");
+    gtk_file_filter_add_pattern ( filter, "*.gpx" );
+    gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(dialog), filter );
+    gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
+    break;
+  case FILE_TYPE_KML:
+    filter = gtk_file_filter_new ();
+    gtk_file_filter_set_name( filter, _("Google Earth") );
+    gtk_file_filter_add_mime_type ( filter, "application/vnd.google-earth.kml+xml");
+    gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(dialog), filter);
+    gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
+    break;
+  default: break;
+  }
+  filter = gtk_file_filter_new ();
+  gtk_file_filter_set_name( filter, _("All") );
+  gtk_file_filter_add_pattern ( filter, "*" );
+  gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+
   while ( gtk_dialog_run ( GTK_DIALOG(file_selector) ) == GTK_RESPONSE_ACCEPT )
   {
     gchar *fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) );
