@@ -1837,7 +1837,7 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
             pc_blob = tp_percentage_by_distance ( widgets->tr, widgets->blob_tp, widgets->track_length_inc_gaps );
 
           if ( !isnan(pc_blob) ) {
-            x_blob = (pc_blob * widgets->profile_width);
+            x_blob = pc_blob * (widgets->profile_width-1);
           }
           y_blob = blob_y_position ( x_blob > 0 ? (guint)x_blob : 0, widgets, pwgt );
         }
@@ -3198,12 +3198,12 @@ void vik_trw_layer_propwin_main_draw_blob ( gpointer self, VikTrackpoint *trkpt 
   }
 
   if ( !isnan(pc_blob) ) {
-    x_blob = pc_blob * widgets->profile_width;
+    x_blob = pc_blob * (widgets->profile_width-1);
 
     if ( page == widgets->event_box[PGT_ELEVATION_DISTANCE] )
-      y_blob = blob_y_position ( (guint)x_blob, widgets, PGT_ELEVATION_DISTANCE );
+      y_blob = blob_y_position ( x_blob > 0 ? (guint)x_blob : 0, widgets, PGT_ELEVATION_DISTANCE );
     if ( page == widgets->event_box[PGT_SPEED_TIME] )
-      y_blob = blob_y_position ( (guint)x_blob, widgets, PGT_SPEED_TIME );
+      y_blob = blob_y_position ( x_blob > 0 ? (guint)x_blob : 0, widgets, PGT_SPEED_TIME );
   }
 
   gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
