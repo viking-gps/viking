@@ -3843,12 +3843,11 @@ void calendar_update ( VikWindow *vw )
   if ( !layers )
     return;
   
-  while ( layers ) {
-    VikTrwLayer *vtl = VIK_TRW_LAYER(layers->data);
+  for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
+    VikTrwLayer *vtl = VIK_TRW_LAYER(layer->data);
     calendar_consider_layer ( calendar, vtl );
-    layers = g_list_next ( layers );
   }
-  g_list_free ( layers );    
+  g_list_free ( layers );
 }
 #endif
 
@@ -4461,11 +4460,10 @@ static void preferences_change_update ( VikWindow *vw, gpointer data )
   if ( !layers )
     return;
 
-  while ( layers ) {
+  for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
     // Reset the individual waypoints themselves due to the preferences change
-    VikTrwLayer *vtl = VIK_TRW_LAYER(layers->data);
+    VikTrwLayer *vtl = VIK_TRW_LAYER(layer->data);
     vik_trw_layer_reset_waypoints ( vtl );
-    layers = g_list_next ( layers );
   }
 
   g_list_free ( layers );

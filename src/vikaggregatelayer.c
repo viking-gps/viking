@@ -1196,11 +1196,10 @@ static GList* aggregate_layer_waypoint_create_list ( VikLayer *vl, gpointer user
 
   // For each TRW layers keep adding the waypoints to build a list of all of them
   GList *waypoints_and_layers = NULL;
-  layers = g_list_first ( layers );
-  while ( layers ) {
-    GList *waypoints = g_hash_table_get_values ( vik_trw_layer_get_waypoints( VIK_TRW_LAYER(layers->data) ) );
-    waypoints_and_layers = g_list_concat ( waypoints_and_layers, vik_trw_layer_build_waypoint_list_t ( VIK_TRW_LAYER(layers->data), waypoints ) );
-    layers = g_list_next ( layers );
+  for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
+    GList *waypoints = g_hash_table_get_values ( vik_trw_layer_get_waypoints( VIK_TRW_LAYER(layer->data) ) );
+    waypoints_and_layers = g_list_concat ( waypoints_and_layers, vik_trw_layer_build_waypoint_list_t ( VIK_TRW_LAYER(layer->data), waypoints ) );
+    g_list_free ( waypoints );
   }
   g_list_free ( layers );
 
@@ -1279,12 +1278,11 @@ static GList* aggregate_layer_track_create_list ( VikLayer *vl, gpointer user_da
 
   // For each TRW layers keep adding the tracks and routes to build a list of all of them
   GList *tracks_and_layers = NULL;
-  layers = g_list_first ( layers );
-  while ( layers ) {
-    GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) );
-    tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_routes( VIK_TRW_LAYER(layers->data) ) ) );
-    tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layers->data), tracks ) );
-    layers = g_list_next ( layers );
+  for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
+    GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layer->data) ) );
+    tracks = g_list_concat ( tracks, g_hash_table_get_values ( vik_trw_layer_get_routes( VIK_TRW_LAYER(layer->data) ) ) );
+    tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layer->data), tracks ) );
+    g_list_free ( tracks );
   }
   g_list_free ( layers );
 
@@ -1808,15 +1806,13 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
     (ct->val->on[CONTIG] * ct->num_of_tracks) +
     (ct->val->on[CLUSTER] * ct->num_of_tracks);
   
-  ct->tracks_and_layers = g_list_first ( ct->tracks_and_layers );
-  while ( ct->tracks_and_layers ) {
+  for ( GList *tl = ct->tracks_and_layers; tl != NULL; tl = tl->next ) {
     gdouble percent = (gdouble)tracks_processed/(gdouble)(ct->num_of_tracks+extras);
     gint res = a_background_thread_progress ( threaddata, percent );
     if ( res != 0 ) return -1;
 
-    check_track ( ct->val, ct->tracks_and_layers->data );
+    check_track ( ct->val, tl->data );
     tracks_processed++;
-    ct->tracks_and_layers = g_list_next ( ct->tracks_and_layers );
   }
 
   // Timing for basic tile coverage
@@ -1888,16 +1884,15 @@ static void tac_calculate ( VikAggregateLayer *val )
 
   // For each TRW layers keep adding the tracks to build a list of all of them
   GList *tracks_and_layers = NULL; // A list of #vik_trw_track_list_t
-  layers = g_list_first ( layers );
-  while ( layers ) {
-    GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) );
+  for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
+    GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layer->data) ) );
     if ( !val->tac_time_range )
       // All
-      tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layers->data), tracks ) );
+      tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layer->data), tracks ) );
     else {
       // Only those within specified time period
-      while ( tracks ) {
-        VikTrack *trk = VIK_TRACK(tracks->data);
+      for ( GList *track = tracks; track != NULL; track = track->next ) {
+        VikTrack *trk = VIK_TRACK(track->data);
         gdouble ts = VIK_TRACKPOINT(trk->trackpoints->data)->timestamp;
         if ( trk->trackpoints && !isnan(ts) ) {
           GDate* gdate = g_date_new ();
@@ -1909,14 +1904,13 @@ static void tac_calculate ( VikAggregateLayer *val )
           if ( diff > 0 && diff < (365.25*val->tac_time_range) ) {
             vik_trw_and_track_t *vtdl = g_malloc (sizeof(vik_trw_and_track_t));
             vtdl->trk = trk;
-            vtdl->vtl = VIK_TRW_LAYER(layers->data);
+            vtdl->vtl = VIK_TRW_LAYER(layer->data);
             tracks_and_layers = g_list_prepend ( tracks_and_layers, vtdl );
           }
         }
-        tracks = g_list_next ( tracks );
       }
     }
-    layers = g_list_next ( layers );
+    g_list_free ( tracks );
   }
   g_list_free ( layers );
   g_date_free ( now );
@@ -2002,18 +1996,16 @@ static gint hm_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
   gdouble mf = mercator_factor ( val->hm_zoom, val->hm_scale );
 
   guint tracks_processed = 0;
-  ct->tracks_and_layers = g_list_first ( ct->tracks_and_layers );
-  while ( ct->tracks_and_layers ) {
+  for ( GList *tl = ct->tracks_and_layers; tl != NULL; tl = tl->next ) {
     gdouble percent = (gdouble)tracks_processed/(gdouble)(ct->num_of_tracks);
     gint res = a_background_thread_progress ( threaddata, percent );
     if ( res != 0 ) return -1;
 
-    vik_trw_and_track_t *vtlist = ct->tracks_and_layers->data;
+    vik_trw_and_track_t *vtlist = tl->data;
     if ( BBOX_INTERSECT ( vtlist->trk->bbox, val->hm_bbox ) )
       hm_track ( ct->val, vtlist, mf, hm, stamp );
 
     tracks_processed++;
-    ct->tracks_and_layers = g_list_next ( ct->tracks_and_layers );
   }
 
   // Would be better if testing for any tracks actually used
@@ -2074,11 +2066,10 @@ static void hm_calculate ( VikAggregateLayer *val )
 
   // For each TRW layers keep adding the tracks to build a list of all of them
   GList *tracks_and_layers = NULL; // A list of #vik_trw_track_list_t
-  layers = g_list_first ( layers );
-  while ( layers ) {
-    GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) );
-    tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layers->data), tracks ) );
-    layers = g_list_next ( layers );
+  for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
+    GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layer->data) ) );
+    tracks_and_layers = g_list_concat ( tracks_and_layers, vik_trw_layer_build_track_list_t ( VIK_TRW_LAYER(layer->data), tracks ) );
+    g_list_free ( tracks );
   }
   g_list_free ( layers );
 
@@ -2313,9 +2304,8 @@ static void aggregate_view_all_trw ( menu_array_values values )
   struct LatLon maxmin[2] = { {0,0}, {0,0} };
 
   gboolean have_bbox = FALSE;
-  GList *iter = g_list_first ( layers );
-  while ( iter ) {
-    VikTrwLayer *vtl = VIK_TRW_LAYER(iter->data);
+  for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
+    VikTrwLayer *vtl = VIK_TRW_LAYER(layer->data);
     if ( !vik_trw_layer_is_empty(vtl) ) {
       LatLonBBox bbox = vik_trw_layer_get_bbox ( vtl );
       if ( !have_bbox ) {
@@ -2335,8 +2325,8 @@ static void aggregate_view_all_trw ( menu_array_values values )
           maxmin[1].lon = bbox.west;
       }
     }
-    iter = g_list_next ( iter );
   }
+  g_list_free ( layers );
 
   if ( have_bbox ) {
     vu_zoom_to_show_latlons ( vik_viewport_get_coord_mode(vvp), vvp, maxmin );
@@ -2515,11 +2505,10 @@ static GList* aggregate_layer_tac_tracks_list ( VikLayer *vl, gpointer user_data
 
   // For each TRW layers keep adding the tracks the match our criteria
   GList *tracks_and_layers = NULL;
-  layers = g_list_first ( layers );
-  while ( layers ) {
-    GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layers->data) ) );
-    tracks_and_layers = g_list_concat ( tracks_and_layers, build_tac_track_list(VIK_TRW_LAYER(layers->data), tracks, mc) );
-    layers = g_list_next ( layers );
+  for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
+    GList *tracks = g_hash_table_get_values ( vik_trw_layer_get_tracks( VIK_TRW_LAYER(layer->data) ) );
+    tracks_and_layers = g_list_concat ( tracks_and_layers, build_tac_track_list(VIK_TRW_LAYER(layer->data), tracks, mc) );
+    g_list_free ( tracks );
   }
   g_list_free ( layers );
 

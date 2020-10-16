@@ -200,13 +200,12 @@ void layers_panel_calendar_update ( VikLayersPanel *vlp )
   GList *layers = vik_layers_panel_get_all_layers_of_type ( vlp, VIK_LAYER_TRW, TRUE );
   if ( !layers )
     return;
-  
-  while ( layers ) {
-    VikTrwLayer *vtl = VIK_TRW_LAYER(layers->data);
+
+  for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
+    VikTrwLayer *vtl = VIK_TRW_LAYER(layer->data);
     calendar_mark_layer_in_month ( vlp, vtl );
-    layers = g_list_next ( layers );
   }
-  g_list_free ( layers );    
+  g_list_free ( layers );
 }
 
 /**
@@ -380,8 +379,8 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
   gboolean need_to_break = FALSE;
   VikTrwLayer *vtl = NULL;
   GDate *gd = g_date_new();
-  while ( layers ) {
-    vtl = VIK_TRW_LAYER(layers->data);
+  for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
+    vtl = VIK_TRW_LAYER(layer->data);
 
     GHashTable *trks = vik_trw_layer_get_tracks ( vtl ); 
     GHashTableIter iter;
@@ -407,11 +406,10 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
     if ( need_to_break )
       break;
     
-    layers = g_list_next ( layers );
     vtl = NULL;
   }
   g_date_free ( gd );
-  g_list_free ( layers );    
+  g_list_free ( layers );
 
   if ( vtl)
     return g_strdup (vik_layer_get_name ( VIK_LAYER(vtl) ));
