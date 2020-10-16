@@ -2079,7 +2079,10 @@ static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton 
 
       vml->dl_tool_x = vml->dl_tool_y = -1;
 
-      if ( ! vml->dl_right_click_menu ) {
+      if ( vml->dl_right_click_menu )
+        g_object_ref_sink ( G_OBJECT(vml->dl_right_click_menu) );
+
+      {
         VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
 
         vml->dl_right_click_menu = GTK_MENU ( gtk_menu_new () );
