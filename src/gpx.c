@@ -378,6 +378,7 @@ static tag_mapping_ext extension_trackpoints_map[] = {
   { ext_trk_color, "gpxx:DisplayColor" },
   { ext_trk_color, "gpxd:color" },
   { ext_trk_color, "color" }, // e.g. OsmAnd?
+  {0}
 };
 
 static tag_type_ext get_tag_ext_specific (const char *tt)
