@@ -3950,7 +3950,7 @@ static void trw_layer_export_gpspoint ( menu_array_layer values )
 {
   gchar *auto_save_name = append_file_ext ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])), FILE_TYPE_GPSPOINT );
 
-  vik_trw_layer_export ( VIK_TRW_LAYER (values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GPSPOINT );
+  vik_trw_layer_export ( VIK_LAYER(values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GPSPOINT );
 
   g_free ( auto_save_name );
 }
@@ -3959,7 +3959,7 @@ static void trw_layer_export_gpsmapper ( menu_array_layer values )
 {
   gchar *auto_save_name = append_file_ext ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])), FILE_TYPE_GPSMAPPER );
 
-  vik_trw_layer_export ( VIK_TRW_LAYER (values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GPSMAPPER );
+  vik_trw_layer_export ( VIK_LAYER(values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GPSMAPPER );
 
   g_free ( auto_save_name );
 }
@@ -3968,7 +3968,7 @@ static void trw_layer_export_gpx ( menu_array_layer values )
 {
   gchar *auto_save_name = append_file_ext ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])), FILE_TYPE_GPX );
 
-  vik_trw_layer_export ( VIK_TRW_LAYER (values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GPX );
+  vik_trw_layer_export ( VIK_LAYER(values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GPX );
 
   g_free ( auto_save_name );
 }
@@ -3977,7 +3977,7 @@ static void trw_layer_export_kml ( menu_array_layer values )
 {
   gchar *auto_save_name = append_file_ext ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])), FILE_TYPE_KML );
 
-  vik_trw_layer_export ( VIK_TRW_LAYER (values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_KML );
+  vik_trw_layer_export ( VIK_LAYER(values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_KML );
 
   g_free ( auto_save_name );
 }
@@ -3986,7 +3986,7 @@ static void trw_layer_export_geojson ( menu_array_layer values )
 {
   gchar *auto_save_name = append_file_ext ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])), FILE_TYPE_GEOJSON );
 
-  vik_trw_layer_export ( VIK_TRW_LAYER (values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GEOJSON );
+  vik_trw_layer_export ( VIK_LAYER(values[MA_VTL]), _("Export Layer"), auto_save_name, NULL, FILE_TYPE_GEOJSON );
 
   g_free ( auto_save_name );
 }
@@ -4026,7 +4026,7 @@ static void trw_layer_export_gpx_track ( menu_array_sublayer values )
     label = _("Export Route as GPX");
   else
     label = _("Export Track as GPX");
-  vik_trw_layer_export ( VIK_TRW_LAYER (values[MA_VTL]), label, auto_save_name, trk, FILE_TYPE_GPX );
+  vik_trw_layer_export ( VIK_LAYER(values[MA_VTL]), label, auto_save_name, trk, FILE_TYPE_GPX );
 
   g_free ( auto_save_name );
 }

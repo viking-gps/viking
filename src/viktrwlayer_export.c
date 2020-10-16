@@ -153,7 +153,16 @@ static gboolean gpx_export ( VikTrwLayer *vtl, const gchar *fn, VikTrack* trk )
   return a_file_export ( vtl, fn, FILE_TYPE_GPX, trk, trk ? TRUE : FALSE );
 }
 
-void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name, VikTrack* trk, VikFileType_t file_type )
+/**
+ * vik_trw_layer_export:
+ *
+ * vl: The #VikLayer to operate on
+ *
+ * Note since we now use the #VikLayer type rather than #VikTrwLayer,
+ *  this function could be renamed and shifted into the appropriate file.
+ * However for now leave it as is.
+ */
+void vik_trw_layer_export ( VikLayer *vl, const gchar *title, const gchar* default_name, VikTrack* trk, VikFileType_t file_type )
 {
   GtkWidget *file_selector;
   gboolean failed = FALSE;
@@ -203,13 +212,19 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
       last_folder_uri = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER(file_selector) );
 
       gtk_widget_hide ( file_selector );
-      vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
-      // Don't Export invisible items - unless requested on this specific track
-      if ( file_type == FILE_TYPE_GPX )
-        failed = ! gpx_export ( vtl, fn, trk );
-      else
-        failed = ! a_file_export ( vtl, fn, file_type, trk, trk ? TRUE : FALSE );
-      vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+      vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl)) );
+      switch ( vl->type ) {
+      case VIK_LAYER_TRW:
+        // Don't Export invisible items - unless requested on this specific track
+        if ( file_type == FILE_TYPE_GPX )
+          failed = ! gpx_export ( VIK_TRW_LAYER(vl), fn, trk );
+        else
+          failed = ! a_file_export ( VIK_TRW_LAYER(vl), fn, file_type, trk, trk ? TRUE : FALSE );
+        break;
+      default:
+        g_critical ( "%s:%s %d", __FUNCTION__, "Export not expected for layer type", vl->type ); break;
+      }
+      vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl)) );
       g_free ( fn );
       break;
     }
@@ -217,7 +232,7 @@ void vik_trw_layer_export ( VikTrwLayer *vtl, const gchar *title, const gchar* d
   }
   gtk_widget_destroy ( file_selector );
   if ( failed )
-    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("The filename you requested could not be opened for writing.") );
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vl), _("The filename you requested could not be opened for writing.") );
 }
 
 
