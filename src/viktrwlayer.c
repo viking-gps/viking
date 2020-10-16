@@ -4986,7 +4986,7 @@ void vik_trw_layer_tidy_tracks ( VikTrwLayer *vtl, guint speed, gboolean recalc_
   while ( g_hash_table_iter_next (&iter, &key, &value) ) {
     VikTrack *trk = VIK_TRACK(value);
     if ( vik_track_remove_dodgy_first_point ( trk, speed, FALSE ) )
-      g_printf ( "%s: Removed dodgy first point from track: %s\n", __FUNCTION__, trk->name );
+      g_message ( "%s: Removed dodgy first point from track: %s", __FUNCTION__, trk->name );
   }
 }
 
