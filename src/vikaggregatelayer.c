@@ -2271,6 +2271,7 @@ static void tac_generate_mbtiles_cb ( menu_array_values values )
     if ( g_file_test(fn, G_FILE_TEST_EXISTS) == FALSE || a_dialog_yes_or_no ( GTK_WINDOW(dialog), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) )
       break;
     g_free ( fn );
+    fn = NULL;
   }
   gtk_widget_destroy ( dialog );
 
