@@ -1958,3 +1958,77 @@ gchar* a_gpx_write_track_tmp_file ( VikTrack *trk, GpxWritingOptions *options )
 {
 	return write_tmp_file ( NULL, trk, options );
 }
+
+static int waypoint_compare_vtwl(const void *x, const void *y)
+{
+  VikWaypoint *a = (VikWaypoint *)((vik_trw_waypoint_list_t*)x)->wpt;
+  VikWaypoint *b = (VikWaypoint *)((vik_trw_waypoint_list_t*)y)->wpt;
+  return strcmp(a->name,b->name);
+}
+
+static int track_compare_name_vtt(const void *x, const void *y)
+{
+  VikTrack *a = (VikTrack *)((vik_trw_and_track_t*)x)->trk;
+  VikTrack *b = (VikTrack *)((vik_trw_and_track_t*)y)->trk;
+  return strcmp(a->name,b->name);
+}
+
+static int track_compare_timestamp_vtt(const void *x, const void *y)
+{
+  VikTrack *a = (VikTrack *)((vik_trw_and_track_t*)x)->trk;
+  VikTrack *b = (VikTrack *)((vik_trw_and_track_t*)y)->trk;
+  return vik_track_compare_timestamp (a, b);
+}
+
+/*
+ * a_gpx_write_combined_file:
+ * @name:    The name to use
+ * @vtt:     A #GList of #vik_trw_waypoint_list_t for the tracks & routes to save
+ * @vtwl:    A #GList of #vik_trw_and_track_t for the waypoints to save
+ * @ff:      The opened #FILE to be written
+ * @options: Possible ways of writing the file data
+ * @dirpath: Can be NULL
+ *
+ * Save multiple tracks, routes and waypoints from various VikTrwLayers into a single GPX File.
+ *
+ */
+void a_gpx_write_combined_file ( const gchar *name, GList *vtt, GList *vtwl, FILE *ff, GpxWritingOptions *options, const gchar *dirpath )
+{
+  g_return_if_fail ( ff != NULL );
+  g_return_if_fail ( options != NULL );
+
+  GpxWritingContext context = { options, ff, dirpath };
+  gpx_write_header ( ff, NULL, &context );
+
+  write_string ( ff, TRK_SPACES, "name", name );
+  // NB No overall metadata readily available, so don't bother
+
+  GList *gl = NULL;
+  gl = g_list_sort ( vtwl, waypoint_compare_vtwl );
+  for ( GList *iter = gl; iter != NULL; iter = g_list_next(iter) )
+    gpx_write_waypoint ( ((vik_trw_waypoint_list_t*)iter->data)->wpt, &context );
+
+  // Sort method determined by preference
+  if ( a_vik_get_gpx_export_trk_sort() == VIK_GPX_EXPORT_TRK_SORT_TIME )
+    gl = g_list_sort ( vtt, track_compare_timestamp_vtt );
+  else if ( a_vik_get_gpx_export_trk_sort() == VIK_GPX_EXPORT_TRK_SORT_ALPHA )
+    gl = g_list_sort ( vtt, track_compare_name_vtt );
+
+  // Tracks First
+  for ( GList *iter = gl; iter != NULL; iter = g_list_next(iter) ) {
+    VikTrack *trk = ((vik_trw_and_track_t*)iter->data)->trk;
+    if ( !trk->is_route )
+      gpx_write_track ( trk, &context );
+  }
+
+  context.options->is_route = TRUE;
+
+  // Finally Routes
+  for ( GList *iter = gl; iter != NULL; iter = g_list_next(iter) ) {
+    VikTrack *trk = ((vik_trw_and_track_t*)iter->data)->trk;
+    if ( trk->is_route )
+      gpx_write_track ( trk, &context );
+  }
+
+  gpx_write_footer ( ff );
+}

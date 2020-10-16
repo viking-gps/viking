@@ -25,9 +25,11 @@
 #include "viktrwlayer_analysis.h"
 #include "viktrwlayer_tracklist.h"
 #include "viktrwlayer_waypointlist.h"
+#include "viktrwlayer_export.h"
 #include "icons/icons.h"
 #include "maputils.h"
 #include "background.h"
+#include "gpx.h"
 #ifdef HAVE_SQLITE3_H
 #include "sqlite3.h"
 #endif
@@ -1211,7 +1213,7 @@ static void aggregate_layer_sort_timestamp_descend ( menu_array_values values )
 /**
  * aggregate_layer_waypoint_create_list:
  * @vl:        The layer that should create the waypoint and layers list
- * @user_data: Not used in this function
+ * @user_data: If not NULL then invisible layers are excluded
  *
  * Returns: A list of #vik_trw_waypoint_list_t
  */
@@ -1221,7 +1223,7 @@ static GList* aggregate_layer_waypoint_create_list ( VikLayer *vl, gpointer user
 
   // Get all TRW layers
   GList *layers = NULL;
-  layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, TRUE );
+  layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, user_data ? FALSE : TRUE );
 
   // For each TRW layers keep adding the waypoints to build a list of all of them
   GList *waypoints_and_layers = NULL;
@@ -1293,7 +1295,7 @@ static void aggregate_layer_search_date ( menu_array_values values )
 /**
  * aggregate_layer_track_create_list:
  * @vl:        The layer that should create the track and layers list
- * @user_data: Not used in this function
+ * @user_data: If not NULL then invisible layers are excluded
  *
  * Returns: A list of #vik_trw_and_track_t
  */
@@ -1303,7 +1305,7 @@ static GList* aggregate_layer_track_create_list ( VikLayer *vl, gpointer user_da
 
   // Get all TRW layers
   GList *layers = NULL;
-  layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, TRUE );
+  layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, user_data ? FALSE : TRUE );
 
   // For each TRW layers keep adding the tracks and routes to build a list of all of them
   GList *tracks_and_layers = NULL;
@@ -1416,6 +1418,15 @@ static void aggregate_layer_file_load ( menu_array_values values )
   }
 
   vik_layer_emit_update ( VIK_LAYER ( val ) );
+}
+
+/**
+ *
+ */
+static void aggregate_layer_export_gpx ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
+  vik_aggregate_layer_export_gpx_setup ( val );
 }
 
 /**
@@ -2637,6 +2648,7 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   (void)vu_menu_add_item ( file_submenu, _("Load E_xternal Layers"), GTK_STOCK_EXECUTE, G_CALLBACK(aggregate_layer_load_external_layers_click), values );
   (void)vu_menu_add_item ( file_submenu, _("Save _Layer As..."), GTK_STOCK_SAVE, G_CALLBACK(aggregate_layer_save_layer_as_cb), values );
   (void)vu_menu_add_item ( file_submenu, _("_Append File..."), GTK_STOCK_ADD, G_CALLBACK(aggregate_layer_file_load), values );
+  (void)vu_menu_add_item ( file_submenu, _("_Export as GPX..."), GTK_STOCK_CONVERT, G_CALLBACK(aggregate_layer_export_gpx), values );
 
   (void)aggregate_build_submenu_tac ( val, menu, values );
 
@@ -2947,4 +2959,74 @@ guint vik_aggregate_layer_count ( VikAggregateLayer *val )
     nn = g_list_length (children);
   }
   return nn;
+}
+
+/**
+ * vik_aggregate_layer_export_gpx_setup:
+ *
+ * Export all visible VikTrwLayers in this aggregate into a GPX file
+ * This checks there is something to save before calling other functions to do the work
+ */
+void vik_aggregate_layer_export_gpx_setup ( VikAggregateLayer *val )
+{
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
+
+  GList *layers = NULL;
+  layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, FALSE );
+  if ( !layers ) {
+    a_dialog_info_msg ( GTK_WINDOW(vw), _("Nothing to Export!") );
+    return;
+  }
+  g_list_free ( layers );
+
+  // This export function mostly gets the file to save
+  //  and will call the vik_aggregate_layer_export_gpx_main() to do the actual conversion work
+  gchar *auto_save_name = append_file_ext ( VIK_LAYER(val)->name, FILE_TYPE_GPX );
+  vik_trw_layer_export ( VIK_LAYER(val), _("Export to GPX"), auto_save_name, NULL, FILE_TYPE_GPX );
+  g_free ( auto_save_name );
+}
+
+/**
+ * vik_aggregate_layer_export_gpx_main:
+ *
+ * Exports all visible VikTrwLayers in this aggregate into a GPX file
+ */
+gboolean vik_aggregate_layer_export_gpx_main ( VikAggregateLayer *val, const gchar *filename )
+{
+  gboolean ans = TRUE;
+
+  FILE *ff = g_fopen ( filename, "w" );
+  if ( ff ) {
+    GList *vtt = aggregate_layer_track_create_list ( VIK_LAYER(val), GINT_TO_POINTER(1) );
+    GList *vtwl = aggregate_layer_waypoint_create_list ( VIK_LAYER(val), GINT_TO_POINTER(1) );
+
+    // Scan list(s) of vtls to find latest version
+    gpx_version_t vers = GPX_V1_0; // default
+    for ( GList *iter = vtt; iter != NULL; iter = iter->next ) {
+      VikTrwLayer *vtl = ((vik_trw_and_track_t*)iter->data)->vtl;
+      if ( vik_trw_layer_get_gpx_version(vtl) == GPX_V1_1 ) {
+        vers = GPX_V1_1;
+        break;
+      }
+    }
+    if ( vers == GPX_V1_0 ) {
+      for ( GList *iter = vtwl; iter != NULL; iter = iter->next ) {
+        VikTrwLayer *vtl = ((vik_trw_waypoint_list_t*)iter->data)->vtl;
+        if ( vik_trw_layer_get_gpx_version(vtl) == GPX_V1_1 ) {
+          vers = GPX_V1_1;
+          break;
+        }
+      }
+    }
+
+    GpxWritingOptions options = { FALSE, FALSE, FALSE, FALSE, vers };
+    a_gpx_write_combined_file ( VIK_LAYER(val)->name, vtt, vtwl, ff, &options, NULL );
+    fclose ( ff );
+    g_list_free ( vtt );
+    g_list_free ( vtwl );
+  }
+  else
+    ans = FALSE;
+
+  return ans;
 }

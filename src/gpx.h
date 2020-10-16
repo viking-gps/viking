@@ -45,6 +45,8 @@ void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options
 gchar* a_gpx_write_tmp_file ( VikTrwLayer *vtl, GpxWritingOptions *options );
 gchar* a_gpx_write_track_tmp_file ( VikTrack *trk, GpxWritingOptions *options );
 
+void a_gpx_write_combined_file ( const gchar *name, GList *vtt, GList *vtwl, FILE *ff, GpxWritingOptions *options, const gchar *dirpath );
+
 G_END_DECLS
 
 #endif

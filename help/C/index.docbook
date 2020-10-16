@@ -604,14 +604,28 @@ Displays some simple properties about the loaded Viking project file (if any), s
 <section><title>Export All</title>
 <para>
 Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Export All</guisubmenu></menuchoice> menu only.
-Choose either the <menuchoice><guimenu>GPX</guimenu></menuchoice> or <menuchoice><guimenu>KML</guimenu></menuchoice> option.</para>
-<para>
-This allows converting every <xref linkend="TrackWaypoint"/> layer from the existing project into files of the type choosen.
+</para>
+<variablelist>
+<varlistentry>
+<term><guilabel>GPX</guilabel></term>
+<term><guilabel>KML</guilabel></term>
+<listitem>
+  <para>This allows converting every <xref linkend="TrackWaypoint"/> layer from the existing project into files of the type choosen.
 You will be prompted for a directory into which a new file for each layer will be saved.
 </para>
 <para>
 The KML option uses <application>GPSBabel</application> and so will not be available if <application>GPSBabel</application> can not be detected.
 </para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Single GPX File</guilabel></term>
+<listitem>
+  <para>This allows exporting all visible <xref linkend="TrackWaypoint"/> layers into a single GPX file.
+</para>
+</listitem>
+</varlistentry>
+</variablelist>
 <para>
 Note that some data properties are not supported by the target export file type. Such as item visibility or track colours.
 </para>

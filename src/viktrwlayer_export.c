@@ -221,6 +221,9 @@ void vik_trw_layer_export ( VikLayer *vl, const gchar *title, const gchar* defau
         else
           failed = ! a_file_export ( VIK_TRW_LAYER(vl), fn, file_type, trk, trk ? TRUE : FALSE );
         break;
+      case VIK_LAYER_AGGREGATE:
+        failed = ! vik_aggregate_layer_export_gpx_main ( VIK_AGGREGATE_LAYER(vl), fn );
+        break;
       default:
         g_critical ( "%s:%s %d", __FUNCTION__, "Export not expected for layer type", vl->type ); break;
       }

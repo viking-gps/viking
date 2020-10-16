@@ -16,6 +16,7 @@ static const char *menu_xml =
 	"      <separator/>"
 	"      <menu action='Export'>"
 	"        <menuitem action='ExportGPX'/>"
+	"        <menuitem action='ExportSingleGPX'/>"
 	"      </menu>"
 	"      <menu action='Acquire'>"
 	"        <menuitem action='AcquireRouting'/>"
