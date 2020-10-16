@@ -47,6 +47,19 @@ Configurable properties:
 </listitem>
 </varlistentry>
 <varlistentry>
+<term><guilabel>Colour Scheme</guilabel></term>
+<listitem>
+	<para>Default or Delineate. Delineate allows selecting start and end colours, with in between colours automatically allocated.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Start Colour</guilabel></term>
+<term><guilabel>End Colour</guilabel></term>
+<listitem>
+	<para>For the Delineate Colour Scheme.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
 <term><guilabel>Type</guilabel></term>
 <listitem>
 	<para>Absolute height or Height gradient.</para>

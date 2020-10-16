@@ -2,6 +2,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
+ * Copyright (c) 2020, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,8 +62,10 @@ static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, guint *len );
 static VikDEMLayer *dem_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );
 static gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp );
 static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gboolean is_file_operation );
-static void dem_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_file );
+static void dem_layer_change_param ( GtkWidget *widget, ui_change_values values );
+static void dem_layer_post_read ( VikDEMLayer *vdl, VikViewport *vp, gboolean from_file );
 static void srtm_draw_existence ( VikViewport *vp );
+static void dem_layer_apply_colors ( VikDEMLayer *vdl, VikViewport *vp );
 
 #ifdef VIK_CONFIG_DEM24K
 static void dem24k_draw_existence ( VikViewport *vp );
@@ -99,14 +102,29 @@ enum { DEM_TYPE_HEIGHT = 0,
        DEM_TYPE_NONE,
 };
 
+typedef enum {
+  DEM_CS_DEFAULT = 0,
+  DEM_CS_DELINEATE,
+} dem_color_style_type;
+
 static VikLayerParamData color_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "blue", &data.c ); return data;
+}
+
+// Height defaults
+static VikLayerParamData color_min_default ( void ) {
+  VikLayerParamData data; gdk_color_parse ( "#9b793c", &data.c ); return data;
+}
+
+static VikLayerParamData color_max_default ( void ) {
+  VikLayerParamData data; gdk_color_parse ( "#ffffff", &data.c ); return data;
 }
 
 static VikLayerParamData source_default ( void ) { return VIK_LPD_UINT ( DEM_SOURCE_SRTM ); }
 static VikLayerParamData type_default ( void ) { return VIK_LPD_UINT ( DEM_TYPE_HEIGHT ); }
 static VikLayerParamData min_elev_default ( void ) { return VIK_LPD_DOUBLE ( 0.0 ); }
 static VikLayerParamData max_elev_default ( void ) { return VIK_LPD_DOUBLE ( 1000.0 ); }
+static VikLayerParamData color_scheme_default ( void ) { return VIK_LPD_UINT ( DEM_CS_DEFAULT ); }
 
 static void reset_cb ( GtkWidget *widget, gpointer ptr )
 {
@@ -115,10 +133,15 @@ static void reset_cb ( GtkWidget *widget, gpointer ptr )
 
 static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(reset_cb); }
 
+static gchar *params_schemes[] = { N_("Default"), N_("Delineate"), NULL };
+
 static VikLayerParam dem_layer_params[] = {
   { VIK_LAYER_DEM, "files", VIK_LAYER_PARAM_STRING_LIST, VIK_LAYER_GROUP_NONE, N_("DEM Files:"), VIK_LAYER_WIDGET_FILELIST, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_DEM, "source", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Download Source:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_source, NULL, NULL, source_default, NULL, NULL },
   { VIK_LAYER_DEM, "color", VIK_LAYER_PARAM_COLOR, VIK_LAYER_GROUP_NONE, N_("Min Elev Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_default, NULL, NULL },
+  { VIK_LAYER_DEM, "color_scheme", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Color Scheme:"), VIK_LAYER_WIDGET_COMBOBOX, params_schemes, NULL, NULL, color_scheme_default, NULL, NULL },
+  { VIK_LAYER_DEM, "color_min", VIK_LAYER_PARAM_COLOR, VIK_LAYER_GROUP_NONE, N_("Start Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_min_default, NULL, NULL },
+  { VIK_LAYER_DEM, "color_max", VIK_LAYER_PARAM_COLOR, VIK_LAYER_GROUP_NONE, N_("End Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_max_default, NULL, NULL },
   { VIK_LAYER_DEM, "type", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Type:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_type, NULL, NULL, type_default, NULL, NULL },
   { VIK_LAYER_DEM, "min_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Min Elev:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0, NULL, NULL, min_elev_default, NULL, NULL },
   { VIK_LAYER_DEM, "max_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Max Elev:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0, NULL, NULL, max_elev_default, NULL, NULL },
@@ -127,7 +150,19 @@ static VikLayerParam dem_layer_params[] = {
 };
 
 
-enum { PARAM_FILES=0, PARAM_SOURCE, PARAM_COLOR, PARAM_TYPE, PARAM_MIN_ELEV, PARAM_MAX_ELEV, PARAM_RESET, NUM_PARAMS };
+enum {
+      PARAM_FILES=0,
+      PARAM_SOURCE,
+      PARAM_COLOR,
+      PARAM_COLOR_SCHEME,
+      PARAM_COLOR_MIN,
+      PARAM_COLOR_MAX,
+      PARAM_TYPE,
+      PARAM_MIN_ELEV,
+      PARAM_MAX_ELEV,
+      PARAM_RESET,
+      NUM_PARAMS
+};
 
 static gpointer dem_layer_download_create ( VikWindow *vw, VikViewport *vvp);
 static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
@@ -233,7 +268,7 @@ VikLayerInterface vik_dem_layer_interface = {
 
   (VikLayerFuncSetParam)                dem_layer_set_param,
   (VikLayerFuncGetParam)                dem_layer_get_param,
-  (VikLayerFuncChangeParam)             NULL,
+  (VikLayerFuncChangeParam)             dem_layer_change_param,
 
   (VikLayerFuncReadFileData)            NULL,
   (VikLayerFuncWriteFileData)           NULL,
@@ -261,8 +296,14 @@ struct _VikDEMLayer {
   gdouble min_elev;
   gdouble max_elev;
   GdkColor color;
+  GdkColor color_min;
+  GdkColor color_max;
+  guint color_scheme;
   guint source;
   guint type;
+
+  GPtrArray *height_colors;
+  GPtrArray *gradient_colors;
 
   // right click menu only stuff - similar to mapslayer
   GtkMenu *right_click_menu;
@@ -317,19 +358,13 @@ static void dem_layer_marshall( VikDEMLayer *vdl, guint8 **data, guint *len )
 static VikDEMLayer *dem_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp )
 {
   VikDEMLayer *rv = dem_layer_new ( vvp );
-  gint i;
 
   /* TODO: share GCS between layers */
-  for ( i = 0; i < DEM_N_HEIGHT_COLORS; i++ ) {
-    if ( i == 0 )
-      rv->gcs[i] = vik_viewport_new_gc_from_color ( vvp, &(rv->color), UNUSED_LINE_THICKNESS );
-    else
-      rv->gcs[i] = vik_viewport_new_gc ( vvp, dem_height_colors[i], UNUSED_LINE_THICKNESS );
-  }
-  for ( i = 0; i < DEM_N_GRADIENT_COLORS; i++ )
-    rv->gcsgradient[i] = vik_viewport_new_gc ( vvp, dem_gradient_colors[i], UNUSED_LINE_THICKNESS );
 
   vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
+
+  dem_layer_apply_colors ( rv, vvp );
+
   return rv;
 }
 
@@ -411,6 +446,15 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp )
   switch ( vlsp->id )
   {
     case PARAM_COLOR: vdl->color = vlsp->data.c; gdk_gc_set_rgb_fg_color ( vdl->gcs[0], &(vdl->color) ); break;
+    case PARAM_COLOR_SCHEME:
+      if ( vlsp->data.u < G_N_ELEMENTS(params_schemes) ) {
+        vdl->color_scheme = vlsp->data.u;
+        dem_layer_apply_colors ( vdl, vlsp->vp );
+      } else
+        g_warning ( "%s: Unknown color scheme", __FUNCTION__ );
+      break;
+    case PARAM_COLOR_MIN: vdl->color_min = vlsp->data.c; dem_layer_apply_colors ( vdl, vlsp->vp ); break;
+    case PARAM_COLOR_MAX: vdl->color_max = vlsp->data.c; dem_layer_apply_colors ( vdl, vlsp->vp ); break;
     case PARAM_SOURCE: vdl->source = vlsp->data.u; break;
     case PARAM_TYPE: vdl->type = vlsp->data.u; break;
     case PARAM_MIN_ELEV:
@@ -497,6 +541,9 @@ static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gbo
     case PARAM_SOURCE: rv.u = vdl->source; break;
     case PARAM_TYPE: rv.u = vdl->type; break;
     case PARAM_COLOR: rv.c = vdl->color; break;
+    case PARAM_COLOR_SCHEME: rv.u = vdl->color_scheme; break;
+    case PARAM_COLOR_MIN: rv.c = vdl->color_min; break;
+    case PARAM_COLOR_MAX: rv.c = vdl->color_max; break;
     case PARAM_MIN_ELEV:
       /* Convert for display in desired units
          NB file operation always in internal units (metres) */
@@ -518,9 +565,111 @@ static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gbo
   return rv;
 }
 
-static void dem_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_file )
+static void dem_layer_change_param ( GtkWidget *widget, ui_change_values values )
 {
-  /* nothing ATM, but keep in case it's needed the future */
+  switch ( GPOINTER_TO_INT(values[UI_CHG_PARAM_ID]) ) {
+    // Alter sensitivity of color widgets according to the scheme setting
+  case PARAM_COLOR_SCHEME: {
+    // Get new value
+    VikLayerParamData vlpd = a_uibuilder_widget_get_value ( widget, values[UI_CHG_PARAM] );
+
+    gboolean sensitive = (vlpd.u == DEM_CS_DELINEATE);
+    GtkWidget **ww1 = values[UI_CHG_WIDGETS];
+    GtkWidget **ww2 = values[UI_CHG_LABELS];
+    GtkWidget *w1 = ww1[PARAM_COLOR_MIN];
+    GtkWidget *w2 = ww2[PARAM_COLOR_MIN];
+    GtkWidget *w3 = ww1[PARAM_COLOR_MAX];
+    GtkWidget *w4 = ww2[PARAM_COLOR_MAX];
+
+    if ( w1 ) gtk_widget_set_sensitive ( w1, sensitive );
+    if ( w2 ) gtk_widget_set_sensitive ( w2, sensitive );
+    if ( w3 ) gtk_widget_set_sensitive ( w3, sensitive );
+    if ( w4 ) gtk_widget_set_sensitive ( w4, sensitive );
+
+    break;
+  }
+
+  default: break;
+  }
+}
+
+static void dem_layer_apply_color_scheme ( VikDEMLayer *vdl )
+{
+  if ( vdl->color_scheme == DEM_CS_DEFAULT ) {
+
+    for ( guint ii = 0; ii < DEM_N_HEIGHT_COLORS; ii++ ) {
+      gchar *gg = g_strdup ( dem_height_colors[ii] );
+      g_ptr_array_insert ( vdl->height_colors, ii, gg );
+    }
+
+    for ( guint ii = 0; ii < DEM_N_GRADIENT_COLORS; ii++ ) {
+      gchar *gg = g_strdup ( dem_gradient_colors[ii] );
+      g_ptr_array_insert ( vdl->gradient_colors, ii, gg );
+    }
+  }
+  else {
+    // Color Scheme == DEM_DELINEATE
+    GdkColor tmp;
+    tmp = vdl->color_min;
+    gdouble r_inc, g_inc, b_inc;
+    r_inc = ((gdouble)vdl->color_max.red - (gdouble)vdl->color_min.red) / DEM_N_HEIGHT_COLORS;
+    g_inc = ((gdouble)vdl->color_max.green - (gdouble)vdl->color_min.green) / DEM_N_HEIGHT_COLORS;
+    b_inc = ((gdouble)vdl->color_max.blue - (gdouble)vdl->color_min.blue) / DEM_N_HEIGHT_COLORS;
+
+    for ( guint ii = 0; ii < DEM_N_HEIGHT_COLORS; ii++ ) {
+      if ( ii > 0 ) {
+        tmp.red += (int)r_inc;
+        tmp.green += (int)g_inc;
+        tmp.blue += (int)b_inc;
+        gchar *gg = g_strdup_printf ( "#%.2x%.2x%.2x", (int)(tmp.red/256),(int)(tmp.green/256),(int)(tmp.blue/256));
+        g_ptr_array_insert ( vdl->height_colors, ii, gg );
+      }
+      else {
+        gchar *gg = g_strdup ( dem_height_colors[ii] );
+        g_ptr_array_insert ( vdl->height_colors, ii, gg );
+      }
+    }
+
+    tmp = vdl->color_min;
+    r_inc = ((gdouble)vdl->color_max.red - (gdouble)vdl->color_min.red) / DEM_N_GRADIENT_COLORS;
+    g_inc = ((gdouble)vdl->color_max.green - (gdouble)vdl->color_min.green) / DEM_N_GRADIENT_COLORS;
+    b_inc = ((gdouble)vdl->color_max.blue - (gdouble)vdl->color_min.blue) / DEM_N_GRADIENT_COLORS;
+
+    for ( guint ii = 0; ii < DEM_N_GRADIENT_COLORS; ii++ ) {
+      tmp.red += (int)r_inc;
+      tmp.green += (int)g_inc;
+      tmp.blue += (int)b_inc;
+      gchar *gg = g_strdup_printf ( "#%.2x%.2x%.2x", (int)(tmp.red/256),(int)(tmp.green/256),(int)(tmp.blue/256));
+      g_ptr_array_insert ( vdl->gradient_colors, ii, gg );
+    }
+  }
+}
+
+static void dem_layer_apply_colors ( VikDEMLayer *vdl, VikViewport *vp )
+{
+  dem_layer_apply_color_scheme ( vdl );
+
+  for (guint i = 0; i < DEM_N_HEIGHT_COLORS; i++ ) {
+    if ( i > 0 ) {
+      if ( vdl->gcs[i] )
+        g_object_unref ( vdl->gcs[i] );
+      gchar *hc = g_ptr_array_index ( vdl->height_colors, i );
+      vdl->gcs[i] = vik_viewport_new_gc ( vp, hc, UNUSED_LINE_THICKNESS );
+    }
+  }
+  for (guint i = 0; i < DEM_N_GRADIENT_COLORS; i++ ) {
+    if ( vdl->gcsgradient[i] )
+      g_object_unref ( vdl->gcsgradient[i] );
+    gchar *gradc = g_ptr_array_index ( vdl->gradient_colors, i );
+    vdl->gcsgradient[i] = vik_viewport_new_gc ( vp, gradc, UNUSED_LINE_THICKNESS );
+  }
+}
+
+static void dem_layer_post_read ( VikDEMLayer *vdl, VikViewport *vp, gboolean from_file )
+{
+  if ( vp ) {
+    dem_layer_apply_colors ( vdl, vp );
+  }
 }
 
 static VikDEMLayer *dem_layer_new ( VikViewport *vvp )
@@ -531,9 +680,12 @@ static VikDEMLayer *dem_layer_new ( VikViewport *vvp )
 
   vdl->files = NULL;
 
-  vdl->gcs = g_malloc(sizeof(GdkGC *)*DEM_N_HEIGHT_COLORS);
-  vdl->gcsgradient = g_malloc(sizeof(GdkGC *)*DEM_N_GRADIENT_COLORS);
+  vdl->gcs = g_malloc0(sizeof(GdkGC *)*DEM_N_HEIGHT_COLORS);
+  vdl->gcsgradient = g_malloc0(sizeof(GdkGC *)*DEM_N_GRADIENT_COLORS);
   /* make new gcs only if we need it (copy layer -> use old) */
+
+  vdl->height_colors = g_ptr_array_sized_new ( DEM_N_HEIGHT_COLORS );
+  vdl->gradient_colors = g_ptr_array_sized_new ( DEM_N_GRADIENT_COLORS );
 
   // Ensure the base GC is available so the default colour can be applied
   if ( vvp ) vdl->gcs[0] = vik_viewport_new_gc ( vvp, "#0000FF", 1 );
@@ -909,21 +1061,17 @@ static void dem_layer_free ( VikDEMLayer *vdl )
   g_free ( vdl->gcsgradient );
 
   a_dems_list_free ( vdl->files );
+
+  g_ptr_array_foreach ( vdl->height_colors, (GFunc)g_free, NULL );
+  (void)g_ptr_array_free ( vdl->height_colors, TRUE );
+
+  g_ptr_array_foreach ( vdl->gradient_colors, (GFunc)g_free, NULL );
+  (void)g_ptr_array_free ( vdl->gradient_colors, TRUE );
 }
 
 VikDEMLayer *dem_layer_create ( VikViewport *vp )
 {
   VikDEMLayer *vdl = dem_layer_new ( vp );
-  gint i;
-  if ( vp ) {
-    /* TODO: share GCS between layers */
-    for ( i = 0; i < DEM_N_HEIGHT_COLORS; i++ ) {
-      if ( i > 0 )
-        vdl->gcs[i] = vik_viewport_new_gc ( vp, dem_height_colors[i], UNUSED_LINE_THICKNESS );
-    }
-    for ( i = 0; i < DEM_N_GRADIENT_COLORS; i++ )
-      vdl->gcsgradient[i] = vik_viewport_new_gc ( vp, dem_gradient_colors[i], UNUSED_LINE_THICKNESS );
-  }
   return vdl;
 }
 /**************************************************************
