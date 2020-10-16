@@ -444,6 +444,9 @@ static gdouble tp_percentage_by_distance ( VikTrack *tr, VikTrackpoint *trackpoi
   gdouble pc = NAN;
   if (trackpoint == NULL)
     return pc;
+  // Is it the first trackpoint?
+  if (trackpoint == tr->trackpoints->data)
+    return 0.0;
   gdouble dist = 0.0;
   GList *iter;
   for (iter = tr->trackpoints->next; iter != NULL; iter = iter->next) {
