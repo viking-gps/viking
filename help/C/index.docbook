@@ -120,7 +120,7 @@ Analyzing Off Highway Vehicle (OHV) and hiking trips, understanding where you we
 </para>
 </listitem>
 <listitem>
-<para>Making waypoints, tracks and routes to follow to easily get someplace
+<para>Making waypoints, tracks and routes to follow to easily get some place
 you've never been before or don't have GPS data for but online
 maps exist for it.
 </para>
@@ -206,7 +206,7 @@ Unfortunately the downside of this complexity is remembering how differing layer
 <para>
 The Map layers have <ulink url="https://en.wikipedia.org/wiki/Alpha_compositing"><citetitle>Alpha Compositing</citetitle></ulink>,
 to create the appearance of partial transparency.
-By controlling this value one can see data below it in the layer heirarchy for interesting effects.
+By controlling this value one can see data below it in the layer hierarchy for interesting effects.
 </para>
 </section>
 <section id="gc_layers_panel" xreflabel="Layers Panel"><title>Layers Panel</title>
@@ -244,7 +244,7 @@ The graphs will automatically hide itself when nothing or no suitable item is se
 </para>
 <para>
 Moving the mouse pointer over the graphs will show a tooltip readout of the nearest trackpoint.
-Similarily to the track properties graphs, left clicking will center the viewport on the trackpoint.
+Similarly to the track properties graphs, left clicking will center the viewport on the trackpoint.
 A right click menu offers controls of the drawing options, a subset of track operations and access to further information dialogs.
 </para>
 </section>
@@ -293,7 +293,7 @@ Newest messages are put at the top of the list.</para>
 
 <section id="projection" xreflabel="Projection"><title>Projections</title>
 <para>
-&appname; supports differents projections:
+&appname; supports different projections:
 <itemizedlist>
 <listitem>
 <para>UTM</para>
@@ -400,7 +400,7 @@ Other function keys control turn on/off visibility of various elements:
 <listitem><para><keycap>Shift+F12</keycap> Toggle visibility of the Track Graphs</para></listitem>
 </itemizedlist>
 <para>
-Standard shortcuts are provided for normal GUI operations: such as creating new files, opening, saving and exitting.
+Standard shortcuts are provided for normal GUI operations: such as creating new files, opening, saving and exiting.
 Then there are shortcuts specific to &appname; to switch projection modes, zoom in/out, create layers,switch the active tool mode and move the map:
 <itemizedlist>
 <listitem><para><keycap>Ctrl+Up</keycap> Pan the viewport North</para></listitem>
@@ -476,7 +476,7 @@ Besides it's own file type, &appname; can open (and save to via export methods) 
 <note>
 <para>
 Extensions from GPX 1.1 are supported in a read/write only fashion; with viewing of the raw data (i.e. no editing).
-The arbitary extension information is not saved in .vik format files.
+The arbitrary extension information is not saved in .vik format files.
 </para>
 <para>
 Specific GPX 1.1 extensions such as heart rate, cadence, temperature and power are supported for viewing (including overview graphs) and these values will also be saved in .vik format files.
@@ -733,7 +733,7 @@ If the program is not detected on your system, then this option will not be avai
 See <ulink url="https://www.npmjs.org/package/togpx">here</ulink> for the installation method.
 </para>
 <para>
-Versions proir to 1.6.0 of GPSBabel did not support the <ulink url="https://geojson.org/">GeoJSON</ulink> file format.
+Versions prior to 1.6.0 of GPSBabel did not support the <ulink url="https://geojson.org/">GeoJSON</ulink> file format.
 </para>
 </section>
 
@@ -1122,7 +1122,7 @@ The result is put into a new layer.
 </section>
 <section><title>Remove Duplicate Waypoints</title>
 <para>
-Remove Duplicate Waypoints - fairly self explainatory, with the results created in a new layer.
+Remove Duplicate Waypoints - fairly self explanatory, with the results created in a new layer.
 </para>
 <note>
 <para>
@@ -1706,7 +1706,7 @@ The record of the Google route is stored in the track's comment, so if the comme
 <section><title>Waypoint Properties</title>
 
 <para>
-This shows a dialog with detailed information for the waypoint. Many properties of the waypoint can changed here, such as the comment, the symbol used in drawing or the image (normally a photograph taken at this position) assiocated with it. When a waypoint has an image, a thumbnail of it is drawn in the viewport for the waypoint (in preference to the symbol).
+This shows a dialog with detailed information for the waypoint. Many properties of the waypoint can changed here, such as the comment, the symbol used in drawing or the image (normally a photograph taken at this position) associated with it. When a waypoint has an image, a thumbnail of it is drawn in the viewport for the waypoint (in preference to the symbol).
 </para>
 <para>
 If the waypoint has an associated image, then the Geotag information may be updated, either with updating the file's modification timestamp or not.
@@ -1810,7 +1810,7 @@ The GPS layer is responsible for uploading and downloading GPS data
 from a GPS device. It also is responsible for realtime GPS tracking.
 Expand the GPS layer in the layers panel to see the two <xref linkend="TrackWaypoint"/> layers it
 uses for uploading and downloading. To upload, download, or use
-realtime tracking, right-click the GPS layer and click the appropiate
+realtime tracking, right-click the GPS layer and click the appropriate
 menu item.
 </para>
 
@@ -2883,9 +2883,9 @@ This feature is called <guilabel>Webtools</guilabel>. It is also known as Extern
 <para><emphasis>UTC</emphasis> enforces this standard timezone.</para>
 </section>
 <section><title>Tile's age</title>
-<para>This age is used to decided wether or not a new request to tile server must be done.
+<para>This age is used to decided whether or not a new request to tile server must be done.
 </para>
-<para>Changing this value, you will increase or decrese the network load.</para>
+<para>Changing this value, you will increase or decrease the network load.</para>
 </section>
 <section><title>Default map layer directory</title>
 <para>This property sets the default directory of the tiles cache.
@@ -3055,7 +3055,7 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 </section>
 <section><title>Rerender Timeout</title>
 <para>The time in hours before any tile is rerendered.</para>
-<para>This is useful in case the underlying source data for the tiles changes (e.g. OSM data is continually evovling).
+<para>This is useful in case the underlying source data for the tiles changes (e.g. OSM data is continually evolving).
  &appname; normally has no way of knowing when the data has changed, so this simple timeout method is provided to maintain consistency of the tile images.</para>
 </section>
 <section><title>CartoCSS</title>
@@ -3162,7 +3162,7 @@ Some other general use cases for using &appname;, are as follows:
 </para>
 <section><title>Go to an area of interest</title>
 <para>
-&appname;'s default location is a Manhatten, New York, USA, so you may need to pick another place that interests you - such as where you live.
+&appname;'s default location is a Manhattan, New York, USA, so you may need to pick another place that interests you - such as where you live.
 </para>
 <procedure>
 <title>Method A</title>
@@ -3273,7 +3273,7 @@ Your tracks will now be drawn over the map.
 	Then at any time you can return to this place by clicking on the <guibutton>Home</guibutton> icon on the toolbar.
 </para>
 <para>
-    You can also set the default location via specifing the exact latitude and longitude in the <xref linkend="prefs"/>.
+    You can also set the default location via specifying the exact latitude and longitude in the <xref linkend="prefs"/>.
 </para>
 </section>
 
@@ -3405,7 +3405,7 @@ tiles into <filename>.viking-map-holiday/</filename> if you like.
 <para>follow this sequence until you have all tiles for all zoom levels you need</para>
 <substeps>
 <step><para>right-click the map layer properties</para></step>
-<step><para>set the zoomlevel explicitely one below the last (in the first cycle 512), hit OK</para></step>
+<step><para>set the zoomlevel explicitly one below the last (in the first cycle 512), hit OK</para></step>
 <step><para>right click the map layer  <guimenuitem>Download Missing Onscreen Maps</guimenuitem></para></step>
 <step><para>wait until all tiles for that resolution have been downloaded</para></step>
 </substeps>
@@ -3528,7 +3528,7 @@ This list can be sorted on each column so that it easier to find an individual t
 </para>
 <para>
 	Load some images that where taken around the time the track log was recorded. Confirm the other options in the dialog - normally the defaults should be alright and select OK.
-	If things are succesful, new waypoints with thumbnail images of the photographs will appear.
+	If things are successful, new waypoints with thumbnail images of the photographs will appear.
 	You should probably check they are really in the right place as often the timestamp of the camera may not be aligned to the GPS correctly leading to inferring incorrect locations.
 </para>
 <formalpara><title>Option: Overwrite Waypoints</title>
@@ -4206,7 +4206,7 @@ Accept: */*
 	  </listitem>
 	  <listitem>
 	    <para>osm_basic_auth=false</para>
-	    <para>Set to true to force the use of HTTP Basic Authenication even when OAuth is available</para>
+	    <para>Set to true to force the use of HTTP Basic Authentication even when OAuth is available</para>
 	  </listitem>
 	  <listitem>
 	    <para>background_max_threads=10</para>
@@ -4318,7 +4318,7 @@ Accept: */*
           <title>Message Format Code</title>
 	  <para>Currently for ease of implementation the message format code is a string of characters.</para>
           <para>Each character represents what should be inserted in relation to a Trackpoint.</para>
-	  <para>One day it might evolve into something more user friendly with a frontend to control it, perhaps allowing arbitary text too. However for now at least some control is offered :)</para>
+	  <para>One day it might evolve into something more user friendly with a frontend to control it, perhaps allowing arbitrary text too. However for now at least some control is offered :)</para>
 	  <para>
           <variablelist>
             <varlistentry>
