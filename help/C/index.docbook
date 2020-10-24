@@ -2034,7 +2034,7 @@ Such as <ulink url="https://operations.osmfoundation.org/policies/tiles/"><citet
 
 <section id="Aggregate" xreflabel="Aggregate"><title>Aggregate Layer</title>
 <para>
-This layer is a container layer to hold other layers. There is always an initial and controlling <emphasis>Top Layer</emphasis> that can not be removed or renamed.
+This layer is a container layer to hold other layers. There is always an initial and controlling <emphasis>Top Layer</emphasis> that can not be removed but it can be renamed.
 </para>
 <para>
 This layer type is useful for grouping other layers, especially <xref linkend="TrackWaypoint"/> layers, in whatever categories are relevant to you: such as by activity, location or date.
