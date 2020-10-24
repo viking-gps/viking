@@ -2981,6 +2981,10 @@ Hopefully a simplified track will be more useful to follow to your destination w
 <section><title>Show Tooltip during Track Creation</title>
 <para>A setting to control whether the tooltip with the cumulative track or route distance is shown when creating tracks and routes.</para>
 </section>
+<section><title>Show Graph for TrackWaypoint Layer</title>
+<para>A setting to control for the selected <xref linkend="TrackWaypoint"/> layer whether a graph should be drawn when there is a singular track or route in the layer.
+Otherwise the specific track or route must be selected in order to draw the associated graph.</para>
+</section>
 <section><title>The number of recent files</title>
 <para>
 	The number of recent files shown in the <menuchoice><guimenu>File</guimenu><guisubmenu>Open Recent File</guisubmenu></menuchoice> menu.

@@ -244,6 +244,8 @@ gboolean a_vik_get_ask_for_create_track_name ( );
 
 gboolean a_vik_get_create_track_tooltip ( );
 
+gboolean a_vik_get_show_graph_for_trwlayer ( );
+
 gboolean a_vik_get_open_files_in_selected_layer ( );
 
 gboolean a_vik_get_calendar_show_day_names ( );

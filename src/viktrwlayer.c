@@ -3635,6 +3635,35 @@ static gboolean show_graphs_for_track ( gpointer gw, VikWindow *vw, VikTrwLayer 
   return FALSE;
 }
 
+static void maybe_show_graph ( VikWindow *vw, VikTrwLayer *vtl, gpointer gw )
+{
+  VikTrack *trk = NULL;
+
+  if ( a_vik_get_show_graph_for_trwlayer() ) {
+
+    // Get the track or route if there is only one of these in the layer
+    GHashTableIter iter;
+    gpointer key, value;
+
+    guint szr = g_hash_table_size ( vtl->routes );
+    guint szt = g_hash_table_size ( vtl->tracks );
+    if ( szr == 1 && szt == 0 ) {
+      g_hash_table_iter_init ( &iter, vtl->routes );
+      g_hash_table_iter_next ( &iter, &key, &value );
+      trk = VIK_TRACK(value);
+    } else if ( szr == 0 && szt == 1 ) {
+      g_hash_table_iter_init ( &iter, vtl->tracks );
+      g_hash_table_iter_next ( &iter, &key, &value );
+      trk = VIK_TRACK(value);
+    }
+  }
+
+  if ( trk )
+    show_graphs_for_track ( gw, vw, vtl, trk );
+  else
+    close_vw_graphs_if_layer_different ( gw, vw, vtl );
+}
+
 /**
  * General layer selection function, find out which bit is selected and take appropriate action
  * Also open or close the associated graphs on the main view, according to what is selected
@@ -3659,7 +3688,7 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
     case VIK_TREEVIEW_TYPE_LAYER:
       {
         vik_window_set_selected_trw_layer ( vw, l );
-        close_vw_graphs_if_layer_different ( gw, vw, l );
+        maybe_show_graph ( vw, l, gw );
         return TRUE; // Mark for redraw
       }
       break;
