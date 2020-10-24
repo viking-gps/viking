@@ -26,26 +26,44 @@
 <para>
 Configurable properties:
 </para>
-<itemizedlist>
+<variablelist>
+<varlistentry>
+<term><guilabel>Auto Connect</guilabel></term>
 <listitem>
-	<para>Auto Connect</para>
+	<para>Whether to automatically connect or not. </para>
 </listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Recording tracks</guilabel></term>
 <listitem>
-	<para>Recording tracks - Whether to form a track on the location updates.</para>
+	<para>Whether to form a track on the location updates.</para>
 </listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Jump to current position on start</guilabel></term>
 <listitem>
-	<para>Jump to the position on start.</para>
+	<para>Whether to move the viewport on first location report.</para>
 </listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Moving method</guilabel></term>
 <listitem>
-	<para>Moving method - How the viewport is moved upon location updates: centered, keep the position in the viewport or none.</para>
+	<para>How the viewport is moved upon location updates: centered, keep the position in the viewport or none.</para>
 </listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Update Statusbar</guilabel></term>
 <listitem>
-	<para>Update Statusbar - Whether the Statusbar is also updated on location updates</para>
+	<para>Whether the Statusbar is also updated on location updates.</para>
 </listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Colour</guilabel></term>
 <listitem>
-	<para>Colour - set the colour of the position indicator</para>
+	<para>Set the colour of the position indicator.</para>
 </listitem>
-</itemizedlist>
+</varlistentry>
+</variablelist>
 </section><!-- Prop END -->
 
 <section><title>Layer Operations</title>
