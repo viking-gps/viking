@@ -229,7 +229,7 @@ buttons at the bottom of the layers panel.
 The main &appname; area where the layer data is drawn, is called the <emphasis role="bold">viewport</emphasis>.
 </para>
 <para>
-This will typically include a <xref linkend="Maps"/> layer with a default map created as standard.
+This will typically include a <xref linkend="Map"/> layer with a default map created as standard.
 </para>
 <para>
 Using the mouse (and keyboard) you can move and zoom the viewport or select items on view.
@@ -254,7 +254,7 @@ A right click menu offers controls of the drawing options, a subset of track ope
 <listitem><para>The currently selected (mouse pointer) tool</para></listitem>
 <listitem><para>The number of items to process in the background - normally this the number in the map tile download queue</para></listitem>
 <listitem><para>The zoom level</para></listitem>
-<listitem><para>The location of the mouse pointer (and potentially height information if DEM data is available)</para></listitem>
+<listitem><para>The location of the mouse pointer (and potentially height information if <xref linkend="DEM"/> data is available)</para></listitem>
 <listitem><para>The number of log messages</para></listitem>
 <listitem><para>A general feedback area, such as the result of an operation or information about the selected item</para></listitem>
 </itemizedlist>
@@ -836,7 +836,7 @@ Layers supported by &appname; are:
 <listitem><para><xref linkend="GPS"/></para></listitem>
 <listitem><para><xref linkend="DEM"/></para></listitem>
 <listitem><para><xref linkend="Coordinate"/></para></listitem>
-<listitem><para><xref linkend="Maps"/></para></listitem>
+<listitem><para><xref linkend="Map"/></para></listitem>
 <listitem><para><xref linkend="GeoRef"/></para></listitem>
 <listitem><para><xref linkend="MapnikRendering"/></para></listitem>
 <listitem><para><xref linkend="GeoClue"/></para></listitem>
@@ -1270,7 +1270,7 @@ The following colors are used in the elevation-distance graph:
 <varlistentry>
 <term>Green</term>
 <listitem>
-<para>elevation data from DEM</para>
+<para>elevation data from <xref linkend="DEM"/></para>
 </listitem>
 </varlistentry>
 <varlistentry>
@@ -1493,7 +1493,7 @@ And don't seem to fit any other category :)
 </para>
 <section><title>Apply DEM data</title>
 <para>
-If any DEM data is loaded, this will apply the DEM data to give the track elevation data.
+If any <xref linkend="DEM"/> data is loaded, this will apply the DEM data to give the track elevation data.
 Two ways of applying DEM data are offered:
 <orderedlist>
 <listitem><para>Keep. Retains the existing elevation data of trackpoints and only those missing an elevation value are set.</para></listitem>
@@ -1705,7 +1705,7 @@ The record of the Google route is stored in the track's comment, so if the comme
 <varlistentry>
 <term><guilabel>Transform</guilabel></term>
 <listitem>
-<para>Options to set the altitude value from DEM data. Also see track <xref linkend="transform"/>.</para>
+<para>Options to set the altitude value from <xref linkend="DEM"/> data. Also see track <xref linkend="transform"/>.</para>
 <para>An option to set the time from the comment field. First tries ISO8601 formats and then a fallback of a custom format, see "gpx_comment_time_format" in <xref linkend="misc_settings"/>.</para>
 <para>An option to convert the (visible) waypoints into a track. The points will be ordered according to the layers Waypoint sort order property. Note that some information such as associated images, symbols, comments etc... are lost in this conversion.</para>
 </listitem>
@@ -1754,7 +1754,7 @@ In this circumstance creation of waypoint options are disabled and only the opti
 <section><title>Transform</title>
 <para>
 Offers a subset of the track <xref linkend="transform"/> utilities.
-Setting the altitude from DEM data and Time from Comment methods are available.
+Setting the altitude from <xref linkend="DEM"/> data and Time from Comment methods are available.
 </para>
 </section>
 
@@ -1863,7 +1863,7 @@ There are several options to quickly delete a subsection of data:
 </section><!-- End GPS -->
 
 
-<section id="Maps" xreflabel="Maps"><title>Maps Layer</title>
+<section id="Map" xreflabel="Map"><title>Map Layer</title>
 <para>
 This layer provides a single map resource, you may have multiple map layers but only top one (if enabled) will be visible (subject to the Alpha compositing property).
 </para>
@@ -2152,7 +2152,7 @@ Alphabetical and Date sorts are available.
 </para>
 <note>
 <para>
-Generally it is not useful to sort the Top most layer. Sort is mainly intended for Aggregate groups of TrackWaypoint layers.
+Generally it is not useful to sort the Top most layer. Sort is mainly intended for Aggregate groups of <xref linkend="TrackWaypoint"/> layers.
 </para>
 </note>
 </section>
@@ -2168,7 +2168,7 @@ This table may be invoked from a variety of different layer levels and will then
 <variablelist>
 <varlistentry>
 <term>Aggregate Layer</term>
-<listitem><para>Lists Tracks and Routes and the TrackWaypoint Layer they are in</para></listitem>
+<listitem><para>Lists Tracks and Routes and the <xref linkend="TrackWaypoint"/> Layer they are in</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>TrackWaypoint Layer</term>
@@ -2189,7 +2189,7 @@ This table may be invoked from a variety of different layer levels and will then
 <title>Track List Dialog: Example</title>
 <blockquote>
 <para>
-This is showing all tracks and routes (although there are no actual routes here!) in multiple TrackWaypoint layers, that has been sorted by height.
+This is showing all tracks and routes (although there are no actual routes here!) in multiple <xref linkend="TrackWaypoint"/> layers, that has been sorted by height.
 Note that routes will not have timestamps or speeds, but may have elevations and should have some distance!
 </para>
 </blockquote>
@@ -2236,7 +2236,7 @@ This table may be invoked from a variety of different layer levels and will then
 <variablelist>
 <varlistentry>
 <term>Aggregate Layer</term>
-<listitem><para>Lists Waypoints and the TrackWaypoint Layer they are in</para></listitem>
+<listitem><para>Lists Waypoints and the <xref linkend="TrackWaypoint"/> Layer they are in</para></listitem>
 </varlistentry>
 <varlistentry>
 <term>TrackWaypoint Layer</term>
@@ -2253,7 +2253,7 @@ This table may be invoked from a variety of different layer levels and will then
 <title>Waypoint List Dialog: Example</title>
 <blockquote>
 <para>
-This was invoked on a TrackWaypoint layer and shows all waypoints from that single layer. It has been sorted by the symbols.
+This was invoked on a <xref linkend="TrackWaypoint"/> layer and shows all waypoints from that single layer. It has been sorted by the symbols.
 </para>
 </blockquote>
 <screenshot>
@@ -2737,7 +2737,7 @@ Drag to move the georeferenced map.
 
 <section id="map_tool_dl" xreflabel="Map Download"><title>Map Download</title>
 <para>
-You must have a <xref linkend="Maps"/> Layer selected to use this.
+You must have a <xref linkend="Map"/> Layer selected to use this.
 </para>
 <para>
 Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/mapdl_18.png"/></guiicon>
@@ -2767,7 +2767,7 @@ The possible methods to redownload one or more tiles are:
 </para>
 <formalpara><title>Map Tile Information</title>
 <para>
-By right clicking on viewport and selecting <guimenu>Show Tile Information</guimenu> you can see the tile properties of this location for the current map layer and current zoom level.
+By right clicking on viewport and selecting <guimenu>Show Tile Information</guimenu> you can see the tile properties of this location for the current <xref linkend="Map"/> layer and current zoom level.
 This includes the remote source URL for the tile and the cached version on the local filesystem with timestamp details.
 </para>
 </formalpara>
@@ -2878,7 +2878,7 @@ This feature is called <guilabel>Webtools</guilabel>. It is also known as Extern
 </section>
 <section><title>Default map layer directory</title>
 <para>This property sets the default directory of the tiles cache.
-This value is used when you create a new map layer.
+This value is used when you create a new <xref linkend="Map"/> layer.
 </para>
 <para>You are still able to change this value in each map layer properties.</para>
 </section>
@@ -2970,7 +2970,7 @@ Otherwise the specific track or route must be selected in order to draw the asso
 	A value of -1 means all files. The new value applies to New Windows only (or on application restart).
 </para>
 <section><title>Open files in selected layer</title>
-<para>A setting to control whether non Viking format files (i.e. typically GPX or KML files) will open in the selected TrackWaypoint Layer.
+<para>A setting to control whether non Viking format files (i.e. typically GPX or KML files) will open in the selected <xref linkend="TrackWaypoint"/> Layer.
 When no TrackWaypoint Layer is selected (or the layer is invisibile) then the file will be open in the default manner: at the top level.
 </para>
 </section>
@@ -3076,7 +3076,7 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 </section>
 <section><title>Default Map Layer</title>
 <para>When this is enabled, a map layer is automatically added whenever &appname; is opened and a &appname; file is not to be loaded.</para>
-<para>The map layer used is defined by the map layer's default values.</para>
+<para>The <xref linkend="Map"/> layer used is defined by the map layer's default values.</para>
 </section>
 <section><title>Startup Method</title>
 <para>Enables selection of how the startup position should be determined.</para>
@@ -3252,7 +3252,7 @@ If you can no longer see your tracks or waypoints and only the map,
 it is because the layer named <emphasis>Map</emphasis> is <emphasis>ABOVE</emphasis> your TrackWaypoint layer that your GPS data is in.
 This means that it will be drawn last and on top of the other <xref linkend="gc_layers"/>.
 Look at the  <xref linkend="gc_layers_panel"/> to the left which shows this order.
-Select the Map layer from the list and click the down arrow button beneath the list until the Map layer is below the TrackWaypoint layer.
+Select the <xref linkend="Map"/> layer from the list and click the down arrow button beneath the list until the Map layer is below the <xref linkend="TrackWaypoint"/> layer.
 Your tracks will now be drawn over the map.
 </para>
 </section>
@@ -3312,7 +3312,7 @@ automatically.
 </procedure>
 
 <para>In the layer listing on the left, the <xref linkend="DEM"/> layer should reside
-above the map layer. If this is not the case, highlight the DEM layer
+above the <xref linkend="Map"/> layer. If this is not the case, highlight the DEM layer
 an shift it one up (using the arrow up button).
 </para>
 <procedure>
@@ -3342,7 +3342,7 @@ You can also alter the Min. and Max. elevation in this dialogue.
 <step><para>Uncheck the <xref linkend="DEM"/> layer (the map is shown again)</para></step>
 <step>
 	<para><menuchoice><guimenu>Layers</guimenu><guimenuitem>New TrackWaypoint Layer</guimenuitem></menuchoice></para>
-	<para>Ensure the new track layer is above the map layer.</para>
+	<para>Ensure the new track layer is above the <xref linkend="Map"/> layer.</para>
 </step>
 <step><para>Expand the <xref linkend="TrackWaypoint"/> layer, select <guimenuitem>Tracks</guimenuitem></para></step>
 <step><para>In the tools menu choose <guiicon><inlinegraphic fileref="figures/addtr_18.png"/></guiicon> <guibutton>Create Track</guibutton>
@@ -3367,7 +3367,7 @@ In order to save this setting for later usage
 </section>
 <section><title>Usecase: offline data for holiday</title>
 <para>
-Suppose you want to have the <xref linkend="Maps"/> and <xref linkend="DEM"/> data offline for your holiday in Italy near Bologna.
+Suppose you want to have the <xref linkend="Map"/> and <xref linkend="DEM"/> data offline for your holiday in Italy near Bologna.
 </para>
 <procedure>
 <step><para>Start a new &appname; session.</para></step>
@@ -3397,9 +3397,9 @@ tiles into <filename>.viking-map-holiday/</filename> if you like.
 <step>
 <para>follow this sequence until you have all tiles for all zoom levels you need</para>
 <substeps>
-<step><para>right-click the map layer properties</para></step>
+<step><para>right-click the <xref linkend="Map"/> layer properties</para></step>
 <step><para>set the zoomlevel explicitly one below the last (in the first cycle 512), hit OK</para></step>
-<step><para>right click the map layer  <guimenuitem>Download Missing Onscreen Maps</guimenuitem></para></step>
+<step><para>right click the map layer <guimenuitem>Download Missing Onscreen Maps</guimenuitem></para></step>
 <step><para>wait until all tiles for that resolution have been downloaded</para></step>
 </substeps>
 </step>
@@ -3485,7 +3485,7 @@ This list can be sorted on each column so that it easier to find an individual t
 
 <section><title>Geotagging</title>
 <para>
-	This assumes you already have a <xref linkend="Maps"/> layer enabled for ease of use (if not see above to get one).
+	This assumes you already have a <xref linkend="Map"/> layer enabled for ease of use (if not see above to get one).
 </para>
 <section><title>Manual Positioning</title>
 <para>
@@ -3495,7 +3495,7 @@ This list can be sorted on each column so that it easier to find an individual t
 </para>
 <para>
 	First create a <xref linkend="TrackWaypoint"/> layer or use an existing one; and select it in the <xref linkend="gc_layers_panel"/>.
-	NB Make sure this layer is above the map layer in the Layers Panel list.
+	NB Make sure this layer is above the <xref linkend="Map"/> layer in the Layers Panel list.
 	Create a new waypoint (or move an existing one) to exact location desired:
 <itemizedlist>
 	<listitem><para>Select the <xref linkend="createwptool"/> tool, then left click on the map at the location desired, choosing an image to associate with it in the new waypoint dialog</para></listitem>
@@ -3531,7 +3531,7 @@ This list can be sorted on each column so that it easier to find an individual t
 </para>
 </formalpara>
 <para>
-	If you have multiple tracks in a TrackWaypoint layer, then invoking the <menuchoice><guimenu>Geotag Images...</guimenu></menuchoice> action on the layer
+	If you have multiple tracks in a <xref linkend="TrackWaypoint"/> layer, then invoking the <menuchoice><guimenu>Geotag Images...</guimenu></menuchoice> action on the layer
 	will search all the tracks to find location matches.
 </para>
 </section>
@@ -3542,7 +3542,7 @@ This list can be sorted on each column so that it easier to find an individual t
 	&appname; relies on <ulink url="https://gpsd.gitlab.io/gpsd">gpsd</ulink> to provide the current location from a real time feed from a GPS device.
 </para>
 <para>
-	This assumes you already have a <xref linkend="Maps"/> layer enabled for ease of use (if not see above to get one).
+	This assumes you already have a <xref linkend="Map"/> layer enabled for ease of use (if not see above to get one).
 </para>
 <para>
 	Turn on the GPS Device, ensure it has figured out it's location and plug it in to your computer.
