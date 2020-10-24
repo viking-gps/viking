@@ -24,6 +24,62 @@ ATM &appname; does not auto download DEM data. If you want to get lots of data b
 <para>
 Using many DEMs is CPU/memory intensive. Depending on your computer's capability, &appname; will be less responsive when about 50+ DEM blocks are loaded. It is probably unwise to attempt using 200+ blocks, so trying to use DEMs covering large countries/continents (USA, Australia etc...) is unlikely to work. In these conditions under Linux, &appname; may be automatically stopped by the "<ulink url="https://en.wikipedia.org/wiki/Out_of_memory/">OOM</ulink> Killer"
 </para>
+<para>
+One technique is to load DEM files, but keep the layer invisible so that screen redrawing is much faster yet the height information is available for use (such as height at mouse location readout, track elevation drawing, track/waypoint creation etc...).
+</para>
 </note>
+
+<section><title>Layer Properties</title>
+<para>
+Configurable properties:
+</para>
+<variablelist>
+<varlistentry>
+<term><guilabel>DEM Files</guilabel></term>
+<listitem>
+	<para>The list of files in use.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Min Elev Colour</guilabel></term>
+<listitem>
+	<para>Explicit colour for those lower than the Min Elev.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Type</guilabel></term>
+<listitem>
+	<para>Absolute height or Height gradient.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Min Elev</guilabel></term>
+<listitem>
+	<para>The colourmap starts from this height.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Max Elev</guilabel></term>
+<listitem>
+	<para>The colourmap ends at this height.</para>
+</listitem>
+</varlistentry>
+</variablelist>
+
+
+<para>
+Colours for drawing the DEM are allocated in discrete units between the Min Elev and Max Elev heights.
+Thus to see differences more clearly you may want to adjust these values to match the height variance around the area of interest.
+</para>
+
+</section><!-- Prop END -->
+
+<section><title>Layer Operations</title>
+
+<para>
+Other than the standard operations (Cut, Paste etc...), there are no further specific operations available.
+</para>
+
+</section><!-- End Layer Ops -->
 
 </section><!-- End DEM -->
