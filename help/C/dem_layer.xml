@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+   [<!ENTITY appname          "Viking">]
+>
+
+<section id="DEM" xreflabel="DEM"><title>DEM (Digital Elevation Model) Layer</title>
+<para>
+This layer provides elevation data from the <ulink url="https://www2.jpl.nasa.gov/srtm/">Shuttle Radar Topography Mission (SRTM)</ulink>
+</para>
+<para>
+Elevation data can be useful in planning trips, as you many wish to avoid/minimise the hills encountered. [OSM Cyclemap is also useful this way too]
+</para>
+<para>
+To download the data use the <xref linkend="dem_tool_dl"/> tool (shown on the toolbar), and then click on a area of the viewport. Once files have been downloaded they can then be loaded from disk via the DEM properties in future application runs.
+</para>
+<para>
+The current data server is: <ulink url="https://dds.cr.usgs.gov/srtm/version2_1/">NASA STRM 2.1</ulink>.
+</para>
+<para>
+ATM &appname; does not auto download DEM data. If you want to get lots of data blocks, you may wish to use some other program get such as <application>curl</application> or <application>wget</application> to download them for an area.
+</para>
+<note>
+<para>
+Using many DEMs is CPU/memory intensive. Depending on your computer's capability, &appname; will be less responsive when about 50+ DEM blocks are loaded. It is probably unwise to attempt using 200+ blocks, so trying to use DEMs covering large countries/continents (USA, Australia etc...) is unlikely to work. In these conditions under Linux, &appname; may be automatically stopped by the "<ulink url="https://en.wikipedia.org/wiki/Out_of_memory/">OOM</ulink> Killer"
+</para>
+</note>
+
+</section><!-- End DEM -->

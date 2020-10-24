@@ -17,7 +17,7 @@
 # Otherwise manually resolve pandoc issues:
 # Run for each instance:
 pandoc -f docbook index.docbook -t markdown -o help-all.md
-for x in $(ls [gm]*.xml); do pandoc -f docbook $x -o help-$x.md; done
+for x in $(ls [dgm]*.xml); do pandoc -f docbook $x -o help-$x.md; done
 # These done in specific order to help the joining order
 pandoc -f docbook recommends.xml -t markdown -o help-r.md
 pandoc -f docbook commandline.xml -t markdown -o help-u.md
