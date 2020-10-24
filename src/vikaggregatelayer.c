@@ -157,7 +157,7 @@ VikLayerParam aggregate_layer_params[] = {
     VIK_LAYER_WIDGET_BUTTON, N_("Reset All to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
 
-typedef enum { BASIC, MAX_SQR, CONTIG, CLUSTER, CP_NUM } common_property_types;
+typedef enum { BASIC, CONTIG, CLUSTER, MAX_SQR, CP_NUM } common_property_types;
 
 enum {
       PARAM_DO_TAC=0,
@@ -261,7 +261,8 @@ struct _VikAggregateLayer {
   gboolean on[CP_NUM];
   guint8 alpha[CP_NUM];
   GdkColor color[CP_NUM];
-  GdkPixbuf *pixbuf[CP_NUM];
+  GdkPixbuf *pixbuf[CP_NUM];      // Individual tile
+  GdkPixbuf *full_pixbuf[CP_NUM]; // Whole screen
   guint num_tiles[CP_NUM];
 
   guint cont_label;
@@ -779,7 +780,7 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
     gint base_yy;
     // Prevent the program grinding to a halt if trying to deal with thousands of tiles
     const gint tiles = (xmax-xmin) * (ymax-ymin);
-    if ( tiles > 65356 ) {
+    if ( tiles > 524288 ) {
       // Maybe put in status bar
       g_warning ( "%s: Giving up trying to draw many tiles (%d)", __FUNCTION__, tiles );
       return;
@@ -821,6 +822,16 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
       val->pixbuf[CLUSTER] = layer_pixbuf_update ( val->pixbuf[CLUSTER], val->color[CLUSTER], tilesize <= 256 ? 256 : tilesize, tilesize <= 256 ? 256 : tilesize, val->alpha[CLUSTER] );
     }
 
+    // Create pixbufs the size of the screen
+    for ( guint ii=0; ii<CP_NUM; ii++ ) {
+      if ( val->on[ii] ) {
+        if ( val->full_pixbuf[ii] )
+          g_object_unref ( val->full_pixbuf[ii] );
+        val->full_pixbuf[ii] = gdk_pixbuf_new ( GDK_COLORSPACE_RGB, TRUE, 8, width, height );
+        gdk_pixbuf_fill ( val->full_pixbuf[ii], 0x00000000 );
+      }
+    }
+
     guint tile_draw_count = 0;
     for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
       yy = base_yy;
@@ -829,25 +840,41 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
         ulm.y = y;
 
         if ( is_tile_occupied(val->tiles, x, y) ) {
-          //g_printf ( "%s: %d, %d, %d, %d\n", __FUNCTION__, xx, yy, tilesize_ceil, tilesize_ceil );
+          //g_printf ( "%s1: %d, %d, %d, %d, %d, %d %0.2f\n", __FUNCTION__, xx, yy, tilesize_ceil, tilesize_ceil, width, height, shrinkfactor );
           if ( !is_big ) {
 
-            vik_viewport_draw_pixbuf ( vvp, val->pixbuf[BASIC], 0, 0, xx, yy, tilesize_ceil, tilesize_ceil );
+            // Limit size request of pixbufs at the edge, as to not request a size overflowing the destination pixbuf
+            // otherwise gdk_pixbuf_copy_area() will complain
+            guint sizex = ( xx + tilesize_ceil > width ) ? width - xx : tilesize_ceil;
+            guint sizey = ( yy + tilesize_ceil > height ) ? height - yy : tilesize_ceil;
 
-            if ( val->cont_label && (tile_label(val->tiles, x, y) == val->cont_label) ) {
-              vik_viewport_draw_pixbuf ( vvp, val->pixbuf[CONTIG], 0, 0, xx, yy, tilesize_ceil, tilesize_ceil );
-            }
+            guint destx = 0;
+            if ( xx < 0 )
+              sizex += xx;
+            else
+              destx = xx;
+
+            guint desty = 0;
+            if ( yy < 0 )
+              sizey += yy;
+            else
+              desty = yy;
+
+            gdk_pixbuf_copy_area ( val->pixbuf[BASIC], 0, 0, sizex, sizey, val->full_pixbuf[BASIC], destx, desty );
+
+            if ( val->cont_label && (tile_label(val->tiles, x, y) == val->cont_label) )
+              gdk_pixbuf_copy_area ( val->pixbuf[CONTIG], 0, 0, sizex, sizey, val->full_pixbuf[CONTIG], destx, desty );
 
             // Cluster drawing
             if ( val->on[CLUSTER] )
               if ( val->clust_label && (tile_label(val->tiles_clust, x, y) == val->clust_label) )
-                vik_viewport_draw_pixbuf ( vvp, val->pixbuf[CLUSTER], 0, 0, xx, yy, tilesize_ceil, tilesize_ceil );
+                gdk_pixbuf_copy_area ( val->pixbuf[CLUSTER], 0, 0, sizex, sizey, val->full_pixbuf[CLUSTER], destx, desty );
 
             // Max Square drawing
             if ( val->on[MAX_SQR] )
               if ( ( x >= val->xx && x < (val->xx + val->max_square) )
                      && ( y >= val->yy && y < (val->yy + val->max_square) ) ) {
-                vik_viewport_draw_pixbuf ( vvp, val->pixbuf[MAX_SQR], 0, 0, xx, yy, tilesize_ceil, tilesize_ceil );
+                gdk_pixbuf_copy_area ( val->pixbuf[MAX_SQR], 0, 0, sizex, sizey, val->full_pixbuf[MAX_SQR], destx, desty );                
               }
           } else {
             gint x2 = xx;
@@ -872,6 +899,13 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
       }
       xx += tilesize;
     }
+
+    if ( !is_big ) {
+      for ( guint ii=0; ii<CP_NUM; ii++ )
+        if ( val->on[ii] && val->full_pixbuf[ii] )
+          vik_viewport_draw_pixbuf ( vvp, val->full_pixbuf[ii], 0, 0, 0, 0, width, height );
+    }
+
     //g_debug ( "%s: Tiles drawn %d", __FUNCTION__, tile_draw_count );
 
     // Grid lines if wanted and otherwise doesn't dominate the display either...
@@ -2630,14 +2664,12 @@ void vik_aggregate_layer_free ( VikAggregateLayer *val )
     gtk_widget_destroy ( val->tracks_analysis_dialog );
 
   g_hash_table_destroy ( val->tiles );
-  if ( val->pixbuf[BASIC] )
-    g_object_unref ( val->pixbuf[BASIC] );
-  if ( val->pixbuf[MAX_SQR] )
-    g_object_unref ( val->pixbuf[MAX_SQR] );
-  if ( val->pixbuf[CONTIG] )
-    g_object_unref ( val->pixbuf[CONTIG] );
-  if ( val->pixbuf[CLUSTER] )
-    g_object_unref ( val->pixbuf[CLUSTER] );
+  for ( guint ii=0; ii<CP_NUM; ii++ ) {
+    if ( val->pixbuf[ii] )
+      g_object_unref ( val->pixbuf[ii] );
+    if ( val->full_pixbuf[ii] )
+      g_object_unref ( val->full_pixbuf[ii] );
+  }
   g_hash_table_destroy ( val->tiles_clust );
 
   if ( val->hm_pixbuf )
