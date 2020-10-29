@@ -13,6 +13,7 @@ HELP_FILES = index.docbook
 HELP_EXTRA = legal.xml \
     attribution.xml \
     commandline.xml \
+    edit_view_menus.xml \
     dem_layer.xml \
     geoclue_layer.xml \
     georef_layer.xml \

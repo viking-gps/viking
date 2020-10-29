@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+   [<!ENTITY appname          "Viking">]
+>
+
+<section id="EditViewMenu"><title>Edit and View Menus</title>
+
+<section><title>Standard Edit Entries</title>
+<para>
+  Besides the standard edit entries (Cut, Copy, Paste, Delete) that operate on the currently selected item,
+  there is also the <guilabel>Delete All</guilabel> which removes <emphasis>ALL</emphasis> layers
+  (including the automatically created Default Map).
+</para>
+</section><!-- End Standard Edit Entries-->
+
+<section><title>Map/Position Edit Entries</title>
+<variablelist>
+<varlistentry>
+<term><guilabel>Copy Center Location</guilabel></term>
+<listitem>
+  <para>This will copy the current center of the viewport as coordinate lat/lon pair in plain text, such that it can be then be pasted into other applications.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Flush Map Cache</guilabel></term>
+<listitem>
+  <para>This will empty the in memory map cache, hence it should reduce the amount of memory that &appname; is using.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Set Default Location</guilabel></term>
+<listitem>
+  <para>This will set the Default Location (AKA the Home Location) to current center position of the viewport.</para>
+  <para>See <xref linkend="GoHome"/>.</para>
+</listitem>
+</varlistentry>
+</variablelist>
+</section><!-- End Map/Position Edit Entries-->
+
+<section><title>&appname; Configuration Edit Entries</title>
+<para>
+  Allows access to &appname; <xref linkend="prefs"/>.
+</para>
+<para>
+  Allows access to the <xref linkend="Layers"/> defaults.
+  When creating a new layer it will start with the default values as specified here.
+</para>
+</section><!-- End Configuration Edit Entries-->
+
+
+<section><title>Mode View Entries</title>
+<para>
+  Allows selection of the <xref linkend="projection"/> mode.
+</para>
+</section><!-- End Mode View Entries-->
+
+<section><title>Go to View Entries</title>
+<para>
+  Offers a selection of methods to jump to a position in the world.
+</para>
+<para>
+  The Go to Lat/Lon dialog method allows manually specifying the coordinates to move to.
+  <note>
+    <para>
+      The latitude entry (although a spin button) can accept any text and will be attempted to be used as a <xref linkend="LatLonInput"/>.
+    </para>
+  </note>
+</para>
+<para>
+  Additionally there is method to move the calendar view to todays date.
+</para>
+</section><!-- End Go to View Entries-->
+
+<section><title>Colour View Entries</title>
+<para>
+  These entries allow setting the default background colour (i.e. when there are no maps) and the highlight colour for selected tracks and waypoints.
+</para>
+</section><!-- End Colour View Entries-->
+
+<section><title>Zoom View Entries</title>
+<para>
+  Offers a selection of methods to zoom the viewport, including not only <guilabel>In</guilabel> and <guilabel>Out</guilabel> but also to any specific level.
+</para>
+</section><!-- End Zoom View Entries-->
+
+<section><title>Show View Entries</title>
+<para>
+  Offers a selection of methods to control visibility of various screen elements.
+  Most of these can also be accessed via <xref linkend="shortcut_keys"/>.
+</para>
+</section><!-- End Show View Entries-->
+
+<section><title>Dialog View Entries</title>
+<para>
+  Offers alternative access to additional informational dialogs. Otherwise these can be accessed from the <xref linkend="Statusbar"/>.
+</para>
+</section><!-- End Dialog View Entries-->
+
+</section><!-- End Edit/View -->

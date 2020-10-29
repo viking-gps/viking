@@ -254,7 +254,7 @@ Similarly to the track properties graphs, left clicking will center the viewport
 A right click menu offers controls of the drawing options, a subset of track operations and access to further information dialogs.
 </para>
 </section>
-<section><title>Statusbar</title>
+<section id="Statusbar"><title>Statusbar</title>
 <para>This provides a readout of various information:</para>
 <itemizedlist>
 <listitem><para>The currently selected (mouse pointer) tool</para></listitem>
@@ -870,6 +870,8 @@ See the section <xref linkend="search_provider"/> to configure additional search
 
 </section> <!-- End File Types -->
 
+<xi:include href="edit_view_menus.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
 <section id="Layers"><title>Layers</title>
 
 <para>
@@ -1064,7 +1066,7 @@ This is only available when a track or route is being created by the <xref linke
 <section><title>New</title>
 <section id="new_wp"><title>New Waypoint</title>
 <para>
-This opens a dialog box to create a new waypoint. A default name will be suggested and the default position is the center of the viewport.
+This opens a dialog (see <xref linkend="WptProps"/>) to create a new waypoint. A default name will be suggested and the default position is the center of the viewport.
 </para>
 </section>
 <section id="new_track"><title>New Track</title>
@@ -1758,10 +1760,10 @@ The record of the Google route is stored in the track's comment, so if the comme
 </variablelist>
 </section>
 
-<section><title>Waypoint Properties</title>
+<section id="WptProps"><title>Waypoint Properties</title>
 
 <para>
-This shows a dialog with detailed information for the waypoint. Many properties of the waypoint can changed here, such as the comment, the symbol used in drawing or the image (normally a photograph taken at this position) associated with it. When a waypoint has an image, a thumbnail of it is drawn in the viewport for the waypoint (in preference to the symbol).
+This shows a dialog with detailed information for the (possibly new) waypoint. Many properties of the waypoint can set or changed here, such as the comment, the symbol used in drawing or the image (normally a photograph taken at this position) associated with it. When a waypoint has an image, a thumbnail of it is drawn in the viewport for the waypoint (in preference to the symbol).
 </para>
 <para>
 If the waypoint has an associated image, then the Geotag information may be updated, either with updating the file's modification timestamp or not.
@@ -2612,7 +2614,7 @@ You must have a <xref linkend="TrackWaypoint"/> Layer selected to use these tool
 Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/addwp_18.png"/></guiicon>
 </para>
 <para>
-Left click will open the new waypoint dialog using the specified position.
+Left click will open the new waypoint dialog (see <xref linkend="WptProps"/>) using the specified position.
 </para>
 </section>
 
@@ -3317,7 +3319,7 @@ Your tracks will now be drawn over the map.
 </para>
 </section>
 
-<section><title>Set Your Home Location</title>
+<section id="GoHome" xreflabel="Home Location"><title>Set Your Home Location</title>
 <para>
 	You can save the current center position of the viewport as the default location AKA the Home Location by
 	<menuchoice><guimenu>Edit</guimenu><guimenuitem>Set the Default Location</guimenuitem></menuchoice>.
