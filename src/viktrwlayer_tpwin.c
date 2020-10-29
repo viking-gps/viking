@@ -164,11 +164,12 @@ static void time_remove_cb ( VikTrwLayerTpwin *tpwin )
 }
 
 /**
- * remove_menu:
+ * time_menu:
  */
-static void remove_menu ( GtkWidget *widget, guint button, VikTrwLayerTpwin *tpwin )
+static void time_menu ( GtkWidget *widget, guint button, VikTrwLayerTpwin *tpwin )
 {
   GtkWidget *menu = gtk_menu_new();
+  (void)vu_menu_add_item ( GTK_MENU(menu), NULL, GTK_STOCK_COPY, G_CALLBACK(vu_copy_label), widget );
   (void)vu_menu_add_item ( GTK_MENU(menu), NULL, GTK_STOCK_REMOVE, G_CALLBACK(time_remove_cb), tpwin );
   gtk_widget_show_all ( GTK_WIDGET(menu) );
   gtk_menu_popup ( GTK_MENU(menu), NULL, NULL, NULL, NULL, button, gtk_get_current_event_time() );
@@ -184,18 +185,15 @@ static void tpwin_sync_time_to_tp ( GtkWidget* widget, GdkEventButton *event, Vi
     return;
 
   if ( event->button == 3 ) {
-    // On right click and when a time is available, allow a method to copy the displayed time as text
+    // On right click and when a time is available, allow a methods to copy or remove the time
     if ( !gtk_button_get_image ( GTK_BUTTON(widget) ) ) {
-       vu_copy_label_menu ( widget, event->button );
+      time_menu ( widget, event->button, tpwin );
     }
     return;
   }
-  else if ( event->button == 2 ) {
-    if ( !gtk_button_get_image ( GTK_BUTTON(widget) ) ) {
-      remove_menu ( widget, event->button, tpwin );
-    }
+
+  if ( event->button == 2 )
     return;
-  }
 
   if ( !tpwin->cur_tp || tpwin->sync_to_tp_block )
     return;

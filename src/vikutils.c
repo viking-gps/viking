@@ -819,7 +819,7 @@ void vu_command_line ( VikWindow *vw, gdouble latitude, gdouble longitude, gint 
 /**
  * Copy the displayed text of a widget (should be a GtkButton ATM)
  */
-static void vu_copy_label ( GtkWidget *widget )
+void vu_copy_label ( GtkWidget *widget )
 {
 	a_clipboard_copy (VIK_CLIPBOARD_DATA_TEXT, 0, 0, 0, gtk_button_get_label(GTK_BUTTON(widget)), NULL );
 }

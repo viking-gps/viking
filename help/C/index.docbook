@@ -1723,7 +1723,8 @@ If the waypoint has an associated image, then the Geotag information may be upda
 This can be useful when the waypoint has been moved.
 </para>
 <para>
-If the waypoint has a time then clicking on it opens the time edit dialog. Right clicking on the button enables copying the time value as text and middle clicking enables a method to remove the time value.
+Clicking on the time opens the time edit dialog from which the time can be adjusted (or added if the waypoint did not have a time).
+When the waypoint has a time, right clicking on the button opens a menu from which there are options to copy the time value as text or remove the time value.
 </para>
 
 <figure>

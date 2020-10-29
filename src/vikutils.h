@@ -45,6 +45,7 @@ void vu_finalize_lat_lon_tz_lookup ();
 
 void vu_command_line ( VikWindow *vw, gdouble latitude, gdouble longitude, gint zoom_osm_level, gint map_id );
 
+void vu_copy_label ( GtkWidget *widget );
 void vu_copy_label_menu ( GtkWidget *widget, guint button );
 
 void vu_zoom_to_show_latlons ( VikCoordMode mode, VikViewport *vvp, struct LatLon maxmin[2] );
