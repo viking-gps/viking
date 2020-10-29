@@ -34,6 +34,32 @@ void a_dialog_msg ( GtkWindow *parent, gint type, const gchar *info, const gchar
   gtk_widget_destroy ( msgbox );
 }
 
+// Temporary storage - easiest to route values from latitude input via this manner
+static gdouble alat = NAN;
+static gdouble alon = NAN;
+
+/**
+ * Try getting extended lat/lon formats from just the latitude entry
+ *  since this is a spin box we can intercept the input here
+ *  and thus inspect the full text that is in the widget
+ *
+ */
+static gint lat_spin_input ( GtkSpinButton *spin_button,
+                             gpointer       new_value,
+                             gpointer       user_data )
+{
+  const gchar *txt = gtk_entry_get_text ( GTK_ENTRY(spin_button) );
+  alat = NAN;
+  alon = NAN;
+  struct LatLon ll;
+  if ( clip_parse_latlon(txt, &ll) ) {
+    alat = ll.lat;
+    alon = ll.lon;
+    return TRUE;
+  }
+  return FALSE;
+}
+
 /**
  * a_dialog_goto_latlon:
  *
@@ -58,6 +84,10 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
 
   GtkWidget *latlabel = gtk_label_new (_("Latitude:"));
   GtkWidget *lat = ui_spin_button_new ( (GtkAdjustment*)gtk_adjustment_new(old->lat,-90,90.0,0.05,0.1,0), 0.1, 6 );
+  alat = NAN;
+  alon = NAN;
+  g_signal_connect ( lat, "input", G_CALLBACK(lat_spin_input), dialog );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(lat), _("This can accept extended lat/lon formats") );
 
   GtkWidget *lonlabel = gtk_label_new (_("Longitude:"));
   GtkWidget *lon = ui_spin_button_new ( (GtkAdjustment*)gtk_adjustment_new(old->lon,-180.0,180.0,0.05,0.1,0), 0.1, 6 );
@@ -72,13 +102,24 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
   g_signal_connect_swapped (lon, "activate", G_CALLBACK(a_dialog_response_accept), dialog);
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+  GtkWidget *response_w = NULL;
+#if GTK_CHECK_VERSION (2, 20, 0)
+  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+#endif
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
 
   gtk_widget_show_all ( dialog );
 
-  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT )
-  {
-    ll->lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lat) ) );
-    ll->lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lon) ) );
+  if ( gtk_dialog_run ( GTK_DIALOG(dialog) ) == GTK_RESPONSE_ACCEPT ) {
+
+    if ( isnan(alat) && isnan(alon) ) {
+      ll->lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lat) ) );
+      ll->lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(lon) ) );
+    } else {
+      ll->lat = alat;
+      ll->lon = alon;
+    }
     gtk_widget_destroy ( dialog );
     return TRUE;
   }

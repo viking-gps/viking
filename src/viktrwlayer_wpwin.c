@@ -542,6 +542,7 @@ VikTrwLayerWpwin *vik_trw_layer_wpwin_show ( GtkWindow *parent, VikTrwLayerWpwin
   gtk_entry_set_text ( GTK_ENTRY(ww->latentry), lat );
   gtk_entry_set_text ( GTK_ENTRY(ww->lonentry), lon );
   ui_entry_set_text ( ww->altentry, alt );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(ww->latentry), _("This can accept extended lat/lon formats") );
 
   g_free ( lat );
   g_free ( lon );
@@ -729,8 +730,12 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
     else {
       // Do It
       vik_units_height_t height_units = a_vik_get_units_height ();
-      ll.lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(ww->latentry) ) );
-      ll.lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(ww->lonentry) ) );
+      const gchar *txt = gtk_entry_get_text ( GTK_ENTRY(ww->latentry) );
+      // Try getting extended lat/lon formats in just the lat
+      if ( !clip_parse_latlon(txt, &ll) ) {
+        ll.lat = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(ww->latentry) ) );
+        ll.lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(ww->lonentry) ) );
+      }
       vik_coord_load_from_latlon ( &(wp->coord), ww->coord_mode, &ll );
       gchar const *alttext = gtk_entry_get_text ( GTK_ENTRY(ww->altentry) );
       if ( alttext && strlen(alttext) ) {

@@ -127,6 +127,7 @@ src/misc/*.o
 /test/test_babel
 /test/test_time
 /test/test_decimal_output
+/test/test_parse_latlon
 /test/vik2vik
 
 # /po/

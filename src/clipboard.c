@@ -135,7 +135,7 @@ static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointe
  *
  * Returns: TRUE if coordinates are set.
  */
-static gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord ) 
+gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord )
 {
   gint latdeg, londeg, latmi, lonmi;
   gdouble lats, lons;

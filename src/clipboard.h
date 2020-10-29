@@ -38,6 +38,8 @@ void a_clipboard_copy_selected ( VikLayersPanel *vlp );
 gboolean a_clipboard_paste ( VikLayersPanel *vlp );
 VikClipboardDataType a_clipboard_type ( );
 
+gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord );
+
 G_END_DECLS
 
 #endif

@@ -1771,7 +1771,22 @@ This can be useful when the waypoint has been moved.
 Clicking on the time opens the time edit dialog from which the time can be adjusted (or added if the waypoint did not have a time).
 When the waypoint has a time, right clicking on the button opens a menu from which there are options to copy the time value as text or remove the time value.
 </para>
-
+<note>
+  <para id="LatLonInput" xreflabel="Lat/Lon Pair">
+    The latitude entry can accept any text and will attempt to decode the text as a lat/lon pair.
+    If successfully decoded then this will take precedence over the longitude value.
+    In the case entering e.g. "54.32 -1.098", the latitude will become 54.32 and the longitude -1.098 (when the dialog is accepted).
+    This takes a few various lat/lon format strings, including:
+    <itemizedlist>
+      <listitem><para>"12, 34": Commas are ignored</para></listitem>
+      <listitem><para>"S12 W34": With cardinal indicators at begining</para></listitem>
+      <listitem><para>"12 S 34 W": With cardinal indicators after (must have space between the number and letter)</para></listitem>
+      <listitem><para>"12.34 56.67": DDD format</para></listitem>
+      <listitem><para>"S034° 12.3456 W003° 45.6789": DMM format. Equals DDD "-34.20576 -3.76131"</para></listitem>
+      <listitem><para>"S034° 12 34 W003° 45 54": DMS format. Equals DDD "-34.20944 -3.76500"</para></listitem>
+    </itemizedlist>
+  </para>
+</note>
 <figure>
 <title>Waypoint Properties: Example</title>
 <screenshot>

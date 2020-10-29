@@ -8,6 +8,7 @@ endif
 
 TESTS = check_degrees_conversions.sh \
 	check_decimal_output.sh \
+	check_parse_latlon.sh \
 	check_babel.sh \
 	check_vik2vik.sh \
 	check_gpx.sh \
@@ -27,6 +28,7 @@ check_PROGRAMS = degrees_converter \
 	test_time \
 	test_decimal_output \
 	test_coord_conversion \
+	test_parse_latlon \
 	test_babel \
 	test_md5_hash \
 	test_metatile
@@ -37,6 +39,7 @@ endif
 
 check_SCRIPTS = check_degrees_conversions.sh \
 	check_decimal_output.sh \
+	check_parse_latlon.sh \
 	check_vik2vik.sh \
 	check_gpx.sh \
 	check_help_xml.sh \
@@ -51,6 +54,7 @@ endif
 # Scripts and the test data that they use
 EXTRA_DIST = check_degrees_conversions.sh \
 	check_decimal_output.sh \
+	check_parse_latlon.sh \
 	check_babel.sh \
 	check_help_xml.sh \
 	check_vik2vik.sh \
@@ -108,6 +112,11 @@ test_decimal_output_LDADD = \
 
 test_coord_conversion_SOURCES = test_coord_conversion.c
 test_coord_conversion_LDADD = \
+  $(top_builddir)/src/libviking.a \
+  $(LDADD)
+
+test_parse_latlon_SOURCES = test_parse_latlon.c
+test_parse_latlon_LDADD = \
   $(top_builddir)/src/libviking.a \
   $(LDADD)
 
