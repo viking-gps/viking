@@ -47,6 +47,7 @@ src/viklayer_defaults.c
 src/uibuilder.c
 src/vikaggregatelayer.c
 src/vikdemlayer.c
+src/vikdatetime_edit_dialog.c
 src/vikfileentry.c
 src/vikfilelist.c
 src/vikgeocluelayer.c
