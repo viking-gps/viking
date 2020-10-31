@@ -3013,17 +3013,8 @@ static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pas
 
   GdkPixbuf *pixbuf = NULL;
 
-  if ( track->has_color ) {
-    pixbuf = gdk_pixbuf_new ( GDK_COLORSPACE_RGB, FALSE, 8, SMALL_ICON_SIZE, SMALL_ICON_SIZE );
-    // Annoyingly the GdkColor.pixel does not give the correct color when passed to gdk_pixbuf_fill (even when alloc'ed)
-    // Here is some magic found to do the conversion
-    // http://www.cs.binghamton.edu/~sgreene/cs360-2011s/topics/gtk+-2.20.1/gtk/gtkcolorbutton.c
-    guint32 pixel = ((track->color.red & 0xff00) << 16) |
-      ((track->color.green & 0xff00) << 8) |
-      (track->color.blue & 0xff00);
-
-    gdk_pixbuf_fill ( pixbuf, pixel );
-  }
+  if ( track->has_color )
+    pixbuf = ui_pixbuf_new ( &track->color, SMALL_ICON_SIZE, SMALL_ICON_SIZE );
 
   gdouble timestamp = 0;
   VikTrackpoint *tpt = vik_track_get_tp_first(track);
@@ -5667,12 +5658,7 @@ void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk, gboolean do_so
       iter = g_hash_table_lookup ( vtl->tracks_iters, udata.uuid );
 
     if ( iter ) {
-      // TODO: Make this a function
-      GdkPixbuf *pixbuf = gdk_pixbuf_new ( GDK_COLORSPACE_RGB, FALSE, 8, 18, 18);
-      guint32 pixel = ((trk->color.red & 0xff00) << 16) |
-	((trk->color.green & 0xff00) << 8) |
-	(trk->color.blue & 0xff00);
-      gdk_pixbuf_fill ( pixbuf, pixel );
+      GdkPixbuf *pixbuf = ui_pixbuf_new ( &trk->color, SMALL_ICON_SIZE, SMALL_ICON_SIZE );
       vik_treeview_item_set_icon ( VIK_LAYER(vtl)->vt, iter, pixbuf );
       g_object_unref (pixbuf);
 

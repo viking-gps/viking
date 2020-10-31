@@ -507,12 +507,7 @@ static GdkPixbuf* layer_pixbuf_update ( GdkPixbuf *pixbuf, GdkColor color, guint
 {
   if ( pixbuf )
     g_object_unref ( pixbuf );
-  pixbuf = gdk_pixbuf_new ( GDK_COLORSPACE_RGB, FALSE, 8, size_x, size_y );
-  guint32 pixel = ((color.red & 0xff00) << 16) |
-    ((color.green & 0xff00) << 8) |
-    (color.blue & 0xff00);
-
-  gdk_pixbuf_fill ( pixbuf, pixel );
+  pixbuf = ui_pixbuf_new ( &color, size_x, size_y );
   pixbuf = ui_pixbuf_set_alpha ( pixbuf, alpha );
   return pixbuf;
 }  

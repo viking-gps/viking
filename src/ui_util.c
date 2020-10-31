@@ -200,6 +200,24 @@ GtkWidget* ui_label_new_selectable ( const gchar* text )
 }
 
 /**
+ * Create a new pixbuf of the specified color and size
+ */
+GdkPixbuf *ui_pixbuf_new ( GdkColor *color, guint width, guint height )
+{
+	GdkPixbuf *pixbuf = gdk_pixbuf_new ( GDK_COLORSPACE_RGB, FALSE, 8, width, height );
+	// Annoyingly the GdkColor.pixel does not give the correct color when passed to gdk_pixbuf_fill (even when alloc'ed)
+	// Here is some magic found to do the conversion
+	// http://www.cs.binghamton.edu/~sgreene/cs360-2011s/topics/gtk+-2.20.1/gtk/gtkcolorbutton.c
+	if ( color ) {
+		guint32 pixel = ((color->red & 0xff00) << 16) |
+			((color->green & 0xff00) << 8) |
+			(color->blue & 0xff00);
+		gdk_pixbuf_fill ( pixbuf, pixel );
+	}
+	return pixbuf;
+}
+
+/**
  * Apply the alpha value to the specified pixbuf
  */
 GdkPixbuf *ui_pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha )

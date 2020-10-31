@@ -42,6 +42,7 @@ GtkWidget *ui_spin_button_new ( GtkAdjustment *adjustment,
                                 gdouble climb_rate,
                                 guint digits );
 
+GdkPixbuf *ui_pixbuf_new ( GdkColor *color, guint width, guint height );
 GdkPixbuf *ui_pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha );
 GdkPixbuf *ui_pixbuf_scale_alpha ( GdkPixbuf *pixbuf, guint8 alpha );
 void ui_add_recent_file ( const gchar *filename );
