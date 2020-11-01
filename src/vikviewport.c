@@ -1546,13 +1546,6 @@ void vik_gc_get_fg_color ( GdkGC *gc, GdkColor *dest )
   gdk_colormap_query_color ( gdk_colormap_get_system(), values.foreground.pixel, dest );
 }
 
-GdkFunction vik_gc_get_function ( GdkGC *gc )
-{
-  static GdkGCValues values;
-  gdk_gc_get_values ( gc, &values );
-  return values.function;
-}
-
 void vik_viewport_set_drawmode ( VikViewport *vvp, VikViewportDrawMode drawmode )
 {
   vvp->drawmode = drawmode;
