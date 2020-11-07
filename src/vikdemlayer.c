@@ -73,8 +73,8 @@ static void dem24k_draw_existence ( VikViewport *vp );
 
 /* Upped upper limit incase units are feet */
 static VikLayerParamScale param_scales[] = {
+  { -100, 30000, 10, 1 },
   { 0, 30000, 10, 1 },
-  { 1, 30000, 10, 1 },
   { 0, 255, 3, 0 }, // alpha
 };
 
@@ -838,12 +838,12 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
           if ( (box_x > width) || (box_y > height) )
             continue;
 
-	  gboolean below_minimum = FALSE;
+          gboolean minimum_level = FALSE;
           if(vdl->type == DEM_TYPE_HEIGHT) {
-            if ( elev != VIK_DEM_INVALID_ELEVATION && elev < vdl->min_elev ) {
+            if ( elev != VIK_DEM_INVALID_ELEVATION && elev <= vdl->min_elev ) {
               // Prevent 'elev - vdl->min_elev' from being negative so can safely use as array index
               elev = ceil ( vdl->min_elev );
-	      below_minimum = TRUE;
+              minimum_level = TRUE;
 	    }
             if ( elev != VIK_DEM_INVALID_ELEVATION && elev > vdl->max_elev )
               elev = vdl->max_elev;
@@ -907,7 +907,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
                   box_width = width - box_x;
                 GdkColor gcolor;
                 /* If 'sea' colour or below the defined mininum draw in the configurable colour */
-                if ( elev <= 0 || below_minimum )
+                if ( minimum_level )
                   gcolor = vdl->color;
                 else {
                   guint index = (gint)floor(((elev - vdl->min_elev)/(vdl->max_elev - vdl->min_elev))*(DEM_N_HEIGHT_COLORS-2))+1;
