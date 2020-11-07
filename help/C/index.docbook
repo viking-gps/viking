@@ -185,6 +185,12 @@ View, create and update Geotagged Images (using EXIF data).
 <screenshot>
   <graphic format="JPG" fileref="figures/Viking-OSM-CycleMap-ManyTracks.jpg"/>
 </screenshot>
+<informalexample>
+<para>
+Here the toolbar is on the same line as the Menubar.
+This is set via the <xref linkend="prefs"/> <menuchoice><guimenu>Toolbar</guimenu><guisubmenu>Append to Menu</guisubmenu></menuchoice> setting.
+</para>
+</informalexample>
 </figure>
 <note>
 <para>
@@ -224,7 +230,7 @@ buttons at the bottom of the layers panel.
   Right clicking brings up a menu from which you can select to go to the previous or next layer in time.
 </para>
 </section>
-<section><title>Viewport</title>
+<section id="viewport"><title>Viewport</title>
 <para>
 The main &appname; area where the layer data is drawn, is called the <emphasis role="bold">viewport</emphasis>.
 </para>
@@ -744,7 +750,7 @@ Versions prior to 1.6.0 of GPSBabel did not support the <ulink url="https://geoj
 Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Print</guisubmenu></menuchoice> menu and on the toolbar <guibutton>Print</guibutton>.
 </para>
 <para>
-Print uses what is displayed on the current map view for printing: i.e. what ever map, tracks and waypoints that are in view, including the
+Print uses what is displayed on the current <xref linkend="viewport"/> for printing: i.e. what ever map, tracks and waypoints that are in view, including the
 cross hairs and the scale.
 </para>
 <para>
@@ -814,13 +820,38 @@ This generates a new <xref linkend="GeoRef"/> map layer using the overlay image 
 Located on the <menuchoice><guimenu>File</guimenu></menuchoice> menu only.
 </para>
 <para>
-Enables exporting the current viewport as a KMZ map file.
+Enables exporting the current <xref linkend="viewport"/> as a KMZ map file.
 The area and zoom level covered by the KMZ map can be adjusted before saving.
 </para>
 <para>
 Note that Garmin GPSr devices have limits in using images if they are too large (e.g. over 3Mb big) in KMZ files.
 &appname; does not enforce any limits on the KMZ files it generates.
 </para>
+</section>
+
+<section><title>Calendar</title>
+<para>
+The calendar marks days when any activity in Tracks occurred. Hovering the mouse pointer over a marked day shows the name of the corresponding <xref linkend="TrackWaypoint"/> Layer. Double clicking on a marked day moves the <xref linkend="viewport"/> to view the first track of that day.
+</para>
+<para>
+Right clicking on the calendar offers further options to navigate in time, including moving the calendar to the next or previous track by date or to move to todays date.
+</para>
+</section>
+
+<section><title>Goto</title>
+<para>
+This offers to search locations using the selected online providers, by default either <ulink url="https://nominatim.org/">OSM Nominatim</ulink> or <ulink url="https://www.geonames.org/">Geonames</ulink>.
+One may click on the an entry in the list of returned results to move the <xref linkend="viewport"/> to that location.
+</para>
+<para>
+See the section <xref linkend="search_provider"/> to configure additional search providers.
+</para>
+<figure>
+<title>Screenshot: Goto Tab</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Goto_Main_Window.png"/>
+</screenshot>
+</figure>
 </section>
 
 </section> <!-- End File Types -->
@@ -3920,7 +3951,7 @@ Accept: */*
         </para>
       </section>
 
-      <section>
+      <section id="search_provider">
         <title>Go-to search engines</title>
         <para>It is possible to add new new search engines for the "Go-To" feature. The file is <filename>~/.viking/goto_tools.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/goto_tools.xml</filename>.</para>
