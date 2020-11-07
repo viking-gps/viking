@@ -42,6 +42,7 @@ HELP_MEDIA = \
     figures/ruler_18.png \
     figures/select_18.png \
     figures/showpic_18.png \
+    figures/DEM_Example.png \
     figures/Goto_Main_Window.png \
     figures/Trackpoint_edit_dialog.png \
     figures/Track_elevation_graph.png \

@@ -209,10 +209,11 @@ This can be useful for analysis and general handling of various sets of data.
 <para>
 Unfortunately the downside of this complexity is remembering how differing layers of data can obscure other data.
 </para>
-<para>
-The Map layers have <ulink url="https://en.wikipedia.org/wiki/Alpha_compositing"><citetitle>Alpha Compositing</citetitle></ulink>,
+<para id="Alpha" xreflabel="Alpha">
+The Map layers and various other image features have <ulink url="https://en.wikipedia.org/wiki/Alpha_compositing"><citetitle>Alpha Compositing</citetitle></ulink>,
 to create the appearance of partial transparency.
-By controlling this value one can see data below it in the layer hierarchy for interesting effects.
+This is a value between 0 and 255 with the default being 255 for a fully solid image, whereas 0 is fully transparent.
+By controlling this value one can see data below it in the layer hierarchy for interesting effects. A value of around 160 can be useful for blending views.
 </para>
 </section>
 <section id="gc_layers_panel" xreflabel="Layers Panel"><title>Layers Panel</title>
@@ -1927,7 +1928,7 @@ There are several options to quickly delete a subsection of data:
 
 <section id="Map" xreflabel="Map"><title>Map Layer</title>
 <para>
-This layer provides a single map resource, you may have multiple map layers but only top one (if enabled) will be visible (subject to the Alpha compositing property).
+This layer provides a single map resource, you may have multiple map layers but only top one (if enabled) will be visible (subject to the <xref linkend="Alpha"/> compositing property).
 </para>
 <para>
 Some maps are continually improving over time (e.g. OpenStreetMap) thus &appname; employs a caching mechanism to avoid redownloading data (see <xref linkend="mapcache"/>).
@@ -2011,8 +2012,7 @@ Configurable properties:
 <varlistentry>
 <term><guilabel>Alpha</guilabel></term>
 <listitem>
-	<para>Control the Alpha value for transparency effect using a value between 0 and 255 with the default being 255 for a fully solid image.</para>
-	<para>Zero is fully transparent. A value of around 160 can be useful for blending views of multiple map layers (when applied to the upper most map layer).</para>
+	<para>Control the <xref linkend="Alpha"/> value for transparency effects.</para>
 </listitem>
 </varlistentry>
 <varlistentry>

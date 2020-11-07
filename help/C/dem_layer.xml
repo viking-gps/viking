@@ -22,10 +22,7 @@ ATM &appname; does not auto download DEM data. If you want to get lots of data b
 </para>
 <note>
 <para>
-Using many DEMs is CPU/memory intensive. Depending on your computer's capability, &appname; will be less responsive when about 50+ DEM blocks are loaded. It is probably unwise to attempt using 200+ blocks, so trying to use DEMs covering large countries/continents (USA, Australia etc...) is unlikely to work. In these conditions under Linux, &appname; may be automatically stopped by the "<ulink url="https://en.wikipedia.org/wiki/Out_of_memory/">OOM</ulink> Killer"
-</para>
-<para>
-One technique is to load DEM files, but keep the layer invisible so that screen redrawing is much faster yet the height information is available for use (such as height at mouse location readout, track elevation drawing, track/waypoint creation etc...).
+Using many DEMs is memory intensive as every DEM block is loaded into memory. Depending on your computer's capability, it is probably unwise to attempt using too many blocks (perhaps 200+ it becomes an issue), so trying to use DEMs covering large countries/continents (USA, Australia etc...) is unlikely to work. In these conditions under Linux, &appname; may be automatically stopped by the "<ulink url="https://en.wikipedia.org/wiki/Out_of_memory/">OOM</ulink> Killer".
 </para>
 </note>
 
@@ -77,6 +74,12 @@ Configurable properties:
 	<para>The colourmap ends at this height.</para>
 </listitem>
 </varlistentry>
+<varlistentry>
+<term><guilabel>Alpha</guilabel></term>
+<listitem>
+  <para>Control the <xref linkend="Alpha"/> value for transparency effects.</para>
+</listitem>
+</varlistentry>
 </variablelist>
 
 
@@ -94,5 +97,21 @@ Other than the standard operations (Cut, Paste etc...), there are no further spe
 </para>
 
 </section><!-- End Layer Ops -->
+
+<section><title>Screenshot</title>
+
+<figure>
+<title>Screenshot: DEM Example</title>
+<screenshot>
+  <graphic format="JPG" fileref="figures/DEM_Example.png"/>
+</screenshot>
+<informalexample>
+  <para>
+    An example with an alternative colour scheme.
+  </para>
+</informalexample>
+</figure>
+
+</section><!-- End Screenshot -->
 
 </section><!-- End DEM -->

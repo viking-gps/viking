@@ -197,6 +197,7 @@ color_max=#ffffff
 type=0
 min_elev=0.000000
 max_elev=1000.000000
+alpha=255
 ~EndLayer
 
 
