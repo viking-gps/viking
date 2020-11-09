@@ -80,6 +80,8 @@ gboolean util_is_url ( const gchar *str );
 
 gchar* util_frob ( gchar *str, guint ii );
 
+gboolean util_glist_of_strings_compare ( GList *aa, GList *bb );
+
 G_END_DECLS
 
 #endif

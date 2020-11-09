@@ -349,3 +349,28 @@ gchar* util_frob ( gchar *str, guint ii )
 	}
 	return str;
 }
+
+/**
+ * util_glist_of_strings_compare:
+ *
+ * Returns: TRUE if they have the same list of string contents
+ */
+gboolean util_glist_of_strings_compare ( GList *aa, GList *bb )
+{
+  gboolean ans = TRUE;
+  if ( g_list_length(aa) == g_list_length(bb) ) {
+    while ( aa ) {
+      if ( g_strcmp0((gchar*)aa->data, (gchar*)bb->data) != 0 ) {
+        ans = FALSE;
+        break;
+      }
+      aa = aa->next;
+      bb = bb->next;
+    }
+  }
+  else
+    // Must be different if different lengths
+    ans = FALSE;
+
+  return ans;
+}
