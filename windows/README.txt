@@ -14,7 +14,7 @@ On the host need to ensure the viking-1.X.tar.gz file is available:
 	make dist
 
 Generate help PDF
-	dblatex help/C/viking.xml
+	dblatex help/C/index.docbook -o viking.pdf
 This could be done in the VM but installing dblatex requires ~650Mb install (so a waste if already available on the host).
 
 ### Guest Preparation (root) ###

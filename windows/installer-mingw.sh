@@ -46,7 +46,7 @@ cp ../README $DESTINATION/README.txt
 # PDF generation if required
 if [ ! -e ../help/C/viking.pdf ]; then
 	pushd ../help/C
-	dblatex viking.xml
+	dblatex index.docbook -o viking.pdf
 	if [ $? != 0 ]; then
 		echo "Help PDF generation failed."
 		exit
