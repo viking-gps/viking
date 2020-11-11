@@ -64,7 +64,7 @@ Requires:	mingw32-liboauth
 %description
 Viking is a free/open source program to manage GPS data.
 You can import, plot and create tracks, routes and waypoints, show OSM and other maps, see real-time GPS position, control items, etc.
-Other advanced capabilities include Geotagging Images, generate Maps (using Mapnik), Upload and Download tracks from OSM, Routing from OSRM or Google, Name Searches from OSM Nominatim or Google and more.
+Other advanced capabilities include Geotagging Images, generate Maps (using Mapnik), Upload and Download tracks from OSM, Routing from OSRM, Name Searches from OSM Nominatim or Geonames and more.
 It is written in mainly in C with some C++ and uses the GTK+2 toolkit.
 
 %prep
