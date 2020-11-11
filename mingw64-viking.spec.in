@@ -22,7 +22,6 @@ BuildRequires:	mingw64-cross-binutils
 BuildRequires:	mingw64-cross-gcc
 BuildRequires:	mingw64-cross-pkg-config
 BuildRequires:	mingw64-gettext-tools
-BuildRequires:	mingw64-gnome-doc-utils-devel
 BuildRequires:	intltool
 BuildRequires:	gdk-pixbuf-devel
 BuildRequires:	libxslt-tools
