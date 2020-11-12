@@ -72,7 +72,6 @@ static GOptionEntry entries[] =
 int main( int argc, char *argv[] )
 {
   VikWindow *first_window;
-  GdkPixbuf *main_icon;
   gboolean dashdash_already = FALSE;
   int i = 0;
   GError *error = NULL;
@@ -115,6 +114,9 @@ int main( int argc, char *argv[] )
 
   // Discover if this is the very first run
   a_vik_very_first_run ();
+
+  vik_icons_register_resource ();
+  ui_load_icons();
 
   a_settings_init ();
   a_preferences_init ();
@@ -168,7 +170,7 @@ int main( int argc, char *argv[] )
     vu_setup_lat_lon_tz_lookup();
 
   /* Set the icon */
-  main_icon = gdk_pixbuf_from_pixdata(&viking_pixbuf, FALSE, NULL);
+  GdkPixbuf *main_icon = ui_get_icon ( "viking", 48 );
   gtk_window_set_default_icon(main_icon);
 
   // Ask for confirmation of default settings on first run
@@ -236,6 +238,8 @@ int main( int argc, char *argv[] )
 
   vu_finalize_lat_lon_tz_lookup ();
 
+  vik_icons_unregister_resource ();
+  
   // Clean up any temporary files
   util_remove_all_in_deletion_list ();
 

@@ -26,7 +26,6 @@
 #include "viktrwlayer_tracklist.h"
 #include "viktrwlayer_waypointlist.h"
 #include "viktrwlayer_export.h"
-#include "icons/icons.h"
 #include "maputils.h"
 #include "background.h"
 #include "gpx.h"
@@ -188,7 +187,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
   AGGREGATE_FIXED_NAME,
   N_("Aggregate"),
   "<control><shift>A",
-  &vikaggregatelayer_pixbuf,
+  "vikaggregatelayer",
 
   NULL,
   0,

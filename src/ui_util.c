@@ -36,6 +36,7 @@
 #include "util.h"
 #include "dialog.h"
 #include "settings.h"
+#include "icons/icons.h"
 
 #ifdef WINDOWS
 #include <windows.h>
@@ -427,4 +428,60 @@ gboolean ui_tree_model_number_tooltip_cb ( GtkWidget    *widget,
 		g_free ( text );
 	}
 	return (num != 0);
+}
+
+/**
+ * Load Icons using GResource (see icons/icons.gresource.xml)
+ */
+void ui_load_icons ( void )
+{
+	const gchar *vikpath = "/org/viking-gps/viking/icons";
+	// Much easier in GTK3
+#if GTK_CHECK_VERSION(3, 14, 0)
+	gtk_icon_theme_add_resource_path ( gtk_icon_theme_get_default(), vikpath );
+#else
+	GResource *icon_res = vik_icons_get_resource();
+	char ** children = g_resource_enumerate_children ( icon_res, vikpath, 0, NULL );
+
+	if ( children == NULL ) {
+		g_critical ( "No icons in resources!" );
+		return;
+	}
+
+	for ( int ii = 0; children[ii] != NULL; ii++ ) {
+		char *path = g_strdup_printf ( "%s/%s", vikpath, children[ii] );
+		GError *error = NULL;
+
+		GdkPixbuf *pb = gdk_pixbuf_new_from_resource ( path, &error );
+		if ( error ) {
+			g_warning ( "%s: %s, %s", __FUNCTION__, children[ii], error->message );
+			g_error_free ( error );
+			break;
+		}
+		
+		int size = gdk_pixbuf_get_height ( pb );
+		// Use a normalized name (i.e. skip the '.png')
+		char *name = g_strdup ( children[ii] );
+		char *pos = g_strstr_len ( name, -1, "." );
+		if ( pos != NULL )
+			*pos = '\0';
+		gtk_icon_theme_add_builtin_icon ( name, size, pb );
+		g_object_unref ( pb );
+		g_free ( name );
+	}
+	g_strfreev ( children );
+#endif
+}
+
+
+GdkPixbuf *ui_get_icon ( const gchar *name, guint size )
+{
+	GError *error = NULL;
+	GdkPixbuf *icon = gtk_icon_theme_load_icon ( gtk_icon_theme_get_default(), name, size, 0, &error );
+	if ( error ) {
+		// Own icons should always be defined
+		g_critical ( "%s: icon '%s' - %s", __FUNCTION__, name, error->message );
+		g_error_free ( error );
+	}
+	return icon;
 }

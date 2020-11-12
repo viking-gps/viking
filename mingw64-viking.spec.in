@@ -23,9 +23,9 @@ BuildRequires:	mingw64-cross-gcc
 BuildRequires:	mingw64-cross-pkg-config
 BuildRequires:	mingw64-gettext-tools
 BuildRequires:	intltool
-BuildRequires:	gdk-pixbuf-devel
 BuildRequires:	libxslt-tools
-# ^For gdk-pixbuf-csource
+BuildRequires:  glib2-devel
+#^ For glib-compile-resources
 
 # Code
 # Not worried about versions ATM

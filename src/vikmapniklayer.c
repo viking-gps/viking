@@ -27,7 +27,6 @@
 #include "mapcoord.h"
 #include "mapcache.h"
 #include "dir.h"
-#include "icons/icons.h"
 #include "mapnik_interface.h"
 #include "background.h"
 
@@ -138,7 +137,7 @@ VikLayerInterface vik_mapnik_layer_interface = {
 	MAPNIK_FIXED_NAME,
 	N_("Mapnik Rendering"),
 	NULL,
-	&vikmapniklayer_pixbuf, // icon
+	"vikmapniklayer", // Icon name
 
 	mapnik_tools,
 	G_N_ELEMENTS(mapnik_tools),
@@ -663,7 +662,7 @@ static void render ( VikMapnikLayer *vml, VikCoord *ul, VikCoord *br, MapCoord *
 	g_debug ( "Mapnik rendering completed in %.3f seconds", tt );
 	if ( !pixbuf ) {
 		// A pixbuf to stick into cache incase of an unrenderable area - otherwise will get continually re-requested
-		pixbuf = gdk_pixbuf_scale_simple ( gdk_pixbuf_from_pixdata(&vikmapniklayer_pixbuf, FALSE, NULL), vml->tile_size_x, vml->tile_size_x, GDK_INTERP_BILINEAR );
+		pixbuf = gdk_pixbuf_scale_simple ( ui_get_icon("vikmapniklayer", 16), vml->tile_size_x, vml->tile_size_x, GDK_INTERP_BILINEAR );
 	}
 	possibly_save_pixbuf ( vml, pixbuf, ulm );
 

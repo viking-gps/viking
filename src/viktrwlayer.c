@@ -57,7 +57,6 @@
 #include "vikexttools.h"
 #include "vikexttool_datasources.h"
 #include "vikrouting.h"
-#include "icons/icons.h"
 
 #include <ctype.h>
 #include <gdk/gdkkeysyms.h>
@@ -411,18 +410,18 @@ static void highest_wp_number_remove_wp(VikTrwLayer *vtl, const gchar *old_wp_na
 //  the second N_ text value is used for the button tooltip (i.e. generally don't want an underscore here)
 //  the value is always set to 0 and the tool loader in VikWindow will set the actual appropriate value used
 static VikToolInterface trw_layer_tools[] = {
-  { &addwp_18_pixbuf,
-    { "CreateWaypoint", "vik-icon-Create Waypoint", N_("Create _Waypoint"), "<control><shift>W", N_("Create Waypoint"), 0 },
+  { "addwp_18",
+    { "CreateWaypoint", "addwp_18", N_("Create _Waypoint"), "<control><shift>W", N_("Create Waypoint"), 0 },
     (VikToolConstructorFunc) tool_new_waypoint_create,    NULL, NULL, NULL,
     (VikToolMouseFunc) tool_new_waypoint_click,    NULL, NULL,
     (VikToolKeyFunc) NULL,
     (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_addwp_pixbuf, NULL },
+    GDK_CURSOR_IS_PIXMAP, "cursor_addwp", NULL },
 
   // CreateTrack instead of EditTrack for backwards compatibility
-  { &addtr_18_pixbuf,
-    { "CreateTrack", "vik-icon-Edit Track", N_("Edit _Track"), "<control><shift>T", N_("Edit Track"), 0 },
+  { "addtr_18",
+    { "CreateTrack", "addtr_18", N_("Edit _Track"), "<control><shift>T", N_("Edit Track"), 0 },
     (VikToolConstructorFunc) tool_edit_track_create,       NULL, NULL, NULL,
     (VikToolMouseFunc) tool_edit_track_click,
     (VikToolMouseMoveFunc) tool_edit_track_move,
@@ -430,11 +429,11 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolKeyFunc) tool_edit_track_key_press,
     (VikToolKeyFunc) tool_edit_track_key_release,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
-    GDK_CURSOR_IS_PIXMAP, &cursor_addtr_pixbuf, NULL },
+    GDK_CURSOR_IS_PIXMAP, "cursor_addtr", NULL },
 
   // CreateRoute instead of EditRoute for backwards compatibility
-  { &vik_new_route_18_pixbuf,
-    { "CreateRoute", "vik-icon-Edit Route", N_("Edit _Route"), "<control><shift>B", N_("Edit Route"), 0 },
+  { "vik_new_route_18",
+    { "CreateRoute", "vik_new_route_18", N_("Edit _Route"), "<control><shift>B", N_("Edit Route"), 0 },
     (VikToolConstructorFunc) tool_edit_route_create,       NULL, NULL, NULL,
     (VikToolMouseFunc) tool_edit_route_click,
     (VikToolMouseMoveFunc) tool_edit_track_move, // -\#
@@ -442,10 +441,10 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolKeyFunc) tool_edit_track_key_press,  // -/#
     (VikToolKeyFunc) tool_edit_track_key_release,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
-    GDK_CURSOR_IS_PIXMAP, &cursor_new_route_pixbuf, NULL },
+    GDK_CURSOR_IS_PIXMAP, "cursor_new_route", NULL },
 
-  { &route_finder_18_pixbuf,
-    { "ExtendedRouteFinder", "vik-icon-Route Finder", N_("Route _Finder"), "<control><shift>F", N_("Route Finder"), 0 },
+  { "route_finder_18",
+    { "ExtendedRouteFinder", "route_finder_18", N_("Route _Finder"), "<control><shift>F", N_("Route Finder"), 0 },
     (VikToolConstructorFunc) tool_extended_route_finder_create,  NULL, NULL, NULL,
     (VikToolMouseFunc) tool_extended_route_finder_click,
     (VikToolMouseMoveFunc) tool_edit_track_move, // -\#
@@ -453,10 +452,10 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolKeyFunc) tool_extended_route_finder_key_press,
     (VikToolKeyFunc) tool_edit_track_key_release,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
-    GDK_CURSOR_IS_PIXMAP, &cursor_route_finder_pixbuf, NULL },
+    GDK_CURSOR_IS_PIXMAP, "cursor_route_finder", NULL },
 
-  { &splitter_18_pixbuf,
-    { "Splitter", "vik-icon-Splitter", N_("Splitter"), "<control><shift>L", N_("Splitter"), 0 },
+  { "splitter_18",
+    { "Splitter", "splitter_18", N_("Splitter"), "<control><shift>L", N_("Splitter"), 0 },
     (VikToolConstructorFunc) tool_splitter_create,  NULL, NULL, NULL,
     (VikToolMouseFunc) tool_splitter_click,
     (VikToolMouseMoveFunc) NULL,
@@ -464,10 +463,10 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolKeyFunc) NULL,
     (VikToolKeyFunc) NULL,
     TRUE, // Still need to handle clicks when in PAN mode to disable the potential trackpoint drawing
-    GDK_CURSOR_IS_PIXMAP, &cursor_splitter_pixbuf, NULL },
+    GDK_CURSOR_IS_PIXMAP, "cursor_splitter", NULL },
 
-  { &edwp_18_pixbuf,
-    { "EditWaypoint", "vik-icon-Edit Waypoint", N_("_Edit Waypoint"), "<control><shift>E", N_("Edit Waypoint"), 0 },
+  { "edwp_18",
+    { "EditWaypoint", "edwp_18", N_("_Edit Waypoint"), "<control><shift>E", N_("Edit Waypoint"), 0 },
     (VikToolConstructorFunc) tool_edit_waypoint_create,
     (VikToolDestructorFunc) tool_edit_waypoint_destroy,
     NULL, NULL,
@@ -477,10 +476,10 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolKeyFunc) NULL,
     (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_edwp_pixbuf, NULL },
+    GDK_CURSOR_IS_PIXMAP, "cursor_edwp", NULL },
 
-  { &edtr_18_pixbuf,
-    { "EditTrackpoint", "vik-icon-Edit Trackpoint", N_("Edit Trac_kpoint"), "<control><shift>K", N_("Edit Trackpoint"), 0 },
+  { "edtr_18",
+    { "EditTrackpoint", "edtr_18", N_("Edit Trac_kpoint"), "<control><shift>K", N_("Edit Trackpoint"), 0 },
     (VikToolConstructorFunc) tool_edit_trackpoint_create,
     (VikToolDestructorFunc) tool_edit_trackpoint_destroy,
     NULL, NULL,
@@ -490,7 +489,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolKeyFunc) NULL,
     (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_edtr_pixbuf, NULL },
+    GDK_CURSOR_IS_PIXMAP, "cursor_edtr", NULL },
 
   { NULL, // a pixbuf for this one is already made globally available
     { "ShowPicture", VIK_ICON_SHOW_PICTURE, N_("Show P_icture"), "<control><shift>I", N_("Show Picture"), 0 },
@@ -499,7 +498,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolKeyFunc) NULL,
     (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_showpic_pixbuf, NULL },
+    GDK_CURSOR_IS_PIXMAP, "cursor_showpic", NULL },
 
 };
 
@@ -833,7 +832,7 @@ VikLayerInterface vik_trw_layer_interface = {
   TRACKWAYPOINT_FIXED_NAME,
   N_("TrackWaypoint"),
   "<control><shift>Y",
-  &viktrwlayer_pixbuf,
+  "viktrwlayer", // Icon name
 
   trw_layer_tools,
   G_N_ELEMENTS(trw_layer_tools),
@@ -12267,14 +12266,12 @@ static void trw_update_layer_icon ( VikTrwLayer *trw )
   if ( ! VIK_LAYER(trw)->vt )
     return;
 
-  const GdkPixdata *data;
+  GdkPixbuf *buf;
   switch ( trw->external_layer ) {
-    case VIK_TRW_LAYER_EXTERNAL: data = &viktrwlayer_external_pixbuf; break;
-    case VIK_TRW_LAYER_EXTERNAL_NO_WRITE: data = &viktrwlayer_external_nowrite_pixbuf; break;
-    default: data = &viktrwlayer_pixbuf; break;
+    case VIK_TRW_LAYER_EXTERNAL: buf = ui_get_icon ( "viktrwlayer_external", 16 ); break;
+    case VIK_TRW_LAYER_EXTERNAL_NO_WRITE: buf = ui_get_icon ( "viktrwlayer_external_nowrite", 16 ); break;
+    default: buf = ui_get_icon ( "viktrwlayer", 16 ); break;
   }
-
-  GdkPixbuf *buf = gdk_pixbuf_from_pixdata ( data, FALSE, NULL );
   vik_treeview_item_set_icon ( VIK_LAYER(trw)->vt, &(VIK_LAYER(trw)->iter), buf );
   g_object_unref ( buf );
 }

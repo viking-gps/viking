@@ -582,7 +582,7 @@ GdkPixbuf *vik_layer_load_icon ( VikLayerTypeEnum type )
 {
   g_assert ( type < VIK_LAYER_NUM_TYPES );
   if ( vik_layer_interfaces[type]->icon )
-    return gdk_pixbuf_from_pixdata ( vik_layer_interfaces[type]->icon, FALSE, NULL );
+    return ui_get_icon ( vik_layer_interfaces[type]->icon, 16 );
   return NULL;
 }
 

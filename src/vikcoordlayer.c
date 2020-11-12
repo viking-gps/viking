@@ -20,7 +20,6 @@
  */
 #include "viking.h"
 #include "vikcoordlayer.h"
-#include "icons/icons.h"
 
 #define COORD_FIXED_NAME "Coord"
 
@@ -68,7 +67,7 @@ VikLayerInterface vik_coord_layer_interface = {
   COORD_FIXED_NAME,
   N_("Coordinate"),
   NULL,
-  &vikcoordlayer_pixbuf,
+  "vikcoordlayer",
 
   NULL,
   0,

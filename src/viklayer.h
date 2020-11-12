@@ -91,7 +91,7 @@ typedef gboolean (*VikToolKeyFunc) (VikLayer *, GdkEventKey *, gpointer);
 
 typedef struct _VikToolInterface VikToolInterface;
 struct _VikToolInterface {
-  const GdkPixdata *icon;
+  const gchar *icon;
   GtkRadioActionEntry radioActionEntry;
   VikToolConstructorFunc create;
   VikToolDestructorFunc destroy;
@@ -104,7 +104,7 @@ struct _VikToolInterface {
   VikToolKeyFunc key_release; /* as above */
   gboolean pan_handler; // Call click & release funtions even when 'Pan Mode' is on
   GdkCursorType cursor_type;
-  const GdkPixdata *cursor_data;
+  const gchar *cursor_name;
   const GdkCursor *cursor;
 };
 
@@ -205,7 +205,7 @@ struct _VikLayerInterface {
   const gchar *                     fixed_layer_name; // Used in .vik files - this should never change to maintain file compatibility
   const gchar *                     name;             // Translate-able name used for display purposes
   const gchar *                     accelerator;
-  const GdkPixdata *                icon;
+  const gchar *                     icon;
 
   VikToolInterface *                tools;
   guint16                           tools_count;

@@ -36,7 +36,6 @@
 #include "vikdemlayer.h"
 #include "dem.h"
 #include "dems.h"
-#include "icons/icons.h"
 #include "bbox.h"
 
 #define DEM_FIXED_NAME "DEM"
@@ -174,14 +173,14 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
 static gboolean dem_layer_download_click ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
 
 static VikToolInterface dem_tools[] = {
-  { &demdl_18_pixbuf,
-    { "DEMDownload", "vik-icon-DEM Download", N_("_DEM Download"), NULL, N_("DEM Download"), 0 },
+  { "demdl_18",
+    { "DEMDownload", "demdl_18", N_("_DEM Download"), NULL, N_("DEM Download"), 0 },
     (VikToolConstructorFunc) dem_layer_download_create, NULL, NULL, NULL,
     (VikToolMouseFunc) dem_layer_download_click, NULL,  (VikToolMouseFunc) dem_layer_download_release,
     (VikToolKeyFunc) NULL,
     (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_demdl_pixbuf, NULL },
+    GDK_CURSOR_IS_PIXMAP, "cursor_demdl", NULL },
 };
 
 
@@ -229,7 +228,7 @@ VikLayerInterface vik_dem_layer_interface = {
   DEM_FIXED_NAME,
   N_("DEM"),
   "<control><shift>D",
-  &vikdemlayer_pixbuf,
+  "vikdemlayer", // Icon name
 
   dem_tools,
   G_N_ELEMENTS(dem_tools),

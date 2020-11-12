@@ -44,13 +44,11 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
-#include <gdk-pixbuf/gdk-pixdata.h>
 #include "globals.h"
 #include "bingmapsource.h"
 #include "maputils.h"
 #include "bbox.h"
 #include "background.h"
-#include "icons/icons.h"
 
 /* Format for URL */
 #define URL_ATTR_FMT "http://dev.virtualearth.net/REST/v1/Imagery/Metadata/Aerial/0,0?zl=1&mapVersion=v1&key=%s&include=ImageryProviders&output=xml"
@@ -230,7 +228,12 @@ bing_map_source_class_init (BingMapSourceClass *klass)
 
 	object_class->finalize = bing_map_source_finalize;
 
-	pixbuf = gdk_pixbuf_from_pixdata ( &bing_maps_pixbuf, TRUE, NULL );
+	GError *error = NULL;
+	pixbuf = gdk_pixbuf_new_from_resource ( "/org/viking-gps/viking/assets/bing_maps.png", &error );
+	if ( error ) {
+		g_critical ( "%s: %s", __FUNCTION__, error->message );
+		g_error_free ( error );
+	}
 }
 
 static gchar *

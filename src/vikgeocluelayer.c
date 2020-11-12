@@ -22,7 +22,6 @@
 #include "vikgeocluelayer.h"
 #include "viking.h"
 #include "libgeoclue.h"
-#include "icons/icons.h"
 
 #define GEOCLUE_FIXED_NAME "GeoClue"
 
@@ -99,7 +98,7 @@ VikLayerInterface vik_geoclue_layer_interface = {
   GEOCLUE_FIXED_NAME,
   N_("GeoClue"),
   NULL,
-  &vikgeocluelayer_pixbuf,
+  "vikgeocluelayer",
 
   NULL,
   0,

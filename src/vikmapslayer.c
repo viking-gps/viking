@@ -37,7 +37,6 @@
 #include "mapcache.h"
 #include "background.h"
 #include "vikmapslayer.h"
-#include "icons/icons.h"
 #include "metatile.h"
 #include "map_ids.h"
 
@@ -190,8 +189,8 @@ void maps_layer_set_cache_default ( VikMapsCacheLayout layout )
 }
 
 static VikToolInterface maps_tools[] = {
-  { &mapdl_18_pixbuf,
-    { "MapsDownload", "vik-icon-Maps Download", N_("_Maps Download"), NULL, N_("Maps Download"), 0 },
+  { "mapdl_18",
+    { "MapsDownload", "mapdl_18", N_("_Maps Download"), NULL, N_("Maps Download"), 0 },
     (VikToolConstructorFunc) maps_layer_download_create,
     NULL,
     NULL,
@@ -202,14 +201,14 @@ static VikToolInterface maps_tools[] = {
     NULL,
     NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_mapdl_pixbuf, NULL },
+    GDK_CURSOR_IS_PIXMAP, "cursor_mapdl", NULL },
 };
 
 VikLayerInterface vik_maps_layer_interface = {
   MAP_FIXED_NAME,
   N_("Map"),
   "<control><shift>M",
-  &vikmapslayer_pixbuf,
+  "vikmapslayer", // Icon name
 
   maps_tools,
   G_N_ELEMENTS(maps_tools),

@@ -87,11 +87,11 @@ AM_WITH_EXPAT
 # Curl
 LIBCURL_CHECK_CONFIG([yes],[],[],[AC_MSG_ERROR([libcurl is needed but not found])])
 
-# gdk-pixbuf-csource
-AC_CHECK_PROG([GDK_PIXBUF_CSOURCE],gdk-pixbuf-csource,[yes])
-if test "x$GDK_PIXBUF_CSOURCE" != "xyes"
+# glib-compile-resources
+AC_CHECK_PROG([GLIB_COMPILE_RESOURCES],glib-compile-resources,[yes])
+if test "x$GLIB_COMPILE_RESOURCES" != "xyes"
 then
-  AC_MSG_ERROR([gdk-pixbuf-csource is needed but not found])
+  AC_MSG_ERROR([glib-compile-resources is needed but not found])
 fi
 
 dnl  ------------------
@@ -102,7 +102,8 @@ PKG_CHECK_MODULES(PACKAGE, [
         glib-2.0          >= 2.40
         gthread-2.0       >= 2.2
         gtk+-2.0          >= 2.18
-        gio-2.0           >= 2.12
+        gio-2.0           >= 2.32
+        gdk-pixbuf-2.0    >= 2.26
 ])
 
 AC_SUBST(PACKAGE_CFLAGS)

@@ -23,7 +23,6 @@
 #include "vikgeoreflayer.h"
 #include <ctype.h>
 
-#include "icons/icons.h"
 #include "vikmapslayer.h"
 
 /*
@@ -81,30 +80,30 @@ static gboolean georef_layer_zoom_press ( VikGeorefLayer *vgl, GdkEventButton *e
 
 // See comment in viktrwlayer.c for advice on values used
 static VikToolInterface georef_tools[] = {
-  { &geomove_18_pixbuf,
-    { "GeorefMoveMap", "vik-icon-Georef Move Map",  N_("_Georef Move Map"), NULL,  N_("Georef Move Map"), 0 },
+  { "geomove_18",
+    { "GeorefMoveMap", "geomove_18",  N_("_Georef Move Map"), NULL,  N_("Georef Move Map"), 0 },
     (VikToolConstructorFunc) georef_layer_move_create, NULL, NULL, NULL,
     (VikToolMouseFunc) georef_layer_move_press, NULL, (VikToolMouseFunc) georef_layer_move_release,
     (VikToolKeyFunc) NULL,
     (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_geomove_pixbuf, NULL },
+    GDK_CURSOR_IS_PIXMAP, "cursor_geomove", NULL },
 
-  { &geozoom_18_pixbuf,
-    { "GeorefZoomTool", "vik-icon-Georef Zoom Tool",  N_("Georef Z_oom Tool"), NULL,  N_("Georef Zoom Tool"), 0 },
+  { "geozoom_18",
+    { "GeorefZoomTool", "geozoom_18",  N_("Georef Z_oom Tool"), NULL,  N_("Georef Zoom Tool"), 0 },
     (VikToolConstructorFunc) georef_layer_zoom_create, NULL, NULL, NULL,
     (VikToolMouseFunc) georef_layer_zoom_press, NULL, NULL,
     (VikToolKeyFunc) NULL,
     (VikToolKeyFunc) NULL,
     FALSE,
-    GDK_CURSOR_IS_PIXMAP, &cursor_geozoom_pixbuf, NULL },
+    GDK_CURSOR_IS_PIXMAP, "cursor_geozoom", NULL },
 };
 
 VikLayerInterface vik_georef_layer_interface = {
   "GeoRef Map",
   N_("GeoRef Map"),
   NULL,
-  &vikgeoreflayer_pixbuf, /*icon */
+  "vikgeoreflayer", // Icon name
 
   georef_tools,
   sizeof(georef_tools) / sizeof(VikToolInterface),

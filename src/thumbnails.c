@@ -86,7 +86,7 @@ gboolean a_thumbnails_exists ( const gchar *filename )
 
 GdkPixbuf *a_thumbnails_get_default ()
 {
-  return gdk_pixbuf_from_pixdata ( &thumbnails_pixbuf, FALSE, NULL );
+  return ui_get_icon ( "thumbnails", 128 );
 }
 
 /* filename must be absolute. you could have a function to make sure it exists and absolutize it */

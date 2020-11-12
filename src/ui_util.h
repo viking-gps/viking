@@ -61,6 +61,10 @@ gboolean ui_tree_model_number_tooltip_cb ( GtkWidget    *widget,
                                            gboolean      keyboard_mode,
                                            GtkTooltip   *tooltip,
                                            GtkTreeModel *tree_model );
+
+void ui_load_icons ( void );
+GdkPixbuf *ui_get_icon ( const gchar *name, guint size );
+
 G_END_DECLS
 
 #endif

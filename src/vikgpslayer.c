@@ -22,7 +22,6 @@
  */
 #include "viking.h"
 #include "vikgpslayer.h"
-#include "icons/icons.h"
 #include "babel.h"
 #include "viktrwlayer.h"
 
@@ -254,7 +253,7 @@ VikLayerInterface vik_gps_layer_interface = {
   GPS_FIXED_NAME,
   N_("GPS"),
   NULL,
-  &vikgpslayer_pixbuf,
+  "vikgpslayer", // Icon name
 
   NULL,
   0,
