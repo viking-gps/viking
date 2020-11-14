@@ -1681,7 +1681,7 @@ This is only enabled when a trackpoint is selected.
 
 <section><title>Refine Route...</title>
 <para>
-This function allows to request a Routing Engine in order to refine a given route.
+This function allows one to request a Routing Engine in order to refine a given route.
 By "refining" we mean computing all real intermediates points between some given major points.
 This could be useful to compute a trip giving only the wished important steps.
 </para>
@@ -3986,7 +3986,7 @@ Accept: */*
         <title>Go-to search engines</title>
         <para>It is possible to add new new search engines for the "Go-To" feature. The file is <filename>~/.viking/goto_tools.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/goto_tools.xml</filename>.</para>
-        <para>Currently, there is a single object class available: <classname>VikGotoXmlTool</classname>. Such feature allows to declare any search engine using a XML format as result.</para>
+        <para>Currently, there is a single object class available: <classname>VikGotoXmlTool</classname>. This feature allows one to declare any search engine using a XML format as result.</para>
         <para>The related properties are:
           <variablelist>
             <varlistentry>
@@ -4022,7 +4022,7 @@ Accept: */*
         <title>External tools</title>
         <para>It is possible to add new external tools. The file is <filename>~/.viking/external_tools.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/external_tools.xml</filename>.</para>
-        <para>The <classname>VikWebtoolCenter</classname> allows to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
+        <para>The <classname>VikWebtoolCenter</classname> allows one to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
         <para>The related properties are:
           <variablelist>
             <varlistentry>
@@ -4035,7 +4035,7 @@ Accept: */*
             </varlistentry>
           </variablelist>
         </para>
-        <para>The <classname>VikWebtoolBounds</classname> allows to declare any Webtool using a logic based on bounds coordinates.</para>
+        <para>The <classname>VikWebtoolBounds</classname> allows one to declare any Webtool using a logic based on bounds coordinates.</para>
         <para>The related properties are:
           <variablelist>
             <varlistentry>
@@ -4054,7 +4054,7 @@ Accept: */*
         <title>Routing engine</title>
         <para>It is possible to declare new routing engines. The file is <filename>~/.viking/routing.xml</filename>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/routing.xml</filename>.</para>
-        <para>The <classname>VikRoutingWebEngine</classname> allows to declare a routing engine available via HTTP.</para>
+        <para>The <classname>VikRoutingWebEngine</classname> allows one to declare a routing engine available via HTTP.</para>
         <para>The related properties are:
           <variablelist>
             <varlistentry>
@@ -4118,7 +4118,7 @@ Accept: */*
         <para>It is possible to add web references expected to return a file which can then be opened directly or converted via GPSBabel.</para>
         <para>The file is <filename>~/.viking/datasources.xml</filename>.</para>
         <para>An example of the file is in the source distribution <filename>doc/examples/datasources.xml</filename>.</para>
-        <para>The <classname>VikWebtoolDatasource</classname> allows to declare any URL using logic based on coordinates.</para>
+        <para>The <classname>VikWebtoolDatasource</classname> allows one to declare any URL using logic based on coordinates.</para>
         <para>The related properties are:
           <variablelist>
             <varlistentry>
