@@ -96,10 +96,10 @@ cp $MINGW_BIN/liblzma*.dll $DESTINATION
 cp $MINGW_BIN/libpng*.dll $DESTINATION
 cp $MINGW_BIN/libpango*.dll $DESTINATION
 cp $MINGW_BIN/libpixman*.dll $DESTINATION
+cp $MINGW_BIN/libssp*.dll $DESTINATION
 cp $MINGW_BIN/libtiff*.dll $DESTINATION
 cp $MINGW_BIN/libxml2*.dll $DESTINATION
-cp $MINGW_BIN/zlib1.dll $DESTINATION
-cp $MINGW_BIN/libzip*.dll $DESTINATION
+cp $MINGW_BIN/libz*.dll $DESTINATION
 
 # Extras
 cp $MINGW_BIN/libexpat*.dll $DESTINATION

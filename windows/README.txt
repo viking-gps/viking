@@ -23,8 +23,6 @@ In the guest ensure availability of build dependent mingw32 / mingw64 packages (
 	# As root
 	zypper ar -f http://download.opensuse.org/repositories/windows:/mingw:/win32/openSUSE_Tumbleweed windows
 	zypper ar -f http://download.opensuse.org/repositories/windows:/mingw:/win64/openSUSE_Tumbleweed windows64
-	zypper ar -f http://download.opensuse.org/repositories/home:/ecsos/openSUSE_Tumbleweed windows-extra-ecsos
-	zypper ar -f http://download.opensuse.org/repositories/home:/ecsos:/pipelight/openSUSE_Tumbleweed windows-extra-ecsos2
 	# Ensure a standard user account is available for the build e.g:
 	#useradd -m build
 	#passwd build
@@ -45,7 +43,12 @@ fi
 Make code accessible via a shared folder
 So add a suitable Shared Folder to the virtual machine
 Remember the build user will need mount access priviledges - if using VirtualBox then:
-	#As root
+	##As root: Enable shared folder - often needing to run guest additions (insert/add disk .iso image)
+	#zypper install kernel-source kernel-syms
+	#mount /dev/cdrom /media/cdrom
+	#cd /media/cdrom/
+	#./VBoxLinuxAdditions.run
+	## Allow access
 	#usermod -a -G vboxsf <builduser>
 
 ### Guest Preparation (builduser) ###

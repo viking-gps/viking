@@ -57,6 +57,7 @@ Requires:	mingw64-libsqlite3-0
 Requires:	mingw64-libzip4
 Requires:	mingw64-libnettle
 Requires:	mingw64-liboauth
+Requires:	mingw64-libgps
 # Currently running makensis in seperate script - so you will need it then
 # NB No 64bit version available
 #Requires:	mingw32-cross-nsis

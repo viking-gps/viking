@@ -58,6 +58,7 @@ Requires:	mingw32-libzip4
 Requires:	mingw32-libnettle
 Requires:	mingw32-libgps
 Requires:	mingw32-liboauth
+Requires:	mingw32-libgps
 # Currently running makensis in seperate script - so you will need it then
 #Requires:	mingw32-cross-nsis
 
@@ -79,7 +80,6 @@ popd
 #
 # Specifics for Windows build - i.e. no Mapnik yet
 %{_mingw32_configure}\
-  --disable-realtime-gps-tracking \
   --disable-mapnik \
   --disable-geoclue \
   --enable-windows \
