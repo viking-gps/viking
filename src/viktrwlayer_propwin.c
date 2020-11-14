@@ -2141,7 +2141,7 @@ static gboolean split_at_marker ( PropWidgets *widgets )
         }
         if (iter == NULL) {
           a_dialog_msg(VIK_GTK_WINDOW_FROM_LAYER(vtl), GTK_MESSAGE_ERROR,
-                  _("Failed spliting track. Track unchanged"), NULL);
+                  _("Failed splitting track. Track unchanged"), NULL);
           return TRUE;
         }
 

@@ -4434,7 +4434,7 @@ msgid "%.1f km"
 msgstr "%.1f公里"
 
 #: ../src/viktrwlayer_propwin.c:3083
-msgid "Failed spliting track. Track unchanged"
+msgid "Failed splitting track. Track unchanged"
 msgstr "分割轨迹失败。轨迹未变"
 
 #: ../src/viktrwlayer_propwin.c:3234 ../src/viktrwlayer_propwin.c:3744

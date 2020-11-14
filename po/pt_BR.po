@@ -4424,7 +4424,7 @@ msgid "%.1f km"
 msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3083
-msgid "Failed spliting track. Track unchanged"
+msgid "Failed splitting track. Track unchanged"
 msgstr "Desmembramento da Faixa falhou. Faixa inalterada"
 
 #: ../src/viktrwlayer_propwin.c:3234 ../src/viktrwlayer_propwin.c:3744
