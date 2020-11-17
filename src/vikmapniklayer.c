@@ -323,6 +323,7 @@ void vik_mapnik_layer_post_init (void)
 void vik_mapnik_layer_uninit ()
 {
 	vik_mutex_free (tp_mutex);
+	g_hash_table_destroy ( requests );
 }
 
 // NB Only performed once per program run
