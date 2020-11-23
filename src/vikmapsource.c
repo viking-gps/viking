@@ -263,11 +263,11 @@ gboolean
 vik_map_source_is_direct_file_access (VikMapSource * self)
 {
 	VikMapSourceClass *klass;
-	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	g_return_val_if_fail (self != NULL, FALSE);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), FALSE);
 	klass = VIK_MAP_SOURCE_GET_CLASS(self);
 
-	g_return_val_if_fail (klass->is_direct_file_access != NULL, 0);
+	g_return_val_if_fail (klass->is_direct_file_access != NULL, FALSE);
 
 	return (*klass->is_direct_file_access)(self);
 }
@@ -284,11 +284,11 @@ gboolean
 vik_map_source_is_mbtiles (VikMapSource * self)
 {
 	VikMapSourceClass *klass;
-	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	g_return_val_if_fail (self != NULL, FALSE);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), FALSE);
 	klass = VIK_MAP_SOURCE_GET_CLASS(self);
 
-	g_return_val_if_fail (klass->is_mbtiles != NULL, 0);
+	g_return_val_if_fail (klass->is_mbtiles != NULL, FALSE);
 
 	return (*klass->is_mbtiles)(self);
 }
@@ -303,11 +303,11 @@ vik_map_source_is_mbtiles (VikMapSource * self)
 gboolean vik_map_source_is_osm_meta_tiles (VikMapSource * self)
 {
 	VikMapSourceClass *klass;
-	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	g_return_val_if_fail (self != NULL, FALSE);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), FALSE);
 	klass = VIK_MAP_SOURCE_GET_CLASS(self);
 
-	g_return_val_if_fail (klass->is_osm_meta_tiles != NULL, 0);
+	g_return_val_if_fail (klass->is_osm_meta_tiles != NULL, FALSE);
 
 	return (*klass->is_osm_meta_tiles)(self);
 }
@@ -316,11 +316,11 @@ gboolean
 vik_map_source_supports_download_only_new (VikMapSource * self)
 {
 	VikMapSourceClass *klass;
-	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	g_return_val_if_fail (self != NULL, FALSE);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), FALSE);
 	klass = VIK_MAP_SOURCE_GET_CLASS(self);
 
-	g_return_val_if_fail (klass->supports_download_only_new != NULL, 0);
+	g_return_val_if_fail (klass->supports_download_only_new != NULL, FALSE);
 
 	return (*klass->supports_download_only_new)(self);
 }
@@ -508,11 +508,11 @@ void *
 vik_map_source_download_handle_init (VikMapSource *self)
 {
 	VikMapSourceClass *klass;
-	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), NULL);
 	klass = VIK_MAP_SOURCE_GET_CLASS(self);
 
-	g_return_val_if_fail (klass->download_handle_init != NULL, 0);
+	g_return_val_if_fail (klass->download_handle_init != NULL, NULL);
 
 	return (*klass->download_handle_init)(self);
 }

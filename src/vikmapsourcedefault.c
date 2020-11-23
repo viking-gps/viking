@@ -590,11 +590,11 @@ gchar *
 vik_map_source_default_get_uri( VikMapSourceDefault *self, MapCoord *src )
 {
 	VikMapSourceDefaultClass *klass;
-	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self), 0);
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self), NULL);
 	klass = VIK_MAP_SOURCE_DEFAULT_GET_CLASS(self);
 
-	g_return_val_if_fail (klass->get_uri != NULL, 0);
+	g_return_val_if_fail (klass->get_uri != NULL, NULL);
 
 	return (*klass->get_uri)(self, src);
 }
@@ -603,11 +603,11 @@ gchar *
 vik_map_source_default_get_hostname( VikMapSourceDefault *self )
 {
 	VikMapSourceDefaultClass *klass;
-	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self), 0);
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self), NULL);
 	klass = VIK_MAP_SOURCE_DEFAULT_GET_CLASS(self);
 
-	g_return_val_if_fail (klass->get_hostname != NULL, 0);
+	g_return_val_if_fail (klass->get_hostname != NULL, NULL);
 
 	return (*klass->get_hostname)(self);
 }
@@ -616,11 +616,11 @@ DownloadFileOptions *
 vik_map_source_default_get_download_options( VikMapSourceDefault *self, MapCoord *src )
 {
 	VikMapSourceDefaultClass *klass;
-	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self), 0);
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self), NULL);
 	klass = VIK_MAP_SOURCE_DEFAULT_GET_CLASS(self);
 
-	g_return_val_if_fail (klass->get_download_options != NULL, 0);
+	g_return_val_if_fail (klass->get_download_options != NULL, NULL);
 
 	return (*klass->get_download_options)(self, src);
 }
@@ -629,12 +629,12 @@ gchar *
 vik_map_source_default_get_url_display( VikMapSourceDefault *self, MapCoord *src )
 {
 	VikMapSourceDefaultClass *klass;
-	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self), 0);
+	g_return_val_if_fail (self != NULL, NULL);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self), NULL);
 	klass = VIK_MAP_SOURCE_DEFAULT_GET_CLASS(self);
 
-	g_return_val_if_fail (klass->get_uri != NULL, 0);
-	g_return_val_if_fail (klass->get_hostname != NULL, 0);
+	g_return_val_if_fail (klass->get_uri != NULL, NULL);
+	g_return_val_if_fail (klass->get_hostname != NULL, NULL);
 
 	gchar *newstr = NULL;
 	gchar *hostname = (*klass->get_hostname)(self);

@@ -212,9 +212,9 @@ vik_routing_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLo
 {
 	VikRoutingEngineClass *klass;
 	
-	g_return_val_if_fail ( VIK_IS_ROUTING_ENGINE (self), 0 );
+	g_return_val_if_fail ( VIK_IS_ROUTING_ENGINE (self), FALSE );
 	klass = VIK_ROUTING_ENGINE_GET_CLASS( self );
-	g_return_val_if_fail ( klass->find != NULL, 0 );
+	g_return_val_if_fail ( klass->find != NULL, FALSE );
 
 	return klass->find( self, vtl, start, end );
 }
@@ -318,9 +318,9 @@ vik_routing_engine_refine ( VikRoutingEngine *self, VikTrwLayer *vtl, VikTrack *
 {
   VikRoutingEngineClass *klass;
 
-  g_return_val_if_fail ( VIK_IS_ROUTING_ENGINE (self), 0 );
+  g_return_val_if_fail ( VIK_IS_ROUTING_ENGINE (self), FALSE );
   klass = VIK_ROUTING_ENGINE_GET_CLASS ( self );
-  g_return_val_if_fail ( klass->refine != NULL, 0 );
+  g_return_val_if_fail ( klass->refine != NULL, FALSE );
 
   return klass->refine ( self, vtl, vt );
 }
