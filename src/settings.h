@@ -22,6 +22,8 @@
 #ifndef __SETTINGS_H
 #define __SETTINGS_H
 
+#include <glib.h>
+
 G_BEGIN_DECLS
 
 void a_settings_init();

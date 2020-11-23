@@ -31,7 +31,7 @@
   *  between various Viking versions, should one switch to different API/storage methods.
   * Indeed even the internal settings themselves can be liable to change.
   */
-#include <glib.h>
+#include "settings.h"
 #include "dir.h"
 
 static GKeyFile *keyfile;
