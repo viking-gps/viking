@@ -8,7 +8,6 @@
     <property name="id">13</property>
     <property name="zoom-min">0</property>
     <property name="zoom-max">19</property>
-    <property name="name">OSM-Mapnik</property>
     <property name="copyright">© OpenStreetMap contributors</property>
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
@@ -25,7 +24,6 @@
     <property name="zoom-min">0</property>
     <property name="zoom-max">18</property>
     <property name="id">17</property>
-    <property name="name">OSM-Cycle</property>
     <property name="copyright">© OpenStreetMap contributors</property>
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
@@ -34,7 +32,6 @@
   </object>
 -->
   <object class="VikSlippyMapSource">
-    <property name="name">OSM GPS Traces</property>
     <property name="label">OSM GPS Traces</property>
     <property name="hostname">https://gps-c.tile.openstreetmap.org</property>
     <property name="url">/lines/%d/%d/%d.png</property>
@@ -66,7 +63,6 @@
     <property name="license-url">http://caltopo.com/</property>
   </object>
   <object class="VikSlippyMapSource">
-    <property name="name">Public Transport Map</property>
     <property name="label">Public Transport Map</property>
     <property name="hostname">tile.xn--pnvkarte-m4a.de</property>
     <property name="url">/tilegen/%0d/%d/%d.png</property>
@@ -88,7 +84,6 @@
     <property name="zoom-max">18</property>
     <property name="id">600</property>
     <property name="follow-location">2</property>
-    <property name="name">OpenSeaMap</property>
     <property name="copyright">© OpenStreetMap contributors</property>
     <property name="license">CC-BY-SA</property>
     <property name="license-url">http://www.openstreetmap.org/copyright</property>
