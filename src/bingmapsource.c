@@ -290,7 +290,8 @@ static void
 _get_copyright(VikMapSource * self, LatLonBBox bbox, gdouble zoom, void (*fct)(VikViewport*,const gchar*), void *data)
 {
 	g_return_if_fail (BING_IS_MAP_SOURCE(self));
-	g_debug("%s: looking for %g %g %g %g at %g", __FUNCTION__, bbox.south, bbox.north, bbox.east, bbox.west, zoom);
+	if ( vik_verbose )
+		g_debug("%s: looking for %g %g %g %g at %g", __FUNCTION__, bbox.south, bbox.north, bbox.east, bbox.west, zoom);
 
 	BingMapSourcePrivate *priv = BING_MAP_SOURCE_GET_PRIVATE(self);
 
