@@ -495,11 +495,11 @@ DownloadResult_t
 vik_map_source_download (VikMapSource * self, MapCoord * src, const gchar * dest_fn, void *handle)
 {
 	VikMapSourceClass *klass;
-	g_return_val_if_fail (self != NULL, 0);
-	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), 0);
+	g_return_val_if_fail (self != NULL, DOWNLOAD_PARAMETERS_ERROR);
+	g_return_val_if_fail (VIK_IS_MAP_SOURCE (self), DOWNLOAD_PARAMETERS_ERROR);
 	klass = VIK_MAP_SOURCE_GET_CLASS(self);
 
-	g_return_val_if_fail (klass->download != NULL, 0);
+	g_return_val_if_fail (klass->download != NULL, DOWNLOAD_PARAMETERS_ERROR);
 
 	return (*klass->download)(self, src, dest_fn, handle);
 }
