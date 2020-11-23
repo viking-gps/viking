@@ -46,6 +46,10 @@
   Allows access to the <xref linkend="Layers"/> defaults.
   When creating a new layer it will start with the default values as specified here.
 </para>
+<para>
+  Access to show the messages that are being suppressed and the ability to reset back to the default of no messages being suppressed.
+  Some warning style messages can be selected to be ignored, since if they repeatedly come up in your work flow they could otherwise become tiresome.
+</para>
 </section><!-- End Configuration Edit Entries-->
 
 

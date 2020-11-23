@@ -62,6 +62,7 @@ static const char *menu_xml =
 	"      <menuitem action='Preferences'/>"
 	"      <menuitem action='PreferencesReset'/>"
 	"      <menu action='LayerDefaults'/>"
+	"      <menuitem action='SuppressionsReset'/>"
 	"    </menu>"
 	"    <menu action='View'>"
 	"      <menuitem action='ModeUTM'/>"

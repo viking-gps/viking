@@ -4616,6 +4616,24 @@ static void preferences_reset_cb ( GtkAction *a, VikWindow *vw )
   }
 }
 
+static void suppressions_reset_cb ( GtkAction *a, VikWindow *vw )
+{
+  GList *messages = a_settings_get_string_list ( VIK_SUPPRESS_MESSAGES );
+  if ( messages ) {
+    GList *ans = a_dialog_select_from_list ( GTK_WINDOW(vw),
+                                             messages,
+                                             FALSE,
+                                             _("Suppressions List"),
+                                             _("Reset all the suppressed messages?") );
+    if ( ans ) {
+      a_settings_clear_string_list ( VIK_SUPPRESS_MESSAGES );
+      g_list_free_full ( ans, g_free );
+    }
+  }
+  else
+    a_dialog_info_msg ( GTK_WINDOW(vw), _("No messages are being suppressed") );
+}
+
 static void default_location_cb ( GtkAction *a, VikWindow *vw )
 {
   // Get relevant preferences - these should always be available
@@ -5479,6 +5497,7 @@ static GtkActionEntry entries[] = {
   { "SetDefaultLocation", GTK_STOCK_GO_FORWARD, N_("_Set the Default Location"), NULL, N_("Set the Default Location to the current position"),(GCallback)default_location_cb },
   { "Preferences",GTK_STOCK_PREFERENCES, N_("_Preferences"),                  NULL,         N_("Program Preferences"),                      (GCallback)preferences_cb },
   { "PreferencesReset",GTK_STOCK_REFRESH, N_("Preferences Reset All"),        NULL,         N_("Reset All Program Preferences"),            (GCallback)preferences_reset_cb },
+  { "SuppressionsReset",GTK_STOCK_REFRESH,N_("_Suppression Messages..."),     NULL,         N_("Reset List of Messages being Suppressed"),  (GCallback)suppressions_reset_cb },
   { "LayerDefaults",GTK_STOCK_PROPERTIES, N_("_Layer Defaults"),             NULL,         NULL,                                           NULL },
   { "Properties",GTK_STOCK_PROPERTIES,   N_("_Properties"),                   NULL,         N_("Layer Properties"),                         (GCallback)menu_properties_cb },
 

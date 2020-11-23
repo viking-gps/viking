@@ -411,6 +411,67 @@ gboolean a_dialog_yes_or_no ( GtkWindow *parent, const gchar *message, const gch
   }
 }
 
+/**
+ * a_dialog_yes_or_no_suppress:
+ *
+ * If the *message is actively being suppressed then this will return TRUE.
+ *
+ * Allow the user to select when such messages are no longer desired,
+ *  primarily aimed at disabing warning messages, which once you have seen them a few times,
+ *  you might decide they are annoying.
+ *
+ * ATM this assumes all of the text in the *message is fixed,
+ *  such that it can be matched to previous messages.
+ * Any variable text such as layer or track names should be in the *extra component
+ */
+gboolean a_dialog_yes_or_no_suppress ( GtkWindow *parent, const gchar *message, const gchar *extra )
+{
+  // See if message has been seen before and desired to be ignored
+  if ( a_settings_get_string_list_contains(VIK_SUPPRESS_MESSAGES, message) ) {
+    return TRUE;
+  }
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Question"),
+                                                    parent,
+                                                    GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_NO, GTK_RESPONSE_REJECT,
+                                                    GTK_STOCK_YES, GTK_RESPONSE_YES,
+                                                    NULL );
+
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
+  GtkWidget *response_w = NULL;
+#if GTK_CHECK_VERSION (2, 20, 0)
+  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
+#endif
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
+
+  GtkWidget *hbox = gtk_hbox_new ( FALSE, 0 );
+  GtkWidget *ckb = gtk_check_button_new ();
+  GtkWidget *lab = gtk_label_new ( _("Do not show this message again" ) );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(lab), _("\"Yes\" will be applied automatically in the future") );
+
+  gtk_box_pack_start ( GTK_BOX(hbox), ckb, FALSE, FALSE, 2 );
+  gtk_box_pack_start ( GTK_BOX(hbox), lab, FALSE, FALSE, 2 );
+
+  GtkWidget *ca = gtk_dialog_get_content_area ( GTK_DIALOG(dialog) );
+  gchar *msg = g_strdup_printf ( message, extra );
+  gtk_box_pack_start ( GTK_BOX(ca), gtk_label_new(msg), TRUE, TRUE, 10 );
+  gtk_box_pack_start ( GTK_BOX(ca), hbox, TRUE, TRUE, 0 );
+  g_free ( msg );
+  gtk_widget_show_all ( dialog );
+
+  gboolean ans = FALSE;
+  if ( gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_YES ) {
+    ans = TRUE;
+    // Only apply chk button if explicitly saying yes.
+    if ( gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ckb)) ) {
+      a_settings_set_string_list_containing ( VIK_SUPPRESS_MESSAGES, message );
+    }
+  }
+  gtk_widget_destroy ( dialog );
+  return ans;
+}
+
 static void zoom_spin_changed ( GtkSpinButton *spin, GtkWidget *pass_along[3] )
 {
   if ( gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(pass_along[2]) ) )
