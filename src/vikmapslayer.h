@@ -59,6 +59,7 @@ typedef enum {
 //  http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification
 
 void maps_layer_init ();
+void maps_layer_uninit ();
 void maps_layer_set_autodownload_default ( gboolean autodownload );
 void maps_layer_set_cache_default ( VikMapsCacheLayout layout );
 guint vik_maps_layer_get_default_map_type ();

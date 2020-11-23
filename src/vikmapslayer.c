@@ -309,6 +309,12 @@ static VikLayerParam prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "maplayer_default_dir", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Default map layer directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, N_("Choose a directory to store cached Map tiles for this layer"), mpl_dir_default, NULL, NULL },
 };
 
+// Single global tracking of requests (as opposed to per map layer)
+//  thus the same requests from multiple copies of maps can be prevented
+//  as well as the same requests from a single layer
+static GMutex *rq_mutex;
+static GHashTable *requests = NULL;
+
 void maps_layer_init ()
 {
   a_preferences_register ( prefs, (VikLayerParamData){0}, VIKING_PREFERENCES_GROUP_KEY );
@@ -338,6 +344,16 @@ void maps_layer_init ()
   if ( a_settings_get_boolean ( VIK_SETTINGS_MAP_SCALE_SMALLER_ZOOM_FIRST, &gbtmp ) )
     SCALE_SMALLER_ZOOM_FIRST = gbtmp;
 
+  rq_mutex = vik_mutex_new();
+
+  // Just storing keys only
+  requests = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
+}
+
+void maps_layer_uninit ()
+{
+  vik_mutex_free ( rq_mutex );
+  g_hash_table_destroy ( requests );
 }
 
 /****************************************/
@@ -411,6 +427,26 @@ void maps_layer_register_map_source ( VikMapSource *map )
 #define MAPS_LAYER_NTH_LABEL(n) (params_maptypes[n])
 #define MAPS_LAYER_NTH_ID(n) (params_maptypes_ids[n])
 #define MAPS_LAYER_NTH_TYPE(n) (VIK_MAP_SOURCE(g_list_nth_data(__map_types, (n))))
+
+gboolean req_hash_remove_id  (gpointer key,
+                              gpointer value,
+                              gpointer user_data)
+{
+  gboolean ans = FALSE;
+  gchar *prefix = g_strdup_printf ( "%d-", GPOINTER_TO_UINT(user_data) );
+  if ( g_str_has_prefix((gchar*)key, prefix) )
+    ans = TRUE;
+  g_free ( prefix );
+  return ans;
+}
+
+static void requests_clear ( guint maptype )
+{
+  guint id = vik_map_source_get_uniq_id ( MAPS_LAYER_NTH_TYPE(maptype) );
+  g_mutex_lock ( rq_mutex );
+  g_hash_table_foreach_remove ( requests, req_hash_remove_id, GUINT_TO_POINTER(id) );
+  g_mutex_unlock ( rq_mutex );
+}
 
 /**
  * vik_maps_layer_get_map_type:
@@ -1577,36 +1613,87 @@ static gboolean is_in_area (VikMapSource *map, MapCoord mc)
   return vik_coord_inside ( &vc, &vctl, &vcbr );
 }
 
+// Free after use
+static gchar *create_request_string ( MapDownloadInfo *mdi, gint x, gint y )
+{
+  return g_strdup_printf ( "%d-%d-%d-%d-%d", vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(mdi->maptype)),
+                           x, y, mdi->mapcoord.scale, mdi->mapcoord.z );
+}
+
+static void mark_request_complete ( MapDownloadInfo *mdi, gint x, gint y )
+{
+  gchar *request = create_request_string ( mdi, x, y );
+  g_mutex_lock ( rq_mutex );
+  (void)g_hash_table_remove ( requests, request );
+  g_mutex_unlock ( rq_mutex );
+  if ( vik_verbose )
+    g_debug ( "%s: %s", __FUNCTION__, request );
+  g_free ( request );
+}
+
 static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 {
   void *handle = vik_map_source_download_handle_init(MAPS_LAYER_NTH_TYPE(mdi->maptype));
   guint donemaps = 0;
   MapCoord mcoord = mdi->mapcoord;
   gint x, y;
-  for ( x = mdi->x0; x <= mdi->xf; x++ )
-  {
+  gboolean needed[mdi->xf-mdi->x0][mdi->yf-mdi->y0];
+
+  for ( x = mdi->x0; x <= mdi->xf; x++ ) {
     mcoord.x = x;
-    for ( y = mdi->y0; y <= mdi->yf; y++ )
-    {
+    for ( y = mdi->y0; y <= mdi->yf; y++ ) {
       mcoord.y = y;
       // Only attempt to download a tile from supported areas
-      if ( is_in_area ( MAPS_LAYER_NTH_TYPE(mdi->maptype), mcoord ) )
-      {
+      if ( is_in_area ( MAPS_LAYER_NTH_TYPE(mdi->maptype), mcoord ) ) {
+        gchar *request = create_request_string ( mdi, x, y );
+
+        // Avoid requesting the same tile when already waiting for this request to complete from another thread
+        //  such as scrolling the map around and/or zoomed in/out and come back to a view covering the same tiles
+        g_mutex_lock ( rq_mutex );
+	needed[mdi->xf-x][mdi->yf-y] = ! g_hash_table_lookup_extended ( requests, request, NULL, NULL );
+        if ( needed[mdi->xf-x][mdi->yf-y] ) {
+          if ( vik_verbose )
+            g_debug ( "%s: %d %d Inserting request %s", __FUNCTION__, mdi->xf-x, mdi->yf-y, request );
+          g_hash_table_insert ( requests, request, NULL );
+        }
+        g_mutex_unlock ( rq_mutex );
+
+        if ( !needed[mdi->xf-x][mdi->yf-y] ) {
+          if ( vik_verbose )
+            g_debug ( "%s: Request for %s already in progress", __FUNCTION__, request );
+          g_free ( request );
+        }
+      }
+    }
+  }
+
+  for ( x = mdi->x0; x <= mdi->xf; x++ ) {
+    mcoord.x = x;
+    for ( y = mdi->y0; y <= mdi->yf; y++ ) {
+      mcoord.y = y;
+
+      // Only attempt to download a tile from supported areas
+      if ( is_in_area ( MAPS_LAYER_NTH_TYPE(mdi->maptype), mcoord ) ) {
+
         gboolean remove_mem_cache = FALSE;
         gboolean need_download = FALSE;
+        donemaps++;
+        int res = a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
+        if (res != 0) {
+          requests_clear ( mdi->maptype );
+          vik_map_source_download_handle_cleanup(MAPS_LAYER_NTH_TYPE(mdi->maptype), handle);
+          return -1;
+        }
+        // Skip as already being requested
+        if ( !needed[mdi->xf-x][mdi->yf-y] ) {
+          continue;
+        }
 
         get_filename ( mdi->cache_dir, mdi->cache_layout,
                        vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(mdi->maptype)),
                        vik_map_source_get_name(MAPS_LAYER_NTH_TYPE(mdi->maptype)),
                        mdi->mapcoord.scale, mdi->mapcoord.z, x, y, mdi->filename_buf, mdi->maxlen,
                        vik_map_source_get_file_extension(MAPS_LAYER_NTH_TYPE(mdi->maptype)) );
-
-        donemaps++;
-        int res = a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
-        if (res != 0) {
-          vik_map_source_download_handle_cleanup(MAPS_LAYER_NTH_TYPE(mdi->maptype), handle);
-          return -1;
-        }
 
         if ( g_file_test ( mdi->filename_buf, G_FILE_TEST_EXISTS ) == FALSE ) {
           need_download = TRUE;
@@ -1615,6 +1702,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
         } else {  /* in case map file already exists */
           switch (mdi->redownload) {
             case REDOWNLOAD_NONE:
+              mark_request_complete ( mdi, x, y );
               continue;
 
             case REDOWNLOAD_BAD:
@@ -1686,6 +1774,8 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
           }
         }
 
+        mark_request_complete ( mdi, x, y );
+
         g_mutex_lock(mdi->mutex);
         if (remove_mem_cache)
             a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(mdi->maptype)), mdi->mapcoord.scale, mdi->vml->filename );
@@ -1723,6 +1813,8 @@ static void mdi_cancel_cleanup ( MapDownloadInfo *mdi )
         g_warning ( "Cleanup failed to remove: %s", mdi->filename_buf );
     }
   }
+
+  requests_clear ( mdi->maptype );
 }
 
 static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const VikCoord *ul, const VikCoord *br, gint redownload )
