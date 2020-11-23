@@ -55,6 +55,14 @@ gboolean a_settings_get_integer_list_contains ( const gchar *name, gint val );
 
 void a_settings_set_integer_list_containing ( const gchar *name, gint val );
 
+GList* a_settings_get_string_list ( const gchar *name );
+
+void a_settings_clear_string_list ( const gchar *name );
+
+gboolean a_settings_get_string_list_contains ( const gchar *name, const gchar *val );
+
+void a_settings_set_string_list_containing ( const gchar *name, const gchar *val );
+
 G_END_DECLS
 
 #endif

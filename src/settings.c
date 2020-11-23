@@ -294,3 +294,112 @@ void a_settings_set_integer_list_containing ( const gchar *name, gint val )
 	if ( vals )
 		g_free (vals);
 }
+
+/*
+ * The returned list of strings should be freed when no longer needed
+ *  use g_strfreev().
+ */
+static gchar** settings_get_string_list ( const gchar *group, const gchar *name, gsize *length )
+{
+	GError *error = NULL;
+	gchar **msgs = g_key_file_get_string_list ( keyfile, group, name, length, &error );
+	if ( error ) {
+		// Only print on debug - as often may have requests for keys not in the file
+		g_debug ( "%s", error->message );
+		g_error_free ( error );
+	}
+	return msgs;
+}
+
+/**
+ * a_settings_get_string_list:
+ *
+ * Returns: A #GList of strings
+ *
+ * Free the returned list after use (including the contents)
+ */
+GList* a_settings_get_string_list ( const gchar *name )
+{
+	//gchar **vals = NULL;
+	GList *gl = NULL;
+	gsize length;
+	gchar **vals = settings_get_string_list ( VIKING_SETTINGS_GROUP, name, &length );
+	if ( vals ) {
+		for ( guint ii = 0; ii < length; ii++ )
+			gl = g_list_prepend ( gl, g_strdup(vals[ii]) );
+		gl = g_list_reverse ( gl );
+		g_strfreev ( vals );
+	}
+	return gl;
+}
+
+void a_settings_clear_string_list ( const gchar *name )
+{
+	g_key_file_set_string_list ( keyfile, VIKING_SETTINGS_GROUP, name, NULL, 0 );
+}
+
+gboolean a_settings_get_string_list_contains ( const gchar *name, const gchar *val )
+{
+	//	gchar **vals = NULL;
+	gsize length;
+	// Get current list and see if the value supplied is in the list
+	gboolean contains = FALSE;
+	// Get current list
+	gchar **vals = settings_get_string_list ( VIKING_SETTINGS_GROUP, name, &length );
+	if ( vals ) {
+		//if ( settings_get_string_list ( VIKING_SETTINGS_GROUP, name, vals, &length ) ) {
+		// See if it's not already there
+		//		if ( vals ) {
+			contains = g_strv_contains ( (const gchar * const*)vals, val );
+			g_strfreev ( vals );
+			//}
+	}
+	return contains;
+}
+
+void a_settings_set_string_list_containing ( const gchar *name, const gchar *val )
+{
+	//	gchar** vals = NULL;
+	gsize length = 0;
+	gboolean need_to_add = TRUE;
+	//gint ii = 0;
+	// Get current list
+	gchar **vals = settings_get_string_list ( VIKING_SETTINGS_GROUP, name, &length );
+	if ( vals ) {
+		//	if ( settings_get_string_list ( VIKING_SETTINGS_GROUP, name, vals, &length ) ) {
+		// See if it's not already there
+		//if ( vals )
+			need_to_add = ! g_strv_contains ( (const gchar * const*)vals, val );
+	}
+	// Add value into array if necessary
+	if ( need_to_add ) {
+		//gchar **new_vals = g_strdupv ( vals ); // Not sure how to append to this
+		// NB not bothering to sort this 'list' ATM as there is not much to be gained
+		const gchar *new_vals[length+2]; // +2 for new value + null
+		// Copy any previous values
+		for ( guint ii=0; ii<length; ii++ )
+			new_vals[ii] = g_strdup ( vals[ii] );
+
+		// Add the new value and the final terminator
+		new_vals[length] = g_strdup ( val ); // Set the new value
+		new_vals[length+1] = NULL;
+
+		/*
+		GPtrArray *string_list = g_ptr_array_new ();
+		// Copy any previous values
+		while ( ii < length ) {
+			g_ptr_array_add ( string_list, g_strdup ( vals[ii] ) );
+			ii++;
+		}
+		// Add the new value
+		g_ptr_array_add ( string_list, g_strdup ( val ) );
+		gchar **new_vals = (gchar**)g_ptr_array_free ( string_list, FALSE );
+		*/
+		// Apply
+		g_key_file_set_string_list ( keyfile, VIKING_SETTINGS_GROUP, name, new_vals, length+1 );
+	}
+
+	// Free old array
+	if ( vals )
+		g_strfreev ( vals );
+}

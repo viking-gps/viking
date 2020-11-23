@@ -99,7 +99,7 @@ dnl | Pkgconfig checks |---------------------------------------
 dnl  ------------------
 
 PKG_CHECK_MODULES(PACKAGE, [
-        glib-2.0          >= 2.40
+        glib-2.0          >= 2.44
         gthread-2.0       >= 2.2
         gtk+-2.0          >= 2.18
         gio-2.0           >= 2.32
