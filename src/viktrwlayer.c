@@ -7998,7 +7998,7 @@ static void trw_layer_delete_tracks_from_selection ( menu_array_layer values )
 
   // Ensure list of track names offered is unique
   if ( trw_layer_has_same_track_names ( vtl->tracks ) ) {
-    if ( a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+    if ( a_dialog_yes_or_no_suppress ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
 			      _("Multiple entries with the same name exist. This method only works with unique names. Force unique names now?"), NULL ) ) {
       vik_trw_layer_uniquify_tracks ( vtl, VIK_LAYERS_PANEL(values[MA_VLP]), vtl->tracks, TRUE );
     }
@@ -8048,7 +8048,7 @@ static void trw_layer_delete_routes_from_selection ( menu_array_layer values )
 
   // Ensure list of track names offered is unique
   if ( trw_layer_has_same_track_names ( vtl->routes ) ) {
-    if ( a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+    if ( a_dialog_yes_or_no_suppress ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
                               _("Multiple entries with the same name exist. This method only works with unique names. Force unique names now?"), NULL ) ) {
       vik_trw_layer_uniquify_tracks ( vtl, VIK_LAYERS_PANEL(values[MA_VLP]), vtl->routes, FALSE );
     }
@@ -8211,7 +8211,7 @@ static void trw_layer_delete_waypoints_from_selection ( menu_array_layer values 
 
   // Ensure list of waypoint names offered is unique
   if ( trw_layer_has_same_waypoint_names ( vtl ) ) {
-    if ( a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+    if ( a_dialog_yes_or_no_suppress ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
 			      _("Multiple entries with the same name exist. This method only works with unique names. Force unique names now?"), NULL ) ) {
       vik_trw_layer_uniquify_waypoints ( vtl, VIK_LAYERS_PANEL(values[MA_VLP]) );
     }
@@ -8725,7 +8725,7 @@ static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gc
 
     if ( wpf ) {
       // An existing waypoint has been found with the requested name
-      if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(l),
+      if ( ! a_dialog_yes_or_no_suppress ( VIK_GTK_WINDOW_FROM_LAYER(l),
            _("A waypoint with the name \"%s\" already exists. Really rename to the same name?"),
            newname ) )
         return NULL;
@@ -8755,7 +8755,7 @@ static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gc
 
     if ( trkf ) {
       // An existing track has been found with the requested name
-      if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(l),
+      if ( ! a_dialog_yes_or_no_suppress ( VIK_GTK_WINDOW_FROM_LAYER(l),
           _("A track with the name \"%s\" already exists. Really rename to the same name?"),
           newname ) )
         return NULL;
@@ -8792,7 +8792,7 @@ static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gc
 
     if ( trkf ) {
       // An existing track has been found with the requested name
-      if ( ! a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_LAYER(l),
+      if ( ! a_dialog_yes_or_no_suppress ( VIK_GTK_WINDOW_FROM_LAYER(l),
           _("A route with the name \"%s\" already exists. Really rename to the same name?"),
           newname ) )
         return NULL;
