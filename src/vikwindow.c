@@ -2771,6 +2771,7 @@ static VikLayerToolFuncStatus selecttool_move (VikLayer *vl, GdkEventMotion *eve
 
 static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *event, tool_ed_t *t)
 {
+  gboolean do_draw = FALSE;
   if ( t->vw->select_move ) {
     // Don't care about vl here
     if ( t->vtl )
@@ -2802,6 +2803,9 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
         draw_update ( t->vw );
         t->vw->select_double_click = FALSE;
       }
+      else {
+        do_draw = t->vw->select_pan;
+      }
     }
   }
 
@@ -2812,6 +2816,12 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
 
   // End of this select movement
   t->vw->select_move = FALSE;
+
+  // Final end of the select movement
+  //  (redraw to trigger potential map downloads as now 'pan_move' is off)
+  if ( do_draw )
+    draw_update ( t->vw );
+  t->vw->select_pan = FALSE;
 
   return VIK_LAYER_TOOL_ACK;
 }
