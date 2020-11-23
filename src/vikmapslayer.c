@@ -803,7 +803,7 @@ static void maps_layer_free ( VikMapsLayer *vml )
       int ans = sqlite3_close ( vml->mbtiles );
       if ( ans != SQLITE_OK ) {
         // Only to console for information purposes only
-        g_warning ( "SQL Close problem: %d", ans );
+        g_warning ( "%s: SQL Close problem: %s", __FUNCTION__, sqlite3_errstr(ans) );
       }
     }
   }
@@ -926,7 +926,7 @@ static GdkPixbuf *get_pixbuf_sql_exec ( sqlite3 *sql, gint xx, gint yy, gint zoo
   sqlite3_stmt *sql_stmt = NULL;
   int ans = sqlite3_prepare_v2 ( sql, statement, -1, &sql_stmt, NULL );
   if ( ans != SQLITE_OK ) {
-    g_warning ( "%s: %s - %d: %s", __FUNCTION__, "prepare failure", ans, statement );
+    g_warning ( "%s: %s - %s: %s", __FUNCTION__, "prepare failure", sqlite3_errstr(ans), statement );
     finished = TRUE;
   }
 
@@ -966,7 +966,7 @@ static GdkPixbuf *get_pixbuf_sql_exec ( sqlite3 *sql, gint xx, gint yy, gint zoo
        // Finished normally
        //  and give up on any errors
        if ( ans != SQLITE_DONE )
-         g_warning ( "%s: %s - %d", __FUNCTION__, "step issue", ans );
+         g_warning ( "%s: %s - %s", __FUNCTION__, "step issue", sqlite3_errstr(ans) );
        finished = TRUE;
        break;
     }
