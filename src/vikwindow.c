@@ -4102,6 +4102,8 @@ static void load_file ( GtkAction *a, VikWindow *vw )
     append = TRUE;
   }
   else if (!strcmp(gtk_action_get_name(a), "OpenExtLayer")) {
+    if ( !vu_check_confirm_external_use(GTK_WINDOW(vw)) )
+      return;
     external = TRUE;
   }
   else {

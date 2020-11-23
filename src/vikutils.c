@@ -1418,3 +1418,13 @@ GList* vu_sorted_list_from_hash_table ( GHashTable *hash_table, vik_layer_sort_o
 	gl = g_list_sort_with_data ( gl, sort_hash_compare, GINT_TO_POINTER(order) );
 	return gl;
 }
+
+/**
+ *
+ */
+gboolean vu_check_confirm_external_use ( GtkWindow *parent )
+{
+	gchar *txt = _( "Using \"External\" files means changes made in Viking are explicitly not saved.\n"
+	                "See the manual for more detail.%s" );
+	return a_dialog_yes_or_no_suppress ( parent, txt, _("\n\nDo you wish to continue?") );
+}

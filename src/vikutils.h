@@ -98,6 +98,8 @@ typedef struct SortTRWHash
 
 GList* vu_sorted_list_from_hash_table ( GHashTable *hash_table, vik_layer_sort_order_t order, VikTRWDataTypeT type );
 
+gboolean vu_check_confirm_external_use ( GtkWindow *parent );
+
 G_END_DECLS
 
 #endif
