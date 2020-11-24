@@ -667,7 +667,10 @@ _get_download_options( VikMapSourceDefault *self, MapCoord *src )
 	VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
 	g_free ( priv->options.custom_http_headers );
 	if ( src )
-		priv->options.custom_http_headers = g_strdup_printf ( priv->custom_http_headers, 17-src->scale, src->x, src->y);
+		if ( priv->custom_http_headers )
+			priv->options.custom_http_headers = g_strdup_printf ( priv->custom_http_headers, 17-src->scale, src->x, src->y );
+		else
+			priv->options.custom_http_headers = NULL;
 	else
 		priv->options.custom_http_headers = g_strdup ( priv->custom_http_headers );
 	return &(priv->options);
