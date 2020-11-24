@@ -560,7 +560,7 @@ _supports_download_only_new (VikMapSource *self)
 static guint8
 _get_zoom_min (VikMapSource *self)
 {
-  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), 0);
   VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
   return priv->zoom_min;
 }
@@ -571,7 +571,7 @@ _get_zoom_min (VikMapSource *self)
 static guint8
 _get_zoom_max (VikMapSource *self)
 {
-  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), 18);
   VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
   return priv->zoom_max;
 }
@@ -582,7 +582,7 @@ _get_zoom_max (VikMapSource *self)
 static gdouble
 _get_lat_min (VikMapSource *self)
 {
-  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), -90.0);
   VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
   return priv->lat_min;
 }
@@ -593,7 +593,7 @@ _get_lat_min (VikMapSource *self)
 static gdouble
 _get_lat_max (VikMapSource *self)
 {
-  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), 90.0);
   VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
   return priv->lat_max;
 }
@@ -604,7 +604,7 @@ _get_lat_max (VikMapSource *self)
 static gdouble
 _get_lon_min (VikMapSource *self)
 {
-  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), -180.0);
   VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
   return priv->lon_min;
 }
@@ -615,7 +615,7 @@ _get_lon_min (VikMapSource *self)
 static gdouble
 _get_lon_max (VikMapSource *self)
 {
-  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
+  g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), 180.0);
   VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
   return priv->lon_max;
 }
