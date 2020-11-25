@@ -323,6 +323,8 @@ SectionGroupEnd
 
 Section $(VIKING_FILE_ASSOCIATION_SECTION_TITLE) SecFileAssociation
   ${registerExtension} "$INSTDIR\viking.exe" ".gpx" "GPX File"
+  ${registerExtension} "$INSTDIR\viking.exe" ".tcx" "TCX File"
+  ${registerExtension} "$INSTDIR\viking.exe" ".kml" "KML File"
 SectionEnd
 
 ;--------------------------------
@@ -386,6 +388,8 @@ Section Uninstall
     ; File association
     ${unregisterExtension} ".vik" "Viking File"
     ${unregisterExtension} ".gpx" "GPX File"
+    ${unregisterExtension} ".tcx" "TCX File"
+    ${unregisterExtension} ".kml" "KML File"
 
     Goto done
 
