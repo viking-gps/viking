@@ -109,6 +109,7 @@ static void time_edit_click ( GtkWidget* widget, GdkEventButton *event, VikWaypo
   update_time ( widget, edit_wp );
 }
 
+#ifdef VIK_CONFIG_GEOTAG
 /**
  * direction_edit_click:
  */
@@ -125,6 +126,7 @@ static void direction_add_click ( GtkWidget* widget, GdkEventButton *event, GtkW
   gtk_widget_set_sensitive ( direction, TRUE );
   gtk_spin_button_set_value ( GTK_SPIN_BUTTON(direction), 0.0 );
 }
+#endif
 
 static void symbol_entry_changed_cb(GtkWidget *combo, GtkListStore *store)
 {
@@ -775,8 +777,10 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
       if ( ww->direction_sb ) {
         if ( gtk_widget_get_sensitive (ww->direction_sb) ) {
           wp->image_direction = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(ww->direction_sb) );
+#ifdef VIK_CONFIG_GEOTAG
           if ( wp->image && wp->image_direction != edit_wp->image_direction )
             a_geotag_write_exif_gps ( wp->image, wp->coord, wp->altitude, wp->image_direction, wp->image_direction_ref, TRUE );
+#endif
         }
       }
 
