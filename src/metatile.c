@@ -98,6 +98,7 @@ int xyz_to_meta(char *path, size_t len, const char *dir, int x, int y, int z)
  */
 int metatile_read(const char *dir, int x, int y, int z, char *buf, size_t sz, int * compressed, char * log_msg)
 {
+    int ignored;
     char path[PATH_MAX];
     int meta_offset, fd;
     unsigned int pos;
@@ -109,8 +110,9 @@ int metatile_read(const char *dir, int x, int y, int z, char *buf, size_t sz, in
 
     fd = open(path, O_RDONLY);
     if (fd < 0) {
-        snprintf(log_msg,PATH_MAX - 1, "Could not open metatile %s. Reason: %s\n", path, strerror(errno));
+        ignored = snprintf(log_msg,PATH_MAX - 1, "Could not open metatile %s. Reason: %s\n", path, strerror(errno));
         free(meta);
+        if ( (size_t)ignored > sizeof(path) ) return -1; // Use 'ignored' at least once to silence the compiler
         return -1;
     }
 
@@ -119,7 +121,7 @@ int metatile_read(const char *dir, int x, int y, int z, char *buf, size_t sz, in
         size_t len = header_len - pos;
         int got = read(fd, ((unsigned char *) meta) + pos, len);
         if (got < 0) {
-            snprintf(log_msg,PATH_MAX - 1, "Failed to read complete header for metatile %s Reason: %s\n", path, strerror(errno));
+            ignored = snprintf(log_msg,PATH_MAX - 1, "Failed to read complete header for metatile %s Reason: %s\n", path, strerror(errno));
             close(fd);
             free(meta);
             return -2;
@@ -130,14 +132,14 @@ int metatile_read(const char *dir, int x, int y, int z, char *buf, size_t sz, in
         }
     }
     if (pos < header_len) {
-        snprintf(log_msg,PATH_MAX - 1, "Meta file %s too small to contain header\n", path);
+        ignored = snprintf(log_msg,PATH_MAX - 1, "Meta file %s too small to contain header\n", path);
         close(fd);
         free(meta);
         return -3;
     }
     if (memcmp(meta->magic, META_MAGIC, strlen(META_MAGIC))) {
         if (memcmp(meta->magic, META_MAGIC_COMPRESSED, strlen(META_MAGIC_COMPRESSED))) {
-            snprintf(log_msg,PATH_MAX - 1, "Meta file %s header magic mismatch\n", path);
+            ignored = snprintf(log_msg,PATH_MAX - 1, "Meta file %s header magic mismatch\n", path);
             close(fd);
             free(meta);
             return -4;
@@ -148,7 +150,7 @@ int metatile_read(const char *dir, int x, int y, int z, char *buf, size_t sz, in
 
     // Currently this code only works with fixed metatile sizes (due to xyz_to_meta above)
     if (meta->count != (METATILE * METATILE)) {
-        snprintf(log_msg, PATH_MAX - 1, "Meta file %s header bad count %d != %d\n", path, meta->count, METATILE * METATILE);
+        ignored = snprintf(log_msg, PATH_MAX - 1, "Meta file %s header bad count %d != %d\n", path, meta->count, METATILE * METATILE);
         free(meta);
         close(fd);
         return -5;
@@ -160,14 +162,14 @@ int metatile_read(const char *dir, int x, int y, int z, char *buf, size_t sz, in
     free(meta);
 
     if (tile_size > sz) {
-        snprintf(log_msg, PATH_MAX - 1, "Truncating tile %zd to fit buffer of %zd\n", tile_size, sz);
+        ignored = snprintf(log_msg, PATH_MAX - 1, "Truncating tile %zd to fit buffer of %zd\n", tile_size, sz);
         tile_size = sz;
         close(fd);
         return -6;
     }
 
     if (lseek(fd, file_offset, SEEK_SET) < 0) {
-        snprintf(log_msg, PATH_MAX - 1, "Meta file %s seek error: %s\n", path, strerror(errno));
+        ignored = snprintf(log_msg, PATH_MAX - 1, "Meta file %s seek error: %s\n", path, strerror(errno));
         close(fd);
         return -7;
     }
@@ -177,7 +179,7 @@ int metatile_read(const char *dir, int x, int y, int z, char *buf, size_t sz, in
         size_t len = tile_size - pos;
         int got = read(fd, buf + pos, len);
         if (got < 0) {
-            snprintf(log_msg, PATH_MAX - 1, "Failed to read data from file %s. Reason: %s\n", path, strerror(errno));
+            ignored = snprintf(log_msg, PATH_MAX - 1, "Failed to read data from file %s. Reason: %s\n", path, strerror(errno));
             close(fd);
             return -8;
         } else if (got > 0) {
