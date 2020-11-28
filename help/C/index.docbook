@@ -1880,8 +1880,12 @@ Whereas <emphasis>Image Timezone</emphasis> is more for adjusting for a camera's
 
 <section id="GPS" xreflabel="GPS"><title>GPS Layer</title>
 <para>
-The GPS layer is responsible for uploading and downloading GPS data
-from a GPS device. It also is responsible for realtime GPS tracking.
+The GPS layer is responsible for uploading and downloading GPS data from a GPS device via a serial port connection.
+It uses <application>GPSBabel</application> in the background to perform the low level transfer.
+Modern GPS devices don't support serial connections any more and typically expose a file system interface and you can simply use the standard File->Open and Export to GPX File methods to transfer data.
+</para>
+<para>
+This layer is also responsible for realtime GPS tracking.
 Expand the GPS layer in the layers panel to see the two <xref linkend="TrackWaypoint"/> layers it
 uses for uploading and downloading. To upload, download, or use
 realtime tracking, right-click the GPS layer and click the appropriate
