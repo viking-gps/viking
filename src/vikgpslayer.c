@@ -360,7 +360,6 @@ struct _VikGpsLayer {
   guint realtime_retry_timer;
   GdkGC *realtime_track_gc;
   GdkGC *realtime_track_bg_gc;
-  GdkGC *realtime_track_pt_gc;
   GdkGC *realtime_track_pt1_gc;
   GdkGC *realtime_track_pt2_gc;
 
@@ -721,7 +720,6 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
     vgl->realtime_track_bg_gc = vik_viewport_new_gc ( vp, "grey", 2 );
     vgl->realtime_track_pt1_gc = vik_viewport_new_gc ( vp, "red", 2 );
     vgl->realtime_track_pt2_gc = vik_viewport_new_gc ( vp, "green", 2 );
-    vgl->realtime_track_pt_gc = vgl->realtime_track_pt1_gc;
   }
   vgl->realtime_track = NULL;
 #endif // VIK_CONFIG_REALTIME_GPS_TRACKING
@@ -1665,7 +1663,6 @@ static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp)
      vik_viewport_draw_rectangle ( vp,
          (vgl->realtime_fix.fix.mode > MODE_2D) ? vgl->realtime_track_pt2_gc : vgl->realtime_track_pt1_gc,
          TRUE, x-2, y-2, 4, 4 );
-     //vgl->realtime_track_pt_gc = (vgl->realtime_track_pt_gc == vgl->realtime_track_pt1_gc) ? vgl->realtime_track_pt2_gc : vgl->realtime_track_pt1_gc;
   }
 }
 
