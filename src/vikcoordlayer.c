@@ -202,10 +202,7 @@ static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id,
 static void coord_layer_post_read ( VikLayer *vl, VikViewport *vp, gboolean from_file )
 {
   VikCoordLayer *vcl = VIK_COORD_LAYER(vl);
-  if ( vcl->gc )
-    g_object_unref ( G_OBJECT(vcl->gc) );
-
-  vcl->gc = vik_viewport_new_gc_from_color ( vp, &(vcl->color), vcl->line_thickness );
+  coord_layer_update_gc ( vcl, vp );
 }
 
 static VikCoordLayer *coord_layer_new ( VikViewport *vvp )
