@@ -1376,6 +1376,37 @@ static void aggregate_layer_load_external_layers_click ( menu_array_values value
   vik_layers_panel_calendar_update ( values[MA_VLP] );
 }
 
+/**
+ * Load selected files as external layers into this Aggregate Layer
+ *
+ */
+static void aggregate_layer_load_external_file_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
+  VikViewport *vvp = vik_window_viewport ( vw );
+
+  if ( !vu_check_confirm_external_use(GTK_WINDOW(vw)) )
+    return;
+
+  GSList *files = vu_get_ui_selected_gps_files ( vw, TRUE );
+  GSList *cur_file = files;
+  while ( cur_file ) {
+    gchar *filename = cur_file->data;
+    VikLoadType_t ans = a_file_load ( val, vvp, NULL, filename, FALSE, TRUE, NULL );
+    if ( ans < LOAD_TYPE_OTHER_FAILURE_NON_FATAL )
+      a_dialog_error_msg_extra ( GTK_WINDOW(vw), _("Failed to open %s"), filename );
+    else if ( ans == LOAD_TYPE_OTHER_FAILURE_NON_FATAL ) {
+      gchar *msg = g_strdup_printf ( _("WARNING: issues encountered loading %s"), a_file_basename (filename) );
+      vik_statusbar_set_message ( vik_window_get_statusbar(VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val))), VIK_STATUSBAR_INFO, msg );
+      g_free ( msg );
+    }
+    g_free ( filename );
+    cur_file = g_slist_next ( cur_file );
+  }
+  g_slist_free (files);
+}
+
 static void aggregate_layer_save_layer_as_cb ( menu_array_values values )
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
@@ -2645,6 +2676,8 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   GtkWidget *itemsf = vu_menu_add_item ( menu, _("_File"), GTK_STOCK_FILE, NULL, NULL );
   gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemsf), GTK_WIDGET(file_submenu) );
   (void)vu_menu_add_item ( file_submenu, _("Load E_xternal Layers"), GTK_STOCK_EXECUTE, G_CALLBACK(aggregate_layer_load_external_layers_click), values );
+  (void)vu_menu_add_item ( file_submenu, _("_Open GPX as External Layer..."), GTK_STOCK_OPEN, G_CALLBACK(aggregate_layer_load_external_file_cb), values );
+
   (void)vu_menu_add_item ( file_submenu, _("Save _Layer As..."), GTK_STOCK_SAVE, G_CALLBACK(aggregate_layer_save_layer_as_cb), values );
   (void)vu_menu_add_item ( file_submenu, _("_Append File..."), GTK_STOCK_ADD, G_CALLBACK(aggregate_layer_file_load), values );
   (void)vu_menu_add_item ( file_submenu, _("_Export as GPX..."), GTK_STOCK_CONVERT, G_CALLBACK(aggregate_layer_export_gpx), values );
