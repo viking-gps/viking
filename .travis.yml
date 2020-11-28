@@ -26,10 +26,12 @@ env:
 # Use the latest LTS version for these
    - BUILD_IMG=ubuntu:18.04 DEPS="libglib2.0-dev-bin libexif-dev" OPTS="--with-libexif"
    - BUILD_IMG=ubuntu:18.04 DEPS=libglib2.0-dev-bin OPTS="--disable-bzip2"
+   - BUILD_IMG=ubuntu:18.04 DEPS=libglib2.0-dev-bin OPTS="--disable-geotag"
    - BUILD_IMG=ubuntu:18.04 DEPS=libglib2.0-dev-bin OPTS="--disable-magic"
    - BUILD_IMG=ubuntu:18.04 DEPS=libglib2.0-dev-bin OPTS="--disable-mapnik"
    - BUILD_IMG=ubuntu:18.04 DEPS=libglib2.0-dev-bin OPTS="--disable-mbtiles"
    - BUILD_IMG=ubuntu:18.04 DEPS=libglib2.0-dev-bin OPTS="--disable-nettle"
+   - BUILD_IMG=ubuntu:18.04 DEPS=libglib2.0-dev-bin OPTS="--disable-realtime-gps-tracking"
    - BUILD_IMG=ubuntu:18.04 DEPS=libglib2.0-dev-bin OPTS="--disable-zip"
 
 script: docker run --rm=true -v $HOME:$HOME:rw $BUILD_IMG /bin/sh -c "sed -i '/^#\sdeb-src /s/^#//' /etc/apt/sources.list && apt-get update && apt-get build-dep --yes viking && apt-get install --yes $COMMON_DEPS $DEPS && cd $PWD && ./autogen.sh $OPTS && make -j && make -j check && make install"
