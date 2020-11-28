@@ -154,8 +154,8 @@ typedef struct zip_file zip_file_t;
 	}
 	zip_discard ( archive );
 
-#endif
  cleanup:
+#endif
 	return ans;
 }
 
