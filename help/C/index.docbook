@@ -948,7 +948,7 @@ No-write layers are primarily intended to be used with the <xref linkend="open_g
 <para>
 External layers are loaded only when they are displayed or selected.
 Hence, they will not appear in any summary statistics if they have not been loaded.
-It is possible to load all external layers contained in an <xref linkend="Aggregate"/> layer by selecting "Load External Layers" from the Aggregate Layer context menu.
+It is possible to load all external layers contained in an <xref linkend="Aggregate"/> layer by selecting <menuchoice><guimenu>File</guimenu><guisubmenu>Load External Layers</guisubmenu></menuchoice> from the Aggregate Layer context menu.
 Note, &appname; specific options may not be saved if not supported by the GPX export.
 </para>
 
@@ -2436,10 +2436,44 @@ This opens a dialog to display various statistics about all tracks contained wit
 </para>
 </section>
 
-<section id="agg_append"><title>Append File</title>
+<section><title>File Options</title>
 <para>
-This opens a dialog to select files to load within this Aggregate layer.
+Offers methods to manage loading and exporting to/from this specific Aggregate layer.
 </para>
+<variablelist>
+<varlistentry>
+<term><guilabel>Load External Layers</guilabel></term>
+<listitem>
+<para>
+Using this forces External Layers in this Aggregate Layer to be loaded and so contribute to analysis, as otherwise they are loaded only when they are displayed or selected.
+</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Open GPX as External Layer...</guilabel></term>
+<listitem>
+<para>This opens a dialog to select files to <xref linkend="open_gpx_external"/> within this Aggregate Layer.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Save Layer As...</guilabel></term>
+<listitem>
+<para>This opens a dialog to choose a name and location for a new Viking file containing data just this Aggregate Layer.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Append File...</guilabel></term>
+<listitem>
+<para>This opens a dialog to select files to load within this Aggregate layer.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Export As GPX...</guilabel></term>
+<listitem>
+<para>This opens a dialog choose a name and location for a new GPX file from all visible <xref linkend="TrackWaypoint"/> layers in this Aggregate Layer into a single GPX file.</para>
+</listitem>
+</varlistentry>
+</variablelist>
 </section>
 
 <section><title>Tracks Area Coverage->Calculate</title>
