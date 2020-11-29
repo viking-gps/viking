@@ -625,8 +625,7 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, VikLayerSetParam *vlsp )
       vgl->realtime_update_statusbar = vlsp->data.b;
       break;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
-    default:
-      g_warning("gps_layer_set_param(): unknown parameter");
+    default: break;
   }
 
   return TRUE;
@@ -689,8 +688,7 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
       rv.b = vgl->realtime_update_statusbar;
       break;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
-    default:
-      g_warning(_("%s: unknown parameter"), __FUNCTION__);
+    default: break;
   }
 
   return rv;
