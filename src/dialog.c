@@ -1043,6 +1043,25 @@ void a_dialog_build_info ( GtkWindow *parent )
   g_string_append_printf ( msg, "liboauth version: %s\n", LIBOAUTH_VERSION );
 #endif
 #endif
+
+  // https://docs.flatpak.org/en/latest/flatpak-command-reference.html#flatpak-metadata
+  if ( g_file_test("/.flatpak-info", G_FILE_TEST_EXISTS) ) {
+    g_string_append ( msg, "\nRunning inside Flatpak sandbox\n" );
+    gchar *appname = NULL;
+    gchar *runtime = NULL;
+    GKeyFile *kf = g_key_file_new ();
+    g_key_file_load_from_file ( kf, "/.flatpak-info", G_KEY_FILE_NONE, NULL );
+    if ( g_key_file_has_group(kf, "Application") ) {
+      appname = g_key_file_get_string ( kf, "Application", "name", NULL );
+      runtime = g_key_file_get_string ( kf, "Application", "runtime", NULL );
+    }
+    g_key_file_unref (kf);
+    if ( appname || runtime )
+      g_string_append_printf ( msg, "Flatpak info: name=%s runtime=%s\n", appname, runtime );
+    g_free ( appname );
+    g_free ( runtime );
+  }
+
   a_dialog_info_msg ( parent, msg->str );
   g_string_free ( msg, TRUE );
 }

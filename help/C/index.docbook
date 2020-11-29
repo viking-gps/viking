@@ -192,6 +192,14 @@ This is set via the <xref linkend="prefs"/> <menuchoice><guimenu>Toolbar</guimen
 </para>
 </informalexample>
 </figure>
+<section id="Flatpak"><title>Flatpak Version</title>
+<para>
+  &appname; is now available for use in Linux as a Flatpak, however since &appname; is running in a sandbox some system integration features no longer work properly in the Flatpak runtime.
+</para>
+<para>
+  See the file <filename>FLATPAK.md</filename> in the top level of the source distribution for more detail.
+</para>
+</section>
 </section>
 
 <section id="GeneralConcepts"><title>General Concepts</title>

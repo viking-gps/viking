@@ -166,3 +166,9 @@ windows/installer/pixmaps/*o
 windows/installer/translations/Makefile
 windows/installer/translations/Makefile.in
 windows/installer/viking*.exe
+
+# Flatpak stuff
+.flatpak-builder/
+flatpak/
+flatpakrepo/
+viking*.flatpak
