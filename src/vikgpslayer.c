@@ -62,6 +62,10 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2] );
 static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp);
 static void rt_gpsd_disconnect(VikGpsLayer *vgl);
 static gboolean rt_gpsd_connect(VikGpsLayer *vgl, gboolean ask_if_failed);
+static VikLayerParamData color_default_tri ( void ) {
+  VikLayerParamData data; gdk_color_parse ( "#203070", &data.c ); return data;
+}
+static void layer_update_indictor_gc (VikGpsLayer *vgl, VikViewport *vp);
 #endif
 
 // Shouldn't need to use these much any more as the protocol is now saved as a string.
@@ -222,6 +226,7 @@ static VikLayerParam gps_layer_params[] = {
   { VIK_LAYER_GPS, "record_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Recording tracks"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_GPS, "center_start_tracking", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Jump to current position on start"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_false_default, NULL, NULL },
   { VIK_LAYER_GPS, "moving_map_method", VIK_LAYER_PARAM_UINT, GROUP_REALTIME_MODE, N_("Moving Map Method:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_vehicle_position, NULL, NULL, moving_map_method_default, NULL, NULL },
+  { VIK_LAYER_GPS, "indicator_color", VIK_LAYER_PARAM_COLOR, GROUP_REALTIME_MODE, N_("Indicator Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_default_tri, NULL, NULL },
   { VIK_LAYER_GPS, "realtime_update_statusbar", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Update Statusbar:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("Display information in the statusbar on GPS updates"), vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_GPS, "auto_connect", VIK_LAYER_PARAM_BOOLEAN, GROUP_REALTIME_MODE, N_("Auto Connect"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("Automatically connect to GPSD"), vik_lpd_false_default, NULL, NULL },
   { VIK_LAYER_GPS, "gpsd_host", VIK_LAYER_PARAM_STRING, GROUP_REALTIME_MODE, N_("Gpsd Host:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, gpsd_host_default, NULL, NULL },
@@ -240,6 +245,7 @@ enum {
   PARAM_REALTIME_REC,
   PARAM_REALTIME_CENTER_START,
   PARAM_VEHICLE_POSITION,
+  PARAM_INDICATOR_COLOR,
   PARAM_REALTIME_UPDATE_STATUSBAR,
   PARAM_GPSD_CONNECT,
   PARAM_GPSD_HOST,
@@ -371,6 +377,7 @@ struct _VikGpsLayer {
   gboolean realtime_record;
   gboolean realtime_jump_to_start;
   guint vehicle_position;
+  GdkColor indicator_color;
   gboolean realtime_update_statusbar;
   VikTrackpoint *trkpt;
   VikTrackpoint *trkpt_prev;
@@ -621,6 +628,12 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, VikLayerSetParam *vlsp )
     case PARAM_VEHICLE_POSITION:
       vgl->vehicle_position = vlsp->data.u;
       break;
+    case PARAM_INDICATOR_COLOR:
+      vgl->indicator_color = vlsp->data.c;
+      // Apply setting
+      if ( vgl->realtime_track_gc )
+        layer_update_indictor_gc ( vgl, vlsp->vp );
+      break;
     case PARAM_REALTIME_UPDATE_STATUSBAR:
       vgl->realtime_update_statusbar = vlsp->data.b;
       break;
@@ -684,6 +697,9 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
     case PARAM_VEHICLE_POSITION:
       rv.u = vgl->vehicle_position;
       break;
+    case PARAM_INDICATOR_COLOR:
+      rv.c = vgl->indicator_color;
+      break;
     case PARAM_REALTIME_UPDATE_STATUSBAR:
       rv.b = vgl->realtime_update_statusbar;
       break;
@@ -714,7 +730,7 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   vgl->realtime_io_watch_id = 0;
   vgl->realtime_retry_timer = 0;
   if ( vp ) {
-    vgl->realtime_track_gc = vik_viewport_new_gc ( vp, "#203070", 2 );
+    layer_update_indictor_gc ( vgl, vp );
     vgl->realtime_track_bg_gc = vik_viewport_new_gc ( vp, "grey", 2 );
     vgl->realtime_track_pt1_gc = vik_viewport_new_gc ( vp, "red", 2 );
     vgl->realtime_track_pt2_gc = vik_viewport_new_gc ( vp, "green", 2 );
@@ -733,6 +749,10 @@ static void vik_gps_layer_post_read ( VikGpsLayer *vgl, VikViewport *vvp, gboole
     trw_layer_calculate_bounds_waypoints ( vgl->trw_children[i] );
     trw_layer_calculate_bounds_tracks ( vgl->trw_children[i] );
   }
+  
+#if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
+  layer_update_indictor_gc ( vgl, vvp );
+#endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
 }
 
 static void vik_gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp )
@@ -2054,4 +2074,12 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
     rt_gpsd_disconnect(vgl);
   }
 }
+
+static void layer_update_indictor_gc (VikGpsLayer *vgl, VikViewport *vp)
+{
+  if ( vgl->realtime_track_gc )
+    g_object_unref ( G_OBJECT(vgl->realtime_track_gc) );
+  vgl->realtime_track_gc = vik_viewport_new_gc_from_color ( vp, &(vgl->indicator_color), 2 );
+}
+
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */

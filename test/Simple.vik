@@ -222,6 +222,7 @@ gps_upload_waypoints=t
 record_tracking=t
 center_start_tracking=f
 moving_map_method=1
+indicator_color=#203070
 realtime_update_statusbar=t
 auto_connect=f
 gpsd_host=localhost
