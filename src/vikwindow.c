@@ -165,6 +165,8 @@ struct _VikWindow {
   GtkWidget *graphs;
   gpointer graphs_widgets; // viktrwlayer_propwin.c : _propwidgets
 
+  guint sbiu_id; // StatusBar Idle Update Id
+
   GtkWidget *main_vbox;
   GtkWidget *menu_hbox;
 
@@ -285,6 +287,7 @@ typedef struct {
   VikStatusbar *vs;
   vik_statusbar_type_t vs_type;
   gchar* message; // Always make a copy of this data
+  VikWindow *vw;
 } statusbar_idle_data;
 
 /**
@@ -292,6 +295,7 @@ typedef struct {
  */
 static gboolean statusbar_idle_update ( statusbar_idle_data *sid )
 {
+  sid->vw->sbiu_id = 0;
   vik_statusbar_set_message ( sid->vs, sid->vs_type, sid->message );
   g_free ( sid->message );
   g_free ( sid );
@@ -320,13 +324,14 @@ void vik_window_statusbar_update ( VikWindow *vw, const gchar* message, vik_stat
   sid->vs = vw->viking_vs;
   sid->vs_type = vs_type;
   sid->message = g_strdup ( message );
+  sid->vw = vw;
 
   if ( g_thread_self() == thread ) {
-    (void)g_idle_add ( (GSourceFunc)statusbar_idle_update, sid );
+    vw->sbiu_id = g_idle_add ( (GSourceFunc)statusbar_idle_update, sid );
   }
   else {
     // From a background thread
-    (void)gdk_threads_add_idle ( (GSourceFunc)statusbar_idle_update, sid );
+    vw->sbiu_id = gdk_threads_add_idle ( (GSourceFunc)statusbar_idle_update, sid );
   }
 }
 
@@ -636,6 +641,9 @@ static void window_finalize ( GObject *gob )
 {
   VikWindow *vw = VIK_WINDOW(gob);
   g_return_if_fail ( vw != NULL );
+
+  if ( vw->sbiu_id )
+    (void)g_source_remove ( vw->sbiu_id );
 
   a_background_remove_window ( vw );
   a_logging_remove_window ( vw );
