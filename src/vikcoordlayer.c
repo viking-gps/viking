@@ -178,7 +178,12 @@ gboolean coord_layer_set_param ( VikCoordLayer *vcl, VikLayerSetParam *vlsp )
 {
   switch ( vlsp->id )
   {
-    case PARAM_COLOR: vcl->color = vlsp->data.c; break;
+    case PARAM_COLOR:
+      vcl->color = vlsp->data.c;
+      // Apply setting
+      if ( vcl->gc )
+        coord_layer_update_gc ( vcl, vlsp->vp );
+      break;
     case PARAM_MIN_INC: vcl->deg_inc = vlsp->data.d / 60.0; break;
     case PARAM_LINE_THICKNESS: if ( vlsp->data.u >= 1 && vlsp->data.u <= 15 ) vcl->line_thickness = vlsp->data.u; break;
     default: break;
