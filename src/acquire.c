@@ -463,6 +463,10 @@ static GtkWidget *acquire_build_menu ( VikWindow *vw, VikLayersPanel *vlp, VikVi
   GtkWidget *item=NULL;
   int i;
 
+  // ATM All the filter options invoke GPSBabel
+  if ( !a_babel_available() )
+    return NULL;
+
   pass_along[0] = vw;
   pass_along[1] = vlp;
   pass_along[2] = vvp;

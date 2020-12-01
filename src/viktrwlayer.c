@@ -9268,7 +9268,8 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
     // Currently filter with functions all use shellcommands and thus don't work in Windows
 #ifndef WINDOWS
-    (void)vu_menu_add_item ( menu, _("Use with _Filter"), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_track_use_with_filter), data );
+    if ( a_babel_available() )
+      (void)vu_menu_add_item ( menu, _("Use with _Filter"), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_track_use_with_filter), data );
 #endif
 
     /* ATM This function is only available via the layers panel, due to needing a vlp */
