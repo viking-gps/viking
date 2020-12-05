@@ -385,6 +385,7 @@ Section Uninstall
 
     ; Shortcuts..
     Delete "$DESKTOP\Viking.lnk"
+    RMDir /r "$SMPROGRAMS\Viking"
 
     ; File association
     ${unregisterExtension} ".vik" "Viking File"
