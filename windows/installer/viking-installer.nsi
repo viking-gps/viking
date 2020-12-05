@@ -253,9 +253,9 @@ Section $(VIKING_SECTION_TITLE) SecViking
     WriteRegStr SHCTX ${VIKING_REG_KEY} "" "$INSTDIR"
     WriteRegStr SHCTX ${VIKING_REG_KEY} "Version" "${VIKING_VERSION}"
     ${If} ${RunningX64}
-      WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayName" "Viking (x86)"
+      WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayName" "Viking ${VIKING_VERSION} (x64)"
     ${Else}
-      WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayName" "Viking (x64)"
+      WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayName" "Viking ${VIKING_VERSION} (x86)"
     ${EndIf}
     WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayVersion" "${VIKING_VERSION}"
     WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayIcon" "$INSTDIR\viking_icon.ico"
