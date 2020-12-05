@@ -21,6 +21,7 @@ Name $name
 !endif
 
 OutFile "viking-${VIKING_VERSION}.exe"
+Unicode True
 
 ;NB Using /SOLID method on a mingw32 setup seems to generate an exe that fails the CRC check
 ;So now don't set the compressor here - it can be set by the calling command/script if necessary.
