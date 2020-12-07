@@ -289,7 +289,7 @@ static gboolean geoclue_layer_set_param ( VikGeoclueLayer *vgl, VikLayerSetParam
 	case PARAM_POSITION:         vgl->position = vlsp->data.u; break;
 	case PARAM_UPDATE_STATUSBAR: vgl->update_statusbar = vlsp->data.b; break;
 	case PARAM_COLOR:            vgl->color = vlsp->data.c; break;
-	default: g_warning("geoclue_layer_set_param(): unknown parameter");	break;
+	default: break;
 	}
 	return TRUE;
 }
@@ -304,9 +304,7 @@ static VikLayerParamData geoclue_layer_get_param ( VikGeoclueLayer *vgl, guint16
 	case PARAM_POSITION:         rv.u = vgl->position; break;
 	case PARAM_UPDATE_STATUSBAR: rv.u = vgl->update_statusbar; break;
 	case PARAM_COLOR:            rv.c = vgl->color; break;
-	default:
-		g_warning ( _("%s: unknown parameter"), __FUNCTION__ );
-		break;
+	default: break;
 	}
 	return rv;
 }
