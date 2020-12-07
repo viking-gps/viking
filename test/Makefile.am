@@ -4,6 +4,13 @@ AM_CFLAGS		= -Wall \
 LDADD           = $(PACKAGE_LIBS) @EXPAT_LIBS@ @LIBCURL@ $(top_builddir)/src/icons/libicons.a
 if REALTIME_GPS_TRACKING
 LDADD           += -lgps
+AM_TESTS_ENVIRONMENT = \
+  REALTIME_GPS_TRACKING="YES"; export REALTIME_GPS_TRACKING;
+endif
+
+if GEOCLUE
+AM_TESTS_ENVIRONMENT = \
+  GEOCLUE_ENABLED=="YES"; export GEOCLUE_ENABLED;
 endif
 
 TESTS = check_degrees_conversions.sh \

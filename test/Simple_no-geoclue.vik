@@ -727,16 +727,5 @@ type="routeend"
 ~EndLayerData
 ~EndLayer
 
-
-~Layer GeoClue
-name=GeoClue
-auto_connect=t
-record_tracking=t
-center_start_tracking=t
-moving_map_method=0
-update_statusbar=t
-color=#800080
-~EndLayer
-
 ~EndTopLayer
 
