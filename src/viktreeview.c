@@ -948,6 +948,11 @@ static gboolean vik_treeview_drag_data_received (GtkTreeDragDest *drag_dest, Gtk
 	vik_layer_get_interface(vl_dest->type)->drag_drop_request(vl_src, vl_dest, &src_iter, dest);
       }    
     }
+
+    // Update as things have changed - this needs to be performed at the root level
+    //  due to visibility settings of the heirachy effects what needs drawing (and removing)
+    //  so can't be in drag_drop_request() as an update on either vl_src or vl_dest layers isn't enough
+    vik_layer_emit_update ( vl );
   }
 
  out:
