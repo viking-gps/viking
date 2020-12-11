@@ -1405,6 +1405,8 @@ static void aggregate_layer_load_external_file_cb ( menu_array_values values )
     cur_file = g_slist_next ( cur_file );
   }
   g_slist_free (files);
+
+  vik_layer_emit_update ( VIK_LAYER(val) );
 }
 
 static void aggregate_layer_save_layer_as_cb ( menu_array_values values )
