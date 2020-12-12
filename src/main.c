@@ -171,7 +171,8 @@ int main( int argc, char *argv[] )
 
   /* Set the icon */
   GdkPixbuf *main_icon = ui_get_icon ( "viking", 48 );
-  gtk_window_set_default_icon(main_icon);
+  if ( main_icon )
+    gtk_window_set_default_icon(main_icon);
 
   // Ask for confirmation of default settings on first run
   vu_set_auto_features_on_first_run ();
