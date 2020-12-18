@@ -659,21 +659,34 @@ _get_hostname( VikMapSourceDefault *self )
 	return g_strdup( priv->hostname );
 }
 
+/**
+ * The return value is allocated and contents must be freed after use
+ * see: a_download_file_options_free()
+ */
 static DownloadFileOptions *
 _get_download_options( VikMapSourceDefault *self, MapCoord *src )
 {
 	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), NULL);
 	
 	VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
-	g_free ( priv->options.custom_http_headers );
+
+	DownloadFileOptions *dfo = g_malloc0 ( sizeof(DownloadFileOptions) );
+	dfo->check_file_server_time = priv->options.check_file_server_time;
+	dfo->use_etag = priv->options.use_etag;
+	dfo->referer = g_strdup ( priv->options.referer );
+	dfo->follow_location = priv->options.follow_location;
 	if ( src )
 		if ( priv->custom_http_headers )
-			priv->options.custom_http_headers = g_strdup_printf ( priv->custom_http_headers, 17-src->scale, src->x, src->y );
+			dfo->custom_http_headers = g_strdup_printf ( priv->custom_http_headers, 17-src->scale, src->x, src->y );
 		else
-			priv->options.custom_http_headers = NULL;
+			dfo->custom_http_headers = NULL;
 	else
-		priv->options.custom_http_headers = g_strdup ( priv->custom_http_headers );
-	return &(priv->options);
+		dfo->custom_http_headers = g_strdup ( priv->custom_http_headers );
+	dfo->check_file = priv->options.check_file;
+	dfo->user_pass = g_strdup ( priv->options.user_pass );
+	dfo->convert_file = priv->options.convert_file;
+
+	return dfo;
 }
 
 VikSlippyMapSource *

@@ -84,6 +84,8 @@ typedef struct {
 
 } DownloadFileOptions;
 
+void a_download_file_options_free ( DownloadFileOptions *dfo );
+
 void a_download_init(void);
 void a_download_uninit(void);
 

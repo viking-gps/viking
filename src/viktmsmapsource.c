@@ -521,12 +521,24 @@ _get_download_options( VikMapSourceDefault *self, MapCoord *src )
 {
 	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), NULL);
 	VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
-	g_free ( priv->options.custom_http_headers );
+
+	DownloadFileOptions *dfo = g_malloc0 ( sizeof(DownloadFileOptions) );
+	dfo->check_file_server_time = priv->options.check_file_server_time;
+	dfo->use_etag = priv->options.use_etag;
+	dfo->referer = g_strdup ( priv->options.referer );
+	dfo->follow_location = priv->options.follow_location;
 	if ( src )
-		priv->options.custom_http_headers = g_strdup_printf ( priv->custom_http_headers, 17-src->scale, src->x, src->y);
+		if ( priv->custom_http_headers )
+			dfo->custom_http_headers = g_strdup_printf ( priv->custom_http_headers, 17-src->scale, src->x, src->y );
+		else
+			dfo->custom_http_headers = NULL;
 	else
-		priv->options.custom_http_headers = g_strdup ( priv->custom_http_headers );
-	return &(priv->options);
+		dfo->custom_http_headers = g_strdup ( priv->custom_http_headers );
+	dfo->check_file = priv->options.check_file;
+	dfo->user_pass = g_strdup ( priv->options.user_pass );
+	dfo->convert_file = priv->options.convert_file;
+
+	return dfo;
 }
 
 /**

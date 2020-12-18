@@ -43,6 +43,10 @@ struct _VikMapSourceDefaultClass
 
 	gchar * (*get_uri) ( VikMapSourceDefault *self, MapCoord *src );
 	gchar * (*get_hostname) ( VikMapSourceDefault *self );
+	// DownloadFileOptions* must be allocated and copied for thread safe usage (rather than directly used)
+	// for maps since the content of the options can change during the lifetime of the MapSource
+	//  as it is location dependent
+	//  (and then of course freed after use)
 	DownloadFileOptions * (*get_download_options) ( VikMapSourceDefault *self, MapCoord *src );
 };
 

@@ -49,6 +49,21 @@
 #include "globals.h"
 #include "vik_compat.h"
 
+/**
+ * a_download_file_options_free:
+ *
+ * Free the contents of #DownloadFileOptions and itself
+ */
+void a_download_file_options_free ( DownloadFileOptions *dfo )
+{
+	g_return_if_fail ( dfo != NULL );
+
+	g_free ( dfo->referer );
+	g_free ( dfo->custom_http_headers );
+	g_free ( dfo->user_pass );
+	g_free ( dfo );
+}
+
 static gboolean check_file_first_line(FILE* f, gchar *patterns[])
 {
   gchar **s;

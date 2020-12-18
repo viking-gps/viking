@@ -544,6 +544,7 @@ _download ( VikMapSource *self, MapCoord *src, const gchar *dest_fn, void *handl
    gchar *host = vik_map_source_default_get_hostname(VIK_MAP_SOURCE_DEFAULT(self));
    DownloadFileOptions *options = vik_map_source_default_get_download_options(VIK_MAP_SOURCE_DEFAULT(self), src);
    DownloadResult_t res = a_http_download_get_url ( host, uri, dest_fn, options, handle );
+   a_download_file_options_free ( options );
    g_free ( uri );
    g_free ( host );
    return res;

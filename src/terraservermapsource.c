@@ -252,8 +252,19 @@ static DownloadFileOptions *
 _get_download_options( VikMapSourceDefault *self )
 {
 	g_return_val_if_fail (TERRASERVER_IS_MAP_SOURCE(self), NULL);
+
+	DownloadFileOptions *dfo = g_malloc0 ( sizeof(DownloadFileOptions) );
+
+	dfo->check_file_server_time = terraserver_options.check_file_server_time;
+	dfo->use_etag = terraserver_options.use_etag;
+	dfo->referer = g_strdup ( terraserver_options.referer );
+	dfo->follow_location = terraserver_options.follow_location;
+	dfo->custom_http_headers = g_strdup ( terraserver_options.custom_http_headers );
+	dfo->check_file = terraserver_options.check_file;
+	dfo->user_pass = g_strdup ( terraserver_options.user_pass );
+	dfo->convert_file = terraserver_options.convert_file;
 	
-	return &terraserver_options;
+	return dfo;
 }
 
 TerraserverMapSource *
