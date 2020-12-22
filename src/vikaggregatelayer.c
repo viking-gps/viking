@@ -751,6 +751,33 @@ static gboolean is_cluster ( GHashTable *val, gint x, gint y )
   return TRUE;
 }
 
+static GdkPixbuf *setup_pixbuf ( GdkPixbuf *pixbuf, guint width, guint height )
+{
+  if ( pixbuf )
+    g_object_unref ( pixbuf );
+  pixbuf = gdk_pixbuf_new ( GDK_COLORSPACE_RGB, TRUE, 8, width, height );
+  gdk_pixbuf_fill ( pixbuf, 0x00000000 );
+  return pixbuf;
+}
+
+static void get_pixel_limits ( guint *sizex, guint *sizey, guint *destx, guint *desty, gint xx, gint yy, guint width, guint height, gint tilesize_ceil )
+{
+  *sizex = ( xx + tilesize_ceil > width ) ? width - xx : tilesize_ceil;
+  *sizey = ( yy + tilesize_ceil > height ) ? height - yy : tilesize_ceil;
+
+  *destx = 0;
+  if ( xx < 0 )
+    *sizex += xx;
+  else
+    *destx = xx;
+
+  *desty = 0;
+  if ( yy < 0 )
+    *sizey += yy;
+  else
+    *desty = yy;
+}
+
 /**
  *
  */
@@ -773,7 +800,6 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
 
     VikCoord coord;
     gint xx, yy;
-    gint base_yy;
     // Prevent the program grinding to a halt if trying to deal with thousands of tiles
     const gint tiles = (xmax-xmin) * (ymax-ymin);
     if ( tiles > 524288 ) {
@@ -786,21 +812,19 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
     gint xx_tmp, yy_tmp;
     map_utils_iTMS_to_center_vikcoord ( &ulm, &coord );
     vik_viewport_coord_to_screen ( vvp, &coord, &xx_tmp, &yy_tmp );
-    xx = xx_tmp; yy = yy_tmp;
 
     // ceiled so tiles will be maximum size in the case of funky shrinkfactor
-    gint tilesize_ceil = ceil ( tilesize );
-    gint8 xinc = (ulm.x == xmin) ? 1 : -1;
-    gint8 yinc = (ulm.y == ymin) ? 1 : -1;
-    gint xend, yend;
-
-    xend = (xinc == 1) ? (xmax+1) : (xmin-1);
-    yend = (yinc == 1) ? (ymax+1) : (ymin-1);
+    const gint tilesize_ceil = ceil ( tilesize );
+    const gint8 xinc = (ulm.x == xmin) ? 1 : -1;
+    const gint8 yinc = (ulm.y == ymin) ? 1 : -1;
+    const gint xend = (xinc == 1) ? (xmax+1) : (xmin-1);
+    const gint yend = (yinc == 1) ? (ymax+1) : (ymin-1);
 
     /* above trick so xx,yy doubles. this is so shrinkfactors aren't rounded off
      * eg if tile size 128, shrinkfactor 0.333 */
-    xx -= (tilesize/2);
-    base_yy = yy - (tilesize/2);
+    const gint base_xx = xx_tmp - (tilesize/2);
+    const gint base_yy = yy_tmp - (tilesize/2);
+    xx = base_xx; yy = base_yy;
 
     // When a single tile bigger than the whole screen, only need to draw part of the tile.
     // Thus don't draw only the on screen part, to avoid trying to handle a massive pixbuf
@@ -821,10 +845,7 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
     // Create pixbufs the size of the screen
     for ( guint ii=0; ii<CP_NUM; ii++ ) {
       if ( val->on[ii] ) {
-        if ( val->full_pixbuf[ii] )
-          g_object_unref ( val->full_pixbuf[ii] );
-        val->full_pixbuf[ii] = gdk_pixbuf_new ( GDK_COLORSPACE_RGB, TRUE, 8, width, height );
-        gdk_pixbuf_fill ( val->full_pixbuf[ii], 0x00000000 );
+        val->full_pixbuf[ii] = setup_pixbuf ( val->full_pixbuf[ii], width, height );
       }
     }
 
@@ -841,20 +862,8 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
 
             // Limit size request of pixbufs at the edge, as to not request a size overflowing the destination pixbuf
             // otherwise gdk_pixbuf_copy_area() will complain
-            guint sizex = ( xx + tilesize_ceil > width ) ? width - xx : tilesize_ceil;
-            guint sizey = ( yy + tilesize_ceil > height ) ? height - yy : tilesize_ceil;
-
-            guint destx = 0;
-            if ( xx < 0 )
-              sizex += xx;
-            else
-              destx = xx;
-
-            guint desty = 0;
-            if ( yy < 0 )
-              sizey += yy;
-            else
-              desty = yy;
+            guint sizex, sizey, destx, desty;
+            get_pixel_limits ( &sizex, &sizey, &destx, &desty, xx, yy, width, height, tilesize_ceil );
 
             gdk_pixbuf_copy_area ( val->pixbuf[BASIC], 0, 0, sizex, sizey, val->full_pixbuf[BASIC], destx, desty );
 
@@ -911,10 +920,6 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
       // Thus loop around x & y again, but this time separately
       GdkGC *black_gc = GTK_WIDGET(vvp)->style->black_gc;
       // Draw single grid lines across the whole screen
-      xx = xx_tmp; yy = yy_tmp;
-      gint base_xx = xx - (tilesize/2);
-      base_yy = yy - (tilesize/2);
-      
       xx = base_xx;
       for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
          vik_viewport_draw_line ( vvp, black_gc, xx, base_yy, xx, height );
