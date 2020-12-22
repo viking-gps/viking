@@ -1431,7 +1431,7 @@ static gboolean window_configure_event ( VikWindow *vw, GdkEventConfigure *event
   }
 
   // NB Would be nice to resize the graphs pane here when the overall window size has changed
-  //  partically when jumping from small window <-> maximised
+  //  particularly when jumping from small window <-> maximised
   // But ATM this function also gets called when moving the vpane & it's not easy to separate out the individual drawing parts
 
   return FALSE;
