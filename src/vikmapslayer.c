@@ -2482,9 +2482,11 @@ gboolean maps_dialog_zoom_between ( GtkWindow *parent,
   return TRUE;
 }
 
-// My best guess of sensible limits
-#define REALLY_LARGE_AMOUNT_OF_TILES 5000
-#define CONFIRM_LARGE_AMOUNT_OF_TILES 500
+// General request limits
+// For OSM see:
+// https://operations.osmfoundation.org/policies/tiles/
+#define REALLY_LARGE_AMOUNT_OF_TILES 2500
+#define CONFIRM_LARGE_AMOUNT_OF_TILES 250
 
 /**
  * Get all maps in the region for zoom levels specified by the user
