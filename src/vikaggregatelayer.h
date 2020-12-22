@@ -44,6 +44,7 @@ GType vik_aggregate_layer_get_type ();
 
 typedef struct _VikAggregateLayer VikAggregateLayer;
 
+void vik_aggregate_layer_uninit ();
 VikAggregateLayer *vik_aggregate_layer_new ();
 void vik_aggregate_layer_add_layer ( VikAggregateLayer *val, VikLayer *l, gboolean allow_reordering );
 void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, GtkTreeIter *replace_layer );

@@ -1,0 +1,16 @@
+# ZOOM X Y
+#### England ####
+# RAF Lakenheath
+14 8217 5381
+# MOD Westdown Artillery Range
+14 8104 5465
+# MOD Larkhill Artillery Range
+14 8106 5464
+14 8106 5465
+14 8106 5466
+14 8107 5465
+14 8107 5466
+# MOD Porton Down
+14 8116 5474
+14 8117 5474
+14 8115 5475

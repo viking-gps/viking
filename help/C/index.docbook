@@ -2208,6 +2208,23 @@ Thus ATM is it recommended to turn off the visibility of the tracks themselves f
 </screenshot>
 </figure>
 </para>
+
+<para>
+A concept of ignoring <emphasis>unreachable</emphasis> tiles is supported. This allows marking individual tiles as inaccessible (e.g typically military use only, so no public access) so that the tile is still included for maximum square and clustering count purposes. These tiles are drawn in red on the viewport.
+</para>
+<para>
+On startup &appname; attempts to load the file <filename>unreachable_tiles.txt</filename> in your <xref linkend="config_file_loc"/>.</para>
+<para>
+The file should contain a list of tiles in the format of 3 numbers, with each line being "OSM_ZOOM TILE_X_ID TILE_Y_ID". e.g.
+</para>
+<screen>
+14 8116 5474
+14 8117 5474
+</screen>
+<para>
+Any lines starting with a '#', '!' or ';' are ignored as intended for comments.
+A fuller example covering the UK is in <filename>/usr/share/viking/unreachable_tiles.txt</filename> or <filename>C:\Program Files\Viking\data\unreachable_tiles.txt</filename> according to the operating system and typical install locations. You may wish to copy this file into your &appname; home directory so that it is used.
+</para>
 </section>
 
 <section><title>Heatmap</title>

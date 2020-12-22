@@ -29,6 +29,7 @@
 #include "maputils.h"
 #include "background.h"
 #include "gpx.h"
+#include "dir.h"
 #ifdef HAVE_SQLITE3_H
 #include "sqlite3.h"
 #endif
@@ -264,6 +265,7 @@ struct _VikAggregateLayer {
   GdkColor color[CP_NUM];
   GdkPixbuf *pixbuf[CP_NUM];      // Individual tile
   GdkPixbuf *full_pixbuf[CP_NUM]; // Whole screen
+  GdkPixbuf *unreachable_pixbuf; // Whole screen
   guint num_tiles[CP_NUM];
 
   guint cont_label;
@@ -301,6 +303,51 @@ struct _VikAggregateLayer {
   MapCoord rc_menu_mc; // Position of Right Click menu
 };
 
+// Single global
+GHashTable *tiles_unreachable = NULL;
+
+static void aggregate_layer_class_init ( VikAggregateLayerClass *klass )
+{
+  gchar *fn = g_build_filename ( a_get_viking_dir(), "unreachable_tiles.txt", NULL );
+  FILE *ff = g_fopen ( fn, "r" );
+
+  // Load
+  if ( ff ) {
+    tiles_unreachable = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
+
+    gchar buf[4096];
+    guint line = 0;
+    gint xx, yy, zz;
+    while ( !feof(ff) ) {
+      if ( fgets(buf, sizeof(buf), ff) == NULL )
+        break;
+      line++;
+      // Skip comment style lines
+      if ( buf == NULL || buf[0] == '\0' || buf[0] == '!' || buf[0] == ';' || buf[0] == '#' )
+        continue;
+      if ( sscanf(buf, "%d %d %d", &zz, &xx, &yy) == 3 ) {
+        gchar *key = g_strdup_printf ( "%d %d %d", zz, xx, yy );
+        g_hash_table_insert ( tiles_unreachable, key, GUINT_TO_POINTER(0) );
+      }
+      else
+        g_warning ( "%s: %s line %d does not contain 3 numbers", __FUNCTION__, fn, line );
+    }
+    fclose ( ff );
+
+    guint sz = g_hash_table_size ( tiles_unreachable );
+    if ( sz )
+      g_debug ( "%s: using %d unreachable tiles", __FUNCTION__, sz );
+  }
+
+  g_free ( fn );
+}
+
+void vik_aggregate_layer_uninit ()
+{
+  if ( tiles_unreachable )
+    g_hash_table_destroy ( tiles_unreachable );
+}
+
 GType vik_aggregate_layer_get_type ()
 {
   static GType val_type = 0;
@@ -312,7 +359,7 @@ GType vik_aggregate_layer_get_type ()
       sizeof (VikAggregateLayerClass),
       NULL, /* base_init */
       NULL, /* base_finalize */
-      NULL, /* class init */
+      (GClassInitFunc)aggregate_layer_class_init, /* class init */
       NULL, /* class_finalize */
       NULL, /* class_data */
       sizeof (VikAggregateLayer),
@@ -848,6 +895,8 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
         val->full_pixbuf[ii] = setup_pixbuf ( val->full_pixbuf[ii], width, height );
       }
     }
+    if ( tiles_unreachable )
+      val->unreachable_pixbuf = setup_pixbuf ( val->unreachable_pixbuf, width, height );
 
     guint tile_draw_count = 0;
     for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
@@ -905,10 +954,45 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
       xx += tilesize;
     }
 
+    // Draw any unreachable tiles if they are in the display area
+    if ( tiles_unreachable && !is_big ) {
+
+      GHashTableIter iter;
+      gpointer key, value;
+      gint uz, ux, uy;
+      const guint zl = (guint)map_utils_mpp_to_zoom_level ( zoom );
+
+      // Always red - not bothered to allow config of this ATM
+      GdkColor gdc;
+      gdk_color_parse ( "red", &gdc );
+      GdkPixbuf *pixbuf = NULL;
+      pixbuf = layer_pixbuf_update ( pixbuf, gdc, tilesize <= 256 ? 256 : tilesize, tilesize <= 256 ? 256 : tilesize, val->alpha[BASIC] );
+
+      MapCoord mc;
+      mc.scale = ulm.scale; // Current display zoom level
+      guint sizex, sizey, destx, desty;
+
+      g_hash_table_iter_init ( &iter, tiles_unreachable );
+      while ( g_hash_table_iter_next(&iter, &key, &value) ) {
+        (void)sscanf ( key, "%d %d %d", &uz, &ux, &uy );
+        if ( uz == zl && (ux >= xmin) && (ux <= xmax) && (uy >= ymin) && (uy <=ymax) ) {
+          mc.x = ux;
+          mc.y = uy;
+          map_utils_iTMS_to_vikcoord ( &mc, &coord );
+          vik_viewport_coord_to_screen ( vvp, &coord, &xx_tmp, &yy_tmp );
+          get_pixel_limits ( &sizex, &sizey, &destx, &desty, xx_tmp, yy_tmp, width, height, tilesize_ceil );
+          gdk_pixbuf_copy_area ( pixbuf, 0, 0, sizex, sizey, val->unreachable_pixbuf, destx, desty );
+        }
+      }
+      g_object_unref ( pixbuf );
+    }
+
     if ( !is_big ) {
       for ( guint ii=0; ii<CP_NUM; ii++ )
         if ( val->on[ii] && val->full_pixbuf[ii] )
           vik_viewport_draw_pixbuf ( vvp, val->full_pixbuf[ii], 0, 0, 0, 0, width, height );
+      if ( tiles_unreachable )
+        vik_viewport_draw_pixbuf ( vvp, val->unreachable_pixbuf, 0, 0, 0, 0, width, height );
     }
 
     //g_debug ( "%s: Tiles drawn %d", __FUNCTION__, tile_draw_count );
@@ -1869,11 +1953,38 @@ static void tac_square_calc ( VikAggregateLayer *val )
 }
 
 /**
+ * Insert unreachable tiles to pretend they have been visited
+ *  thus contributing to max squares, clusters and contiguous calculations
+ * NB: ATM this doesn't effect the numbers reported too much as it uses the
+ *  separate count 'num_tiles' rather than the number in the hash table
+ */
+static void tac_unreachable ( VikAggregateLayer *val )
+{
+  if ( !tiles_unreachable ) return;
+
+  GHashTableIter iter;
+  gpointer key, value;
+  gint z,x,y;
+
+  guint zoom = (guint)map_utils_mpp_to_zoom_level(val->zoom_level);
+
+  g_hash_table_iter_init ( &iter, tiles_unreachable );
+  while ( g_hash_table_iter_next(&iter, &key, &value) ) {
+    (void)sscanf ( key, "%d %d %d", &z, &x, &y );
+    if ( z == zoom )
+      add_tile ( val->tiles, x, y );
+  }
+}
+
+/**
  *
  */
 static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
 {
   clock_t begin = clock();
+
+  tac_unreachable ( ct->val );
+
   guint tracks_processed = 0;
   // This is used to prevent the progress going negative or otherwise over 100%
   // It's difficult to get an estimate for the total and track progress of each of these parts
@@ -2716,6 +2827,8 @@ void vik_aggregate_layer_free ( VikAggregateLayer *val )
     if ( val->full_pixbuf[ii] )
       g_object_unref ( val->full_pixbuf[ii] );
   }
+  if ( val->unreachable_pixbuf )
+    g_object_unref ( val->unreachable_pixbuf );
   g_hash_table_destroy ( val->tiles_clust );
 
   if ( val->hm_pixbuf )
