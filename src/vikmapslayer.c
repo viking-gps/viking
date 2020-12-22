@@ -529,6 +529,20 @@ gchar *maps_layer_default_dir ()
       else
         defaultdir = g_strdup ( LOCAL_MAPS_DIR );
     }
+
+    // Only use above if already existing, otherwise now default to using
+    //  a more modern default location from g_get_user_cache_dir()
+    if ( defaultdir && !g_file_test(defaultdir, G_FILE_TEST_EXISTS) ) {
+      const gchar *ucachedir = g_get_user_cache_dir();
+      if ( ucachedir ) {
+        g_free ( defaultdir );
+        if ( ucachedir[strlen(ucachedir)-1] != G_DIR_SEPARATOR )
+          defaultdir = g_build_filename ( ucachedir, G_DIR_SEPARATOR_S, "viking", G_DIR_SEPARATOR_S, NULL );
+        else
+          defaultdir = g_build_filename ( ucachedir, "viking", G_DIR_SEPARATOR_S, NULL );
+      }
+    }
+
     if (defaultdir && (defaultdir[strlen(defaultdir)-1] != G_DIR_SEPARATOR))
     {
       /* Add the separator at the end */

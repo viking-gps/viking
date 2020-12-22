@@ -65,7 +65,7 @@ and docbook-xsl in your Build-Depends control field.
       <holder>Guilhem Bonnefille</holder>
     </copyright>
     <copyright>
-      <year>2013</year>
+      <year>2020</year>
       <holder>Rob Norris</holder>
     </copyright>
     &dhdate;
@@ -259,9 +259,14 @@ and docbook-xsl in your Build-Depends control field.
 </literallayout>
 </para>
       <para>You can find more examples in the documentation part of the distribution.</para>
+      <para>
+        The User Configuration File Location directory is <filename>~/.viking</filename> for versions up to v1.8.
+        For new installs from v1.9 onwards it is <filename>~/.config/viking</filename>
+        If the legacy location exists then Viking will use that in preference to the new location.
+      </para>
       <formalpara>
         <title>Map Source</title>
-        <para>It is possible to add new map sources. The file is <filename>~/.viking/maps.xml</filename>.</para>
+        <para>It is possible to add new map sources. The file is <filename>maps.xml</filename> in User Configuration File Location directory.</para>
         <para>An example of the file in the distribution <filename>doc/examples/maps.xml</filename>.</para>
         <para>The <classname>VikSlippyMapSource</classname> allows declaration of any map source working like OpenStreetMap. It supports the following properties:
           <variablelist>
@@ -271,7 +276,7 @@ and docbook-xsl in your Build-Depends control field.
             </varlistentry>
             <varlistentry>
               <term>name</term>
-              <listitem><para>a string (should be unique) that is used for the OSM style cache directory name when the Map Cache directory is the default (<filename>~/.viking-maps</filename>)</para></listitem>
+              <listitem><para>a string (should be unique) that is used for the OSM style cache directory name when the Map Cache directory is the default (up to v1.8 <filename>~/.viking-maps</filename> or v1.9 onwards<filename>~/.cache/viking</filename>)</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>label</term>
@@ -476,7 +481,7 @@ and docbook-xsl in your Build-Depends control field.
 
       <formalpara>
         <title>Go-to search engines</title>
-        <para>It is possible to add new new search engines for the "Go-To" feature. The file is <filename>~/.viking/goto_tools.xml</filename>.</para>
+        <para>It is possible to add new new search engines for the "Go-To" feature. The file is <filename>goto_tools.xml</filename> in User Configuration File Location directory.</para>
         <para>An example of the file in the distribution <filename>doc/examples/goto_tools.xml</filename>.</para>
         <para>Currently, there is a single object class available: VikGotoXmlTool. This feature allows one to declare any search engine using a XML format as result.</para>
         <para>The related properties are:
@@ -512,7 +517,7 @@ and docbook-xsl in your Build-Depends control field.
 
       <formalpara>
         <title>External tools</title>
-        <para>It is possible to add new external tools. The file is <filename>~/.viking/external_tools.xml</filename>.</para>
+        <para>It is possible to add new external tools. The file is <filename>external_tools.xml</filename> in User Configuration File Location directory.</para>
         <para>An example of the file in the distribution <filename>doc/examples/external_tools.xml</filename>.</para>
         <para>The VikWebtoolCenter allows one to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
         <para>The related properties are:
@@ -544,7 +549,7 @@ and docbook-xsl in your Build-Depends control field.
 
       <formalpara>
         <title>Routing engine</title>
-        <para>It is possible to declare new routing engines. The file is <filename>~/.viking/routing.xml</filename>.</para>
+        <para>It is possible to declare new routing engines. The file is <filename>routing.xml</filename> in User Configuration File Location directory.</para>
         <para>An example of the file in the distribution <filename>doc/examples/routing.xml</filename>.</para>
         <para>The <classname>VikRoutingWebEngine</classname> allows one to declare a routing engine available via HTTP.</para>
         <para>The related properties are:
@@ -608,7 +613,7 @@ and docbook-xsl in your Build-Depends control field.
       <formalpara>
         <title>Remote File Datasources</title>
         <para>It is possible to add web references expected to return a file which can then be opened directly or converted via GPSBabel.</para>
-        <para>The file is <filename>~/.viking/datasources.xml</filename>.</para>
+        <para>The file is <filename>datasources.xml</filename> in your User Configuration File Location directory.</para>
         <para>An example of the file is in the source distribution <filename>doc/examples/datasources.xml</filename>.</para>
         <para>The VikWebtoolDatasource allows one to declare any URL using logic based on coordinates.</para>
         <para>The related properties are:
@@ -668,57 +673,61 @@ and docbook-xsl in your Build-Depends control field.
   </refsect1>
   <refsect1>
     <title>FILES</title>
-
+    <para>
+      The User Configuration File Location directory is <filename>~/.viking</filename> for versions up to v1.8.
+For new installs it is <filename>~/.config/viking</filename> from v1.9 onwards.
+If the legacy location exists then Viking will use that in preference to the new location.
+</para>
     <variablelist>
       <varlistentry>
-        <term><filename>~/.viking/maps.xml</filename></term>
+        <term>Configuration: <filename>maps.xml</filename></term>
         <listitem>
           <para>File containing definition of map sources.</para>
           <para>See previous section for details.</para>
        </listitem>
       </varlistentry>
       <varlistentry>
-        <term><filename>~/.viking/goto_tools.xml</filename></term>
+        <term>Configuration: <filename>goto_tools.xml</filename></term>
         <listitem>
           <para>File containing definition of "Go-to" services.</para>
           <para>See previous section for details.</para>
        </listitem>
       </varlistentry>
       <varlistentry>
-        <term><filename>~/.viking/external_tools.xml</filename></term>
+        <term>Configuration: <filename>external_tools.xml</filename></term>
         <listitem>
           <para>File containing definition of external tools.</para>
           <para>See previous section for details.</para>
        </listitem>
       </varlistentry>
       <varlistentry>
-        <term><filename>~/.viking/datasources.xml</filename></term>
+        <term>Configuration: <filename>datasources.xml</filename></term>
         <listitem>
           <para>File containing definition of remote file datasources.</para>
           <para>See previous section for details.</para>
        </listitem>
       </varlistentry>
       <varlistentry>
-        <term><filename>~/.viking/routing.xml</filename></term>
+        <term>Configuration: <filename>routing.xml</filename></term>
         <listitem>
           <para>File containing definition of routing sources.</para>
           <para>See previous section for details.</para>
        </listitem>
       </varlistentry>
       <varlistentry>
-        <term><filename>~/.viking/viking.prefs</filename></term>
+        <term>Configuration: <filename>viking.prefs</filename></term>
         <listitem>
           <para>Preferences for &dhpackage;.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><filename>~/.viking/viking_layer_defaults.ini</filename></term>
+        <term>Configuration: <filename>viking_layer_defaults.ini</filename></term>
         <listitem>
           <para>Layer default values for &dhpackage;.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><filename>~/.viking/viking.ini</filename></term>
+        <term>Configuration: <filename>viking.ini</filename></term>
         <listitem>
           <para>Values for &dhpackage; automatically saved between sessions.</para>
           <para>Not generally intended to be manually edited.</para>
@@ -726,16 +735,18 @@ and docbook-xsl in your Build-Depends control field.
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><filename>~/.viking/keys.rc</filename></term>
+        <term>Configuration: <filename>keys.rc</filename></term>
         <listitem>
           <para>File containing short cut key accelerators.</para>
           <para>This is in the standard GTK Accelerator map format.</para>
        </listitem>
       </varlistentry>
       <varlistentry>
-        <term><filename>~/.viking-maps/</filename></term>
+        <term>Up to v1.8 <filename>~/.viking-maps/</filename></term>
+        <term>v1.9 onwards <filename>~/.cache/viking/</filename></term>
         <listitem>
           <para>Default location of the map cache of tiles downloaded or created by &dhpackage;.</para>
+          <para>If the legacy location exists then Viking will use that in preference.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -759,6 +770,12 @@ and docbook-xsl in your Build-Depends control field.
         <term><envar>XDG_DATA_DIRS</envar></term>
         <listitem>
           <para>Path used to change the directories scanned for extension files (&extfiles;).</para>
+       </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><envar>VIKING_MAPS</envar></term>
+        <listitem>
+          <para>The path used for the default root location of maps.</para>
        </listitem>
       </varlistentry>
     </variablelist>

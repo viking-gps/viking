@@ -1942,6 +1942,79 @@ Some maps are continually improving over time (e.g. OpenStreetMap) thus &appname
 However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option or <keycap>Ctrl+F5</keycap>.
 </para>
 
+<para id="cache_location" xreflabel="Cache Root Location">
+The default root location for the map cache is searched for in this order (including the legacy locations), using the first existing directory location found to exist. Thus on upgrading &app; it will still continue to use the previous location if it is available.
+</para>
+<variablelist>
+  <varlistentry>
+    <term>Environment Override</term>
+    <listitem><para><envar>$VIKING_MAPS</envar></para></listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>Global Map Directory</term>
+    <listitem>
+      <para><trademark>UNIX</trademark>: <filename>/var/cache/maps</filename></para>
+      <para><trademark>Windows</trademark>: <filename>C:\VIKING-MAPS</filename></para>
+      <para><trademark>Mac</trademark>: <filename>/Library/cache/Viking/maps</filename></para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>Local Map Directory - Legacy - v1.8 and earlier</term>
+    <listitem>
+      <para><trademark>UNIX</trademark>: <filename>~/.viking-maps</filename></para>
+      <para><trademark>Windows</trademark>: <filename>C:\Users\<replaceable>username</replaceable>\VIKING-MAPS</filename></para>
+      <para><trademark>Mac</trademark>: <filename>/Library/Application Support/Viking/viking-maps</filename></para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>Local Map Directory - Current - v1.9 onwards</term>
+    <listitem>
+      <para><trademark>UNIX</trademark>: <filename><envar>$XDG_CACHE_HOME</envar>/viking</filename> - (typically <filename>~/.cache/viking</filename>)</para>
+      <para><trademark>Windows</trademark>: <filename>C:\Users\<replaceable>username</replaceable>\AppData\Local\Microsoft\Windows\INetCache\viking</filename></para>
+      <para><trademark>Mac</trademark>: <filename>/Library/Caches/viking</filename></para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+
+<para>
+You can modify this directory default by setting an explicit value in the <xref linkend="prefs"/> or in <menuchoice><guimenu>Edit</guimenu><guisubmenu>Layer Defaults</guisubmenu></menuchoice> for all new Maps. Or set an explicit Map Directory value for the particular Map Layer in the <xref linkend="map_props"/>.
+</para>
+
+<note>
+<para>
+  If you've upgraded &app; to v1.9 and want it to use the new location, you need to perform these manual steps to ensure consistency in usage:
+</para>
+<orderedlist>
+  <listitem>
+    <para>
+      Manually move the existing directory (when &app; is not running). e.g. in the command line: <command>mv -p ~/.viking-maps ~/.cache/viking-maps</command>
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+      Update your <emphasis>.vik files</emphasis> to use the new directory location.
+One way would be to manually edit the files with a text editor to change the Map Layer setting from <command>directory=/some/dir/ --> directory=</command> as a blank entry will use the default.
+      Otherwise if you open .vik file with &app; the maps may auto download and recreate the previous location, so even if you modify the map directory within &app; and save the .vik file, the next time you open &app; it would notice the old location exists (unless you remove it) and may use that in preference for new Map Layers.
+    </para>
+  </listitem>
+  <listitem>
+    <para>
+      This location is also used by DEM files, so you need to update your <emphasis>.vik files</emphasis> appropriately use the new directory location of each file used.
+  </para>
+  </listitem>
+  <listitem>
+  <para>
+    You should also modify any existing explicit Map Directory default in the <xref linkend="prefs"/> and in <menuchoice><guimenu>Edit</guimenu><guisubmenu>Layer Defaults</guisubmenu></menuchoice> (or at least ensure they are blank, in order to use the defaults).
+  </para>
+  </listitem>
+  <listitem>
+  <para>
+    Finally you will need to fix any other absolute file references in .vik files if you have used files in the map cache location, such as Waypoint Images, Georef Images, External TrackWaypoint Layer references and so forth.
+  </para>
+  </listitem>
+</orderedlist>
+</note>
+
 <para>
 Also see <xref linkend="map_tool_dl"/> tool for use in conjunction with this layer.
 </para>
@@ -1992,7 +2065,7 @@ Some map types supported are for on disk tile formats:
 Of course you need to have acquired or generated these tilesets yourself.
 </para>
 
-<section><title>Map Layer Properties</title>
+<section id="map_props"><title>Map Layer Properties</title>
 <para>
 Configurable properties:
 </para>
@@ -3801,8 +3874,8 @@ Accept: */*
 	When you define object group that already exists (and for Maps this means by a repeated Id key, but you may have to examine the source code to work out what the relevant Id values are) then you need to define all the other keys as well, otherwise they will be reset to the defaults.
       </para>
       <section id="map_source" xreflabel="Map Source Extensions">
-        <title>Map Source</title>
-        <para>It is possible to add new map sources. The file is <filename>~/.viking/maps.xml</filename> for <trademark>UNIX</trademark> like systems, <filename>C:\Documents and Settings\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows XP</trademark> or <filename>C:\Users\<replaceable>username</replaceable>\.viking\maps.xml</filename> on <trademark>Windows 7</trademark> onwards.</para>
+        <title>Map Sources</title>
+        <para>It is possible to add new map sources. The file is <filename>maps.xml</filename> placed in your <xref linkend="config_file_loc"/></para>
         <para>An example of the file is in the distribution <filename>doc/examples/maps.xml</filename>. Further examples and values are online in the <ulink url="https://sourceforge.net/p/viking/wikiallura/Maps/">Maps Wiki</ulink></para>
 
         <para>The <classname>VikSlippyMapSource</classname> allows declaration of any map source working like OpenStreetMap. It supports the following properties:
@@ -4024,8 +4097,8 @@ Accept: */*
       </section>
 
       <section id="search_provider">
-        <title>Go-to search engines</title>
-        <para>It is possible to add new new search engines for the "Go-To" feature. The file is <filename>~/.viking/goto_tools.xml</filename>.</para>
+        <title>Go-to Search Engines</title>
+        <para>It is possible to add new new search engines for the "Go-To" feature. The file is <filename>goto_tools.xml</filename>  placed in your <xref linkend="config_file_loc"/>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/goto_tools.xml</filename>.</para>
         <para>Currently, there is a single object class available: <classname>VikGotoXmlTool</classname>. This feature allows one to declare any search engine using a XML format as result.</para>
         <para>The related properties are:
@@ -4060,8 +4133,8 @@ Accept: */*
       </section>
 
       <section>
-        <title>External tools</title>
-        <para>It is possible to add new external tools. The file is <filename>~/.viking/external_tools.xml</filename>.</para>
+        <title>External Tools</title>
+        <para>It is possible to add new external tools. The file is <filename>external_tools.xml</filename> placed in your <xref linkend="config_file_loc"/>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/external_tools.xml</filename>.</para>
         <para>The <classname>VikWebtoolCenter</classname> allows one to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
         <para>The related properties are:
@@ -4092,8 +4165,8 @@ Accept: */*
       </section>
       
       <section>
-        <title>Routing engine</title>
-        <para>It is possible to declare new routing engines. The file is <filename>~/.viking/routing.xml</filename>.</para>
+        <title>Routing Engines</title>
+        <para>It is possible to declare new routing engines. The file is <filename>routing.xml</filename> placed in your <xref linkend="config_file_loc"/>.</para>
         <para>An example of the file in the distribution <filename>doc/examples/routing.xml</filename>.</para>
         <para>The <classname>VikRoutingWebEngine</classname> allows one to declare a routing engine available via HTTP.</para>
         <para>The related properties are:
@@ -4157,7 +4230,7 @@ Accept: */*
       <section>
         <title>Remote File Datasources</title>
         <para>It is possible to add web references expected to return a file which can then be opened directly or converted via GPSBabel.</para>
-        <para>The file is <filename>~/.viking/datasources.xml</filename>.</para>
+        <para>The file is <filename>datasources.xml</filename> placed in your <xref linkend="config_file_loc"/>.</para>
         <para>An example of the file is in the source distribution <filename>doc/examples/datasources.xml</filename>.</para>
         <para>The <classname>VikWebtoolDatasource</classname> allows one to declare any URL using logic based on coordinates.</para>
         <para>The related properties are:
@@ -4219,14 +4292,58 @@ Accept: */*
       <section>
         <title>System Extension File Locations</title>
         <para>Note that, on <trademark>UNIX</trademark> like systems, the extension files (&extfiles;) are also searched in <filename>/etc/viking</filename> and <filename>/usr/share/viking</filename> directories (or related in your system).</para>
-        <para>The <envar>XDG_DATA_DIRS</envar> environment variable can be used to change these directories.</para>
-        <para>The <envar>XDG_DATA_HOME</envar> environment variable is also used (if set) to look for these extension files.</para>
+        <para>The <envar>$XDG_DATA_DIRS</envar> environment variable can be used to change these directories.</para>
+        <para>The <envar>$XDG_DATA_HOME</envar> environment variable is also used (if set) to look for these extension files.</para>
       </section>
 
+      <section id="config_file_loc" xreflabel="User Configuration File Location">
+        <title>User Configuration File Location</title>
+        <para>Viking looks for its configuration files (<filename>viking.prefs</filename>, <filename>viking.ini</filename>, <filename>viking.ini</filename> and <filename>keys.rc</filename>) in a specific directory, searching legacy locations first before trying new locations. Thus if you upgrade &appname; it will continue to use your existing setup.</para>
+        <para>For <trademark>UNIX</trademark> like systems:</para>
+        <variablelist>
+          <varlistentry>
+            <term>Up to v1.8</term>
+            <listitem>
+              <para><filename>~/.viking/</filename></para>
+              <para>(typically <filename>/home/<replaceable>username</replaceable>/.viking</filename>)</para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>From v1.9 onwards</term>
+            <listitem>
+              <para><ulink url="https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html">XDG Base Directory compliant</ulink></para>
+              <para>Typically <filename>~/config/viking/</filename></para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+        <para>For <trademark>Windows</trademark> systems:</para>
+        <variablelist>
+          <varlistentry>
+            <term>v1.8 or earlier</term>
+            <listitem>
+              <para><filename>C:\Users\<replaceable>username</replaceable>\.viking</filename></para>
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term>v1.9 onwards</term>
+            <listitem>
+              <para><filename>C:\Users\<replaceable>username</replaceable>\AppData\Local\viking</filename></para>
+            </listitem>
+          </varlistentry>
+        </variablelist>
+        <para>For <trademark>Mac</trademark>:</para>
+        <para><filename>/Library/Application Support/Viking</filename></para>
+
+        <note>
+          <para>
+            If you've upgraded &app; to v1.9 and want it to use the new location, you will have to manually move the existing directory (when &app; is not running). e.g. in the command line: <command>mv ~/.viking ~/.config/viking</command>
+          </para>
+        </note>
+      </section>
 
       <section id="misc_settings" xreflabel="Miscellaneous Settings">
         <title>Miscellaneous Settings</title>
-        <para>Various individual values are automatically saved between &app; sessions in the <filename>~/.viking/viking.ini</filename> file.</para>
+        <para>Various individual values are automatically saved between &app; sessions in the <filename>viking.ini</filename> file placed in your <xref linkend="config_file_loc"/>.</para>
         <para>This file is not intended to be manually edited, but since it is a plain text file it can be changed if desired.</para>
         <para>Some values in this file are <emphasis>read only</emphasis>, in the sense that there is no way to set it other than by manually entering in the keys and values (the key will not exist in the file otherwise). This allows some fine tuning of &app; behaviours, without resorting to recompiling the code. However is it not expected that these values should need to be changed for a normal user, hence no GUI options for these have been provided.</para>
         <para>Here is the list of the <emphasis>read only</emphasis> keys and their default values.</para>
@@ -4450,7 +4567,7 @@ Accept: */*
 
     <section id="config_keys" xreflabel="Keyboard Shortcuts File">
       <title>Keyboard Shortcuts (Accelerator) Settings</title>
-      <para>This is held in the file <filename>~/.viking/keys.rc</filename></para>
+      <para>This is held in the file <filename>keys.rc</filename> in your <xref linkend="config_file_loc"/>.</para>
       <para>It is in the standard GTK Accelerator map format. Values are automatically read in and saved between &app; sessions.</para>
       <para>This file is not intended to be manually edited, but since it is a plain text file it can be changed if desired.</para>
     </section>

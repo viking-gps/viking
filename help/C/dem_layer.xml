@@ -20,6 +20,9 @@ The current data server is: <ulink url="https://dds.cr.usgs.gov/srtm/version2_1/
 <para>
 ATM &appname; does not auto download DEM data. If you want to get lots of data blocks, you may wish to use some other program get such as <application>curl</application> or <application>wget</application> to download them for an area.
 </para>
+<para>
+  The location for DEM files stored on local disk is under the <xref linkend="Map"/> Layer <xref linkend="cache_location"/>.
+</para>
 <note>
 <para>
 Using many DEMs is memory intensive as every DEM block is loaded into memory. Depending on your computer's capability, it is probably unwise to attempt using too many blocks (perhaps 200+ it becomes an issue), so trying to use DEMs covering large countries/continents (USA, Australia etc...) is unlikely to work. In these conditions under Linux, &appname; may be automatically stopped by the "<ulink url="https://en.wikipedia.org/wiki/Out_of_memory/">OOM</ulink> Killer".

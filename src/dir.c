@@ -37,8 +37,6 @@
  */
 gchar *a_get_viking_dir_no_create()
 {
-  // TODO: use g_get_user_config_dir ?
-
   const gchar *home = g_getenv("HOME");
   if (!home || g_access(home, W_OK))
     home = g_get_home_dir ();
@@ -55,10 +53,25 @@ gchar *a_get_viking_dir_no_create()
 
     /* Build the name of the directory */
 #ifdef __APPLE__
-  return g_build_filename(home, "/Library/Application Support/Viking", NULL);
+  gchar *vikdir = g_build_filename(home, "/Library/Application Support/Viking", NULL);
 #else
-  return g_build_filename(home, ".viking", NULL);
+  gchar *vikdir = g_build_filename(home, ".viking", NULL);
 #endif
+
+  // Now more XDG compliant via g_get_user_config_dir() when legacy location doesn't exist
+  // https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+  if ( !g_file_test(vikdir, G_FILE_TEST_EXISTS) ) {
+    const gchar *confdir = g_get_user_config_dir();
+    if ( confdir ) {
+      g_free ( vikdir );
+      if ( confdir[strlen(confdir)-1] != G_DIR_SEPARATOR )
+        vikdir = g_build_filename ( confdir, G_DIR_SEPARATOR_S, "viking", NULL );
+      else
+        vikdir = g_build_filename ( confdir, "viking", NULL );
+    }
+  }
+
+  return vikdir;
 }
 
 static gchar *viking_dir = NULL;

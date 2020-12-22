@@ -25,8 +25,7 @@ Currently &appname; can not tell when an included file of the project has change
 <para>
 &appname; will only (re)render tiles when it believes it is necessary - such as when there is no tile in the file cache,
 when there is a new Mapnik configuration style or the tile is over a certain age.
-To force &appname; to (re)render all tiles - create the file <filename>~/.viking/planet-import-complete</filename>
- and/or update its timestamp. (e.g. using the <emphasis>touch</emphasis> command).
+To force &appname; to (re)render all tiles - create the file <filename>planet-import-complete</filename> in your <xref linkend="config_file_loc"/> and/or update its timestamp. (e.g. using the <emphasis>touch</emphasis> command).
 </para>
 
 <para>
