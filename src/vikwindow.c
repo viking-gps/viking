@@ -206,6 +206,7 @@ struct _VikWindow {
   gint pan_x, pan_y;
   gint delayed_pan_x, delayed_pan_y; // Temporary storage
   gboolean single_click_pending;
+  guint zoom_draw_id;
 
   guint draw_image_width, draw_image_height;
   gboolean draw_image_save_as_png;
@@ -1760,6 +1761,17 @@ static void zoom_at_xy ( VikWindow *vw, guint point_x, guint point_y, gboolean s
   vik_viewport_set_center_screen ( vw->viking_vvp, center_x + (x - point_x), center_y + (y - point_y) );
 }
 
+/**
+ * Perform screen redraw after a little delay on zoom events
+ * (particularly scroll events)
+ */
+static gboolean window_zoom_timeout ( VikWindow *vw )
+{
+  vw->zoom_draw_id = 0;
+  draw_update ( vw );
+  return FALSE;
+}
+
 static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
 {
   if ( !a_vik_get_scroll_to_zoom() ) {
@@ -1788,7 +1800,13 @@ static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
     zoom_at_xy ( vw, event->x, event->y, TRUE, event->direction, 0 );
   }
 
-  draw_update(vw);
+  // If a pending draw, remove it and create a new one
+  //  thus avoiding intermediary screen redraws when transiting through several
+  //  zoom levels in quick succession, as typical when scroll zooming.
+  if ( vw->zoom_draw_id )
+    g_source_remove ( vw->zoom_draw_id );
+  vw->zoom_draw_id = g_timeout_add ( 150, (GSourceFunc)window_zoom_timeout, vw );
+
   return TRUE;
 }
 
