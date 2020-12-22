@@ -1637,7 +1637,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
   guint donemaps = 0;
   MapCoord mcoord = mdi->mapcoord;
   gint x, y;
-  gboolean needed[mdi->xf-mdi->x0][mdi->yf-mdi->y0];
+  gboolean needed[mdi->xf-mdi->x0+1][mdi->yf-mdi->y0+1];
 
   for ( x = mdi->x0; x <= mdi->xf; x++ ) {
     mcoord.x = x;
