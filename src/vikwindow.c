@@ -91,7 +91,7 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
 static gboolean key_release_event( VikWindow *vw, GdkEventKey *event, gpointer data );
 
 static void center_changed_cb ( VikWindow *vw );
-static gboolean window_configure_event ( VikWindow *vw );
+static gboolean window_configure_event ( VikWindow *vw, GdkEventConfigure *event, gpointer user_data );
 static gboolean draw_sync ( VikWindow *vw );
 static void draw_redraw ( VikWindow *vw );
 static gboolean draw_scroll  ( VikWindow *vw, GdkEventScroll *event );
@@ -1405,7 +1405,7 @@ static void scale_graphs_pane ( VikWindow *vw )
   }
 }
 
-static gboolean window_configure_event ( VikWindow *vw )
+static gboolean window_configure_event ( VikWindow *vw, GdkEventConfigure *event, gpointer user_data )
 {
   static gboolean first = TRUE;
   draw_redraw ( vw );
