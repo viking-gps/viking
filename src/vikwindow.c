@@ -910,7 +910,7 @@ static void vik_window_init ( VikWindow *vw )
   window_create_ui(vw);
   window_set_filename (vw, NULL);
 
-  vw->busy_cursor = gdk_cursor_new ( GDK_WATCH );
+  vw->busy_cursor = gdk_cursor_new_for_display ( gtk_widget_get_display(GTK_WIDGET(vw)), GDK_WATCH );
 
   vw->filename = NULL;
   vw->loaded_type = LOAD_TYPE_READ_FAILURE; //AKA none
@@ -3611,7 +3611,7 @@ static const GdkCursor *toolbox_get_cursor(toolbox_tools_t *vt, const gchar *too
       t->ti.cursor = gdk_cursor_new_from_pixbuf ( gdk_display_get_default(), cursor_pixbuf, 3, 3 );
       g_object_unref ( G_OBJECT(cursor_pixbuf) );
     } else {
-      t->ti.cursor = gdk_cursor_new ( t->ti.cursor_type );
+      t->ti.cursor = gdk_cursor_new_for_display ( gtk_widget_get_display(GTK_WIDGET(vt->vw)), t->ti.cursor_type );
     }
   }
   return t->ti.cursor;

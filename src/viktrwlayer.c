@@ -2966,7 +2966,7 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
     return rv;
   }
 
-  rv->crosshair_cursor = gdk_cursor_new ( GDK_CROSSHAIR );
+  rv->crosshair_cursor = gdk_cursor_new_for_display ( gtk_widget_get_display(GTK_WIDGET(vp)), GDK_CROSSHAIR );
 
   rv->wplabellayout = gtk_widget_create_pango_layout (GTK_WIDGET(vp), NULL);
   pango_layout_set_font_description (rv->wplabellayout, gtk_widget_get_style(GTK_WIDGET(vp))->font_desc);
