@@ -40,7 +40,11 @@ enum
 };
 
 struct _VikStatusbar {
+#if GTK_CHECK_VERSION (3,0,0)
+  GtkBox hbox;
+#else
   GtkHBox hbox;
+#endif
   GtkWidget *status[VIK_STATUSBAR_NUM_TYPES];
   gboolean empty[VIK_STATUSBAR_NUM_TYPES];
 };

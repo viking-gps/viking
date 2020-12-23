@@ -391,7 +391,11 @@ GType vik_goto_panel_get_type ();
 static GObjectClass *parent_class;
 
 struct _VikGotoPanel {
+#if GTK_CHECK_VERSION (3,0,0)
+  GtkBox vb;
+#else
   GtkVBox vb;
+#endif
   GtkWidget *goto_entry;
   GtkWidget *tool_list;
   GtkWidget *find_button;
@@ -403,6 +407,10 @@ struct _VikGotoPanel {
 
 static void vik_goto_panel_init ( VikGotoPanel *vgp )
 {
+#if GTK_CHECK_VERSION (3,0,0)
+  // Force vertical mode for box (as default is horizontal in GTK3)
+  gtk_orientable_set_orientation ( GTK_ORIENTABLE(vgp), GTK_ORIENTATION_VERTICAL );
+#endif
 }
 
 static void goto_panel_finalize ( GObject *gob )

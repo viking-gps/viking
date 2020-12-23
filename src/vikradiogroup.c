@@ -30,7 +30,11 @@ static void radio_group_finalize ( GObject *gob );
 static void radio_group_class_init ( VikRadioGroupClass *klass );
 
 struct _VikRadioGroup {
+#if GTK_CHECK_VERSION (3,0,0)
+  GtkBox parent;
+#else
   GtkVBox parent;
+#endif
   GSList *radios;
   guint options_count;
 };
@@ -82,6 +86,11 @@ GtkWidget *vik_radio_group_new ( GList *options )
     return NULL;
 
   vrg = VIK_RADIO_GROUP ( g_object_new ( VIK_RADIO_GROUP_TYPE, NULL ) );
+
+#if GTK_CHECK_VERSION (3,0,0)
+  // Force vertical mode for box (as default is horizontal in GTK3)
+  gtk_orientable_set_orientation ( GTK_ORIENTABLE(vrg), GTK_ORIENTATION_VERTICAL );
+#endif
 
   label = g_list_nth_data(options, 0);
   t = gtk_radio_button_new_with_label ( NULL, _(label) );

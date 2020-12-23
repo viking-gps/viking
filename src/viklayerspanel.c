@@ -44,7 +44,11 @@ static guint layers_panel_signals[VLP_LAST_SIGNAL] = { 0 };
 static GObjectClass *parent_class;
 
 struct _VikLayersPanel {
+#if GTK_CHECK_VERSION (3,0,0)
+  GtkBox vbox;
+#else
   GtkVBox vbox;
+#endif
   GtkWidget *hbox;
   GtkWidget *vpaned;
   GtkWidget *tabs;
@@ -476,6 +480,11 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   GtkWidget *copybutton, *copyimage;
   GtkWidget *pastebutton, *pasteimage;
   GtkWidget *scrolledwindow;
+
+#if GTK_CHECK_VERSION (3,0,0)
+  // Force vertical mode for box (as default is horizontal in GTK3)
+  gtk_orientable_set_orientation ( GTK_ORIENTABLE(vlp), GTK_ORIENTATION_VERTICAL );
+#endif
 
   vlp->vvp = NULL;
 

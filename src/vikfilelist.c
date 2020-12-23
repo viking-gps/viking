@@ -30,7 +30,11 @@
 #include "vikfilelist.h"
 
 struct _VikFileList {
+#if GTK_CHECK_VERSION (3,0,0)
+  GtkBox parent;
+#else
   GtkVBox parent;
+#endif
   GtkWidget *treeview;
   GtkWidget *file_selector;
   GtkTreeModel *model;
@@ -171,6 +175,10 @@ GtkWidget *vik_file_list_new ( const gchar *title, GtkFileFilter *filter, const 
   GtkWidget *hbox, *scrolledwindow;
   VikFileList *vfl = VIK_FILE_LIST ( g_object_new ( VIK_FILE_LIST_TYPE, NULL ) );
 
+#if GTK_CHECK_VERSION (3,0,0)
+  // Force vertical mode for box (as default is horizontal in GTK3)
+  gtk_orientable_set_orientation ( GTK_ORIENTABLE(vfl), GTK_ORIENTATION_VERTICAL );
+#endif
   vfl->filter = filter;
   vfl->dir = g_strdup ( dir );
 

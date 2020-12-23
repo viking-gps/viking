@@ -30,7 +30,11 @@
 #include "ui_util.h"
 
 struct _VikFileEntry {
+#if GTK_CHECK_VERSION (3,0,0)
+  GtkBox parent;
+#else
   GtkHBox parent;
+#endif
   GtkWidget *entry, *button;
   GtkWidget *file_selector;
   GtkFileChooserAction action;
