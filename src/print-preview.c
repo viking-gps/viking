@@ -535,10 +535,12 @@ vik_print_preview_get_scale (VikPrintPreview* preview)
   gdouble scale_x;
   gdouble scale_y;
 
-  scale_x = ((gdouble) preview->area->allocation.width /
+  GtkAllocation allocation;
+  gtk_widget_get_allocation ( preview->area, &allocation );
+  scale_x = ((gdouble) allocation.width /
              gtk_page_setup_get_paper_width (preview->page, GTK_UNIT_POINTS));
 
-  scale_y = ((gdouble) preview->area->allocation.height /
+  scale_y = ((gdouble) allocation.height /
              gtk_page_setup_get_paper_height (preview->page, GTK_UNIT_POINTS));
 
   return MIN (scale_x, scale_y);
