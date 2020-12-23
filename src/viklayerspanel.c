@@ -655,7 +655,7 @@ static gboolean layers_button_press_cb ( VikLayersPanel *vlp, GdkEventButton *ev
 static gboolean layers_key_press_cb ( VikLayersPanel *vlp, GdkEventKey *event )
 {
   // Accept all forms of delete keys
-  if (event->keyval == GDK_Delete || event->keyval == GDK_KP_Delete || event->keyval == GDK_BackSpace) {
+  if (event->keyval == GDK_KEY_Delete || event->keyval == GDK_KEY_KP_Delete || event->keyval == GDK_KEY_BackSpace) {
     vik_layers_panel_delete_selected (vlp);
     return TRUE;
  }

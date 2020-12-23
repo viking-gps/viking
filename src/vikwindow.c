@@ -1152,14 +1152,14 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
   // Standard 'Refresh' keys: F5 or Ctrl+r
   // Note 'F5' is actually handled via draw_refresh_cb() later on
   //  (not 'R' it's 'r' notice the case difference!!)
-  if ( event->keyval == GDK_r && (event->state & modifiers) == GDK_CONTROL_MASK ) {
+  if ( event->keyval == GDK_KEY_r && (event->state & modifiers) == GDK_CONTROL_MASK ) {
 	map_download = TRUE;
 	map_download_only_new = TRUE;
   }
   // Full cache reload with Ctrl+F5 or Ctrl+Shift+r [This is not in the menu system]
   // Note the use of uppercase R here since shift key has been pressed
-  else if ( (event->keyval == GDK_F5 && (event->state & modifiers) == GDK_CONTROL_MASK ) ||
-           ( event->keyval == GDK_R && (event->state & modifiers) == (GDK_CONTROL_MASK + GDK_SHIFT_MASK) ) ) {
+  else if ( (event->keyval == GDK_KEY_F5 && (event->state & modifiers) == GDK_CONTROL_MASK ) ||
+           ( event->keyval == GDK_KEY_R && (event->state & modifiers) == (GDK_CONTROL_MASK + GDK_SHIFT_MASK) ) ) {
 	map_download = TRUE;
 	map_download_only_new = FALSE;
   }
@@ -1197,7 +1197,7 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
   if ( check_box ) {
     gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
     if ( !state ) {
-      if ( event->keyval == GDK_Escape ) {
+      if ( event->keyval == GDK_KEY_Escape ) {
 	gtk_widget_show ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
 	gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), TRUE );
 	return TRUE; /* handled keypress */
@@ -1216,7 +1216,7 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
   }
 
   // Default Tool
-  if ( event->keyval == GDK_Escape ) {
+  if ( event->keyval == GDK_KEY_Escape ) {
     default_tool_enable ( vw );
     return TRUE;
   }
@@ -2265,7 +2265,7 @@ static void ruler_deactivate (VikLayer *vl, tool_ed_t *s)
 
 static gboolean ruler_key_press (VikLayer *vl, GdkEventKey *event, tool_ed_t *s)
 {
-  if (event->keyval == GDK_Escape) {
+  if (event->keyval == GDK_KEY_Escape) {
     if ( s->displayed ) {
       s->has_oldcoord = FALSE;
       ruler_deactivate ( NULL, s );
@@ -2856,17 +2856,17 @@ static gboolean selecttool_key_release (VikLayer *vl, GdkEventKey *event, tool_e
 {
   if (vl && (vl->type == VIK_LAYER_TRW)) {
     if ( vl->visible ) {
-      if ( event->keyval == GDK_Menu ) {
+      if ( event->keyval == GDK_KEY_Menu ) {
         /* Act on currently selected item to show menu */
         if ( t->vw->selected_track || t->vw->selected_waypoint )
           if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
             return vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, NULL, t->vw->viking_vvp );
-      } else if ( event->keyval == GDK_Left ) {
+      } else if ( event->keyval == GDK_KEY_Left ) {
 	if ( t->vw->containing_vtl ) {
           vik_trw_layer_goto_track_prev_point ( t->vw->containing_vtl );
           return TRUE;
         }
-     } else if ( event->keyval == GDK_Right ) {
+     } else if ( event->keyval == GDK_KEY_Right ) {
         if ( t->vw->containing_vtl ) {
           vik_trw_layer_goto_track_next_point ( t->vw->containing_vtl );
           return TRUE;

@@ -10784,7 +10784,7 @@ static void undo_trackpoint_add ( VikTrwLayer *vtl )
 static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )
 {
   gboolean mods = event->state & gtk_accelerator_get_default_mod_mask ();
-  if ( vtl->current_track && event->keyval == GDK_Escape && !mods ) {
+  if ( vtl->current_track && event->keyval == GDK_KEY_Escape && !mods ) {
     // Bin track if only one point as it's not very useful
     if ( vik_track_get_tp_count(vtl->current_track) == 1 ) {
       if ( vtl->current_track->is_route )
@@ -10795,27 +10795,27 @@ static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event
     vtl->current_track = NULL;
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
-  } else if ( vtl->current_track && event->keyval == GDK_BackSpace && !mods ) {
+  } else if ( vtl->current_track && event->keyval == GDK_KEY_BackSpace && !mods ) {
     undo_trackpoint_add ( vtl );
     update_statusbar ( vtl );
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
-  } else if ( event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R ) {
+  } else if ( event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R ) {
     GdkWindow *gdkw = gtk_widget_get_window(GTK_WIDGET(vvp));
     gdk_window_set_cursor ( gdkw, vtl->crosshair_cursor );
     return TRUE;
-  } else if ( event->keyval == GDK_Left && !mods ) {
+  } else if ( event->keyval == GDK_KEY_Left && !mods ) {
     vik_trw_layer_goto_track_prev_point ( vtl );
     return TRUE;
-  } else if ( event->keyval == GDK_Right && !mods ) {
+  } else if ( event->keyval == GDK_KEY_Right && !mods ) {
     vik_trw_layer_goto_track_next_point ( vtl );
     return TRUE;
-  } else if ( ( event->keyval == GDK_bracketleft || event->keyval == GDK_KP_Subtract ) && !mods ) {
+  } else if ( ( event->keyval == GDK_KEY_bracketleft || event->keyval == GDK_KEY_KP_Subtract ) && !mods ) {
     if ( vtl->current_tp_track ) {
       trw_layer_insert_tp_beside_current_tp ( vtl, TRUE, vtl->current_tp_track->is_route );
     }
     return TRUE;
-  } else if ( ( event->keyval == GDK_bracketright || event->keyval == GDK_KP_Add ) && !mods ) {
+  } else if ( ( event->keyval == GDK_KEY_bracketright || event->keyval == GDK_KEY_KP_Add ) && !mods ) {
     if ( vtl->current_tp_track ) {
       trw_layer_insert_tp_beside_current_tp ( vtl, FALSE, vtl->current_tp_track->is_route );
     }
@@ -10827,7 +10827,7 @@ static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event
 
 static gboolean tool_edit_track_key_release ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )
 {
-  if ( event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R ) {
+  if ( event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R ) {
     VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
     // this resets to standard tool cursor
     vik_window_clear_busy_cursor ( vw );
@@ -11355,14 +11355,14 @@ static gboolean tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventBut
 
 static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )
 {
-  if ( vtl->current_track && event->keyval == GDK_Escape ) {
+  if ( vtl->current_track && event->keyval == GDK_KEY_Escape ) {
     vtl->current_track = NULL;
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
-  } else if ( vtl->current_track && event->keyval == GDK_BackSpace ) {
+  } else if ( vtl->current_track && event->keyval == GDK_KEY_BackSpace ) {
     tool_extended_route_finder_undo ( vtl );
     return TRUE;
-  } else if ( event->keyval == GDK_Shift_L || event->keyval == GDK_Shift_R ) {
+  } else if ( event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R ) {
     GdkWindow *gdkw = gtk_widget_get_window(GTK_WIDGET(vvp));
     gdk_window_set_cursor ( gdkw, vtl->crosshair_cursor );
     return TRUE;
