@@ -22,7 +22,8 @@
 #include <gtk/gtk.h>
 
 #include "print-preview.h"
-
+#include "vikviewport.h"
+#include "config.h"
 
 #define DRAWING_AREA_SIZE 200
 
@@ -167,11 +168,6 @@ vik_print_preview_finalize (GObject *object)
 {
   VikPrintPreview *preview = VIK_PRINT_PREVIEW (object);
 
-  if (preview->drawable)
-    {
-      preview->drawable = NULL;
-    }
-
   if (preview->pixbuf)
     {
       g_object_unref (preview->pixbuf);
@@ -190,7 +186,7 @@ vik_print_preview_finalize (GObject *object)
 /**
  * vik_print_preview_new:
  * @page: page setup
- * @drawable_id: the drawable to print
+ * @vvp: the viewport to print
  *
  * Creates a new #VikPrintPreview widget.
  *
@@ -198,14 +194,14 @@ vik_print_preview_finalize (GObject *object)
  **/
 GtkWidget *
 vik_print_preview_new (GtkPageSetup *page,
-                        GdkDrawable        *drawable)
+                        gpointer      vvp)
 {
   VikPrintPreview *preview;
   gfloat            ratio;
 
   preview = g_object_new (VIK_TYPE_PRINT_PREVIEW, NULL);
 
-  preview->drawable = drawable;
+  preview->viewport = VIK_VIEWPORT(vvp);
 
   if (page != NULL)
     preview->page = gtk_page_setup_copy (page);
@@ -229,7 +225,7 @@ vik_print_preview_new (GtkPageSetup *page,
  * @xres: the X resolution
  * @yres: the Y resolution
  *
- * Sets the resolution of the image/drawable displayed by the
+ * Sets the resolution of the image displayed by the
  * #VikPrintPreview.
  **/
 void
@@ -280,7 +276,7 @@ vik_print_preview_set_page_setup (VikPrintPreview *preview,
  * @offset_x: the X offset
  * @offset_y: the Y offset
  *
- * Sets the offsets of the image/drawable displayed by the #VikPrintPreview.
+ * Sets the offsets of the image displayed by the #VikPrintPreview.
  * It does not emit the "offsets-changed" signal.
  **/
 void
@@ -302,7 +298,7 @@ vik_print_preview_set_image_offsets (VikPrintPreview *preview,
  * @offset_x_max: the maximum X offset allowed
  * @offset_y_max: the maximum Y offset allowed
  *
- * Sets the maximum offsets of the image/drawable displayed by the
+ * Sets the maximum offsets of the image displayed by the
  * #VikPrintPreview.  It does not emit the "offsets-changed" signal.
  **/
 void
@@ -415,15 +411,19 @@ vik_print_preview_event (GtkWidget        *widget,
   return FALSE;
 }
 
-static GdkPixbuf *get_thumbnail(GdkDrawable *drawable, gint thumb_width, gint thumb_height)
+static GdkPixbuf *get_thumbnail(VikViewport *vvp, gint thumb_width, gint thumb_height)
 {
-  gint width, height;
   GdkPixbuf *pixbuf;
   GdkPixbuf *thumbnail;
 
-  gdk_drawable_get_size(drawable, &width, &height);
-  pixbuf = gdk_pixbuf_get_from_drawable(NULL, drawable,
-                                           NULL, 0, 0, 0, 0, width, height);
+  gint width = vik_viewport_get_width ( vvp );
+  gint height = vik_viewport_get_height ( vvp );
+#if GTK_CHECK_VERSION (3,0,0)
+  pixbuf = gdk_pixbuf_get_from_window ( gtk_widget_get_window(GTK_WIDGET(vvp)), 0, 0, width, height );
+#else
+  GdkDrawable *drawable = GDK_DRAWABLE(vik_viewport_get_pixmap(vvp));
+  pixbuf = gdk_pixbuf_get_from_drawable(NULL, drawable, NULL, 0, 0, 0, 0, width, height);
+#endif
   thumbnail = gdk_pixbuf_scale_simple(pixbuf, thumb_width, thumb_height,
                                       GDK_INTERP_BILINEAR);
   g_object_unref(pixbuf);
@@ -475,8 +475,9 @@ vik_print_preview_expose_event (GtkWidget        *widget,
 
   if (preview->dragging)
     {
-      gint width, height;
-      gdk_drawable_get_size(preview->drawable, &width, &height);
+      gint width = vik_viewport_get_width ( preview->viewport );
+      gint height = vik_viewport_get_height ( preview->viewport );
+
       cairo_rectangle (cr,
                        left_margin + preview->image_offset_x,
                        top_margin  + preview->image_offset_y,
@@ -486,8 +487,6 @@ vik_print_preview_expose_event (GtkWidget        *widget,
     }
   else
     {
-      GdkDrawable *drawable = preview->drawable;
-
       /* draw image */
       cairo_translate (cr,
                        left_margin + preview->image_offset_x,
@@ -500,13 +499,13 @@ vik_print_preview_expose_event (GtkWidget        *widget,
           gint width  = MIN (allocation.width, 1024);
           gint height = MIN (allocation.height, 1024);
 
-          preview->pixbuf = get_thumbnail(drawable, width, height);
+          preview->pixbuf = get_thumbnail(preview->viewport, width, height);
         }
 
       if (preview->pixbuf != NULL)
         {
-          gint width, height;
-          gdk_drawable_get_size(drawable, &width, &height);
+          gint width = vik_viewport_get_width ( preview->viewport );
+          gint height = vik_viewport_get_height ( preview->viewport );
 
           gdouble scale_x = ((gdouble) width /
                              gdk_pixbuf_get_width (preview->pixbuf));

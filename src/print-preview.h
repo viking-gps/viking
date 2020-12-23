@@ -41,7 +41,7 @@ struct _VikPrintPreview
   GdkPixbuf      *pixbuf;
   gboolean        dragging;
 
-  GdkDrawable    *drawable;
+  gpointer        viewport; // Reference of the #VikViewport
 
   gdouble         image_offset_x;
   gdouble         image_offset_y;
@@ -65,8 +65,8 @@ struct _VikPrintPreviewClass
 
 GType       vik_print_preview_get_type          (void) G_GNUC_CONST;
 
-GtkWidget * vik_print_preview_new               (GtkPageSetup     *page,
-                                                  GdkDrawable     *drawable);
+GtkWidget * vik_print_preview_new               (GtkPageSetup  *page,
+                                                  gpointer       vvp);
 
 void        vik_print_preview_set_image_dpi     (VikPrintPreview *preview,
                                                   gdouble           xres,
