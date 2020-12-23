@@ -720,8 +720,9 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	gtk_box_pack_start (GTK_BOX(filter_box), filter_label, FALSE, TRUE, 10);
 	gtk_box_pack_start (GTK_BOX(filter_box), filter_entry, TRUE, TRUE, 10);
 
-	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), scrolledwindow, TRUE, TRUE, 0);
-	gtk_box_pack_end (GTK_BOX(GTK_DIALOG(dialog)->vbox), filter_box, FALSE, TRUE, 10);
+	GtkBox *vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+	gtk_box_pack_start (vbox, scrolledwindow, TRUE, TRUE, 0);
+	gtk_box_pack_end (vbox, filter_box, FALSE, TRUE, 10);
 
 	// Set ordering of the initial view by one of the name columns
 	gtk_tree_view_column_clicked ( sort_by_column );

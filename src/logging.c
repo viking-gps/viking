@@ -361,8 +361,9 @@ void a_logging_show_window ()
 
 	g_signal_connect ( G_OBJECT(dialog), "response", G_CALLBACK(response_cb), NULL );
 	
-	gtk_box_pack_start (GTK_BOX(GTK_DIALOG(dialog)->vbox), scrolledwindow, TRUE, TRUE, 0);
-	gtk_box_pack_end (GTK_BOX(GTK_DIALOG(dialog)->vbox), filter_box, FALSE, TRUE, 10);
+	GtkBox *vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+	gtk_box_pack_start ( vbox, scrolledwindow, TRUE, TRUE, 0 );
+	gtk_box_pack_end ( vbox, filter_box, FALSE, TRUE, 10 );
 
 	gtk_window_set_default_size ( GTK_WINDOW(dialog), 600, 500 );
 

@@ -1116,8 +1116,9 @@ static TBEditorWidget *tb_editor_create_dialog(VikToolbar *vtb, GtkWindow *paren
 	gtk_box_pack_start(GTK_BOX(hbox), vbox_buttons, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(hbox), swin_used, TRUE, TRUE, 0);
 
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), label, FALSE, FALSE, 6);
-	gtk_box_pack_start(GTK_BOX(GTK_DIALOG(dialog)->vbox), hbox, TRUE, TRUE, 0);
+	GtkBox *vbox2 = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+	gtk_box_pack_start(vbox2, label, FALSE, FALSE, 6);
+	gtk_box_pack_start(vbox2, hbox, TRUE, TRUE, 0);
 
 	gtk_widget_show_all(dialog);
 
