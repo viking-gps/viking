@@ -1272,20 +1272,20 @@ static gboolean delete_event( VikWindow *vw )
   if ( window_count == 1 ) {
     // On the final window close - save latest state - if it's wanted...
     if ( a_vik_get_restore_window_state() ) {
-      gint state = gdk_window_get_state ( GTK_WIDGET(vw)->window );
+      gint state = gdk_window_get_state ( gtk_widget_get_window(GTK_WIDGET(vw)) );
       gboolean state_max = state & GDK_WINDOW_STATE_MAXIMIZED;
       a_settings_set_boolean ( VIK_SETTINGS_WIN_MAX, state_max );
 
       gboolean state_fullscreen = state & GDK_WINDOW_STATE_FULLSCREEN;
       a_settings_set_boolean ( VIK_SETTINGS_WIN_FULLSCREEN, state_fullscreen );
 
-      a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vlp)) );
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL, gtk_widget_get_visible(GTK_WIDGET(vw->viking_vlp)) );
 
-      a_settings_set_boolean ( VIK_SETTINGS_WIN_GRAPHS, GTK_WIDGET_VISIBLE (vw->graphs) );
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_GRAPHS, gtk_widget_get_visible(vw->graphs) );
 
-      a_settings_set_boolean ( VIK_SETTINGS_WIN_STATUSBAR, GTK_WIDGET_VISIBLE (GTK_WIDGET(vw->viking_vs)) );
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_STATUSBAR, gtk_widget_get_visible(GTK_WIDGET(vw->viking_vs)) );
 
-      a_settings_set_boolean ( VIK_SETTINGS_WIN_TOOLBAR, GTK_WIDGET_VISIBLE (toolbar_get_widget(vw->viking_vtb)) );
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_TOOLBAR, gtk_widget_get_visible(toolbar_get_widget(vw->viking_vtb)) );
 
       a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_BUTTONS, vw->show_side_panel_buttons );
 
