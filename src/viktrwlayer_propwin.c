@@ -2899,7 +2899,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   gchar *title = g_strdup_printf(_("%s - Track Properties"), tr->name);
   GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
                          parent,
-                         GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_NO_SEPARATOR,
+                         GTK_DIALOG_DESTROY_WITH_PARENT,
                          GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
                          _("Split at _Marker"), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER,
                          _("Split _Segments"), VIK_TRW_LAYER_PROPWIN_SPLIT,
