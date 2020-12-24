@@ -528,7 +528,7 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   vlp->cal_shown = TRUE;
 
   // Ensure any detail results in a tooltip rather than embedded in the calendar display
-  GValue sd = { 0 };
+  GValue sd = G_VALUE_INIT;
   g_value_init ( &sd, G_TYPE_BOOLEAN );
   g_value_set_boolean ( &sd, FALSE );
   g_object_set_property ( G_OBJECT(vlp->calendar), "show-details", &sd );
@@ -1131,7 +1131,7 @@ void vik_layers_panel_calendar_date ( VikLayersPanel *vlp, time_t timestamp )
  */
 void vik_layers_panel_set_preferences ( VikLayersPanel *vlp )
 {
-  GValue sd = { 0 };
+  GValue sd = G_VALUE_INIT;
   g_value_init ( &sd, G_TYPE_BOOLEAN );
   g_value_set_boolean ( &sd, a_vik_get_calendar_show_day_names() );
   g_object_set_property ( G_OBJECT(vlp->calendar), "show-day-names", &sd );

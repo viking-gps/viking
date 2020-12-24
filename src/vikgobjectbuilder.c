@@ -176,7 +176,7 @@ _text (GMarkupParseContext *context,
 {
 	if (strcmp (g_markup_parse_context_get_element (context), "property") == 0)
 	{
-		GValue gvalue = {0};
+		GValue gvalue = G_VALUE_INIT;
 		gboolean found = FALSE;
 		if (gtype != 0 && property_name != NULL)
 		{
