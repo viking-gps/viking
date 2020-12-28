@@ -131,7 +131,7 @@ static int myXErrorHandler(Display *display, XErrorEvent *theEvent)
 	// No exit on X errors!
 	//  mainly to handle out of memory error when requesting large pixbuf from user request
 	//  see vikwindow.c::save_image_file ()
-	gchar *msg = g_strdup_printf ( _("Ignoring Xlib error: error code %d request code %d\n"),
+	gchar *msg = g_strdup_printf ( _("Ignoring Xlib error: error code %d request code %d"),
 	                               theEvent->error_code,
 	                               theEvent->request_code );
 	log_it ( "Xlib", G_LOG_LEVEL_ERROR, msg, NULL );
