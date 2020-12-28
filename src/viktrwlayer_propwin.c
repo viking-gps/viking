@@ -1317,9 +1317,9 @@ static void draw_grid_x_distance ( GtkWidget *window, GtkWidget *image, PropWidg
 }
 
 /**
- * clear the images (scale texts & actual graph)
+ * clear the pixmap (scale texts & actual graph)
  */
-static void clear_images (GdkPixmap *pix, GtkWidget *window, PropWidgets *widgets)
+static void clear_pixmap (GdkPixmap *pix, GtkWidget *window, PropWidgets *widgets)
 {
   gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->bg_gc[0],
                      TRUE, 0, 0, widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y);
@@ -1668,7 +1668,7 @@ static void draw_it ( GtkWidget *image, VikTrack *trk, PropWidgets *widgets, Gtk
   GdkPixmap *pix = gdk_pixmap_new ( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
   // Reset before redrawing
-  clear_images ( pix, window, widgets );
+  clear_pixmap ( pix, window, widgets );
 
   const gdouble chunk = chunks[ci];
 
@@ -3382,16 +3382,11 @@ gboolean vik_trw_layer_propwin_main_refresh ( VikLayer *vl )
 
   // If no current values then clear display of any previous stuff
   if ( !widgets->values[PGT_ELEVATION_DISTANCE] && widgets->event_box[PGT_ELEVATION_DISTANCE] ) {
-    GtkWidget *window = gtk_widget_get_toplevel ( widgets->event_box[PGT_ELEVATION_DISTANCE] );
-    GdkPixmap *pix = gdk_pixmap_new ( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
-    gtk_image_set_from_pixmap ( GTK_IMAGE(widgets->image[PGT_ELEVATION_DISTANCE]), pix, NULL );
-    clear_images ( pix, window, widgets );
+    gtk_image_clear ( GTK_IMAGE(widgets->image[PGT_ELEVATION_DISTANCE]) );
 
     // Extra protection in case all trackpoints of an existing timed track get deleted
     if ( !widgets->values[PGT_SPEED_TIME] && widgets->event_box[PGT_SPEED_TIME] ) {
-      GdkPixmap *pix = gdk_pixmap_new ( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
-      gtk_image_set_from_pixmap ( GTK_IMAGE(widgets->image[PGT_SPEED_TIME]), pix, NULL );
-      clear_images ( pix, window, widgets );
+      gtk_image_clear ( GTK_IMAGE(widgets->image[PGT_SPEED_TIME]) );
     }
   }
   else
