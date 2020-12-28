@@ -4803,7 +4803,7 @@ static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, 
   /* pretend like nothing happened ;) */
   vik_viewport_set_xmpp ( vw->viking_vvp, old_xmpp );
   vik_viewport_set_ympp ( vw->viking_vvp, old_ympp );
-  vik_viewport_configure ( vw->viking_vvp );
+  (void)vik_viewport_configure ( vw->viking_vvp );
   draw_update ( vw );
 }
 
@@ -4873,7 +4873,7 @@ static void save_image_dir ( VikWindow *vw, const gchar *fn, guint w, guint h, g
   vik_viewport_set_center_utm ( vw->viking_vvp, &utm_orig, FALSE );
   vik_viewport_set_xmpp ( vw->viking_vvp, old_xmpp );
   vik_viewport_set_ympp ( vw->viking_vvp, old_ympp );
-  vik_viewport_configure ( vw->viking_vvp );
+  (void)vik_viewport_configure ( vw->viking_vvp );
   draw_update ( vw );
 
   g_free ( name_of_file );
