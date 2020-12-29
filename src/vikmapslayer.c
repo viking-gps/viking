@@ -1327,7 +1327,7 @@ gboolean try_draw_scale_up (VikMapsLayer *vml, VikViewport *vvp, guint vp_scale,
           gint dest_y = yy + pict_y * (tilesize_y_ceil / scale_factor);
           gint xa = off_x / scale_factor;
           gint ya = off_y / scale_factor;
-          vik_viewport_draw_pixbuf ( vvp, pixbuf, 0, 0, dest_x+xa, dest_y+ya, tilesize_y_ceil / scale_factor, tilesize_y_ceil / scale_factor );
+          vik_viewport_draw_pixbuf ( vvp, pixbuf, 0, 0, dest_x+xa, dest_y+ya, tilesize_x_ceil / scale_factor, tilesize_y_ceil / scale_factor );
           g_object_unref(pixbuf);
           ans = TRUE;
         }
