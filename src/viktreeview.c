@@ -357,6 +357,25 @@ void vik_treeview_item_set_visible_tree ( VikTreeview *vt, GtkTreeIter *iter )
   }
 }
 
+static void add_vis_column ( VikTreeview *vt )
+{
+  /* Layer visible */
+  GtkCellRenderer *renderer = gtk_cell_renderer_toggle_new ();
+  g_object_set (G_OBJECT (renderer), "xalign", 0.5, NULL);
+
+  g_signal_connect (renderer, "toggled", G_CALLBACK (vik_treeview_toggled_cb), vt);
+
+  gint col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (vt),
+                                                                 -1, "",
+                                                                 renderer,
+                                                                 "active",
+                                                                 VISIBLE_COLUMN,
+                                                                 NULL);
+
+  GtkTreeViewColumn *column = gtk_tree_view_get_column (GTK_TREE_VIEW (vt), col_offset - 1);
+  gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
+                                   GTK_TREE_VIEW_COLUMN_AUTOSIZE);
+}
 
 static void vik_treeview_add_columns ( VikTreeview *vt )
 {
@@ -388,6 +407,13 @@ static void vik_treeview_add_columns ( VikTreeview *vt )
                                    GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_expand (GTK_TREE_VIEW_COLUMN (column), TRUE);
 
+  // Swap the columns around in GTK3
+  // Annoying scrollbars that resize on top of other widgets can obscure the checkbox button
+  //  so when trying to click on the checkbox you end up clicking on the scrollbar.
+#if GTK_CHECK_VERSION (3,0,0)
+  add_vis_column ( vt );
+#endif
+
   /* Layer type */
   renderer = gtk_cell_renderer_pixbuf_new ();
 
@@ -403,23 +429,9 @@ static void vik_treeview_add_columns ( VikTreeview *vt )
   gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
                                    GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 
-  /* Layer visible */
-  renderer = gtk_cell_renderer_toggle_new ();
-  g_object_set (G_OBJECT (renderer), "xalign", 0.5, NULL);
-
-  g_signal_connect (renderer, "toggled", G_CALLBACK (vik_treeview_toggled_cb), vt);
-
-  col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (vt),
-							    -1, "",
-							    renderer,
-							    "active",
-							    VISIBLE_COLUMN,
-							    NULL);
-
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (vt), col_offset - 1);
-  gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column),
-                                   GTK_TREE_VIEW_COLUMN_AUTOSIZE);
-
+#if !GTK_CHECK_VERSION (3,0,0)
+  add_vis_column ( vt );
+#endif
 
   g_object_set (GTK_TREE_VIEW (vt), "has-tooltip", TRUE, NULL);
   g_signal_connect (GTK_TREE_VIEW (vt), "query-tooltip", G_CALLBACK (vik_treeview_tooltip_cb), vt);
