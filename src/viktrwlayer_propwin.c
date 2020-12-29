@@ -1195,13 +1195,8 @@ static void draw_dem_alt_speed_dist ( VikTrack *tr,
  * A common way to draw the grid with y axis labels
  *
  */
-static void draw_grid_y ( GtkWidget *window, GtkWidget *image, PropWidgets *widgets, GdkPixmap *pix, gchar *ss, gint i )
+static void draw_grid_y ( GtkWidget *window, PangoLayout *pl, PropWidgets *widgets, GdkPixmap *pix, gchar *ss, gint i )
 {
-  PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
-
-  pango_layout_set_alignment (pl, PANGO_ALIGN_RIGHT);
-  pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
-
   gchar *label_markup = g_strdup_printf ( "<span size=\"small\">%s</span>", ss );
   pango_layout_set_markup ( pl, label_markup, -1 );
   g_free ( label_markup );
@@ -1213,7 +1208,6 @@ static void draw_grid_y ( GtkWidget *window, GtkWidget *image, PropWidgets *widg
                     MARGIN_X-w-3,
                     CLAMP((int)i*widgets->profile_height/LINES - h/2 + MARGIN_Y, 0, widgets->profile_height-h+MARGIN_Y),
                     pl );
-  g_object_unref ( G_OBJECT ( pl ) );
 
   gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
                   MARGIN_X, MARGIN_Y + widgets->profile_height/LINES * i,
@@ -1226,7 +1220,7 @@ static void draw_grid_y ( GtkWidget *window, GtkWidget *image, PropWidgets *widg
  * A common way to draw the grid with x axis labels for time graphs
  *
  */
-static void draw_grid_x_time ( GtkWidget *window, GtkWidget *image, PropWidgets *widgets, GdkPixmap *pix, guint ii, guint tt, guint xx )
+static void draw_grid_x_time ( GtkWidget *window, PangoLayout *pl, PropWidgets *widgets, GdkPixmap *pix, guint ii, guint tt, guint xx )
 {
   gchar *label_markup = NULL;
   switch (ii) {
@@ -1263,10 +1257,6 @@ static void draw_grid_x_time ( GtkWidget *window, GtkWidget *image, PropWidgets 
       break;
   }
   if ( label_markup ) {
-
-    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
-    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
-
     pango_layout_set_markup ( pl, label_markup, -1 );
     g_free ( label_markup );
     int ww, hh;
@@ -1274,7 +1264,6 @@ static void draw_grid_x_time ( GtkWidget *window, GtkWidget *image, PropWidgets 
 
     gdk_draw_layout ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0],
                       MARGIN_X+xx-ww/2, MARGIN_Y/2-hh/2, pl );
-    g_object_unref ( G_OBJECT ( pl ) );
   }
 
   gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
@@ -1287,7 +1276,7 @@ static void draw_grid_x_time ( GtkWidget *window, GtkWidget *image, PropWidgets 
  * A common way to draw the grid with x axis labels for distance graphs
  *
  */
-static void draw_grid_x_distance ( GtkWidget *window, GtkWidget *image, PropWidgets *widgets, GdkPixmap *pix, guint ii, gdouble dd, guint xx, vik_units_distance_t dist_units )
+static void draw_grid_x_distance ( GtkWidget *window, PangoLayout *pl, PropWidgets *widgets, GdkPixmap *pix, guint ii, gdouble dd, guint xx, vik_units_distance_t dist_units )
 {
   gchar *label_markup = NULL;
   gchar *units = vu_distance_units_text ( dist_units );
@@ -1299,9 +1288,6 @@ static void draw_grid_x_distance ( GtkWidget *window, GtkWidget *image, PropWidg
   g_free ( units );
 
   if ( label_markup ) {
-    PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(image), NULL);
-    pango_layout_set_font_description (pl, gtk_widget_get_style(window)->font_desc);
-
     pango_layout_set_markup ( pl, label_markup, -1 );
     g_free ( label_markup );
     int ww, hh;
@@ -1309,7 +1295,6 @@ static void draw_grid_x_distance ( GtkWidget *window, GtkWidget *image, PropWidg
 
     gdk_draw_layout ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0],
                       MARGIN_X+xx-ww/2, MARGIN_Y/2-hh/2, pl );
-    g_object_unref ( G_OBJECT ( pl ) );
   }
 
   gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
@@ -1330,7 +1315,7 @@ static void clear_pixmap (GdkPixmap *pix, GtkWidget *window, PropWidgets *widget
 /**
  *
  */
-static void draw_distance_divisions ( GtkWidget *window, GtkWidget *image, GdkPixmap *pix, PropWidgets *widgets, vik_units_distance_t dist_units )
+static void draw_distance_divisions ( GtkWidget *window, PangoLayout *pl, GdkPixmap *pix, PropWidgets *widgets, vik_units_distance_t dist_units )
 {
   // Set to display units from length in metres.
   gdouble length = vu_distance_convert ( dist_units, widgets->track_length_inc_gaps);
@@ -1338,11 +1323,11 @@ static void draw_distance_divisions ( GtkWidget *window, GtkWidget *image, GdkPi
   gdouble dist_per_pixel = length/widgets->profile_width;
 
   for (guint i=1; chunks[index]*i <= length; i++) {
-    draw_grid_x_distance ( window, image, widgets, pix, index, chunks[index]*i, (guint)(chunks[index]*i/dist_per_pixel), dist_units );
+    draw_grid_x_distance ( window, pl, widgets, pix, index, chunks[index]*i, (guint)(chunks[index]*i/dist_per_pixel), dist_units );
   }
 }
 
-static void draw_time_lines ( GtkWidget *window, GtkWidget *image, GdkPixmap *pix, PropWidgets *widgets )
+static void draw_time_lines ( GtkWidget *window, PangoLayout *pl, GdkPixmap *pix, PropWidgets *widgets )
 {
   guint index = get_time_chunk_index ( widgets->duration );
   gdouble time_per_pixel = (gdouble)(widgets->duration)/widgets->profile_width;
@@ -1352,7 +1337,7 @@ static void draw_time_lines ( GtkWidget *window, GtkWidget *image, GdkPixmap *pi
     return;
 
   for (guint i=1; chunkst[index]*i <= widgets->duration; i++) {
-    draw_grid_x_time ( window, image, widgets, pix, index, chunkst[index]*i, (guint)(chunkst[index]*i/time_per_pixel) );
+    draw_grid_x_time ( window, pl, widgets, pix, index, chunkst[index]*i, (guint)(chunkst[index]*i/time_per_pixel) );
   }
 }
 
@@ -1672,17 +1657,25 @@ static void draw_it ( GtkWidget *image, VikTrack *trk, PropWidgets *widgets, Gtk
 
   const gdouble chunk = chunks[ci];
 
+  PangoLayout *pl = gtk_widget_create_pango_layout ( widgets->event_box[pwgt], NULL );
+
+  pango_layout_set_alignment ( pl, PANGO_ALIGN_RIGHT );
+
   // draw grid
   for ( i=0; i<=LINES; i++ ) {
     gchar ss[32];
     widgets->get_y_text[pwgt] ( ss, sizeof(ss), min + (LINES-i)*chunk );
-    draw_grid_y ( window, image, widgets, pix, ss, i );
+    draw_grid_y ( window, pl, widgets, pix, ss, i );
   }
 
+  pango_layout_set_alignment ( pl, PANGO_ALIGN_LEFT );
+
   if ( is_time_graph(pwgt) )
-    draw_time_lines ( window, image, pix, widgets );
+    draw_time_lines ( window, pl, pix, widgets );
   else    
-    draw_distance_divisions ( window, image, pix, widgets, a_vik_get_units_distance() );
+    draw_distance_divisions ( window, pl, pix, widgets, a_vik_get_units_distance() );
+
+  g_object_unref ( G_OBJECT(pl) );
 
   const guint height = MARGIN_Y+widgets->profile_height;
 
