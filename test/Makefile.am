@@ -1,7 +1,7 @@
 AM_CFLAGS		= -Wall \
 	-I$(top_srcdir)/src \
-	$(PACKAGE_CFLAGS)
-LDADD           = $(PACKAGE_LIBS) @EXPAT_LIBS@ @LIBCURL@ $(top_builddir)/src/icons/libicons.a
+	$(PACKAGE_CFLAGS) $(GTK_CFLAGS)
+LDADD           = $(PACKAGE_LIBS) $(GTK_LIBS) @EXPAT_LIBS@ @LIBCURL@ $(top_builddir)/src/icons/libicons.a
 if REALTIME_GPS_TRACKING
 LDADD           += -lgps
 AM_TESTS_ENVIRONMENT = \

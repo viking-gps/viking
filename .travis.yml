@@ -36,6 +36,7 @@ env:
    - BUILD_IMG=ubuntu:18.04 DEPS=libglib2.0-dev-bin OPTS="--disable-nettle"
    - BUILD_IMG=ubuntu:18.04 DEPS=libglib2.0-dev-bin OPTS="--disable-realtime-gps-tracking"
    - BUILD_IMG=ubuntu:18.04 DEPS=libglib2.0-dev-bin OPTS="--disable-zip"
+   - BUILD_IMG=ubuntu:18.04 DEPS="libglib2.0-dev-bin libgtk-3-dev" OPTS="--enable-gtk3"
 #
 # Allow specifying docker user for increased rate allowance (compared to anonymous access):
 #  https://docs.docker.com/docker-hub/download-rate-limit/

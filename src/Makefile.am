@@ -232,14 +232,14 @@ endif
 
 viking_SOURCES = main.c
 
-LDADD           = icons/libicons.a $(noinst_LIBRARIES) $(PACKAGE_LIBS) @EXPAT_LIBS@ @LIBCURL@
+LDADD           = icons/libicons.a $(noinst_LIBRARIES) $(PACKAGE_LIBS) $(GTK_LIBS) @EXPAT_LIBS@ @LIBCURL@
 if WINDOWS
 LDADD += \
 	../windows/installer/pixmaps/viking_icon.o
 endif
 
 AM_CFLAGS		= -Wall -g -D_GNU_SOURCE \
-	$(PACKAGE_CFLAGS) \
+	$(PACKAGE_CFLAGS) $(GTK_CFLAGS) \
 	@EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@ @LIBGEOCLUE_CFLAGS@
 AM_CPPFLAGS		= \
 	$(PACKAGE_CFLAGS) $(GTK_CFLAGS) \

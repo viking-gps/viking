@@ -101,7 +101,6 @@ dnl  ------------------
 PKG_CHECK_MODULES(PACKAGE, [
         glib-2.0          >= 2.44
         gthread-2.0       >= 2.2
-        gtk+-2.0          >= 2.18
         gio-2.0           >= 2.32
         gdk-pixbuf-2.0    >= 2.26
 ])
@@ -141,6 +140,26 @@ if test "x$ac_cv_enable_deprecations" = "xyes"; then
 fi
 
 # Options
+#
+# GTK
+#
+# GTK version 2 (default) or 3
+AC_ARG_ENABLE(gtk3, AC_HELP_STRING([--enable-gtk3],
+              [enable GTK3 build (default is disabled)]),
+              [ac_cv_enable_gtk3=$enableval],
+              [ac_cv_enable_gtk3=no])
+AC_CACHE_CHECK([whether to enable GTK3],
+               [ac_cv_enable_gtk3], [ac_cv_enable_gtk3=no])
+case $ac_cv_enable_gtk3 in
+  yes)
+    PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.22])
+  ;;
+  *)
+    PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.22])
+  ;;
+esac
+
+
 AC_ARG_ENABLE(bing, AC_HELP_STRING([--enable-bing],
               [enable Bing stuff (default is enable)]),
               [ac_cv_enable_bing=$enableval],
@@ -582,6 +601,7 @@ AC_MSG_NOTICE(["
 ===========================================
 $PACKAGE $PACKAGE_URL $VERSION
 -------------------------------------------
+GTK3                             : $ac_cv_enable_gtk3
 Bing Maps                        : $ac_cv_enable_bing
 Google                           : $ac_cv_enable_google
 Terraserver Maps                 : $ac_cv_enable_terraserver
