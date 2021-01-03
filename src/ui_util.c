@@ -473,11 +473,10 @@ void ui_load_icons ( void )
 #endif
 }
 
-
 GdkPixbuf *ui_get_icon ( const gchar *name, guint size )
 {
 	GError *error = NULL;
-	GdkPixbuf *icon = gtk_icon_theme_load_icon ( gtk_icon_theme_get_default(), name, size, 0, &error );
+	GdkPixbuf *icon = gtk_icon_theme_load_icon ( gtk_icon_theme_get_default(), name, size, GTK_ICON_LOOKUP_FORCE_SIZE, &error );
 	if ( error ) {
 		// Own icons should always be defined
 		g_critical ( "%s: icon '%s' - %s", __FUNCTION__, name, error->message );

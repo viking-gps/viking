@@ -389,26 +389,16 @@ static GdkPixbuf *get_wp_sym_from_index ( gint i ) {
   // Ensure data exists to either directly load icon or scale from the other set
   if ( !garmin_syms[i].icon && ( garmin_syms[i].data || garmin_syms[i].data_large) ) {
     if ( a_vik_get_use_large_waypoint_icons() ) {
-      if ( garmin_syms[i].data_large )
-	// Directly load icon
-	garmin_syms[i].icon = ui_get_icon ( garmin_syms[i].data_large, 30 );
-      else {
-        // Up sample from small image
-        GdkPixbuf* pixbuf = ui_get_icon ( garmin_syms[i].data, 18 );
-        garmin_syms[i].icon = gdk_pixbuf_scale_simple ( pixbuf, 30, 30, GDK_INTERP_BILINEAR );
-        g_object_unref ( pixbuf );
-      }
+      if ( garmin_syms[i].data )
+        garmin_syms[i].icon = ui_get_icon ( garmin_syms[i].data, 30 );
+      else
+        garmin_syms[i].icon = ui_get_icon ( garmin_syms[i].data_large, 30 );
     }
     else {
       if ( garmin_syms[i].data )
-	// Directly use small symbol
-	garmin_syms[i].icon = ui_get_icon ( garmin_syms[i].data, 18 );
-      else {
-        // Down size large image
-        GdkPixbuf* pixbuf = ui_get_icon ( garmin_syms[i].data_large, 30 );
-        garmin_syms[i].icon = gdk_pixbuf_scale_simple ( pixbuf, 18, 18, GDK_INTERP_BILINEAR );
-        g_object_unref ( pixbuf );
-      }
+        garmin_syms[i].icon = ui_get_icon ( garmin_syms[i].data, 18 );
+      else
+        garmin_syms[i].icon = ui_get_icon ( garmin_syms[i].data_large, 18 );
     }
   }
   return garmin_syms[i].icon;
