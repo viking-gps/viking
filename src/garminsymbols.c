@@ -25,6 +25,8 @@
 #include "garminsymbols.h"
 #include "icons/icons.h"
 
+GtkListStore *list = NULL;
+
 static struct {
   gchar *sym;     /* icon names used by gpsbabel, garmin */
   gchar *old_sym; /* keep backward compatible */
@@ -448,7 +450,8 @@ const gchar *a_get_hashed_sym ( const gchar *sym ) {
     return NULL;
 }
 
-void a_populate_sym_list ( GtkListStore *list ) {
+static void a_populate_sym_list ( GtkListStore *list )
+{
   gint i;
   for (i=0; i<G_N_ELEMENTS(garmin_syms); i++) {
     // Ensure at least one symbol available - the other can be auto generated
@@ -458,6 +461,24 @@ void a_populate_sym_list ( GtkListStore *list ) {
       gtk_list_store_set(list, &iter, 0, garmin_syms[i].sym, 1, get_wp_sym_from_index(i), -1);
     }
   }
+}
+
+//
+// For some reason in GTK3, a_populate_sym_list() is very slow.
+// Thus avoid having to perform it on every waypoint property dialog opening,
+//  and so generate a single list store just once here
+//  (and whenever the waypoint pref size has changed)
+//
+GtkListStore* a_garmin_get_sym_liststore ( void )
+{
+  if ( !list ) {
+    list = gtk_list_store_new(3, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING);
+    a_populate_sym_list ( list );
+    GtkTreeIter iter;
+    gtk_list_store_append (list, &iter);
+    gtk_list_store_set (list, &iter, 0, NULL, 1, NULL, 2, _("(none)"), -1);
+  }
+  return list;
 }
 
 
@@ -470,6 +491,11 @@ void clear_garmin_icon_syms () {
       g_object_unref (garmin_syms[i].icon);
       garmin_syms[i].icon = NULL;
     }
+  }
+  if ( list ) {
+    gtk_list_store_clear ( list );
+    g_object_unref ( list );
+    list = NULL;
   }
 }
 
