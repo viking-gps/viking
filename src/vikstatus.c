@@ -49,7 +49,7 @@ G_DEFINE_TYPE (VikStatusbar, vik_statusbar, GTK_TYPE_HBOX)
 
 static guint vik_statusbar_signals[LAST_SIGNAL] = { 0 };
 
-static gint
+static void
 forward_signal (GObject *object, gpointer user_data)
 {
     gint item = GPOINTER_TO_INT (g_object_get_data ( object, "type" ));
@@ -67,8 +67,6 @@ forward_signal (GObject *object, gpointer user_data)
       g_signal_emit (G_OBJECT (vs),
                      vik_statusbar_signals[CLICKED], 0,
                      item);
-
-    return TRUE;
 }
 
 static void

@@ -757,12 +757,12 @@ static GtkWidget *create_zoom_combo_all_levels ()
   return combo;
 }
 
-static gint zoom_popup_handler (GtkWidget *widget)
+static void zoom_popup_handler (GtkWidget *widget)
 {
   GtkMenu *menu;
 
-  g_return_val_if_fail (widget != NULL, FALSE);
-  g_return_val_if_fail (GTK_IS_MENU (widget), FALSE);
+  g_return_if_fail (widget != NULL);
+  g_return_if_fail (GTK_IS_MENU (widget));
 
   /* The "widget" is the menu that was supplied when
    * g_signal_connect_swapped() was called.
@@ -771,7 +771,6 @@ static gint zoom_popup_handler (GtkWidget *widget)
 
   gtk_menu_popup (menu, NULL, NULL, NULL, NULL,
                   1, gtk_get_current_event_time());
-  return TRUE;
 }
 
 enum {
