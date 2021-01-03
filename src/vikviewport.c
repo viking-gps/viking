@@ -1393,12 +1393,6 @@ void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled,
     gdk_draw_rectangle ( vvp->scr_buffer, gc, filled, x1, y1, x2, y2);
 }
 
-void vik_viewport_draw_string ( VikViewport *vvp, GdkFont *font, GdkGC *gc, gint x1, gint y1, const gchar *string )
-{
-  if ( x1 > -100 && x1 < vvp->width + 100 && y1 > -100 && y1 < vvp->height + 100 )
-    gdk_draw_string ( vvp->scr_buffer, font, gc, x1, y1, string );
-}
-
 void vik_viewport_draw_pixbuf ( VikViewport *vvp, GdkPixbuf *pixbuf, gint src_x, gint src_y,
                               gint dest_x, gint dest_y, gint w, gint h )
 {
