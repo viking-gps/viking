@@ -782,31 +782,6 @@ void vik_viewport_sync ( VikViewport *vvp )
   gdk_draw_drawable(gtk_widget_get_window(GTK_WIDGET(vvp)), gtk_widget_get_style(GTK_WIDGET(vvp))->bg_gc[0], GDK_DRAWABLE(vvp->scr_buffer), 0, 0, 0, 0, vvp->width, vvp->height);
 }
 
-void vik_viewport_pan_sync ( VikViewport *vvp, gint x_off, gint y_off )
-{
-  gint x, y, wid, hei;
-
-  g_return_if_fail ( vvp != NULL );
-  gdk_draw_drawable(gtk_widget_get_window(GTK_WIDGET(vvp)), gtk_widget_get_style(GTK_WIDGET(vvp))->bg_gc[0], GDK_DRAWABLE(vvp->scr_buffer), 0, 0, x_off, y_off, vvp->width, vvp->height);
-
-  if (x_off >= 0) {
-    x = 0;
-    wid = x_off;
-  } else {
-    x = vvp->width+x_off; 
-    wid = -x_off;
-  }
-  if (y_off >= 0) {
-    y = 0;
-    hei = y_off;
-  } else {
-    y = vvp->height+y_off; 
-    hei = -y_off;
-  }
-  gtk_widget_queue_draw_area(GTK_WIDGET(vvp), x, 0, wid, vvp->height);
-  gtk_widget_queue_draw_area(GTK_WIDGET(vvp), 0, y, vvp->width, hei);
-}
-
 void vik_viewport_set_zoom ( VikViewport *vvp, gdouble xympp )
 {
   g_return_if_fail ( vvp != NULL );

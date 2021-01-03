@@ -133,7 +133,6 @@ gboolean vik_viewport_get_half_drawn( VikViewport *vp );
 /* Viewport buffer management/drawing to screen */
 GdkPixmap *vik_viewport_get_pixmap ( VikViewport *vvp ); /* get pointer to drawing buffer */
 void vik_viewport_sync ( VikViewport *vvp );             /* draw buffer to window */
-void vik_viewport_pan_sync ( VikViewport *vvp, gint x_off, gint y_off );
 void vik_viewport_clear ( VikViewport *vvp );
 void vik_viewport_draw_pixbuf ( VikViewport *vvp, GdkPixbuf *pixbuf, gint src_x, gint src_y,
                               gint dest_x, gint dest_y, gint w, gint h );
