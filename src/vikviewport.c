@@ -584,18 +584,18 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
 			 PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT);
     /* black scale */
-    vik_viewport_draw_line(vvp, vvp->black_gc, //gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
+    vik_viewport_draw_line(vvp, vvp->black_gc,
 			 PAD, vvp->height-PAD, PAD + len, vvp->height-PAD);
-    vik_viewport_draw_line(vvp, vvp->black_gc, //gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
+    vik_viewport_draw_line(vvp, vvp->black_gc,
 			 PAD, vvp->height-PAD, PAD, vvp->height-PAD-HEIGHT);
-    vik_viewport_draw_line(vvp, vvp->black_gc, //gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
+    vik_viewport_draw_line(vvp, vvp->black_gc,
 			 PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT);
     if (odd%2) {
       int i;
       for (i=1; i<5; i++) {
         vik_viewport_draw_line(vvp, vvp->scale_bg_gc, 
                                PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-(HEIGHT/2));
-        vik_viewport_draw_line(vvp, vvp->black_gc, //gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
+        vik_viewport_draw_line(vvp, vvp->black_gc,
                                PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-(HEIGHT/2));
       }
     } else {
@@ -603,7 +603,7 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
       for (i=1; i<10; i++) {
         vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
   			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
-        vik_viewport_draw_line(vvp, vvp->black_gc, //gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
+        vik_viewport_draw_line(vvp, vvp->black_gc,
   			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
       }
     }
@@ -735,7 +735,7 @@ void vik_viewport_draw_centermark ( VikViewport *vvp )
   int center_x = vvp->width/2;
   int center_y = vvp->height/2;
 
-  // white background
+  // grey background
   vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x - len, center_y, center_x - gap, center_y);
   vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x + gap, center_y, center_x + len, center_y);
   vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x, center_y - len, center_x, center_y - gap);
