@@ -33,6 +33,7 @@
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
 
+#include "ui_util.h"
 #include "util.h"
 #include "dialog.h"
 #include "settings.h"
