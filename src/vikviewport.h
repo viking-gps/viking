@@ -162,7 +162,6 @@ void vik_viewport_set_background_color ( VikViewport *vvp, const gchar *color );
 const gchar *vik_viewport_get_background_color ( VikViewport *vvp );
 GdkColor *vik_viewport_get_background_gdkcolor ( VikViewport *vvp );
 void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor * );
-void vik_gc_get_fg_color ( GdkGC *gc, GdkColor *dest ); /* warning: could be slow, don't use obsessively */
 GdkGC *vik_viewport_new_gc ( VikViewport *vvp, const gchar *colorname, gint thickness );
 GdkGC *vik_viewport_new_gc_from_color ( VikViewport *vvp, GdkColor *color, gint thickness );
 GdkGC* vik_viewport_get_black_gc ( VikViewport *vvp );

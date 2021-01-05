@@ -1508,13 +1508,6 @@ void vik_viewport_draw_layout ( VikViewport *vvp, GdkGC *gc, gint x, gint y, Pan
     gdk_draw_layout ( vvp->scr_buffer, gc, x, y, layout );
 }
 
-void vik_gc_get_fg_color ( GdkGC *gc, GdkColor *dest )
-{
-  static GdkGCValues values;
-  gdk_gc_get_values ( gc, &values );
-  gdk_colormap_query_color ( gdk_colormap_get_system(), values.foreground.pixel, dest );
-}
-
 void vik_viewport_set_drawmode ( VikViewport *vvp, VikViewportDrawMode drawmode )
 {
   vvp->drawmode = drawmode;
