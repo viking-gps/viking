@@ -160,16 +160,16 @@ gboolean vik_viewport_get_draw_highlight ( VikViewport *vvp );
 /* Color/graphics context management */
 void vik_viewport_set_background_color ( VikViewport *vvp, const gchar *color );
 const gchar *vik_viewport_get_background_color ( VikViewport *vvp );
-GdkColor *vik_viewport_get_background_gdkcolor ( VikViewport *vvp );
-void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor * );
+GdkColor vik_viewport_get_background_gdkcolor ( VikViewport *vvp );
+void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor color );
 GdkGC *vik_viewport_new_gc ( VikViewport *vvp, const gchar *colorname, gint thickness );
 GdkGC *vik_viewport_new_gc_from_color ( VikViewport *vvp, GdkColor *color, gint thickness );
 GdkGC* vik_viewport_get_black_gc ( VikViewport *vvp );
 
 void vik_viewport_set_highlight_color ( VikViewport *vvp, const gchar *color );
 const gchar *vik_viewport_get_highlight_color ( VikViewport *vvp );
-GdkColor *vik_viewport_get_highlight_gdkcolor ( VikViewport *vvp );
-void vik_viewport_set_highlight_gdkcolor ( VikViewport *vvp, GdkColor * );
+GdkColor vik_viewport_get_highlight_gdkcolor ( VikViewport *vvp );
+void vik_viewport_set_highlight_gdkcolor ( VikViewport *vvp, GdkColor color );
 GdkGC* vik_viewport_get_gc_highlight ( VikViewport *vvp );
 void vik_viewport_set_highlight_thickness ( VikViewport *vvp, gint thickness );
 

@@ -284,11 +284,9 @@ vik_viewport_init ( VikViewport *vvp )
   default_vvp = vvp;
 }
 
-GdkColor *vik_viewport_get_background_gdkcolor ( VikViewport *vvp )
+GdkColor vik_viewport_get_background_gdkcolor ( VikViewport *vvp )
 {
-  GdkColor *rv = g_malloc ( sizeof ( GdkColor ) );
-  *rv = vvp->background_color;
-  return rv;
+  return vvp->background_color;
 }
 
 /* returns pointer to internal static storage, changes next time function called, use quickly */
@@ -307,17 +305,15 @@ void vik_viewport_set_background_color ( VikViewport *vvp, const gchar *colornam
     g_warning("%s: Failed to parse color '%s'", __FUNCTION__, colorname);
 }
 
-void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor *color )
+void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor color )
 {
-  vvp->background_color = *color;
-  gdk_gc_set_rgb_fg_color ( vvp->background_gc, color );
+  vvp->background_color = color;
+  gdk_gc_set_rgb_fg_color ( vvp->background_gc, &color );
 }
 
-GdkColor *vik_viewport_get_highlight_gdkcolor ( VikViewport *vvp )
+GdkColor vik_viewport_get_highlight_gdkcolor ( VikViewport *vvp )
 {
-  GdkColor *rv = g_malloc ( sizeof ( GdkColor ) );
-  *rv = vvp->highlight_color;
-  return rv;
+  return vvp->highlight_color;
 }
 
 /* returns pointer to internal static storage, changes next time function called, use quickly */
@@ -334,10 +330,10 @@ void vik_viewport_set_highlight_color ( VikViewport *vvp, const gchar *colorname
   gdk_gc_set_rgb_fg_color ( vvp->highlight_gc, &(vvp->highlight_color) );
 }
 
-void vik_viewport_set_highlight_gdkcolor ( VikViewport *vvp, GdkColor *color )
+void vik_viewport_set_highlight_gdkcolor ( VikViewport *vvp, GdkColor color )
 {
-  vvp->highlight_color = *color;
-  gdk_gc_set_rgb_fg_color ( vvp->highlight_gc, color );
+  vvp->highlight_color = color;
+  gdk_gc_set_rgb_fg_color ( vvp->highlight_gc, &color );
 }
 
 GdkGC *vik_viewport_get_gc_highlight ( VikViewport *vvp )

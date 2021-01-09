@@ -5378,32 +5378,30 @@ static void toggle_draw_highlight ( GtkAction *a, VikWindow *vw )
 static void set_bg_color ( GtkAction *a, VikWindow *vw )
 {
   GtkWidget *colorsd = gtk_color_selection_dialog_new ( _("Choose a background color") );
-  GdkColor *color = vik_viewport_get_background_gdkcolor ( vw->viking_vvp );
-  gtk_color_selection_set_previous_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), color );
-  gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), color );
+  GdkColor color = vik_viewport_get_background_gdkcolor ( vw->viking_vvp );
+  gtk_color_selection_set_previous_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), &color );
+  gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), &color );
   if ( gtk_dialog_run ( GTK_DIALOG(colorsd) ) == GTK_RESPONSE_OK )
   {
-    gtk_color_selection_get_current_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), color );
+    gtk_color_selection_get_current_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), &color );
     vik_viewport_set_background_gdkcolor ( vw->viking_vvp, color );
     draw_update ( vw );
   }
-  g_free ( color );
   gtk_widget_destroy ( colorsd );
 }
 
 static void set_highlight_color ( GtkAction *a, VikWindow *vw )
 {
   GtkWidget *colorsd = gtk_color_selection_dialog_new ( _("Choose a track highlight color") );
-  GdkColor *color = vik_viewport_get_highlight_gdkcolor ( vw->viking_vvp );
-  gtk_color_selection_set_previous_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), color );
-  gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), color );
+  GdkColor color = vik_viewport_get_highlight_gdkcolor ( vw->viking_vvp );
+  gtk_color_selection_set_previous_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), &color );
+  gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), &color );
   if ( gtk_dialog_run ( GTK_DIALOG(colorsd) ) == GTK_RESPONSE_OK )
   {
-    gtk_color_selection_get_current_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), color );
+    gtk_color_selection_get_current_color ( GTK_COLOR_SELECTION(gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG(colorsd))), &color );
     vik_viewport_set_highlight_gdkcolor ( vw->viking_vvp, color );
     draw_update ( vw );
   }
-  g_free ( color );
   gtk_widget_destroy ( colorsd );
 }
 
