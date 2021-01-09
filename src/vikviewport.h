@@ -28,6 +28,7 @@
 
 #include "vikcoord.h"
 #include "bbox.h"
+#include "vik_compat.h"
 
 G_BEGIN_DECLS
 

@@ -47,6 +47,12 @@ void vik_mutex_free (GMutex *mutex);
 #define vik_combo_box_text_append(X,Y) gtk_combo_box_append_text(GTK_COMBO_BOX(X),Y)
 #endif
 
+// Cheeky way to maintain much header compatibility;
+//  mostly for vikviewport.h
+#if GTK_CHECK_VERSION (3,0,0)
+typedef cairo_t GdkGC;
+#endif
+
 G_END_DECLS
 
 #endif
