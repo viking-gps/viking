@@ -463,10 +463,10 @@ GtkListStore* a_garmin_get_sym_liststore ( void )
 {
   if ( !list ) {
     list = gtk_list_store_new(3, G_TYPE_STRING, GDK_TYPE_PIXBUF, G_TYPE_STRING);
-    a_populate_sym_list ( list );
     GtkTreeIter iter;
     gtk_list_store_append (list, &iter);
     gtk_list_store_set (list, &iter, 0, NULL, 1, NULL, 2, _("(none)"), -1);
+    a_populate_sym_list ( list );
   }
   return list;
 }
