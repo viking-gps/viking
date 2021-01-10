@@ -735,8 +735,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
     if ( y2 > vik_viewport_get_height(vp) ) y2=vik_viewport_get_height(vp);
     if ( x2 < 0 ) x2 = 0;
     if ( y1 < 0 ) y1 = 0;
-    vik_viewport_draw_rectangle ( vp, gtk_widget_get_style(GTK_WIDGET(vp))->black_gc,
-	FALSE, x2, y1, x1-x2, y2-y1 );
+    vik_viewport_draw_rectangle ( vp, vik_viewport_get_black_gc(vp), FALSE, x2, y1, x1-x2, y2-y1 );
     return;
   }
   #endif
@@ -1216,8 +1215,7 @@ static void srtm_draw_existence ( VikViewport *vp )
         vik_viewport_coord_to_screen ( vp, &ne, &x2, &y2 );
         if ( x1 < 0 ) x1 = 0;
         if ( y2 < 0 ) y2 = 0;
-        vik_viewport_draw_rectangle ( vp, gtk_widget_get_style(GTK_WIDGET(vp))->black_gc,
-		FALSE, x1, y2, x2-x1, y1-y2 );
+        vik_viewport_draw_rectangle ( vp, vik_viewport_get_black_gc(vp), FALSE, x1, y2, x2-x1, y1-y2 );
       }
     }
   }
@@ -1294,8 +1292,7 @@ static void dem24k_draw_existence ( VikViewport *vp )
         vik_viewport_coord_to_screen ( vp, &ne, &x2, &y2 );
         if ( x1 < 0 ) x1 = 0;
         if ( y2 < 0 ) y2 = 0;
-        vik_viewport_draw_rectangle ( vp, gtk_widget_get_style(GTK_WIDGET(vp))->black_gc,
-		FALSE, x1, y2, x2-x1, y1-y2 );
+        vik_viewport_draw_rectangle ( vp, vik_viewport_get_black_gc(vp), FALSE, x1, y2, x2-x1, y1-y2 );
       }
     }
   }

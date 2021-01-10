@@ -1002,7 +1002,7 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
     if ( val->draw_grid && tilesize > 4 ) {
       // Grid drawing here so it gets drawn on top of the previous tiles
       // Thus loop around x & y again, but this time separately
-      GdkGC *black_gc = GTK_WIDGET(vvp)->style->black_gc;
+      GdkGC *black_gc = vik_viewport_get_black_gc ( vvp );
       // Draw single grid lines across the whole screen
       xx = base_xx;
       for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {

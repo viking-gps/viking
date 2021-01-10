@@ -883,7 +883,7 @@ static void mapnik_layer_draw ( VikMapnikLayer *vml, VikViewport *vvp )
 		// Done after so drawn on top
 		// Just a handy guide to tile blocks.
 		if ( vik_debug && vik_verbose ) {
-			GdkGC *black_gc = GTK_WIDGET(vvp)->style->black_gc;
+			GdkGC *black_gc = vik_viewport_get_black_gc ( vvp );
 			gint width = vik_viewport_get_width(vvp);
 			gint height = vik_viewport_get_height(vvp);
 			gint xx, yy;

@@ -1470,7 +1470,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
                              ulm.scale, ulm.z, ulm.x, ulm.y, path_buf, max_path_len, vik_map_source_get_file_extension(map) );
 
             if ( g_file_test ( path_buf, G_FILE_TEST_EXISTS ) == TRUE ) {
-	      GdkGC *black_gc = gtk_widget_get_style(GTK_WIDGET(vvp))->black_gc;
+	      GdkGC *black_gc = vik_viewport_get_black_gc(vvp);
               vik_viewport_draw_line ( vvp, black_gc, xx+tilesize_x_ceil, yy, xx, yy+tilesize_y_ceil );
             }
           } else {
@@ -1508,7 +1508,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
         /* Grid drawing here so it gets drawn on top of the map */
         /* Thus loop around x & y again, but this time separately */
         /* Only showing grid for the current scale */
-        GdkGC *black_gc = GTK_WIDGET(vvp)->style->black_gc;
+        GdkGC *black_gc = vik_viewport_get_black_gc(vvp);
         /* Draw single grid lines across the whole screen */
         const gint width = vik_viewport_get_width(vvp);
         const gint height = vik_viewport_get_height(vvp);
