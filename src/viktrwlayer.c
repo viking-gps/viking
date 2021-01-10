@@ -791,7 +791,7 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp );
 static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter );
 static void trw_layer_post_read ( VikTrwLayer *vtl, VikViewport *vvp, gboolean from_file );
 static void trw_layer_free ( VikTrwLayer *trwlayer );
-static void trw_layer_draw ( VikTrwLayer *l, gpointer data );
+static void trw_layer_draw ( VikTrwLayer *l, VikViewport *vvp );
 static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mode );
 static gdouble trw_layer_get_timestamp ( VikTrwLayer *vtl );
 static void trw_layer_set_menu_selection ( VikTrwLayer *vtl, guint16 );
@@ -2794,12 +2794,12 @@ static void trw_layer_draw_waypoint_cb ( gpointer id, VikWaypoint *wp, struct Dr
   }
 }
 
-static void trw_layer_draw_with_highlight ( VikTrwLayer *l, gpointer data, gboolean highlight )
+static void trw_layer_draw_with_highlight ( VikTrwLayer *l, VikViewport *vvp, gboolean highlight )
 {
   static struct DrawingParams dp;
   g_assert ( l != NULL );
 
-  init_drawing_params ( &dp, l, VIK_VIEWPORT(data), highlight );
+  init_drawing_params ( &dp, l, vvp, highlight );
 
   if ( l->tracks_visible )
     g_hash_table_foreach ( l->tracks, (GHFunc) trw_layer_draw_track_cb, &dp );
@@ -2811,16 +2811,16 @@ static void trw_layer_draw_with_highlight ( VikTrwLayer *l, gpointer data, gbool
     g_hash_table_foreach ( l->waypoints, (GHFunc) trw_layer_draw_waypoint_cb, &dp );
 }
 
-static void trw_layer_draw ( VikTrwLayer *l, gpointer data )
+static void trw_layer_draw ( VikTrwLayer *l, VikViewport *vvp )
 {
   trw_ensure_layer_loaded ( l );
   // If this layer is to be highlighted - then don't draw now - as it will be drawn later on in the specific highlight draw stage
   // This may seem slightly inefficient to test each time for every layer
   //  but for a layer with *lots* of tracks & waypoints this can save some effort by not drawing the items twice
-  if ( vik_viewport_get_draw_highlight ( (VikViewport*)data ) &&
+  if ( vik_viewport_get_draw_highlight ( vvp ) &&
        vik_window_get_selected_trw_layer ((VikWindow*)VIK_GTK_WINDOW_FROM_LAYER((VikLayer*)l)) == l )
     return;
-  trw_layer_draw_with_highlight ( l, data, FALSE );
+  trw_layer_draw_with_highlight ( l, vvp, FALSE );
 }
 
 void vik_trw_layer_draw_highlight ( VikTrwLayer *vtl, VikViewport *vvp )
