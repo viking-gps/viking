@@ -1499,7 +1499,6 @@ static gboolean draw_buf(gpointer data)
   return FALSE;
 }
 
-
 /* Mouse event handlers ************************************************************************/
 
 static void vik_window_pan_click (VikWindow *vw, GdkEventButton *event)
@@ -1837,7 +1836,6 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
   }
   vik_viewport_coord_to_screen ( vvp, end, &x2, &y2 );
 
-
   gdouble len, dx, dy, c, s, angle, angle_end, display_angle, baseangle;
   gint i;
 
@@ -1884,7 +1882,7 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
       struct LatLon ll;
       vik_coord_to_latlon ( &coord, &ll) ;
 
-      if (sqrt(pow(last_x-x, 2) + pow(last_y-y, 2)) < 100) {;
+      if (sqrt(pow(last_x-x, 2) + pow(last_y-y, 2)) < 100) {
         gdk_draw_line(d, gc, last_x, last_y, x, y);
       }
       last_x = x;
