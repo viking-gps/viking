@@ -140,6 +140,12 @@ static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event);
 static void toolbox_move (toolbox_tools_t *vt, GdkEventMotion *event);
 static void toolbox_release (toolbox_tools_t *vt, GdkEventButton *event);
 
+static void tool_ed_destroy (tool_ed_t *te)
+{
+  if ( te->pixmap )
+    g_object_unref ( G_OBJECT ( te->pixmap ) );
+  g_free ( te );
+}
 
 /* ui creation */
 static void window_create_ui( VikWindow *window );
@@ -2044,9 +2050,7 @@ static gpointer ruler_create (VikWindow *vw, VikViewport *vvp)
 
 static void ruler_destroy (tool_ed_t *te)
 {
-  if ( te->pixmap )
-    g_object_unref ( G_OBJECT ( te->pixmap ) );
-  g_free ( te );
+  tool_ed_destroy ( te );
 }
 
 static void ruler_click_normal (VikLayer *vl, GdkEventButton *event, tool_ed_t *s)
@@ -2376,9 +2380,7 @@ static gpointer zoomtool_create (VikWindow *vw, VikViewport *vvp)
 
 static void zoomtool_destroy ( tool_ed_t *te)
 {
-  if ( te->pixmap )
-    g_object_unref ( G_OBJECT ( te->pixmap ) );
-  g_free(te);
+  tool_ed_destroy ( te );
 }
 
 static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *event, tool_ed_t *te)
@@ -2632,9 +2634,7 @@ static gpointer selecttool_create (VikWindow *vw, VikViewport *vvp)
 
 static void selecttool_destroy (tool_ed_t *t)
 {
-  if ( t->pixmap )
-    g_object_unref ( G_OBJECT ( t->pixmap ) );
-  g_free(t);
+  tool_ed_destroy ( t );
 }
 
 typedef struct {
