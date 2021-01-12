@@ -1849,8 +1849,13 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
   gdouble distance = vik_coord_diff (start, end);
 
   len = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
-  dx = (x2-x1)/len*10;
-  dy = (y2-y1)/len*10;
+  if ( len > 0.0001 ) {
+    dx = (x2-x1)/len*10;
+    dy = (y2-y1)/len*10;
+  } else {
+    dx = 0.0;
+    dy = 0.0;
+  }
 
   /* if the distance is less than 10km, the curvature definitely won't be visible */
   if (distance < 10e3) {
