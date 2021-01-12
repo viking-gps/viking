@@ -1814,6 +1814,9 @@ static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
   return TRUE;
 }
 
+static const double C15 = cos(DEG2RAD(15.0));
+static const double S15 = sin(DEG2RAD(15.0));
+
 /********************************************************************************
  ** Ruler tool code
  ********************************************************************************/
@@ -1848,8 +1851,6 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
   len = sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
   dx = (x2-x1)/len*10;
   dy = (y2-y1)/len*10;
-  c = cos(DEG2RAD(15.0));
-  s = sin(DEG2RAD(15.0));
 
   /* if the distance is less than 10km, the curvature definitely won't be visible */
   if (distance < 10e3) {
@@ -1861,10 +1862,10 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
     gdk_draw_line(d, gc, x1 - dy, y1 + dx, x1 + dy, y1 - dx);
     gdk_draw_line(d, gc, x2 - dy, y2 + dx, x2 + dy, y2 - dx);
     /* arrow components */
-    gdk_draw_line(d, gc, x2, y2, x2 - (dx * c + dy * s), y2 - (dy * c - dx * s));
-    gdk_draw_line(d, gc, x2, y2, x2 - (dx * c - dy * s), y2 - (dy * c + dx * s));
-    gdk_draw_line(d, gc, x1, y1, x1 + (dx * c + dy * s), y1 + (dy * c - dx * s));
-    gdk_draw_line(d, gc, x1, y1, x1 + (dx * c - dy * s), y1 + (dy * c + dx * s));
+    gdk_draw_line(d, gc, x2, y2, x2 - (dx * C15 + dy * S15), y2 - (dy * C15 - dx * S15));
+    gdk_draw_line(d, gc, x2, y2, x2 - (dx * C15 - dy * S15), y2 - (dy * C15 + dx * S15));
+    gdk_draw_line(d, gc, x1, y1, x1 + (dx * C15 + dy * S15), y1 + (dy * C15 - dx * S15));
+    gdk_draw_line(d, gc, x1, y1, x1 + (dx * C15 - dy * S15), y1 + (dy * C15 + dx * S15));
   }
 
   else {
@@ -1898,10 +1899,10 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
     gdk_draw_line(d, gc, x1 - dx1, y1 - dy1, x1 + dx1, y1 + dy1);
     gdk_draw_line(d, gc, x2 - dx2, y2 - dy2, x2 + dx2, y2 + dy2);
     /* arrow components */
-    gdk_draw_line(d, gc, x2, y2, x2 + (-dy2 * c + dx2 * s), y2 + (+dx2 * c + dy2 * s));
-    gdk_draw_line(d, gc, x2, y2, x2 + (-dy2 * c - dx2 * s), y2 + (+dx2 * c - dy2 * s));
-    gdk_draw_line(d, gc, x1, y1, x1 + (+dy1 * c + dx1 * s), y1 + (-dx1 * c + dy1 * s));
-    gdk_draw_line(d, gc, x1, y1, x1 + (+dy1 * c - dx1 * s), y1 + (-dx1 * c - dy1 * s));
+    gdk_draw_line(d, gc, x2, y2, x2 + (-dy2 * C15 + dx2 * S15), y2 + (+dx2 * C15 + dy2 * S15));
+    gdk_draw_line(d, gc, x2, y2, x2 + (-dy2 * C15 - dx2 * S15), y2 + (+dx2 * C15 - dy2 * S15));
+    gdk_draw_line(d, gc, x1, y1, x1 + (+dy1 * C15 + dx1 * S15), y1 + (-dx1 * C15 + dy1 * S15));
+    gdk_draw_line(d, gc, x1, y1, x1 + (+dy1 * C15 - dx1 * S15), y1 + (-dx1 * C15 - dy1 * S15));
   }
 
 
