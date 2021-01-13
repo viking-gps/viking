@@ -10119,10 +10119,8 @@ static gboolean tool_sync(gpointer data)
 static void marker_begin_move ( tool_ed_t *t, gint x, gint y )
 {
   t->holding = TRUE;
-  t->gc = vik_viewport_new_gc (t->vvp, "black", 2);
+  t->gc = vik_viewport_new_gc (t->vvp, "black", 2*vik_viewport_get_scale(t->vvp));
   gdk_gc_set_function ( t->gc, GDK_INVERT );
-  vik_viewport_draw_rectangle ( t->vvp, t->gc, FALSE, x-3, y-3, 6, 6 );
-  vik_viewport_sync(t->vvp);
   t->oldx = x;
   t->oldy = y;
   t->moving = FALSE;
@@ -10131,8 +10129,14 @@ static void marker_begin_move ( tool_ed_t *t, gint x, gint y )
 static void marker_moveto ( tool_ed_t *t, gint x, gint y )
 {
   VikViewport *vvp =  t->vvp;
-  vik_viewport_draw_rectangle ( vvp, t->gc, FALSE, t->oldx-3, t->oldy-3, 6, 6 );
-  vik_viewport_draw_rectangle ( vvp, t->gc, FALSE, x-3, y-3, 6, 6 );
+  // Even if the waypoint marker is not a square (e.g. a circle),
+  // for simplicity still draw the new virtual location as a square
+  //  using the same code for the trackpoint move drawing
+  const guint8 rsize = t->is_waypoint ?
+    VIK_TRW_LAYER(t->vtl)->wp_size :
+    VIK_TRW_LAYER(t->vtl)->drawpoints_size*2;
+  vik_viewport_draw_rectangle ( vvp, t->gc, FALSE, t->oldx-rsize, t->oldy-rsize, rsize*2, rsize*2 );
+  vik_viewport_draw_rectangle ( vvp, t->gc, FALSE, x-rsize, y-rsize, rsize*2, rsize*2 );
   t->oldx = x;
   t->oldy = y;
   t->moving = TRUE;
@@ -10145,7 +10149,6 @@ static void marker_moveto ( tool_ed_t *t, gint x, gint y )
 
 static void marker_end_move ( tool_ed_t *t )
 {
-  vik_viewport_draw_rectangle ( t->vvp, t->gc, FALSE, t->oldx-3, t->oldy-3, 6, 6 );
   g_object_unref ( t->gc );
   t->holding = FALSE;
   t->moving = FALSE;
