@@ -25,12 +25,12 @@
 
 #define GEOCLUE_FIXED_NAME "GeoClue"
 
-static VikGeoclueLayer *vik_geoclue_layer_create ( VikViewport *vp);
-static void vik_geoclue_layer_realize ( VikGeoclueLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter );
-static void vik_geoclue_layer_post_read ( VikGeoclueLayer *vgl, VikViewport *vp, gboolean from_file );
-static void vik_geoclue_layer_free ( VikGeoclueLayer *vgl );
-static void vik_geoclue_layer_draw ( VikGeoclueLayer *vgl, VikViewport *vp );
-static VikGeoclueLayer *vik_geoclue_layer_new ( VikViewport *vp );
+static VikGeoclueLayer *geoclue_layer_create ( VikViewport *vp);
+static void geoclue_layer_realize ( VikGeoclueLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter );
+static void geoclue_layer_post_read ( VikGeoclueLayer *vgl, VikViewport *vp, gboolean from_file );
+static void geoclue_layer_free ( VikGeoclueLayer *vgl );
+static void geoclue_layer_draw ( VikGeoclueLayer *vgl, VikViewport *vp );
+static VikGeoclueLayer *geoclue_layer_new ( VikViewport *vp );
 
 static void geoclue_layer_marshall( VikGeoclueLayer *vgl, guint8 **data, guint *len );
 static VikGeoclueLayer *geoclue_layer_unmarshall ( guint8 *data, guint len, VikViewport *vvp );
@@ -110,13 +110,13 @@ VikLayerInterface vik_geoclue_layer_interface = {
 
   VIK_MENU_ITEM_ALL,
 
-  (VikLayerFuncCreate)                  vik_geoclue_layer_create,
-  (VikLayerFuncRealize)                 vik_geoclue_layer_realize,
-  (VikLayerFuncPostRead)                vik_geoclue_layer_post_read,
-  (VikLayerFuncFree)                    vik_geoclue_layer_free,
+  (VikLayerFuncCreate)                  geoclue_layer_create,
+  (VikLayerFuncRealize)                 geoclue_layer_realize,
+  (VikLayerFuncPostRead)                geoclue_layer_post_read,
+  (VikLayerFuncFree)                    geoclue_layer_free,
 
   (VikLayerFuncProperties)              NULL,
-  (VikLayerFuncDraw)                    vik_geoclue_layer_draw,
+  (VikLayerFuncDraw)                    geoclue_layer_draw,
   (VikLayerFuncChangeCoordMode)         geoclue_layer_change_coord_mode,
 
   (VikLayerFuncGetTimestamp)            NULL,
@@ -208,9 +208,9 @@ GType vik_geoclue_layer_get_type ()
   return val_type;
 }
 
-static VikGeoclueLayer *vik_geoclue_layer_create ( VikViewport *vp )
+static VikGeoclueLayer *geoclue_layer_create ( VikViewport *vp )
 {
-	VikGeoclueLayer *rv = vik_geoclue_layer_new ( vp );
+	VikGeoclueLayer *rv = geoclue_layer_new ( vp );
 	vik_layer_rename ( VIK_LAYER(rv), vik_geoclue_layer_interface.name );
 	rv->trw = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vp, FALSE ));
 	vik_layer_set_menu_items_selection ( VIK_LAYER(rv->trw), VIK_MENU_ITEM_ALL & ~(VIK_MENU_ITEM_CUT|VIK_MENU_ITEM_DELETE) );
@@ -263,7 +263,7 @@ static VikGeoclueLayer *geoclue_layer_unmarshall ( guint8 *data, guint len, VikV
 	len -= sizeof(guint) + alm_size; \
 	data += sizeof(guint) + alm_size;
   
-	VikGeoclueLayer *rv = vik_geoclue_layer_new(vvp);
+	VikGeoclueLayer *rv = geoclue_layer_new(vvp);
 
 	vik_layer_unmarshall_params ( VIK_LAYER(rv), data+sizeof(guint), alm_size, vvp );
 	alm_next;
@@ -272,7 +272,7 @@ static VikGeoclueLayer *geoclue_layer_unmarshall ( guint8 *data, guint len, VikV
 	if (layer) {
 		rv->trw = (VikTrwLayer*)layer;
 		// NB no need to attach signal update handler here
-		//  as this will always be performed later on in vik_geoclue_layer_realize()
+		//  as this will always be performed later on in geoclue_layer_realize()
 	}
 	alm_next;
 	return rv;
@@ -309,7 +309,7 @@ static VikLayerParamData geoclue_layer_get_param ( VikGeoclueLayer *vgl, guint16
 	return rv;
 }
 
-VikGeoclueLayer *vik_geoclue_layer_new ( VikViewport *vp )
+static VikGeoclueLayer *geoclue_layer_new ( VikViewport *vp )
 {
 	VikGeoclueLayer *vgl = VIK_GEOCLUE_LAYER ( g_object_new ( VIK_GEOCLUE_LAYER_TYPE, NULL ) );
 	vik_layer_set_type ( VIK_LAYER(vgl), VIK_LAYER_GEOCLUE );
@@ -352,7 +352,7 @@ static void tracking_draw ( VikGeoclueLayer *vgl, VikViewport *vp )
 	}
 }
 
-static void vik_geoclue_layer_draw ( VikGeoclueLayer *vgl, VikViewport *vp )
+static void geoclue_layer_draw ( VikGeoclueLayer *vgl, VikViewport *vp )
 {
 	// NB I don't understand this half drawn business
 	// This is just copied from vikgpslayer.c
@@ -430,7 +430,7 @@ static void disconnect_layer_signal ( VikLayer *vl, VikGeoclueLayer *vgl )
 	}
 }
 
-static void vik_geoclue_layer_free ( VikGeoclueLayer *vgl )
+static void geoclue_layer_free ( VikGeoclueLayer *vgl )
 {
     if ( vgl->client )
 		g_clear_object ( &vgl->client );
@@ -697,7 +697,7 @@ static void geoclue_connect ( VikGeoclueLayer *vgl )
 	                   vgl );
 }
 
-static void vik_geoclue_layer_realize ( VikGeoclueLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter )
+static void geoclue_layer_realize ( VikGeoclueLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
 	GtkTreeIter iter;
 	VikLayer *trw = VIK_LAYER(vgl->trw);
@@ -714,7 +714,7 @@ static void vik_geoclue_layer_realize ( VikGeoclueLayer *vgl, VikTreeview *vt, G
 	}
 }
 
-static void vik_geoclue_layer_post_read ( VikGeoclueLayer *vgl, VikViewport *vp, gboolean from_file )
+static void geoclue_layer_post_read ( VikGeoclueLayer *vgl, VikViewport *vp, gboolean from_file )
 {
 	// Ensure bounds values are set (particularly if loading from a file)
 	trw_layer_calculate_bounds_waypoints ( vgl->trw );
