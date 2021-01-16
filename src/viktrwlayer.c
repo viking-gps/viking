@@ -366,31 +366,31 @@ static void trw_layer_sort_all ( VikTrwLayer *vtl );
 
 static gpointer tool_edit_trackpoint_create ( VikWindow *vw, VikViewport *vvp);
 static void tool_edit_trackpoint_destroy ( tool_ed_t *t );
-static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
-static gboolean tool_edit_trackpoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data );
-static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
+static VikLayerToolFuncStatus tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
+static VikLayerToolFuncStatus tool_edit_trackpoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data );
+static VikLayerToolFuncStatus tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
 static gpointer tool_show_picture_create ( VikWindow *vw, VikViewport *vvp);
-static gboolean tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
+static VikLayerToolFuncStatus tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
 static gpointer tool_edit_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static void tool_edit_waypoint_destroy ( tool_ed_t *t );
-static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
-static gboolean tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data );
-static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
+static VikLayerToolFuncStatus tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
+static VikLayerToolFuncStatus tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data );
+static VikLayerToolFuncStatus tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
 static gpointer tool_edit_route_create ( VikWindow *vw, VikViewport *vvp);
-static gboolean tool_edit_route_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus tool_edit_route_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gpointer tool_edit_track_create ( VikWindow *vw, VikViewport *vvp);
-static gboolean tool_edit_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus tool_edit_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static VikLayerToolFuncStatus tool_edit_track_move ( VikTrwLayer *vtl, GdkEventMotion *event, VikViewport *vvp );
-static void tool_edit_track_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus tool_edit_track_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp );
 static gboolean tool_edit_track_key_release ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp );
 static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
-static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gpointer tool_extended_route_finder_create ( VikWindow *vw, VikViewport *vvp);
-static gboolean tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp );
 static gpointer tool_splitter_create ( VikWindow *vw, VikViewport *vvp);
-static gboolean tool_splitter_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus tool_splitter_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 
 static VikTrackpoint *closest_tp_in_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y );
 static VikWaypoint *closest_wp_in_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y );
@@ -10168,7 +10168,7 @@ static void tool_edit_waypoint_destroy ( tool_ed_t *t )
   g_free ( t );
 }
 
-static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
+static VikLayerToolFuncStatus tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
 {
   WPSearchParams params;
   tool_ed_t *t = data;
@@ -10177,14 +10177,14 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
   t->is_waypoint = TRUE;
 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
 
   if ( t->holding ) {
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
 
   if ( !vtl->vl.visible || !vtl->waypoints_visible )
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
 
   if ( vtl->current_wp && vtl->current_wp->visible )
   {
@@ -10200,7 +10200,7 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
       else {
 	marker_begin_move(t, event->x, event->y);
       }
-      return TRUE;
+      return VIK_LAYER_TOOL_ACK;
     }
   }
 
@@ -10219,7 +10219,7 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
       vtl->waypoint_rightclick = TRUE; /* remember that we're clicking; other layers will ignore release signal */
     else
       marker_begin_move(t, event->x, event->y);
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
   }
   else if ( params.closest_wp )
   {
@@ -10235,23 +10235,23 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
 
     /* could make it so don't update if old WP is off screen and new is null but oh well */
     vik_layer_emit_update ( VIK_LAYER(vtl) );
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
 
   vtl->current_wp = NULL;
   vtl->current_wp_id = NULL;
   vtl->waypoint_rightclick = FALSE;
   vik_layer_emit_update ( VIK_LAYER(vtl) );
-  return FALSE;
+  return VIK_LAYER_TOOL_IGNORED;
 }
 
-static gboolean tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data )
+static VikLayerToolFuncStatus tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data )
 {
   tool_ed_t *t = data;
   VikViewport *vvp = t->vvp;
 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
 
   if ( t->holding ) {
     VikCoord new_coord;
@@ -10279,18 +10279,18 @@ static gboolean tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEventMotion *even
 
       marker_moveto ( t, x, y );
     } 
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
-  return FALSE;
+  return VIK_LAYER_TOOL_IGNORED;
 }
 
-static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
+static VikLayerToolFuncStatus tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
 {
   tool_ed_t *t = data;
   VikViewport *vvp = t->vvp;
 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
   
   if ( t->holding && event->button == 1 )
   {
@@ -10319,7 +10319,7 @@ static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *e
 
     trw_layer_calculate_bounds_waypoints ( vtl );
     vik_layer_emit_update ( VIK_LAYER(vtl) );
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
   /* PUT IN RIGHT PLACE!!! */
   if ( event->button == 3 && vtl->waypoint_rightclick )
@@ -10335,7 +10335,7 @@ static gboolean tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *e
     }
     vtl->waypoint_rightclick = FALSE;
   }
-  return FALSE;
+  return VIK_LAYER_TOOL_IGNORED;
 }
 
 /*** Edit track or route (lots of common functionality) ****/
@@ -10847,28 +10847,28 @@ static gboolean tool_edit_track_key_release ( VikTrwLayer *vtl, GdkEventKey *eve
  *  . enables removal of last point via right click
  *  . finishing of the track or route via double clicking
  */
-static gboolean tool_edit_track_or_route_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, gboolean newsegment )
+static VikLayerToolFuncStatus tool_edit_track_or_route_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, gboolean newsegment )
 {
   VikTrackpoint *tp;
 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
 
   if ( event->button == 2 ) {
     // As the display is panning, the new track pixmap is now invalid so don't draw it
     //  otherwise this drawing done results in flickering back to an old image
     vtl->draw_sync_do = FALSE;
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
   }
 
   if ( event->button == 3 )
   {
     if ( !vtl->current_track )
-      return FALSE;
+      return VIK_LAYER_TOOL_IGNORED;
     undo_trackpoint_add ( vtl );
     update_statusbar ( vtl );
     vik_layer_emit_update ( VIK_LAYER(vtl) );
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
 
   if ( event->type == GDK_2BUTTON_PRESS )
@@ -10881,7 +10881,7 @@ static gboolean tool_edit_track_or_route_click ( VikTrwLayer *vtl, GdkEventButto
       vtl->current_track = NULL;
     }
     vik_layer_emit_update ( VIK_LAYER(vtl) );
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
 
   tp = vik_trackpoint_new();
@@ -10909,10 +10909,10 @@ static gboolean tool_edit_track_or_route_click ( VikTrwLayer *vtl, GdkEventButto
   vtl->ct_y2 = event->y;
 
   vik_layer_emit_update ( VIK_LAYER(vtl) );
-  return TRUE;
+  return VIK_LAYER_TOOL_ACK;
 }
 
-static gboolean tool_edit_track_new ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus tool_edit_track_new ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   gboolean newsegment = FALSE;
   // ----------------------------------------------------- if current is a route - switch to new track
@@ -10954,10 +10954,10 @@ static gboolean tool_edit_track_or_route_split ( VikTrwLayer *vtl, TPSearchParam
 
 // attempt to join to a track/route
 // plot a route to join if in route finder tool
-static gboolean tool_edit_track_or_route_join ( VikTrwLayer *vtl, TPSearchParams *params, gboolean in_route_finder )
+static VikLayerToolFuncStatus tool_edit_track_or_route_join ( VikTrwLayer *vtl, TPSearchParams *params, gboolean in_route_finder )
 {
   if ( vtl->current_track == NULL )
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
 
   VikTrack *origin_track = vtl->current_track;
   gboolean is_route = origin_track->is_route;
@@ -10966,13 +10966,13 @@ static gboolean tool_edit_track_or_route_join ( VikTrwLayer *vtl, TPSearchParams
   {
     // don't join to self
     if ( vtl->current_tp_track == origin_track )
-      return FALSE;
+      return VIK_LAYER_TOOL_IGNORED;
 
     if ( in_route_finder )
     {
       VikCoord *target = &(VIK_TRACKPOINT(vtl->current_tpl->data)->coord);
       if ( ! tool_plot_route ( vtl, target ) )
-        return FALSE;
+        return VIK_LAYER_TOOL_IGNORED;
     }
 
     trw_layer_split_at_selected_trackpoint ( vtl, is_route ? VIK_TRW_LAYER_SUBLAYER_ROUTE : VIK_TRW_LAYER_SUBLAYER_TRACK );
@@ -10990,12 +10990,12 @@ static gboolean tool_edit_track_or_route_join ( VikTrwLayer *vtl, TPSearchParams
     vtl->current_tp_track = NULL;
 
     vik_layer_emit_update( VIK_LAYER(vtl) );
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
-  return FALSE;
+  return VIK_LAYER_TOOL_IGNORED;
 }
 
-static gboolean tool_edit_route_new ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus tool_edit_route_new ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   gboolean newsegment = FALSE;
 
@@ -11027,9 +11027,9 @@ static gboolean tool_edit_route_new ( VikTrwLayer *vtl, GdkEventButton *event, V
 //   Else
 //     Try to join existing track
 //     If not, create new track point
-static gboolean tool_edit_track_or_route_click_dispatch ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, gboolean is_track )
+static VikLayerToolFuncStatus tool_edit_track_or_route_click_dispatch ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, gboolean is_track )
 {
-  gboolean ans = FALSE;
+  VikLayerToolFuncStatus ans = VIK_LAYER_TOOL_IGNORED;
   // goto is evil ;)
   // but here I think for simple flow control to get to a commonal exit point it is sensible usage
   //  (whereas before it would return from any of the goto uses)
@@ -11090,18 +11090,19 @@ static gboolean tool_edit_track_or_route_click_dispatch ( VikTrwLayer *vtl, GdkE
   return ans;
 }
 
-static gboolean tool_edit_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus tool_edit_track_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   return tool_edit_track_or_route_click_dispatch ( vtl, event, vvp, TRUE );
 }
 
-static void tool_edit_track_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus tool_edit_track_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   if ( event->button == 2 ) {
     // Pan moving ended - enable potential point drawing again
     vtl->draw_sync_do = TRUE;
     vtl->draw_sync_done = TRUE;
   }
+  return VIK_LAYER_TOOL_ACK;
 }
 
 static gpointer tool_edit_route_create ( VikWindow *vw, VikViewport *vvp)
@@ -11109,7 +11110,7 @@ static gpointer tool_edit_route_create ( VikWindow *vw, VikViewport *vvp)
   return vvp;
 }
 
-static gboolean tool_edit_route_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus tool_edit_route_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   return tool_edit_track_or_route_click_dispatch ( vtl, event, vvp, FALSE );
 }
@@ -11121,7 +11122,7 @@ static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp)
   return vvp;
 }
 
-static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   VikCoord coord;
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
@@ -11132,7 +11133,7 @@ static gboolean tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *even
     if ( VIK_LAYER(vtl)->visible )
       vik_layer_emit_update ( VIK_LAYER(vtl) );
   }
-  return TRUE;
+  return VIK_LAYER_TOOL_ACK;
 }
 
 
@@ -11159,7 +11160,7 @@ static void tool_edit_trackpoint_destroy ( tool_ed_t *t )
  *  then initiate the move operation to drag the point to a new destination.
  * NB The current trackpoint will get reset elsewhere.
  */
-static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
+static VikLayerToolFuncStatus tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
 {
   tool_ed_t *t = data;
   VikViewport *vvp = t->vvp;
@@ -11174,13 +11175,13 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
   params.bbox = vik_viewport_get_bbox ( vvp );
 
   if ( event->button != 1 ) 
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
 
   if ( !vtl->vl.visible || !(vtl->tracks_visible || vtl->routes_visible) )
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
 
   if ( vtl->current_tpl )
   {
@@ -11188,7 +11189,7 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
     VikTrackpoint *tp = VIK_TRACKPOINT(vtl->current_tpl->data);
     VikTrack *current_tr = vtl->current_tp_track;
     if ( !current_tr )
-      return FALSE;
+      return VIK_LAYER_TOOL_IGNORED;
 
     gint x, y;
     vik_viewport_coord_to_screen ( vvp, &(tp->coord), &x, &y );
@@ -11197,7 +11198,7 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
          abs(x - (int)round(event->x)) < (vtl->drawpoints_size*2) &&
          abs(y - (int)round(event->y)) < (vtl->drawpoints_size*2) ) {
       marker_begin_move ( t, event->x, event->y );
-      return TRUE;
+      return VIK_LAYER_TOOL_ACK;
     }
 
   }
@@ -11205,20 +11206,20 @@ static gboolean tool_edit_trackpoint_click ( VikTrwLayer *vtl, GdkEventButton *e
   if ( tool_select_tp ( vtl, &params, TRUE, TRUE ) )
   {
     trw_layer_tpwin_init ( vtl );
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
 
   /* these aren't the droids you're looking for */
-  return FALSE;
+  return VIK_LAYER_TOOL_IGNORED;
 }
 
-static gboolean tool_edit_trackpoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data )
+static VikLayerToolFuncStatus tool_edit_trackpoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data )
 {
   tool_ed_t *t = data;
   VikViewport *vvp = t->vvp;
 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
 
   if ( t->holding )
   {
@@ -11239,20 +11240,20 @@ static gboolean tool_edit_trackpoint_move ( VikTrwLayer *vtl, GdkEventMotion *ev
       marker_moveto ( t, x, y );
     } 
 
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
-  return FALSE;
+  return VIK_LAYER_TOOL_IGNORED;
 }
 
-static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
+static VikLayerToolFuncStatus tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data )
 {
   tool_ed_t *t = data;
   VikViewport *vvp = t->vvp;
 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
   if ( event->button != 1) 
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
 
   if ( t->holding ) {
     VikCoord new_coord;
@@ -11278,9 +11279,9 @@ static gboolean tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton 
         my_tpwin_set_tp ( vtl );
 
     vik_layer_emit_update ( VIK_LAYER(vtl) );
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
-  return FALSE;
+  return VIK_LAYER_TOOL_IGNORED;
 }
 
 
@@ -11311,15 +11312,15 @@ static void tool_extended_route_finder_undo ( VikTrwLayer *vtl )
   }
 }
 
-static gboolean tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
-  if ( !vtl ) return FALSE;
+  if ( !vtl ) return VIK_LAYER_TOOL_IGNORED;
   if ( event->button == 3 && vtl->current_track ) {
     tool_extended_route_finder_undo ( vtl );
   }
   else if ( event->button == 2 ) {
      vtl->draw_sync_do = FALSE;
-     return FALSE;
+     return VIK_LAYER_TOOL_IGNORED;
   }
   // if we started the track but via undo deleted all the track points, begin again
   else if ( vtl->current_track && vtl->current_track->is_route && ! vik_track_get_tp_first ( vtl->current_track ) ) {
@@ -11338,7 +11339,7 @@ static gboolean tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventBut
       params.closest_tpl = NULL;
       params.bbox = vik_viewport_get_bbox ( vvp );
 
-      tool_edit_track_or_route_join ( vtl, &params, TRUE );
+      (void)tool_edit_track_or_route_join ( vtl, &params, TRUE );
     }
     else
     {
@@ -11425,11 +11426,11 @@ static void trw_layer_show_picture ( menu_array_sublayer values )
 #endif /* WINDOWS */
 }
 
-static gboolean tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   gpointer params[3] = { vvp, event, NULL };
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
   g_hash_table_foreach ( vtl->waypoints, (GHFunc) tool_show_picture_wp, params );
   if ( params[2] )
   {
@@ -11437,10 +11438,10 @@ static gboolean tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *even
     values[MA_VTL] = vtl;
     values[MA_MISC] = params[2];
     trw_layer_show_picture ( values );
-    return TRUE; /* found a match */
+    return VIK_LAYER_TOOL_ACK; // found a match
   }
   else
-    return FALSE; /* go through other layers, searching for a match */
+    return VIK_LAYER_TOOL_IGNORED; // go through other layers, searching for a match
 }
 
 /***************************************************************************
@@ -12289,7 +12290,7 @@ static gpointer tool_splitter_create ( VikWindow *vw, VikViewport *vvp)
   return vvp;
 }
 
-static gboolean tool_splitter_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus tool_splitter_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp )
 {
   TPSearchParams params;
   params.size = MAX(5, vtl->drawpoints_size*2);
@@ -12304,8 +12305,8 @@ static gboolean tool_splitter_click ( VikTrwLayer *vtl, GdkEventButton *event, V
   if ( tool_select_tp ( vtl, &params, TRUE, TRUE ) )
   {
     trw_layer_split_at_selected_trackpoint ( vtl, vtl->current_tp_track->is_route ? VIK_TRW_LAYER_SUBLAYER_ROUTE : VIK_TRW_LAYER_SUBLAYER_TRACK );
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
 
-  return FALSE;
+  return VIK_LAYER_TOOL_IGNORED;
 }

@@ -98,8 +98,8 @@ static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values
 static void maps_layer_draw ( VikMapsLayer *vml, VikViewport *vvp );
 static VikMapsLayer *maps_layer_new ( VikViewport *vvp );
 static void maps_layer_free ( VikMapsLayer *vml );
-static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp );
-static gboolean maps_layer_download_click ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus maps_layer_download_click ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp );
 static gpointer maps_layer_download_create ( VikWindow *vw, VikViewport *vvp );
 static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir );
 static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const VikCoord *ul, const VikCoord *br, gint redownload );
@@ -2168,10 +2168,10 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
   g_free ( filename );
 }
 
-static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp )
 {
   if (!vml || vml->vl.type != VIK_LAYER_MAPS)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
   if ( vml->dl_tool_x != -1 && vml->dl_tool_y != -1 )
   {
     if ( event->button == 1 )
@@ -2181,7 +2181,7 @@ static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton 
       vik_viewport_screen_to_coord ( vvp, MIN(vik_viewport_get_width(vvp), MAX(event->x, vml->dl_tool_x)), MIN(vik_viewport_get_height(vvp), MAX ( event->y, vml->dl_tool_y ) ), &br );
       start_download_thread ( vml, vvp, &ul, &br, DOWNLOAD_OR_REFRESH );
       vml->dl_tool_x = vml->dl_tool_y = -1;
-      return TRUE;
+      return VIK_LAYER_TOOL_ACK;
     }
     else
     {
@@ -2216,7 +2216,7 @@ static gboolean maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton 
       gtk_widget_show_all ( GTK_WIDGET(vml->dl_right_click_menu) );
     }
   }
-  return FALSE;
+  return VIK_LAYER_TOOL_IGNORED;
 }
 
 static gpointer maps_layer_download_create ( VikWindow *vw, VikViewport *vvp)
@@ -2224,11 +2224,11 @@ static gpointer maps_layer_download_create ( VikWindow *vw, VikViewport *vvp)
   return vvp;
 }
 
-static gboolean maps_layer_download_click ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus maps_layer_download_click ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp )
 {
   MapCoord tmp;
   if (!vml || vml->vl.type != VIK_LAYER_MAPS)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
   VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
   if ( vik_map_source_get_drawmode(map) == vik_viewport_get_drawmode ( vvp ) &&
        vik_map_source_coord_to_mapcoord ( map, vik_viewport_get_center ( vvp ),
@@ -2236,9 +2236,9 @@ static gboolean maps_layer_download_click ( VikMapsLayer *vml, GdkEventButton *e
            vml->ymapzoom ? vml->ymapzoom : vik_viewport_get_ympp ( vvp ),
            &tmp ) ) {
     vml->dl_tool_x = event->x, vml->dl_tool_y = event->y;
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
-  return FALSE;
+  return VIK_LAYER_TOOL_IGNORED;
 }
 
 // A slightly better way of defining the menu callback information

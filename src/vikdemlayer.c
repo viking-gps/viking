@@ -169,8 +169,8 @@ enum {
 };
 
 static gpointer dem_layer_download_create ( VikWindow *vw, VikViewport *vvp);
-static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
-static gboolean dem_layer_download_click ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus dem_layer_download_click ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp );
 
 static VikToolInterface dem_tools[] = {
   { "demdl_18",
@@ -1424,7 +1424,7 @@ static void dem_layer_file_info ( GtkWidget *widget, struct LatLon *ll )
   g_free ( filename );
 }
 
-static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp )
 {
   VikCoord coord;
   static struct LatLon ll;
@@ -1444,7 +1444,7 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
 #endif
 
   if ( ! dem_file )
-    return TRUE;
+    return VIK_LAYER_TOOL_IGNORED;
 
   full_path = g_strdup_printf("%s%s", MAPS_CACHE_DIR, dem_file );
 
@@ -1487,15 +1487,15 @@ static gboolean dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *e
   g_free ( dem_file );
   g_free ( full_path );
 
-  return TRUE;
+  return VIK_LAYER_TOOL_ACK;
 }
 
-static gboolean dem_layer_download_click ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus dem_layer_download_click ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp )
 {
 /* choose & keep track of cache dir
  * download in background thread
  * download over area */
-  return TRUE;
+  return VIK_LAYER_TOOL_ACK;
 }
 
 

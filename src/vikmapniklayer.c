@@ -109,7 +109,7 @@ static gpointer mapnik_feature_create ( VikWindow *vw, VikViewport *vvp)
   return vvp;
 }
 
-static gboolean mapnik_feature_release ( VikMapnikLayer *vml, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus mapnik_feature_release ( VikMapnikLayer *vml, GdkEventButton *event, VikViewport *vvp );
 
 // See comment in viktrwlayer.c for advice on values used
 // FUTURE:
@@ -1101,10 +1101,10 @@ static void mapnik_layer_tile_info ( VikMapnikLayer *vml )
 	g_free ( filename );
 }
 
-static gboolean mapnik_feature_release ( VikMapnikLayer *vml, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus mapnik_feature_release ( VikMapnikLayer *vml, GdkEventButton *event, VikViewport *vvp )
 {
 	if ( !vml )
-		return FALSE;
+		return VIK_LAYER_TOOL_IGNORED;
 	if ( event->button == 3 ) {
 		vik_viewport_screen_to_coord ( vvp, MAX(0, event->x), MAX(0, event->y), &vml->rerender_ul );
 		vml->rerender_zoom = vik_viewport_get_zoom ( vvp );
@@ -1120,5 +1120,5 @@ static gboolean mapnik_feature_release ( VikMapnikLayer *vml, GdkEventButton *ev
 		gtk_widget_show_all ( GTK_WIDGET(vml->right_click_menu) );
 	}
 
-	return FALSE;
+	return VIK_LAYER_TOOL_IGNORED;
 }

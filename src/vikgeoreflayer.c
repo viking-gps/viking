@@ -73,10 +73,10 @@ static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboo
 
 /* tools */
 static gpointer georef_layer_move_create ( VikWindow *vw, VikViewport *vvp);
-static gboolean georef_layer_move_release ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp );
-static gboolean georef_layer_move_press ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus georef_layer_move_release ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus georef_layer_move_press ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp );
 static gpointer georef_layer_zoom_create ( VikWindow *vw, VikViewport *vvp);
-static gboolean georef_layer_zoom_press ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp );
+static VikLayerToolFuncStatus georef_layer_zoom_press ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp );
 
 // See comment in viktrwlayer.c for advice on values used
 static VikToolInterface georef_tools[] = {
@@ -1056,19 +1056,19 @@ static gpointer georef_layer_move_create ( VikWindow *vw, VikViewport *vvp)
   return vvp;
 }
 
-static gboolean georef_layer_move_release ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus georef_layer_move_release ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp )
 {
   if (!vgl || vgl->vl.type != VIK_LAYER_GEOREF)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
 
   if ( vgl->click_x != -1 )
   {
     vgl->corner.easting += (event->x - vgl->click_x) * vik_viewport_get_xmpp (vvp);
     vgl->corner.northing -= (event->y - vgl->click_y) * vik_viewport_get_ympp (vvp);
     vik_layer_emit_update ( VIK_LAYER(vgl) );
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
-  return FALSE; /* I didn't move anything on this layer! */
+  return VIK_LAYER_TOOL_IGNORED; // I didn't move anything on this layer!
 }
 
 static gpointer georef_layer_zoom_create ( VikWindow *vw, VikViewport *vvp)
@@ -1076,10 +1076,10 @@ static gpointer georef_layer_zoom_create ( VikWindow *vw, VikViewport *vvp)
   return vvp;
 }
 
-static gboolean georef_layer_zoom_press ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus georef_layer_zoom_press ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp )
 {
   if (!vgl || vgl->vl.type != VIK_LAYER_GEOREF)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
   if ( event->button == 1 )
   {
     if ( vgl->mpp_easting < (VIK_VIEWPORT_MAX_ZOOM / 1.05) && vgl->mpp_northing < (VIK_VIEWPORT_MAX_ZOOM / 1.05) )
@@ -1099,16 +1099,16 @@ static gboolean georef_layer_zoom_press ( VikGeorefLayer *vgl, GdkEventButton *e
   vik_viewport_set_xmpp ( vvp, vgl->mpp_easting );
   vik_viewport_set_ympp ( vvp, vgl->mpp_northing );
   vik_layer_emit_update ( VIK_LAYER(vgl) );
-  return TRUE;
+  return VIK_LAYER_TOOL_ACK;
 }
 
-static gboolean georef_layer_move_press ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp )
+static VikLayerToolFuncStatus georef_layer_move_press ( VikGeorefLayer *vgl, GdkEventButton *event, VikViewport *vvp )
 {
   if (!vgl || vgl->vl.type != VIK_LAYER_GEOREF)
-    return FALSE;
+    return VIK_LAYER_TOOL_IGNORED;
   vgl->click_x = event->x;
   vgl->click_y = event->y;
-  return TRUE;
+  return VIK_LAYER_TOOL_ACK;
 }
 
 static void goto_center_ll ( VikViewport *vp,
