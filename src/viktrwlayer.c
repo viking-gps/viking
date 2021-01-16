@@ -10173,6 +10173,8 @@ static gboolean tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *eve
   WPSearchParams params;
   tool_ed_t *t = data;
   VikViewport *vvp = t->vvp;
+  t->vtl = vtl;
+  t->is_waypoint = TRUE;
 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
     return FALSE;
