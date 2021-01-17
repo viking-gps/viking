@@ -3268,6 +3268,10 @@ When no TrackWaypoint Layer is selected (or the layer is invisibile) then the fi
 <section><title>Use Scroll to Zoom</title>
 <para>A setting to control if scroll events cause the viewport to zoom (rather than moving). Useful with mouse scroll wheels, but less intuitive for touchpads.
 </para>
+<note>
+<para>GTK3 Build: Viking now detects the device emitting scroll events, so from trackpads/touchscreens these will always scroll the viewport. This setting is only now used for mouse scroll wheels.
+</para>
+</note>
 </section>
 <section><title>Invert Scroll Direction</title>
 <para>A setting to control the direction of scroll events. Especially useful with touchpads and can be used to override the desktop system's setting.

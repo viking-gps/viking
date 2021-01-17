@@ -238,7 +238,7 @@ struct _VikWindow {
   gint pan_x, pan_y;
   gint delayed_pan_x, delayed_pan_y; // Temporary storage
   gboolean single_click_pending;
-  guint zoom_draw_id;
+  guint pending_draw_id;
 
   guint draw_image_width, draw_image_height;
   gboolean draw_image_save_as_png;
@@ -1847,13 +1847,18 @@ static gboolean draw_release ( VikWindow *vw, GdkEventButton *event )
 
 static void scroll_zoom_direction ( VikWindow *vw, GdkScrollDirection direction )
 {
+  // In our GTK3 version, 'invert_scroll_direction' is only for moving the viewport
+  //  and thus doesn't effect zoom direction anymore
+#if !GTK_CHECK_VERSION (3,0,0)
   if ( a_vik_get_invert_scroll_direction() ) {
     if ( direction == GDK_SCROLL_DOWN )
      vik_viewport_zoom_in (vw->viking_vvp);
     else if ( direction == GDK_SCROLL_UP ) {
       vik_viewport_zoom_out (vw->viking_vvp);
     }
-  } else {
+  } else
+#endif
+  {
     if ( direction == GDK_SCROLL_UP )
       vik_viewport_zoom_in (vw->viking_vvp);
     else if ( direction == GDK_SCROLL_DOWN ) {
@@ -1926,21 +1931,40 @@ static void zoom_at_xy ( VikWindow *vw, guint point_x, guint point_y, gboolean s
 }
 
 /**
- * Perform screen redraw after a little delay on zoom events
- * (particularly scroll events)
+ * Perform screen redraw after a little delay
+ * (particularly from scroll events)
  */
-static gboolean window_zoom_timeout ( VikWindow *vw )
+static gboolean pending_draw_timeout ( VikWindow *vw )
 {
-  vw->zoom_draw_id = 0;
+  vw->pending_draw_id = 0;
   draw_update ( vw );
   return FALSE;
 }
 
 static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
 {
-  if ( !a_vik_get_scroll_to_zoom() ) {
+  // Typically wheel mouse scrolls should zoom;
+  //  but one could use a mouse with dual scroll wheels.
+  // Whereas in GTK3 we can detect touch device scrolls and so it will then always move the viewport
+  gboolean do_move = !a_vik_get_scroll_to_zoom();
+#if GTK_CHECK_VERSION (3,0,0)
+  GdkDevice *device = gdk_event_get_source_device ( (GdkEvent*)event );
+  GdkInputSource isrc = gdk_device_get_source ( device );
+  if ( isrc == GDK_SOURCE_TOUCHPAD || isrc == GDK_SOURCE_TOUCHSCREEN )
+    do_move = TRUE;
+#endif
+  if ( do_move ) {
     scroll_move_viewport ( vw, event );
-    draw_update(vw);
+
+    // Paint the screen image
+    draw_sync ( vw );
+
+    // Note using a shorter timeout compared to the other instance at the end of this function
+    //  since one path to get here is via touch-pad scrolls which would be generating many events
+    if ( vw->pending_draw_id )
+      g_source_remove ( vw->pending_draw_id );
+    vw->pending_draw_id = g_timeout_add ( 75, (GSourceFunc)pending_draw_timeout, vw );
+
     return TRUE;
   }
     GdkScrollDirection direction = event->direction;
@@ -1980,9 +2004,9 @@ static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
   // If a pending draw, remove it and create a new one
   //  thus avoiding intermediary screen redraws when transiting through several
   //  zoom levels in quick succession, as typical when scroll zooming.
-  if ( vw->zoom_draw_id )
-    g_source_remove ( vw->zoom_draw_id );
-  vw->zoom_draw_id = g_timeout_add ( 150, (GSourceFunc)window_zoom_timeout, vw );
+  if ( vw->pending_draw_id )
+    g_source_remove ( vw->pending_draw_id );
+  vw->pending_draw_id = g_timeout_add ( 150, (GSourceFunc)pending_draw_timeout, vw );
 
   return TRUE;
 }
