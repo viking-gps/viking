@@ -278,7 +278,11 @@ static void new_access_token_cb ( )
   gchar *authorize_url = get_authorize_url ( request_key );
   g_debug ( "%s:%s", __FUNCTION__, authorize_url );
   if ( authorize_url ) {
-    gtk_show_uri ( gdk_screen_get_default(), authorize_url, GDK_CURRENT_TIME, NULL );
+#if GTK_CHECK_VERSION (3,22,0)
+    (void)gtk_show_uri_on_window ( parent, authorize_url, GDK_CURRENT_TIME, NULL );
+#else
+    (void)gtk_show_uri ( gdk_screen_get_default(), authorize_url, GDK_CURRENT_TIME, NULL );
+#endif
   }
   g_free ( authorize_url );
 

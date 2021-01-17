@@ -86,7 +86,11 @@ void open_url(GtkWindow *parent, const gchar * url)
   }
   else {
     GError *error = NULL;
-    gtk_show_uri ( parent ? gtk_widget_get_screen(GTK_WIDGET(parent)) : NULL, url, GDK_CURRENT_TIME, &error );
+#if GTK_CHECK_VERSION (3,22,0)
+	(void)gtk_show_uri_on_window ( parent, url, GDK_CURRENT_TIME, &error );
+#else
+    (void)gtk_show_uri ( parent ? gtk_widget_get_screen(GTK_WIDGET(parent)) : NULL, url, GDK_CURRENT_TIME, &error );
+#endif
     if ( error ) {
       a_dialog_error_msg_extra ( parent, _("Could not launch web browser. %s"), error->message );
       g_error_free ( error );
@@ -99,7 +103,11 @@ void new_email(GtkWindow *parent, const gchar * address)
 {
   gchar *uri = g_strdup_printf("mailto:%s", address);
   GError *error = NULL;
-  gtk_show_uri ( gtk_widget_get_screen (GTK_WIDGET(parent)), uri, GDK_CURRENT_TIME, &error );
+#if GTK_CHECK_VERSION (3,22,0)
+  (void)gtk_show_uri_on_window ( parent, uri, GDK_CURRENT_TIME, &error );
+#else
+  (void)gtk_show_uri ( gtk_widget_get_screen (GTK_WIDGET(parent)), uri, GDK_CURRENT_TIME, &error );
+#endif
   if ( error ) {
     a_dialog_error_msg_extra ( parent, _("Could not create new email. %s"), error->message );
     g_error_free ( error );

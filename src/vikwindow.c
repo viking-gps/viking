@@ -3481,7 +3481,11 @@ static void help_help_cb ( GtkAction *a, VikWindow *vw )
   gchar *uri;
   uri = g_strdup_printf("help:%s", PACKAGE);
   GError *error = NULL;
+#if GTK_CHECK_VERSION (3,22,0)
+  gboolean show = gtk_show_uri_on_window ( GTK_WINDOW(vw), uri, GDK_CURRENT_TIME, &error );
+#else
   gboolean show = gtk_show_uri (NULL, uri, GDK_CURRENT_TIME, &error);
+#endif
   if ( !show && !error )
     // No error to show, so unlikely this will get called
     a_dialog_error_msg ( GTK_WINDOW(vw), _("The help system is not available.") );
