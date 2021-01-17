@@ -50,6 +50,9 @@
 #include <ctype.h>
 #include <gio/gio.h>
 #include <gdk/gdkkeysyms.h>
+#ifdef GDK_WINDOWING_WAYLAND
+#include <gdk/gdkwayland.h>
+#endif
 
 // This seems rather arbitary, quite large and pointless
 //  I mean, if you have a thousand windows open;
@@ -1056,7 +1059,17 @@ static void vik_window_init ( VikWindow *vw )
 #endif
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "configure_event", G_CALLBACK(window_configure_event), vw);
 #if GTK_CHECK_VERSION (3,0,0)
-  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_SCROLL_MASK | GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK );
+  // Further discussion on GTK3/Wayland/X11 scrolling - https://sourceforge.net/p/scintilla/bugs/1901/
+  guint smoothMask = 0;
+#ifdef GDK_WINDOWING_WAYLAND
+  GdkDisplay *pdisplay = gdk_display_get_default();
+  // On Wayland, touch pads only produce smooth scroll events
+  if ( GDK_IS_WAYLAND_DISPLAY(pdisplay) )
+    smoothMask = GDK_SMOOTH_SCROLL_MASK;
+#endif
+  g_debug ( "%s smoothMask %d", __FUNCTION__, smoothMask );
+  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_SCROLL_MASK | smoothMask | GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_TOUCHPAD_GESTURE_MASK );
+  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_TOUCHPAD_GESTURE_MASK ); // Does this need to be on the GdkWindow rather the vvp?
 #else
   gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK );
 #endif
@@ -1656,11 +1669,14 @@ static gboolean draw_click (VikWindow *vw, GdkEventButton *event)
 static void vik_window_pan_move (VikWindow *vw, GdkEventMotion *event)
 {
   if ( vw->pan_x != -1 ) {
-    vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2 - event->x + vw->pan_x,
-                                     vik_viewport_get_height(vw->viking_vvp)/2 - event->y + vw->pan_y );
+    gint new_pan_x = (gint)round(event->x);
+    gint new_pan_y = (gint)round(event->y);
+    vik_viewport_set_center_screen ( vw->viking_vvp,
+                                     vik_viewport_get_width(vw->viking_vvp)/2 - new_pan_x + vw->pan_x,
+                                     vik_viewport_get_height(vw->viking_vvp)/2 - new_pan_y + vw->pan_y );
     vw->pan_move = TRUE;
-    vw->pan_x = event->x;
-    vw->pan_y = event->y;
+    vw->pan_x = new_pan_x;
+    vw->pan_y = new_pan_y;
     draw_update ( vw );
   }
 }
@@ -1700,16 +1716,21 @@ static gboolean draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
   gdouble zoom;
   VikDemInterpol interpol_method;
 
+  gint x, y;
+#if GTK_CHECK_VERSION (3,0,0)
+  x = (int)round(event->x);
+  y = (int)round(event->y);
+#else
+  // Maintain for GTK2 even if possibly not necessary any more;
+  // For Wayland displays should not be used
   /* This is a hack, but work far the best, at least for single pointer systems.
    * See http://bugzilla.gnome.org/show_bug.cgi?id=587714 for more. */
-  gint x, y;
   gdk_window_get_pointer (event->window, &x, &y, NULL);
-  event->x = x;
-  event->y = y;
+#endif
 
   toolbox_move(vw->vt, event);
 
-  vik_viewport_screen_to_coord ( vw->viking_vvp, event->x, event->y, &coord );
+  vik_viewport_screen_to_coord ( vw->viking_vvp, x, y, &coord );
   vik_coord_to_utm ( &coord, &utm );
 
   get_location_strings ( vw, utm, &lat, &lon );
@@ -1843,28 +1864,39 @@ static void scroll_zoom_direction ( VikWindow *vw, GdkScrollDirection direction 
 
 static void scroll_move_viewport ( VikWindow *vw, GdkEventScroll *event )
 {
+  static const gdouble DELTA_STEP = 0.0333;
+  int width = vik_viewport_get_width(vw->viking_vvp);
+  int height = vik_viewport_get_height(vw->viking_vvp);
   if ( a_vik_get_invert_scroll_direction() ) {
     switch ( event->direction ) {
     case GDK_SCROLL_RIGHT:
-      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*0.666, vik_viewport_get_height(vw->viking_vvp)/2 ); break;
+      vik_viewport_set_center_screen ( vw->viking_vvp, width*0.666, height/2 ); break;
     case GDK_SCROLL_LEFT:
-      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*0.333, vik_viewport_get_height(vw->viking_vvp)/2 ); break;
+      vik_viewport_set_center_screen ( vw->viking_vvp, width*0.333, height/2 ); break;
     case GDK_SCROLL_DOWN:
-      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*0.666 ); break;
+      vik_viewport_set_center_screen ( vw->viking_vvp, width/2, height*0.666 ); break;
     case GDK_SCROLL_UP:
-      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*0.333 ); break;
+      vik_viewport_set_center_screen ( vw->viking_vvp, width/2, height*0.333 ); break;
+#if GTK_CHECK_VERSION (3,0,0)
+    case GDK_SCROLL_SMOOTH:
+      vik_viewport_set_center_screen ( vw->viking_vvp, width/2+(DELTA_STEP*width*event->delta_x), height/2+(DELTA_STEP*height*event->delta_y ) ); break;
+#endif
     default: g_critical ( "%s: unhandled scroll direction %d", __FUNCTION__, event->direction ); break;
     }
   } else {
     switch ( event->direction ) {
     case GDK_SCROLL_RIGHT:
-      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*0.333, vik_viewport_get_height(vw->viking_vvp)/2 ); break;
+      vik_viewport_set_center_screen ( vw->viking_vvp, width*0.333, height/2 ); break;
     case GDK_SCROLL_LEFT:
-      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*0.666, vik_viewport_get_height(vw->viking_vvp)/2 ); break;
+      vik_viewport_set_center_screen ( vw->viking_vvp, width*0.666, height/2 ); break;
     case GDK_SCROLL_DOWN:
-      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*0.333 ); break;
+      vik_viewport_set_center_screen ( vw->viking_vvp, width/2, height*0.333 ); break;
     case GDK_SCROLL_UP:
-      vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*0.666 ); break;
+      vik_viewport_set_center_screen ( vw->viking_vvp, width/2, height*0.666 ); break;
+#if GTK_CHECK_VERSION (3,0,0)
+    case GDK_SCROLL_SMOOTH:
+      vik_viewport_set_center_screen ( vw->viking_vvp, width/2-(DELTA_STEP*width*event->delta_x), height/2-(DELTA_STEP*height*event->delta_y ) ); break;
+#endif
     default: g_critical ( "%s: unhandled scroll direction %d", __FUNCTION__, event->direction ); break;
     }
   }
@@ -1911,25 +1943,38 @@ static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
     draw_update(vw);
     return TRUE;
   }
+    GdkScrollDirection direction = event->direction;
+    // Possibly in Wayland even mouse wheel scrolls are 'smooth' events!
+#if GTK_CHECK_VERSION(3,0,0)
+    if ( direction == GDK_SCROLL_SMOOTH ) {
+      double x_scroll, y_scroll;
+      if ( gdk_event_get_scroll_deltas((GdkEvent*)event, &x_scroll, &y_scroll) ) {
+        if ( y_scroll < 0 )
+          direction = GDK_SCROLL_UP;
+        else
+          direction = GDK_SCROLL_DOWN;
+      }
+    }
+#endif
   guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
   if ( modifiers == GDK_CONTROL_MASK ) {
     /* control == pan up & down */
-    if ( event->direction == GDK_SCROLL_UP )
+    if ( direction == GDK_SCROLL_UP )
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)/3 );
-    else if ( event->direction == GDK_SCROLL_DOWN )
+    else if ( direction == GDK_SCROLL_DOWN )
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp)*2/3 );
   } else if ( modifiers == GDK_SHIFT_MASK ) {
     /* shift == pan left & right */
-    if ( event->direction == GDK_SCROLL_UP )
+    if ( direction == GDK_SCROLL_UP )
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/3, vik_viewport_get_height(vw->viking_vvp)/2 );
-    else if ( event->direction == GDK_SCROLL_DOWN )
+    else if ( direction == GDK_SCROLL_DOWN )
       vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)*2/3, vik_viewport_get_height(vw->viking_vvp)/2 );
   } else if ( modifiers == (GDK_CONTROL_MASK | GDK_SHIFT_MASK) ) {
     // This zoom is on the center position
-    scroll_zoom_direction ( vw, event->direction );
+    scroll_zoom_direction ( vw, direction );
   } else {
     /* make sure mouse is still over the same point on the map when we zoom */
-    zoom_at_xy ( vw, event->x, event->y, TRUE, event->direction, 0 );
+    zoom_at_xy ( vw, event->x, event->y, TRUE, direction, 0 );
   }
 
   // If a pending draw, remove it and create a new one
