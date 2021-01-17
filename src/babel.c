@@ -174,7 +174,7 @@ static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointe
     g_string_append_printf ( gstr, "%s:", __FUNCTION__ );
     for ( guint i=0; args[i]; i++ )
       g_string_append_printf ( gstr, " %s", args[i] );
-    g_message ( gstr->str );
+    g_message ( "%s", gstr->str );
     g_string_free ( gstr, TRUE );
   }
 
