@@ -265,6 +265,9 @@ struct _VikWindow {
   /* only use for individual track or waypoint */
   /* For track(s) & waypoint(s) it is the layer they are in - this helps refering to the individual item easier */
   gpointer containing_vtl; /* notionally VikTrwLayer */
+
+  gdouble pinch_zoom_begin;
+  gdouble pinch_zoom_last;
 };
 
 enum {
@@ -911,6 +914,49 @@ static gboolean draw_signal ( GtkWidget *widget, cairo_t *cr, VikWindow *vw )
   draw_status ( vw );
   return TRUE;
 }
+
+static void zoom_gesture_begin_cb ( GtkGesture       *gesture,
+                                    GdkEventSequence *sequence,
+                                    VikWindow        *vw )
+{
+  vw->pinch_zoom_begin = vik_viewport_get_zoom ( vw->viking_vvp );
+  vw->pinch_zoom_last = vw->pinch_zoom_begin;
+  g_debug ( "%s: %.4f", __FUNCTION__, vw->pinch_zoom_begin );
+}
+
+static void zoom_gesture_scale_changed_cb ( GtkGesture *gesture,
+                                            gdouble    scale,
+                                            VikWindow  *vw )
+{
+  gdouble target_zoom = vw->pinch_zoom_begin * ( 1 / scale );
+  gdouble new_zoom = 0;
+
+  if ( target_zoom <= vw->pinch_zoom_last / 2 )
+    new_zoom = vw->pinch_zoom_last / 2;
+  else if ( target_zoom >= vw->pinch_zoom_last * 2 )
+    new_zoom = vw->pinch_zoom_last * 2;
+
+  if ( new_zoom >= VIK_VIEWPORT_MIN_ZOOM && new_zoom <= VIK_VIEWPORT_MAX_ZOOM ) {
+    VikCoord coord;
+    gint x, y;
+    gdouble point_x, point_y;
+
+    gtk_gesture_get_point ( gesture, NULL, &point_x, &point_y );
+    gint center_x = vik_viewport_get_width ( vw->viking_vvp ) / 2;
+    gint center_y = vik_viewport_get_height ( vw->viking_vvp ) / 2;
+
+    vik_viewport_screen_to_coord ( vw->viking_vvp, (int)point_x, (int)point_y, &coord );
+
+    vik_viewport_set_zoom ( vw->viking_vvp, new_zoom );
+
+    vik_viewport_coord_to_screen ( vw->viking_vvp, &coord, &x, &y );
+    vik_viewport_set_center_screen ( vw->viking_vvp, center_x + (x - point_x), center_y + (y - point_y) );
+
+    draw_update ( vw );
+    vw->pinch_zoom_last = new_zoom;
+  }
+  g_debug ( "%s: %.4f %.3f", __FUNCTION__, new_zoom, scale );
+}
 #endif
 
 static void action_activate_current_tool ( VikWindow *vw )
@@ -1069,7 +1115,10 @@ static void vik_window_init ( VikWindow *vw )
 #endif
   g_debug ( "%s smoothMask %d", __FUNCTION__, smoothMask );
   gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_SCROLL_MASK | smoothMask | GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK | GDK_TOUCHPAD_GESTURE_MASK );
-  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_TOUCHPAD_GESTURE_MASK ); // Does this need to be on the GdkWindow rather the vvp?
+  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_TOUCHPAD_GESTURE_MASK );
+  GtkGesture *zoom_gesture = gtk_gesture_zoom_new ( GTK_WIDGET(vw->viking_vvp) );
+  g_signal_connect ( zoom_gesture, "begin", G_CALLBACK(zoom_gesture_begin_cb), vw );
+  g_signal_connect ( zoom_gesture, "scale-changed", G_CALLBACK(zoom_gesture_scale_changed_cb), vw );
 #else
   gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK );
 #endif
