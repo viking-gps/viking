@@ -95,9 +95,9 @@ static gboolean window_configure_event ( VikWindow *vw, GdkEventConfigure *event
 static gboolean draw_sync ( VikWindow *vw );
 static void draw_redraw ( VikWindow *vw );
 static gboolean draw_scroll  ( VikWindow *vw, GdkEventScroll *event );
-static void draw_click  ( VikWindow *vw, GdkEventButton *event );
-static void draw_release ( VikWindow *vw, GdkEventButton *event );
-static void draw_mouse_motion ( VikWindow *vw, GdkEventMotion *event );
+static gboolean draw_click  ( VikWindow *vw, GdkEventButton *event );
+static gboolean draw_release ( VikWindow *vw, GdkEventButton *event );
+static gboolean draw_mouse_motion ( VikWindow *vw, GdkEventMotion *event );
 static void draw_zoom_cb ( GtkAction *a, VikWindow *vw );
 static void draw_goto_cb ( GtkAction *a, VikWindow *vw );
 static void draw_refresh_cb ( GtkAction *a, VikWindow *vw );
@@ -1509,7 +1509,7 @@ static void vik_window_pan_click (VikWindow *vw, GdkEventButton *event)
   vw->pan_y = (gint) event->y;
 }
 
-static void draw_click (VikWindow *vw, GdkEventButton *event)
+static gboolean draw_click (VikWindow *vw, GdkEventButton *event)
 {
   gtk_widget_grab_focus ( GTK_WIDGET(vw->viking_vvp) );
 
@@ -1526,6 +1526,7 @@ static void draw_click (VikWindow *vw, GdkEventButton *event)
   else {
     toolbox_click(vw->vt, event);
   }
+  return FALSE;
 }
 
 static void vik_window_pan_move (VikWindow *vw, GdkEventMotion *event)
@@ -1564,7 +1565,7 @@ static void get_location_strings ( VikWindow *vw, struct UTM utm, gchar **lat, g
   }
 }
 
-static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
+static gboolean draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
 {
   static VikCoord coord;
   static struct UTM utm;
@@ -1620,6 +1621,8 @@ static void draw_mouse_motion (VikWindow *vw, GdkEventMotion *event)
    * http://bugzilla.gnome.org/show_bug.cgi?id=587714
   */
   /* gdk_event_request_motions ( event ); */
+
+  return FALSE;
 }
 
 /**
@@ -1680,7 +1683,7 @@ static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
     draw_update ( vw );
 }
 
-static void draw_release ( VikWindow *vw, GdkEventButton *event )
+static gboolean draw_release ( VikWindow *vw, GdkEventButton *event )
 {
   gtk_widget_grab_focus ( GTK_WIDGET(vw->viking_vvp) );
 
@@ -1694,6 +1697,7 @@ static void draw_release ( VikWindow *vw, GdkEventButton *event )
   else {
     toolbox_release(vw->vt, event);
   }
+  return FALSE;
 }
 
 static void scroll_zoom_direction ( VikWindow *vw, GdkScrollDirection direction )
