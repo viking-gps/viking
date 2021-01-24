@@ -3,6 +3,7 @@
 //run like:
 // ./vik2vik < input.vik output.vik
 //
+#include <gtk/gtk.h>
 #include <stdio.h>
 #include "viklayer.h"
 #include "viklayer_defaults.h"
@@ -18,6 +19,12 @@ int main(int argc, char *argv[])
 {
   if ( argc != 2 )
     return argc;
+
+  // Under GTK2, despite perhaps being undefined behaviour - it seemed to work without a $DISPLAY
+  // But for GTK3 it doesn't work
+#if GTK_CHECK_VERSION (3,0,0)
+  gtk_init ( NULL, NULL );
+#endif
 
   // Some stuff must be initialized as it gets auto used
   a_settings_init ();
