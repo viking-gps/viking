@@ -243,6 +243,8 @@ static void cancel_job_with_iter ( GtkTreeIter *piter )
     args[5] = NULL;
 }
 
+static GtkWidget *bgwindow = NULL;
+
 // In main thread
 static void bgwindow_response (GtkDialog *dialog, gint response_id, GtkTreeView *bgtreeview )
 {
@@ -250,6 +252,7 @@ static void bgwindow_response (GtkDialog *dialog, gint response_id, GtkTreeView 
   case GTK_RESPONSE_DELETE_EVENT:
     // Delibrate fall through
   case GTK_RESPONSE_CLOSE:
+    bgwindow = NULL;
     gtk_widget_destroy ( GTK_WIDGET(dialog) );
     break;
   case 1: // Delete / Cancel selected item
@@ -344,7 +347,10 @@ void a_background_post_init()
  */
 void a_background_show_window ()
 {
-  GtkWidget *bgwindow = NULL;
+  // Only allow one dialog showing background processes
+  if ( bgwindow )
+    return;
+
   GtkWidget *bgtreeview = NULL;
   GtkCellRenderer *renderer;
   GtkTreeViewColumn *column;
