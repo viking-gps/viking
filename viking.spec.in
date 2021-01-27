@@ -17,7 +17,7 @@ BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:	curl-devel
 BuildRequires:	expat-devel
 BuildRequires:	glib2-devel
-BuildRequires:	gtk2-devel >= 2.16
+BuildRequires:	gtk3-devel >= 3.22
 BuildRequires:	pkgconfig
 BuildRequires:	gpsd-devel
 BuildRequires:	gettext perl(XML::Parser)
@@ -35,7 +35,7 @@ BuildRequires:  liboauth-devel
 Viking is a free/open source program to manage GPS data.
 You can import, plot and create tracks, routes and waypoints, show OSM and other maps, see real-time GPS position, control items, etc.
 Other advanced capabilities include Geotagging Images, generate Maps (using Mapnik), Upload and Download tracks from OSM, Routing from OSRM, Name Searches from OSM Nominatim or Geonames and more.
-It is written in mainly in C with some C++ and uses the GTK+2 toolkit.
+It is written in mainly in C with some C++ and uses the GTK+3 toolkit.
 
 %prep
 %setup -q

@@ -443,7 +443,7 @@ For other combinations see the menu entry themselves.
 </note>
 <note>
 <para>
-	For Windows systems this can be done by adding the line <emphasis>gtk-can-change-accels=1</emphasis> to <filename>%USERPROFILE%\.gtkrc-2.0</filename> (create the file if it does not exist).
+	For Windows systems this can be done by adding the line <emphasis>gtk-can-change-accels=1</emphasis> to <filename>%USERPROFILE%\.gtkrc-3.0</filename> (create the file if it does not exist).
 </para>
 </note>
 <para>From &app; 1.6+ the keyboard configuration is automatically loaded and saved between sessions in the <xref linkend="config_keys"/></para>

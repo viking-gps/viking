@@ -276,7 +276,8 @@ Section $(VIKING_SECTION_TITLE) SecViking
     File ${BINARIES}\magic.mgc
     File /r ${BINARIES}\data
     File /r ${BINARIES}\share
-    File /r ${BINARIES}\lib
+    ; NB lib no longer used in GTK3 version
+    File /nonfatal /r ${BINARIES}\lib
 
     ; Estimate install size based on files in $INSTDIR
     ${GetSize} "$INSTDIR" "/S=0K" $0 $1 $2

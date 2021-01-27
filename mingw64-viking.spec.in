@@ -28,9 +28,9 @@ BuildRequires:  glib2-devel
 #^ For glib-compile-resources
 
 # Code
-# Not worried about versions ATM
-BuildRequires:	mingw64-gtk2-devel
-# ATM gtk2-devel auto includes at least devel versions of glib2, gobject, zlib and more
+# Not worried about versions ATM - latest is 3.22 which is what we need
+BuildRequires:	mingw64-gtk3-devel
+# ATM gtk3-devel auto includes at least devel versions of glib2, gobject, zlib and more
 
 # Mandatory libraries
 BuildRequires:	mingw64-libexpat-devel
@@ -48,7 +48,7 @@ BuildRequires:	mingw64-libgps-devel
 BuildRequires:	mingw64-liboauth-devel
 
 # Libs for runtime (and thus also available for the NSIS installer to include the dependencies)
-Requires:	mingw64-gtk2
+Requires:	mingw64-gtk3
 Requires:	mingw64-libexpat1
 Requires:	mingw64-libcurl4
 Requires:	mingw64-libgexiv2
@@ -61,12 +61,14 @@ Requires:	mingw64-libgps
 # Currently running makensis in seperate script - so you will need it then
 # NB No 64bit version available
 #Requires:	mingw32-cross-nsis
+# GTK3 theming
+Requires:	adwaita-icon-theme
 
 %description
 Viking is a free/open source program to manage GPS data.
 You can import, plot and create tracks, routes and waypoints, show OSM and other maps, see real-time GPS position, control items, etc.
 Other advanced capabilities include Geotagging Images, generate Maps (using Mapnik), Upload and Download tracks from OSM, Routing from OSRM, Name Searches from OSM Nominatim or Geonames and more.
-It is written in mainly in C with some C++ and uses the GTK+2 toolkit.
+It is written in mainly in C with some C++ and uses the GTK+3 toolkit.
 
 %prep
 %setup -q -n %{_pkg_name}-%{version}
@@ -83,6 +85,7 @@ popd
   --disable-mapnik \
   --disable-geoclue \
   --enable-windows \
+  --enable-gtk3 \
   CFLAGS="-DWINDOWS -DWIN32 -mwindows"
 # NB not sure if '-DWIN32' is necessary/applicable for a 64bit build...
 
