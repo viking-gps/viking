@@ -3773,10 +3773,10 @@ NB For <trademark>Windows</trademark> the process is slightly more involved as t
 so you have to redirect the output to a file, e.g. open the command prompt and then:
 <programlisting>
 cd "C:\Program Files\Viking"
-viking -dV 2>1 > %TMP/viking.log
+viking -dV 2>1 > %TMP%\viking.log
 </programlisting>
 Then close &appname; before viewing the output file, such as:
-<programlisting>notepad %TMP/viking.log</programlisting>
+<programlisting>notepad %TMP%\viking.log</programlisting>
 </para>
 <para>
 For instance you can check the correct URLs &appname; is using in requesting remote data for DEMs or map tiles in the verbose debug output.
