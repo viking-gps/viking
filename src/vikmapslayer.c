@@ -1873,27 +1873,35 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
 
     MapCoord mcoord = mdi->mapcoord;
 
-    if ( mdi->redownload ) {
-      mdi->mapstoget = (mdi->xf - mdi->x0 + 1) * (mdi->yf - mdi->y0 + 1);
-    } else {
-      /* calculate how many we need */
-      for ( a = mdi->x0; a <= mdi->xf; a++ )
-      {
-        mcoord.x = a;
-        for ( b = mdi->y0; b <= mdi->yf; b++ )
-        {
-          mcoord.y = b;
-          // Only count tiles from supported areas
-          if ( is_in_area (map, mcoord) )
-          {
-            get_filename ( mdi->cache_dir, mdi->cache_layout,
-                           vik_map_source_get_uniq_id(map),
-                           vik_map_source_get_name(map),
-                           ulm.scale, ulm.z, a, b, mdi->filename_buf, mdi->maxlen,
-                           vik_map_source_get_file_extension(map) );
-            if ( g_file_test ( mdi->filename_buf, G_FILE_TEST_EXISTS ) == FALSE )
+    // Always calculate how many we need
+    for ( a = mdi->x0; a <= mdi->xf; a++ ) {
+      mcoord.x = a;
+      for ( b = mdi->y0; b <= mdi->yf; b++ ) {
+        mcoord.y = b;
+        // Only count tiles from supported areas
+        if ( is_in_area (map, mcoord) ) {
+          gchar *request = create_request_string ( mdi, a, b );
+          // Only count it if not an outstanding request
+          if ( !g_hash_table_lookup_extended(requests, request, NULL, NULL ) ) {
+            if ( mdi->redownload )
+              // Note this count is quite simplistic,
+              //  we still might not attempt to get a newer version of existing tiles
+              //  such as due to file timestamps/tile age parameter, use-etag properties and so on
+              //  these details are currently in the map/download functions
               mdi->mapstoget++;
+            else {
+              // Otherwise only if file is missing
+              get_filename ( mdi->cache_dir, mdi->cache_layout,
+                             vik_map_source_get_uniq_id(map),
+                             vik_map_source_get_name(map),
+                             ulm.scale, ulm.z, a, b, mdi->filename_buf, mdi->maxlen,
+                             vik_map_source_get_file_extension(map) );
+              if ( g_file_test ( mdi->filename_buf, G_FILE_TEST_EXISTS ) == FALSE ) {
+                mdi->mapstoget++;
+              }
+            }
           }
+          g_free ( request );
         }
       }
     }
