@@ -140,11 +140,19 @@ static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event);
 static void toolbox_move (toolbox_tools_t *vt, GdkEventMotion *event);
 static void toolbox_release (toolbox_tools_t *vt, GdkEventButton *event);
 
-static void tool_ed_destroy (tool_ed_t *te)
+void tool_edit_destroy (tool_ed_t *te)
 {
   if ( te->pixmap )
     g_object_unref ( G_OBJECT ( te->pixmap ) );
   g_free ( te );
+}
+
+tool_ed_t* tool_edit_create ( VikWindow *vw, VikViewport *vvp )
+{
+  tool_ed_t *te = g_new0(tool_ed_t, 1);
+  te->vw = vw;
+  te->vvp = vvp;
+  return te;
 }
 
 /* ui creation */
@@ -2049,18 +2057,6 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
   g_object_unref ( G_OBJECT ( thickgc ) );
 }
 
-static gpointer ruler_create (VikWindow *vw, VikViewport *vvp) 
-{
-  tool_ed_t *te = g_new0(tool_ed_t, 1);
-  te->vw = vw;
-  return te;
-}
-
-static void ruler_destroy (tool_ed_t *te)
-{
-  tool_ed_destroy ( te );
-}
-
 static void ruler_click_normal (VikLayer *vl, GdkEventButton *event, tool_ed_t *s)
 {
   struct LatLon ll;
@@ -2269,7 +2265,7 @@ static VikLayerToolFuncStatus ruler_release (VikLayer *vl, GdkEventButton *event
   return VIK_LAYER_TOOL_ACK;
 }
 
-static void ruler_deactivate (VikLayer *vl, tool_ed_t *s)
+static void ruler_deactivate (VikLayer *ignore, tool_ed_t *s)
 {
   draw_update ( s->vw );
 }
@@ -2292,8 +2288,8 @@ static VikToolInterface ruler_tool =
   // NB Ctrl+Shift+R is used for Refresh (deemed more important), so use 'U' instead
   { "ruler_18",
     { "Ruler", "ruler_18", N_("_Ruler"), "<control><shift>U", N_("Ruler Tool"), TOOL_RULER },
-    (VikToolConstructorFunc) ruler_create,
-    (VikToolDestructorFunc) ruler_destroy,
+    (VikToolConstructorFunc) tool_edit_create,
+    (VikToolDestructorFunc) tool_edit_destroy,
     (VikToolActivationFunc) NULL,
     (VikToolActivationFunc) ruler_deactivate, 
     (VikToolMouseFunc) ruler_click,
@@ -2377,18 +2373,6 @@ static void tool_redraw_pixmap (tool_ed_t *te, GdkEventMotion *event)
       (void)g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
       draw_buf_done = FALSE;
     }
-}
-
-static gpointer zoomtool_create (VikWindow *vw, VikViewport *vvp)
-{
-  tool_ed_t *te = g_new0(tool_ed_t, 1);
-  te->vw = vw;
-  return te;
-}
-
-static void zoomtool_destroy ( tool_ed_t *te)
-{
-  tool_ed_destroy ( te );
 }
 
 static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *event, tool_ed_t *te)
@@ -2546,8 +2530,8 @@ static VikLayerToolFuncStatus zoomtool_release (VikLayer *vl, GdkEventButton *ev
 static VikToolInterface zoom_tool = 
   { "zoom_18",
     { "Zoom", "zoom_18", N_("_Zoom"), "<control><shift>Z", N_("Zoom Tool"), TOOL_ZOOM },
-    (VikToolConstructorFunc) zoomtool_create,
-    (VikToolDestructorFunc) zoomtool_destroy,
+    (VikToolConstructorFunc) tool_edit_create,
+    (VikToolDestructorFunc) tool_edit_destroy,
     (VikToolActivationFunc) NULL,
     (VikToolActivationFunc) NULL,
     (VikToolMouseFunc) zoomtool_click, 
@@ -2631,19 +2615,6 @@ static VikToolInterface pan_tool =
 /********************************************************************************
  ** Select tool code
  ********************************************************************************/
-
-static gpointer selecttool_create (VikWindow *vw, VikViewport *vvp)
-{
-  tool_ed_t *t = g_new0(tool_ed_t, 1);
-  t->vw = vw;
-  t->vvp = vvp;
-  return t;
-}
-
-static void selecttool_destroy (tool_ed_t *t)
-{
-  tool_ed_destroy ( t );
-}
 
 typedef struct {
   gboolean cont;
@@ -2887,8 +2858,8 @@ static gboolean selecttool_key_release (VikLayer *vl, GdkEventKey *event, tool_e
 static VikToolInterface select_tool =
   { "select_18",
     { "Select", "select_18", N_("_Select"), "<control><shift>C", N_("Select Tool"), TOOL_SELECT },
-    (VikToolConstructorFunc) selecttool_create,
-    (VikToolDestructorFunc) selecttool_destroy,
+    (VikToolConstructorFunc) tool_edit_create,
+    (VikToolDestructorFunc) tool_edit_destroy,
     (VikToolActivationFunc) NULL,
     (VikToolActivationFunc) NULL,
     (VikToolMouseFunc) selecttool_click,

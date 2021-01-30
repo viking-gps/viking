@@ -121,6 +121,9 @@ typedef struct {
   gboolean displayed;
 } tool_ed_t;
 
+tool_ed_t* tool_edit_create ( VikWindow *vw, VikViewport *vvp );
+void tool_edit_destroy ( tool_ed_t *te );
+
 VikWindow *a_vik_window_get_a_window ();
 
 G_END_DECLS
