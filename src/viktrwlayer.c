@@ -10327,11 +10327,6 @@ static VikLayerToolFuncStatus tool_edit_waypoint_release ( VikTrwLayer *vtl, Gdk
 
 /*** Edit track or route (lots of common functionality) ****/
 
-static gpointer tool_edit_track_create ( VikWindow *vw, VikViewport *vvp)
-{
-  return vvp;
-}
-
 typedef struct {
   VikTrwLayer *vtl;
   GdkDrawable *drawable;
