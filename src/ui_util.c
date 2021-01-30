@@ -486,3 +486,103 @@ GdkPixbuf *ui_get_icon ( const gchar *name, guint size )
 	}
 	return icon;
 }
+
+/**
+ * replacement for gdk_draw_layout()
+ * note that x,y are now doubles and may need to be offset by 0.5
+ */
+void ui_cr_draw_layout ( cairo_t *cr, gdouble xx, gdouble yy, PangoLayout *layout )
+{
+	cairo_move_to ( cr, xx, yy );
+	pango_cairo_show_layout ( cr, layout );
+}
+
+/**
+ * replacement for gdk_draw_line()
+ * note that as x,y are now doubles and describe the center of the line
+ * ATM no clipping is performed and unknown what happens if ones uses
+ *  very large numbers for x2, y2
+ *
+ * cairo_stroke() should be called after using this
+ *  (or after consecutive calls to this are done as a group)
+ */
+void ui_cr_draw_line ( cairo_t *cr, gdouble x1, gdouble y1, gdouble x2, gdouble y2 )
+{
+	cairo_move_to ( cr, x1, y1 );
+	cairo_line_to ( cr, x2, y2 );
+}
+
+/**
+ * replacement for gdk_draw_rectangle()
+ * note that as x,y are now doubles and describe the center of the line
+ * ATM no clipping is performed and unknown what happens if ones uses very large numbers
+ * cairo_stroke() should be called after using this
+ *  (or after consecutive calls to this are done as a group)
+ */
+void ui_cr_draw_rectangle ( cairo_t *cr, gboolean fill, gdouble xx, gdouble yy, gdouble ww, gdouble hh )
+{
+	cairo_rectangle ( cr, xx, yy, ww, hh );
+	if ( fill )
+		cairo_fill ( cr );
+}
+
+void ui_cr_set_color ( cairo_t *cr, const gchar *name )
+{
+  GdkColor color;
+  if ( gdk_color_parse(name, &color) ) {
+    gdk_cairo_set_source_color ( cr, &color );
+  }
+}
+
+// Generic dashed line
+void ui_cr_set_dash ( cairo_t *cr )
+{
+	// ATM assume this doesn't need to be multiplied by the vvp->scale
+	static const double dashed[] = {4.0};
+	cairo_set_dash ( cr, dashed, 1, 0 );
+}
+
+void ui_cr_clear ( cairo_t *cr )
+{
+	g_return_if_fail ( cr != NULL );
+
+	cairo_operator_t operator = cairo_get_operator ( cr );
+	// Clear the buffer
+	cairo_set_operator ( cr, CAIRO_OPERATOR_CLEAR );
+	cairo_paint ( cr );
+	// Return to the previous mode
+	//  typically will be the default operator CAIRO_OPERATOR_OVER, for the normal drawing on top mode
+	cairo_set_operator ( cr, operator );
+}
+
+// Typically should be used in the 'draw' event
+// Draw the specified surface (whole screen)
+//  which would be overlayed on any other surface
+void ui_cr_surface_paint ( cairo_t *cr, cairo_surface_t *surface )
+{
+	g_return_if_fail ( surface != NULL );
+	cairo_set_source_surface ( cr, surface, 0.0, 0.0 );
+	cairo_paint ( cr );
+}
+
+// Label with solid a background and a border
+void ui_cr_label_with_bg (cairo_t *cr, gint xd, gint yd, gint wd, gint hd, PangoLayout *pl)
+{
+	g_return_if_fail ( cr != NULL );
+	ui_cr_set_color ( cr, "#cccccc" );
+	ui_cr_draw_rectangle ( cr, TRUE, xd-2, yd-1, wd+4, hd+1 );
+	cairo_stroke ( cr );
+	ui_cr_set_color ( cr, "#000000" );
+	ui_cr_draw_rectangle ( cr, FALSE, xd-2, yd-1, wd+4, hd+1 );
+	cairo_stroke ( cr );
+	ui_cr_draw_layout ( cr, xd, yd, pl );
+}
+
+void ui_gc_unref ( GdkGC *gc )
+{
+#if GTK_CHECK_VERSION (3,0,0)
+	cairo_destroy ( gc );
+#else
+	g_object_unref ( G_OBJECT(gc) );
+#endif
+}

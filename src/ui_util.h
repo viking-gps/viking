@@ -26,6 +26,7 @@
 
 #include <glib.h>
 #include <gtk/gtk.h>
+#include "vik_compat.h"
 
 G_BEGIN_DECLS
 
@@ -64,6 +65,24 @@ gboolean ui_tree_model_number_tooltip_cb ( GtkWidget    *widget,
 
 void ui_load_icons ( void );
 GdkPixbuf *ui_get_icon ( const gchar *name, guint size );
+
+void ui_cr_draw_layout ( cairo_t *cr, gdouble xx, gdouble yy, PangoLayout *layout );
+
+void ui_cr_draw_line ( cairo_t *cr, gdouble x1, gdouble y1, gdouble x2, gdouble y2 );
+
+void ui_cr_draw_rectangle ( cairo_t *cr, gboolean fill, gdouble xx, gdouble yy, gdouble ww, gdouble hh );
+
+void ui_cr_set_color ( cairo_t *cr, const gchar *name );
+
+void ui_cr_set_dash ( cairo_t *cr );
+
+void ui_cr_clear ( cairo_t *cr );
+
+void ui_cr_surface_paint ( cairo_t *cr, cairo_surface_t *surface );
+
+void ui_cr_label_with_bg (cairo_t *cr, gint xd, gint yd, gint wd, gint hd, PangoLayout *pl);
+
+void ui_gc_unref ( GdkGC *gc );
 
 G_END_DECLS
 
