@@ -46,6 +46,19 @@
     <property name="use-etag">TRUE</property>
   </object>
   <object class="VikSlippyMapSource">
+    <property name="label">CyclOSM</property>
+    <property name="url">https://c.tile-cyclosm.openstreetmap.fr/cyclosm/%d/%d/%d.png</property>
+    <property name="follow-location">4</property>
+    <property name="zoom-min">0</property>
+    <property name="zoom-max">20</property>
+    <property name="id">65</property>
+    <property name="name">CyclOSM</property>
+    <property name="copyright">© OpenStreetMap contributors</property>
+    <property name="license">CC-BY-SA</property>
+    <property name="license-url">http://www.openstreetmap.org/copyright</property>
+    <property name="check-file-server-time">TRUE</property>
+  </object>
+  <object class="VikSlippyMapSource">
     <property name="id">29</property>
     <property name="name">CalTopo</property>
     <property name="label">CalTopo USGS 7.5" Topos</property>
