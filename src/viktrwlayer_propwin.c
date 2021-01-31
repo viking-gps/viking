@@ -78,7 +78,9 @@ static gint stats_height = 0;
 
 typedef struct _propsaved {
   gboolean saved;
+#if !GTK_CHECK_VERSION (3,0,0)
   GdkImage *img;
+#endif
 } PropSaved;
 
 typedef gpointer ui_change_values[UI_CHG_LAST];
@@ -86,7 +88,11 @@ typedef gpointer ui_change_values[UI_CHG_LAST];
 typedef gdouble* (*make_map_func) (const VikTrack*, guint16);
 typedef void (*convert_values_func) (gdouble* values, guint profile_width);
 typedef void (*get_y_text_func) (gchar* ss, guint size, gdouble value);
+#if GTK_CHECK_VERSION (3,0,0)
+typedef void (*draw_extra_func) (gpointer widgets, GtkWidget *window, cairo_t *cr, VikPropWinGraphType_t pwgt);
+#else
 typedef void (*draw_extra_func) (gpointer widgets, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt);
+#endif
 typedef void (*button_update_func) (VikTrackpoint* trackpoint, gpointer widgets, gdouble from_start, guint ix, VikPropWinGraphType_t pwgt);
 
 typedef struct _propwidgets {
@@ -102,6 +108,8 @@ typedef struct _propwidgets {
   gint      profile_width_offset;
   gint      profile_height_offset;
   GtkWidget *dialog;
+  gint      dialog_width;  // Overall size of dialog only used in GTK3 version
+  gint      dialog_height; //
   GtkWidget *tabs;   // When in dialog
   GtkWidget *graphs; // When embedded in main window
   GtkWidget *self; // When embedded in main window
@@ -122,10 +130,10 @@ typedef struct _propwidgets {
   gboolean  show_speed[PGT_END];
   gboolean  show_dem[PGT_END];
   gdouble   track_length_inc_gaps;
-  PropSaved graph_saved_img[PGT_END];
+  PropSaved graph_saved_img[PGT_END]; // NB Not used in GTK3+ version
   GtkWidget* event_box[PGT_END];
   GtkWidget* page[PGT_END];
-  GtkWidget* image[PGT_END];
+  GtkWidget* image[PGT_END]; // NB Not used in GTK3+ version
   gdouble   alt_create_time;
   gdouble   min_value[PGT_END];
   gdouble   max_value[PGT_END];
@@ -149,6 +157,10 @@ typedef struct _propwidgets {
   gdouble   duration;
   gchar     *tz; // TimeZone at track's location
   VikCoord  vc;  // Center of track
+  cairo_t         *cr_main[PGT_END];      // Only used in GTK3 version
+  cairo_t         *cr_2nd[PGT_END];       // Only used in GTK3 version
+  cairo_surface_t *surface_main[PGT_END]; //       "       "
+  cairo_surface_t *surface_2nd[PGT_END];  //       "       "
 } PropWidgets;
 
 // Local functions
@@ -166,8 +178,10 @@ static PropWidgets *prop_widgets_new()
 static void prop_widgets_free(PropWidgets *widgets)
 {
   for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ ) {
+#if !GTK_CHECK_VERSION (3,0,0)
     if ( widgets->graph_saved_img[pwgt].img )
       g_object_unref ( widgets->graph_saved_img[pwgt].img );
+#endif
     if ( widgets->values[pwgt] )
      g_free ( widgets->values[pwgt] );
   }
@@ -350,6 +364,43 @@ static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
   return trackpoint;
 }
 
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_graph_marks ( PropWidgets *widgets,
+                               VikPropWinGraphType_t pwgt,
+                               gdouble marker_x,
+                               gint blob_x,
+                               gint blob_y )
+{
+  // For the GTK3 version, graph marks of the marker line and blob
+  //   are always drawn on to the secondary surface
+  cairo_t *gc = widgets->cr_2nd[pwgt];
+
+  guint blob_size = BLOB_SIZE * vik_viewport_get_scale(widgets->vvp);
+
+  if ( gc ) {
+    ui_cr_clear ( gc );
+    cairo_set_line_width ( gc, 1.0 * vik_viewport_get_scale(widgets->vvp) );
+
+    // Possibly should be foreground colour?, but ATM simply use black
+    ui_cr_set_color ( gc, "black" );
+
+    if ((marker_x >= MARGIN_X) && (marker_x < (widgets->profile_width + MARGIN_X))) {
+      ui_cr_draw_line ( gc, marker_x, MARGIN_Y, marker_x, widgets->profile_height + MARGIN_Y );
+      cairo_stroke ( gc );
+      widgets->is_marker_drawn = TRUE;
+    } else
+      widgets->is_marker_drawn = FALSE;
+
+    // Draw a square blob to indicate where we are on track for this graph
+    if ( (blob_x >= MARGIN_X) && (blob_x < (widgets->profile_width + MARGIN_X)) && (blob_y < widgets->profile_height+MARGIN_Y) ) {
+      ui_cr_draw_rectangle ( gc, TRUE, blob_x-3, blob_y-3, blob_size, blob_size );
+      cairo_stroke ( gc );
+    }
+
+    gtk_widget_queue_draw ( widgets->event_box[pwgt] );
+  }
+}
+#else
 /**
  * Returns whether the marker was drawn or not and whether the blob was drawn or not
  */
@@ -401,6 +452,7 @@ static void save_image_and_draw_graph_marks (GtkWidget *image,
   if (*marker_drawn || *blob_drawn)
     gtk_widget_queue_draw(image);
 }
+#endif
 
 /**
  * Return the percentage of how far a trackpoint is a long a track via the time method
@@ -731,10 +783,7 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, Prop
 
   widgets->marker_tp = trackpoint;
 
-  GtkWidget *image;
-  GtkWidget *window = gtk_widget_get_toplevel(GTK_WIDGET(event_box));
   GtkWidget *graph_box;
-  PropSaved *graph_saved_img;
   gdouble pc = NAN;
 
   // Attempt to redraw marker on all graph types
@@ -743,8 +792,6 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, Prop
 	graphite < PGT_END;
 	graphite++ ) {
 
-    graph_saved_img = &widgets->graph_saved_img[graphite];
-    image           = widgets->image[graphite];
     graph_box       = widgets->event_box[graphite];
 
     // Commonal method of redrawing marker
@@ -756,18 +803,23 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, Prop
 	pc = tp_percentage_by_distance ( widgets->tr, trackpoint, widgets->track_length_inc_gaps );
 
       if (!isnan(pc)) {
+
         gdouble marker_x = (pc * widgets->profile_width) + MARGIN_X;
-	save_image_and_draw_graph_marks(image,
+#if GTK_CHECK_VERSION (3,0,0)
+        draw_graph_marks ( widgets, graphite, marker_x, -1, 0 );
+#else
+	save_image_and_draw_graph_marks(widgets->image[graphite],
 					marker_x,
-					gtk_widget_get_style(window)->black_gc,
+                                        gtk_widget_get_style(gtk_widget_get_toplevel(event_box))->black_gc,
 					-1, // Don't draw blob on clicks
 					0,
-					graph_saved_img,
+					&widgets->graph_saved_img[graphite],
 					widgets->profile_width,
 					widgets->profile_height,
 					BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
 					&widgets->is_marker_drawn,
 					&widgets->is_blob_drawn);
+#endif
       }
     }
   }
@@ -1042,6 +1094,36 @@ static void update_power_buttons ( VikTrackpoint *trackpoint, gpointer ptr, gdou
     time_label_update ( widgets->w_cur_value2[pwgt], seconds_from_start );
 }
 
+static gdouble get_marker_x ( VikPropWinGraphType_t pwgt, PropWidgets *widgets )
+{
+  gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
+  gdouble pc = NAN;
+  if ( is_time_graph(pwgt) )
+    pc = tp_percentage_by_time ( widgets->tr, widgets->marker_tp );
+  else
+    pc = tp_percentage_by_distance ( widgets->tr, widgets->marker_tp, widgets->track_length_inc_gaps );
+  if ( !isnan(pc) ) {
+    marker_x = (pc * widgets->profile_width) + MARGIN_X;
+  }
+  return marker_x;
+}
+
+static void get_blob_xy ( VikPropWinGraphType_t pwgt, PropWidgets *widgets, gdouble *x_blob, guint *y_blob  )
+{
+  gdouble pc_blob = NAN;
+  *x_blob = -MARGIN_X - 1.0; // i.e. Don't draw unless we get a valid value
+  *y_blob = 0;
+  if ( is_time_graph(pwgt) )
+    pc_blob = tp_percentage_by_time ( widgets->tr, widgets->blob_tp );
+  else
+    pc_blob = tp_percentage_by_distance ( widgets->tr, widgets->blob_tp, widgets->track_length_inc_gaps );
+
+  if ( !isnan(pc_blob) ) {
+    *x_blob = pc_blob * (widgets->profile_width-1);
+    *y_blob = blob_y_position ( *x_blob > 0 ? (guint)*x_blob : 0, widgets, pwgt );
+  }
+}
+
 static void track_graph_move ( GtkWidget *event_box, GdkEventMotion *event, PropWidgets *widgets )
 {
   int mouse_x, mouse_y;
@@ -1076,23 +1158,14 @@ static void track_graph_move ( GtkWidget *event_box, GdkEventMotion *event, Prop
   widgets->button_update[pwgt] ( trackpoint, widgets, from_start, ix, pwgt );
 
   guint y_blob = blob_y_position ( ix, widgets, pwgt );
+  gdouble marker_x = get_marker_x ( pwgt, widgets );
 
-  gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
-  if ( widgets->is_marker_drawn ) {
-    gdouble pc = NAN;
-    if ( is_time_graph(pwgt) )
-      pc = tp_percentage_by_time ( widgets->tr, widgets->marker_tp );
-    else
-      pc = tp_percentage_by_distance ( widgets->tr, widgets->marker_tp, widgets->track_length_inc_gaps );
-    if ( !isnan(pc) ) {
-      marker_x = (pc * widgets->profile_width) + MARGIN_X;
-    }
-  }
-
-  GtkWidget *window = gtk_widget_get_toplevel ( event_box );
+#if GTK_CHECK_VERSION (3,0,0)
+  draw_graph_marks ( widgets, pwgt, marker_x, MARGIN_X+x, MARGIN_Y+y_blob );
+#else
   save_image_and_draw_graph_marks ( widgets->image[pwgt],
                                     marker_x,
-                                    gtk_widget_get_style(window)->black_gc,
+                                    gtk_widget_get_style(gtk_widget_get_toplevel(event_box))->black_gc,
                                     MARGIN_X+x,
                                     MARGIN_Y+y_blob,
                                     &widgets->graph_saved_img[pwgt],
@@ -1101,6 +1174,7 @@ static void track_graph_move ( GtkWidget *event_box, GdkEventMotion *event, Prop
                                     BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
                                     &widgets->is_marker_drawn,
                                     &widgets->is_blob_drawn );
+#endif
 
   if ( widgets->graphs && widgets->blob_tp )
     vik_trw_layer_trackpoint_draw ( widgets->vtl, widgets->vvp, widgets->tr, widgets->blob_tp);
@@ -1116,9 +1190,13 @@ static void track_graph_leave ( GtkWidget *event_box, GdkEventMotion *event, Pro
  *  Pixmap x axis should be distance based
  */
 static void draw_dem_alt_speed_dist ( VikTrack *tr,
+#if GTK_CHECK_VERSION (3,0,0)
+                                      cairo_t *cr,
+#else
                                       GdkDrawable *pix,
                                       GdkGC *alt_gc,
                                       GdkGC *speed_gc,
+#endif
                                       gdouble alt_offset,
                                       gdouble draw_min_speed,
                                       guint cia,
@@ -1155,7 +1233,13 @@ static void draw_dem_alt_speed_dist ( VikTrack *tr,
 
         // consider chunk size
         int y_alt = h2 - ((height * elev)/achunk );
+#if GTK_CHECK_VERSION (3,0,0)
+        ui_cr_set_color ( cr, "green" );
+        ui_cr_draw_rectangle ( cr, TRUE, x-2, y_alt-2, 4, 4 );
+        cairo_stroke ( cr );
+#else
         gdk_draw_rectangle(GDK_DRAWABLE(pix), alt_gc, TRUE, x-2, y_alt-2, 4, 4);
+#endif
       }
     }
     if (do_speed) {
@@ -1163,10 +1247,19 @@ static void draw_dem_alt_speed_dist ( VikTrack *tr,
       if (!isnan(VIK_TRACKPOINT(iter->data)->speed)) {
 	gdouble spd = vu_speed_convert ( speed_units, VIK_TRACKPOINT(iter->data)->speed ) ;
         int y_speed = h2 - (height * (spd-draw_min_speed))/schunk;
+#if GTK_CHECK_VERSION (3,0,0)
+        ui_cr_set_color ( cr, "red" );
+        ui_cr_draw_rectangle ( cr, TRUE, x-2, y_speed-2, 4, 4 );
+        cairo_stroke ( cr );
+#else
         gdk_draw_rectangle(GDK_DRAWABLE(pix), speed_gc, TRUE, x-2, y_speed-2, 4, 4);
+#endif
       }
     }
   }
+#if GTK_CHECK_VERSION (3,0,0)
+  cairo_stroke ( cr );
+#endif
 }
 
 /**
@@ -1175,7 +1268,11 @@ static void draw_dem_alt_speed_dist ( VikTrack *tr,
  * A common way to draw the grid with y axis labels
  *
  */
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_grid_y ( GtkWidget *window, PangoLayout *pl, PropWidgets *widgets, cairo_t *cr, gchar *ss, gint i, GdkRGBA *rgbaOC, GdkRGBA *rgbaBC )
+#else
 static void draw_grid_y ( GtkWidget *window, PangoLayout *pl, PropWidgets *widgets, GdkPixmap *pix, gchar *ss, gint i )
+#endif
 {
   gchar *label_markup = g_strdup_printf ( "<span size=\"small\">%s</span>", ss );
   pango_layout_set_markup ( pl, label_markup, -1 );
@@ -1184,6 +1281,14 @@ static void draw_grid_y ( GtkWidget *window, PangoLayout *pl, PropWidgets *widge
   int w, h;
   pango_layout_get_pixel_size ( pl, &w, &h );
 
+#if GTK_CHECK_VERSION (3,0,0)
+  gdk_cairo_set_source_rgba ( cr, rgbaBC );
+  ui_cr_draw_layout ( cr, MARGIN_X-w-3, CLAMP((int)i*widgets->profile_height/LINES - h/2 + MARGIN_Y, 0, widgets->profile_height-h+MARGIN_Y), pl );
+  gdk_cairo_set_source_rgba ( cr, rgbaOC );
+  ui_cr_draw_line ( cr,
+                    MARGIN_X, MARGIN_Y + widgets->profile_height/LINES * i,
+                    MARGIN_X + widgets->profile_width, MARGIN_Y + widgets->profile_height/LINES * i );
+#else
   gdk_draw_layout ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0],
                     MARGIN_X-w-3,
                     CLAMP((int)i*widgets->profile_height/LINES - h/2 + MARGIN_Y, 0, widgets->profile_height-h+MARGIN_Y),
@@ -1192,6 +1297,7 @@ static void draw_grid_y ( GtkWidget *window, PangoLayout *pl, PropWidgets *widge
   gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
                   MARGIN_X, MARGIN_Y + widgets->profile_height/LINES * i,
                   MARGIN_X + widgets->profile_width, MARGIN_Y + widgets->profile_height/LINES * i );
+#endif
 }
 
 /**
@@ -1200,7 +1306,11 @@ static void draw_grid_y ( GtkWidget *window, PangoLayout *pl, PropWidgets *widge
  * A common way to draw the grid with x axis labels for time graphs
  *
  */
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_grid_x_time ( GtkWidget *window, PangoLayout *pl, PropWidgets *widgets, cairo_t *cr, guint ii, guint tt, guint xx, GdkRGBA *rgbaOC, GdkRGBA *rgbaBC )
+#else
 static void draw_grid_x_time ( GtkWidget *window, PangoLayout *pl, PropWidgets *widgets, GdkPixmap *pix, guint ii, guint tt, guint xx )
+#endif
 {
   gchar *label_markup = NULL;
   switch (ii) {
@@ -1242,12 +1352,21 @@ static void draw_grid_x_time ( GtkWidget *window, PangoLayout *pl, PropWidgets *
     int ww, hh;
     pango_layout_get_pixel_size ( pl, &ww, &hh );
 
+
+#if GTK_CHECK_VERSION (3,0,0)
+    gdk_cairo_set_source_rgba ( cr, rgbaBC );
+    ui_cr_draw_layout ( cr, MARGIN_X+xx-ww/2, MARGIN_Y/2-hh/2, pl );
+    gdk_cairo_set_source_rgba ( cr, rgbaOC );
+    ui_cr_draw_line ( cr, MARGIN_X+xx, MARGIN_Y, MARGIN_X+xx, MARGIN_Y+widgets->profile_height );
+#else
     gdk_draw_layout ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0],
                       MARGIN_X+xx-ww/2, MARGIN_Y/2-hh/2, pl );
+
+    gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
+                    MARGIN_X+xx, MARGIN_Y, MARGIN_X+xx, MARGIN_Y+widgets->profile_height );
+#endif
   }
 
-  gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
-                  MARGIN_X+xx, MARGIN_Y, MARGIN_X+xx, MARGIN_Y+widgets->profile_height );
 }
 
 /**
@@ -1256,7 +1375,11 @@ static void draw_grid_x_time ( GtkWidget *window, PangoLayout *pl, PropWidgets *
  * A common way to draw the grid with x axis labels for distance graphs
  *
  */
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_grid_x_distance ( GtkWidget *window, PangoLayout *pl, PropWidgets *widgets, cairo_t *cr, guint ii, gdouble dd, guint xx, vik_units_distance_t dist_units, GdkRGBA *rgbaOC, GdkRGBA *rgbaBC )
+#else
 static void draw_grid_x_distance ( GtkWidget *window, PangoLayout *pl, PropWidgets *widgets, GdkPixmap *pix, guint ii, gdouble dd, guint xx, vik_units_distance_t dist_units )
+#endif
 {
   gchar *label_markup = NULL;
   gchar *units = vu_distance_units_text ( dist_units );
@@ -1273,17 +1396,24 @@ static void draw_grid_x_distance ( GtkWidget *window, PangoLayout *pl, PropWidge
     int ww, hh;
     pango_layout_get_pixel_size ( pl, &ww, &hh );
 
+#if GTK_CHECK_VERSION (3,0,0)
+    gdk_cairo_set_source_rgba ( cr, rgbaBC );
+    ui_cr_draw_layout ( cr, MARGIN_X+xx-ww/2, MARGIN_Y/2-hh/2, pl );
+    gdk_cairo_set_source_rgba ( cr, rgbaOC );
+    ui_cr_draw_line ( cr, MARGIN_X+xx, MARGIN_Y, MARGIN_X+xx, MARGIN_Y+widgets->profile_height );
+#else
     gdk_draw_layout ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->fg_gc[0],
                       MARGIN_X+xx-ww/2, MARGIN_Y/2-hh/2, pl );
+    gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
+                    MARGIN_X+xx, MARGIN_Y, MARGIN_X+xx, MARGIN_Y+widgets->profile_height );
+#endif
   }
-
-  gdk_draw_line ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->dark_gc[0],
-                  MARGIN_X+xx, MARGIN_Y, MARGIN_X+xx, MARGIN_Y+widgets->profile_height );
 }
 
 /**
  * clear the pixmap (scale texts & actual graph)
  */
+#if !GTK_CHECK_VERSION (3,0,0)
 static void clear_pixmap (GdkPixmap *pix, GtkWidget *window, PropWidgets *widgets)
 {
   gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->bg_gc[0],
@@ -1291,11 +1421,16 @@ static void clear_pixmap (GdkPixmap *pix, GtkWidget *window, PropWidgets *widget
   gdk_draw_rectangle(GDK_DRAWABLE(pix), gtk_widget_get_style(window)->mid_gc[0],
                      TRUE, 0, 0, widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y);
 }
+#endif
 
 /**
  *
  */
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_distance_divisions ( GtkWidget *window, PangoLayout *pl, cairo_t *cr, PropWidgets *widgets, vik_units_distance_t dist_units, GdkRGBA *rgbaOC, GdkRGBA *rgbaBC )
+#else
 static void draw_distance_divisions ( GtkWidget *window, PangoLayout *pl, GdkPixmap *pix, PropWidgets *widgets, vik_units_distance_t dist_units )
+#endif
 {
   // Set to display units from length in metres.
   gdouble length = vu_distance_convert ( dist_units, widgets->track_length_inc_gaps);
@@ -1303,11 +1438,19 @@ static void draw_distance_divisions ( GtkWidget *window, PangoLayout *pl, GdkPix
   gdouble dist_per_pixel = length/widgets->profile_width;
 
   for (guint i=1; chunks[index]*i <= length; i++) {
+#if GTK_CHECK_VERSION (3,0,0)
+    draw_grid_x_distance ( window, pl, widgets, cr, index, chunks[index]*i, (guint)(chunks[index]*i/dist_per_pixel), dist_units, rgbaOC, rgbaBC );
+#else
     draw_grid_x_distance ( window, pl, widgets, pix, index, chunks[index]*i, (guint)(chunks[index]*i/dist_per_pixel), dist_units );
+#endif
   }
 }
 
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_time_lines ( GtkWidget *window, PangoLayout *pl, cairo_t *cr, PropWidgets *widgets, GdkRGBA *rgbaOC, GdkRGBA *rgbaBC )
+#else
 static void draw_time_lines ( GtkWidget *window, PangoLayout *pl, GdkPixmap *pix, PropWidgets *widgets )
+#endif
 {
   guint index = get_time_chunk_index ( widgets->duration );
   gdouble time_per_pixel = (gdouble)(widgets->duration)/widgets->profile_width;
@@ -1317,7 +1460,11 @@ static void draw_time_lines ( GtkWidget *window, PangoLayout *pl, GdkPixmap *pix
     return;
 
   for (guint i=1; chunkst[index]*i <= widgets->duration; i++) {
+#if GTK_CHECK_VERSION (3,0,0)
+    draw_grid_x_time ( window, pl, widgets, cr, index, chunkst[index]*i, (guint)(chunkst[index]*i/time_per_pixel), rgbaOC, rgbaBC );
+#else
     draw_grid_x_time ( window, pl, widgets, pix, index, chunkst[index]*i, (guint)(chunkst[index]*i/time_per_pixel) );
+#endif
   }
 }
 
@@ -1408,6 +1555,31 @@ static void power_y_text ( gchar *ss, guint size, gdouble value )
   snprintf ( ss, size, _("%d Watts"), (int)round(value) );
 }
 
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_dem_gps_speed ( PropWidgets *widgets, GtkWidget *window, cairo_t *cr )
+{
+  gdouble min = widgets->draw_min[PGT_ELEVATION_DISTANCE];
+  guint ci = widgets->ci[PGT_ELEVATION_DISTANCE];
+
+  // User override?
+  if ( widgets->user_set_axis ) {
+    ci = widgets->user_cia;
+    min = widgets->user_mina;
+  }
+
+  draw_dem_alt_speed_dist ( widgets->tr,
+                            cr,
+                            min,
+                            0.0,
+                            ci,
+                            widgets->ci[PGT_SPEED_TIME],
+                            widgets->profile_width,
+                            widgets->profile_height,
+                            MARGIN_X,
+                            widgets->show_dem[PGT_ELEVATION_DISTANCE],
+                            widgets->show_speed[PGT_ELEVATION_DISTANCE] );    
+}
+#else
 static void draw_dem_gps_speed ( PropWidgets *widgets, GtkWidget *window, GdkPixmap *pix )
 {
   GdkGC *dem_alt_gc = gdk_gc_new ( gtk_widget_get_window(window) );
@@ -1446,6 +1618,7 @@ static void draw_dem_gps_speed ( PropWidgets *widgets, GtkWidget *window, GdkPix
   g_object_unref ( G_OBJECT(dem_alt_gc) );
   g_object_unref ( G_OBJECT(gps_speed_gc) );
 }
+#endif
 
 /**
  * Need to evaluate speeds (as they have not been yet been done)
@@ -1468,16 +1641,40 @@ static void evaluate_speeds ( PropWidgets *widgets )
   widgets->speeds_evaluated = TRUE;
 }
 
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_ed_extra ( gpointer ptr, GtkWidget *window, cairo_t *cr, VikPropWinGraphType_t pwgt )
+#else
 static void draw_ed_extra ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
+#endif
 {
   PropWidgets *widgets = (PropWidgets*)ptr;
   if ( widgets->show_dem[pwgt] || widgets->show_speed[pwgt] ) {
     if ( !widgets->speeds_evaluated )
       evaluate_speeds ( widgets );
+#if GTK_CHECK_VERSION (3,0,0)
+    draw_dem_gps_speed ( widgets, window, cr );
+#else
     draw_dem_gps_speed ( widgets, window, pix );
+#endif
   }
 }
 
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_gps_speed_by_dist ( PropWidgets *widgets, GtkWidget *window, cairo_t *cr )
+{
+  draw_dem_alt_speed_dist ( widgets->tr,
+                            cr,
+                            0.0,
+                            widgets->draw_min[PGT_SPEED_TIME],
+                            0,
+                            widgets->ci[PGT_SPEED_TIME],
+                            widgets->profile_width,
+                            widgets->profile_height,
+                            MARGIN_X,
+                            FALSE,
+                            TRUE );
+}
+#else
 static void draw_gps_speed_by_dist ( PropWidgets *widgets, GtkWidget *window, GdkPixmap *pix )
 {
   GdkGC *gc = gdk_gc_new ( gtk_widget_get_window(window) );
@@ -1501,17 +1698,40 @@ static void draw_gps_speed_by_dist ( PropWidgets *widgets, GtkWidget *window, Gd
                             TRUE );
   g_object_unref ( G_OBJECT(gc) );
 }
+#endif
 
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_gps_speed_extra ( gpointer ptr, GtkWidget *window, cairo_t *cr, VikPropWinGraphType_t pwgt )
+#else
 static void draw_gps_speed_extra ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
+#endif
 {
   PropWidgets *widgets = (PropWidgets*)ptr;
   if ( widgets->show_speed[pwgt] ) {
     if ( !widgets->speeds_evaluated )
       evaluate_speeds ( widgets );
+#if GTK_CHECK_VERSION (3,0,0)
+    draw_gps_speed_by_dist ( widgets, window, cr );
+#else
     draw_gps_speed_by_dist ( widgets, window, pix );
+#endif
   }
 }
 
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_speed_indicator ( PropWidgets *widgets, GtkWidget *window, cairo_t *cr )
+{
+  ui_cr_set_color ( cr, "red" );
+  gdouble max_speed = widgets->max_value[PGT_SPEED_TIME] * 110 / 100;
+
+  // This is just an indicator - no actual values can be inferred by user
+  for (int i = 0; i < widgets->profile_width; i++ ) {
+    int y_speed = widgets->profile_height - (widgets->profile_height * widgets->values[PGT_SPEED_TIME][i])/max_speed;
+    ui_cr_draw_rectangle ( cr, TRUE, i+MARGIN_X-2, y_speed-2, 4, 4 );
+  }
+  cairo_stroke ( cr );
+}
+#else
 static void draw_speed_indicator ( PropWidgets *widgets, GtkWidget *window, GdkPixmap *pix )
 {
   GdkGC *speed_gc = gdk_gc_new ( gtk_widget_get_window(window) );
@@ -1528,17 +1748,25 @@ static void draw_speed_indicator ( PropWidgets *widgets, GtkWidget *window, GdkP
   }
   g_object_unref ( G_OBJECT(speed_gc) );
 }
+#endif
 
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_gps_speed_by_time ( PropWidgets *widgets, GtkWidget *window, cairo_t *cr )
+#else
 static void draw_gps_speed_by_time ( PropWidgets *widgets, GtkWidget *window, GdkPixmap *pix )
+#endif
 {
   // Use speed time graph for determining pixel positions,
-  //  although the drawing is put on whatever the pixmap is passed in
+  //  although the drawing is put on whatever the pixmap/cr is passed in
   VikPropWinGraphType_t pwgt = PGT_SPEED_TIME;
+#if GTK_CHECK_VERSION (3,0,0)
+  ui_cr_set_color ( cr, "red" );
+#else
   GdkGC *gps_speed_gc = gdk_gc_new ( gtk_widget_get_window(window) );
   GdkColor color;
   gdk_color_parse ( "red", &color );
   gdk_gc_set_rgb_fg_color ( gps_speed_gc, &color);
-
+#endif
   gdouble beg_time = VIK_TRACKPOINT(widgets->tr->trackpoints->data)->timestamp;
   gdouble dur = VIK_TRACKPOINT(g_list_last(widgets->tr->trackpoints)->data)->timestamp - beg_time;
 
@@ -1556,28 +1784,53 @@ static void draw_gps_speed_by_time ( PropWidgets *widgets, GtkWidget *window, Gd
 
     int x = MARGIN_X + widgets->profile_width * (VIK_TRACKPOINT(iter->data)->timestamp - beg_time) / dur;
     int y = height - widgets->profile_height*(gps_speed - mins)/(chunk*LINES);
+#if GTK_CHECK_VERSION (3,0,0)
+    ui_cr_draw_rectangle ( cr, TRUE, x-2, y-2, 4, 4 );
+#else
     gdk_draw_rectangle(GDK_DRAWABLE(pix), gps_speed_gc, TRUE, x-2, y-2, 4, 4);
+#endif
   }
+#if GTK_CHECK_VERSION (3,0,0)
+  cairo_stroke ( cr );
+#else
   g_object_unref ( G_OBJECT(gps_speed_gc) );
+#endif
 }
 
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_vt_gps_speed_extra ( gpointer ptr, GtkWidget *window, cairo_t *cr, VikPropWinGraphType_t pwgt )
+#else
 static void draw_vt_gps_speed_extra ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
+#endif
 {
   PropWidgets *widgets = (PropWidgets*)ptr;
   if ( widgets->show_speed[pwgt] ) {
     if ( !widgets->speeds_evaluated )
       evaluate_speeds ( widgets );
+#if GTK_CHECK_VERSION (3,0,0)
+    draw_gps_speed_by_time ( widgets, window, cr );
+#else
     draw_gps_speed_by_time ( widgets, window, pix );
+#endif
   }
 }
+
+
+#if GTK_CHECK_VERSION (3,0,0)
+static gboolean is_light ( GdkRGBA *rgba )
+{
+  // No idea is this really makes any sense
+  return ((rgba->red + rgba->green + rgba->blue) > 1.5);
+}
+#endif
 
 /**
  * Draw an image
  */
-static void draw_it ( GtkWidget *image, VikTrack *trk, PropWidgets *widgets, GtkWidget *window, VikPropWinGraphType_t pwgt )
+static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets *widgets, GtkWidget *window, VikPropWinGraphType_t pwgt )
 {
   guint i;
-
+  
   if ( widgets->values[pwgt] )
     g_free ( widgets->values[pwgt] );
 
@@ -1630,14 +1883,100 @@ static void draw_it ( GtkWidget *image, VikTrack *trk, PropWidgets *widgets, Gtk
     min = widgets->user_mina;
   }
 
+  const gdouble chunk = chunks[ci];
+  const gdouble chunk_lines = chunk * LINES;
+
+  PangoLayout *pl = gtk_widget_create_pango_layout ( widgets->event_box[pwgt], NULL );
+
+#if GTK_CHECK_VERSION (3,0,0)
+  g_return_if_fail ( cr != NULL );
+  // No need for specific clear, as ATM starting from a blank surface
+  // Colours - https://developer.gnome.org/gtk3/stable/chap-css-properties.html
+  //
+  GtkStyleContext *gsc = gtk_widget_get_style_context ( window );
+  GdkRGBA *rgbaOC; // Outline Colour
+  GdkRGBA *rgbaBC; // Border Colour / Background Colour
+
+  cairo_set_line_width ( cr, 1.0 );
+  cairo_set_line_cap ( cr, CAIRO_LINE_CAP_SQUARE );
+
+  gtk_style_context_get ( gsc, gtk_style_context_get_state(gsc), "outline-color", &rgbaOC, NULL );
+  gtk_style_context_get ( gsc, gtk_style_context_get_state(gsc), GTK_STYLE_PROPERTY_BORDER_COLOR, &rgbaBC, NULL );
+  
+  pango_layout_set_alignment ( pl, PANGO_ALIGN_RIGHT );
+
+  // draw grid
+  for ( i=0; i<=LINES; i++ ) {
+    gchar ss[32];
+    widgets->get_y_text[pwgt] ( ss, sizeof(ss), min + (LINES-i)*chunk );
+    draw_grid_y ( window, pl, widgets, cr, ss, i, rgbaOC, rgbaBC );
+  }
+
+  pango_layout_set_alignment ( pl, PANGO_ALIGN_LEFT );
+
+  if ( is_time_graph(pwgt) )
+    draw_time_lines ( window, pl, cr, widgets, rgbaOC, rgbaBC );
+  else    
+    draw_distance_divisions ( window, pl, cr, widgets, a_vik_get_units_distance(), rgbaOC, rgbaBC );
+  cairo_stroke ( cr );
+  gdk_rgba_free ( rgbaBC );
+  
+  // Unknown how to get theme colour in GTK3
+  // Crashes if provide unknown text like  "theme-selected-bg-color"    
+  gtk_style_context_get ( gsc, gtk_style_context_get_state(gsc), GTK_STYLE_PROPERTY_BACKGROUND_COLOR, &rgbaBC, NULL );
+  // Values taken from Adwaita/Adwaita-dark themes - gtk-contained.css / gtk-contained-dark.css
+  // @define-color theme_selected_bg_color ...
+  GdkRGBA rgbaSLT;
+  if ( is_light(rgbaBC) ) {
+    (void)gdk_rgba_parse ( &rgbaSLT, "#4a90d9" );
+  } else {
+    (void)gdk_rgba_parse ( &rgbaSLT, "#215d9c" );
+  }
+  gdk_rgba_free ( rgbaBC );
+  gdk_cairo_set_source_rgba ( cr, &rgbaSLT );
+
+  /* Always false, even when changing theme betweem Adwaita<->Adwaita-dark
+     GtkSettings *gs = gtk_settings_get_default ();
+     GValue val = G_VALUE_INIT;
+     g_object_get_property ( G_OBJECT(gs), "gtk-application-prefer-dark-theme", &val );
+     g_message ( "%s %d", __FUNCTION__, g_value_get_boolean(&val) );
+  */
+ 
+  guint height = MARGIN_Y+widgets->profile_height-1;
+  gboolean nanny = FALSE;
+
+  for ( i = 0; i < widgets->profile_width; i++ ) {
+    if ( isnan(widgets->values[pwgt][i]) )
+      nanny = TRUE;
+    else {
+      ui_cr_draw_line ( cr,
+                        i + MARGIN_X, height,
+                        i + MARGIN_X, height-widgets->profile_height*(widgets->values[pwgt][i]-min)/chunk_lines );
+    }
+  }
+  cairo_stroke ( cr );
+
+  if ( nanny ) {
+    ui_cr_set_color ( cr, "yellow" );
+    for ( i = 0; i < widgets->profile_width; i++ )
+      if ( isnan(widgets->values[pwgt][i]) )
+	ui_cr_draw_line ( cr, i + MARGIN_X, MARGIN_Y, i + MARGIN_X, height );
+    cairo_stroke ( cr );
+  }
+
+  if ( widgets->draw_extra[pwgt] )
+    widgets->draw_extra[pwgt] ( widgets, window, cr, pwgt );
+
+  // Draw border
+  gdk_cairo_set_source_rgba ( cr, rgbaOC );
+  ui_cr_draw_rectangle ( cr, FALSE, MARGIN_X, MARGIN_Y, widgets->profile_width-1, height );
+  cairo_stroke ( cr );
+
+#else
   GdkPixmap *pix = gdk_pixmap_new ( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
   gtk_image_set_from_pixmap ( GTK_IMAGE(image), pix, NULL );
   // Reset before redrawing
   clear_pixmap ( pix, window, widgets );
-
-  const gdouble chunk = chunks[ci];
-
-  PangoLayout *pl = gtk_widget_create_pango_layout ( widgets->event_box[pwgt], NULL );
 
   pango_layout_set_alignment ( pl, PANGO_ALIGN_RIGHT );
 
@@ -1655,8 +1994,6 @@ static void draw_it ( GtkWidget *image, VikTrack *trk, PropWidgets *widgets, Gtk
   else    
     draw_distance_divisions ( window, pl, pix, widgets, a_vik_get_units_distance() );
 
-  g_object_unref ( G_OBJECT(pl) );
-
   const guint height = MARGIN_Y+widgets->profile_height;
 
   GdkGC *no_info_gc = gdk_gc_new ( gtk_widget_get_window(window) );
@@ -1665,7 +2002,6 @@ static void draw_it ( GtkWidget *image, VikTrack *trk, PropWidgets *widgets, Gtk
   gdk_gc_set_rgb_fg_color ( no_info_gc, &color );
 
   GdkGC *gc = gtk_widget_get_style(window)->dark_gc[3];
-  const gdouble chunk_lines = chunk * LINES;
 
   for ( i = 0; i < widgets->profile_width; i++ ) {
     if ( isnan(widgets->values[pwgt][i]) ) {
@@ -1684,28 +2020,46 @@ static void draw_it ( GtkWidget *image, VikTrack *trk, PropWidgets *widgets, Gtk
  
   g_object_unref ( G_OBJECT(no_info_gc) );
   g_object_unref ( G_OBJECT(pix) );
+#endif
+  g_object_unref ( G_OBJECT(pl) );
 
   if ( pwgt == PGT_SPEED_TIME )
     widgets->speeds_evaluated = TRUE;
 }
 
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_dt_extra ( gpointer ptr, GtkWidget *window, cairo_t *cr, VikPropWinGraphType_t pwgt )
+#else
 static void draw_dt_extra ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
+#endif
 {
   PropWidgets *widgets = (PropWidgets*)ptr;
   if ( widgets->show_speed[pwgt] ) {
     if ( !widgets->speeds_evaluated )
       evaluate_speeds ( widgets );
+#if GTK_CHECK_VERSION (3,0,0)
+    draw_speed_indicator ( widgets, window, cr );
+#else
     draw_speed_indicator ( widgets, window, pix );
+#endif
   }
 }
 
 // ATM Only works for PGT_ELEVATION_TIME
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_dem_by_time ( PropWidgets *widgets, GtkWidget *window, cairo_t *cr, VikPropWinGraphType_t pwgt )
+#else
 static void draw_dem_by_time ( PropWidgets *widgets, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
+#endif
 {
+#if GTK_CHECK_VERSION (3,0,0)
+  ui_cr_set_color ( cr, "green" );
+#else
   GdkColor color;
   GdkGC *dem_alt_gc = gdk_gc_new ( gtk_widget_get_window(window) );
   gdk_color_parse ( "green", &color );
   gdk_gc_set_rgb_fg_color ( dem_alt_gc, &color);
+#endif
 
   const gint h2 = widgets->profile_height + MARGIN_Y; // Adjust height for x axis labelling offset
   const gdouble chunk = chunks[widgets->ci[pwgt]];
@@ -1730,44 +2084,76 @@ static void draw_dem_by_time ( PropWidgets *widgets, GtkWidget *window, GdkPixma
 
 	// consider chunk size
 	int y_alt = h2 - ((widgets->profile_height * elev)/achunk );
+#if GTK_CHECK_VERSION (3,0,0)
+        ui_cr_draw_rectangle ( cr, TRUE, i+MARGIN_X-2, y_alt-2, 4, 4 );
+#else
 	gdk_draw_rectangle(GDK_DRAWABLE(pix), dem_alt_gc, TRUE, i+MARGIN_X-2, y_alt-2, 4, 4);
+#endif
       }
     }
   }
+#if GTK_CHECK_VERSION (3,0,0)
+  cairo_stroke ( cr );
+#else
   g_object_unref ( G_OBJECT(dem_alt_gc) );
+#endif
 }
 
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_extra_dem_and_speed ( gpointer ptr, GtkWidget *window, cairo_t *cr, VikPropWinGraphType_t pwgt )
+#else
 static void draw_extra_dem_and_speed ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
+#endif
 {
   PropWidgets *widgets = (PropWidgets*)ptr;
   if ( widgets->show_dem[pwgt] )
+#if GTK_CHECK_VERSION (3,0,0)
+    draw_dem_by_time ( widgets, window, cr, PGT_ELEVATION_TIME );
+#else
     draw_dem_by_time ( widgets, window, pix, PGT_ELEVATION_TIME );
+#endif
 
   if ( widgets->show_speed[pwgt] ) {
     if ( !widgets->speeds_evaluated )
       evaluate_speeds ( widgets );
+#if GTK_CHECK_VERSION (3,0,0)
+    draw_speed_indicator ( widgets, window, cr );
+#else
     draw_speed_indicator ( widgets, window, pix );
+#endif
   }
 }
 
+#if GTK_CHECK_VERSION (3,0,0)
+static void draw_extra_dem_and_gps_speed ( gpointer ptr, GtkWidget *window, cairo_t *cr, VikPropWinGraphType_t pwgt )
+#else
 static void draw_extra_dem_and_gps_speed ( gpointer ptr, GtkWidget *window, GdkPixmap *pix, VikPropWinGraphType_t pwgt )
+#endif
 {
   PropWidgets *widgets = (PropWidgets*)ptr;
   if ( widgets->show_dem[pwgt] )
+#if GTK_CHECK_VERSION (3,0,0)
+    draw_dem_by_time ( widgets, window, cr, PGT_ELEVATION_TIME );
+#else
     draw_dem_by_time ( widgets, window, pix, PGT_ELEVATION_TIME );
+#endif
 
   if ( widgets->show_speed[pwgt] ) {
     if ( !widgets->speeds_evaluated )
       evaluate_speeds ( widgets );
+#if GTK_CHECK_VERSION (3,0,0)
+    draw_gps_speed_by_time ( widgets, window, cr );
+#else
     draw_gps_speed_by_time ( widgets, window, pix );
+#endif
   }
 }
-
 #undef LINES
 
 /**
  *
  */
+#if !GTK_CHECK_VERSION (3,0,0)
 static void clear_saved_img ( gboolean resized, PropWidgets *widgets, VikPropWinGraphType_t pwgt )
 {
   if ( resized && widgets->graph_saved_img[pwgt].img ) {
@@ -1776,6 +2162,7 @@ static void clear_saved_img ( gboolean resized, PropWidgets *widgets, VikPropWin
     widgets->graph_saved_img[pwgt].saved = FALSE;
   }
 }
+#endif
 
 /**
  * Draw all graphs
@@ -1784,44 +2171,29 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 {
   // Draw graphs even if they are not visible
   GtkWidget *window = gtk_widget_get_toplevel(widget);
-  gdouble pc = NAN;
-  gdouble pc_blob = NAN;
 
   VikPropWinGraphType_t pwgt;
   for ( pwgt = 0; pwgt < PGT_END; pwgt++ ) {
     if ( widgets->event_box[pwgt] ) {
-      // Saved image no longer any good as we've resized, so we remove it here
-      clear_saved_img ( resized, widgets, pwgt );
-
       // Main drawing
-      draw_it ( widgets->image[pwgt], widgets->tr, widgets, window, pwgt );
+      // Saved image no longer any good as we've resized, so we remove it here
+#if GTK_CHECK_VERSION (3,0,0)
+      ui_cr_clear ( widgets->cr_main[pwgt] );
+#else
+      clear_saved_img ( resized, widgets, pwgt );
+#endif
+      draw_it ( widgets->cr_main[pwgt], widgets->image[pwgt], widgets->tr, widgets, window, pwgt );
 
       // Ensure marker or blob are redrawn if necessary
+      gdouble marker_x = get_marker_x ( pwgt, widgets );
+      gdouble x_blob = -MARGIN_X - 1.0; // i.e. Don't draw unless we get a valid value
+      guint   y_blob = 0;
+      get_blob_xy ( pwgt, widgets, &x_blob, &y_blob );
+
+#if GTK_CHECK_VERSION (3,0,0)
+      draw_graph_marks ( widgets, pwgt, marker_x, x_blob+MARGIN_X, y_blob+MARGIN_Y );
+#else
       if ( widgets->is_marker_drawn || widgets->is_blob_drawn ) {
-
-        if ( is_time_graph(pwgt) )
-          pc = tp_percentage_by_time ( widgets->tr, widgets->marker_tp );
-        else
-          pc = tp_percentage_by_distance ( widgets->tr, widgets->marker_tp, widgets->track_length_inc_gaps );
-
-        gdouble x_blob = -MARGIN_X - 1.0; // i.e. Don't draw unless we get a valid value
-        guint   y_blob = 0;
-        if ( widgets->is_blob_drawn ) {
-          if ( is_time_graph(pwgt) )
-            pc_blob = tp_percentage_by_time ( widgets->tr, widgets->blob_tp );
-          else
-            pc_blob = tp_percentage_by_distance ( widgets->tr, widgets->blob_tp, widgets->track_length_inc_gaps );
-
-          if ( !isnan(pc_blob) ) {
-            x_blob = pc_blob * (widgets->profile_width-1);
-          }
-          y_blob = blob_y_position ( x_blob > 0 ? (guint)x_blob : 0, widgets, pwgt );
-        }
-
-        gdouble marker_x = -1.0; // i.e. Don't draw unless we get a valid value
-        if ( !isnan(pc) ) {
-          marker_x = (pc * widgets->profile_width) + MARGIN_X;
-        }
 
         save_image_and_draw_graph_marks ( widgets->image[pwgt],
                                           marker_x,
@@ -1835,10 +2207,34 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
                                           &widgets->is_marker_drawn,
                                           &widgets->is_blob_drawn );
       }
+#endif
     }
   }
   widgets->speeds_evaluated = FALSE;
 }
+
+#if GTK_CHECK_VERSION (3,0,0)
+static cairo_surface_t* recreate_surface ( cairo_t *cr, cairo_surface_t *cs, guint xx, guint yy )
+{
+  if ( cr )
+    cairo_destroy ( cr );
+  if ( cs )
+    cairo_surface_destroy ( cs );
+  return cairo_image_surface_create ( CAIRO_FORMAT_ARGB32, xx, yy );
+}
+
+static void recreate_surfaces ( VikPropWinGraphType_t pwgt, PropWidgets *widgets, guint xx, guint yy )
+{
+  widgets->surface_main[pwgt] = recreate_surface ( widgets->cr_main[pwgt], widgets->surface_main[pwgt], xx, yy );
+  widgets->cr_main[pwgt] = cairo_create ( widgets->surface_main[pwgt] );
+
+  widgets->surface_2nd[pwgt] = recreate_surface ( widgets->cr_2nd[pwgt], widgets->surface_2nd[pwgt], xx, yy );
+  widgets->cr_2nd[pwgt] = cairo_create ( widgets->surface_2nd[pwgt] );
+}
+#endif
+
+#define VIK_SETTINGS_TRACK_PROFILE_WIDTH "track_profile_display_width"
+#define VIK_SETTINGS_TRACK_PROFILE_HEIGHT "track_profile_display_height"
 
 /**
  * Configure/Resize the profile & speed/time images
@@ -1846,11 +2242,13 @@ static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean 
 static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, PropWidgets *widgets )
 {
   if (widgets->configure_dialog) {
+    widgets->configure_dialog = FALSE;
+
+#if !GTK_CHECK_VERSION (3,0,0)
     // Determine size offsets between dialog size and size for images
     // Only on the initialisation of the dialog
     widgets->profile_width_offset = event->width - widgets->profile_width;
     widgets->profile_height_offset = event->height - widgets->profile_height;
-    widgets->configure_dialog = FALSE;
 
     // Without this the settting, the dialog will only grow in vertical size - one can not then make it smaller!
     gtk_widget_set_size_request ( widget, widgets->profile_width+widgets->profile_width_offset, widgets->profile_height+widgets->profile_height_offset );
@@ -1858,31 +2256,57 @@ static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, P
     // Allow resizing back down to a minimal size (especially useful if the initial size has been made bigger after restoring from the saved settings)
     GdkGeometry geom = { 600+widgets->profile_width_offset, 200+widgets->profile_height_offset, 0, 0, 0, 0, 0, 0, 0, 0, GDK_GRAVITY_STATIC };
     gdk_window_set_geometry_hints ( gtk_widget_get_window(widget), &geom, GDK_HINT_MIN_SIZE );
+#endif
   }
   else {
     widgets->profile_width_old = widgets->profile_width;
     widgets->profile_height_old = widgets->profile_height;
   }
 
-  // Now adjust From Dialog size to get image size
-  widgets->profile_width = event->width - widgets->profile_width_offset;
-  widgets->profile_height = event->height - widgets->profile_height_offset;
+  if ( event ) {
+    // Mainly for GTK3 version - simply restore/store whole dialog size;
+    //  rather than trying to determine between dialog<->profile size.
+    widgets->dialog_width = event->width;
+    widgets->dialog_height = event->height;
+  }
+
+  GtkAllocation allocation = { 0, 0 };
+  for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ ) {
+    if ( widgets->event_box[pwgt] ) {
+      gtk_widget_get_allocation ( widgets->event_box[pwgt], &allocation );
+      break;
+    }
+  }
+
+  if ( allocation.width > MARGIN_X ) {
+    widgets->profile_width = allocation.width - MARGIN_X;
+    widgets->profile_height = allocation.height - MARGIN_Y;
+  }
 
   // ATM we receive configure_events when the dialog is moved and so no further action is necessary
   if ( !widgets->configure_dialog &&
        (widgets->profile_width_old == widgets->profile_width) && (widgets->profile_height_old == widgets->profile_height) )
     return FALSE;
 
-  // These widgets are only on the dialog
   for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ ) {
+    // Resized or new
+#if GTK_CHECK_VERSION (3,0,0)
+    if ( widgets->event_box[pwgt] ) {
+      recreate_surfaces ( pwgt, widgets,
+                          widgets->profile_width + MARGIN_X,
+                          widgets->profile_height + MARGIN_Y );
+    }
+#endif
+    // This needs to be done only once, but no harm if redone on every configure event
+    // These widgets are only on the dialog
     if ( widgets->w_show_dem[pwgt] )
       widgets->show_dem[pwgt] = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_dem[pwgt]) );
     if ( widgets->w_show_speed[pwgt] )
       widgets->show_speed[pwgt] = gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(widgets->w_show_speed[pwgt]) );
   }
 
-  // Draw stuff
-  draw_all_graphs ( widget, widgets, TRUE );
+  // Draw stuff in dialog
+  draw_all_graphs ( widgets->dialog, widgets, TRUE );
 
   return FALSE;
 }
@@ -1892,14 +2316,16 @@ static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, P
  */
 GtkWidget *create_event_box ( GtkWidget *window, PropWidgets *widgets, VikPropWinGraphType_t pwgt )
 {
+#if ! GTK_CHECK_VERSION (3,0,0)
   GdkPixmap *pix = gdk_pixmap_new ( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
   widgets->image[pwgt] = gtk_image_new_from_pixmap ( pix, NULL );
   g_object_unref ( G_OBJECT(pix) );
-
+#endif
   GtkWidget *eventbox = gtk_event_box_new ();
   g_signal_connect ( G_OBJECT(eventbox), "button_press_event", G_CALLBACK(track_graph_click_cb), widgets );
   g_signal_connect ( G_OBJECT(eventbox), "motion_notify_event", G_CALLBACK(track_graph_move), widgets );
-  gtk_container_add ( GTK_CONTAINER(eventbox), widgets->image[pwgt] );
+  if ( widgets->image[pwgt] )
+    gtk_container_add ( GTK_CONTAINER(eventbox), widgets->image[pwgt] );
   gtk_widget_set_events ( eventbox, GDK_BUTTON_PRESS_MASK | GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_STRUCTURE_MASK );
   return eventbox;
 }
@@ -2082,8 +2508,18 @@ GtkWidget *vik_trw_layer_create_powdiag ( GtkWidget *window, PropWidgets *widget
 static void save_values ( PropWidgets *widgets )
 {
   // Session settings
+#if GTK_CHECK_VERSION (3,0,0)
+  // gtk_window_get_size() seems not reliable (or not sensible when the window is closing)
+  //  as it often returns the default size rather then the actual size,
+  //  so track these values manually
+  // NB in GTK3 we store/restore the whole dialog size (rather then the graph profile size)
+  a_settings_set_integer ( VIK_SETTINGS_TRACK_PROFILE_WIDTH, widgets->dialog_width );
+  a_settings_set_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, widgets->dialog_height );
+  g_debug ( "%s: w*h %d x %d", __FUNCTION__, widgets->dialog_width, widgets->dialog_height );
+#else
   a_settings_set_integer ( VIK_SETTINGS_TRACK_PROFILE_WIDTH, widgets->profile_width );
   a_settings_set_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, widgets->profile_height );
+#endif
 
   // Set latest values from current dialog, but try to retain tab positions for pages
   //  that may not be shown right now but have been in the past
@@ -2300,7 +2736,7 @@ static GtkWidget *create_graph_page ( PropWidgets *widgets,
   GtkWidget *vbox = gtk_vbox_new ( FALSE, 10 );
   GtkWidget *label = gtk_label_new (NULL);
   GtkWidget *label2 = gtk_label_new (NULL);
-  gtk_box_pack_start (GTK_BOX(vbox), graph, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(vbox), graph, TRUE, TRUE, 0);
   gtk_label_set_markup ( GTK_LABEL(label), markup );
   gtk_label_set_markup ( GTK_LABEL(label2), markup2 );
   gtk_box_pack_start (GTK_BOX(hbox), label, FALSE, FALSE, 0);
@@ -2929,6 +3365,10 @@ static void add_reorderable_page ( GtkNotebook *notebook, GtkWidget *page, GtkWi
   gtk_notebook_set_tab_reorderable ( notebook, page, TRUE );
 }
 
+#if GTK_CHECK_VERSION (3,0,0)
+static gboolean redraw_signal_event ( GtkWidget *widget, cairo_t *cr, PropWidgets *widgets );
+#endif
+
 /**
  *
  */
@@ -2945,18 +3385,22 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   widgets->vlp = vlp;
   widgets->tr = tr;
 
-  gint profile_size_value;
   // Ensure minimum values
   widgets->profile_width = 600 * vik_viewport_get_scale(vvp);
+  widgets->profile_height = 200 * vik_viewport_get_scale(vvp);
+  // In GTK3 version, this size restore is handled in first configure_event()
+#if !GTK_CHECK_VERSION (3,0,0)
+  gint profile_size_value;
   if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_WIDTH, &profile_size_value ) )
     if ( profile_size_value > widgets->profile_width )
       widgets->profile_width = profile_size_value;
 
-  widgets->profile_height = 200 * vik_viewport_get_scale(vvp);
   if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, &profile_size_value ) )
     if ( profile_size_value > widgets->profile_height )
       widgets->profile_height = profile_size_value;
+#endif
 
+  // Does NO separator do anything?
   gchar *title = g_strdup_printf(_("%s - Track Properties"), tr->name);
   GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
                          parent,
@@ -3201,7 +3645,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
       g_signal_connect ( widgets->w_show_speed[pwgt], "toggled", G_CALLBACK(checkbutton_toggle_cb), widgets );
   }
 
-  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), graphs, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), graphs, TRUE, TRUE, 5);
 
   gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog), VIK_TRW_LAYER_PROPWIN_SPLIT_MARKER, FALSE);
   if (vik_track_get_segment_count(tr) <= 1)
@@ -3212,9 +3656,27 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   // On dialog realization configure_event causes the graphs to be initially drawn
   widgets->configure_dialog = TRUE;
   g_signal_connect ( G_OBJECT(dialog), "configure-event", G_CALLBACK (configure_event), widgets );
-
   g_signal_connect ( G_OBJECT(dialog), "destroy", G_CALLBACK (destroy_cb), widgets );
+#if GTK_CHECK_VERSION (3,0,0)
+  // Better to connect each individual graph
+  for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ ) {
+    if ( widgets->event_box[pwgt] )
+      g_signal_connect ( G_OBJECT(widgets->event_box[pwgt]), "draw", G_CALLBACK(redraw_signal_event), widgets );
+  }
 
+  gint ww;
+  gint hh;
+  // Restore size values - if too small the GTK will ignore them anyway
+  if ( !a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_WIDTH, &ww ) )
+    ww = -1;
+  if ( !a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, &hh ) )
+    hh = -1;
+
+  g_debug ( "%s: ww*hh %d x %d", __FUNCTION__, ww, hh );
+  //gtk_window_resize ( GTK_WINDOW(dialog), ww, hh );
+  // NB still allow resizing down to the smallest possible size
+  gtk_window_set_default_size ( GTK_WINDOW(dialog), ww, hh );
+#endif
   vik_track_set_property_dialog(tr, dialog);
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   gtk_widget_show_all ( dialog );
@@ -3260,24 +3722,33 @@ void vik_trw_layer_propwin_main_draw_blob ( gpointer self, VikTrackpoint *trkpt 
   if ( !page )
     return;
 
-  GtkWidget *window = gtk_widget_get_toplevel ( page );
+#if !GTK_CHECK_VERSION (3,0,0)
   GtkWidget *image = NULL;
   PropSaved saved_img;
+#endif
   gdouble x_blob = -MARGIN_X - 1.0; // i.e. Don't draw unless we get a valid value
   guint   y_blob = 0;
 
-  if ( page == widgets->event_box[PGT_ELEVATION_DISTANCE] ) {
+  VikPropWinGraphType_t pwgt = PGT_ELEVATION_DISTANCE;
+  if ( page == widgets->event_box[PGT_ELEVATION_DISTANCE] )
+    pwgt = PGT_ELEVATION_DISTANCE;
+
+  if ( pwgt == PGT_ELEVATION_DISTANCE ) {
     pc = tp_percentage_by_distance ( widgets->tr, widgets->marker_tp, widgets->track_length_inc_gaps );
     pc_blob = tp_percentage_by_distance ( widgets->tr, widgets->blob_tp, widgets->track_length_inc_gaps );
+#if !GTK_CHECK_VERSION (3,0,0)
     image = widgets->image[PGT_ELEVATION_DISTANCE];
     saved_img = widgets->graph_saved_img[PGT_ELEVATION_DISTANCE];
+#endif
   }
 
-  if ( page == widgets->event_box[PGT_SPEED_TIME] ) {
+  if ( pwgt == PGT_SPEED_TIME ) {
     pc = tp_percentage_by_time ( widgets->tr, widgets->marker_tp );
     pc_blob = tp_percentage_by_time ( widgets->tr, widgets->blob_tp );
+#if !GTK_CHECK_VERSION (3,0,0)
     image = widgets->image[PGT_SPEED_TIME];
     saved_img = widgets->graph_saved_img[PGT_SPEED_TIME];
+#endif
   }
 
   if ( !isnan(pc_blob) ) {
@@ -3293,10 +3764,13 @@ void vik_trw_layer_propwin_main_draw_blob ( gpointer self, VikTrackpoint *trkpt 
   if ( !isnan(pc) )
     marker_x = (pc * widgets->profile_width) + MARGIN_X;
 
+#if GTK_CHECK_VERSION (3,0,0)
+  draw_graph_marks ( widgets, pwgt, marker_x, x_blob+MARGIN_X, y_blob+MARGIN_Y );
+#else
   if ( image )
     save_image_and_draw_graph_marks ( image,
                                       marker_x,
-                                      gtk_widget_get_style(window)->black_gc,
+                                      gtk_widget_get_style(gtk_widget_get_toplevel(page))->black_gc,
                                       x_blob+MARGIN_X,
                                       y_blob+MARGIN_Y,
                                       &saved_img,
@@ -3305,6 +3779,7 @@ void vik_trw_layer_propwin_main_draw_blob ( gpointer self, VikTrackpoint *trkpt 
                                       BLOB_SIZE * vik_viewport_get_scale(widgets->vvp),
                                       &widgets->is_marker_drawn,
                                       &widgets->is_blob_drawn );
+#endif
 }
 
 /**
@@ -3432,6 +3907,16 @@ static gboolean graph_tooltip_cb ( GtkWidget  *widget,
   return ans;
 }
 
+static void clear_it ( VikPropWinGraphType_t pwgt, PropWidgets *widgets )
+{
+#if GTK_CHECK_VERSION (3,0,0)
+  if ( widgets->cr_main[pwgt] )
+    ui_cr_clear ( widgets->cr_main[pwgt] );
+#else
+  gtk_image_clear ( GTK_IMAGE(widgets->image[pwgt]) );
+#endif
+}
+
 /**
  * vik_trw_layer_propwin_main_refresh:
  *
@@ -3462,11 +3947,11 @@ gboolean vik_trw_layer_propwin_main_refresh ( VikLayer *vl )
 
   // If no current values then clear display of any previous stuff
   if ( !widgets->values[PGT_ELEVATION_DISTANCE] && widgets->event_box[PGT_ELEVATION_DISTANCE] ) {
-    gtk_image_clear ( GTK_IMAGE(widgets->image[PGT_ELEVATION_DISTANCE]) );
+    clear_it ( PGT_ELEVATION_DISTANCE, widgets );
 
     // Extra protection in case all trackpoints of an existing timed track get deleted
     if ( !widgets->values[PGT_SPEED_TIME] && widgets->event_box[PGT_SPEED_TIME] ) {
-      gtk_image_clear ( GTK_IMAGE(widgets->image[PGT_SPEED_TIME]) );
+      clear_it ( PGT_SPEED_TIME, widgets );
     }
   }
   else
@@ -3478,7 +3963,11 @@ gboolean vik_trw_layer_propwin_main_refresh ( VikLayer *vl )
 /**
  * Draw the graphs when in the main display
  */
+#if GTK_CHECK_VERSION (3,0,0)
+static gboolean redraw_signal_event ( GtkWidget *widget, cairo_t *cr, PropWidgets *widgets )
+#else
 static gboolean redraw_signal_event ( GtkWidget *widget, GdkEvent *event, PropWidgets *widgets )
+#endif
 {
   GtkAllocation allocation;
   if ( widgets->event_box[PGT_ELEVATION_DISTANCE] ) {
@@ -3491,15 +3980,46 @@ static gboolean redraw_signal_event ( GtkWidget *widget, GdkEvent *event, PropWi
     return TRUE;
   }
 
-  // Work out actual size used for the graphs considering the margin
-  widgets->profile_width = allocation.width - MARGIN_X;
-  widgets->profile_height = allocation.height - MARGIN_Y;
+  if ( widgets->graphs ) {
+    widgets->profile_width_old = widgets->profile_width;
+    widgets->profile_height_old = widgets->profile_height;
 
+    // Work out actual size used for the graphs considering the margin
+    widgets->profile_width = allocation.width - MARGIN_X;
+    widgets->profile_height = allocation.height - MARGIN_Y;
+  }
+
+#if GTK_CHECK_VERSION (3,0,0)
+  // Resize of main window embedded graphs here
+  // NB ATM resize of dialog graphs is handled in configure_event()
+  if ( widgets->graphs ) {
+    if ( (widgets->profile_width_old != widgets->profile_width) ||
+         (widgets->profile_height_old != widgets->profile_height) ) {
+      for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ )
+        if ( widgets->event_box[pwgt] )
+          recreate_surfaces ( pwgt, widgets, widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y );
+      draw_all_graphs ( widgets->graphs, widgets, TRUE );
+    }
+  }
+
+  VikPropWinGraphType_t pwgt = event_box_to_graph_type ( widget, widgets );
+  if ( cr ) {
+    ui_cr_surface_paint ( cr, widgets->surface_main[pwgt] );
+
+    if ( widgets->surface_2nd[pwgt] )
+      ui_cr_surface_paint ( cr, widgets->surface_2nd[pwgt] );
+  }
+
+  // Finished painting this specific graph
+  return TRUE;
+#else
   // Draw it
   if ( widgets->profile_width > 0 && widgets->profile_height > 0 ) {
     draw_all_graphs ( widget, widgets, TRUE );
   }
+  // Carry on to draw rest of the notebook (i.e. the buttons)
   return FALSE;
+#endif
 }
 
 /**
@@ -3524,7 +4044,7 @@ gpointer vik_trw_layer_propwin_main ( GtkWindow *parent,
   widgets->self = self;
   // The first width value doesn't really make any difference,
   //  as the array values will get recalculated in the redraw_signal_event() with the latest widget size allocation
-  //  however here ww use an indicative size, which is useful to determine how quick the processing is
+  //  however here we use an indicative size, which is useful to determine how quick the processing is
   widgets->profile_width = 600;
   widgets->profile_height = 100;
 
@@ -3542,8 +4062,21 @@ gpointer vik_trw_layer_propwin_main ( GtkWindow *parent,
   widgets->graphs = graphs;
   gtk_notebook_set_tab_pos ( GTK_NOTEBOOK(graphs), GTK_POS_RIGHT ); // Maybe allow config of Left/Right?
 
+#if GTK_CHECK_VERSION (3,0,0)
+  recreate_surfaces ( PGT_ELEVATION_DISTANCE, widgets, widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y );
+  recreate_surfaces ( PGT_SPEED_TIME, widgets, widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y );
+#endif
+  
   widgets->event_box[PGT_ELEVATION_DISTANCE] = vik_trw_layer_create_profile ( GTK_WIDGET(parent), widgets );
   widgets->event_box[PGT_SPEED_TIME] = vik_trw_layer_create_vtdiag ( GTK_WIDGET(parent), widgets );
+
+  // If no elevation or time info then don't show anything
+  if ( !widgets->event_box[PGT_ELEVATION_DISTANCE] && !widgets->event_box[PGT_SPEED_TIME] ) {
+    prop_widgets_free ( widgets );
+    return NULL;
+  }
+
+  gtk_container_add ( GTK_CONTAINER(self), graphs );
 
   if ( widgets->event_box[PGT_ELEVATION_DISTANCE] ) {
     g_signal_connect ( G_OBJECT(widgets->event_box[PGT_ELEVATION_DISTANCE]), "leave_notify_event", G_CALLBACK(track_graph_leave), widgets );
@@ -3559,14 +4092,6 @@ gpointer vik_trw_layer_propwin_main ( GtkWindow *parent,
     g_signal_connect ( widgets->event_box[PGT_SPEED_TIME], "query-tooltip", G_CALLBACK(graph_tooltip_cb), widgets );
   }
 
-  // If no elevation or time info then don't show anything
-  if ( !widgets->event_box[PGT_ELEVATION_DISTANCE] && !widgets->event_box[PGT_SPEED_TIME] ) {
-    prop_widgets_free ( widgets );
-    return NULL;
-  }
-
-  gtk_container_add ( GTK_CONTAINER(self), graphs );
-
   // Ensure can reize down to a small size
   gtk_widget_set_size_request ( self, 0, 0 );
 
@@ -3581,9 +4106,19 @@ gpointer vik_trw_layer_propwin_main ( GtkWindow *parent,
     gtk_notebook_set_current_page ( GTK_NOTEBOOK(widgets->graphs), 0 );
   }
 
+#if GTK_CHECK_VERSION (3,0,0)
+  // However seem to get an absolute deluge of these signals even when not doing anything
+  if ( widgets->event_box[PGT_ELEVATION_DISTANCE] )
+    g_signal_connect ( G_OBJECT(widgets->event_box[PGT_ELEVATION_DISTANCE]), "draw", G_CALLBACK(redraw_signal_event), widgets );
+  if ( widgets->event_box[PGT_SPEED_TIME] )
+    g_signal_connect ( G_OBJECT(widgets->event_box[PGT_SPEED_TIME]), "draw", G_CALLBACK(redraw_signal_event), widgets );
+
+  draw_all_graphs ( widgets->graphs, widgets, TRUE );
+
+#else
   g_signal_connect ( G_OBJECT(graphs), "expose-event", G_CALLBACK(redraw_signal_event), widgets );
   // NB We get an initial expose-event so don't need to force a first draw
-
+#endif
   return (gpointer)widgets;
 }
 
