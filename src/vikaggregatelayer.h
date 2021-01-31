@@ -50,6 +50,7 @@ void vik_aggregate_layer_add_layer ( VikAggregateLayer *val, VikLayer *l, gboole
 void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, GtkTreeIter *replace_layer );
 void vik_aggregate_layer_move_layer ( VikAggregateLayer *val, GtkTreeIter *child_iter, gboolean up );
 void vik_aggregate_layer_draw ( VikAggregateLayer *val, VikViewport *vp );
+void vik_aggregate_layer_configure ( VikAggregateLayer *val, VikViewport *vp );
 void vik_aggregate_layer_free ( VikAggregateLayer *val );
 void vik_aggregate_layer_clear ( VikAggregateLayer *val );
 gboolean vik_aggregate_layer_delete ( VikAggregateLayer *val, GtkTreeIter *iter );

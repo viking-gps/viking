@@ -208,6 +208,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
 
   (VikLayerFuncProperties)              NULL,
   (VikLayerFuncDraw)                    vik_aggregate_layer_draw,
+  (VikLayerFuncConfigure)               vik_aggregate_layer_configure,
   (VikLayerFuncChangeCoordMode)         aggregate_layer_change_coord_mode,
   
   (VikLayerFuncGetTimestamp)            NULL,
@@ -307,6 +308,8 @@ struct _VikAggregateLayer {
 // Single global
 GHashTable *tiles_unreachable = NULL;
 
+static GdkColor black_color;
+
 static void aggregate_layer_class_init ( VikAggregateLayerClass *klass )
 {
   gchar *fn = g_build_filename ( a_get_viking_dir(), "unreachable_tiles.txt", NULL );
@@ -341,6 +344,8 @@ static void aggregate_layer_class_init ( VikAggregateLayerClass *klass )
   }
 
   g_free ( fn );
+
+  gdk_color_parse ( "#000000", &black_color );
 }
 
 void vik_aggregate_layer_uninit ()
@@ -1008,13 +1013,13 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
       // Draw single grid lines across the whole screen
       xx = base_xx;
       for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
-         vik_viewport_draw_line ( vvp, black_gc, xx, base_yy, xx, height );
+         vik_viewport_draw_line ( vvp, black_gc, xx, base_yy, xx, height, &black_color, 1 );
          xx += tilesize;
       }
 
       yy = base_yy;
       for ( y = ((yinc == 1) ? ymin : ymax); y != yend; y+=yinc ) {
-        vik_viewport_draw_line ( vvp, black_gc, base_xx, yy, width, yy );
+        vik_viewport_draw_line ( vvp, black_gc, base_xx, yy, width, yy, &black_color, 1 );
         yy += tilesize;
       }
     }
@@ -1135,6 +1140,13 @@ static void hm_draw ( VikAggregateLayer *val, VikViewport *vp )
 void vik_aggregate_layer_draw ( VikAggregateLayer *val, VikViewport *vp )
 {
   GList *iter = val->children;
+#if GTK_CHECK_VERSION (3,0,0)
+  // GTK3 Version does not use pixmaps, so no point in trigger layers ATM
+  while ( iter ) {
+    vik_layer_draw ( VIK_LAYER(iter->data), vp );
+    iter = iter->next;
+  }
+#else
   VikLayer *vl;
   VikLayer *trigger = VIK_LAYER(vik_viewport_get_trigger( vp ));
   while ( iter ) {
@@ -1151,7 +1163,7 @@ void vik_aggregate_layer_draw ( VikAggregateLayer *val, VikViewport *vp )
       vik_layer_draw ( vl, vp );
     iter = iter->next;
   }
-
+#endif
   // Make coverage to be drawn last (i.e. over the top of any maps)
   if ( val->on[BASIC] ) {
     tac_draw ( val, vp );
@@ -1159,6 +1171,15 @@ void vik_aggregate_layer_draw ( VikAggregateLayer *val, VikViewport *vp )
 
   if ( !val->hm_calculating && val->hm_pixbuf ) {
     hm_draw ( val, vp );
+  }
+}
+
+void vik_aggregate_layer_configure ( VikAggregateLayer *val, VikViewport *vp )
+{
+  GList *iter = val->children;
+  while ( iter ) {
+    vik_layer_configure ( VIK_LAYER(iter->data), vp );
+    iter = iter->next;
   }
 }
 

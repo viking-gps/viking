@@ -132,8 +132,13 @@ gboolean vik_viewport_get_half_drawn( VikViewport *vp );
  ***************************************************************************************************/
 
 /* Viewport buffer management/drawing to screen */
+cairo_t *vik_viewport_surface_tool_create ( VikViewport *vvp );
+cairo_surface_t *vik_viewport_surface_tool_get ( VikViewport *vvp );
+void vik_viewport_surface_tool_destroy ( VikViewport *vvp );
+#if !GTK_CHECK_VERSION (3,0,0)
 GdkPixmap *vik_viewport_get_pixmap ( VikViewport *vvp ); /* get pointer to drawing buffer */
-void vik_viewport_sync ( VikViewport *vvp );             /* draw buffer to window */
+#endif
+void vik_viewport_sync ( VikViewport *vvp, GdkGC *cr );
 void vik_viewport_clear ( VikViewport *vvp );
 void vik_viewport_draw_pixbuf ( VikViewport *vvp, GdkPixbuf *pixbuf, gint src_x, gint src_y,
                               gint dest_x, gint dest_y, gint w, gint h );
@@ -176,11 +181,12 @@ void vik_viewport_set_highlight_thickness ( VikViewport *vvp, gint thickness );
 
 /* Drawing primitives */
 void a_viewport_clip_line ( gint *x1, gint *y1, gint *x2, gint *y2 ); /* run this before drawing a line. vik_viewport_draw_line runs it for you */
-void vik_viewport_draw_line ( VikViewport *vvp, GdkGC *gc, gint x1, gint y1, gint x2, gint y2 );
-void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x1, gint y1, gint x2, gint y2 );
-void vik_viewport_draw_arc ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x, gint y, gint width, gint height, gint angle1, gint angle2 );
-void vik_viewport_draw_polygon ( VikViewport *vvp, GdkGC *gc, gboolean filled, GdkPoint *points, gint npoints );
-void vik_viewport_draw_layout ( VikViewport *vvp, GdkGC *gc, gint x, gint y, PangoLayout *layout );
+
+void vik_viewport_draw_line ( VikViewport *vvp, GdkGC *gc, gint x1, gint y1, gint x2, gint y2, GdkColor *gcolor, guint thickness );
+void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x1, gint y1, gint x2, gint y2, GdkColor *gcolor );
+void vik_viewport_draw_arc ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x, gint y, gint width, gint height, gint angle1, gint angle2, GdkColor *gcolor );
+void vik_viewport_draw_polygon ( VikViewport *vvp, GdkGC *gc, gboolean filled, GdkPoint *points, gint npoints, GdkColor *gcolor );
+void vik_viewport_draw_layout ( VikViewport *vvp, GdkGC *gc, gint x, gint y, PangoLayout *layout, GdkColor *gcolor );
 
 /* Utilities */
 void vik_viewport_compute_bearing ( VikViewport *vp, gint x1, gint y1, gint x2, gint y2, gdouble *angle, gdouble *baseangle );

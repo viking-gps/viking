@@ -302,6 +302,13 @@ void vik_layer_draw ( VikLayer *l, VikViewport *vp )
       vik_layer_interfaces[l->type]->draw ( l, vp );
 }
 
+void vik_layer_configure ( VikLayer *l, VikViewport *vp )
+{
+  if ( l->visible )
+    if ( vik_layer_interfaces[l->type]->configure )
+      vik_layer_interfaces[l->type]->configure ( l, vp );
+}
+
 void vik_layer_change_coord_mode ( VikLayer *l, VikCoordMode mode )
 {
   if ( vik_layer_interfaces[l->type]->change_coord_mode )

@@ -227,6 +227,7 @@ VikLayerInterface vik_maps_layer_interface = {
 
   (VikLayerFuncProperties)              NULL,
   (VikLayerFuncDraw)                    maps_layer_draw,
+  (VikLayerFuncConfigure)               NULL,
   (VikLayerFuncChangeCoordMode)         NULL,
 
   (VikLayerFuncGetTimestamp)            NULL,
@@ -315,6 +316,8 @@ static VikLayerParam prefs[] = {
 static GMutex *rq_mutex;
 static GHashTable *requests = NULL;
 
+static GdkColor black_color;
+
 void maps_layer_init ()
 {
   a_preferences_register ( prefs, (VikLayerParamData){0}, VIKING_PREFERENCES_GROUP_KEY );
@@ -348,6 +351,8 @@ void maps_layer_init ()
 
   // Just storing keys only
   requests = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
+
+  gdk_color_parse ( "#000000", &black_color );
 }
 
 void maps_layer_uninit ()
@@ -1292,8 +1297,17 @@ gboolean try_draw_scale_down (VikMapsLayer *vml, VikViewport *vvp, guint vp_scal
       gint src_y = (ulm.y % scale_factor) * tilesize_y_ceil;
       gint xa = off_x / scale_factor;
       gint ya = off_y / scale_factor;
-      vik_viewport_draw_pixbuf ( vvp, pixbuf, src_x, src_y, xx+xa, yy+ya, tilesize_x_ceil, tilesize_y_ceil );
+      GdkPixbuf *pixbuf2 = pixbuf;
+#if GTK_CHECK_VERSION (3,0,0)
+      // For GTK3 the low level pixbuf drawing no longer auto crops the image
+      // Since the new pixbuf has already been scaled via get_pixbuf(), now need to extract the revelant part of it
+      // NB in the try_draw_scale_up() below, we simply draw the whole image anyway so it doesn't need to change for GTK3
+      pixbuf2 = gdk_pixbuf_new ( GDK_COLORSPACE_RGB, TRUE, 8, tilesize_x_ceil, tilesize_y_ceil );
+      gdk_pixbuf_copy_area ( pixbuf, src_x, src_y, tilesize_x_ceil, tilesize_y_ceil, pixbuf2, 0, 0 );
       g_object_unref(pixbuf);
+#endif
+      vik_viewport_draw_pixbuf ( vvp, pixbuf2, src_x, src_y, xx+xa, yy+ya, tilesize_x_ceil, tilesize_y_ceil );
+      g_object_unref(pixbuf2);
       return TRUE;
     }
   }
@@ -1472,7 +1486,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
 
             if ( g_file_test ( path_buf, G_FILE_TEST_EXISTS ) == TRUE ) {
 	      GdkGC *black_gc = vik_viewport_get_black_gc(vvp);
-              vik_viewport_draw_line ( vvp, black_gc, xx+tilesize_x_ceil, yy, xx, yy+tilesize_y_ceil );
+              vik_viewport_draw_line ( vvp, black_gc, xx+tilesize_x_ceil, yy, xx, yy+tilesize_y_ceil, &black_color, 1 );
             }
           } else {
             // Try correct scale first
@@ -1518,13 +1532,13 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
 
         xx = base_xx;
         for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
-          vik_viewport_draw_line ( vvp, black_gc, xx, base_yy, xx, height );
+          vik_viewport_draw_line ( vvp, black_gc, xx, base_yy, xx, height, &black_color, 1 );
           xx += tilesize_x;
         }
 
         yy = base_yy;
         for ( y = ((yinc == 1) ? ymin : ymax); y != yend; y+=yinc ) {
-          vik_viewport_draw_line ( vvp, black_gc, base_xx, yy, width, yy );
+          vik_viewport_draw_line ( vvp, black_gc, base_xx, yy, width, yy, &black_color, 1 );
           yy += tilesize_y;
         }
       }

@@ -105,17 +105,20 @@ void vik_window_clear_busy_cursor_widget ( GtkWidget *widget, VikWindow *vw );
 typedef struct {
   VikWindow *vw;
   VikViewport *vvp;
-  gpointer vtl; // VikTrwlayer
+  gpointer vtl; // VikTrwLayer
   gboolean holding;
   gboolean moving;
   gboolean is_waypoint; // otherwise a track
   GdkGC *gc;
+  GdkColor color; // For GTK3+ use as no longer in the gc
   int oldx, oldy;
   // Monitor the bounds for the tool with shift modifier
   gboolean bounds_active;
   gint start_x;
   gint start_y;
+#if !GTK_CHECK_VERSION (3,0,0)
   GdkPixmap *pixmap;
+#endif
   // The following are mostly for ruler tool
   gboolean has_oldcoord;
   VikCoord oldcoord;
@@ -124,6 +127,10 @@ typedef struct {
 
 tool_ed_t* tool_edit_create ( VikWindow *vw, VikViewport *vvp );
 void tool_edit_destroy ( tool_ed_t *te );
+void tool_edit_remove_image ( tool_ed_t *te );
+
+gpointer vik_window_get_active_tool_interface ( VikWindow *vw ); // returns VikToolInterface*
+gpointer vik_window_get_active_tool_data ( VikWindow *vw );
 
 VikWindow *a_vik_window_get_a_window ();
 

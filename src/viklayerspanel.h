@@ -53,6 +53,7 @@ GType vik_layers_panel_get_type ();
 VikLayersPanel *vik_layers_panel_new ();
 void vik_layers_panel_add_layer ( VikLayersPanel *vlp, VikLayer *l );
 void vik_layers_panel_draw_all ( VikLayersPanel *vlp );
+void vik_layers_panel_configure_layers ( VikLayersPanel *vlp );
 VikLayer *vik_layers_panel_get_selected ( VikLayersPanel *vlp );
 void vik_layers_panel_cut_selected ( VikLayersPanel *vlp );
 void vik_layers_panel_copy_selected ( VikLayersPanel *vlp );

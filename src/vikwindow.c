@@ -119,7 +119,7 @@ static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw );
 /* tool management */
 typedef struct {
   VikToolInterface ti;
-  gpointer state;
+  gpointer state; // Data used by the tool - often tool_ed_t*
   gint layer_type;
 } toolbox_tool_t;
 #define TOOL_LAYER_TYPE_NONE -1
@@ -142,10 +142,12 @@ static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event);
 static void toolbox_move (toolbox_tools_t *vt, GdkEventMotion *event);
 static void toolbox_release (toolbox_tools_t *vt, GdkEventButton *event);
 
-void tool_edit_destroy (tool_ed_t *te)
+void tool_edit_destroy ( tool_ed_t *te )
 {
+#if !GTK_CHECK_VERSION (3,0,0)
   if ( te->pixmap )
     g_object_unref ( G_OBJECT ( te->pixmap ) );
+#endif
   g_free ( te );
 }
 
@@ -155,6 +157,15 @@ tool_ed_t* tool_edit_create ( VikWindow *vw, VikViewport *vvp )
   te->vw = vw;
   te->vvp = vvp;
   return te;
+}
+
+void tool_edit_remove_image ( tool_ed_t *te )
+{
+  // Have to manually remove in GTK3
+  vik_viewport_surface_tool_destroy ( te->vvp );
+#if GTK_CHECK_VERSION (3,0,0)
+  te->gc = NULL;
+#endif
 }
 
 /* ui creation */
@@ -890,6 +901,15 @@ static void map_signal_cb ( VikWindow *vw )
   gtk_widget_show_all ( vw->graphs );
 }
 
+#if GTK_CHECK_VERSION (3,0,0)
+static gboolean draw_signal ( GtkWidget *widget, cairo_t *cr, VikWindow *vw )
+{
+  vik_viewport_sync(vw->viking_vvp, cr);
+  draw_status ( vw );
+  return TRUE;
+}
+#endif
+
 static void action_activate_current_tool ( VikWindow *vw )
 {
   switch ( vw->current_tool ) {
@@ -1029,9 +1049,17 @@ static void vik_window_init ( VikWindow *vw )
   g_signal_connect_swapped (G_OBJECT(vw->viking_vlp), "delete_layer", G_CALLBACK(vik_window_clear_selected), vw);
 
   // Signals from GTK
+#if GTK_CHECK_VERSION (3,0,0)
+  g_signal_connect (G_OBJECT(vw->viking_vvp), "draw", G_CALLBACK(draw_signal), vw);
+#else
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "expose_event", G_CALLBACK(draw_sync), vw);
+#endif
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "configure_event", G_CALLBACK(window_configure_event), vw);
+#if GTK_CHECK_VERSION (3,0,0)
+  gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_SCROLL_MASK | GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK );
+#else
   gtk_widget_add_events ( GTK_WIDGET(vw->viking_vvp), GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_KEY_RELEASE_MASK );
+#endif
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "scroll_event", G_CALLBACK(draw_scroll), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_press_event", G_CALLBACK(draw_click), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_release_event", G_CALLBACK(draw_release), vw);
@@ -1436,7 +1464,7 @@ static void draw_update ( VikWindow *vw )
 
 static gboolean draw_sync ( VikWindow *vw )
 {
-  vik_viewport_sync(vw->viking_vvp);
+  vik_viewport_sync(vw->viking_vvp, NULL);
   draw_status ( vw );
   return FALSE;
 }
@@ -1469,9 +1497,12 @@ static void draw_status ( VikWindow *vw )
       /* xmpp should be a whole number so don't show useless .000 bit */
       g_snprintf ( zoom_level, 22, "%d %s", (int)xmpp, unit );
 
+  // In GTK3 version if you hover the mouse over the statusbar zoom level
+  //  This next statement for unknown reason causes a new 'draw' event
+  //  which comes back here and so on continually!
   vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_ZOOM, zoom_level );
 
-  draw_status_tool ( vw );  
+  draw_status_tool ( vw );
 }
 
 void vik_window_set_redraw_trigger(VikLayer *vl)
@@ -1581,6 +1612,7 @@ static void draw_redraw ( VikWindow *vw )
 
 gboolean draw_buf_done = TRUE;
 
+#if !GTK_CHECK_VERSION (3,0,0)
 static gboolean draw_buf(gpointer data)
 {
   gpointer *pass_along = data;
@@ -1589,6 +1621,7 @@ static gboolean draw_buf(gpointer data)
   draw_buf_done = TRUE;
   return FALSE;
 }
+#endif
 
 /* Mouse event handlers ************************************************************************/
 
@@ -1909,6 +1942,52 @@ static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
   return TRUE;
 }
 
+static void set_distance_text ( VikViewport *vvp, gdouble distance, PangoLayout *pl )
+{
+  gchar str[128];
+    vik_units_distance_t dist_units = a_vik_get_units_distance ();
+    switch (dist_units) {
+    case VIK_UNITS_DISTANCE_KILOMETRES:
+      if (distance >= 1000 && distance < 100000) {
+        g_sprintf(str, "%3.2f km", distance/1000.0);
+      } else if (distance < 1000) {
+        g_sprintf(str, "%d m", (int)round(distance));
+      } else {
+        g_sprintf(str, "%d km", (int)round(distance/1000));
+      }
+      break;
+    case VIK_UNITS_DISTANCE_MILES:
+      if (distance >= VIK_MILES_TO_METERS(1) && distance < VIK_MILES_TO_METERS(100)) {
+        g_sprintf(str, "%3.2f miles", VIK_METERS_TO_MILES(distance));
+      } else if (distance < VIK_MILES_TO_METERS(1)) {
+        g_sprintf(str, "%d yards", (int)round((distance*1.0936133)));
+      } else {
+        g_sprintf(str, "%d miles", (int)round(VIK_METERS_TO_MILES(distance)));
+      }
+      break;
+    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
+      if (distance >= VIK_NAUTICAL_MILES_TO_METERS(1) && distance < VIK_NAUTICAL_MILES_TO_METERS(100)) {
+        g_sprintf(str, "%3.2f NM", VIK_METERS_TO_NAUTICAL_MILES(distance));
+      } else if (distance < VIK_NAUTICAL_MILES_TO_METERS(1)) {
+        g_sprintf(str, "%d yards", (int)round(distance*1.0936133));
+      } else {
+        g_sprintf(str, "%d NM", (int)round(VIK_METERS_TO_NAUTICAL_MILES(distance)));
+      }
+      break;
+    default:
+      g_critical("Houston, we've had a problem. distance=%d", dist_units);
+    }
+
+    pango_layout_set_text(pl, str, -1);
+    pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(vvp))->font_desc);
+}
+
+#if GTK_CHECK_VERSION (3,0,0)
+// Hack for a now unused type, yet retain internal function parameter definitions
+//  in a compatible manner for GTK2+3
+typedef gpointer GdkDrawable;
+#endif
+
 // Clang compiler (or strict interpretation of C standard?) doesn't allow functions in static initializer,
 //  so manually put in the values - even if GCC accepts it
 static const double C15 = 0.999989561; // cos(DEG2RAD(15.0));
@@ -1919,10 +1998,12 @@ static const double S15 = 0.004569245; // sin(DEG2RAD(15.0));
  ********************************************************************************/
 static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoord *start, VikCoord *end)
 {
-  PangoLayout *pl;
+#define CR 80
+#define CW 4
+  PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
   gchar str[128];
-  GdkGC *labgc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
-  GdkGC *thickgc = gdk_gc_new(d);
+  // 'N' for North
+  pango_layout_set_text(pl, _("N"), -1);
 
   gint x1, y1, x2, y2;
   vik_viewport_coord_to_screen ( vvp, start, &x1, &y1 );
@@ -1954,6 +2035,143 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
     dy = 0.0;
   }
 
+#if GTK_CHECK_VERSION (3,0,0)
+  ui_cr_clear ( gc );
+  if ( gc ) {
+    /* if the distance is less than 10km, the curvature definitely won't be visible */
+    if (distance < 10e3) {
+      /* draw line with arrow ends */
+      a_viewport_clip_line(&x1, &y1, &x2, &y2);
+      ui_cr_draw_line(gc, x1, y1, x2, y2);
+
+      /* orthogonal bars */
+      ui_cr_draw_line(gc, x1 - dy, y1 + dx, x1 + dy, y1 - dx);
+      ui_cr_draw_line(gc, x2 - dy, y2 + dx, x2 + dy, y2 - dx);
+      /* arrow components */
+      ui_cr_draw_line(gc, x2, y2, x2 - (dx * C15 + dy * S15), y2 - (dy * C15 - dx * S15));
+      ui_cr_draw_line(gc, x2, y2, x2 - (dx * C15 - dy * S15), y2 - (dy * C15 + dx * S15));
+      ui_cr_draw_line(gc, x1, y1, x1 + (dx * C15 + dy * S15), y1 + (dy * C15 - dx * S15));
+      ui_cr_draw_line(gc, x1, y1, x1 + (dx * C15 - dy * S15), y1 + (dy * C15 + dx * S15));
+    } else {
+      gint last_x = x1;
+      gint last_y = y1;
+      gint x, y;
+
+      /* draw geodesic */
+      for (gint step=0;step<=100;step++) {
+        gdouble n = (gdouble) step / 100;
+        VikCoord coord;
+        vik_coord_geodesic_coord ( start, end, n, &coord );
+        vik_viewport_coord_to_screen ( vvp, &coord, &x, &y );
+
+        struct LatLon ll;
+        vik_coord_to_latlon ( &coord, &ll) ;
+
+        if (sqrt(pow(last_x-x, 2) + pow(last_y-y, 2)) < 100) {
+          ui_cr_draw_line(gc, last_x, last_y, x, y);
+        }
+        last_x = x;
+        last_y = y;
+      }
+
+      gdouble dx1 = 10 * cos(angle);
+      gdouble dy1 = 10 * sin(angle);
+      gdouble dx2 = 10 * cos(angle_end);
+      gdouble dy2 = 10 * sin(angle_end);
+
+      /* orthogonal bars */
+      ui_cr_draw_line(gc, x1 - dx1, y1 - dy1, x1 + dx1, y1 + dy1);
+      ui_cr_draw_line(gc, x2 - dx2, y2 - dy2, x2 + dx2, y2 + dy2);
+      /* arrow components */
+      ui_cr_draw_line(gc, x2, y2, x2 + (-dy2 * C15 + dx2 * S15), y2 + (+dx2 * C15 + dy2 * S15));
+      ui_cr_draw_line(gc, x2, y2, x2 + (-dy2 * C15 - dx2 * S15), y2 + (+dx2 * C15 - dy2 * S15));
+      ui_cr_draw_line(gc, x1, y1, x1 + (+dy1 * C15 + dx1 * S15), y1 + (-dx1 * C15 + dy1 * S15));
+      ui_cr_draw_line(gc, x1, y1, x1 + (+dy1 * C15 - dx1 * S15), y1 + (-dx1 * C15 - dy1 * S15));
+    }
+
+    /* draw compass */
+    for (i=0; i<180; i++) {
+      c = cos(DEG2RAD(i)*2 + baseangle);
+      s = sin(DEG2RAD(i)*2 + baseangle);
+
+      if (i%5) {
+        ui_cr_draw_line (gc, x1 + CR*c, y1 + CR*s, x1 + (CR+CW)*c, y1 + (CR+CW)*s);
+      } else {
+        gdouble ticksize = 2*CW;
+        ui_cr_draw_line (gc, x1 + (CR-CW)*c, y1 + (CR-CW)*s, x1 + (CR+ticksize)*c, y1 + (CR+ticksize)*s);
+      }
+    }
+
+    vik_viewport_draw_arc (NULL, gc, FALSE, x1-CR, y1-CR, 2*CR, 2*CR, 0, 64*360, NULL);
+    vik_viewport_draw_arc (NULL, gc, FALSE, x1-CR-CW, y1-CR-CW, 2*(CR+CW), 2*(CR+CW), 0, 64*360, NULL);
+    vik_viewport_draw_arc (NULL, gc, FALSE, x1-CR+CW, y1-CR+CW, 2*(CR-CW), 2*(CR-CW), 0, 64*360, NULL);
+    c = (CR+CW*2)*cos(baseangle);
+    s = (CR+CW*2)*sin(baseangle);
+    ui_cr_draw_line (gc, x1-c, y1-s, x1+c, y1+s);
+    ui_cr_draw_line (gc, x1+s, y1-c, x1-s, y1+c);
+
+    // Output compass rose and bearing lines, before switching to draw the inner ring
+    cairo_stroke(gc);
+
+    // Switch colour for the inner ring
+    GdkColor color;
+    gdk_color_parse("#2255cc", &color);
+    cairo_set_line_width ( gc, CW );
+    vik_viewport_draw_arc (NULL, gc, FALSE, x1-CR+CW/2, y1-CR+CW/2, 2*CR-CW, 2*CR-CW, (RAD2DEG(baseangle)-90)*64, (RAD2DEG(angle)-90)*64, &color );
+    cairo_stroke(gc);
+
+    /* draw labels */
+    gint wd, hd, xd, yd;
+    gint wb, hb, xb, yb;
+    gdk_color_parse("#000000", &color);
+    gdk_cairo_set_source_color ( gc, &color );
+    cairo_set_line_width ( gc, 1 );
+    ui_cr_draw_layout (gc, x1-5, y1-CR-3*CW-8, pl);
+
+    set_distance_text ( vvp, distance, pl );
+
+    /* draw label with distance */
+    pango_layout_get_pixel_size ( pl, &wd, &hd );
+
+    gint mx, my;
+    VikCoord midpoint;
+    vik_coord_geodesic_coord ( start, end, 0.5, &midpoint );
+    vik_viewport_coord_to_screen ( vvp, &midpoint, &mx, &my );
+
+    if (dy>0) {
+      xd = mx + dy;
+      yd = my - hd/2 - dx;
+    } else {
+      xd = mx - dy;
+      yd = my - hd/2 + dx;
+    }
+
+    if ( xd < -5 || yd < -5 || xd > vik_viewport_get_width(vvp)+5 || yd > vik_viewport_get_height(vvp)+5 ) {
+      xd = x2 + 10;
+      yd = y2 - 5;
+    }
+
+    ui_cr_label_with_bg (gc, xd, yd, wd, hd, pl);
+
+    /* draw label with bearing */
+    g_sprintf(str, "%3.1f°", RAD2DEG(angle));
+    pango_layout_set_text(pl, str, -1);
+    pango_layout_get_pixel_size ( pl, &wb, &hb );
+    xb = x1 + CR*cos(angle-M_PI_2);
+    yb = y1 + CR*sin(angle-M_PI_2);
+
+    if ( xb < -5 || yb < -5 || xb > vik_viewport_get_width(vvp)+5 || yb > vik_viewport_get_height(vvp)+5 ) {
+      xb = x2 + 10;
+      yb = y2 + 10;
+    }
+
+    GdkRectangle r1 = {xd-2, yd-1, wd+4, hd+1}, r2 = {xb-2, yb-1, wb+4, hb+1};
+    if (gdk_rectangle_intersect(&r1, &r2, &r2)) {
+      xb = xd + wd + 5;
+    }
+    ui_cr_label_with_bg (gc, xb, yb, wb, hb, pl);
+  }
+#else
   /* if the distance is less than 10km, the curvature definitely won't be visible */
   if (distance < 10e3) {
     /* draw line with arrow ends */
@@ -2007,11 +2225,10 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
     gdk_draw_line(d, gc, x1, y1, x1 + (+dy1 * C15 - dx1 * S15), y1 + (-dx1 * C15 - dy1 * S15));
   }
 
+  GdkGC *labgc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
+  GdkGC *thickgc = gdk_gc_new(d);
 
   /* draw compass */
-#define CR 80
-#define CW 4
-
   {
     GdkColor color;
     gdk_gc_copy(thickgc, gc);
@@ -2020,7 +2237,6 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
     gdk_gc_set_rgb_fg_color(thickgc, &color);
   }
   gdk_draw_arc (d, thickgc, FALSE, x1-CR+CW/2, y1-CR+CW/2, 2*CR-CW, 2*CR-CW, (90 - RAD2DEG(baseangle))*64, -RAD2DEG(angle)*64);
-
 
   gdk_gc_copy(thickgc, gc);
   gdk_gc_set_line_attributes(thickgc, 2, GDK_LINE_SOLID, GDK_CAP_BUTT, GDK_JOIN_MITER);
@@ -2052,47 +2268,10 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
   {
     gint wd, hd, xd, yd;
     gint wb, hb, xb, yb;
-
-    pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
-    pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(vvp))->font_desc);
-    pango_layout_set_text(pl, "N", -1);
     gdk_draw_layout(d, gc, x1-5, y1-CR-3*CW-8, pl);
+    set_distance_text ( vvp, distance, pl );
 
     /* draw label with distance */
-    vik_units_distance_t dist_units = a_vik_get_units_distance ();
-    switch (dist_units) {
-    case VIK_UNITS_DISTANCE_KILOMETRES:
-      if (distance >= 1000 && distance < 100000) {
-        g_sprintf(str, "%3.2f km", distance/1000.0);
-      } else if (distance < 1000) {
-        g_sprintf(str, "%d m", (int)round(distance));
-      } else {
-        g_sprintf(str, "%d km", (int)round(distance/1000));
-      }
-      break;
-    case VIK_UNITS_DISTANCE_MILES:
-      if (distance >= VIK_MILES_TO_METERS(1) && distance < VIK_MILES_TO_METERS(100)) {
-        g_sprintf(str, "%3.2f miles", VIK_METERS_TO_MILES(distance));
-      } else if (distance < VIK_MILES_TO_METERS(1)) {
-        g_sprintf(str, "%d yards", (int)round((distance*1.0936133)));
-      } else {
-        g_sprintf(str, "%d miles", (int)round(VIK_METERS_TO_MILES(distance)));
-      }
-      break;
-    case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
-      if (distance >= VIK_NAUTICAL_MILES_TO_METERS(1) && distance < VIK_NAUTICAL_MILES_TO_METERS(100)) {
-        g_sprintf(str, "%3.2f NM", VIK_METERS_TO_NAUTICAL_MILES(distance));
-      } else if (distance < VIK_NAUTICAL_MILES_TO_METERS(1)) {
-        g_sprintf(str, "%d yards", (int)round(distance*1.0936133));
-      } else {
-        g_sprintf(str, "%d NM", (int)round(VIK_METERS_TO_NAUTICAL_MILES(distance)));
-      }
-      break;
-    default:
-      g_critical("Houston, we've had a problem. distance=%d", dist_units);
-    }
-
-    pango_layout_set_text(pl, str, -1);
     pango_layout_get_pixel_size ( pl, &wd, &hd );
 
     gint mx, my;
@@ -2137,9 +2316,10 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
   }
 #undef LABEL
 
-  g_object_unref ( G_OBJECT ( pl ) );
   g_object_unref ( G_OBJECT ( labgc ) );
   g_object_unref ( G_OBJECT ( thickgc ) );
+#endif
+  g_object_unref ( G_OBJECT ( pl ) );
 }
 
 static void ruler_click_normal (VikLayer *vl, GdkEventButton *event, tool_ed_t *s)
@@ -2194,8 +2374,8 @@ static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, 
   return VIK_LAYER_TOOL_ACK;
 }
 
-static void tool_resize_pixmap (tool_ed_t *te);
-static void tool_redraw_pixmap (tool_ed_t *te, GdkEventMotion *event);
+static void tool_resize_drawing_area (tool_ed_t *te, guint thickness, const gchar *color );
+static void tool_redraw_drawing_area_box (tool_ed_t *te, GdkEventMotion *event);
 
 static void ruler_move_normal (VikLayer *vl, GdkEventMotion *event, tool_ed_t *s)
 {
@@ -2206,9 +2386,19 @@ static void ruler_move_normal (VikLayer *vl, GdkEventMotion *event, tool_ed_t *s
   gchar *temp;
 
   if ( s->has_oldcoord ) {
+    gchar *lat=NULL, *lon=NULL;
+    vik_viewport_screen_to_coord ( vvp, (gint) event->x, (gint) event->y, &coord );
+    vik_coord_to_latlon ( &coord, &ll );
+
+#if GTK_CHECK_VERSION (3,0,0)
+    tool_resize_drawing_area ( s, 1, "#000000" );
+    if ( s->gc ) {
+      draw_ruler ( vvp, NULL, s->gc, &s->oldcoord, &coord );
+      gtk_widget_queue_draw ( GTK_WIDGET(vvp) );
+    }
+#else
     int w1, h1, w2, h2;
     static GdkPixmap *buf = NULL;
-    gchar *lat=NULL, *lon=NULL;
     w1 = vik_viewport_get_width(vvp); 
     h1 = vik_viewport_get_height(vvp);
     if (!buf) {
@@ -2220,9 +2410,6 @@ static void ruler_move_normal (VikLayer *vl, GdkEventMotion *event, tool_ed_t *s
       buf = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), w1, h1, -1 );
     }
 
-    vik_viewport_screen_to_coord ( vvp, (gint) event->x, (gint) event->y, &coord );
-    vik_coord_to_latlon ( &coord, &ll );
-
     gdk_draw_drawable (buf, vik_viewport_get_black_gc(vvp), vik_viewport_get_pixmap(vvp), 0, 0, 0, 0, -1, -1);
     draw_ruler(vvp, buf, vik_viewport_get_black_gc(vvp), &s->oldcoord, &coord );
     if (draw_buf_done) {
@@ -2233,6 +2420,7 @@ static void ruler_move_normal (VikLayer *vl, GdkEventMotion *event, tool_ed_t *s
       (void)g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
       draw_buf_done = FALSE;
     }
+#endif
     a_coords_latlon_to_string(&ll, &lat, &lon);
     vik_units_distance_t dist_units = a_vik_get_units_distance ();
     static gchar tmp_buf[64];
@@ -2252,13 +2440,6 @@ static void ruler_move_normal (VikLayer *vl, GdkEventMotion *event, tool_ed_t *s
  */
 static void draw_boxed_label (VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint x1, gint y1, gint x2, gint y2, vik_positional_t pos, gchar *str)
 {
-  GdkGC *labgc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
-
-#define LABEL(x, y, w, h) { \
-    gdk_draw_rectangle(d, labgc, TRUE, (x)-2, (y)-1, (w)+4, (h)+1); \
-    gdk_draw_rectangle(d, gc, FALSE, (x)-2, (y)-1, (w)+4, (h)+1); \
-    gdk_draw_layout(d, gc, (x), (y), pl); }
-
   gint wd, hd, xd, yd;
   PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
   pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(vvp))->font_desc);
@@ -2279,17 +2460,25 @@ static void draw_boxed_label (VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint 
   break;
   }
 
+#if GTK_CHECK_VERSION (3,0,0)
+  ui_cr_label_with_bg ( gc, xd, yd, wd, hd, pl );
+#else
+  GdkGC *labgc = vik_viewport_new_gc ( vvp, "#cccccc", 1);
+#define LABEL(x, y, w, h) { \
+    gdk_draw_rectangle(d, labgc, TRUE, (x)-2, (y)-1, (w)+4, (h)+1); \
+    gdk_draw_rectangle(d, gc, FALSE, (x)-2, (y)-1, (w)+4, (h)+1); \
+    gdk_draw_layout(d, gc, (x), (y), pl); }
   LABEL(xd, yd, wd, hd);
 #undef LABEL
-
-  g_object_unref ( G_OBJECT ( pl ) );
   g_object_unref ( G_OBJECT ( labgc ) );
+#endif
+  g_object_unref ( G_OBJECT ( pl ) );
 }
 
 static void ruler_move_shift (VikLayer *vl, GdkEventMotion *event, tool_ed_t *te)
 {
-  tool_resize_pixmap ( te );
-  tool_redraw_pixmap ( te, event);
+  tool_resize_drawing_area ( te, 2, "#000000" );
+  tool_redraw_drawing_area_box ( te, event);
   gchar *str;
   gdouble zoom = vik_viewport_get_zoom ( te->vw->viking_vvp );
   if ( zoom < 64.0 ) {
@@ -2322,7 +2511,11 @@ static void ruler_move_shift (VikLayer *vl, GdkEventMotion *event, tool_ed_t *te
 
     vik_positional_t label_pos = a_vik_get_ruler_area_label_pos();
     if ( label_pos != VIK_POSITIONAL_NONE ) {
+#if GTK_CHECK_VERSION (3,0,0)
+      draw_boxed_label ( te->vw->viking_vvp, NULL, te->gc, te->start_x, te->start_y, (gint)event->x, (gint)event->y, label_pos, str );
+#else
       draw_boxed_label ( te->vw->viking_vvp, te->pixmap, vik_viewport_get_black_gc(te->vw->viking_vvp), te->start_x, te->start_y, (gint)event->x, (gint)event->y, label_pos, str );
+#endif
     }
   }
   else {
@@ -2408,7 +2601,8 @@ static gboolean tool_key_release_common_tool_edit ( VikLayer *vl, GdkEventKey *e
 
 static void ruler_deactivate (VikLayer *ignore, tool_ed_t *s)
 {
-  draw_update ( s->vw );
+  tool_edit_remove_image ( s );
+  (void)draw_sync ( s->vw );
 }
 
 static gboolean ruler_key_press (VikLayer *vl, GdkEventKey *event, tool_ed_t *s)
@@ -2455,14 +2649,31 @@ static VikToolInterface ruler_tool =
 /*
  * In case the screen size has changed
  */
-static void tool_resize_pixmap (tool_ed_t *te)
+static void tool_resize_drawing_area (tool_ed_t *te, guint thickness, const gchar *color )
 {
     int w1, h1, w2, h2;
-
     // Allocate a drawing area the size of the viewport
     w1 = vik_viewport_get_width ( te->vw->viking_vvp );
     h1 = vik_viewport_get_height ( te->vw->viking_vvp );
 
+#if GTK_CHECK_VERSION (3,0,0)
+    if ( te->gc ) {
+      cairo_surface_t *surface = vik_viewport_surface_tool_get(te->vvp);
+      if ( surface ) {
+        w2 = cairo_image_surface_get_width ( surface );
+        h2 = cairo_image_surface_get_height ( surface );
+        if ( w1 != w2 || h1 != h2 )
+          tool_edit_remove_image ( te );
+      }
+    }
+    if ( !te->gc ) {
+      te->gc = vik_viewport_surface_tool_create ( te->vvp );
+      if ( te->gc ) {
+        ui_cr_set_color ( te->gc, color );
+        cairo_set_line_width ( te->gc, thickness*vik_viewport_get_scale(te->vvp) );
+      }
+    }
+#else
     if ( !te->pixmap ) {
       // Totally new
       te->pixmap = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(te->vw->viking_vvp)), w1, h1, -1 );
@@ -2475,16 +2686,14 @@ static void tool_resize_pixmap (tool_ed_t *te)
       g_object_unref ( G_OBJECT ( te->pixmap ) );
       te->pixmap = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(te->vw->viking_vvp)), w1, h1, -1 );
     }
+#endif
 }
 
-static void tool_redraw_pixmap (tool_ed_t *te, GdkEventMotion *event)
+/**
+ * Draw outline box in the tool
+ */
+static void tool_redraw_drawing_area_box (tool_ed_t *te, GdkEventMotion *event)
 {
-    // Blank out currently drawn area
-    gdk_draw_drawable ( te->pixmap,
-                        vik_viewport_get_black_gc(te->vw->viking_vvp),
-                        vik_viewport_get_pixmap(te->vw->viking_vvp),
-                        0, 0, 0, 0, -1, -1 );
-
     // Calculate new box starting point & size in pixels
     int xx, yy, width, height;
     if ( event->y > te->start_y ) {
@@ -2504,6 +2713,20 @@ static void tool_redraw_pixmap (tool_ed_t *te, GdkEventMotion *event)
       width = te->start_x-event->x;
     }
 
+#if GTK_CHECK_VERSION (3,0,0)
+    if ( te->gc ) {
+      ui_cr_clear ( te->gc );
+      ui_cr_draw_rectangle ( te->gc, FALSE, xx, yy, width, height );
+      cairo_stroke ( te->gc );
+      gtk_widget_queue_draw ( GTK_WIDGET(te->vw->viking_vvp) );
+    }
+#else
+    // Blank out currently drawn area
+    gdk_draw_drawable ( te->pixmap,
+                        vik_viewport_get_black_gc(te->vw->viking_vvp),
+                        vik_viewport_get_pixmap(te->vw->viking_vvp),
+                        0, 0, 0, 0, -1, -1 );
+
     // Draw the box
     gdk_draw_rectangle (te->pixmap, vik_viewport_get_black_gc(te->vw->viking_vvp), FALSE, xx, yy, width, height);
 
@@ -2516,6 +2739,7 @@ static void tool_redraw_pixmap (tool_ed_t *te, GdkEventMotion *event)
       (void)g_idle_add_full (G_PRIORITY_HIGH_IDLE + 10, draw_buf, pass_along, NULL);
       draw_buf_done = FALSE;
     }
+#endif
 }
 
 static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *event, tool_ed_t *te)
@@ -2571,8 +2795,8 @@ static VikLayerToolFuncStatus zoomtool_move (VikLayer *vl, GdkEventMotion *event
   guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
 
   if ( te->bounds_active && modifiers == GDK_SHIFT_MASK ) {
-    tool_resize_pixmap ( te );
-    tool_redraw_pixmap ( te, event );
+    tool_resize_drawing_area ( te, 2, "#000000" );
+    tool_redraw_drawing_area_box ( te, event );
   }
   else
     te->bounds_active = FALSE;
@@ -2661,6 +2885,8 @@ static VikLayerToolFuncStatus zoomtool_release (VikLayer *vl, GdkEventButton *ev
        }
      }
   }
+
+  tool_edit_remove_image ( te );
 
   draw_update ( te->vw );
 
@@ -3052,6 +3278,23 @@ static VikToolInterface select_tool =
     NULL,
     NULL };
 /*** end select tool code ********************************************************/
+
+
+gpointer vik_window_get_active_tool_data ( VikWindow *vw )
+{
+  gpointer ans = NULL;
+  if ( vw->vt->active_tool >= 0 && vw->vt->active_tool < vw->vt->n_tools )
+    ans = vw->vt->tools[vw->vt->active_tool].state;
+  return ans;
+}
+
+gpointer vik_window_get_active_tool_interface ( VikWindow *vw )
+{
+  gpointer ans = NULL;
+  if ( vw->vt->active_tool >= 0 && vw->vt->active_tool < vw->vt->n_tools )
+    ans = &vw->vt->tools[vw->vt->active_tool].ti;
+  return ans;
+}
 
 static void draw_pan_cb ( GtkAction *a, VikWindow *vw )
 {
@@ -4989,7 +5232,11 @@ static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, 
   draw_redraw ( vw );
 
   /* save buffer as file. */
+#if GTK_CHECK_VERSION (3,0,0)
+  pixbuf_to_save = gdk_pixbuf_get_from_window ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), 0, 0, w, h );
+#else
   pixbuf_to_save = gdk_pixbuf_get_from_drawable ( NULL, GDK_DRAWABLE(vik_viewport_get_pixmap ( vw->viking_vvp )), NULL, 0, 0, 0, 0, w, h);
+#endif
   if ( !pixbuf_to_save ) {
     g_warning("Failed to generate internal pixmap size: %d x %d", w, h);
     gtk_message_dialog_set_markup ( GTK_MESSAGE_DIALOG(msgbox), _("Failed to generate internal image.\n\nTry creating a smaller image.") );
@@ -5080,7 +5327,11 @@ static void save_image_dir ( VikWindow *vw, const gchar *fn, guint w, guint h, g
       draw_redraw ( vw );
 
       /* save buffer as file. */
+#if GTK_CHECK_VERSION (3,0,0)
+      pixbuf_to_save = gdk_pixbuf_get_from_window ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), 0, 0, w, h );
+#else
       pixbuf_to_save = gdk_pixbuf_get_from_drawable ( NULL, GDK_DRAWABLE(vik_viewport_get_pixmap ( vw->viking_vvp )), NULL, 0, 0, 0, 0, w, h);
+#endif
       gdk_pixbuf_save ( pixbuf_to_save, name_of_file, save_as_png ? "png" : "jpeg", &error, NULL );
       if (error)
       {

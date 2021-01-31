@@ -132,6 +132,7 @@ typedef void          (*VikLayerFuncFree)                  (VikLayer *);
 typedef gboolean      (*VikLayerFuncProperties)            (VikLayer *,VikViewport *, gboolean); // gboolean is for using an apply button
 
 typedef void          (*VikLayerFuncDraw)                  (VikLayer *,VikViewport *);
+typedef void          (*VikLayerFuncConfigure)             (VikLayer *,VikViewport *); // 'configure-event' events
 typedef void          (*VikLayerFuncChangeCoordMode)       (VikLayer *,VikCoordMode);
 
 typedef void          (*VikLayerFuncSetMenuItemsSelection)          (VikLayer *,guint16);
@@ -226,6 +227,7 @@ struct _VikLayerInterface {
 
   VikLayerFuncProperties            properties;
   VikLayerFuncDraw                  draw;
+  VikLayerFuncConfigure             configure;
   VikLayerFuncChangeCoordMode       change_coord_mode;
 
   VikLayerFuncGetTimestamp          get_timestamp;
@@ -275,6 +277,7 @@ VikLayerInterface *vik_layer_get_interface ( VikLayerTypeEnum type );
 
 void vik_layer_set_type ( VikLayer *vl, VikLayerTypeEnum type );
 void vik_layer_draw ( VikLayer *l, VikViewport *vp );
+void vik_layer_configure ( VikLayer *l, VikViewport *vp );
 void vik_layer_change_coord_mode ( VikLayer *l, VikCoordMode mode );
 void vik_layer_rename ( VikLayer *l, const gchar *new_name );
 void vik_layer_rename_no_copy ( VikLayer *l, gchar *new_name );

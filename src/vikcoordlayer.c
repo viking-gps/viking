@@ -86,6 +86,7 @@ VikLayerInterface vik_coord_layer_interface = {
 
   (VikLayerFuncProperties)              NULL,
   (VikLayerFuncDraw)                    coord_layer_draw,
+  (VikLayerFuncConfigure)               coord_layer_update_gc,
   (VikLayerFuncChangeCoordMode)         NULL,
 
   (VikLayerFuncGetTimestamp)            NULL,
@@ -219,7 +220,6 @@ static VikCoordLayer *coord_layer_new ( VikViewport *vvp )
   vik_layer_set_defaults ( VIK_LAYER(vcl), vvp );
 
   vcl->gc = NULL;
-
   return vcl;
 }
 
@@ -235,19 +235,21 @@ static void coord_layer_draw ( VikCoordLayer *vcl, VikViewport *vp )
     gdouble l, r, i, j;
     gint x1, y1, x2, y2, smod = 1, mmod = 1;
     gboolean mins = FALSE, secs = FALSE;
+    gint mlt = MAX(vcl->line_thickness/2, 1);
+    gint slt = MAX(vcl->line_thickness/5, 1);
     GdkGC *dgc = vik_viewport_new_gc_from_color(vp, &(vcl->color), vcl->line_thickness);
-    GdkGC *mgc = vik_viewport_new_gc_from_color(vp, &(vcl->color), MAX(vcl->line_thickness/2, 1));
-    GdkGC *sgc = vik_viewport_new_gc_from_color(vp, &(vcl->color), MAX(vcl->line_thickness/5, 1));
+    GdkGC *mgc = vik_viewport_new_gc_from_color(vp, &(vcl->color), mlt);
+    GdkGC *sgc = vik_viewport_new_gc_from_color(vp, &(vcl->color), slt);
 
     vik_viewport_screen_to_coord ( vp, 0, 0, &left );
     vik_viewport_screen_to_coord ( vp, vik_viewport_get_width(vp), 0, &right );
     vik_viewport_screen_to_coord ( vp, 0, vik_viewport_get_height(vp), &left2 );
     vik_viewport_screen_to_coord ( vp, vik_viewport_get_width(vp), vik_viewport_get_height(vp), &right2 );
 
-#define CLINE(gc, c1, c2) { \
+#define CLINE(gc, c1, c2, lt) {                              \
 	  vik_viewport_coord_to_screen(vp, (c1), &x1, &y1);  \
 	  vik_viewport_coord_to_screen(vp, (c2), &x2, &y2);  \
-	  vik_viewport_draw_line (vp, (gc), x1, y1, x2, y2); \
+	  vik_viewport_draw_line (vp, (gc), x1, y1, x2, y2, &vcl->color, lt); \
 	}
 
     l = left.east_west;
@@ -265,18 +267,18 @@ static void coord_layer_draw ( VikCoordLayer *vcl, VikViewport *vp )
 	for (j=i*60+1; j<(i+1)*60; j+=1.0) {
 	  left.east_west = j/3600.0;
 	  left2.east_west = j/3600.0;
-	  if ((int)j % smod == 0) CLINE(sgc, &left, &left2);
+	  if ((int)j % smod == 0) CLINE(sgc, &left, &left2, slt);
 	}
       }
       if (mins) {
 	left.east_west = i/60.0;
 	left2.east_west = i/60.0;
-	if ((int)i % mmod == 0) CLINE(mgc, &left, &left2);
+	if ((int)i % mmod == 0) CLINE(mgc, &left, &left2, mlt);
       }
       if ((int)i % 60 == 0) {
 	left.east_west = i/60.0;
 	left2.east_west = i/60.0;
-	CLINE(dgc, &left, &left2);
+	CLINE(dgc, &left, &left2, vcl->line_thickness);
       }
     }
 
@@ -288,24 +290,24 @@ static void coord_layer_draw ( VikCoordLayer *vcl, VikViewport *vp )
 	for (j=i*60+1; j<(i+1)*60; j+=1.0) {
 	  left.north_south = j/3600.0;
 	  right.north_south = j/3600.0;
-	  if ((int)j % smod == 0) CLINE(sgc, &left, &right);
+	  if ((int)j % smod == 0) CLINE(sgc, &left, &right, slt);
 	}
       }
       if (mins) {
 	left.north_south = i/60.0;
 	right.north_south = i/60.0;
-	if ((int)i % mmod == 0) CLINE(mgc, &left, &right);
+	if ((int)i % mmod == 0) CLINE(mgc, &left, &right, mlt);
       }
       if ((int)i % 60 == 0) {
 	left.north_south = i/60.0;
 	right.north_south = i/60.0;
-	CLINE(dgc, &left, &right);
+	CLINE(dgc, &left, &right, vcl->line_thickness);
       }
     }
 #undef CLINE
-    g_object_unref(dgc);
-    g_object_unref(sgc);
-    g_object_unref(mgc);
+    ui_gc_unref(dgc);
+    ui_gc_unref(sgc);
+    ui_gc_unref(mgc);
     return;
   }
 
@@ -370,7 +372,7 @@ static void coord_layer_draw ( VikCoordLayer *vcl, VikViewport *vp )
       x1 = ( (utm.easting - center->easting) / xmpp ) + (width / 2);
       a_coords_latlon_to_utm ( &ll2, &utm );
       x2 = ( (utm.easting - center->easting) / xmpp ) + (width / 2);
-      vik_viewport_draw_line (vp, vcl->gc, x1, height, x2, 0);
+      vik_viewport_draw_line (vp, vcl->gc, x1, height, x2, 0, &(vcl->color), vcl->line_thickness);
     }
 
     utm = *center;
@@ -392,7 +394,7 @@ static void coord_layer_draw ( VikCoordLayer *vcl, VikViewport *vp )
       x1 = (height / 2) - ( (utm.northing - center->northing) / ympp );
       a_coords_latlon_to_utm ( &ll2, &utm );
       x2 = (height / 2) - ( (utm.northing - center->northing) / ympp );
-      vik_viewport_draw_line (vp, vcl->gc, width, x2, 0, x1);
+      vik_viewport_draw_line (vp, vcl->gc, width, x2, 0, x1, &(vcl->color), vcl->line_thickness);
     }
   }
 }
@@ -400,14 +402,13 @@ static void coord_layer_draw ( VikCoordLayer *vcl, VikViewport *vp )
 static void coord_layer_free ( VikCoordLayer *vcl )
 {
   if ( vcl->gc != NULL )
-    g_object_unref ( G_OBJECT(vcl->gc) );
+    ui_gc_unref ( vcl->gc );
 }
 
 static void coord_layer_update_gc ( VikCoordLayer *vcl, VikViewport *vp )
 {
   if ( vcl->gc )
-    g_object_unref ( G_OBJECT(vcl->gc) );
-
+    ui_gc_unref ( vcl->gc );
   vcl->gc = vik_viewport_new_gc_from_color ( vp, &(vcl->color), vcl->line_thickness );
 }
 

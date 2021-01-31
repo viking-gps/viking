@@ -156,6 +156,7 @@ VikLayerInterface vik_mapnik_layer_interface = {
 
 	(VikLayerFuncProperties)              NULL,
 	(VikLayerFuncDraw)                    mapnik_layer_draw,
+	(VikLayerFuncConfigure)               NULL,
 	(VikLayerFuncChangeCoordMode)         NULL,
 
 	(VikLayerFuncGetTimestamp)            NULL,
@@ -277,6 +278,8 @@ static time_t planet_import_time;
 static GMutex *tp_mutex;
 static GHashTable *requests = NULL;
 
+static GdkColor black_color;
+
 /**
  * vik_mapnik_layer_init:
  *
@@ -288,6 +291,8 @@ void vik_mapnik_layer_init (void)
 
 	for ( guint ii = 0; ii < G_N_ELEMENTS(prefs); ii++ )
 	  a_preferences_register ( &prefs[ii], (VikLayerParamData){0}, MAPNIK_PREFS_GROUP_KEY );
+
+        gdk_color_parse ( "#000000", &black_color );
 }
 
 /**
@@ -894,11 +899,11 @@ static void mapnik_layer_draw ( VikMapnikLayer *vml, VikViewport *vvp )
 			xx = xx - (vml->tile_size_x/2);
 			yy = yy - (vml->tile_size_x/2); // Yes use X ATM
 			for (gint x = xmin; x <= xmax; x++ ) {
-				vik_viewport_draw_line ( vvp, black_gc, xx, 0, xx, height );
+				vik_viewport_draw_line ( vvp, black_gc, xx, 0, xx, height, &black_color, 1 );
 				xx += vml->tile_size_x;
 			}
 			for (gint y = ymin; y <= ymax; y++ ) {
-				vik_viewport_draw_line ( vvp, black_gc, 0, yy, width, yy );
+				vik_viewport_draw_line ( vvp, black_gc, 0, yy, width, yy, &black_color, 1 );
 				yy += vml->tile_size_x; // Yes use X ATM
 			}
 		}

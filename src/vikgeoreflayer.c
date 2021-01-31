@@ -122,6 +122,7 @@ VikLayerInterface vik_georef_layer_interface = {
 
   (VikLayerFuncProperties)              georef_layer_properties,
   (VikLayerFuncDraw)                    georef_layer_draw,
+  (VikLayerFuncConfigure)               NULL, //georef_layer_configure?,
   (VikLayerFuncChangeCoordMode)         NULL,
 
   (VikLayerFuncGetTimestamp)            NULL,

@@ -300,6 +300,7 @@ VikLayerInterface vik_dem_layer_interface = {
 
   (VikLayerFuncProperties)              NULL,
   (VikLayerFuncDraw)                    dem_layer_draw,
+  (VikLayerFuncConfigure)               NULL,
   (VikLayerFuncChangeCoordMode)         NULL,
 
   (VikLayerFuncGetTimestamp)            NULL,
@@ -400,11 +401,15 @@ void vik_dem_layer_init ()
     // Otherwise use the default
     base_url = g_strdup ( SRTM_HTTP_BASE_URL );
   }
+
 }
+
+static GdkColor black_color;
 
 // NB Only performed once per program run
 static void vik_dem_class_init ( VikDEMLayerClass *klass )
 {
+  gdk_color_parse ( "#000000", &black_color );
 }
 
 #define VIK_SETTINGS_DEM_USERNAME "dem_basic_auth_username"
@@ -1388,7 +1393,7 @@ static void srtm_draw_existence ( VikViewport *vp )
         vik_viewport_coord_to_screen ( vp, &ne, &x2, &y2 );
         if ( x1 < 0 ) x1 = 0;
         if ( y2 < 0 ) y2 = 0;
-        vik_viewport_draw_rectangle ( vp, vik_viewport_get_black_gc(vp), FALSE, x1, y2, x2-x1, y1-y2 );
+        vik_viewport_draw_rectangle ( vp, vik_viewport_get_black_gc(vp), FALSE, x1, y2, x2-x1, y1-y2, &black_color );
       }
     }
   }
@@ -1465,7 +1470,7 @@ static void dem24k_draw_existence ( VikViewport *vp )
         vik_viewport_coord_to_screen ( vp, &ne, &x2, &y2 );
         if ( x1 < 0 ) x1 = 0;
         if ( y2 < 0 ) y2 = 0;
-        vik_viewport_draw_rectangle ( vp, vik_viewport_get_black_gc(vp), FALSE, x1, y2, x2-x1, y1-y2 );
+        vik_viewport_draw_rectangle ( vp, vik_viewport_get_black_gc(vp), FALSE, x1, y2, x2-x1, y1-y2, &black_color );
       }
     }
   }

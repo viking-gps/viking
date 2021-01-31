@@ -38,6 +38,7 @@ static VikGpsLayer *vik_gps_layer_create (VikViewport *vp);
 static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter );
 static void vik_gps_layer_free ( VikGpsLayer *vgl );
 static void vik_gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp );
+static void vik_gps_layer_configure ( VikGpsLayer *vgl, VikViewport *vp );
 static VikGpsLayer *vik_gps_layer_new ( VikViewport *vp );
 static void vik_gps_layer_post_read ( VikGpsLayer *vgl, VikViewport *vp, gboolean from_file );
 
@@ -278,6 +279,7 @@ VikLayerInterface vik_gps_layer_interface = {
 
   (VikLayerFuncProperties)              NULL,
   (VikLayerFuncDraw)                    vik_gps_layer_draw,
+  (VikLayerFuncConfigure)               vik_gps_layer_configure,
   (VikLayerFuncChangeCoordMode)         gps_layer_change_coord_mode,
 
   (VikLayerFuncGetTimestamp)            NULL,
@@ -368,7 +370,9 @@ struct _VikGpsLayer {
   GdkGC *realtime_track_bg_gc;
   GdkGC *realtime_track_pt1_gc;
   GdkGC *realtime_track_pt2_gc;
-
+  GdkColor realtime_track_bg_color;
+  GdkColor realtime_track_pt1_color;
+  GdkColor realtime_track_pt2_color;
   /* params */
   gboolean auto_connect_to_gpsd;
   gchar *gpsd_host;
@@ -711,6 +715,15 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
   return rv;
 }
 
+#if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
+static void gcs_create ( VikGpsLayer *vgl, VikViewport *vp )
+{
+  vgl->realtime_track_bg_gc = vik_viewport_new_gc ( vp, "grey", 2 );
+  vgl->realtime_track_pt1_gc = vik_viewport_new_gc ( vp, "red", 2 );
+  vgl->realtime_track_pt2_gc = vik_viewport_new_gc ( vp, "green", 2 );
+}
+#endif
+
 VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
 {
   gint i;
@@ -732,9 +745,10 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   vgl->realtime_retry_timer = 0;
   if ( vp ) {
     layer_update_indictor_gc ( vgl, vp );
-    vgl->realtime_track_bg_gc = vik_viewport_new_gc ( vp, "grey", 2 );
-    vgl->realtime_track_pt1_gc = vik_viewport_new_gc ( vp, "red", 2 );
-    vgl->realtime_track_pt2_gc = vik_viewport_new_gc ( vp, "green", 2 );
+    gdk_color_parse ( "grey", &vgl->realtime_track_bg_color );
+    gdk_color_parse ( "red", &vgl->realtime_track_pt1_color );
+    gdk_color_parse ( "green", &vgl->realtime_track_pt2_color );
+    gcs_create ( vgl, vp );
   }
   vgl->realtime_track = NULL;
 #endif // VIK_CONFIG_REALTIME_GPS_TRACKING
@@ -789,6 +803,28 @@ static void vik_gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp )
       realtime_tracking_draw(vgl, vp);
   }
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
+}
+
+#if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
+static void gcs_free ( VikGpsLayer *vgl )
+{
+  if (vgl->realtime_track_gc != NULL)
+    ui_gc_unref(vgl->realtime_track_gc);
+  if (vgl->realtime_track_bg_gc != NULL)
+    ui_gc_unref(vgl->realtime_track_bg_gc);
+  if (vgl->realtime_track_pt1_gc != NULL)
+    ui_gc_unref(vgl->realtime_track_pt1_gc);
+  if (vgl->realtime_track_pt2_gc != NULL)
+    ui_gc_unref(vgl->realtime_track_pt2_gc);
+}
+#endif
+
+static void vik_gps_layer_configure ( VikGpsLayer *vgl, VikViewport *vp )
+{
+#if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
+  gcs_free ( vgl );
+  gcs_create ( vgl, vp );
+#endif
 }
 
 static void gps_layer_change_coord_mode ( VikGpsLayer *vgl, VikCoordMode mode )
@@ -846,14 +882,7 @@ static void vik_gps_layer_free ( VikGpsLayer *vgl )
   }
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   rt_gpsd_disconnect(vgl);
-  if (vgl->realtime_track_gc != NULL)
-    g_object_unref(vgl->realtime_track_gc);
-  if (vgl->realtime_track_bg_gc != NULL)
-    g_object_unref(vgl->realtime_track_bg_gc);
-  if (vgl->realtime_track_pt1_gc != NULL)
-    g_object_unref(vgl->realtime_track_pt1_gc);
-  if (vgl->realtime_track_pt2_gc != NULL)
-    g_object_unref(vgl->realtime_track_pt2_gc);
+  gcs_free(vgl);
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
 }
 
@@ -1677,11 +1706,16 @@ static void realtime_tracking_draw(VikGpsLayer *vgl, VikViewport *vp)
      GdkPoint trian[3] = { { pt_x, pt_y }, {side1_x, side1_y}, {side2_x, side2_y} };
      GdkPoint trian_bg[3] = { { ptbg_x, pt_y }, {side1bg_x, side1bg_y}, {side2bg_x, side2bg_y} };
 
-     vik_viewport_draw_polygon ( vp, vgl->realtime_track_bg_gc, TRUE, trian_bg, 3 );
-     vik_viewport_draw_polygon ( vp, vgl->realtime_track_gc, TRUE, trian, 3 );
-     vik_viewport_draw_rectangle ( vp,
-         (vgl->realtime_fix.fix.mode > MODE_2D) ? vgl->realtime_track_pt2_gc : vgl->realtime_track_pt1_gc,
-         TRUE, x-2, y-2, 4, 4 );
+     vik_viewport_draw_polygon ( vp, vgl->realtime_track_bg_gc, TRUE, trian_bg, 3, &vgl->realtime_track_bg_color );
+     vik_viewport_draw_polygon ( vp, vgl->realtime_track_gc, TRUE, trian, 3, &vgl->indicator_color );
+     if ( vgl->realtime_fix.fix.mode > MODE_2D )
+       vik_viewport_draw_rectangle ( vp,
+                                     vgl->realtime_track_pt2_gc,
+                                     TRUE, x-2, y-2, 4, 4, &vgl->realtime_track_pt2_color );
+     else
+       vik_viewport_draw_rectangle ( vp,
+                                     vgl->realtime_track_pt1_gc,
+                                     TRUE, x-2, y-2, 4, 4, &vgl->realtime_track_pt1_color );
   }
 }
 
@@ -2087,8 +2121,7 @@ static void gps_start_stop_tracking_cb( gpointer layer_and_vlp[2])
 static void layer_update_indictor_gc (VikGpsLayer *vgl, VikViewport *vp)
 {
   if ( vgl->realtime_track_gc )
-    g_object_unref ( G_OBJECT(vgl->realtime_track_gc) );
+    ui_gc_unref ( vgl->realtime_track_gc );
   vgl->realtime_track_gc = vik_viewport_new_gc_from_color ( vp, &(vgl->indicator_color), 2 );
 }
-
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */

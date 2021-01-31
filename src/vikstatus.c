@@ -122,7 +122,9 @@ vik_statusbar_init (VikStatusbar *vs)
     else
     {
       vs->status[i] = gtk_statusbar_new();
+#if !GTK_CHECK_VERSION (3,0,0)
       gtk_statusbar_set_has_resize_grip ( GTK_STATUSBAR(vs->status[i]), FALSE );
+#endif
     }
     g_object_set_data (G_OBJECT (vs->status[i]), "type", GINT_TO_POINTER(i));
   }

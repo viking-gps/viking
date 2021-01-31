@@ -43,6 +43,8 @@
 #include "vikwindow.h"
 #include "vikviewport.h"
 #include "mapcoord.h"
+#include "ui_util.h"
+#include "viklayerspanel.h"
 
 /* for ALTI_TO_MPP */
 #include "globals.h"
@@ -74,7 +76,16 @@ static GObjectClass *parent_class;
 
 struct _VikViewport {
   GtkDrawingArea drawing_area;
+  // cairo types only used in GTK3+ versions
+  cairo_t *crt;
+  // The main surface for pixbuf, tracks and so on
+  cairo_surface_t *surface_main;
+  // There can only be one
+  cairo_surface_t *surface_tool;
+  cairo_t *cr_tool;
+#if !GTK_CHECK_VERSION (3,0,0)
   GdkPixmap *scr_buffer;
+#endif
   gint width, height;
   gint width_2, height_2; // Half of the normal width and height
   VikCoord center;
@@ -90,10 +101,17 @@ struct _VikViewport {
   gdouble utm_zone_width;
   gboolean one_utm_zone;
 
+  // Remember in GTK3 GdkGC-->cairo_t
+  //  and they just refer back to the crt
   GdkGC *background_gc;
-  GdkColor background_color;
   GdkGC *scale_bg_gc;
   GdkGC *black_gc;
+  GdkGC *highlight_gc;
+
+  GdkColor background_color;
+  GdkColor scale_bg_color;
+  GdkColor black_color;
+  GdkColor highlight_color;
 
   GSList *copyrights;
   GSList *logos;
@@ -102,15 +120,15 @@ struct _VikViewport {
   gboolean draw_scale;
   gboolean draw_centermark;
   gboolean draw_highlight;
-  GdkGC *highlight_gc;
-  GdkColor highlight_color;
 
   /* subset of coord types. lat lon can be plotted in 2 ways, google or exp. */
   VikViewportDrawMode drawmode;
 
   /* trigger stuff */
   gpointer trigger;
+#if !GTK_CHECK_VERSION (3,0,0)
   GdkPixmap *snapshot_buffer;
+#endif
   gboolean half_drawn;
 };
 
@@ -245,8 +263,10 @@ vik_viewport_init ( VikViewport *vvp )
   vvp->center.east_west = ll.lon;
   vvp->center.utm_zone = (int)utm.zone;
   vvp->center.utm_letter = utm.letter;
-  vvp->scr_buffer = NULL;
   vvp->utm_zone_width = 0.0;
+#if !GTK_CHECK_VERSION (3,0,0)
+  vvp->scr_buffer = NULL;
+#endif
   vvp->background_gc = NULL;
   vvp->highlight_gc = NULL;
   vvp->black_gc = NULL;
@@ -268,7 +288,21 @@ vik_viewport_init ( VikViewport *vvp )
   vvp->draw_highlight = TRUE;
 
   vvp->trigger = NULL;
+  vvp->highlight_color = a_vik_get_startup_highlight_color();
+#if GTK_CHECK_VERSION (3,0,0)
+  //(void)gdk_color_parse ( DEFAULT_BACKGROUND_COLOR, &(vvp->background_color) );
+  // or
+  /*
+  GdkRGBA *rgbaBC; // Background Colour
+  GtkStyleContext *gsc = gtk_widget_get_style_context ( gtk_widget_get_toplevel(GTK_WIDGET(vvp)) );
+  gtk_style_context_get ( gsc, gtk_style_context_get_state(gsc), GTK_STYLE_PROPERTY_BACKGROUND_COLOR, &rgbaBC, NULL );
+  vvp->background_color = (GdkColor){ rgbaBC->red * 256, rgbaBC->green * 256, rgbaBC->blue * 256 };
+  gdk_rgba_free ( rgbaBC );
+  */
+  //vik_viewport_set_background_color ( vvp, DEFAULT_BACKGROUND_COLOR );
+#else
   vvp->snapshot_buffer = NULL;
+#endif
   vvp->half_drawn = FALSE;
 
   // Initiate center history
@@ -297,8 +331,11 @@ const gchar *vik_viewport_get_background_color ( VikViewport *vvp )
 
 void vik_viewport_set_background_color ( VikViewport *vvp, const gchar *colorname )
 {
-  if ( gdk_color_parse ( colorname, &(vvp->background_color) ) )
+  if ( gdk_color_parse ( colorname, &(vvp->background_color) ) ) {
+#if !GTK_CHECK_VERSION (3,0,0)
     gdk_gc_set_rgb_fg_color ( vvp->background_gc, &(vvp->background_color) );
+#endif
+  }
   else
     g_warning("%s: Failed to parse color '%s'", __FUNCTION__, colorname);
 }
@@ -306,7 +343,11 @@ void vik_viewport_set_background_color ( VikViewport *vvp, const gchar *colornam
 void vik_viewport_set_background_gdkcolor ( VikViewport *vvp, GdkColor color )
 {
   vvp->background_color = color;
+#if GTK_CHECK_VERSION (3,0,0)
+  gdk_cairo_set_source_color ( vvp->background_gc, &color );
+#else
   gdk_gc_set_rgb_fg_color ( vvp->background_gc, &color );
+#endif
 }
 
 GdkColor vik_viewport_get_highlight_gdkcolor ( VikViewport *vvp )
@@ -325,13 +366,19 @@ const gchar *vik_viewport_get_highlight_color ( VikViewport *vvp )
 void vik_viewport_set_highlight_color ( VikViewport *vvp, const gchar *colorname )
 {
   gdk_color_parse ( colorname, &(vvp->highlight_color) );
+#if !GTK_CHECK_VERSION (3,0,0)
   gdk_gc_set_rgb_fg_color ( vvp->highlight_gc, &(vvp->highlight_color) );
+#endif
 }
 
 void vik_viewport_set_highlight_gdkcolor ( VikViewport *vvp, GdkColor color )
 {
   vvp->highlight_color = color;
+#if GTK_CHECK_VERSION (3,0,0)
+  gdk_cairo_set_source_color ( vvp->highlight_gc, &color );
+#else
   gdk_gc_set_rgb_fg_color ( vvp->highlight_gc, &color );
+#endif
 }
 
 GdkGC *vik_viewport_get_gc_highlight ( VikViewport *vvp )
@@ -342,30 +389,43 @@ GdkGC *vik_viewport_get_gc_highlight ( VikViewport *vvp )
 void vik_viewport_set_highlight_thickness ( VikViewport *vvp, gint thickness )
 {
   // Otherwise same GDK_* attributes as in vik_viewport_new_gc
+#if !GTK_CHECK_VERSION (3,0,0)
   gdk_gc_set_line_attributes ( vvp->highlight_gc, thickness, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND );
+#endif
 }
 
 GdkGC *vik_viewport_new_gc ( VikViewport *vvp, const gchar *colorname, gint thickness )
 {
   GdkGC *rv = NULL;
-  GdkColor color;
 
+#if GTK_CHECK_VERSION (3,0,0)
+  // At the moment create a reference rather than returning it directly
+  g_return_val_if_fail ( vvp->crt != NULL, rv );
+  rv = cairo_reference ( vvp->crt );
+#else
+  GdkColor color;
   rv = gdk_gc_new ( gtk_widget_get_window(GTK_WIDGET(vvp)) );
   if ( gdk_color_parse ( colorname, &color ) )
     gdk_gc_set_rgb_fg_color ( rv, &color );
   else
     g_warning("%s: Failed to parse color '%s'", __FUNCTION__, colorname);
   gdk_gc_set_line_attributes ( rv, thickness, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND );
+#endif
   return rv;
 }
 
 GdkGC *vik_viewport_new_gc_from_color ( VikViewport *vvp, GdkColor *color, gint thickness )
 {
-  GdkGC *rv;
+  GdkGC *rv = NULL;
 
+#if GTK_CHECK_VERSION (3,0,0)
+  if ( vvp->crt )
+    rv = cairo_reference ( vvp->crt );
+#else
   rv = gdk_gc_new ( gtk_widget_get_window(GTK_WIDGET(vvp)) );
   gdk_gc_set_rgb_fg_color ( rv, color );
   gdk_gc_set_line_attributes ( rv, thickness, GDK_LINE_SOLID, GDK_CAP_ROUND, GDK_JOIN_ROUND );
+#endif
   return rv;
 }
 
@@ -382,6 +442,16 @@ void vik_viewport_configure_manually ( VikViewport *vvp, gint width, guint heigh
   vvp->width_2 = vvp->width/2;
   vvp->height_2 = vvp->height/2;
 
+#if GTK_CHECK_VERSION (3,0,0)
+  // Need to recreate the surface each time the size changes
+  //  seemingly no way via the API to resize an existing surface
+  if ( vvp->surface_main )
+    cairo_surface_destroy ( vvp->surface_main );
+  vvp->surface_main = cairo_image_surface_create ( CAIRO_FORMAT_ARGB32, vvp->width, vvp->height );
+  if ( vvp->crt )
+    cairo_destroy ( vvp->crt );
+  vvp->crt = cairo_create ( vvp->surface_main );
+#else
   if ( vvp->scr_buffer )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );
   vvp->scr_buffer = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), vvp->width, vvp->height, -1 );
@@ -390,26 +460,108 @@ void vik_viewport_configure_manually ( VikViewport *vvp, gint width, guint heigh
   if ( vvp->snapshot_buffer )
     g_object_unref ( G_OBJECT ( vvp->snapshot_buffer ) );
   vvp->snapshot_buffer = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), vvp->width, vvp->height, -1 );
+#endif
 }
 
+/**
+ * The returned cairo_t* should be destroyed after use,
+ * inconjunction with vik_viewport_surface_tool_destroy() below.
+ */
+cairo_t *vik_viewport_surface_tool_create ( VikViewport *vvp )
+{
+  if ( vvp->surface_tool )
+    cairo_surface_destroy ( vvp->surface_tool );
+  vvp->surface_tool = cairo_image_surface_create ( CAIRO_FORMAT_ARGB32, vvp->width, vvp->height );
+  if ( vvp->surface_tool ) {
+    // Originally didn't want to know/manage this cairo reference in the viewport
+    vvp->cr_tool = cairo_create ( vvp->surface_tool );
+    return vvp->cr_tool;
+  }
+  return NULL;
+}
 
+/**
+ * Returned value may be NULL
+ */
+cairo_surface_t *vik_viewport_surface_tool_get ( VikViewport *vvp )
+{
+  return vvp->surface_tool;
+}
+
+/**
+ * Remove the surface once finished with the tool
+ * NB you should be removing the cairo reference - as returned in
+ *   vik_viewport_surface_tool_create() - as well.
+ */
+void vik_viewport_surface_tool_destroy ( VikViewport *vvp )
+{
+  if ( vvp->surface_tool )
+    cairo_surface_destroy ( vvp->surface_tool );
+  vvp->surface_tool = NULL; // Variable is reused so clear the value
+  if ( vvp->cr_tool ) {
+    cairo_destroy ( vvp->cr_tool );
+  }
+  vvp->cr_tool = NULL; // Variable is reused so clear the value
+}
+
+// In GTK3 haven't found an ideal way to automatically remove this surface
+//  so operations that invalidate the surface i.e.
+// panning (changing the viewport center) and zooming must call this
+// Potentially this could be invoked by a signal mechanism
+//  but ATM only used internally to vikviewport, so direct calling suffices
+static void viewport_clear_surface_tool ( VikViewport *vvp )
+{
+#if GTK_CHECK_VERSION (3,0,0)
+  if ( vvp->cr_tool )
+    ui_cr_clear ( vvp->cr_tool );
+#endif
+}
+
+#if !GTK_CHECK_VERSION (3,0,0)
 GdkPixmap *vik_viewport_get_pixmap ( VikViewport *vvp )
 {
   return vvp->scr_buffer;
 }
+#endif
 
 gboolean vik_viewport_configure ( VikViewport *vvp )
 {
+  static gboolean first = TRUE;
   g_return_val_if_fail ( vvp != NULL, TRUE );
 
   GtkAllocation allocation;
   gtk_widget_get_allocation ( GTK_WIDGET(vvp), &allocation );
+  gboolean changed_size = FALSE;
+  if ( vvp->width != allocation.width || vvp->height != allocation.height || first )
+    changed_size = TRUE;
+  first = FALSE;
   vvp->width = allocation.width;
   vvp->height = allocation.height;
 
   vvp->width_2 = vvp->width/2;
   vvp->height_2 = vvp->height/2;
 
+#if GTK_CHECK_VERSION (3,0,0)
+  if ( changed_size ) {
+    if ( vvp->crt )
+      cairo_destroy ( vvp->crt );
+
+    if ( vvp->surface_main )
+      cairo_surface_destroy ( vvp->surface_main );
+
+    // One would have thought creating cairo stuff via the gdk functions would be the obvious thing to do
+    //  but for unknown reasons it doesn't actually work and nothing gets shown on the the display
+    //GdkWindow * gw = gtk_widget_get_window(GTK_WIDGET(vvp));
+    //vvp->surface = gdk_window_create_similar_surface ( gw, CAIRO_CONTENT_COLOR_ALPHA, vvp->width, vvp->height );
+    //vvp->crt = gdk_cairo_create ( gw );
+    // So instead use the raw cairo functions
+    vvp->surface_main = cairo_image_surface_create ( CAIRO_FORMAT_ARGB32, vvp->width, vvp->height );
+    vvp->crt = cairo_create ( vvp->surface_main );
+
+    VikWindow *vw = VIK_WINDOW_FROM_WIDGET(vvp);
+    vik_layers_panel_configure_layers ( vik_window_layers_panel(vw) );
+  }
+#else
   if ( vvp->scr_buffer )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );
 
@@ -421,27 +573,34 @@ gboolean vik_viewport_configure ( VikViewport *vvp )
 
   vvp->snapshot_buffer = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), vvp->width, vvp->height, -1 );
   /* TODO trigger */
+#endif
 
-  /* this is down here so it can get a GC (necessary?) */
-  if ( !vvp->background_gc )
-  {
-    vvp->background_gc = vik_viewport_new_gc ( vvp, DEFAULT_BACKGROUND_COLOR, 1 );
-    vik_viewport_set_background_color ( vvp, DEFAULT_BACKGROUND_COLOR );
-  }
-  if ( ! vvp->highlight_gc )
-  {
-    vvp->highlight_color = a_vik_get_startup_highlight_color();
-    vvp->highlight_gc = vik_viewport_new_gc_from_color ( vvp, &vvp->highlight_color, 1 );
-  }
+  if ( vvp->background_gc )
+    ui_gc_unref ( vvp->background_gc );
+  vvp->background_gc = vik_viewport_new_gc ( vvp, DEFAULT_BACKGROUND_COLOR, 1 );
 
-  if ( !vvp->scale_bg_gc) {
-    vvp->scale_bg_gc = vik_viewport_new_gc(vvp, "grey", 3*vvp->scale);
-  }
+  if ( vvp->highlight_gc )
+    ui_gc_unref ( vvp->highlight_gc );
+  vvp->highlight_gc = vik_viewport_new_gc_from_color ( vvp, &vvp->highlight_color, 1 );
 
-  if ( !vvp->black_gc ) {
-    vvp->black_gc = vik_viewport_new_gc ( vvp, "black", vvp->scale );
-  }
-  return FALSE;	
+  if ( vvp->scale_bg_gc )
+    ui_gc_unref ( vvp->scale_bg_gc );
+  vvp->scale_bg_gc = vik_viewport_new_gc ( vvp, "grey", 3*vvp->scale );
+  gdk_color_parse ( "grey", &vvp->scale_bg_color );
+
+  if ( vvp->black_gc )
+    ui_gc_unref ( vvp->black_gc );
+  vvp->black_gc = vik_viewport_new_gc ( vvp, "black", vvp->scale );
+  gdk_color_parse ( "black", &vvp->black_color );
+
+#if GTK_CHECK_VERSION (3,0,0)
+  // Performed after above gc's are reset
+  if ( changed_size )
+    // Propagate internal configure
+    vik_layers_panel_configure_layers ( vik_window_layers_panel(VIK_WINDOW_FROM_WIDGET(vvp)) );
+#endif
+
+  return FALSE;
 }
 
 static void viewport_finalize ( GObject *gob )
@@ -465,27 +624,29 @@ static void viewport_finalize ( GObject *gob )
   if ( vvp->centers )
     g_list_free_full ( vvp->centers, g_free );
 
+#if !GTK_CHECK_VERSION (3,0,0)
   if ( vvp->scr_buffer )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );
-
   if ( vvp->snapshot_buffer )
     g_object_unref ( G_OBJECT ( vvp->snapshot_buffer ) );
+#else
+  if ( vvp->crt )
+    cairo_destroy ( vvp->crt );
+  if ( vvp->surface_main )
+    cairo_surface_destroy ( vvp->surface_main );
+#endif
 
   if ( vvp->background_gc )
-    g_object_unref ( G_OBJECT ( vvp->background_gc ) );
+    ui_gc_unref ( vvp->background_gc );
 
   if ( vvp->highlight_gc )
-    g_object_unref ( G_OBJECT ( vvp->highlight_gc ) );
+    ui_gc_unref ( vvp->highlight_gc );
 
-  if ( vvp->scale_bg_gc ) {
-    g_object_unref ( G_OBJECT ( vvp->scale_bg_gc ) );
-    vvp->scale_bg_gc = NULL;
-  }
+  if ( vvp->scale_bg_gc )
+    ui_gc_unref ( vvp->scale_bg_gc );
 
-  if ( vvp->black_gc ) {
-    g_object_unref ( G_OBJECT ( vvp->black_gc ) );
-    vvp->black_gc = NULL;
-  }
+  if ( vvp->black_gc )
+    ui_gc_unref ( vvp->black_gc );
 
   G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
@@ -499,8 +660,28 @@ static void viewport_finalize ( GObject *gob )
 void vik_viewport_clear ( VikViewport *vvp )
 {
   g_return_if_fail ( vvp != NULL );
+#if GTK_CHECK_VERSION (3,0,0)
+  if ( vvp->crt ) {
+    // Although could draw fully translucent like this
+    // cairo_set_source_rgba ( vvp->crt, 0.0, 0.0, 0.0, 0.0 );
+    // (which would get the default background)
+    // Need to do a 'hard' reset otherwise old image may bleed through especially if pixbufs have alpha values
+    // TODO really only need if loaded value from a file (and saving new file only to set if manually set);
+    // i.e. main use case is manually set for using own GeoRef layer
+    /*
+    GdkRGBA rgba;
+    rgba.red = vvp->background_color.red / 256.0;
+    rgba.green = vvp->background_color.green / 256.0;
+    rgba.blue = vvp->background_color.blue / 256.0;
+    cairo_set_source_rgba ( vvp->crt, rgba.red, rgba.green, rgba.blue, 1.0 );
+    cairo_paint ( vvp->crt );
+    */
+  }
+  ui_cr_clear ( vvp->crt );
+#else
   if ( vvp->scr_buffer )
     gdk_draw_rectangle(GDK_DRAWABLE(vvp->scr_buffer), vvp->background_gc, TRUE, 0, 0, vvp->width, vvp->height);
+#endif
   vik_viewport_reset_copyrights ( vvp );
   vik_viewport_reset_logos ( vvp );
 }
@@ -572,35 +753,37 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
 
     /* grey background */
     vik_viewport_draw_line(vvp, vvp->scale_bg_gc, 
-			 PAD, vvp->height-PAD, PAD + len, vvp->height-PAD);
+                           PAD, vvp->height-PAD, PAD + len, vvp->height-PAD, &vvp->scale_bg_color, 3.0*vvp->scale);
     vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
-			 PAD, vvp->height-PAD, PAD, vvp->height-PAD-HEIGHT);
+                           PAD, vvp->height-PAD, PAD, vvp->height-PAD-HEIGHT, &vvp->scale_bg_color, 3.0*vvp->scale);
     vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
-			 PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT);
+                           PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT, &vvp->scale_bg_color, 3.0*vvp->scale);
+
     /* black scale */
     vik_viewport_draw_line(vvp, vvp->black_gc,
-			 PAD, vvp->height-PAD, PAD + len, vvp->height-PAD);
+                           PAD, vvp->height-PAD, PAD + len, vvp->height-PAD, &vvp->black_color, vvp->scale);
     vik_viewport_draw_line(vvp, vvp->black_gc,
-			 PAD, vvp->height-PAD, PAD, vvp->height-PAD-HEIGHT);
+                           PAD, vvp->height-PAD, PAD, vvp->height-PAD-HEIGHT, &vvp->black_color, vvp->scale);
     vik_viewport_draw_line(vvp, vvp->black_gc,
-			 PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT);
+                           PAD + len, vvp->height-PAD, PAD + len, vvp->height-PAD-HEIGHT, &vvp->black_color, vvp->scale);
     if (odd%2) {
       int i;
       for (i=1; i<5; i++) {
         vik_viewport_draw_line(vvp, vvp->scale_bg_gc, 
-                               PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-(HEIGHT/2));
+                               PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-(HEIGHT/2), &vvp->black_color, vvp->scale);
         vik_viewport_draw_line(vvp, vvp->black_gc,
-                               PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-(HEIGHT/2));
+                               PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-(HEIGHT/2), &vvp->black_color, vvp->scale);
       }
     } else {
       int i;
       for (i=1; i<10; i++) {
         vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
-  			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
+                               PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)), &vvp->black_color, vvp->scale);
         vik_viewport_draw_line(vvp, vvp->black_gc,
-  			     PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)));
+                               PAD+i*len/10, vvp->height-PAD, PAD+i*len/10, vvp->height-PAD-((i==5)?(2*HEIGHT/3):(HEIGHT/2)), &vvp->black_color, vvp->scale);
       }
     }
+
     pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL); 
     pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->font_desc);
 
@@ -642,8 +825,7 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     pango_layout_set_text(pl, s, -1);
     int ww, hh;
     pango_layout_get_pixel_size ( pl, &ww, &hh );
-    vik_viewport_draw_layout(vvp, vvp->black_gc,
-                             PAD + len + PAD, vvp->height - PAD - HEIGHT/2 - hh/2, pl);
+    vik_viewport_draw_layout ( vvp, vvp->black_gc, PAD + len + PAD, vvp->height - PAD - HEIGHT/2 - hh/2, pl, &vvp->black_color );
     g_object_unref(pl);
     pl = NULL;
   }
@@ -692,12 +874,10 @@ void vik_viewport_draw_copyright ( VikViewport *vvp )
   /* Use maximum of half the viewport width */
   pango_layout_set_width ( pl, ( vvp->width / 2 ) * PANGO_SCALE );
   pango_layout_get_pixel_extents(pl, &ink_rect, &logical_rect);
-  vik_viewport_draw_layout(vvp, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->black_gc,
-			   vvp->width / 2, vvp->height - logical_rect.height, pl);
+  vik_viewport_draw_layout ( vvp, vvp->black_gc, vvp->width / 2, vvp->height - logical_rect.height, pl, &vvp->black_color );
 
   /* Free memory */
   g_object_unref(pl);
-  pl = NULL;		
 }
 
 /**
@@ -730,16 +910,16 @@ void vik_viewport_draw_centermark ( VikViewport *vvp )
   int center_y = vvp->height/2;
 
   // grey background
-  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x - len, center_y, center_x - gap, center_y);
-  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x + gap, center_y, center_x + len, center_y);
-  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x, center_y - len, center_x, center_y - gap);
-  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x, center_y + gap, center_x, center_y + len);
+  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x - len, center_y, center_x - gap, center_y, &vvp->scale_bg_color, 3.0*vvp->scale);
+  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x + gap, center_y, center_x + len, center_y, &vvp->scale_bg_color, 3.0*vvp->scale);
+  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x, center_y - len, center_x, center_y - gap, &vvp->scale_bg_color, 3.0*vvp->scale);
+  vik_viewport_draw_line(vvp, vvp->scale_bg_gc, center_x, center_y + gap, center_x, center_y + len, &vvp->scale_bg_color, 3.0*vvp->scale);
+
   // black foreground
-  vik_viewport_draw_line(vvp, vvp->black_gc, center_x - len, center_y, center_x - gap, center_y);
-  vik_viewport_draw_line(vvp, vvp->black_gc, center_x + gap, center_y, center_x + len, center_y);
-  vik_viewport_draw_line(vvp, vvp->black_gc, center_x, center_y - len, center_x, center_y - gap);
-  vik_viewport_draw_line(vvp, vvp->black_gc, center_x, center_y + gap, center_x, center_y + len);
-  
+  vik_viewport_draw_line(vvp, vvp->black_gc, center_x - len, center_y, center_x - gap, center_y, &vvp->black_color, vvp->scale);
+  vik_viewport_draw_line(vvp, vvp->black_gc, center_x + gap, center_y, center_x + len, center_y, &vvp->black_color, vvp->scale);
+  vik_viewport_draw_line(vvp, vvp->black_gc, center_x, center_y - len, center_x, center_y - gap, &vvp->black_color, vvp->scale);
+  vik_viewport_draw_line(vvp, vvp->black_gc, center_x, center_y + gap, center_x, center_y + len, &vvp->black_color, vvp->scale);
 }
 
 void vik_viewport_draw_logo ( VikViewport *vvp )
@@ -770,10 +950,29 @@ gboolean vik_viewport_get_draw_highlight ( VikViewport *vvp )
   return vvp->draw_highlight;
 }
 
-void vik_viewport_sync ( VikViewport *vvp )
+/**
+ * GTK2: cr is not used
+ * GTK3: Remember GdkGC* is actually cairo_t*
+ */
+void vik_viewport_sync ( VikViewport *vvp, GdkGC *cr )
 {
   g_return_if_fail ( vvp != NULL );
+#if !GTK_CHECK_VERSION (3,0,0)
   gdk_draw_drawable(gtk_widget_get_window(GTK_WIDGET(vvp)), gtk_widget_get_style(GTK_WIDGET(vvp))->bg_gc[0], GDK_DRAWABLE(vvp->scr_buffer), 0, 0, 0, 0, vvp->width, vvp->height);
+#else
+  // Avoid using g_message() or similar in the redraw path as that updates the statusbar
+  //  and then that seemingly triggers another update and so on!
+  //  so prefer g_printf() for debugging purposes
+  if ( cr ) {
+    ui_cr_surface_paint ( cr, vvp->surface_main );
+
+    // This *must* be performed within "draw" signal otherwise it simply doesn't actually get drawn on screen
+    // Paint all other surfaces...
+    if ( vvp->surface_tool )
+      ui_cr_surface_paint ( cr, vvp->surface_tool );
+  } else
+    gtk_widget_queue_draw ( GTK_WIDGET(vvp) );
+#endif
 }
 
 void vik_viewport_set_zoom ( VikViewport *vvp, gdouble xympp )
@@ -787,6 +986,7 @@ void vik_viewport_set_zoom ( VikViewport *vvp, gdouble xympp )
 
   if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_UTM )
     viewport_utm_zone_check(vvp);
+  viewport_clear_surface_tool ( vvp );
 }
 
 /* or could do factor */
@@ -803,6 +1003,7 @@ void vik_viewport_zoom_in ( VikViewport *vvp )
 
     viewport_utm_zone_check(vvp);
   }
+  viewport_clear_surface_tool ( vvp );
 }
 
 void vik_viewport_zoom_out ( VikViewport *vvp )
@@ -818,6 +1019,7 @@ void vik_viewport_zoom_out ( VikViewport *vvp )
 
     viewport_utm_zone_check(vvp);
   }
+  viewport_clear_surface_tool ( vvp );
 }
 
 gdouble vik_viewport_get_zoom ( VikViewport *vvp )
@@ -1083,6 +1285,7 @@ void vik_viewport_set_center_latlon ( VikViewport *vvp, const struct LatLon *ll,
     update_centers ( vvp );
   if ( vvp->coord_mode == VIK_COORD_UTM )
     viewport_utm_zone_check ( vvp );
+  viewport_clear_surface_tool ( vvp );
 }
 
 /**
@@ -1099,6 +1302,7 @@ void vik_viewport_set_center_utm ( VikViewport *vvp, const struct UTM *utm, gboo
     update_centers ( vvp );
   if ( vvp->coord_mode == VIK_COORD_UTM )
     viewport_utm_zone_check ( vvp );
+  viewport_clear_surface_tool ( vvp );
 }
 
 /**
@@ -1115,6 +1319,7 @@ void vik_viewport_set_center_coord ( VikViewport *vvp, const VikCoord *coord, gb
     update_centers ( vvp );
   if ( vvp->coord_mode == VIK_COORD_UTM )
     viewport_utm_zone_check ( vvp );
+  viewport_clear_surface_tool ( vvp );
 }
 
 void vik_viewport_corners_for_zonen ( VikViewport *vvp, int zone, VikCoord *ul, VikCoord *br )
@@ -1177,6 +1382,7 @@ void vik_viewport_set_center_screen ( VikViewport *vvp, int x, int y )
     vik_viewport_screen_to_coord ( vvp, x, y, &tmp );
     vik_viewport_set_center_coord ( vvp, &tmp, FALSE );
   }
+  viewport_clear_surface_tool ( vvp );
 }
 
 gint vik_viewport_get_width( VikViewport *vvp )
@@ -1345,42 +1551,120 @@ void a_viewport_clip_line ( gint *x1, gint *y1, gint *x2, gint *y2 )
   }
 }
 
-void vik_viewport_draw_line ( VikViewport *vvp, GdkGC *gc, gint x1, gint y1, gint x2, gint y2 )
+/**
+ * For GTK3 Need to pass in the color and thickness each time
+ *
+ */
+void vik_viewport_draw_line ( VikViewport *vvp, GdkGC *gc, gint x1, gint y1, gint x2, gint y2, GdkColor *gcolor, guint thickness )
 {
+  //g_print ( "%s: \n", __FUNCTION__ );
   if ( ! ( ( x1 < 0 && x2 < 0 ) || ( y1 < 0 && y2 < 0 ) ||
        ( x1 > vvp->width && x2 > vvp->width ) || ( y1 > vvp->height && y2 > vvp->height ) ) ) {
     /*** clipping, yeah! ***/
     a_viewport_clip_line ( &x1, &y1, &x2, &y2 );
+#if GTK_CHECK_VERSION (3,0,0)
+    cairo_set_line_width ( gc, thickness );
+    if ( gcolor )
+      gdk_cairo_set_source_color ( gc, gcolor );
+    ui_cr_draw_line ( gc, x1, y1, x2, y2 );
+    cairo_stroke ( gc );
+#else
     gdk_draw_line ( vvp->scr_buffer, gc, x1, y1, x2, y2);
+#endif
   }
 }
 
-void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x1, gint y1, gint x2, gint y2 )
+/**
+ * For GTK3 Need to pass in the color each time
+ */
+void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x1, gint y1, gint x2, gint y2, GdkColor *gcolor )
 {
   // Using 32 as half the default waypoint image size, so this draws ensures the highlight gets done
-  if ( x1 > -32 && x1 < vvp->width + 32 && y1 > -32 && y1 < vvp->height + 32 )
+  if ( x1 > -32 && x1 < vvp->width + 32 && y1 > -32 && y1 < vvp->height + 32 ) {
+#if GTK_CHECK_VERSION (3,0,0)
+    if ( gcolor )
+      gdk_cairo_set_source_color ( gc, gcolor );
+    ui_cr_draw_rectangle ( gc, filled, x1, y1, x2, y2 );
+    cairo_stroke ( gc );
+#else
     gdk_draw_rectangle ( vvp->scr_buffer, gc, filled, x1, y1, x2, y2);
+#endif
+  }
 }
 
+/**
+ * NB Allows specifing a pixbuf with extents outside the viewport pixel limits
+ * as the lower level APIs can handle out of bounds draw requests
+ * NB2 For GTK3 this no longer crops the image (i.e. it does not use src_x, src_y, w or h)
+ *  and simply draws the whole pixbuf.
+ *  Thus use gdk_pixbuf_copy_area() or similar to produce the desired size.
+ */
 void vik_viewport_draw_pixbuf ( VikViewport *vvp, GdkPixbuf *pixbuf, gint src_x, gint src_y,
                               gint dest_x, gint dest_y, gint w, gint h )
 {
+#if GTK_CHECK_VERSION (3,0,0)
+  // TODO confirm this draws with negative dest_x & dest_y values...
+  gdk_cairo_set_source_pixbuf ( vvp->crt, pixbuf, dest_x, dest_y );
+  // This is needed after each pixbuf is applied
+  //  (i.e. can't group together a series of pixbuf requests and paint once only at the end)
+  cairo_paint ( vvp->crt );
+#else
   gdk_draw_pixbuf ( vvp->scr_buffer,
                     NULL,
                     pixbuf,
                     src_x, src_y, dest_x, dest_y, w, h,
                     GDK_RGB_DITHER_NONE, 0, 0 );
+#endif
 }
 
-void vik_viewport_draw_arc ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x, gint y, gint width, gint height, gint angle1, gint angle2 )
+/**
+ * For GTK3 Need to pass in the color each time
+ * Angles passed in are 1/64th of degrees (GTK2 style)
+ * Typically the caller calculates angles in Radians anyway,
+ *  so if moving to GTK3+ only then could change angle parameters to gdouble radians
+ */
+void vik_viewport_draw_arc ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x, gint y, gint width, gint height, gint angle1, gint angle2, GdkColor *gcolor )
 {
+#if GTK_CHECK_VERSION (3,0,0)
+  // ATM Only used for drawing circles - so height is ignored
+  //  other arc drawing usage also currently uses width==height
+  if ( gcolor )
+    gdk_cairo_set_source_color ( gc, gcolor );
+  cairo_new_sub_path ( gc );
+  // Convert from 1/64ths into Radians
+  gdouble a1 = angle1/64.0 * (M_PI / 180.0);
+  gdouble a2 = angle2/64.0 * (M_PI / 180.0);
+  cairo_arc ( gc, x+width/2.0, y+width/2.0, width/2.0, a1, a2 );
+  if ( filled )
+    cairo_fill ( gc );
+  else
+    cairo_stroke ( gc );
+#else
   gdk_draw_arc ( vvp->scr_buffer, gc, filled, x, y, width, height, angle1, angle2 );
+#endif
 }
 
-
-void vik_viewport_draw_polygon ( VikViewport *vvp, GdkGC *gc, gboolean filled, GdkPoint *points, gint npoints )
+/**
+ * For GTK3 Need to pass in the color each time
+ */
+void vik_viewport_draw_polygon ( VikViewport *vvp, GdkGC *gc, gboolean filled, GdkPoint *points, gint npoints, GdkColor *gcolor )
 {
+#if GTK_CHECK_VERSION (3,0,0)
+  if ( gcolor )
+    gdk_cairo_set_source_color ( gc, gcolor );
+  // Using cairo no obvious draw polygon method,
+  //  so a simple loop to draw between the series of points
+  cairo_move_to ( gc, points[0].x, points[0].y ); // 1st point
+  for ( gint nn = 0; nn < npoints; nn++ )
+    cairo_line_to ( gc, points[nn].x, points[nn].y );
+  if ( filled ) {
+    cairo_close_path ( gc );
+    cairo_fill ( gc );
+  } else
+    cairo_stroke ( gc );
+#else
   gdk_draw_polygon ( vvp->scr_buffer, gc, filled, points, npoints );
+#endif
 }
 
 VikCoordMode vik_viewport_get_coord_mode ( const VikViewport *vvp )
@@ -1496,10 +1780,17 @@ gboolean vik_viewport_is_one_zone ( VikViewport *vvp )
   return vvp->coord_mode == VIK_COORD_UTM && vvp->one_utm_zone;
 }
 
-void vik_viewport_draw_layout ( VikViewport *vvp, GdkGC *gc, gint x, gint y, PangoLayout *layout )
+void vik_viewport_draw_layout ( VikViewport *vvp, GdkGC *gc, gint x, gint y, PangoLayout *layout, GdkColor *gcolor )
 {
-  if ( x > -100 && x < vvp->width + 100 && y > -100 && y < vvp->height + 100 )
+  if ( x > -100 && x < vvp->width + 100 && y > -100 && y < vvp->height + 100 ) {
+#if GTK_CHECK_VERSION (3,0,0)
+    if ( gcolor )
+      gdk_cairo_set_source_color ( gc, gcolor );
+    ui_cr_draw_layout ( gc, x, y, layout );
+#else
     gdk_draw_layout ( vvp->scr_buffer, gc, x, y, layout );
+#endif
+  }
 }
 
 void vik_viewport_set_drawmode ( VikViewport *vvp, VikViewportDrawMode drawmode )
@@ -1530,12 +1821,16 @@ gpointer vik_viewport_get_trigger ( VikViewport *vp )
 
 void vik_viewport_snapshot_save ( VikViewport *vp )
 {
+#if !GTK_CHECK_VERSION (3,0,0)
   gdk_draw_drawable ( vp->snapshot_buffer, vp->background_gc, vp->scr_buffer, 0, 0, 0, 0, -1, -1 );
+#endif
 }
 
 void vik_viewport_snapshot_load ( VikViewport *vp )
 {
+#if !GTK_CHECK_VERSION (3,0,0)
   gdk_draw_drawable ( vp->scr_buffer, vp->background_gc, vp->snapshot_buffer, 0, 0, 0, 0, -1, -1 );
+#endif
 }
 
 void vik_viewport_set_half_drawn(VikViewport *vp, gboolean half_drawn)

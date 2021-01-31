@@ -31,6 +31,7 @@ static void geoclue_layer_post_read ( VikGeoclueLayer *vgl, VikViewport *vp, gbo
 static void geoclue_layer_free ( VikGeoclueLayer *vgl );
 static void geoclue_layer_draw ( VikGeoclueLayer *vgl, VikViewport *vp );
 static VikGeoclueLayer *geoclue_layer_new ( VikViewport *vp );
+static void geoclue_layer_configure ( VikGeoclueLayer *vgl, VikViewport *vp );
 
 static void geoclue_layer_marshall( VikGeoclueLayer *vgl, guint8 **data, guint *len );
 static VikGeoclueLayer *geoclue_layer_unmarshall ( guint8 *data, guint len, VikViewport *vvp );
@@ -117,6 +118,7 @@ VikLayerInterface vik_geoclue_layer_interface = {
 
   (VikLayerFuncProperties)              NULL,
   (VikLayerFuncDraw)                    geoclue_layer_draw,
+  (VikLayerFuncConfigure)               geoclue_layer_configure,
   (VikLayerFuncChangeCoordMode)         geoclue_layer_change_coord_mode,
 
   (VikLayerFuncGetTimestamp)            NULL,
@@ -310,13 +312,18 @@ static VikLayerParamData geoclue_layer_get_param ( VikGeoclueLayer *vgl, guint16
 	return rv;
 }
 
+static void gcs_create ( VikGeoclueLayer *vgl, VikViewport *vp )
+{
+	if ( vp ) {
+		vgl->track_pt_gc = vik_viewport_new_gc_from_color ( vp, &(vgl->color), 2 );
+	}
+}
+
 static VikGeoclueLayer *geoclue_layer_new ( VikViewport *vp )
 {
 	VikGeoclueLayer *vgl = VIK_GEOCLUE_LAYER ( g_object_new ( VIK_GEOCLUE_LAYER_TYPE, NULL ) );
 	vik_layer_set_type ( VIK_LAYER(vgl), VIK_LAYER_GEOCLUE );
-	if ( vp ) {
-		vgl->track_pt_gc = vik_viewport_new_gc_from_color ( vp, &(vgl->color), 2 );
-	}
+	gcs_create ( vgl, vp );
 	vik_layer_set_defaults ( VIK_LAYER(vgl), vp );
 	// Everything else is 0, FALSE or NULL
 	return vgl;
@@ -348,7 +355,7 @@ static void tracking_draw ( VikGeoclueLayer *vgl, VikViewport *vp )
 			// Maybe allow configuration of triangle size?
 			gint x, y;
 			vik_viewport_coord_to_screen ( vp, &vgl->coord, &x, &y );
-			vik_viewport_draw_rectangle ( vp, vgl->track_pt_gc, TRUE, x-tp_size, y-tp_size, tp_size*2, tp_size*2 );
+			vik_viewport_draw_rectangle ( vp, vgl->track_pt_gc, TRUE, x-tp_size, y-tp_size, tp_size*2, tp_size*2, &(vgl->color) );
 		}
 	}
 }
@@ -384,6 +391,18 @@ static void geoclue_layer_draw ( VikGeoclueLayer *vgl, VikViewport *vp )
 		if ( !vik_viewport_get_half_drawn(vp) )
 			tracking_draw ( vgl, vp );
   }
+}
+
+static void gcs_free ( VikGeoclueLayer *vgl )
+{
+	if ( vgl->track_pt_gc )
+		ui_gc_unref ( vgl->track_pt_gc );
+}
+
+static void geoclue_layer_configure ( VikGeoclueLayer *vgl, VikViewport *vp )
+{
+	gcs_free ( vgl );
+	gcs_create ( vgl, vp );
 }
 
 static void geoclue_layer_change_coord_mode ( VikGeoclueLayer *vgl, VikCoordMode mode )
@@ -440,8 +459,7 @@ static void geoclue_layer_free ( VikGeoclueLayer *vgl )
 	if ( vgl->vl.realized )
 		disconnect_layer_signal ( VIK_LAYER(vgl->trw), vgl );
 	g_object_unref ( vgl->trw );
-	if ( vgl->track_pt_gc != NULL )
-		g_object_unref ( vgl->track_pt_gc );
+	gcs_free ( vgl );
 }
 
 gboolean vik_geoclue_layer_is_empty ( VikGeoclueLayer *vgl )
