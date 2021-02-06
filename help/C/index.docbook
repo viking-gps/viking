@@ -3188,6 +3188,10 @@ When no TrackWaypoint Layer is selected (or the layer is invisibile) then the fi
 <para>A setting to enable the Select Tool double click behaviour as per the previous default tool (Pan Tool) behaviour. By default this is off, as typically one would use the scroll wheel to zoom. When off this means Viking does not need to wait to see if double clicks are going to occur and so can take immediate action (e.g. show a context menu without delay). Turning this on my be useful for touchpads (however the intention is to support Pinch Zoom behaviour) or perhaps if your scroll wheel is broken.
 </para>
 </section>
+<section><title>Auto Select Trackpoint</title>
+<para>A setting to control whether when moving the mouse over the track graph on the main display, it updates the selected trackpoint in the viewport.
+</para>
+</section>
 </section>
 </section>
 
