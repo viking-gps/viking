@@ -2642,7 +2642,7 @@ static void click_layer_selected (VikLayer *vl, clicker *ck)
 #define VIK_MOVE_MODIFIER GDK_MOD5_MASK
 #endif
 
-static gboolean window_deselect_timeout (VikWindow *vw)
+static gboolean window_deselect (VikWindow *vw)
 {
   GtkTreeIter iter;
   VikTreeview *vtv = vik_layers_panel_get_treeview ( vw->viking_vlp );
@@ -2661,7 +2661,7 @@ static gboolean window_deselect_timeout (VikWindow *vw)
   return FALSE;
 }
 
-static gboolean window_show_menu_timeout (VikWindow *vw)
+static gboolean window_show_menu (VikWindow *vw)
 {
   VikLayer *vl = vik_layers_panel_get_selected ( vw->viking_vlp );
   if ( vl )
@@ -2712,7 +2712,7 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
 
         if ( vik_treeview_get_selected_iter ( vtv, &iter ) ) {
           // Only have one pending deselection timeout
-          if ( !t->vw->deselect_id ) {
+          if ( a_vik_get_select_double_click_to_zoom() && !t->vw->deselect_id ) {
             // Best if slightly longer than the double click time,
             //  otherwise timeout would get removed, only to be recreated again by the second GTK_BUTTON_PRESS
             GtkSettings *gs = gtk_widget_get_settings ( GTK_WIDGET(t->vw) );
@@ -2720,8 +2720,10 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
             g_value_init ( &gto, G_TYPE_INT );
             g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &gto );
             gint timer = g_value_get_int ( &gto ) + 50;
-            t->vw->deselect_id = g_timeout_add ( timer, (GSourceFunc)window_deselect_timeout, t->vw );
-          }
+            t->vw->deselect_id = g_timeout_add ( timer, (GSourceFunc)window_deselect, t->vw );
+          } else
+            // Not using double clicks - so no need to wait and thus apply now
+            (void)window_deselect ( t->vw );
         }
 
         // Go into pan mode as nothing found
@@ -2735,7 +2737,7 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
     }
   }
   else if ( ( event->button == 3 ) && ( vl && (vl->type == VIK_LAYER_TRW || vl->type == VIK_LAYER_AGGREGATE) ) ) {
-    if ( !t->vw->show_menu_id ) {
+    if ( a_vik_get_select_double_click_to_zoom() && !t->vw->show_menu_id ) {
       t->vw->select_event = *event;
       // Best if slightly longer than the double click time,
       //  otherwise timeout would get removed, only to be recreated again by the second GTK_BUTTON_PRESS
@@ -2744,8 +2746,10 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
       g_value_init ( &gto, G_TYPE_INT );
       g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &gto );
       gint timer = g_value_get_int ( &gto ) + 50;
-      t->vw->show_menu_id = g_timeout_add ( timer, (GSourceFunc)window_show_menu_timeout, t->vw );
-    }
+      t->vw->show_menu_id = g_timeout_add ( timer, (GSourceFunc)window_show_menu, t->vw );
+    } else
+      // Not using double clicks - so no need to wait and thus apply now
+      (void)window_show_menu ( t->vw );
   }
 
   return VIK_LAYER_TOOL_ACK;
@@ -2785,7 +2789,7 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
     if ( event->button == 1 && event->state & VIK_MOVE_MODIFIER )
       vik_window_pan_release ( t->vw, event );
     else {
-      if ( t->vw->select_double_click ) {
+      if ( a_vik_get_select_double_click_to_zoom() && t->vw->select_double_click ) {
         // Turn off otherwise pending deselection - as now overridden by the double click
         if ( t->vw->deselect_id ) {
           g_source_remove ( t->vw->deselect_id );

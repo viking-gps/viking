@@ -149,6 +149,7 @@ static VikLayerParam prefs_advanced[] = {
     N_("Whether scroll events zoom or move the viewport"), vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "invert_scroll_direction", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Invert Scroll Direction:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
     N_("Invert direction of scrolling, particularly for touchpad use"), vik_lpd_false_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "select_tool_double_click_to_zoom", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Select Tool Double Click to Zoom:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_false_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "auto_trackpoint_select", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Auto Select Trackpoint:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
     N_("Select trackpoint from mouse over graph on main display"), vik_lpd_true_default, NULL, NULL },
 };
@@ -382,6 +383,11 @@ gboolean a_vik_get_invert_scroll_direction ( )
 gboolean a_vik_get_scroll_to_zoom ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "use_scroll_to_zoom")->b;
+}
+
+gboolean a_vik_get_select_double_click_to_zoom ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "select_tool_double_click_to_zoom")->b;
 }
 
 gboolean a_vik_get_auto_trackpoint_select ( )

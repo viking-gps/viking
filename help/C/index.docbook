@@ -2663,6 +2663,7 @@ If <keycap>Ctrl</keycap> or <keycap>Shift</keycap> is held down at the same time
 Note that whole tracks cannot be moved.
 </para>
 <para>
+  By default double click zooming is disabled - see <xref linkend="prefs_advanced"/> to enable it.
 Double clicking the left mouse button will zoom the map in.
 <keycap>Shift</keycap> + double clicking the left mouse button will zoom the map out.
 Double clicking the right mouse button will also zoom the map out.
@@ -2683,7 +2684,7 @@ Pan moves the viewpoint. A single click centers the viewport at that point, wher
 This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+P</keycap>
 </para>
 <para>
-The double click behaviour is the same as in the Select mode described above (i.e. zooms in or out).
+The double click behaviour is the same as in the Select mode described above (i.e. zooms in or out), however it is always enabled.
 </para>
 </section>
 
@@ -3181,6 +3182,10 @@ When no TrackWaypoint Layer is selected (or the layer is invisibile) then the fi
 </section>
 <section><title>Invert Scroll Direction</title>
 <para>A setting to control the direction of scroll events. Especially useful with touchpads and can be used to override the desktop system's setting.
+</para>
+</section>
+<section><title>Select Tool Double Click to Zoom</title>
+<para>A setting to enable the Select Tool double click behaviour as per the previous default tool (Pan Tool) behaviour. By default this is off, as typically one would use the scroll wheel to zoom. When off this means Viking does not need to wait to see if double clicks are going to occur and so can take immediate action (e.g. show a context menu without delay). Turning this on my be useful for touchpads (however the intention is to support Pinch Zoom behaviour) or perhaps if your scroll wheel is broken.
 </para>
 </section>
 </section>
