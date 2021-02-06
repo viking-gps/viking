@@ -116,6 +116,7 @@ typedef struct {
 	GpxWritingOptions *options;
 	FILE *file;
 	const gchar *dirpath;
+	VikTrwLayer *vtl;
 } GpxWritingContext;
 
 /*
@@ -1694,28 +1695,36 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
   // ATM Track Colour is the only extension Viking supports editing
   //  thus if there is some other track extension Viking will not add in the color,
   //  but will add it if there is no current track extension.
-  if ( t->extensions ) {
-    gboolean write_as_is = !t->has_color;
-    if ( !write_as_is ) {
-      gchar* text = g_strdup ( t->extensions );
-      g_strstrip ( text );
-      if ( g_str_has_prefix(text, "<gpxx:TrackExtension><gpxx:DisplayColor>") ) {
-        if ( g_str_has_suffix(text, "</gpxx:DisplayColor></gpxx:TrackExtension>") )
-          write_track_extension_color_only ( f, t );
+  // However if the overall header doesn't contain the 'gpxx', give up trying to write the colour
+  gchar *header = NULL;
+  if ( context->vtl )
+    header = vik_trw_layer_get_gpx_header ( context->vtl );
+  // When no header, assume we've written the gpx header ourselves
+  //  and so for GPX1.1 it will contain the "xmlns:gpxx=...."
+  if ( !header || ( header && g_strrstr(header, "xmlns:gpxx=") ) ) {
+    if ( t->extensions ) {
+      gboolean write_as_is = !t->has_color;
+      if ( !write_as_is ) {
+        gchar* text = g_strdup ( t->extensions );
+        g_strstrip ( text );
+        if ( g_str_has_prefix(text, "<gpxx:TrackExtension><gpxx:DisplayColor>") ) {
+          if ( g_str_has_suffix(text, "</gpxx:DisplayColor></gpxx:TrackExtension>") )
+            write_track_extension_color_only ( f, t );
+          else
+            write_as_is = TRUE;
+        }
         else
           write_as_is = TRUE;
+        g_free ( text );
       }
-      else
-        write_as_is = TRUE;
-      g_free ( text );
+      if ( write_as_is )
+        write_string_as_is ( f, TRK_SPACES, "extensions", t->extensions );
     }
-    if ( write_as_is )
-      write_string_as_is ( f, TRK_SPACES, "extensions", t->extensions );
-  }
-  else {
-    if ( context->options && context->options->version == GPX_V1_1 )
-      if ( t->has_color )
-        write_track_extension_color_only ( f, t );
+    else {
+      if ( context->options && context->options->version == GPX_V1_1 )
+        if ( t->has_color )
+          write_track_extension_color_only ( f, t );
+    }
   }
 
   /* No such thing as a rteseg! */
@@ -1796,7 +1805,7 @@ static int gpx_track_compare_name(const void *x, const void *y)
 
 void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, const gchar* dirpath )
 {
-  GpxWritingContext context = { options, f, dirpath };
+  GpxWritingContext context = { options, f, dirpath, vtl };
 
   gpx_write_header ( f, vtl, &context );
 
@@ -1897,7 +1906,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
 
 void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options )
 {
-  GpxWritingContext context = {options, f};
+  GpxWritingContext context = { options, f, NULL, NULL };
   gpx_write_header ( f, NULL, &context );
   gpx_write_track ( trk, &context );
   gpx_write_footer ( f );
@@ -1997,7 +2006,7 @@ void a_gpx_write_combined_file ( const gchar *name, GList *vtt, GList *vtwl, FIL
   g_return_if_fail ( ff != NULL );
   g_return_if_fail ( options != NULL );
 
-  GpxWritingContext context = { options, ff, dirpath };
+  GpxWritingContext context = { options, ff, dirpath, NULL };
   gpx_write_header ( ff, NULL, &context );
 
   write_string ( ff, TRK_SPACES, "name", name );
