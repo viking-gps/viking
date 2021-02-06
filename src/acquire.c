@@ -271,8 +271,10 @@ static void acquire ( VikWindow *vw,
   /* CREATE INPUT DATA & GET OPTIONS */
   ProcessOptions *po = g_malloc0 ( sizeof(ProcessOptions) );
 
+  GpxWritingOptions gpx_options = { FALSE, FALSE, FALSE, FALSE, vik_trw_layer_get_gpx_version(vtl) };
+
   if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRWLAYER ) {
-    gchar *name_src = a_gpx_write_tmp_file ( vtl, NULL );
+    gchar *name_src = a_gpx_write_tmp_file ( vtl, &gpx_options );
 
     source_interface->get_process_options_func ( pass_along_data, po, NULL, name_src, NULL );
 
@@ -280,8 +282,8 @@ static void acquire ( VikWindow *vw,
 
     g_free ( name_src );
   } else if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK ) {
-    gchar *name_src = a_gpx_write_tmp_file ( vtl, NULL );
-    gchar *name_src_track = a_gpx_write_track_tmp_file ( track, NULL );
+    gchar *name_src = a_gpx_write_tmp_file ( vtl, &gpx_options );
+    gchar *name_src_track = a_gpx_write_track_tmp_file ( track, &gpx_options );
 
     source_interface->get_process_options_func ( pass_along_data, po, NULL, name_src, name_src_track );
 
@@ -291,7 +293,7 @@ static void acquire ( VikWindow *vw,
     g_free ( name_src );
     g_free ( name_src_track );
   } else if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRACK ) {
-    gchar *name_src_track = a_gpx_write_track_tmp_file ( track, NULL );
+    gchar *name_src_track = a_gpx_write_track_tmp_file ( track, &gpx_options );
 
     source_interface->get_process_options_func ( pass_along_data, po, NULL, NULL, name_src_track );
 
