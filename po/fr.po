@@ -67,7 +67,7 @@ msgstr ""
 
 #: ../src/babel_ui.c:79
 msgid "Select a file format"
-msgstr ""
+msgstr "Sélectionner un format de fichier"
 
 #: ../src/babel_ui.c:144 ../src/viktrwlayer.c:531 ../src/viktrwlayer.c:2882
 msgid "Tracks"
@@ -204,7 +204,7 @@ msgstr "Entrez un nom pour la trace."
 
 #: ../src/dialog.c:311
 msgid "Today"
-msgstr ""
+msgstr "Aujourd'hui"
 
 #: ../src/dialog.c:393
 msgid "Zoom Factors..."
@@ -233,6 +233,10 @@ msgstr "1 minute"
 #: ../src/dialog.c:470
 msgid "1 hour"
 msgstr "1 heure"
+
+#: ../src/dialog.c:481
+msgid "6 hours"
+msgstr "6 heures"
 
 #: ../src/dialog.c:471
 msgid "1 day"
@@ -371,38 +375,36 @@ msgid "couldn't map temp file"
 msgstr "Impossible d'ouvrir le fichier de carte"
 
 #: ../src/geonamessearch.c:459
-#, fuzzy
 msgid "Select articles"
-msgstr "Outil de sélection"
+msgstr "Sélectionner des articles"
 
 #: ../src/geonamessearch.c:459
 msgid "Select the articles you want to add."
-msgstr ""
+msgstr "Sélectionner les articles que vous souhaitez ajouter"
 
 #: ../src/geonamessearch.c:475
 msgid "city"
-msgstr ""
+msgstr "ville"
 
 #: ../src/geonamessearch.c:477
-#, fuzzy
 msgid "edu"
-msgstr "arrivée"
+msgstr "edu"
 
 #: ../src/geonamessearch.c:479
 msgid "airport"
-msgstr ""
+msgstr "aéroport"
 
 #: ../src/geonamessearch.c:481
 msgid "mountain"
-msgstr ""
+msgstr "montagne"
 
 #: ../src/geonamessearch.c:483
 msgid "forest"
-msgstr ""
+msgstr "forêt"
 
 #: ../src/geonamessearch.c:485
 msgid "church"
-msgstr ""
+msgstr "église"
 
 #: ../src/geojson.c:74
 #, c-format
@@ -436,11 +438,11 @@ msgstr ""
 
 #: ../src/globals.c:68
 msgid "Miles"
-msgstr ""
+msgstr "Miles"
 
 #: ../src/globals.c:68
 msgid "Nautical Miles"
-msgstr ""
+msgstr "Milles marins"
 
 #. VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
 #: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:655 ../src/vikutils.c:100
@@ -462,11 +464,11 @@ msgstr "nœuds"
 
 #: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:658 ../src/vikutils.c:87
 msgid "s/km"
-msgstr ""
+msgstr "s/km"
 
 #: ../src/globals.c:69 ../src/viktrwlayer_tracklist.c:659 ../src/vikutils.c:90
 msgid "min/km"
-msgstr ""
+msgstr "min/km"
 
 #: ../src/globals.c:69
 msgid "s/mi"
@@ -478,23 +480,23 @@ msgstr ""
 
 #: ../src/globals.c:70
 msgid "Metres"
-msgstr ""
+msgstr "Mètres"
 
 #: ../src/globals.c:70
 msgid "Feet"
-msgstr ""
+msgstr "Pieds"
 
 #: ../src/globals.c:73
 msgid "Locale"
-msgstr ""
+msgstr "Paramètres régionaux"
 
 #: ../src/globals.c:73
 msgid "World"
-msgstr ""
+msgstr "Monde"
 
 #: ../src/globals.c:73
 msgid "UTC"
-msgstr ""
+msgstr "UTC"
 
 #: ../src/globals.c:76
 msgid "Degree format:"
@@ -526,7 +528,7 @@ msgstr "Longitude par défaut:"
 
 #: ../src/globals.c:83
 msgid "Time Display:"
-msgstr ""
+msgstr "Affichage de l'heure :"
 
 #: ../src/globals.c:84
 msgid ""
@@ -603,6 +605,22 @@ msgstr "Absolu"
 msgid "Relative"
 msgstr "Relative"
 
+#: ../src/globals.c:124 ../src/print.c:42 ../src/viktrwlayer.c:562
+#: ../src/viktrwlayer.c:574
+msgid "None"
+msgstr "Aucun"
+
+#: ../src/globals.c:124
+msgid "Bottom"
+msgstr "Bas"
+
+#: ../src/globals.c:124
+msgid "Middle"
+msgstr "Milieu"
+
+#: ../src/globals.c:124
+msgid "Top"
+msgstr "Haut"
 #: ../src/globals.c:117
 msgid "Save File Reference Mode:"
 msgstr ""
@@ -730,7 +748,7 @@ msgstr "Google"
 #: ../src/gpx.c:264
 #, c-format
 msgid "Created by: %s"
-msgstr ""
+msgstr "Créé par : %s"
 
 #: ../src/datasource_bfilter.c:43
 msgid "Max number of points:"
@@ -894,7 +912,7 @@ msgstr ""
 
 #: ../src/datasource_geojson.c:47 ../src/datasource_geojson.c:98
 msgid "GeoJSON"
-msgstr ""
+msgstr "GeoJSON"
 
 #: ../src/datasource_geojson.c:152
 #, c-format
@@ -1083,11 +1101,11 @@ msgstr ""
 
 #: ../src/datasource_url.c:49
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: ../src/datasource_url.c:101
 msgid "URL:"
-msgstr ""
+msgstr "URL :"
 
 #. Only GPX (not using GPSbabel)
 #: ../src/datasource_url.c:133 ../src/vikfileentry.c:161
@@ -1375,11 +1393,7 @@ msgstr ""
 
 #: ../src/mapnik_interface.cpp:325 ../src/vikmapniklayer.c:278
 msgid "Mapnik"
-msgstr ""
-
-#: ../src/print.c:51 ../src/viktrwlayer.c:572
-msgid "None"
-msgstr "Aucun"
+msgstr "Mapnik"
 
 #: ../src/print.c:52
 msgid "Horizontally"
@@ -1568,7 +1582,7 @@ msgstr "Préférences"
 
 #: ../src/toolbar.c:91 ../src/toolbar.c:92
 msgid "System Default"
-msgstr ""
+msgstr "Paramètres par défaut"
 
 #: ../src/toolbar.c:91 ../src/viktrwlayer.c:563
 msgid "Small"
@@ -1584,15 +1598,15 @@ msgstr "Grand"
 
 #: ../src/toolbar.c:92
 msgid "Icons Only"
-msgstr ""
+msgstr "Icônes uniquement"
 
 #: ../src/toolbar.c:92
 msgid "Text Only"
-msgstr ""
+msgstr "Texte uniquement"
 
 #: ../src/toolbar.c:92
 msgid "Icons and Text"
-msgstr ""
+msgstr "Icônes et texte"
 
 #: ../src/toolbar.c:106
 msgid "Append to Menu:"
@@ -1604,15 +1618,15 @@ msgstr ""
 
 #: ../src/toolbar.c:108
 msgid "Icon Size:"
-msgstr ""
+msgstr "Taille de l'icône :"
 
 #: ../src/toolbar.c:110
 msgid "Icon Style:"
-msgstr ""
+msgstr "Style de l'icône :"
 
 #: ../src/toolbar.c:112
 msgid "Customize:"
-msgstr ""
+msgstr "Personnaliser :"
 
 #: ../src/toolbar.c:112
 msgid "Customize Buttons"
@@ -1621,37 +1635,38 @@ msgstr ""
 #. Preferences
 #: ../src/toolbar.c:145
 msgid "Toolbar"
-msgstr ""
+msgstr "Barre d’outils"
 
 #: ../src/toolbar.c:312
 msgid "_Customize"
-msgstr ""
+msgstr "_Personnaliser"
 
 #: ../src/toolbar.c:641
 msgid "Separator"
-msgstr ""
+msgstr "Séparateur"
 
 #: ../src/toolbar.c:642
 msgid "--- Separator ---"
-msgstr ""
+msgstr "--- Séparateur ---"
 
 #: ../src/toolbar.c:1007
 msgid "Customize Toolbar"
-msgstr ""
+msgstr "Personnaliser la barre d'outils"
 
 #: ../src/toolbar.c:1028
 msgid ""
 "Select items to be displayed on the toolbar. Items can be reordered by drag "
 "and drop."
-msgstr ""
+msgstr "Sélectionnez les éléments à afficher dans la barre d'outils. Les éléments "
+"peuvent être réordonnés par glisser-déposer."
 
 #: ../src/toolbar.c:1044
 msgid "Available Items"
-msgstr ""
+msgstr "Éléments disponibles"
 
 #: ../src/toolbar.c:1065
 msgid "Displayed Items"
-msgstr ""
+msgstr "Éléments affichés"
 
 #: ../src/viklayer_defaults.c:232
 #, c-format
@@ -1676,6 +1691,18 @@ msgstr "Le fichier \"%s\" existe déjà. Voulez-vous le remplacer ?"
 #: ../src/vikaggregatelayer.c:41
 msgid "Aggregate"
 msgstr "Regroupement"
+
+#: ../src/vikaggregatelayer.c:81
+msgid "Blue/Purple"
+msgstr "Bleu/violet"
+ 
+#: ../src/vikaggregatelayer.c:82
+msgid "Red/Green"
+msgstr "Rouge/vert"
+ 
+#: ../src/vikaggregatelayer.c:83
+msgid "Yellow/Orange/Red"
+msgstr "Jaune/orange/rouge"
 
 #: ../src/vikaggregatelayer.c:528 ../src/viktrwlayer.c:11700
 #, c-format
@@ -1751,7 +1778,7 @@ msgstr ""
 
 #: ../src/vikaggregatelayer.c:753
 msgid "Searc_h"
-msgstr ""
+msgstr "Recherc_her"
 
 #: ../src/vikaggregatelayer.c:759
 msgid "By _Date..."
@@ -1775,9 +1802,24 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../src/vikaggregatelayer.c:1014
-#, fuzzy, c-format
 msgid "Empty"
-msgstr "_Tout vider"
+msgstr "Vide"
+
+#: ../src/vikaggregatelayer.c:2170
+msgid "Export"
+msgstr "Exporter"
+
+#: ../src/vikaggregatelayer.c:2324
+msgid "_Off"
+msgstr "_Désactivé"
+
+#: ../src/vikaggregatelayer.c:2336 ../src/vikaggregatelayer.c:2360
+msgid "_Remove"
+msgstr "_Supprimer"
+
+#: ../src/vikaggregatelayer.c:2324
+msgid "_On"
+msgstr "A_ctivé"
 
 #: ../src/vikdemlayer.c:86
 msgid "SRTM Global 90m (3 arcsec)"
@@ -1897,7 +1939,7 @@ msgstr "PNG"
 
 #: ../src/vikfileentry.c:125
 msgid "TIFF"
-msgstr ""
+msgstr "TIFF"
 
 #: ../src/vikfileentry.c:133
 msgid "MBTiles"
@@ -1905,15 +1947,15 @@ msgstr ""
 
 #: ../src/vikfileentry.c:142
 msgid "XML"
-msgstr ""
+msgstr "XML"
 
 #: ../src/vikfileentry.c:149
 msgid "MML"
-msgstr ""
+msgstr "MML"
 
 #: ../src/vikfileentry.c:154
 msgid "MSS"
-msgstr ""
+msgstr "MSS"
 
 #: ../src/vikfilelist.c:49
 msgid "Choose file(s)"
@@ -1926,6 +1968,14 @@ msgstr "Ajouter…"
 #: ../src/vikfilelist.c:183
 msgid "Delete"
 msgstr "Détruire"
+
+#: ../src/vikgeocluelayer.c:408
+msgid "_Empty"
+msgstr "_Vider"
+
+#: ../src/vikgeocluelayer.c:618
+msgid "GeoClue disabled"
+msgstr "GeoClue désactivé"
 
 #: ../src/vikgeoreflayer.c:97
 msgid "_Georef Move Map"
@@ -2064,11 +2114,11 @@ msgstr ""
 
 #: ../src/vikgeoreflayer.c:948
 msgid "UTM"
-msgstr ""
+msgstr "UTM"
 
 #: ../src/vikgeoreflayer.c:949
 msgid "Latitude/Longitude"
-msgstr ""
+msgstr "Latitude/Longitude"
 
 #: ../src/vikgeoreflayer.c:957 ../src/vikmapniklayer.c:82
 #: ../src/vikmapslayer.c:158
@@ -2173,9 +2223,8 @@ msgid "Display information in the statusbar on GPS updates"
 msgstr ""
 
 #: ../src/vikgpslayer.c:229
-#, fuzzy
 msgid "Auto Connect"
-msgstr "Emplacement automatique"
+msgstr "Connexion automatique"
 
 #: ../src/vikgpslayer.c:229
 msgid "Automatically connect to GPSD"
@@ -2211,11 +2260,11 @@ msgstr "Suivi en temps réel des traces GPS"
 
 #: ../src/vikgpslayer.c:458
 msgid "Connected"
-msgstr ""
+msgstr "Connecté"
 
 #: ../src/vikgpslayer.c:460
 msgid "Disconnected"
-msgstr ""
+msgstr "Déconnecté"
 
 #: ../src/vikgpslayer.c:554
 msgid "Unknown GPS Protocol"
@@ -2432,6 +2481,10 @@ msgstr "Nouveau calque"
 msgid "Top Layer"
 msgstr "Calque maître"
 
+#: ../src/viklayerspanel.c:340
+msgid "_Today"
+msgstr "A_ujourd’hui"
+
 #: ../src/viklayerspanel.c:363
 msgid "Add new layer"
 msgstr "Ajouter un nouveau calque"
@@ -2523,7 +2576,7 @@ msgstr ""
 #. Changing these values only applies before first mapnik layer is 'created'
 #: ../src/vikmapniklayer.c:258
 msgid "Plugins Directory:"
-msgstr ""
+msgstr "Répertoire des greffons :"
 
 #: ../src/vikmapniklayer.c:258 ../src/vikmapniklayer.c:259
 #: ../src/vikmapniklayer.c:260 ../src/vikmapniklayer.c:261
@@ -2553,7 +2606,7 @@ msgstr ""
 
 #: ../src/vikmapniklayer.c:506
 msgid "Running"
-msgstr ""
+msgstr "Exécution"
 
 #: ../src/vikmapniklayer.c:525
 #, c-format
@@ -2568,7 +2621,7 @@ msgstr ""
 
 #: ../src/vikmapniklayer.c:561
 msgid "seconds"
-msgstr ""
+msgstr "secondes"
 
 #: ../src/vikmapniklayer.c:611 ../src/vikmapniklayer.c:979
 #, c-format
@@ -2622,7 +2675,7 @@ msgstr ""
 
 #: ../src/vikmapniklayer.c:1150
 msgid "_Info"
-msgstr ""
+msgstr "_Informations"
 
 #. ******* MAPZOOMS ********
 #: ../src/vikmapslayer.c:96
@@ -2631,7 +2684,7 @@ msgstr "Utiliser le zoom courant"
 
 #: ../src/vikmapslayer.c:146
 msgid "OSM"
-msgstr ""
+msgstr "OSM"
 
 #. NB mode => id - But can't break file format just to rename something better
 #: ../src/vikmapslayer.c:152
@@ -2780,17 +2833,17 @@ msgstr[1] "Téléchargement de %d cartes %s…"
 
 #: ../src/vikmapslayer.c:1969
 msgid "YES"
-msgstr ""
+msgstr "OUI"
 
 #: ../src/vikmapslayer.c:1973 ../src/vikmapslayer.c:1977
 msgid "NO"
-msgstr ""
+msgstr "NON"
 
 #. NB Also handles .jpg automatically due to pixbuf_new_from () support - although just print png for now.
 #: ../src/vikmapslayer.c:1980
 #, c-format
 msgid "Source: %s (%d%s%d%s%d.%s %s)"
-msgstr ""
+msgstr "Source : %s (%d%s%d%s%d.%s %s)"
 
 #: ../src/vikmapslayer.c:1983
 msgid "Source: Not available"
@@ -2803,7 +2856,7 @@ msgstr ""
 #: ../src/vikmapslayer.c:2012
 #, c-format
 msgid "Source: %s"
-msgstr ""
+msgstr "Source : %s"
 
 #: ../src/vikmapslayer.c:2038
 #, fuzzy, c-format
@@ -3004,12 +3057,11 @@ msgstr "Options de trace avancées"
 
 #: ../src/viktrwlayer.c:531
 msgid "Metadata"
-msgstr ""
+msgstr "Métadonnées"
 
 #: ../src/viktrwlayer.c:531
-#, fuzzy
 msgid "Filesystem"
-msgstr "Type de fichier :"
+msgstr "Système de fichiers"
 
 #: ../src/viktrwlayer.c:534
 msgid "Draw by Track"
@@ -3065,15 +3117,15 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:582 ../src/viktrwlayer_propwin.c:3319
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: ../src/viktrwlayer.c:583
 msgid "Yes"
-msgstr ""
+msgstr "Oui"
 
 #: ../src/viktrwlayer.c:584
 msgid "No write"
-msgstr ""
+msgstr "Pas d'écriture"
 
 #: ../src/viktrwlayer.c:649 ../src/viktrwlayer.c:673
 msgid "Draw Labels"
@@ -3220,15 +3272,15 @@ msgstr "Taille du cache des images :"
 
 #: ../src/viktrwlayer.c:690
 msgid "Author"
-msgstr ""
+msgstr "Auteur"
 
 #: ../src/viktrwlayer.c:691
 msgid "Creation Time"
-msgstr ""
+msgstr "Date de création"
 
 #: ../src/viktrwlayer.c:692
 msgid "Keywords"
-msgstr ""
+msgstr "Mots-clés"
 
 #: ../src/viktrwlayer.c:693
 msgid "External layer:"
@@ -3860,9 +3912,8 @@ msgstr[0] "%ld point de cheminement modifié"
 msgstr[1] "%ld points de cheminement modifiés"
 
 #: ../src/viktrwlayer.c:7697
-#, fuzzy
 msgid "No duplicates found"
-msgstr "Aucun itinéraire trouvé"
+msgstr "Aucun doublon trouvé"
 
 #: ../src/viktrwlayer.c:8028
 #, c-format
@@ -4030,9 +4081,8 @@ msgid "_Maximum Speed"
 msgstr "Vitesse _Maximale"
 
 #: ../src/viktrwlayer.c:8646
-#, fuzzy
 msgid "_Date"
-msgstr "Date"
+msgstr "_Date"
 
 #: ../src/viktrwlayer.c:8655
 msgid "Co_mbine"
@@ -4125,7 +4175,7 @@ msgstr "_Appliquer les altitudes du DEM"
 
 #: ../src/viktrwlayer.c:8793 ../src/viktrwlayer.c:9042
 msgid "_Overwrite"
-msgstr ""
+msgstr "É_craser"
 
 #: ../src/viktrwlayer.c:8796 ../src/viktrwlayer.c:9045
 msgid "Overwrite any existing elevation values with DEM values"
@@ -4350,7 +4400,7 @@ msgstr "Impossible de créer de fichier temporaire pour l'export."
 
 #: ../src/viktrwlayer_export.c:268
 msgid "File format:"
-msgstr ""
+msgstr "Format de fichier :"
 
 #: ../src/viktrwlayer_export.c:276
 msgid "Select the file format."
@@ -4432,27 +4482,27 @@ msgstr "%.1f m/s"
 #. Minutes
 #: ../src/viktrwlayer_propwin.c:1411
 msgid "mins"
-msgstr ""
+msgstr "min"
 
 #. Hours
 #: ../src/viktrwlayer_propwin.c:1418
 msgid "h"
-msgstr ""
+msgstr "h"
 
 #. Days
 #: ../src/viktrwlayer_propwin.c:1424
 msgid "d"
-msgstr ""
+msgstr "j"
 
 #. Weeks
 #: ../src/viktrwlayer_propwin.c:1429
 msgid "w"
-msgstr ""
+msgstr "s"
 
 #. 'Months'
 #: ../src/viktrwlayer_propwin.c:1433
 msgid "M"
-msgstr ""
+msgstr "M"
 
 #: ../src/viktrwlayer_propwin.c:2051 ../src/viktrwlayer_analysis.c:303
 #, c-format
@@ -4504,14 +4554,12 @@ msgid "<b>Description:</b>"
 msgstr "<b>Description :</b>"
 
 #: ../src/viktrwlayer_propwin.c:3271
-#, fuzzy
 msgid "<b>Source:</b>"
-msgstr "<b>Départ :</b>"
+msgstr "<b>Source :</b>"
 
 #: ../src/viktrwlayer_propwin.c:3272
-#, fuzzy
 msgid "<b>Type:</b>"
-msgstr "<b>Heure :</b>"
+msgstr "<b>Type :</b>"
 
 #: ../src/viktrwlayer_propwin.c:3273
 msgid "<b>Color:</b>"
@@ -4579,7 +4627,7 @@ msgstr "<b>Durée :</b>"
 
 #: ../src/viktrwlayer_propwin.c:3320
 msgid "Centre"
-msgstr ""
+msgstr "Centre"
 
 #: ../src/viktrwlayer_propwin.c:3321
 msgid "Start only"
@@ -4618,6 +4666,18 @@ msgstr ""
 #: ../src/viktrwlayer_propwin.c:3607 ../src/viktrwlayer_analysis.c:622
 msgid "Statistics"
 msgstr "Statistiques"
+
+#: ../src/viktrwlayer_propwin.c:2278
+msgid "Speed"
+msgstr "Vitesse"
+
+#: ../src/viktrwlayer_propwin.c:2289
+msgid "ft"
+msgstr "pi"
+
+#: ../src/viktrwlayer_propwin.c:2296
+msgid "Loss"
+msgstr "Pertes"
 
 #: ../src/viktrwlayer_propwin.c:3613 ../src/viktrwlayer_propwin.c:3680
 msgid "Show D_EM"
@@ -4689,7 +4749,7 @@ msgstr ""
 
 #: ../src/viktrwlayer_tpwin.c:242
 msgid "<b>Name:</b>"
-msgstr ""
+msgstr "<b>Nom :</b>"
 
 #: ../src/viktrwlayer_tpwin.c:243
 msgid "<b>Latitude:</b>"
@@ -4860,15 +4920,15 @@ msgstr ""
 
 #: ../src/viktrwlayer_waypointlist.c:633
 msgid "Comment"
-msgstr ""
+msgstr "Commentaire"
 
 #: ../src/viktrwlayer_waypointlist.c:643
 msgid "Symbol"
-msgstr ""
+msgstr "Symbole"
 
 #: ../src/viktrwlayer_wpwin.c:93 ../src/viktrwlayer_wpwin.c:302
 msgid "True"
-msgstr ""
+msgstr "Vrai"
 
 #: ../src/viktrwlayer_wpwin.c:122
 msgid "Waypoint Properties"
@@ -4887,9 +4947,8 @@ msgid "Comment:"
 msgstr "Commentaire :"
 
 #: ../src/viktrwlayer_wpwin.c:202
-#, fuzzy
 msgid "Source:"
-msgstr "Télécharger à partir de :"
+msgstr "Source :"
 
 #: ../src/viktrwlayer_wpwin.c:212
 msgid "Image:"
@@ -4912,6 +4971,10 @@ msgstr ""
 msgid "Consistent Position"
 msgstr ""
 
+#: ../src/viktrwlayer_wpwin.c:325
+msgid "Show Name"
+msgstr "Afficher le nom"
+
 #. ATM the direction value box is always shown, even when there is no information.
 #. It would be nice to be able to hide it until the 'Add' has been performed,
 #. however I've not been able to achieve this.
@@ -4923,7 +4986,7 @@ msgstr "Paramètres de l'image"
 
 #: ../src/viktrwlayer_wpwin.c:300
 msgid "Magnetic"
-msgstr ""
+msgstr "Magnétique"
 
 #: ../src/viktrwlayer_wpwin.c:320
 msgid "Time:"
@@ -5149,6 +5212,18 @@ msgstr "%d:%02d h:min"
 msgid "Include Invisible Items"
 msgstr "Inclure les éléments invisibles"
 
+#: ../src/viktrwlayer_analysis.c:661
+msgid "Year"
+msgstr "Année"
+
+#: ../src/viktrwlayer_analysis.c:838
+msgid "Totals"
+msgstr "Totaux"
+ 
+#: ../src/viktrwlayer_analysis.c:843
+msgid "Years"
+msgstr "Années"
+
 #: ../src/vikstatus.c:129
 msgid "Current number of background tasks. Click to see the background jobs."
 msgstr ""
@@ -5265,13 +5340,17 @@ msgstr ""
 "\n"
 "Vous pourrez contrôler les paramètres individuels dans les Préférences."
 
+#: ../src/vikutils.c:1302
+msgid "Zip File"
+msgstr "Fichier zip"
+
 #: ../src/vikwaypoint.c:37
 msgid "Waypoint"
 msgstr "Point de cheminement"
 
 #: ../src/vikwebtool_datasource.c:352
 msgid "Search Term"
-msgstr ""
+msgstr "Terme de recherche"
 
 #. TODO get rid of this as this is unnecessary duplication...
 #: ../src/vikwindow.c:258
@@ -5470,7 +5549,7 @@ msgstr "Viking"
 
 #: ../src/vikwindow.c:3594 ../src/vikwindow.c:4632
 msgid "Open File"
-msgstr ""
+msgstr "Ouvrir un fichier"
 
 #: ../src/vikwindow.c:3630
 msgid "Save as Viking File."
@@ -5703,7 +5782,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:4830
 msgid "_Export All"
-msgstr ""
+msgstr "Tout _exporter"
 
 #: ../src/vikwindow.c:4830
 msgid "Export All TrackWaypoint Layers"
@@ -5731,7 +5810,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:4835
 msgid "_OSM Traces..."
-msgstr ""
+msgstr "Traces _OSM..."
 
 #: ../src/vikwindow.c:4835
 msgid "Get traces from OpenStreetMap"
@@ -5739,7 +5818,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:4836
 msgid "_My OSM Traces..."
-msgstr ""
+msgstr "_Mes traces OSM..."
 
 #: ../src/vikwindow.c:4836
 msgid "Get Your Own Traces from OpenStreetMap"
@@ -5903,9 +5982,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr "Aller à une coordonnée UTM donnée"
 
 #: ../src/vikwindow.c:4868
-#, fuzzy
 msgid "Go to Today"
-msgstr "Aller à une coordonnée UTM"
+msgstr "Aller à aujourd'hui"
 
 #: ../src/vikwindow.c:4868
 msgid "Go to today on the calendar"
@@ -5913,11 +5991,11 @@ msgstr ""
 
 #: ../src/vikwindow.c:4869
 msgid "_Refresh"
-msgstr ""
+msgstr "Actualise_r"
 
 #: ../src/vikwindow.c:4869
 msgid "Refresh any maps displayed"
-msgstr ""
+msgstr "Actualiser les cartes affichées"
 
 #: ../src/vikwindow.c:4870
 msgid "Set _Highlight Color..."
@@ -5933,7 +6011,7 @@ msgstr "Modifier la _couleur de fond…"
 
 #: ../src/vikwindow.c:4871
 msgid "Set Background Color"
-msgstr ""
+msgstr "Définir la couleur d'arrière-plan"
 
 #: ../src/vikwindow.c:4872
 msgid "Zoom _In"
@@ -5941,7 +6019,7 @@ msgstr "Zoom _avant"
 
 #: ../src/vikwindow.c:4872
 msgid "Zoom In"
-msgstr ""
+msgstr "Agrandir"
 
 #: ../src/vikwindow.c:4873
 msgid "Zoom _Out"
@@ -5949,7 +6027,7 @@ msgstr "Zoom a_rrière"
 
 #: ../src/vikwindow.c:4873
 msgid "Zoom Out"
-msgstr ""
+msgstr "Réduire"
 
 #: ../src/vikwindow.c:4874
 msgid "Zoom _To..."
@@ -6025,7 +6103,7 @@ msgstr "Propriétés"
 
 #: ../src/vikwindow.c:4893
 msgid "Help"
-msgstr ""
+msgstr "Aide"
 
 #: ../src/vikwindow.c:4894
 msgid "_About"
@@ -6033,7 +6111,7 @@ msgstr "À _propos"
 
 #: ../src/vikwindow.c:4894
 msgid "About"
-msgstr ""
+msgstr "À propos"
 
 #: ../src/vikwindow.c:4903
 msgid "_KML..."
@@ -6097,7 +6175,7 @@ msgstr ""
 
 #: ../src/vikwindow.c:4923
 msgid "Show Highlight"
-msgstr ""
+msgstr "Afficher en surbrillance"
 
 #: ../src/vikwindow.c:4924
 msgid "_Full Screen"
@@ -6133,7 +6211,7 @@ msgstr "Afficher la barre d'outils"
 
 #: ../src/vikwindow.c:4928
 msgid "Show _Menu"
-msgstr ""
+msgstr "Afficher le _menu"
 
 #: ../src/vikwindow.c:4928
 msgid "Show Menu"
@@ -6165,9 +6243,8 @@ msgid "New _%s Layer"
 msgstr "Nouvelle couche %s"
 
 #: ../src/vikwindow.c:5114
-#, fuzzy
 msgid "..."
-msgstr "Ajouter…"
+msgstr "..."
 
 #: ../src/viking.desktop.in.h:2
 msgid "GPS Data Manager"
