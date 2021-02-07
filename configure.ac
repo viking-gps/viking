@@ -143,19 +143,19 @@ fi
 #
 # GTK
 #
-# GTK version 2 (default) or 3
-AC_ARG_ENABLE(gtk3, AC_HELP_STRING([--enable-gtk3],
-              [enable GTK3 build (default is disabled)]),
-              [ac_cv_enable_gtk3=$enableval],
-              [ac_cv_enable_gtk3=no])
-AC_CACHE_CHECK([whether to enable GTK3],
-               [ac_cv_enable_gtk3], [ac_cv_enable_gtk3=no])
-case $ac_cv_enable_gtk3 in
+# GTK version 3 (default) or 2
+AC_ARG_ENABLE(gtk2, AC_HELP_STRING([--enable-gtk2],
+              [enable GTK2 build (default is disabled)]),
+              [ac_cv_enable_gtk2=$enableval],
+              [ac_cv_enable_gtk2=no])
+AC_CACHE_CHECK([whether to enable GTK2],
+               [ac_cv_enable_gtk2], [ac_cv_enable_gtk2=no])
+case $ac_cv_enable_gtk2 in
   yes)
-    PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.22])
+    PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.22])
   ;;
   *)
-    PKG_CHECK_MODULES([GTK], [gtk+-2.0 >= 2.22])
+    PKG_CHECK_MODULES([GTK], [gtk+-3.0 >= 3.22])
   ;;
 esac
 
@@ -601,7 +601,7 @@ AC_MSG_NOTICE(["
 ===========================================
 $PACKAGE $PACKAGE_URL $VERSION
 -------------------------------------------
-GTK3                             : $ac_cv_enable_gtk3
+GTK2                             : $ac_cv_enable_gtk2
 Bing Maps                        : $ac_cv_enable_bing
 Google                           : $ac_cv_enable_google
 Terraserver Maps                 : $ac_cv_enable_terraserver

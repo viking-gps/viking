@@ -85,7 +85,6 @@ popd
   --disable-mapnik \
   --disable-geoclue \
   --enable-windows \
-  --enable-gtk3 \
   CFLAGS="-DWINDOWS -DWIN32 -mwindows"
 # NB not sure if '-DWIN32' is necessary/applicable for a 64bit build...
 

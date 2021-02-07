@@ -10,7 +10,7 @@
 #  (e.g. as root rpm -i mingw32-viking-1.7-1.noarch.rpm)
 #
 # 'MINGW' and 'DESTINATION' values can be defined to override inbuilt defaults
-# ATM 'GTK3' needs to be set to install GTK3 things instead of GTK2
+# 'GTK2' now needs to be set to install a GTK2 version, otherwise GTK3 by default
 #
 
 if [ -z "$DESTINATION" ]; then
@@ -85,14 +85,14 @@ cp $MINGW_BIN/libgmodule*.dll $DESTINATION
 cp $MINGW_BIN/libgnurx*.dll $DESTINATION
 cp $MINGW_BIN/libgobject*.dll $DESTINATION
 cp $MINGW_BIN/libgpg*.dll $DESTINATION
-if [ -z "$GTK3" ]; then
+if [ -n "$GTK2" ]; then
+    cp $MINGW_BIN/libgdk-win32-2*.dll $DESTINATION
+    cp $MINGW_BIN/libgtk-win32-2*.dll $DESTINATION
+else
     cp $MINGW_BIN/libgailutil-3-*.dll $DESTINATION
     cp $MINGW_BIN/libgdk-3*.dll $DESTINATION
     cp $MINGW_BIN/libgtk-3*.dll $DESTINATION
     cp $MINGW_BIN/libepoxy*.dll $DESTINATION
-else
-    cp $MINGW_BIN/libgdk-win32-2*.dll $DESTINATION
-    cp $MINGW_BIN/libgtk-win32-2*.dll $DESTINATION
 fi
 cp $MINGW_BIN/libintl*.dll $DESTINATION
 cp $MINGW_BIN/libffi*.dll $DESTINATION
@@ -143,7 +143,14 @@ cp $MINGW_BIN/libwinpthread*.dll $DESTINATION
 cp $MINGW_BIN/liboauth*.dll $DESTINATION
 
 # Extra GTK stuff required for (default) theme to work in Windows
-if [ -z "$GTK3" ]; then
+if [ -n "$GTK2" ]; then
+    echo "Preparing GTK2 Version"
+    mkdir -p $DESTINATION/lib
+    cp -a $MINGW/lib/gtk-2.0 $DESTINATION/lib
+    mkdir -p $DESTINATION/share/themes
+    cp -a $MINGW/share/themes/MS-Windows $DESTINATION/share/themes
+else
+    echo "Preparing GTK3 Version"
     mkdir -p $DESTINATION/share/icons
     # Copy entirity of icon set for ease (when we only need a few Open / Save / Exit, etc...)
     # ignore loads of warnings about not copying symbolic links --v
@@ -156,11 +163,6 @@ if [ -z "$GTK3" ]; then
     mkdir -p $DESTINATION/share/glib-2.0/schemas
     cp -a $MINGW/share/glib-2.0/schemas/* $DESTINATION/share/glib-2.0/schemas
     glib-compile-schemas $DESTINATION/share/glib-2.0/schemas
-else
-    mkdir -p $DESTINATION/lib
-    cp -a $MINGW/lib/gtk-2.0 $DESTINATION/lib
-    mkdir -p $DESTINATION/share/themes
-    cp -a $MINGW/share/themes/MS-Windows $DESTINATION/share/themes
 fi
 
 pushd installer

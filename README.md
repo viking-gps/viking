@@ -8,7 +8,7 @@ import, plot and create tracks, routes and waypoints, show OSM
 and other maps, generate maps (using Mapnik),
 see real-time GPS position, Geotag Images,
 control items, upload/download OSM Traces and more.
-It is written mainly in C with some C++ and uses the GTK+2 toolkit.
+It is written mainly in C with some C++ and uses the GTK+3 toolkit.
 
 Website: http://viking.sf.net/
 
@@ -33,7 +33,7 @@ On Debian Sid, following packages must be installed before building:
 
 The following packages are needed (they are included by default in Debian Sid, but not in other distributions). They must be installed too:
 
-	$ sudo apt-get install libcurl4-gnutls-dev libgtk2.0-dev libglib2.0-dev-bin
+	$ sudo apt-get install libcurl4-gnutls-dev libglib2.0-dev-bin
 
 The following packages are also used, but they can each be disabled with configure options, if desired:
 
