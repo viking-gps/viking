@@ -118,6 +118,9 @@ msgstr "前往經度/緯度"
 msgid "Latitude:"
 msgstr "緯度："
 
+msgid "This can accept extended lat/lon formats"
+msgstr ""
+
 msgid "Longitude:"
 msgstr "經度："
 
@@ -157,6 +160,15 @@ msgstr "請為該軌跡輸入一個名字。"
 msgid "Today"
 msgstr "今天"
 
+msgid "Question"
+msgstr ""
+
+msgid "Do not show this message again"
+msgstr ""
+
+msgid "\"Yes\" will be applied automatically in the future"
+msgstr ""
+
 msgid "Zoom Factors..."
 msgstr "縮放係數..."
 
@@ -177,6 +189,9 @@ msgstr "1 分鐘"
 
 msgid "1 hour"
 msgstr "1 小時"
+
+msgid "6 hours"
+msgstr ""
 
 msgid "1 day"
 msgstr "1 天"
@@ -251,6 +266,9 @@ msgid ""
 "Couldn't save EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
+
+msgid "(none)"
+msgstr "(無)"
 
 msgid "Search"
 msgstr "搜索"
@@ -333,7 +351,6 @@ msgstr ""
 msgid "mph"
 msgstr ""
 
-#. VIK_UNITS_SPEED_METRES_PER_SECOND:
 msgid "m/s"
 msgstr ""
 
@@ -358,6 +375,12 @@ msgstr ""
 msgid "Feet"
 msgstr ""
 
+msgid "Celsius"
+msgstr ""
+
+msgid "Fahrenheit"
+msgstr ""
+
 msgid "Locale"
 msgstr ""
 
@@ -378,6 +401,9 @@ msgstr "速度單位："
 
 msgid "Height units:"
 msgstr "高度單位："
+
+msgid "Temperature units:"
+msgstr ""
 
 msgid "Use large waypoint icons:"
 msgstr ""
@@ -414,6 +440,18 @@ msgstr ""
 msgid "KML File Export Units:"
 msgstr ""
 
+msgid "KML File Export Track:"
+msgstr ""
+
+msgid "Controls whether the <Track> tag is created"
+msgstr ""
+
+msgid "KML File Export Points:"
+msgstr ""
+
+msgid "Controls whether placemarks are created for every trackpoint"
+msgstr ""
+
 msgid "GPX Track Order:"
 msgstr ""
 
@@ -448,6 +486,18 @@ msgstr ""
 msgid "Relative"
 msgstr ""
 
+msgid "None"
+msgstr "無"
+
+msgid "Bottom"
+msgstr ""
+
+msgid "Middle"
+msgstr ""
+
+msgid "Top"
+msgstr ""
+
 msgid "Save File Reference Mode:"
 msgstr ""
 
@@ -460,6 +510,13 @@ msgid "Ask for Name before Track Creation:"
 msgstr ""
 
 msgid "Show Tooltip during Track Creation:"
+msgstr ""
+
+msgid "Show Graph for TrackWaypoint Layer:"
+msgstr ""
+
+msgid ""
+"Show graph automatically for a track or route if only one is in the layer"
 msgstr ""
 
 msgid "The number of recent files:"
@@ -477,6 +534,30 @@ msgid "Open files (but not .vik ones) into the selected TrackWaypoint layer."
 msgstr ""
 
 msgid "Show calendar day names:"
+msgstr ""
+
+msgid "Ruler area label position:"
+msgstr ""
+
+msgid "Use Scroll to Zoom:"
+msgstr ""
+
+msgid "Whether scroll events zoom or move the viewport"
+msgstr ""
+
+msgid "Invert Scroll Direction:"
+msgstr ""
+
+msgid "Invert direction of scrolling, particularly for touchpad use"
+msgstr ""
+
+msgid "Select Tool Double Click to Zoom:"
+msgstr ""
+
+msgid "Auto Select Trackpoint:"
+msgstr ""
+
+msgid "Select trackpoint from mouse over graph on main display"
 msgstr ""
 
 msgid "Home Location"
@@ -522,7 +603,7 @@ msgstr ""
 msgid "Periodically check to see if a new version of Viking is available"
 msgstr ""
 
-#. Defaults for the options are setup here
+#. gtk_notebook_append_page ( GTK_NOTEBOOK(tpwin->tabs), main_hbox, gtk_label_new(_("General")) );
 msgid "General"
 msgstr ""
 
@@ -679,7 +760,7 @@ msgid "Acquired from GPS"
 msgstr "已從GPS抓取的"
 
 #, c-format
-msgid "using cmd '%s' and file '%s'\n"
+msgid "using cmd '%s' and file '%s'"
 msgstr ""
 
 #, c-format
@@ -859,10 +940,10 @@ msgid "Setting a value for this tag is unsupported!"
 msgstr ""
 
 #, c-format
-msgid "Too few components specified (need %d, found %d)\n"
+msgid "Too few components specified (need %d, found %d)"
 msgstr ""
 
-msgid "Numeric value expected\n"
+msgid "Numeric value expected"
 msgstr ""
 
 msgid "This shouldn't happen!"
@@ -1025,9 +1106,6 @@ msgstr ""
 msgid "Mapnik"
 msgstr ""
 
-msgid "None"
-msgstr "無"
-
 msgid "Horizontally"
 msgstr "水平的"
 
@@ -1065,6 +1143,10 @@ msgstr ""
 msgid "Could not create new email. %s"
 msgstr ""
 
+#, c-format
+msgid "Items: %d"
+msgstr ""
+
 msgid "Color:"
 msgstr ""
 
@@ -1074,11 +1156,49 @@ msgstr ""
 msgid "Line Thickness:"
 msgstr ""
 
+msgid "Reset to Defaults"
+msgstr ""
+
 msgid "Coordinate"
 msgstr ""
 
+#. NB Not a log level
+#. NB Not a log level
+msgid "Error"
+msgstr ""
+
+msgid "Critical"
+msgstr ""
+
+msgid "Warning"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Info"
+msgstr ""
+
+msgid "Debug"
+msgstr ""
+
+#. No exit on X errors!
+#. mainly to handle out of memory error when requesting large pixbuf from user request
+#. see vikwindow.c::save_image_file ()
 #, c-format
-msgid "Ignoring Xlib error: error code %d request code %d\n"
+msgid "Ignoring Xlib error: error code %d request code %d"
+msgstr ""
+
+msgid "_Copy Data"
+msgstr ""
+
+msgid "Category"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "Log"
 msgstr ""
 
 msgid "Enable debug output"
@@ -1100,6 +1220,9 @@ msgid "Zoom Level (OSM). Value can be 0 - 22"
 msgstr ""
 
 msgid "Add a map layer by id value. Use 0 for the default map."
+msgstr ""
+
+msgid "Load all GPX files in external mode."
 msgstr ""
 
 #, c-format
@@ -1130,10 +1253,7 @@ msgstr ""
 msgid "OSM Metatiles"
 msgstr ""
 
-msgid "Mapbox Outdoors"
-msgstr ""
-
-msgid "Mapbox Specific"
+msgid "OpenTopoMap"
 msgstr ""
 
 msgid "OSM (view)"
@@ -1144,9 +1264,6 @@ msgstr ""
 
 #. Note the use of positional parameters
 msgid "OSM (query)"
-msgstr ""
-
-msgid "OSM (render)"
 msgstr ""
 
 #. Example: http://127.0.0.1:8111/load_and_zoom?left=8.19&right=8.20&top=48.605&bottom=48.590&select=node413602999
@@ -1165,6 +1282,17 @@ msgid "Wikimedia Toolserver GeoHack"
 msgstr ""
 
 msgid "Preferences"
+msgstr ""
+
+msgid "Reset This Tab to Defaults"
+msgstr ""
+
+#, c-format
+msgid "Waypoint%04d"
+msgstr ""
+
+#, c-format
+msgid "Track%03d"
 msgstr ""
 
 msgid "System Default"
@@ -1247,6 +1375,93 @@ msgstr ""
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
 msgstr ""
 
+msgid "All Time"
+msgstr ""
+
+msgid "Spectral"
+msgstr ""
+
+msgid "Blue/Purple"
+msgstr ""
+
+msgid "Red/Green"
+msgstr ""
+
+msgid "Yellow/Orange/Red"
+msgstr ""
+
+msgid "Tracks Area Coverage"
+msgstr ""
+
+msgid "TAC Advanced"
+msgstr ""
+
+msgid "Tracks Heatmap"
+msgstr ""
+
+msgid "On:"
+msgstr ""
+
+msgid "Alpha:"
+msgstr "Alpha:"
+
+msgid "Control the Alpha value for transparency effects"
+msgstr ""
+
+msgid "Max Square On:"
+msgstr ""
+
+msgid "Max Square Alpha:"
+msgstr ""
+
+msgid "Max Square Color:"
+msgstr ""
+
+msgid "Contiguous On:"
+msgstr ""
+
+msgid "Contiguous Alpha:"
+msgstr ""
+
+msgid "Contiguous Color:"
+msgstr ""
+
+msgid "Cluster On:"
+msgstr ""
+
+msgid "Cluster Alpha:"
+msgstr ""
+
+msgid "Cluster Color:"
+msgstr ""
+
+msgid "Draw Grid:"
+msgstr ""
+
+msgid "Tile Area Level:"
+msgstr ""
+
+msgid "Area size. A higher level means a smaller grid."
+msgstr ""
+
+msgid "Within Years:"
+msgstr ""
+
+msgid "Only include tracks that are within this time range."
+msgstr ""
+
+msgid "Width Factor:"
+msgstr ""
+
+msgid "Note higher values means the heatmap takes longer to generate"
+msgstr ""
+
+msgid "Color Style:"
+msgstr ""
+
+msgid "Reset All to Defaults"
+msgstr ""
+
 msgid "Aggregate"
 msgstr ""
 
@@ -1264,6 +1479,72 @@ msgstr ""
 msgid "%s: Track and Route List"
 msgstr ""
 
+#, c-format
+msgid "Failed to open %s"
+msgstr ""
+
+#. Since we can process certain other files with issues (e.g. zip files) just show a warning in the status bar
+#. Not that a user can do much about it... or tells them what this issue is yet...
+#. Since we can process .vik files with issues just show a warning in the status bar
+#. Not that a user can do much about it... or tells them what this issue is yet...
+#, c-format
+msgid "WARNING: issues encountered loading %s"
+msgstr ""
+
+#, c-format
+msgid "Unable to load %s"
+msgstr ""
+
+msgid "Track Area Coverage"
+msgstr ""
+
+msgid "Heatmap generation"
+msgstr ""
+
+#, c-format
+msgid "MBTiles file write problem: %s"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "Creating MBTiles File"
+msgstr ""
+
+msgid "_Tracks Area Coverage"
+msgstr ""
+
+msgid "_Off"
+msgstr ""
+
+msgid "_On"
+msgstr ""
+
+msgid "_Calculate"
+msgstr ""
+
+msgid "_Increase Tile Area"
+msgstr ""
+
+msgid "_Decrease Tile Area"
+msgstr ""
+
+msgid "_Remove"
+msgstr ""
+
+msgid "_Export as MBTiles"
+msgstr ""
+
+msgid "Tracks Heat_map"
+msgstr ""
+
+#, c-format
+msgid "%s: Tracks in tile %d %d, %d"
+msgstr ""
+
+msgid "_Tracks in this Tile"
+msgstr ""
+
 msgid "_Visibility"
 msgstr ""
 
@@ -1274,6 +1555,12 @@ msgid "_Hide All"
 msgstr ""
 
 msgid "_Toggle"
+msgstr ""
+
+msgid "V_iew"
+msgstr ""
+
+msgid "_All TrackWaypoint Layers"
 msgstr ""
 
 msgid "_Sort"
@@ -1309,7 +1596,25 @@ msgstr ""
 msgid "Find the first item with a specified date"
 msgstr ""
 
+msgid "_File"
+msgstr "_F 檔案"
+
 msgid "Load E_xternal Layers"
+msgstr ""
+
+msgid "_Open GPX as External Layer..."
+msgstr ""
+
+msgid "Save _Layer As..."
+msgstr ""
+
+msgid "_Append File..."
+msgstr ""
+
+msgid "_Export as GPX..."
+msgstr ""
+
+msgid "Can not delete layer as calculation is in progress"
 msgstr ""
 
 #. Could have a more complicated tooltip that numbers each type of layers,
@@ -1320,8 +1625,28 @@ msgid_plural "%d layers"
 msgstr[0] ""
 msgstr[1] ""
 
-#, c-format
 msgid "Empty"
+msgstr ""
+
+msgid ""
+"\n"
+"TAC: Calculating"
+msgstr ""
+
+#, c-format
+msgid ""
+"\n"
+"TAC: Area Level %s\n"
+"Total tiles %d\n"
+"Max Square %d\n"
+"Contiguous count %d\n"
+"Cluster size %d"
+msgstr ""
+
+msgid "Nothing to Export!"
+msgstr ""
+
+msgid "Export to GPX"
 msgstr ""
 
 msgid "SRTM Global 90m (3 arcsec)"
@@ -1333,6 +1658,12 @@ msgstr ""
 msgid "Height gradient"
 msgstr ""
 
+msgid "Default"
+msgstr ""
+
+msgid "Delineate"
+msgstr ""
+
 msgid "DEM Files:"
 msgstr "DEM 檔案:"
 
@@ -1340,6 +1671,15 @@ msgid "Download Source:"
 msgstr "下載源:"
 
 msgid "Min Elev Color:"
+msgstr ""
+
+msgid "Color Scheme:"
+msgstr ""
+
+msgid "Start Color:"
+msgstr ""
+
+msgid "End Color:"
 msgstr ""
 
 msgid "Type:"
@@ -1406,6 +1746,12 @@ msgstr "正在下載 DEM %s"
 msgid "_Show DEM File Information"
 msgstr ""
 
+msgid "Accepts various forms of ISO 8601"
+msgstr ""
+
+msgid "Text input time was not understood"
+msgstr ""
+
 msgid "Browse..."
 msgstr "瀏覧 ..."
 
@@ -1438,6 +1784,73 @@ msgstr "添加 ..."
 
 msgid "Delete"
 msgstr "移除"
+
+msgid "Keep position at center"
+msgstr ""
+
+msgid "Keep position on screen"
+msgstr ""
+
+msgid "Disable"
+msgstr ""
+
+msgid "Auto Connect"
+msgstr ""
+
+msgid "Automatically connect to GeoClue"
+msgstr ""
+
+msgid "Recording tracks"
+msgstr "正在紀録軌迹"
+
+msgid "Jump to current position on start"
+msgstr "在開始時跳到目前位置"
+
+msgid "Moving Map Method:"
+msgstr ""
+
+msgid "Update Statusbar:"
+msgstr ""
+
+msgid "Display information in the statusbar on GeoClue updates"
+msgstr ""
+
+msgid "GeoClue"
+msgstr ""
+
+msgid "Connected"
+msgstr ""
+
+msgid "Disconnected"
+msgstr ""
+
+msgid "_Empty"
+msgstr ""
+
+#, c-format
+msgid "Unexpected number of disconnected handlers: %d"
+msgstr ""
+
+msgid "Are you sure you want to delete geoclue data?"
+msgstr ""
+
+msgid "Track"
+msgstr ""
+
+msgid "GeoClue disabled"
+msgstr ""
+
+#, c-format
+msgid "Failed to connect to GeoClue service: %s"
+msgstr ""
+
+#. Possibly client not available for the requested accuracy level (we always use 'EXACT')
+#. lesser accurate levels won't make much sense for tracking positions
+msgid "GeoClue client unavailable"
+msgstr ""
+
+msgid "GeoClue Tracking"
+msgstr ""
 
 msgid "_Georef Move Map"
 msgstr ""
@@ -1547,9 +1960,7 @@ msgstr ""
 msgid "Latitude/Longitude"
 msgstr ""
 
-msgid "Alpha:"
-msgstr "Alpha:"
-
+#. Just a separator
 #. Now with icons
 msgid "_Zoom to Fit Map"
 msgstr ""
@@ -1563,6 +1974,9 @@ msgstr ""
 msgid "No goto tool available."
 msgstr ""
 
+msgid "Service request failure."
+msgstr ""
+
 msgid "goto"
 msgstr ""
 
@@ -1571,6 +1985,19 @@ msgstr ""
 
 msgid "Enter address or place name:"
 msgstr "匯入位址或者地點名稱:"
+
+msgid "No results"
+msgstr ""
+
+msgid "Service request failure"
+msgstr ""
+
+msgid "Searching..."
+msgstr ""
+
+#, c-format
+msgid "Goto request on: %s"
+msgstr ""
 
 msgid "Locality"
 msgstr ""
@@ -1585,9 +2012,6 @@ msgid "Keep vehicle at center"
 msgstr ""
 
 msgid "Keep vehicle on screen"
-msgstr ""
-
-msgid "Disable"
 msgstr ""
 
 msgid "Download Tracks:"
@@ -1608,22 +2032,10 @@ msgstr ""
 msgid "Upload Waypoints:"
 msgstr ""
 
-msgid "Recording tracks"
-msgstr "正在紀録軌迹"
-
-msgid "Jump to current position on start"
-msgstr "在開始時跳到目前位置"
-
-msgid "Moving Map Method:"
-msgstr ""
-
-msgid "Update Statusbar:"
+msgid "Indicator Color:"
 msgstr ""
 
 msgid "Display information in the statusbar on GPS updates"
-msgstr ""
-
-msgid "Auto Connect"
 msgstr ""
 
 msgid "Automatically connect to GPSD"
@@ -1650,22 +2062,13 @@ msgstr "GPS 上傳"
 msgid "GPS Realtime Tracking"
 msgstr "GPS實時追蹤"
 
-msgid "Connected"
-msgstr ""
-
-msgid "Disconnected"
-msgstr ""
-
 msgid "Unknown GPS Protocol"
 msgstr "未知的GPS協定"
 
 msgid "Unknown serial port device"
 msgstr "未知的序列埠裝置"
 
-#, c-format
-msgid "%s: unknown parameter"
-msgstr "%s: 未知的引數"
-
+#. Just a separator
 #. Now with icons
 msgid "_Upload to GPS"
 msgstr ""
@@ -1673,6 +2076,7 @@ msgstr ""
 msgid "Download from _GPS"
 msgstr ""
 
+#. Just a separator
 msgid "Empty _Realtime"
 msgstr ""
 
@@ -1683,10 +2087,6 @@ msgid "_Empty Download"
 msgstr ""
 
 msgid "Empty _All"
-msgstr ""
-
-#, c-format
-msgid "Unexpected number of disconnected handlers: %d"
 msgstr ""
 
 #, c-format
@@ -1825,6 +2225,17 @@ msgstr "刪除(_D)"
 msgid "New Layer"
 msgstr ""
 
+#, c-format
+msgid "Nothing found up to %s"
+msgstr ""
+
+#, c-format
+msgid "Nothing found back to %s"
+msgstr ""
+
+msgid "_Today"
+msgstr ""
+
 msgid "Top Layer"
 msgstr "頂層"
 
@@ -1850,10 +2261,13 @@ msgid ""
 "Paste layer into selected container layer or otherwise above selected layer"
 msgstr ""
 
-msgid "New name can not be blank."
+msgid "Calendar"
 msgstr ""
 
-msgid "Aggregate Layers have no settable properties."
+msgid "Goto"
+msgstr ""
+
+msgid "New name can not be blank."
 msgstr ""
 
 msgid "You cannot cut the Top Layer."
@@ -1967,6 +2381,7 @@ msgstr ""
 msgid "Tile Information"
 msgstr ""
 
+#. local rename
 msgid "_Rerender Tile"
 msgstr ""
 
@@ -1997,9 +2412,6 @@ msgid "Map File:"
 msgstr ""
 
 msgid "An MBTiles file. Only applies when the map type method is 'MBTiles'"
-msgstr ""
-
-msgid "Control the Alpha value for transparency effects"
 msgstr ""
 
 msgid "Autodownload maps:"
@@ -2295,6 +2707,12 @@ msgstr ""
 msgid "Name Descending"
 msgstr ""
 
+msgid "Number Ascending"
+msgstr ""
+
+msgid "Number Descending"
+msgstr ""
+
 msgid "No"
 msgstr ""
 
@@ -2302,6 +2720,12 @@ msgid "Yes"
 msgstr ""
 
 msgid "No write"
+msgstr ""
+
+msgid "1.0"
+msgstr ""
+
+msgid "1.1"
 msgstr ""
 
 msgid "Draw Labels"
@@ -2373,6 +2797,18 @@ msgstr ""
 msgid "Track Sort Order:"
 msgstr ""
 
+msgid "Apply DEM Automatically"
+msgstr ""
+
+msgid "Automatically apply DEM to trackpoints on file load"
+msgstr ""
+
+msgid "Remove Duplicate Trackpoints"
+msgstr ""
+
+msgid "Automatically delete duplicate trackpoints on file load"
+msgstr ""
+
 msgid "Waypoint Font Size:"
 msgstr ""
 
@@ -2421,6 +2857,9 @@ msgstr ""
 msgid "Keywords"
 msgstr ""
 
+msgid "GPX Version"
+msgstr ""
+
 msgid "External layer:"
 msgstr ""
 
@@ -2458,6 +2897,14 @@ msgid "end"
 msgstr ""
 
 #, c-format
+msgid "%s to %s\n"
+msgstr ""
+
+#, c-format
+msgid " in %d:%02d mins:secs"
+msgstr ""
+
+#, c-format
 msgid " in %d:%02d hrs:mins"
 msgstr ""
 
@@ -2486,6 +2933,10 @@ msgid "Routes: %d"
 msgstr ""
 
 #, c-format
+msgid "- %d:%02d mins:secs"
+msgstr ""
+
+#, c-format
 msgid "- %d:%02d hrs:mins"
 msgstr ""
 
@@ -2503,6 +2954,10 @@ msgstr ""
 
 #, c-format
 msgid "Waypoints: %d"
+msgstr ""
+
+#, c-format
+msgid "Wpt: Alt --"
 msgstr ""
 
 #, c-format
@@ -2535,6 +2990,10 @@ msgstr ""
 msgid "Export Track as GPX"
 msgstr ""
 
+#, c-format
+msgid "Could not launch %s."
+msgstr ""
+
 msgid "Find"
 msgstr ""
 
@@ -2547,15 +3006,13 @@ msgstr "在此圖層中没有發現航點"
 msgid "Can not upload invisible track."
 msgstr ""
 
-msgid "Track"
-msgstr ""
-
 msgid "Route"
 msgstr ""
 
 msgid "Externa_l"
 msgstr ""
 
+#. Reuse finish track method
 msgid "_Finish Route"
 msgstr ""
 
@@ -2566,9 +3023,6 @@ msgstr ""
 msgid "_View Layer"
 msgstr ""
 
-msgid "V_iew"
-msgstr ""
-
 msgid "View All _Tracks"
 msgstr ""
 
@@ -2576,6 +3030,15 @@ msgid "View All _Routes"
 msgstr ""
 
 msgid "View All _Waypoints"
+msgstr ""
+
+msgid "_Ensure Visibility On"
+msgstr ""
+
+msgid "View _GPX Extensions"
+msgstr ""
+
+msgid "_Goto"
 msgstr ""
 
 msgid "_Goto Center of Layer"
@@ -2611,6 +3074,9 @@ msgstr ""
 
 #, c-format
 msgid "Open with External Program_2: %s"
+msgstr ""
+
+msgid "Open with Text Editor"
 msgstr ""
 
 msgid "_New"
@@ -2653,7 +3119,7 @@ msgstr ""
 msgid "Within _Layer Bounds"
 msgstr ""
 
-msgid "Within _Current View"
+msgid "Within _Current Bounds"
 msgstr ""
 
 msgid "From Geo_caching..."
@@ -2665,9 +3131,7 @@ msgstr ""
 msgid "From _File..."
 msgstr ""
 
-msgid "Import File With GPS_Babel..."
-msgstr ""
-
+#. GtkMenu *upload_submenu = GTK_MENU(gtk_menu_new());
 msgid "_Upload"
 msgstr ""
 
@@ -2701,6 +3165,9 @@ msgstr ""
 msgid "Delete Duplicate Waypoints"
 msgstr ""
 
+msgid "Waypoint _List..."
+msgstr ""
+
 #, c-format
 msgid "Are you sure you want to delete all tracks in %s?"
 msgstr ""
@@ -2729,6 +3196,21 @@ msgid ""
 "Converting a track to a route removes extra track data such as segments, "
 "timestamps, etc...\n"
 "Do you want to continue?"
+msgstr ""
+
+msgid "This track has timestamps, so this operation is not allowed"
+msgstr ""
+
+msgid ""
+"The first and last points are quite far apart, this operation is intended "
+"for 'circular' routes.\n"
+"Do you wish to continue?"
+msgstr ""
+
+msgid "Rotate"
+msgstr ""
+
+msgid "Shift by N points:"
 msgstr ""
 
 msgid "No DEM layers available, thus no DEM values can be applied."
@@ -2893,6 +3375,11 @@ msgid "No duplicates found"
 msgstr ""
 
 #, c-format
+msgid "%ld waypoint adjusted"
+msgid_plural "%ld waypoints adjusted"
+msgstr[0] ""
+
+#, c-format
 msgid ""
 "A waypoint with the name \"%s\" already exists. Really rename to the same "
 "name?"
@@ -2908,15 +3395,13 @@ msgid ""
 "A route with the name \"%s\" already exists. Really rename to the same name?"
 msgstr ""
 
-msgid "_Goto"
-msgstr ""
-
 msgid "_Visit Geocache Webpage"
 msgstr ""
 
 msgid "Geotag multiple images against this waypoint"
 msgstr ""
 
+#. Own icon - see stock_icons in vikwindow.c
 msgid "_Show Picture..."
 msgstr ""
 
@@ -3016,6 +3501,27 @@ msgstr ""
 msgid "_Date"
 msgstr ""
 
+msgid "Maximum _Heart Rate"
+msgstr ""
+
+msgid "Maximum Cadence"
+msgstr ""
+
+msgid "Maximum Power"
+msgstr ""
+
+msgid "Minimum Temperature"
+msgstr ""
+
+msgid "Maximum Temperature"
+msgstr ""
+
+msgid "_Previous point"
+msgstr ""
+
+msgid "_Next point"
+msgstr ""
+
 msgid "Co_mbine"
 msgstr ""
 
@@ -3054,6 +3560,9 @@ msgid "Split By _Number of Points..."
 msgstr ""
 
 msgid "Split at _Trackpoint"
+msgstr ""
+
+msgid "_Create Segment at Trackpoint"
 msgstr ""
 
 msgid "_Insert Points"
@@ -3118,6 +3627,9 @@ msgstr ""
 msgid "C_onvert to a Track"
 msgstr ""
 
+msgid "Convert to Waypoints"
+msgstr ""
+
 msgid "_Anonymize Times"
 msgstr ""
 
@@ -3130,6 +3642,12 @@ msgstr ""
 msgid ""
 "Reset trackpoint timestamps between the first and last points such that "
 "track is traveled at equal speed"
+msgstr ""
+
+msgid "_Rotate..."
+msgstr ""
+
+msgid "Shift trackpoints to move the first points to the end"
 msgstr ""
 
 msgid "_Reverse Track"
@@ -3183,7 +3701,14 @@ msgstr ""
 msgid "Use with _Filter"
 msgstr ""
 
+#. Just a separator
 msgid "_Edit Trackpoint"
+msgstr ""
+
+msgid "Set Time from Comment"
+msgstr ""
+
+msgid "Convert to Track"
 msgstr ""
 
 #, c-format
@@ -3246,11 +3771,10 @@ msgstr ""
 msgid "Export of GPX file simplified using point limit: %d"
 msgstr ""
 
-msgid "The filename you requested could not be opened for writing."
+msgid "Google Earth"
 msgstr ""
 
-#, c-format
-msgid "Could not launch %s."
+msgid "The filename you requested could not be opened for writing."
 msgstr ""
 
 msgid "Could not create temporary file for export."
@@ -3269,44 +3793,105 @@ msgid ""
 "Please, refer to GPSbabel if unsure."
 msgstr ""
 
+msgid "GPSBabel suboptions"
+msgstr ""
+
 msgid "You did not select a valid file format."
 msgstr ""
 
+msgid "Tabs on the side:"
+msgstr ""
+
+msgid "Show splits tab:"
+msgstr ""
+
+msgid "Show Elevation-distance graph:"
+msgstr ""
+
+msgid "Show Elevation-time graph:"
+msgstr ""
+
+msgid "Show Gradient-distance graph:"
+msgstr ""
+
+msgid "Show Speed-time graph:"
+msgstr ""
+
+msgid "Show Speed-distance graph:"
+msgstr ""
+
+msgid "Show Distance-time graph:"
+msgstr ""
+
+msgid "Show Heart Rate graph:"
+msgstr ""
+
+msgid "Show Cadence graph:"
+msgstr ""
+
+msgid "Show Temperature graph:"
+msgstr ""
+
+msgid "Show Power graph:"
+msgstr ""
+
+msgid "Track Properties Dialog"
+msgstr ""
+
+msgid "Statistics"
+msgstr ""
+
+msgid "Splits"
+msgstr ""
+
+msgid "Axis Control"
+msgstr ""
+
+msgid "Height Divisions:"
+msgstr ""
+
+msgid "Minimum Height:"
+msgstr ""
+
+msgid "_Center View on Route"
+msgstr ""
+
+msgid "_Center View on Track"
+msgstr ""
+
+msgid "_Edit Trackpoint..."
+msgstr ""
+
+msgid "Split at Marker"
+msgstr ""
+
+msgid "Axis Control..."
+msgstr ""
+
+msgid "_Show"
+msgstr ""
+
+msgid "_DEM"
+msgstr ""
+
+msgid "_GPS Speed"
+msgstr ""
+
+#. Every graph has two value labels
 #, c-format
 msgid "No Data"
 msgstr "没有資料"
 
 #, c-format
-msgid "%.1f kph"
+msgid "%d bpm"
 msgstr ""
 
 #, c-format
-msgid "%.1f mph"
+msgid "%d RPM"
 msgstr ""
 
 #, c-format
-msgid "%.1f knots"
-msgstr ""
-
-#, c-format
-msgid "%.1f s/km"
-msgstr ""
-
-#, c-format
-msgid "%.1f min/km"
-msgstr ""
-
-#, c-format
-msgid "%.1f sec/mi"
-msgstr ""
-
-#, c-format
-msgid "%.1f min/mi"
-msgstr ""
-
-#. VIK_UNITS_SPEED_METRES_PER_SECOND:
-#, c-format
-msgid "%.1f m/s"
+msgid "%d Watts"
 msgstr ""
 
 #. Minutes
@@ -3329,57 +3914,38 @@ msgstr ""
 msgid "M"
 msgstr ""
 
-#, c-format
-msgid "%.1f miles"
-msgstr ""
-
-#, c-format
-msgid "%.1f NM"
-msgstr ""
-
-#. VIK_UNITS_DISTANCE_KILOMETRES
-#, c-format
-msgid "%.1f km"
-msgstr ""
-
 msgid "Failed splitting track. Track unchanged"
 msgstr ""
 
+msgid "Show D_EM"
+msgstr ""
+
+msgid "Distance"
+msgstr ""
+
+msgid ""
+"Time\n"
+"(m:ss)"
+msgstr ""
+
+msgid "Speed"
+msgstr ""
+
+#. VIK_UNITS_DISTANCE_KILOMETRES:
+msgid "m"
+msgstr ""
+
+msgid "ft"
+msgstr ""
+
+msgid "Gain"
+msgstr ""
+
+msgid "Loss"
+msgstr ""
+
 #, c-format
-msgid "%s - Track Properties"
-msgstr ""
-
-msgid "Split at _Marker"
-msgstr ""
-
-msgid "Split _Segments"
-msgstr ""
-
-msgid "_Reverse"
-msgstr ""
-
-msgid "_Delete Dupl."
-msgstr ""
-
-msgid "<b>Comment:</b>"
-msgstr "<b>説明:</b>"
-
-msgid "<b>Description:</b>"
-msgstr ""
-
-msgid "<b>Source:</b>"
-msgstr ""
-
-msgid "<b>Type:</b>"
-msgstr ""
-
-msgid "<b>Color:</b>"
-msgstr ""
-
-msgid "<b>Draw Name:</b>"
-msgstr ""
-
-msgid "<b>Distance Labels:</b>"
+msgid "Split %d"
 msgstr ""
 
 msgid "<b>Track Length:</b>"
@@ -3421,6 +3987,106 @@ msgstr "<b>結束:</b>"
 msgid "<b>Duration:</b>"
 msgstr "<b>持續時間:</b>"
 
+#, c-format
+msgid "%d minutes - %d minutes moving"
+msgstr ""
+
+#, c-format
+msgid "%s total - %s in segments"
+msgstr ""
+
+msgid "<b>Max Cadence:</b>"
+msgstr ""
+
+#, c-format
+msgid "%.1f RPM"
+msgstr ""
+
+msgid "<b>Avg. Cadence:</b>"
+msgstr ""
+
+msgid "<b>Max Heart Rate:</b>"
+msgstr ""
+
+#, c-format
+msgid "%.1f bpm"
+msgstr ""
+
+msgid "<b>Avg. Heart Rate:</b>"
+msgstr ""
+
+#, c-format
+msgid "%.1f%sC / %.1f%sC"
+msgstr ""
+
+#, c-format
+msgid "%.1f%sF / %.1f%sF"
+msgstr ""
+
+msgid "<b>Min/Max Temperature:</b>"
+msgstr ""
+
+#, c-format
+msgid "%.1f%sC"
+msgstr ""
+
+#, c-format
+msgid "%.1f%sF"
+msgstr ""
+
+msgid "<b>Avg. Temperature:</b>"
+msgstr ""
+
+msgid "<b>Max Power:</b>"
+msgstr ""
+
+#, c-format
+msgid "%.1f Watts"
+msgstr ""
+
+msgid "<b>Avg. Power:</b>"
+msgstr ""
+
+#, c-format
+msgid "%s - Track Properties"
+msgstr ""
+
+msgid "Split at _Marker"
+msgstr ""
+
+msgid "Split _Segments"
+msgstr ""
+
+msgid "_Reverse"
+msgstr ""
+
+msgid "_Delete Dupl."
+msgstr ""
+
+msgid "<b>Comment:</b>"
+msgstr "<b>説明:</b>"
+
+msgid "<b>Description:</b>"
+msgstr ""
+
+msgid "<b>Source:</b>"
+msgstr ""
+
+msgid "<b>Type:</b>"
+msgstr ""
+
+msgid "<b>Number:</b>"
+msgstr ""
+
+msgid "<b>Color:</b>"
+msgstr ""
+
+msgid "<b>Draw Name:</b>"
+msgstr ""
+
+msgid "<b>Distance Labels:</b>"
+msgstr ""
+
 msgid "Centre"
 msgstr ""
 
@@ -3439,30 +4105,22 @@ msgstr ""
 msgid "Maximum number of distance labels to be shown"
 msgstr ""
 
+msgid "Drawing"
+msgstr ""
+
+msgid "GPX Extensions"
+msgstr ""
+
 msgid "Properties"
-msgstr ""
-
-#, c-format
-msgid "%d minutes - %d minutes moving"
-msgstr ""
-
-#, c-format
-msgid "%s total - %s in segments"
-msgstr ""
-
-msgid "Statistics"
-msgstr ""
-
-msgid "Show D_EM"
-msgstr ""
-
-msgid "Show _GPS Speed"
 msgstr ""
 
 msgid "<b>Track Distance:</b>"
 msgstr ""
 
 msgid "<b>Track Height:</b>"
+msgstr ""
+
+msgid "Show _GPS Speed"
 msgstr ""
 
 msgid "Elevation-distance"
@@ -3496,6 +4154,30 @@ msgid "Elevation-time"
 msgstr ""
 
 msgid "Speed-distance"
+msgstr ""
+
+msgid "<b>Heart Rate:</b>"
+msgstr ""
+
+msgid "Heart Rate"
+msgstr ""
+
+msgid "<b>Cadence:</b>"
+msgstr ""
+
+msgid "Cadence"
+msgstr ""
+
+msgid "<b>Temperature:</b>"
+msgstr ""
+
+msgid "Temperature"
+msgstr ""
+
+msgid "<b>Power:</b>"
+msgstr ""
+
+msgid "Power"
 msgstr ""
 
 msgid "Date/Time Edit"
@@ -3555,24 +4237,12 @@ msgstr ""
 msgid "Split Here"
 msgstr ""
 
-msgid "_Copy Data"
+msgid "_Additional"
 msgstr ""
 
-#.
-#. item = gtk_image_menu_item_new_with_mnemonic ( _("_Select") );
-#. gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
-#. g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_select), values );
-#. gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-#. gtk_widget_show ( item );
-#.
+#. (void)vu_menu_add_item ( menu, _("_Select"), GTK_STOCK_FIND, G_CALLBACK(trw_layer_track_select), values );
 #. ATM view auto selects, so don't bother with separate select menu entry
-#.
-#. item = gtk_image_menu_item_new_with_mnemonic ( _("_Select") );
-#. gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
-#. g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_select), values );
-#. gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-#. gtk_widget_show ( item );
-#.
+#. (void)vu_menu_add_item ( menu, _("_Select"), GTK_STOCK_FIND, G_CALLBACK(trw_layer_waypoint_select), values );
 #. AUTO SELECT NOT TRUE YET...
 #. ATM view auto selects, so don't bother with separate select menu entry
 msgid "_View"
@@ -3606,9 +4276,6 @@ msgstr ""
 msgid ""
 "Length\n"
 "(minutes)"
-msgstr ""
-
-msgid "sec/mi"
 msgstr ""
 
 #, c-format
@@ -3652,6 +4319,9 @@ msgstr ""
 msgid "Name:"
 msgstr "名稱:"
 
+msgid "Show Name"
+msgstr ""
+
 msgid "Altitude:"
 msgstr "海拔:"
 
@@ -3667,9 +4337,6 @@ msgstr "圖片:"
 msgid "Symbol:"
 msgstr "象徵式:"
 
-msgid "(none)"
-msgstr "(無)"
-
 #. Geotag Info [readonly]
 msgid "Has Geotag"
 msgstr ""
@@ -3677,22 +4344,64 @@ msgstr ""
 msgid "Consistent Position"
 msgstr ""
 
-#. ATM the direction value box is always shown, even when there is no information.
-#. It would be nice to be able to hide it until the 'Add' has been performed,
-#. however I've not been able to achieve this.
-#. Thus simply sensistizing it instead.
 msgid "Image Direction:"
-msgstr ""
-
-msgid "Magnetic"
 msgstr ""
 
 msgid "Time:"
 msgstr "時間："
 
-#. TODO: other checks (isalpha or whatever )
+msgid "Course:"
+msgstr ""
+
+#, c-format
+msgid "Speed: (%s)"
+msgstr ""
+
+msgid "Magnetic Variance:"
+msgstr ""
+
+msgid "Geoid Height:"
+msgstr ""
+
+msgid "URL Name:"
+msgstr ""
+
+#. Combine fix & satellites into one line??
+msgid "Fix Mode:"
+msgstr ""
+
+msgid "Satellites:"
+msgstr ""
+
+msgid "HDOP:"
+msgstr ""
+
+msgid "VDOP:"
+msgstr ""
+
+msgid "PDOP:"
+msgstr ""
+
+msgid "Age of DGPS Data:"
+msgstr ""
+
+msgid "DGPS Station Id:"
+msgstr ""
+
+msgid "Basic"
+msgstr ""
+
+msgid "Extra"
+msgstr ""
+
+msgid "Magnetic"
+msgstr ""
+
 msgid "Please enter a name for the waypoint."
 msgstr "請為該航點匯入一個名字."
+
+msgid "Course value must be between 0 and 360."
+msgstr ""
 
 #, c-format
 msgid "Failed updating EXIF on %s"
@@ -3741,13 +4450,21 @@ msgid ""
 "to adjust times when a camera's timestamp was incorrect."
 msgstr ""
 
+msgid "Image Time is Local:"
+msgstr ""
+
+msgid ""
+"The timestamps in the images are in local time (rather than UTC) and so "
+"current local timezone adjustment will be automatically applied."
+msgstr ""
+
 msgid "Image Timezone:"
 msgstr ""
 
 msgid ""
-"The timezone that was used when the images were created. For example, if a "
-"camera is set to AWST or +8:00 hours. Enter +8:00 here so that the correct "
-"adjustment to the images' time can be made. GPS data is always in UTC."
+"The timezone adjustment factor. e.g. for AWST use +8:00. This should be "
+"unnecessary if using 'time is local'. However time stamps may be offset due "
+"to timezone issues."
 msgstr ""
 
 #, c-format
@@ -3803,39 +4520,6 @@ msgid "Avg. Duration"
 msgstr ""
 
 #, c-format
-msgid "%.2f miles"
-msgstr ""
-
-#, c-format
-msgid "%.2f NM"
-msgstr ""
-
-#. VIK_UNITS_DISTANCE_KILOMETRES
-#, c-format
-msgid "%.2f km"
-msgstr ""
-
-#, c-format
-msgid "%.2f m/s"
-msgstr ""
-
-#, c-format
-msgid "%.2f knots"
-msgstr ""
-
-#, c-format
-msgid "%d s/km"
-msgstr ""
-
-#, c-format
-msgid "%d sec/mi"
-msgstr ""
-
-#, c-format
-msgid "%.2f km/h"
-msgstr ""
-
-#, c-format
 msgid "%d feet"
 msgstr ""
 
@@ -3859,13 +4543,50 @@ msgstr ""
 msgid "%d:%02d hrs:mins"
 msgstr ""
 
+msgid "Year"
+msgstr ""
+
+#, c-format
+msgid ""
+"Distance\n"
+"(%s)"
+msgstr ""
+
+#, c-format
+msgid ""
+"Average Dist\n"
+"(%s)"
+msgstr ""
+
+#, c-format
+msgid "%d %s: Track List"
+msgstr ""
+
+msgid "_Track List"
+msgstr ""
+
+msgid "Month"
+msgstr ""
+
+msgid "Totals"
+msgstr ""
+
+msgid "Years"
+msgstr ""
+
 msgid "Include Invisible Items"
+msgstr ""
+
+msgid "Include Tracks With No Times"
 msgstr ""
 
 msgid "Current number of background tasks. Click to see the background jobs."
 msgstr ""
 
 msgid "Current zoom level. Click to select a new one."
+msgstr ""
+
+msgid "Current number of log messages. Click to see them."
 msgstr ""
 
 msgid "Left click to clear the message. Right click to copy the message."
@@ -3888,6 +4609,10 @@ msgid "%sClimb%s %.2f%s"
 msgstr ""
 
 #, c-format
+msgid "%sAlt --"
+msgstr ""
+
+#, c-format
 msgid "%sAlt %dfeet"
 msgstr ""
 
@@ -3897,14 +4622,10 @@ msgid "%sAlt %dm"
 msgstr ""
 
 #, c-format
-msgid "%sCourse %03d°"
+msgid "%sCourse %03d%s"
 msgstr ""
 
 msgid "yards"
-msgstr ""
-
-#. VIK_UNITS_DISTANCE_KILOMETRES:
-msgid "m"
 msgstr ""
 
 #, c-format
@@ -3948,6 +4669,37 @@ msgid ""
 "Do you wish to enable automatic internet features?\n"
 "\n"
 "Individual settings can be controlled in the Preferences."
+msgstr ""
+
+msgid "sec/mi"
+msgstr ""
+
+msgid "Please select a GPS data file to open. "
+msgstr "請選取一個GPS資料檔案來開啟 "
+
+msgid "Bzip2 File"
+msgstr ""
+
+msgid "TCX"
+msgstr ""
+
+msgid "Zip File"
+msgstr ""
+
+msgid "Viking"
+msgstr ""
+
+#, c-format
+msgid ""
+"Using \"External\" files means changes made in Viking are explicitly not "
+"saved.\n"
+"See the manual for more detail.%s"
+msgstr ""
+
+msgid ""
+"\n"
+"\n"
+"Do you wish to continue?"
 msgstr ""
 
 msgid "Waypoint"
@@ -4027,6 +4779,26 @@ msgstr ""
 msgid "%s %s"
 msgstr ""
 
+#, c-format
+msgid "%s %s DIFF %s"
+msgstr ""
+
+#, c-format
+msgid "Area: %.3f miles * %.3f miles = %.3f sq. miles"
+msgstr ""
+
+#, c-format
+msgid "Area: %.3f NM * %.3f NM = %.3f sq. NM"
+msgstr ""
+
+#. case VIK_UNITS_DISTANCE_KILOMETRES:
+#, c-format
+msgid "Area: %.3f km * %.3f km = %.3f sq. km"
+msgstr ""
+
+msgid "Area approximation not valid at this zoom level"
+msgstr ""
+
 msgid "_Ruler"
 msgstr "_R 測距"
 
@@ -4088,25 +4860,15 @@ msgid "Unable to load malformed GPX file %s"
 msgstr ""
 
 #, c-format
-msgid "Unsupported file type for %s"
+msgid "Unable to load malformed TCX file %s"
 msgstr ""
 
-#. Since we can process .vik files with issues just show a warning in the status bar
-#. Not that a user can do much about it... or tells them what this issue is yet...
 #, c-format
-msgid "WARNING: issues encountered loading %s"
+msgid "Unable to load malformed KML file %s"
 msgstr ""
 
-msgid "Please select a GPS data file to open. "
-msgstr "請選取一個GPS資料檔案來開啟 "
-
-msgid "Google Earth"
-msgstr ""
-
-msgid "Viking"
-msgstr ""
-
-msgid "Open File"
+#, c-format
+msgid "Unsupported file type for %s"
 msgstr ""
 
 msgid "Save as Viking File."
@@ -4119,9 +4881,6 @@ msgstr ""
 #. Confirm what happened.
 #, c-format
 msgid "Exported files: %d"
-msgstr ""
-
-msgid "Nothing to Export!"
 msgstr ""
 
 msgid "Export to directory"
@@ -4137,6 +4896,25 @@ msgid "No Viking File"
 msgstr ""
 
 msgid "This layer has no configurable properties."
+msgstr ""
+
+msgid "Are you sure you wish to reset all preferences back to the defaults?"
+msgstr ""
+
+#, c-format
+msgid "A backup of the previous preferences was saved to: %s"
+msgstr ""
+
+msgid "Preferences not reset as backup of current preferences failed"
+msgstr ""
+
+msgid "Suppressions List"
+msgstr ""
+
+msgid "Reset all the suppressed messages?"
+msgstr ""
+
+msgid "No messages are being suppressed"
 msgstr ""
 
 msgid "Are you sure you wish to delete all layers?"
@@ -4228,6 +5006,9 @@ msgstr ""
 msgid "This feature is not available in UTM mode"
 msgstr ""
 
+msgid "Open File"
+msgstr ""
+
 #, c-format
 msgid "Unable to import %s."
 msgstr ""
@@ -4238,14 +5019,8 @@ msgstr "選取一個背景色"
 msgid "Choose a track highlight color"
 msgstr ""
 
-msgid "_File"
-msgstr "_F 檔案"
-
 msgid "_Edit"
 msgstr "_E 編輯"
-
-msgid "_Show"
-msgstr ""
 
 msgid "_Layers"
 msgstr "_L 圖層"
@@ -4293,6 +5068,12 @@ msgid "_GPX..."
 msgstr ""
 
 msgid "Export as GPX"
+msgstr ""
+
+msgid "_Single GPX File..."
+msgstr ""
+
+msgid "Export to Single GPX File"
 msgstr ""
 
 msgid "A_cquire"
@@ -4493,6 +5274,9 @@ msgstr "_J 背景工作"
 msgid "Background Jobs"
 msgstr ""
 
+msgid "Logged messages"
+msgstr ""
+
 msgid "Cu_t"
 msgstr "剪下(_t)"
 
@@ -4515,6 +5299,18 @@ msgid "_Preferences"
 msgstr "_P 個人偏好"
 
 msgid "Program Preferences"
+msgstr ""
+
+msgid "Preferences Reset All"
+msgstr ""
+
+msgid "Reset All Program Preferences"
+msgstr ""
+
+msgid "_Suppression Messages..."
+msgstr ""
+
+msgid "Reset List of Messages being Suppressed"
 msgstr ""
 
 msgid "_Layer Defaults"
@@ -4541,7 +5337,13 @@ msgstr "輸出 KML"
 msgid "Transfer data from a GPS device"
 msgstr "從一個GPS接收器獲得資料"
 
+msgid "Import File With GPS_Babel..."
+msgstr ""
+
 msgid "Import file via GPSBabel converter"
+msgstr ""
+
+msgid "Missing GPSBabel program recommended..."
 msgstr ""
 
 msgid "Import Geo_JSON File..."
@@ -4549,6 +5351,12 @@ msgstr "匯入 Geo_JSON 檔..."
 
 msgid "Import GeoJSON file"
 msgstr "匯入 GeoJSON 檔"
+
+msgid "Debug Mode"
+msgstr ""
+
+msgid "Toggle debug mode"
+msgstr ""
 
 msgid "_UTM Mode"
 msgstr "UTM 模式(_U)"
@@ -4592,6 +5400,12 @@ msgstr ""
 msgid "Show Side Panel"
 msgstr ""
 
+msgid "Show Track _Graphs"
+msgstr ""
+
+msgid "Show Track Graphs"
+msgstr ""
+
 msgid "Show Status_bar"
 msgstr ""
 
@@ -4622,6 +5436,12 @@ msgstr ""
 msgid "Show Side Panel Calendar"
 msgstr ""
 
+msgid "Show Side Panel Tabs"
+msgstr ""
+
+msgid "Show Side Panel Goto"
+msgstr ""
+
 #, c-format
 msgid "New _%s Layer"
 msgstr ""
@@ -4645,12 +5465,3 @@ msgstr ""
 #, c-format
 msgid "Could not read '%s'."
 msgstr ""
-
-#~ msgid "Email:"
-#~ msgstr "電子郵箱 :"
-
-#~ msgid "Error: couldn't find gpsbabel."
-#~ msgstr "錯誤: 没有發現 gpsbabel."
-
-#~ msgid "Create Track"
-#~ msgstr "建立軌迹"

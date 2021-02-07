@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
-"Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2019-01-19 12:53+0000\n"
 "PO-Revision-Date: 2019-07-30 22:39+0000\n"
+"Report-Msgid-Bugs-To: \n"
 "Last-Translator: Alexander Gabilondo <alexgabi@irakasle.net>\n"
 "Language-Team: Basque <eu@li.org>\n"
 "Language: eu\n"
@@ -130,6 +130,9 @@ msgstr "Joan latit/longitudera"
 msgid "Latitude:"
 msgstr "Latitudea:"
 
+msgid "This can accept extended lat/lon formats"
+msgstr ""
+
 msgid "Longitude:"
 msgstr "Longitudea:"
 
@@ -171,6 +174,15 @@ msgstr "Eman izen bat arrastoari."
 msgid "Today"
 msgstr "Gaur"
 
+msgid "Question"
+msgstr ""
+
+msgid "Do not show this message again"
+msgstr ""
+
+msgid "\"Yes\" will be applied automatically in the future"
+msgstr ""
+
 msgid "Zoom Factors..."
 msgstr "Zoom faktoreak..."
 
@@ -191,6 +203,9 @@ msgstr "Minutu 1"
 
 msgid "1 hour"
 msgstr "Ordu 1"
+
+msgid "6 hours"
+msgstr ""
 
 msgid "1 day"
 msgstr "Egun 1"
@@ -283,6 +298,9 @@ msgstr ""
 "Ezin da gorde EXPEDIA irudi-fitxategia (hain justu arrakastaz deskargatu "
 "ondoren! Informatu eta ezabatu irudi-fitxategai!): %s"
 
+msgid "(none)"
+msgstr "(bat ere ez)"
+
 msgid "Search"
 msgstr "Bilatu"
 
@@ -364,7 +382,6 @@ msgstr "km/h"
 msgid "mph"
 msgstr "mph"
 
-#. VIK_UNITS_SPEED_METRES_PER_SECOND:
 msgid "m/s"
 msgstr "m/s"
 
@@ -389,6 +406,12 @@ msgstr "Metroak"
 msgid "Feet"
 msgstr "Oinak"
 
+msgid "Celsius"
+msgstr ""
+
+msgid "Fahrenheit"
+msgstr ""
+
 msgid "Locale"
 msgstr "Tokikoa"
 
@@ -409,6 +432,9 @@ msgstr "Abiadura-unitateak:"
 
 msgid "Height units:"
 msgstr "Alturera-unitateak:"
+
+msgid "Temperature units:"
+msgstr ""
 
 msgid "Use large waypoint icons:"
 msgstr "Erabili bide-puntu ikono handiak:"
@@ -448,6 +474,18 @@ msgstr "Minuskulaz"
 msgid "KML File Export Units:"
 msgstr "KML fitxategien esportazio unitateak:"
 
+msgid "KML File Export Track:"
+msgstr ""
+
+msgid "Controls whether the <Track> tag is created"
+msgstr ""
+
+msgid "KML File Export Points:"
+msgstr ""
+
+msgid "Controls whether placemarks are created for every trackpoint"
+msgstr ""
+
 msgid "GPX Track Order:"
 msgstr "GPXaren arrastoaren agindua:"
 
@@ -486,6 +524,18 @@ msgstr "Absolutua"
 msgid "Relative"
 msgstr "Erlatiboa"
 
+msgid "None"
+msgstr "Bat ere ez"
+
+msgid "Bottom"
+msgstr ""
+
+msgid "Middle"
+msgstr ""
+
+msgid "Top"
+msgstr ""
+
 msgid "Save File Reference Mode:"
 msgstr "Gorde fitxategien erreferentzia modua:"
 
@@ -501,6 +551,13 @@ msgstr "Eskatu izena arrastoa sortu aurretik:"
 
 msgid "Show Tooltip during Track Creation:"
 msgstr "Erakutsi argibideak arrastoa sortzean"
+
+msgid "Show Graph for TrackWaypoint Layer:"
+msgstr ""
+
+msgid ""
+"Show graph automatically for a track or route if only one is in the layer"
+msgstr ""
 
 msgid "The number of recent files:"
 msgstr "Azken fitxategien kopurua:"
@@ -522,6 +579,30 @@ msgstr ""
 
 msgid "Show calendar day names:"
 msgstr "Erakutsi egutegiko egunen izenak:"
+
+msgid "Ruler area label position:"
+msgstr ""
+
+msgid "Use Scroll to Zoom:"
+msgstr ""
+
+msgid "Whether scroll events zoom or move the viewport"
+msgstr ""
+
+msgid "Invert Scroll Direction:"
+msgstr ""
+
+msgid "Invert direction of scrolling, particularly for touchpad use"
+msgstr ""
+
+msgid "Select Tool Double Click to Zoom:"
+msgstr ""
+
+msgid "Auto Select Trackpoint:"
+msgstr ""
+
+msgid "Select trackpoint from mouse over graph on main display"
+msgstr ""
 
 msgid "Home Location"
 msgstr "Etxeko kokapena"
@@ -571,7 +652,7 @@ msgstr "Begiratu bertsio berria ote dagoen."
 msgid "Periodically check to see if a new version of Viking is available"
 msgstr "Begiratu periodikoki ea Viking-en bertsio berririk ote dagoen."
 
-#. Defaults for the options are setup here
+#. gtk_notebook_append_page ( GTK_NOTEBOOK(tpwin->tabs), main_hbox, gtk_label_new(_("General")) );
 msgid "General"
 msgstr "Orokorra"
 
@@ -1099,9 +1180,6 @@ msgstr ""
 msgid "Mapnik"
 msgstr "Mapnik"
 
-msgid "None"
-msgstr "Bat ere ez"
-
 msgid "Horizontally"
 msgstr "Horizontalki"
 
@@ -1139,6 +1217,10 @@ msgstr "Ezin da web-nabigatzailea abiarazi.  %s"
 msgid "Could not create new email. %s"
 msgstr "Ezin da sortu posta-mezu berririk. %s"
 
+#, c-format
+msgid "Items: %d"
+msgstr ""
+
 msgid "Color:"
 msgstr "Kolorea:"
 
@@ -1148,12 +1230,50 @@ msgstr "Zabalera minututan:"
 msgid "Line Thickness:"
 msgstr "Marraren lodiera"
 
+msgid "Reset to Defaults"
+msgstr ""
+
 msgid "Coordinate"
 msgstr "Koordenatua"
 
+#. NB Not a log level
+#. NB Not a log level
+msgid "Error"
+msgstr ""
+
+msgid "Critical"
+msgstr ""
+
+msgid "Warning"
+msgstr ""
+
+msgid "Message"
+msgstr ""
+
+msgid "Info"
+msgstr ""
+
+msgid "Debug"
+msgstr ""
+
+#. No exit on X errors!
+#. mainly to handle out of memory error when requesting large pixbuf from user request
+#. see vikwindow.c::save_image_file ()
 #, c-format
 msgid "Ignoring Xlib error: error code %d request code %d"
 msgstr "Ez ikusia egiten Xlib errorea: errore-kodea %d eskaera-kodea %d"
+
+msgid "_Copy Data"
+msgstr "Kopiatu datuak"
+
+msgid "Category"
+msgstr ""
+
+msgid "Messages"
+msgstr ""
+
+msgid "Log"
+msgstr ""
 
 msgid "Enable debug output"
 msgstr "Gaitu arazketaren irteera"
@@ -1176,6 +1296,9 @@ msgstr "Zoom maila (OSM). Balioa 0-22 bitartean"
 msgid "Add a map layer by id value. Use 0 for the default map."
 msgstr ""
 "Gehitu mapa geruza id balioaren bidez. Erabili 0 lehenetsitako maparentzat."
+
+msgid "Load all GPX files in external mode."
+msgstr ""
 
 #, c-format
 msgid ""
@@ -1205,11 +1328,8 @@ msgstr "MBTiles fitxategia"
 msgid "OSM Metatiles"
 msgstr "OSM meta lauzak"
 
-msgid "Mapbox Outdoors"
-msgstr "Mapbox Outdoors"
-
-msgid "Mapbox Specific"
-msgstr "Mapbox Specific"
+msgid "OpenTopoMap"
+msgstr ""
 
 msgid "OSM (view)"
 msgstr "OSM (ikusi)"
@@ -1220,9 +1340,6 @@ msgstr "OSM (editatu)"
 #. Note the use of positional parameters
 msgid "OSM (query)"
 msgstr "OSM (kontsula)"
-
-msgid "OSM (render)"
-msgstr "OSM (errendatu)"
 
 #. Example: http://127.0.0.1:8111/load_and_zoom?left=8.19&right=8.20&top=48.605&bottom=48.590&select=node413602999
 #. JOSM or merkaartor must already be running with remote interface enabled
@@ -1241,6 +1358,17 @@ msgstr "Wikimedia Toolserver GeoHack"
 
 msgid "Preferences"
 msgstr "Hobespenak"
+
+msgid "Reset This Tab to Defaults"
+msgstr ""
+
+#, c-format
+msgid "Waypoint%04d"
+msgstr ""
+
+#, c-format
+msgid "Track%03d"
+msgstr ""
 
 msgid "System Default"
 msgstr "Sistemak lehenetsia"
@@ -1324,6 +1452,93 @@ msgstr "Kontuan izan pasahitza fitxategi arrunt batean gordeko dela."
 msgid "The file \"%s\" exists, do you wish to overwrite it?"
 msgstr "Lehendik badago \"%s\" izeneko fitxategia, gainidatzi nahi duzu?"
 
+msgid "All Time"
+msgstr ""
+
+msgid "Spectral"
+msgstr ""
+
+msgid "Blue/Purple"
+msgstr ""
+
+msgid "Red/Green"
+msgstr ""
+
+msgid "Yellow/Orange/Red"
+msgstr ""
+
+msgid "Tracks Area Coverage"
+msgstr ""
+
+msgid "TAC Advanced"
+msgstr ""
+
+msgid "Tracks Heatmap"
+msgstr ""
+
+msgid "On:"
+msgstr ""
+
+msgid "Alpha:"
+msgstr "Alfa:"
+
+msgid "Control the Alpha value for transparency effects"
+msgstr "Kontrolatu Alfa-balioa gardentasun efektuetarako"
+
+msgid "Max Square On:"
+msgstr ""
+
+msgid "Max Square Alpha:"
+msgstr ""
+
+msgid "Max Square Color:"
+msgstr ""
+
+msgid "Contiguous On:"
+msgstr ""
+
+msgid "Contiguous Alpha:"
+msgstr ""
+
+msgid "Contiguous Color:"
+msgstr ""
+
+msgid "Cluster On:"
+msgstr ""
+
+msgid "Cluster Alpha:"
+msgstr ""
+
+msgid "Cluster Color:"
+msgstr ""
+
+msgid "Draw Grid:"
+msgstr ""
+
+msgid "Tile Area Level:"
+msgstr ""
+
+msgid "Area size. A higher level means a smaller grid."
+msgstr ""
+
+msgid "Within Years:"
+msgstr ""
+
+msgid "Only include tracks that are within this time range."
+msgstr ""
+
+msgid "Width Factor:"
+msgstr ""
+
+msgid "Note higher values means the heatmap takes longer to generate"
+msgstr ""
+
+msgid "Color Style:"
+msgstr ""
+
+msgid "Reset All to Defaults"
+msgstr ""
+
 msgid "Aggregate"
 msgstr "Agregatu"
 
@@ -1341,6 +1556,72 @@ msgstr "Eskatutako datan ez dago elementurik."
 msgid "%s: Track and Route List"
 msgstr "%s: Arrasto eta ibilbideen zerrenda"
 
+#, c-format
+msgid "Failed to open %s"
+msgstr ""
+
+#. Since we can process certain other files with issues (e.g. zip files) just show a warning in the status bar
+#. Not that a user can do much about it... or tells them what this issue is yet...
+#. Since we can process .vik files with issues just show a warning in the status bar
+#. Not that a user can do much about it... or tells them what this issue is yet...
+#, c-format
+msgid "WARNING: issues encountered loading %s"
+msgstr "Kontuz: erroreak %s kargatzean"
+
+#, c-format
+msgid "Unable to load %s"
+msgstr ""
+
+msgid "Track Area Coverage"
+msgstr ""
+
+msgid "Heatmap generation"
+msgstr ""
+
+#, c-format
+msgid "MBTiles file write problem: %s"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "Creating MBTiles File"
+msgstr ""
+
+msgid "_Tracks Area Coverage"
+msgstr ""
+
+msgid "_Off"
+msgstr ""
+
+msgid "_On"
+msgstr ""
+
+msgid "_Calculate"
+msgstr ""
+
+msgid "_Increase Tile Area"
+msgstr ""
+
+msgid "_Decrease Tile Area"
+msgstr ""
+
+msgid "_Remove"
+msgstr ""
+
+msgid "_Export as MBTiles"
+msgstr ""
+
+msgid "Tracks Heat_map"
+msgstr ""
+
+#, c-format
+msgid "%s: Tracks in tile %d %d, %d"
+msgstr ""
+
+msgid "_Tracks in this Tile"
+msgstr ""
+
 msgid "_Visibility"
 msgstr "_Ikusgaitasuna"
 
@@ -1352,6 +1633,12 @@ msgstr "_Ezkutatu denak"
 
 msgid "_Toggle"
 msgstr "_Txandakatu"
+
+msgid "V_iew"
+msgstr "_Ikusi"
+
+msgid "_All TrackWaypoint Layers"
+msgstr ""
 
 msgid "_Sort"
 msgstr "_Ordenatu"
@@ -1386,8 +1673,26 @@ msgstr "_Dataren arabera..."
 msgid "Find the first item with a specified date"
 msgstr "Bilatu zehaztutako data duen lehenengo elementua"
 
+msgid "_File"
+msgstr "_Fitxategia"
+
 msgid "Load E_xternal Layers"
 msgstr "Kargatu kanpoko geruzak"
+
+msgid "_Open GPX as External Layer..."
+msgstr ""
+
+msgid "Save _Layer As..."
+msgstr ""
+
+msgid "_Append File..."
+msgstr ""
+
+msgid "_Export as GPX..."
+msgstr ""
+
+msgid "Can not delete layer as calculation is in progress"
+msgstr ""
 
 #. Could have a more complicated tooltip that numbers each type of layers,
 #. but for now a simple overall count
@@ -1397,9 +1702,29 @@ msgid_plural "%d layers"
 msgstr[0] "Geruza bat"
 msgstr[1] "geruza"
 
-#, c-format
 msgid "Empty"
 msgstr "Hutsa"
+
+msgid ""
+"\n"
+"TAC: Calculating"
+msgstr ""
+
+#, c-format
+msgid ""
+"\n"
+"TAC: Area Level %s\n"
+"Total tiles %d\n"
+"Max Square %d\n"
+"Contiguous count %d\n"
+"Cluster size %d"
+msgstr ""
+
+msgid "Nothing to Export!"
+msgstr "Ez dago ezer esportatzeko!"
+
+msgid "Export to GPX"
+msgstr ""
 
 msgid "SRTM Global 90m (3 arcsec)"
 msgstr "SRTM Global 90m (3 arcsec)"
@@ -1410,6 +1735,12 @@ msgstr "Altuera absolutua"
 msgid "Height gradient"
 msgstr "Altuera-gradientea"
 
+msgid "Default"
+msgstr ""
+
+msgid "Delineate"
+msgstr ""
+
 msgid "DEM Files:"
 msgstr "DEM fitxategiak:"
 
@@ -1418,6 +1749,15 @@ msgstr "Deskargatu iturria:"
 
 msgid "Min Elev Color:"
 msgstr "Altuera txikienaren kolorea"
+
+msgid "Color Scheme:"
+msgstr ""
+
+msgid "Start Color:"
+msgstr ""
+
+msgid "End Color:"
+msgstr ""
 
 msgid "Type:"
 msgstr "Mota:"
@@ -1491,6 +1831,12 @@ msgstr "DEM deskargatzen  %s"
 msgid "_Show DEM File Information"
 msgstr "_Erakutsi DEM fitxategiaren informazioa"
 
+msgid "Accepts various forms of ISO 8601"
+msgstr ""
+
+msgid "Text input time was not understood"
+msgstr ""
+
 msgid "Browse..."
 msgstr "Arakatu..."
 
@@ -1523,6 +1869,73 @@ msgstr "Gehitu..."
 
 msgid "Delete"
 msgstr "Ezabatu"
+
+msgid "Keep position at center"
+msgstr ""
+
+msgid "Keep position on screen"
+msgstr ""
+
+msgid "Disable"
+msgstr "Ezgaitu"
+
+msgid "Auto Connect"
+msgstr "Auto konektatu"
+
+msgid "Automatically connect to GeoClue"
+msgstr ""
+
+msgid "Recording tracks"
+msgstr "Arrastoak grabatzen"
+
+msgid "Jump to current position on start"
+msgstr "Jauzi egin uneko posiziora abiatzean"
+
+msgid "Moving Map Method:"
+msgstr "Mapa-mugikorra metodoa:"
+
+msgid "Update Statusbar:"
+msgstr "Eguneratu egoera-barra"
+
+msgid "Display information in the statusbar on GeoClue updates"
+msgstr ""
+
+msgid "GeoClue"
+msgstr ""
+
+msgid "Connected"
+msgstr "Konektatuta"
+
+msgid "Disconnected"
+msgstr "Deskonektatuta"
+
+msgid "_Empty"
+msgstr ""
+
+#, c-format
+msgid "Unexpected number of disconnected handlers: %d"
+msgstr "Deskonektatutako  gailu kopuru ustegabea: %d"
+
+msgid "Are you sure you want to delete geoclue data?"
+msgstr ""
+
+msgid "Track"
+msgstr "Arrastoa"
+
+msgid "GeoClue disabled"
+msgstr ""
+
+#, c-format
+msgid "Failed to connect to GeoClue service: %s"
+msgstr ""
+
+#. Possibly client not available for the requested accuracy level (we always use 'EXACT')
+#. lesser accurate levels won't make much sense for tracking positions
+msgid "GeoClue client unavailable"
+msgstr ""
+
+msgid "GeoClue Tracking"
+msgstr ""
 
 msgid "_Georef Move Map"
 msgstr "_Georef Move Map"
@@ -1638,9 +2051,7 @@ msgstr "UTM"
 msgid "Latitude/Longitude"
 msgstr "Latitudea/Longitudea"
 
-msgid "Alpha:"
-msgstr "Alfa:"
-
+#. Just a separator
 #. Now with icons
 msgid "_Zoom to Fit Map"
 msgstr "_Zoom egin mapa doitzeko"
@@ -1654,6 +2065,9 @@ msgstr "_Esportatu Mundua fitxategira"
 msgid "No goto tool available."
 msgstr "Joan-tresna ezin da erabili"
 
+msgid "Service request failure."
+msgstr ""
+
 msgid "goto"
 msgstr "Joan"
 
@@ -1662,6 +2076,19 @@ msgstr "Jo zerbitzu-hornitzailearengana:"
 
 msgid "Enter address or place name:"
 msgstr "Sartu helbidea edo toki-izena"
+
+msgid "No results"
+msgstr ""
+
+msgid "Service request failure"
+msgstr ""
+
+msgid "Searching..."
+msgstr ""
+
+#, c-format
+msgid "Goto request on: %s"
+msgstr ""
 
 msgid "Locality"
 msgstr "Tokia"
@@ -1677,9 +2104,6 @@ msgstr "Mantendu ibilgailua erdian"
 
 msgid "Keep vehicle on screen"
 msgstr "Mantendu ibilgailua pantailan"
-
-msgid "Disable"
-msgstr "Ezgaitu"
 
 msgid "Download Tracks:"
 msgstr "Deskargatu arrastoak:"
@@ -1699,23 +2123,11 @@ msgstr "Deskargatu bide-puntuak:"
 msgid "Upload Waypoints:"
 msgstr "Kargatu bide-puntuak:"
 
-msgid "Recording tracks"
-msgstr "Arrastoak grabatzen"
-
-msgid "Jump to current position on start"
-msgstr "Jauzi egin uneko posiziora abiatzean"
-
-msgid "Moving Map Method:"
-msgstr "Mapa-mugikorra metodoa:"
-
-msgid "Update Statusbar:"
-msgstr "Eguneratu egoera-barra"
+msgid "Indicator Color:"
+msgstr ""
 
 msgid "Display information in the statusbar on GPS updates"
 msgstr "GPSaren egunertzeen informazioa erakutsi egoera-barran"
-
-msgid "Auto Connect"
-msgstr "Auto konektatu"
 
 msgid "Automatically connect to GPSD"
 msgstr "Automatikoki konektatuta GPSDrekin"
@@ -1741,22 +2153,13 @@ msgstr "GPS karga"
 msgid "GPS Realtime Tracking"
 msgstr "GPS denbora errealeko arrastoa"
 
-msgid "Connected"
-msgstr "Konektatuta"
-
-msgid "Disconnected"
-msgstr "Deskonektatuta"
-
 msgid "Unknown GPS Protocol"
 msgstr "GPS-protokolo ezezaguna"
 
 msgid "Unknown serial port device"
 msgstr "serie-atakako gailu ezezaguna"
 
-#, c-format
-msgid "%s: unknown parameter"
-msgstr "%s: parametro ezezaguna"
-
+#. Just a separator
 #. Now with icons
 msgid "_Upload to GPS"
 msgstr "_GPSra kargatu"
@@ -1764,6 +2167,7 @@ msgstr "_GPSra kargatu"
 msgid "Download from _GPS"
 msgstr "_GPStik deskargatu"
 
+#. Just a separator
 msgid "Empty _Realtime"
 msgstr "Hustu benetako_denbora"
 
@@ -1775,10 +2179,6 @@ msgstr "Deskarga hutsa"
 
 msgid "Empty _All"
 msgstr "Dena hutsa"
-
-#, c-format
-msgid "Unexpected number of disconnected handlers: %d"
-msgstr "Deskonektatutako  gailu kopuru ustegabea: %d"
 
 #, c-format
 msgid "Uploading %d waypoint..."
@@ -1920,6 +2320,17 @@ msgstr "_Ezabatu"
 msgid "New Layer"
 msgstr "Geruza berria"
 
+#, c-format
+msgid "Nothing found up to %s"
+msgstr ""
+
+#, c-format
+msgid "Nothing found back to %s"
+msgstr ""
+
+msgid "_Today"
+msgstr ""
+
 msgid "Top Layer"
 msgstr "Goiko geruza"
 
@@ -1947,11 +2358,14 @@ msgstr ""
 "Itsatsi geruza hautatutako edukiontzian edo bestela hautatutako geruzaren "
 "gainean."
 
+msgid "Calendar"
+msgstr ""
+
+msgid "Goto"
+msgstr ""
+
 msgid "New name can not be blank."
 msgstr "Izena ezin duzu hutsik utzi"
-
-msgid "Aggregate Layers have no settable properties."
-msgstr "Gehitutako geruzek ez dute propietate konfiguragarririk"
 
 msgid "You cannot cut the Top Layer."
 msgstr "Ezin duzu moztu goiko geruza"
@@ -2068,6 +2482,7 @@ msgstr "Errendatze-denbora %.2f segundo"
 msgid "Tile Information"
 msgstr "Lauzaren informazioa"
 
+#. local rename
 msgid "_Rerender Tile"
 msgstr "Errendatze-lauza"
 
@@ -2101,9 +2516,6 @@ msgid "An MBTiles file. Only applies when the map type method is 'MBTiles'"
 msgstr ""
 "MBTiles fitxategia. Bakarrik aplikatzen da mapa motaren metodoa 'MBTiles' "
 "denean"
-
-msgid "Control the Alpha value for transparency effects"
-msgstr "Kontrolatu Alfa-balioa gardentasun efektuetarako"
 
 msgid "Autodownload maps:"
 msgstr "Autodeskargatu mapak:"
@@ -2412,6 +2824,12 @@ msgstr "Alfabetikoki gora"
 msgid "Name Descending"
 msgstr "Alfabetikoki behera"
 
+msgid "Number Ascending"
+msgstr ""
+
+msgid "Number Descending"
+msgstr ""
+
 msgid "No"
 msgstr "Ez"
 
@@ -2420,6 +2838,12 @@ msgstr "Bai"
 
 msgid "No write"
 msgstr "Ez idatzi"
+
+msgid "1.0"
+msgstr ""
+
+msgid "1.1"
+msgstr ""
 
 msgid "Draw Labels"
 msgstr "Marraztu etiketak"
@@ -2494,6 +2918,18 @@ msgstr "Batez besteko abiadurarekiko faktoreak zehazten du erabilitako kolorea"
 msgid "Track Sort Order:"
 msgstr "Arrastoen ordena:"
 
+msgid "Apply DEM Automatically"
+msgstr ""
+
+msgid "Automatically apply DEM to trackpoints on file load"
+msgstr ""
+
+msgid "Remove Duplicate Trackpoints"
+msgstr ""
+
+msgid "Automatically delete duplicate trackpoints on file load"
+msgstr ""
+
 msgid "Waypoint Font Size:"
 msgstr "Bide-puntuaren letra-mota"
 
@@ -2542,6 +2978,9 @@ msgstr "Sortze-data"
 msgid "Keywords"
 msgstr "Hitz gakoak"
 
+msgid "GPX Version"
+msgstr ""
+
 msgid "External layer:"
 msgstr "Kanpoko geruza:"
 
@@ -2583,6 +3022,14 @@ msgid "end"
 msgstr "bukaera"
 
 #, c-format
+msgid "%s to %s\n"
+msgstr ""
+
+#, c-format
+msgid " in %d:%02d mins:secs"
+msgstr ""
+
+#, c-format
 msgid " in %d:%02d hrs:mins"
 msgstr " %d:%02d ordu:min"
 
@@ -2615,6 +3062,10 @@ msgid "Routes: %d"
 msgstr "Ibilbideak: %d"
 
 #, c-format
+msgid "- %d:%02d mins:secs"
+msgstr ""
+
+#, c-format
 msgid "- %d:%02d hrs:mins"
 msgstr "- %d:%02d ordu:min"
 
@@ -2633,6 +3084,10 @@ msgstr "%s%.1f NM %s"
 #, c-format
 msgid "Waypoints: %d"
 msgstr "Bide-puntuak: %d"
+
+#, c-format
+msgid "Wpt: Alt --"
+msgstr ""
 
 #, c-format
 msgid "Wpt: Alt %dft"
@@ -2664,6 +3119,10 @@ msgstr "Esportatu ibilbidea GPX formatura"
 msgid "Export Track as GPX"
 msgstr "Esportatu arrastoa GPX formatuan."
 
+#, c-format
+msgid "Could not launch %s."
+msgstr "Ezin izan da %s abiatu."
+
 msgid "Find"
 msgstr "Aurkitu"
 
@@ -2676,15 +3135,13 @@ msgstr "Bide-puntua ez da aurkitu geruza honetan."
 msgid "Can not upload invisible track."
 msgstr "Ezin da kargatu arrato ikustezina."
 
-msgid "Track"
-msgstr "Arrastoa"
-
 msgid "Route"
 msgstr "Ibilbidea"
 
 msgid "Externa_l"
 msgstr "Kanpokoa"
 
+#. Reuse finish track method
 msgid "_Finish Route"
 msgstr "_Bukatu ibilbidea"
 
@@ -2695,9 +3152,6 @@ msgstr "_Bukatu arrastoa"
 msgid "_View Layer"
 msgstr "_Ikusi geruza"
 
-msgid "V_iew"
-msgstr "_Ikusi"
-
 msgid "View All _Tracks"
 msgstr "_Ikusi arrasto guztiak"
 
@@ -2706,6 +3160,15 @@ msgstr "_Ikusi ibilbide guztiak"
 
 msgid "View All _Waypoints"
 msgstr "_Ikusi bide-puntu guztiak"
+
+msgid "_Ensure Visibility On"
+msgstr ""
+
+msgid "View _GPX Extensions"
+msgstr ""
+
+msgid "_Goto"
+msgstr "_Joan hona"
 
 msgid "_Goto Center of Layer"
 msgstr "_Joan geruzaren erdira"
@@ -2741,6 +3204,9 @@ msgstr "Ireki kanpoko programa baten bidez_1: %s"
 #, c-format
 msgid "Open with External Program_2: %s"
 msgstr "Ireki kanpoko programa baten bidez_2: %s"
+
+msgid "Open with Text Editor"
+msgstr ""
 
 msgid "_New"
 msgstr "_Berria"
@@ -2782,8 +3248,8 @@ msgstr "Wikipedia Waypoints-etik"
 msgid "Within _Layer Bounds"
 msgstr "Geruzaren mugen barruan"
 
-msgid "Within _Current View"
-msgstr "Uneko ikuspegiaren barruan"
+msgid "Within _Current Bounds"
+msgstr ""
 
 msgid "From Geo_caching..."
 msgstr "Geo_cachin-etik..."
@@ -2794,9 +3260,7 @@ msgstr "Geotagged _Images-etik..."
 msgid "From _File..."
 msgstr "Fitxategitik..."
 
-msgid "Import File With GPS_Babel..."
-msgstr "Inportatu datuak GPSBabel-en bidez..."
-
+#. GtkMenu *upload_submenu = GTK_MENU(gtk_menu_new());
 msgid "_Upload"
 msgstr "_Kargatu"
 
@@ -2830,6 +3294,9 @@ msgstr "_Ezabatu hautatutako bide-puntuak..."
 msgid "Delete Duplicate Waypoints"
 msgstr "Ezabatu bikoiztutako bide-puntuak"
 
+msgid "Waypoint _List..."
+msgstr ""
+
 #, c-format
 msgid "Are you sure you want to delete all tracks in %s?"
 msgstr "Seguru zaude %s-ko arrasto guztiak ezabatu nahi dituzula?"
@@ -2862,6 +3329,21 @@ msgstr ""
 "Arrasto bat ibilbidea bihurtzean arrastoaren hainbat datu, hala nola "
 "segmentuak, denborak eta abar galduko dira.\n"
 "Aurrera egin nahi duzu?"
+
+msgid "This track has timestamps, so this operation is not allowed"
+msgstr ""
+
+msgid ""
+"The first and last points are quite far apart, this operation is intended "
+"for 'circular' routes.\n"
+"Do you wish to continue?"
+msgstr ""
+
+msgid "Rotate"
+msgstr ""
+
+msgid "Shift by N points:"
+msgstr ""
 
 msgid "No DEM layers available, thus no DEM values can be applied."
 msgstr "Ez dago DEM geruzarik eskuragarri, beraz ezin da DEM baliorik aplikatu"
@@ -3036,6 +3518,12 @@ msgid "No duplicates found"
 msgstr "Ez da bikoiztutakorik aurkitu"
 
 #, c-format
+msgid "%ld waypoint adjusted"
+msgid_plural "%ld waypoints adjusted"
+msgstr[0] ""
+msgstr[1] ""
+
+#, c-format
 msgid ""
 "A waypoint with the name \"%s\" already exists. Really rename to the same "
 "name?"
@@ -3057,15 +3545,13 @@ msgstr ""
 "Lehendik badago  \"%s\" izeneko ibilbidea. Benetan izen berarekin "
 "berrizendatu nahi duzu?"
 
-msgid "_Goto"
-msgstr "_Joan hona"
-
 msgid "_Visit Geocache Webpage"
 msgstr "_Bisitatu Geocache web-orria"
 
 msgid "Geotag multiple images against this waypoint"
 msgstr "Geoetiketatu irudiak bide-puntu honekin"
 
+#. Own icon - see stock_icons in vikwindow.c
 msgid "_Show Picture..."
 msgstr "_Erakutsi irudia..."
 
@@ -3165,6 +3651,27 @@ msgstr "_Abiadurarik handiena"
 msgid "_Date"
 msgstr "_Data"
 
+msgid "Maximum _Heart Rate"
+msgstr ""
+
+msgid "Maximum Cadence"
+msgstr ""
+
+msgid "Maximum Power"
+msgstr ""
+
+msgid "Minimum Temperature"
+msgstr ""
+
+msgid "Maximum Temperature"
+msgstr ""
+
+msgid "_Previous point"
+msgstr ""
+
+msgid "_Next point"
+msgstr ""
+
 msgid "Co_mbine"
 msgstr "_Konbinatu"
 
@@ -3204,6 +3711,9 @@ msgstr "_Zatitu puntu-kopuruaren arabera"
 
 msgid "Split at _Trackpoint"
 msgstr "_Zatitu arrato-puntuan"
+
+msgid "_Create Segment at Trackpoint"
+msgstr ""
 
 msgid "_Insert Points"
 msgstr "_Txertatu puntuak"
@@ -3268,6 +3778,9 @@ msgstr "Ibilbidea bihurtu"
 msgid "C_onvert to a Track"
 msgstr "_Arrastoa bihurtu"
 
+msgid "Convert to Waypoints"
+msgstr ""
+
 msgid "_Anonymize Times"
 msgstr "_Ezkutatu denborak"
 
@@ -3283,6 +3796,12 @@ msgid ""
 msgstr ""
 "Berrezarri arrasto-puntuen denbora-markak lehenengo eta azkeneko puntuen "
 "artean arrastoa abiadura berean erreproduzitzen den bitartean"
+
+msgid "_Rotate..."
+msgstr ""
+
+msgid "Shift trackpoints to move the first points to the end"
+msgstr ""
 
 msgid "_Reverse Track"
 msgstr "_Alderantzizkatu arrastoa"
@@ -3335,8 +3854,15 @@ msgstr "_Ikusi Google Directions"
 msgid "Use with _Filter"
 msgstr "_Iragazkia erabili"
 
+#. Just a separator
 msgid "_Edit Trackpoint"
 msgstr "_Editatu arrasto-puntua"
+
+msgid "Set Time from Comment"
+msgstr ""
+
+msgid "Convert to Track"
+msgstr ""
 
 #, c-format
 msgid " - Gain %dm:Loss %dm"
@@ -3402,12 +3928,11 @@ msgstr ""
 msgid "Export of GPX file simplified using point limit: %d"
 msgstr "GPX esportazio fitxategia sinplifikatu da puntu kopurua mugatuta: %d"
 
+msgid "Google Earth"
+msgstr "Google Earth"
+
 msgid "The filename you requested could not be opened for writing."
 msgstr "Eskatu duzun fitxategia ezin da ireki idazteko"
-
-#, c-format
-msgid "Could not launch %s."
-msgstr "Ezin izan da %s abiatu."
 
 msgid "Could not create temporary file for export."
 msgstr "Ezin da esportatzeko aldi baterako fitxategia sortu"
@@ -3428,45 +3953,106 @@ msgstr ""
 "Kontuz: parametro horien jokabidea hautatutako formatuaren menpekoa da.\n"
 "Seguru ez ba zaude kontsultatu GPSBabel ."
 
+msgid "GPSBabel suboptions"
+msgstr ""
+
 msgid "You did not select a valid file format."
 msgstr "Ez duzu hautatu baliozko fitxategi-formaturik."
 
+msgid "Tabs on the side:"
+msgstr ""
+
+msgid "Show splits tab:"
+msgstr ""
+
+msgid "Show Elevation-distance graph:"
+msgstr ""
+
+msgid "Show Elevation-time graph:"
+msgstr ""
+
+msgid "Show Gradient-distance graph:"
+msgstr ""
+
+msgid "Show Speed-time graph:"
+msgstr ""
+
+msgid "Show Speed-distance graph:"
+msgstr ""
+
+msgid "Show Distance-time graph:"
+msgstr ""
+
+msgid "Show Heart Rate graph:"
+msgstr ""
+
+msgid "Show Cadence graph:"
+msgstr ""
+
+msgid "Show Temperature graph:"
+msgstr ""
+
+msgid "Show Power graph:"
+msgstr ""
+
+msgid "Track Properties Dialog"
+msgstr ""
+
+msgid "Statistics"
+msgstr "Estatistikak"
+
+msgid "Splits"
+msgstr ""
+
+msgid "Axis Control"
+msgstr ""
+
+msgid "Height Divisions:"
+msgstr ""
+
+msgid "Minimum Height:"
+msgstr ""
+
+msgid "_Center View on Route"
+msgstr ""
+
+msgid "_Center View on Track"
+msgstr ""
+
+msgid "_Edit Trackpoint..."
+msgstr ""
+
+msgid "Split at Marker"
+msgstr ""
+
+msgid "Axis Control..."
+msgstr ""
+
+msgid "_Show"
+msgstr "_Erakutsi"
+
+msgid "_DEM"
+msgstr ""
+
+msgid "_GPS Speed"
+msgstr ""
+
+#. Every graph has two value labels
 #, c-format
 msgid "No Data"
 msgstr "Daturik ez"
 
 #, c-format
-msgid "%.1f kph"
-msgstr "%.1f k/h"
+msgid "%d bpm"
+msgstr ""
 
 #, c-format
-msgid "%.1f mph"
-msgstr "%.1f m/h"
+msgid "%d RPM"
+msgstr ""
 
 #, c-format
-msgid "%.1f knots"
-msgstr "%.1f korapilo"
-
-#, c-format
-msgid "%.1f s/km"
-msgstr "%.1f s/km"
-
-#, c-format
-msgid "%.1f min/km"
-msgstr "%.1f min/km"
-
-#, c-format
-msgid "%.1f sec/mi"
-msgstr "%.1f seg/mi"
-
-#, c-format
-msgid "%.1f min/mi"
-msgstr "%.1f min/mi"
-
-#. VIK_UNITS_SPEED_METRES_PER_SECOND:
-#, c-format
-msgid "%.1f m/s"
-msgstr "%.1f m/s"
+msgid "%d Watts"
+msgstr ""
 
 #. Minutes
 msgid "mins"
@@ -3488,58 +4074,39 @@ msgstr "aste"
 msgid "M"
 msgstr "hil"
 
-#, c-format
-msgid "%.1f miles"
-msgstr "%.1f milia"
-
-#, c-format
-msgid "%.1f NM"
-msgstr "%.1f NM"
-
-#. VIK_UNITS_DISTANCE_KILOMETRES
-#, c-format
-msgid "%.1f km"
-msgstr "%.1f km"
-
 msgid "Failed splitting track. Track unchanged"
 msgstr "Errorea arraztoa zatitzen. Arrastoa ez da aldatu"
 
+msgid "Show D_EM"
+msgstr "_Erakutsi DEM"
+
+msgid "Distance"
+msgstr ""
+
+msgid ""
+"Time\n"
+"(m:ss)"
+msgstr ""
+
+msgid "Speed"
+msgstr ""
+
+#. VIK_UNITS_DISTANCE_KILOMETRES:
+msgid "m"
+msgstr "m"
+
+msgid "ft"
+msgstr ""
+
+msgid "Gain"
+msgstr ""
+
+msgid "Loss"
+msgstr ""
+
 #, c-format
-msgid "%s - Track Properties"
-msgstr "%s - arrastoaren propietatateak"
-
-msgid "Split at _Marker"
-msgstr "_Zatitu markatzailean"
-
-msgid "Split _Segments"
-msgstr "_Zatitu segmentuak"
-
-msgid "_Reverse"
-msgstr "_Alderantzikatu"
-
-msgid "_Delete Dupl."
-msgstr "_Ezabatu bikoiztutakoak"
-
-msgid "<b>Comment:</b>"
-msgstr "<b>Iruzkina:</b>"
-
-msgid "<b>Description:</b>"
-msgstr "<b>Deskribapena:</b>"
-
-msgid "<b>Source:</b>"
-msgstr "<b>Jatorria:</b>"
-
-msgid "<b>Type:</b>"
-msgstr "<b>Mota:</b>"
-
-msgid "<b>Color:</b>"
-msgstr "<b>Kolorea::</b>"
-
-msgid "<b>Draw Name:</b>"
-msgstr "<b>Marraztu izena:</b>"
-
-msgid "<b>Distance Labels:</b>"
-msgstr "<b>Distantzia-etiketak:</b>"
+msgid "Split %d"
+msgstr ""
 
 msgid "<b>Track Length:</b>"
 msgstr "<b>Arrastoaren luzera::</b>"
@@ -3580,6 +4147,106 @@ msgstr "<b>Bukaera:</b>"
 msgid "<b>Duration:</b>"
 msgstr "<b>Iraupena:</b>"
 
+#, c-format
+msgid "%d minutes - %d minutes moving"
+msgstr "%d minutu - %d minutu mugitzen"
+
+#, c-format
+msgid "%s total - %s in segments"
+msgstr "%s denetara - %s segmentutan"
+
+msgid "<b>Max Cadence:</b>"
+msgstr ""
+
+#, c-format
+msgid "%.1f RPM"
+msgstr ""
+
+msgid "<b>Avg. Cadence:</b>"
+msgstr ""
+
+msgid "<b>Max Heart Rate:</b>"
+msgstr ""
+
+#, c-format
+msgid "%.1f bpm"
+msgstr ""
+
+msgid "<b>Avg. Heart Rate:</b>"
+msgstr ""
+
+#, c-format
+msgid "%.1f%sC / %.1f%sC"
+msgstr ""
+
+#, c-format
+msgid "%.1f%sF / %.1f%sF"
+msgstr ""
+
+msgid "<b>Min/Max Temperature:</b>"
+msgstr ""
+
+#, c-format
+msgid "%.1f%sC"
+msgstr ""
+
+#, c-format
+msgid "%.1f%sF"
+msgstr ""
+
+msgid "<b>Avg. Temperature:</b>"
+msgstr ""
+
+msgid "<b>Max Power:</b>"
+msgstr ""
+
+#, c-format
+msgid "%.1f Watts"
+msgstr ""
+
+msgid "<b>Avg. Power:</b>"
+msgstr ""
+
+#, c-format
+msgid "%s - Track Properties"
+msgstr "%s - arrastoaren propietatateak"
+
+msgid "Split at _Marker"
+msgstr "_Zatitu markatzailean"
+
+msgid "Split _Segments"
+msgstr "_Zatitu segmentuak"
+
+msgid "_Reverse"
+msgstr "_Alderantzikatu"
+
+msgid "_Delete Dupl."
+msgstr "_Ezabatu bikoiztutakoak"
+
+msgid "<b>Comment:</b>"
+msgstr "<b>Iruzkina:</b>"
+
+msgid "<b>Description:</b>"
+msgstr "<b>Deskribapena:</b>"
+
+msgid "<b>Source:</b>"
+msgstr "<b>Jatorria:</b>"
+
+msgid "<b>Type:</b>"
+msgstr "<b>Mota:</b>"
+
+msgid "<b>Number:</b>"
+msgstr ""
+
+msgid "<b>Color:</b>"
+msgstr "<b>Kolorea::</b>"
+
+msgid "<b>Draw Name:</b>"
+msgstr "<b>Marraztu izena:</b>"
+
+msgid "<b>Distance Labels:</b>"
+msgstr "<b>Distantzia-etiketak:</b>"
+
 msgid "Centre"
 msgstr "Erdiko gunea"
 
@@ -3598,31 +4265,23 @@ msgstr "Erdiko gunea, hasiera eta bukaera"
 msgid "Maximum number of distance labels to be shown"
 msgstr "Erakutsi behar den distantzia-etiketen gehienezko kopurua"
 
+msgid "Drawing"
+msgstr ""
+
+msgid "GPX Extensions"
+msgstr ""
+
 msgid "Properties"
 msgstr "Propietateak"
-
-#, c-format
-msgid "%d minutes - %d minutes moving"
-msgstr "%d minutu - %d minutu mugitzen"
-
-#, c-format
-msgid "%s total - %s in segments"
-msgstr "%s denetara - %s segmentutan"
-
-msgid "Statistics"
-msgstr "Estatistikak"
-
-msgid "Show D_EM"
-msgstr "_Erakutsi DEM"
-
-msgid "Show _GPS Speed"
-msgstr "_Erakutsi GPS-abiadura"
 
 msgid "<b>Track Distance:</b>"
 msgstr "<b>Arrastoaren distantzia:</b>"
 
 msgid "<b>Track Height:</b>"
 msgstr "<b>Arrastoaren altuera:</b>"
+
+msgid "Show _GPS Speed"
+msgstr "_Erakutsi GPS-abiadura"
 
 msgid "Elevation-distance"
 msgstr "Altuera-distantzia"
@@ -3656,6 +4315,30 @@ msgstr "Altuera-denbora"
 
 msgid "Speed-distance"
 msgstr "Abiadura-distantzia"
+
+msgid "<b>Heart Rate:</b>"
+msgstr ""
+
+msgid "Heart Rate"
+msgstr ""
+
+msgid "<b>Cadence:</b>"
+msgstr ""
+
+msgid "Cadence"
+msgstr ""
+
+msgid "<b>Temperature:</b>"
+msgstr ""
+
+msgid "Temperature"
+msgstr ""
+
+msgid "<b>Power:</b>"
+msgstr ""
+
+msgid "Power"
+msgstr ""
 
 msgid "Date/Time Edit"
 msgstr "Data/Denbora editatu"
@@ -3719,24 +4402,12 @@ msgstr "_Txertatu ondoren"
 msgid "Split Here"
 msgstr "Moztu hemen"
 
-msgid "_Copy Data"
-msgstr "Kopiatu datuak"
+msgid "_Additional"
+msgstr ""
 
-#.
-#. item = gtk_image_menu_item_new_with_mnemonic ( _("_Select") );
-#. gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
-#. g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_select), values );
-#. gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-#. gtk_widget_show ( item );
-#.
+#. (void)vu_menu_add_item ( menu, _("_Select"), GTK_STOCK_FIND, G_CALLBACK(trw_layer_track_select), values );
 #. ATM view auto selects, so don't bother with separate select menu entry
-#.
-#. item = gtk_image_menu_item_new_with_mnemonic ( _("_Select") );
-#. gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
-#. g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_select), values );
-#. gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
-#. gtk_widget_show ( item );
-#.
+#. (void)vu_menu_add_item ( menu, _("_Select"), GTK_STOCK_FIND, G_CALLBACK(trw_layer_waypoint_select), values );
 #. AUTO SELECT NOT TRUE YET...
 #. ATM view auto selects, so don't bother with separate select menu entry
 msgid "_View"
@@ -3754,10 +4425,18 @@ msgstr "Agerian"
 
 msgid ""
 "Distance\n"
-"(%s)"
+"(miles)"
 msgstr ""
-"Distantzia\n"
-"(%s)"
+
+msgid ""
+"Distance\n"
+"(NM)"
+msgstr ""
+
+msgid ""
+"Distance\n"
+"(km)"
+msgstr ""
 
 msgid ""
 "Length\n"
@@ -3765,9 +4444,6 @@ msgid ""
 msgstr ""
 "Iraupena\n"
 "(minutuak)"
-
-msgid "sec/mi"
-msgstr "seg/mi"
 
 #, c-format
 msgid ""
@@ -3818,6 +4494,9 @@ msgstr "Bide-puntuaren  propietateak"
 msgid "Name:"
 msgstr "Izena:"
 
+msgid "Show Name"
+msgstr ""
+
 msgid "Altitude:"
 msgstr "Altitudea:"
 
@@ -3833,9 +4512,6 @@ msgstr "Irudia:"
 msgid "Symbol:"
 msgstr "Ikurra:"
 
-msgid "(none)"
-msgstr "(bat ere ez)"
-
 #. Geotag Info [readonly]
 msgid "Has Geotag"
 msgstr "Has geoetiketa"
@@ -3843,10 +4519,6 @@ msgstr "Has geoetiketa"
 msgid "Consistent Position"
 msgstr "Kokapen koherentea"
 
-#. ATM the direction value box is always shown, even when there is no information.
-#. It would be nice to be able to hide it until the 'Add' has been performed,
-#. however I've not been able to achieve this.
-#. Thus simply sensistizing it instead.
 msgid "Image Direction:"
 msgstr ""
 "Irudiaren norabidea:   ATM norabide-balioen koadroa beti agertzen da, "
@@ -3854,15 +4526,61 @@ msgstr ""
 "'Gehitu' egin arte. hala ere, ezin izan dut hau lortu. Horren ordez, "
 "sentsibilizatu behar duzu"
 
-msgid "Magnetic"
-msgstr "Magnetikoa"
-
 msgid "Time:"
 msgstr "Ordua:"
 
-#. TODO: other checks (isalpha or whatever )
+msgid "Course:"
+msgstr ""
+
+#, c-format
+msgid "Speed: (%s)"
+msgstr ""
+
+msgid "Magnetic Variance:"
+msgstr ""
+
+msgid "Geoid Height:"
+msgstr ""
+
+msgid "URL Name:"
+msgstr ""
+
+#. Combine fix & satellites into one line??
+msgid "Fix Mode:"
+msgstr ""
+
+msgid "Satellites:"
+msgstr ""
+
+msgid "HDOP:"
+msgstr ""
+
+msgid "VDOP:"
+msgstr ""
+
+msgid "PDOP:"
+msgstr ""
+
+msgid "Age of DGPS Data:"
+msgstr ""
+
+msgid "DGPS Station Id:"
+msgstr ""
+
+msgid "Basic"
+msgstr ""
+
+msgid "Extra"
+msgstr ""
+
+msgid "Magnetic"
+msgstr "Magnetikoa"
+
 msgid "Please enter a name for the waypoint."
 msgstr "Eman iezaiozu izen bat bide-puntuari, mesedez."
+
+msgid "Course value must be between 0 and 360."
+msgstr ""
 
 #, c-format
 msgid "Failed updating EXIF on %s"
@@ -3915,19 +4633,22 @@ msgstr ""
 "negatibo izan daiteke. Erabilgarria oso argazki-kameraren denbora-zigiluak "
 "huts egin duenean."
 
+msgid "Image Time is Local:"
+msgstr ""
+
+msgid ""
+"The timestamps in the images are in local time (rather than UTC) and so "
+"current local timezone adjustment will be automatically applied."
+msgstr ""
+
 msgid "Image Timezone:"
 msgstr "Irudiaren denbora-zona"
 
 msgid ""
-"The timezone that was used when the images were created. For example, if a "
-"camera is set to AWST or +8:00 hours. Enter +8:00 here so that the correct "
-"adjustment to the images' time can be made. GPS data is always in UTC."
+"The timezone adjustment factor. e.g. for AWST use +8:00. This should be "
+"unnecessary if using 'time is local'. However time stamps may be offset due "
+"to timezone issues."
 msgstr ""
-"Ordu-zonaldea erabili izan da irudiak sortzerakoan. Esate baterako, kamera "
-"batean lehenetsita baldin badago +8:00 ordua, sartu +8:00 hemen ere eta "
-"horrela konponduko dituzu aurretik behar bada egin dituzun beste doiketa "
-"batzuk. GPS datuak beti daude UTC (Ordu Unibertsal Koordinatua) horren "
-"arabera doiturik."
 
 #, c-format
 msgid "Using waypoint: %s"
@@ -3982,39 +4703,6 @@ msgid "Avg. Duration"
 msgstr "Batez besteko iraupena"
 
 #, c-format
-msgid "%.2f miles"
-msgstr "%.2f milia"
-
-#, c-format
-msgid "%.2f NM"
-msgstr "%.2f NM"
-
-#. VIK_UNITS_DISTANCE_KILOMETRES
-#, c-format
-msgid "%.2f km"
-msgstr "%.2f km"
-
-#, c-format
-msgid "%.2f m/s"
-msgstr "%.2f m/s"
-
-#, c-format
-msgid "%.2f knots"
-msgstr "%.2f korapilo"
-
-#, c-format
-msgid "%d s/km"
-msgstr "%d s/km"
-
-#, c-format
-msgid "%d sec/mi"
-msgstr "%d seg/mi"
-
-#, c-format
-msgid "%.2f km/h"
-msgstr "%.2f km/h"
-
-#, c-format
 msgid "%d feet"
 msgstr "%d oin"
 
@@ -4038,14 +4726,53 @@ msgstr "%d:%02d:%02d egun:ordu:min"
 msgid "%d:%02d hrs:mins"
 msgstr "%d:%02d ordu:min"
 
+msgid "Year"
+msgstr ""
+
+#, c-format
+msgid ""
+"Distance\n"
+"(%s)"
+msgstr ""
+"Distantzia\n"
+"(%s)"
+
+#, c-format
+msgid ""
+"Average Dist\n"
+"(%s)"
+msgstr ""
+
+#, c-format
+msgid "%d %s: Track List"
+msgstr ""
+
+msgid "_Track List"
+msgstr ""
+
+msgid "Month"
+msgstr ""
+
+msgid "Totals"
+msgstr ""
+
+msgid "Years"
+msgstr ""
+
 msgid "Include Invisible Items"
 msgstr "Gehitu elementu ikusezinak"
+
+msgid "Include Tracks With No Times"
+msgstr ""
 
 msgid "Current number of background tasks. Click to see the background jobs."
 msgstr "Atzeko planoko uneko atazen kopurua. Egin klik atzeko atazak ikusteko."
 
 msgid "Current zoom level. Click to select a new one."
 msgstr "Uneko zoom maila. Klikatu beste bat hautatzeko."
+
+msgid "Current number of log messages. Click to see them."
+msgstr ""
 
 msgid "Left click to clear the message. Right click to copy the message."
 msgstr "Ezker klik mezua garbitzeko. Eskuin klik mezua kopiatzeko."
@@ -4067,6 +4794,10 @@ msgid "%sClimb%s %.2f%s"
 msgstr "%sJauzi%s %.2f%s"
 
 #, c-format
+msgid "%sAlt --"
+msgstr ""
+
+#, c-format
 msgid "%sAlt %dfeet"
 msgstr "%sAlt %doin"
 
@@ -4076,15 +4807,11 @@ msgid "%sAlt %dm"
 msgstr "%sAlt %dm"
 
 #, c-format
-msgid "%sCourse %03d°"
-msgstr "%sNorabidea %03d°"
+msgid "%sCourse %03d%s"
+msgstr ""
 
 msgid "yards"
 msgstr "yarda"
-
-#. VIK_UNITS_DISTANCE_KILOMETRES:
-msgid "m"
-msgstr "m"
 
 #, c-format
 msgid "%sDistance diff %d%s"
@@ -4135,6 +4862,37 @@ msgstr ""
 "Nahi duzu interneteko eginbide automatikoak gaitzea?\n"
 "\n"
 "Nork bere ezarpenak egokitu ditzake hobespenetan."
+
+msgid "sec/mi"
+msgstr "seg/mi"
+
+msgid "Please select a GPS data file to open. "
+msgstr "Hautatu GPS datu-fitxategia irekitzeko. "
+
+msgid "Bzip2 File"
+msgstr ""
+
+msgid "TCX"
+msgstr ""
+
+msgid "Zip File"
+msgstr ""
+
+msgid "Viking"
+msgstr "Viking"
+
+#, c-format
+msgid ""
+"Using \"External\" files means changes made in Viking are explicitly not "
+"saved.\n"
+"See the manual for more detail.%s"
+msgstr ""
+
+msgid ""
+"\n"
+"\n"
+"Do you wish to continue?"
+msgstr ""
 
 msgid "Waypoint"
 msgstr "Bide-puntua"
@@ -4216,6 +4974,26 @@ msgstr "%s %s %doin"
 msgid "%s %s"
 msgstr "%s %s"
 
+#, c-format
+msgid "%s %s DIFF %s"
+msgstr ""
+
+#, c-format
+msgid "Area: %.3f miles * %.3f miles = %.3f sq. miles"
+msgstr ""
+
+#, c-format
+msgid "Area: %.3f NM * %.3f NM = %.3f sq. NM"
+msgstr ""
+
+#. case VIK_UNITS_DISTANCE_KILOMETRES:
+#, c-format
+msgid "Area: %.3f km * %.3f km = %.3f sq. km"
+msgstr ""
+
+msgid "Area approximation not valid at this zoom level"
+msgstr ""
+
 msgid "_Ruler"
 msgstr "_Erregela"
 
@@ -4282,26 +5060,16 @@ msgid "Unable to load malformed GPX file %s"
 msgstr "Ezin da gaizki eratutako %s GPX fitxategia kargatu"
 
 #, c-format
+msgid "Unable to load malformed TCX file %s"
+msgstr ""
+
+#, c-format
+msgid "Unable to load malformed KML file %s"
+msgstr ""
+
+#, c-format
 msgid "Unsupported file type for %s"
 msgstr "Onartzen ez den fitxategi mota %s"
-
-#. Since we can process .vik files with issues just show a warning in the status bar
-#. Not that a user can do much about it... or tells them what this issue is yet...
-#, c-format
-msgid "WARNING: issues encountered loading %s"
-msgstr "Kontuz: erroreak %s kargatzean"
-
-msgid "Please select a GPS data file to open. "
-msgstr "Hautatu GPS datu-fitxategia irekitzeko. "
-
-msgid "Google Earth"
-msgstr "Google Earth"
-
-msgid "Viking"
-msgstr "Viking"
-
-msgid "Open File"
-msgstr "Ireki fitxategia"
 
 msgid "Save as Viking File."
 msgstr "Gorde Viking fitxategi gisa"
@@ -4314,9 +5082,6 @@ msgstr "Esportatzen fitxategira: %s"
 #, c-format
 msgid "Exported files: %d"
 msgstr "Esportatutako fitxategiak: %d"
-
-msgid "Nothing to Export!"
-msgstr "Ez dago ezer esportatzeko!"
 
 msgid "Export to directory"
 msgstr "Esportatu direktoriora"
@@ -4332,6 +5097,25 @@ msgstr "Ez da Viking fitxategia"
 
 msgid "This layer has no configurable properties."
 msgstr "Geruzak ez dauka ezartzeko ezaugarririk"
+
+msgid "Are you sure you wish to reset all preferences back to the defaults?"
+msgstr ""
+
+#, c-format
+msgid "A backup of the previous preferences was saved to: %s"
+msgstr ""
+
+msgid "Preferences not reset as backup of current preferences failed"
+msgstr ""
+
+msgid "Suppressions List"
+msgstr ""
+
+msgid "Reset all the suppressed messages?"
+msgstr ""
+
+msgid "No messages are being suppressed"
+msgstr ""
 
 msgid "Are you sure you wish to delete all layers?"
 msgstr "Seguru zaude geruza guztiak ezabatu nahi dituzula?"
@@ -4429,6 +5213,9 @@ msgstr "Iparra-Hegoa irudi-lauzak"
 msgid "This feature is not available in UTM mode"
 msgstr "Ataza hau ez da egingarria UTM moduan"
 
+msgid "Open File"
+msgstr "Ireki fitxategia"
+
 #, c-format
 msgid "Unable to import %s."
 msgstr "Ezin da %s inportatu."
@@ -4439,14 +5226,8 @@ msgstr "Aukeratu atzeko planoko kolorea"
 msgid "Choose a track highlight color"
 msgstr "Aukeratu arrastoa nabarmentzeko kolorea"
 
-msgid "_File"
-msgstr "_Fitxategia"
-
 msgid "_Edit"
 msgstr "_Editatu"
-
-msgid "_Show"
-msgstr "_Erakutsi"
 
 msgid "_Layers"
 msgstr "_Geruzak"
@@ -4495,6 +5276,12 @@ msgstr "_GPX..."
 
 msgid "Export as GPX"
 msgstr "GPX moduan esportatu"
+
+msgid "_Single GPX File..."
+msgstr ""
+
+msgid "Export to Single GPX File"
+msgstr ""
 
 msgid "A_cquire"
 msgstr "Eskuratu"
@@ -4694,6 +5481,9 @@ msgstr "Atzeko planoko lanak"
 msgid "Background Jobs"
 msgstr "Atzeko planoaren lanak"
 
+msgid "Logged messages"
+msgstr ""
+
 msgid "Cu_t"
 msgstr "_Ebaki"
 
@@ -4717,6 +5507,18 @@ msgstr "_Hobespenak"
 
 msgid "Program Preferences"
 msgstr "Aplikazioaren hobespenak"
+
+msgid "Preferences Reset All"
+msgstr ""
+
+msgid "Reset All Program Preferences"
+msgstr ""
+
+msgid "_Suppression Messages..."
+msgstr ""
+
+msgid "Reset List of Messages being Suppressed"
+msgstr ""
 
 msgid "_Layer Defaults"
 msgstr "_Lehenetsitako geruzak"
@@ -4742,14 +5544,26 @@ msgstr "KML moduan esportatu"
 msgid "Transfer data from a GPS device"
 msgstr "Ekarri datuak GPS batetik"
 
+msgid "Import File With GPS_Babel..."
+msgstr "Inportatu datuak GPSBabel-en bidez..."
+
 msgid "Import file via GPSBabel converter"
 msgstr "Inportatu datuak GPSBabel bihurgailuaren bidez"
+
+msgid "Missing GPSBabel program recommended..."
+msgstr ""
 
 msgid "Import Geo_JSON File..."
 msgstr "Inportatu Geo_JSON fitxategia..."
 
 msgid "Import GeoJSON file"
 msgstr "Inportatu Geo_JSON fitxategia"
+
+msgid "Debug Mode"
+msgstr ""
+
+msgid "Toggle debug mode"
+msgstr ""
 
 msgid "_UTM Mode"
 msgstr "_UTM modua"
@@ -4793,6 +5607,12 @@ msgstr "Erakutsi alboko panela"
 msgid "Show Side Panel"
 msgstr "Erakutsi alboko panela"
 
+msgid "Show Track _Graphs"
+msgstr ""
+
+msgid "Show Track Graphs"
+msgstr ""
+
 msgid "Show Status_bar"
 msgstr "Erakutsi egoera-barra"
 
@@ -4822,6 +5642,12 @@ msgstr "Erakutsi alboko panelaren egutegia"
 
 msgid "Show Side Panel Calendar"
 msgstr "Erakutsi alboko panelaren egutegia"
+
+msgid "Show Side Panel Tabs"
+msgstr ""
+
+msgid "Show Side Panel Goto"
+msgstr ""
 
 #, c-format
 msgid "New _%s Layer"

@@ -147,6 +147,7 @@ src/misc/*.o
 /po/quot.sed
 /po/remove-potcdate.sin
 /po/viking/
+/po/viking.pot
 
 # tools/
 tools/Makefile.in
