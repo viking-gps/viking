@@ -1126,7 +1126,7 @@ msgid "_Adjust Page Size and Orientation"
 msgstr ""
 
 msgid "C_enter:"
-msgstr ""
+msgstr "C_entre:"
 
 #. ignore page margins
 msgid "Ignore Page _Margins"
@@ -1415,7 +1415,7 @@ msgid "Max Square Alpha:"
 msgstr ""
 
 msgid "Max Square Color:"
-msgstr ""
+msgstr "Max Square Colour:"
 
 msgid "Contiguous On:"
 msgstr ""
@@ -1424,7 +1424,7 @@ msgid "Contiguous Alpha:"
 msgstr ""
 
 msgid "Contiguous Color:"
-msgstr ""
+msgstr "Contiguous Colour:"
 
 msgid "Cluster On:"
 msgstr ""
@@ -1433,7 +1433,7 @@ msgid "Cluster Alpha:"
 msgstr ""
 
 msgid "Cluster Color:"
-msgstr ""
+msgstr "Cluster Colour:"
 
 msgid "Draw Grid:"
 msgstr ""
@@ -1457,7 +1457,7 @@ msgid "Note higher values means the heatmap takes longer to generate"
 msgstr ""
 
 msgid "Color Style:"
-msgstr ""
+msgstr "Colour Style:"
 
 msgid "Reset All to Defaults"
 msgstr ""
@@ -1671,16 +1671,16 @@ msgid "Download Source:"
 msgstr ""
 
 msgid "Min Elev Color:"
-msgstr "Min Elev Colour"
+msgstr "Min Elev Colour:"
 
 msgid "Color Scheme:"
-msgstr ""
+msgstr "Colour Scheme:"
 
 msgid "Start Color:"
-msgstr ""
+msgstr "Start Colour:"
 
 msgid "End Color:"
-msgstr ""
+msgstr "End Colour:"
 
 msgid "Type:"
 msgstr ""
@@ -1786,7 +1786,7 @@ msgid "Delete"
 msgstr ""
 
 msgid "Keep position at center"
-msgstr ""
+msgstr "Keep position at centre"
 
 msgid "Keep position on screen"
 msgstr ""
@@ -1966,7 +1966,7 @@ msgid "_Zoom to Fit Map"
 msgstr ""
 
 msgid "_Goto Map Center"
-msgstr ""
+msgstr "_Goto Map Centre"
 
 msgid "_Export to World File"
 msgstr ""
@@ -2009,7 +2009,7 @@ msgid "Realtime Tracking Mode"
 msgstr ""
 
 msgid "Keep vehicle at center"
-msgstr ""
+msgstr "Keep vehicle at centre"
 
 msgid "Keep vehicle on screen"
 msgstr ""
@@ -2033,7 +2033,7 @@ msgid "Upload Waypoints:"
 msgstr ""
 
 msgid "Indicator Color:"
-msgstr ""
+msgstr "Indicator Colour:"
 
 msgid "Display information in the statusbar on GPS updates"
 msgstr ""
@@ -2678,7 +2678,7 @@ msgid "Draw by Speed"
 msgstr ""
 
 msgid "All Tracks Same Color"
-msgstr ""
+msgstr "All Tracks Same Colour"
 
 msgid "Filled Square"
 msgstr ""
@@ -3046,7 +3046,7 @@ msgid "_Goto"
 msgstr ""
 
 msgid "_Goto Center of Layer"
-msgstr ""
+msgstr "_Goto Centre of Layer"
 
 msgid "Goto _Waypoint..."
 msgstr ""
@@ -3490,7 +3490,7 @@ msgid "_Startpoint"
 msgstr ""
 
 msgid "\"_Center\""
-msgstr ""
+msgstr "\"_Centre\""
 
 msgid "_Endpoint"
 msgstr ""
@@ -3860,10 +3860,10 @@ msgid "Minimum Height:"
 msgstr ""
 
 msgid "_Center View on Route"
-msgstr ""
+msgstr "_Centre View on Route"
 
 msgid "_Center View on Track"
-msgstr ""
+msgstr "_Centre View on Track"
 
 msgid "_Edit Trackpoint..."
 msgstr ""
@@ -5236,13 +5236,13 @@ msgid "Set _Highlight Color..."
 msgstr "Set _Highlight Colour..."
 
 msgid "Set Highlight Color"
-msgstr ""
+msgstr "Set Highlight Colour"
 
 msgid "Set Bac_kground Color..."
 msgstr "Set Bac_kground Colour..."
 
 msgid "Set Background Color"
-msgstr ""
+msgstr "Set Background Colour"
 
 msgid "Zoom _In"
 msgstr ""
@@ -5383,7 +5383,7 @@ msgid "Show Scale"
 msgstr ""
 
 msgid "Show _Center Mark"
-msgstr ""
+msgstr "Show _Centre Mark"
 
 msgid "Show Center Mark"
 msgstr "Show Centre Mark"
