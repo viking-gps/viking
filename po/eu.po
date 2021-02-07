@@ -731,8 +731,8 @@ msgid "Acquired from GPS"
 msgstr "GPStik eskuratua"
 
 #, c-format
-msgid "using cmd '%s' and file '%s'\n"
-msgstr "cmd '%s' eta '%s' fitxategia erabitzen\n"
+msgid "using cmd '%s' and file '%s'"
+msgstr "cmd '%s' eta '%s' fitxategia erabitzen"
 
 #, c-format
 msgid "Downloading %d waypoint..."
@@ -913,11 +913,11 @@ msgid "Setting a value for this tag is unsupported!"
 msgstr "Etiketa honetarako balio bat ezartzeko zerbitzurik ez dago!"
 
 #, c-format
-msgid "Too few components specified (need %d, found %d)\n"
-msgstr "Osagai gutxiegi zehaztu dira (%d behar ziren,  %d topatu dira)\n"
+msgid "Too few components specified (need %d, found %d)"
+msgstr "Osagai gutxiegi zehaztu dira (%d behar ziren,  %d topatu dira)"
 
-msgid "Numeric value expected\n"
-msgstr "Balio numerikoa espero zen\n"
+msgid "Numeric value expected"
+msgstr "Balio numerikoa espero zen"
 
 msgid "This shouldn't happen!"
 msgstr "Hau ez luke gertatu behar!"
@@ -1152,8 +1152,8 @@ msgid "Coordinate"
 msgstr "Koordenatua"
 
 #, c-format
-msgid "Ignoring Xlib error: error code %d request code %d\n"
-msgstr "Ez ikusia egiten Xlib errorea: errore-kodea %d eskaera-kodea %d\n"
+msgid "Ignoring Xlib error: error code %d request code %d"
+msgstr "Ez ikusia egiten Xlib errorea: errore-kodea %d eskaera-kodea %d"
 
 msgid "Enable debug output"
 msgstr "Gaitu arazketaren irteera"
@@ -2149,8 +2149,9 @@ msgstr "Mapa-geruza lehenetsien direktorioa"
 msgid "Choose a directory to store cached Map tiles for this layer"
 msgstr "Aukeratu direktorio bat gordetzeko geruza honetako mapa-lauzak"
 
-msgid "Unknown map type"
-msgstr "Mapa mota ezezaguna"
+#, c-format
+msgid "%s: Unknown map type %d"
+msgstr "%s: Mapa mota ezezaguna %d"
 
 msgid "Unknown Map Zoom"
 msgstr "Mapa zoom ezezaguna"

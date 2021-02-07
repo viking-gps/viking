@@ -888,8 +888,8 @@ msgstr ""
 msgid "Too few components specified (need %d, found %d)\n"
 msgstr ""
 
-msgid "Numeric value expected\n"
-msgstr "Se espera un valor numérico\n"
+msgid "Numeric value expected"
+msgstr "Se espera un valor numérico"
 
 msgid "This shouldn't happen!"
 msgstr "¡Esto no debería suceder!"
@@ -2073,8 +2073,9 @@ msgstr ""
 msgid "Choose a directory to store cached Map tiles for this layer"
 msgstr ""
 
-msgid "Unknown map type"
-msgstr "Tipo de mapa desconocido"
+#, c-format
+msgid "%s: Unknown map type %d"
+msgstr "%s: Tipo de mapa desconocido %d"
 
 msgid "Unknown Map Zoom"
 msgstr "Nivel de zoom de mapa desconocido"

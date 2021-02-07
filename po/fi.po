@@ -888,8 +888,8 @@ msgid "Setting a value for this tag is unsupported!"
 msgstr "Arvon asettamista tälle tunnisteelle ei tueta!"
 
 #, c-format
-msgid "Too few components specified (need %d, found %d)\n"
-msgstr "Määritelty liian vähän komponentteja (tarvitaan %d, löytyi %d)\n"
+msgid "Too few components specified (need %d, found %d)"
+msgstr "Määritelty liian vähän komponentteja (tarvitaan %d, löytyi %d)"
 
 msgid "Numeric value expected\n"
 msgstr "Odotettiin numeroarvoa\n"
@@ -2077,8 +2077,9 @@ msgstr ""
 msgid "Choose a directory to store cached Map tiles for this layer"
 msgstr ""
 
-msgid "Unknown map type"
-msgstr "Tuntematon karttatyyppi"
+#, c-format
+msgid "%s: Unknown map type %d"
+msgstr "%s: Tuntematon karttatyyppi %d"
 
 msgid "Unknown Map Zoom"
 msgstr "Tuntematon karttaloitonnus/-lähennys"

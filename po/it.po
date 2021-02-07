@@ -890,11 +890,11 @@ msgid "Setting a value for this tag is unsupported!"
 msgstr "L'impostazione di un valore per questo tag non è supportato!"
 
 #, c-format
-msgid "Too few components specified (need %d, found %d)\n"
-msgstr "Troppo pochi componenti specificati (necessari %d, trovati %d)\n"
+msgid "Too few components specified (need %d, found %d)"
+msgstr "Troppo pochi componenti specificati (necessari %d, trovati %d)"
 
-msgid "Numeric value expected\n"
-msgstr "Valore numerico atteso\n"
+msgid "Numeric value expected"
+msgstr "Valore numerico atteso"
 
 msgid "This shouldn't happen!"
 msgstr "Questo non dovrebbe accadere!"
@@ -2080,8 +2080,9 @@ msgstr ""
 msgid "Choose a directory to store cached Map tiles for this layer"
 msgstr ""
 
-msgid "Unknown map type"
-msgstr "Tipo di mappa sconosciuto"
+#, c-format
+msgid "%s: Unknown map type %d"
+msgstr "%s: Tipo di mappa sconosciuto %d"
 
 msgid "Unknown Map Zoom"
 msgstr "Zoom di mappa sconosciuto"

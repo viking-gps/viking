@@ -723,8 +723,8 @@ msgid "Acquired from GPS"
 msgstr "Получено из GPS"
 
 #, c-format
-msgid "using cmd '%s' and file '%s'\n"
-msgstr "использование команды '%s' и файла '%s'\n"
+msgid "using cmd '%s' and file '%s'"
+msgstr "использование команды '%s' и файла '%s'"
 
 #, c-format
 msgid "Downloading %d waypoint..."
@@ -908,11 +908,11 @@ msgid "Setting a value for this tag is unsupported!"
 msgstr "Установка значения для этого тега не поддерживается!"
 
 #, c-format
-msgid "Too few components specified (need %d, found %d)\n"
-msgstr "Слишком мало указанных компонентов (нужно %d, найдено %d)\n"
+msgid "Too few components specified (need %d, found %d)"
+msgstr "Слишком мало указанных компонентов (нужно %d, найдено %d)"
 
-msgid "Numeric value expected\n"
-msgstr "Ожидаемые числовые значения\n"
+msgid "Numeric value expected"
+msgstr "Ожидаемые числовые значения"
 
 msgid "This shouldn't happen!"
 msgstr "Это не должно случиться!"
@@ -1138,8 +1138,8 @@ msgid "Coordinate"
 msgstr "Координатная сетка"
 
 #, c-format
-msgid "Ignoring Xlib error: error code %d request code %d\n"
-msgstr "Игнорируется ошибка Xlib: код ошибки %d, код запроса %d\n"
+msgid "Ignoring Xlib error: error code %d request code %d"
+msgstr "Игнорируется ошибка Xlib: код ошибки %d, код запроса %d"
 
 msgid "Enable debug output"
 msgstr "Включить отладочную выдачу"
@@ -2143,8 +2143,9 @@ msgid "Choose a directory to store cached Map tiles for this layer"
 msgstr ""
 "Выберите каталог для хранения кэшированных квадратов карт для этого слоя"
 
-msgid "Unknown map type"
-msgstr "Неизвестный тип карты"
+#, c-format
+msgid "%s: Unknown map type %d"
+msgstr "%s: Неизвестный тип карты %d"
 
 msgid "Unknown Map Zoom"
 msgstr "Неизвестный масштаб карты"

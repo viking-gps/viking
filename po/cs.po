@@ -903,11 +903,11 @@ msgid "Setting a value for this tag is unsupported!"
 msgstr "Nastavení hodnoty z tohoto údaje není podporováno!"
 
 #, c-format
-msgid "Too few components specified (need %d, found %d)\n"
-msgstr "Příliš málo zadaných komponent  (nutno %d, nalezeno %d)\n"
+msgid "Too few components specified (need %d, found %d)"
+msgstr "Příliš málo zadaných komponent  (nutno %d, nalezeno %d)"
 
-msgid "Numeric value expected\n"
-msgstr "Očekávám číslo\n"
+msgid "Numeric value expected"
+msgstr "Očekávám číslo"
 
 msgid "This shouldn't happen!"
 msgstr "To by nemělo nastat!"
@@ -1129,8 +1129,8 @@ msgid "Coordinate"
 msgstr "Souřadnicová"
 
 #, c-format
-msgid "Ignoring Xlib error: error code %d request code %d\n"
-msgstr "Xlib error: error kód %d kód požadavku %d\n"
+msgid "Ignoring Xlib error: error code %d request code %d"
+msgstr "Xlib error: error kód %d kód požadavku %d"
 
 msgid "Enable debug output"
 msgstr "Povolit ladící výstup"
@@ -2121,8 +2121,9 @@ msgstr "Adresář pro data map"
 msgid "Choose a directory to store cached Map tiles for this layer"
 msgstr "Vyberte složku určenou pro mapy této vrstvy"
 
-msgid "Unknown map type"
-msgstr "Neznámý typ mapy"
+#, c-format
+msgid "%s: Unknown map type %d"
+msgstr "%s: Neznámý typ mapy %d"
 
 msgid "Unknown Map Zoom"
 msgstr "Neznámé přiblížení mapy"

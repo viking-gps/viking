@@ -903,11 +903,11 @@ msgid "Setting a value for this tag is unsupported!"
 msgstr ""
 
 #, c-format
-msgid "Too few components specified (need %d, found %d)\n"
-msgstr "Trop peu de composants spécifiés (%d requis, %d trouvés)\n"
+msgid "Too few components specified (need %d, found %d)"
+msgstr "Trop peu de composants spécifiés (%d requis, %d trouvés)"
 
-msgid "Numeric value expected\n"
-msgstr "Valeur numérique attendue\n"
+msgid "Numeric value expected"
+msgstr "Valeur numérique attendue"
 
 msgid "This shouldn't happen!"
 msgstr "Cela ne devrait pas se produire !"
@@ -2138,8 +2138,9 @@ msgstr ""
 "Choisir un dossier pour enregistrer les tuiles de carte mises en mémoire-"
 "cache pour ce calque"
 
-msgid "Unknown map type"
-msgstr "Type de carte inconnu"
+#, c-format
+msgid "%s: Unknown map type %d"
+msgstr "%s: Type de carte inconnu %d"
 
 msgid "Unknown Map Zoom"
 msgstr "Zoom de carte inconnu"

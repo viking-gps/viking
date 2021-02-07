@@ -2048,8 +2048,9 @@ msgstr ""
 msgid "Choose a directory to store cached Map tiles for this layer"
 msgstr ""
 
-msgid "Unknown map type"
-msgstr "Neznana vrsta zemljevida"
+#, c-format
+msgid "%s: Unknown map type %d"
+msgstr "%s: Neznana vrsta zemljevida %d"
 
 msgid "Unknown Map Zoom"
 msgstr ""

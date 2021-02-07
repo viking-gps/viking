@@ -700,8 +700,8 @@ msgid "Acquired from GPS"
 msgstr "已从GPS获取"
 
 #, c-format
-msgid "using cmd '%s' and file '%s'\n"
-msgstr "用‘%s’命令和文件‘%s’\n"
+msgid "using cmd '%s' and file '%s'"
+msgstr "用‘%s’命令和文件‘%s’"
 
 #, c-format
 msgid "Downloading %d waypoint..."
@@ -879,11 +879,11 @@ msgid "Setting a value for this tag is unsupported!"
 msgstr "不支持给该标签赋值！"
 
 #, c-format
-msgid "Too few components specified (need %d, found %d)\n"
-msgstr "指定组件数量太少（需要%d，找到%d）\n"
+msgid "Too few components specified (need %d, found %d)"
+msgstr "指定组件数量太少（需要%d，找到%d）"
 
-msgid "Numeric value expected\n"
-msgstr "需要数值\n"
+msgid "Numeric value expected"
+msgstr "需要数值"
 
 msgid "This shouldn't happen!"
 msgstr "这个不可能发生！"
@@ -1104,8 +1104,8 @@ msgid "Coordinate"
 msgstr "坐标"
 
 #, c-format
-msgid "Ignoring Xlib error: error code %d request code %d\n"
-msgstr "忽略Xlib组件错误：错误代码%d请求代码%d\n"
+msgid "Ignoring Xlib error: error code %d request code %d"
+msgstr "忽略Xlib组件错误：错误代码%d请求代码%d"
 
 msgid "Enable debug output"
 msgstr "启用调试输出"
@@ -2067,8 +2067,9 @@ msgstr "默认图层目录："
 msgid "Choose a directory to store cached Map tiles for this layer"
 msgstr "选择目录来保存该层已缓存地图瓦片"
 
-msgid "Unknown map type"
-msgstr "未知地图类型"
+#, c-format
+msgid "%s: Unknown map type %d"
+msgstr "%s: 未知地图类型 %d"
 
 msgid "Unknown Map Zoom"
 msgstr "未知地图缩放"

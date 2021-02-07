@@ -892,8 +892,8 @@ msgstr ""
 msgid "Too few components specified (need %d, found %d)\n"
 msgstr ""
 
-msgid "Numeric value expected\n"
-msgstr "Numerieke waarde verwacht\n"
+msgid "Numeric value expected"
+msgstr "Numerieke waarde verwacht"
 
 msgid "This shouldn't happen!"
 msgstr "Dit zou niet mogen gebeuren!"

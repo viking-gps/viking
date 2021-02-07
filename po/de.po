@@ -918,11 +918,11 @@ msgid "Setting a value for this tag is unsupported!"
 msgstr "Werteingabe für diese Marke wird nicht unterstützt!"
 
 #, c-format
-msgid "Too few components specified (need %d, found %d)\n"
-msgstr "Zu wenig Komponenten angegeben (erforderlich: %d, gefunden: %d)\n"
+msgid "Too few components specified (need %d, found %d)"
+msgstr "Zu wenig Komponenten angegeben (erforderlich: %d, gefunden: %d)"
 
-msgid "Numeric value expected\n"
-msgstr "Numerischer Wert erwartet\n"
+msgid "Numeric value expected"
+msgstr "Numerischer Wert erwartet"
 
 msgid "This shouldn't happen!"
 msgstr "Das sollte nicht passieren!"
@@ -1148,8 +1148,8 @@ msgid "Coordinate"
 msgstr "Koordinate"
 
 #, c-format
-msgid "Ignoring Xlib error: error code %d request code %d\n"
-msgstr "Ignoriere Xlib-Fehler: Fehlercode %d Anforderungscode %d\n"
+msgid "Ignoring Xlib error: error code %d request code %d"
+msgstr "Ignoriere Xlib-Fehler: Fehlercode %d Anforderungscode %d"
 
 msgid "Enable debug output"
 msgstr "Fehlerausgabe aktivieren"
@@ -2144,8 +2144,9 @@ msgstr ""
 "Wählen Sie ein Verzeichnis, das zum Zwischenspeichern von Kacheln dieser "
 "Ebene verwendet wird"
 
-msgid "Unknown map type"
-msgstr "Unbekannter Kartentyp"
+#, c-format
+msgid "%s: Unknown map type %d"
+msgstr "%s: Unbekannter Kartentyp %d"
 
 msgid "Unknown Map Zoom"
 msgstr "Unbekannte Kartenvergrößerung"
