@@ -275,7 +275,6 @@ Section $(VIKING_SECTION_TITLE) SecViking
     File ${BINARIES}\*.txt
     File ${BINARIES}\magic.mgc
     File /r ${BINARIES}\data
-    File /r ${BINARIES}\locale
     File /r ${BINARIES}\share
     File /r ${BINARIES}\lib
 
@@ -378,7 +377,6 @@ Section Uninstall
     Delete "$INSTDIR\data\*txt"
     Delete "$INSTDIR\data\*xml"
     RMDir "$INSTDIR\data"
-    RMDir /r "$INSTDIR\locale"
     RMDir /r "$INSTDIR\lib"
     RMDir /r "$INSTDIR\share"
     RMDir "$INSTDIR"

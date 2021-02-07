@@ -33,8 +33,8 @@ echo MINGW=$MINGW
 
 echo Make language copies
 for x in $(ls ../po/*.gmo); do
-	mkdir -p $DESTINATION/locale/$(basename -s .gmo $x)/LC_MESSAGES
-	cp $MINGW/share/locale/$(basename -s .gmo $x)/LC_MESSAGES/viking.mo $DESTINATION/locale/$(basename -s .gmo $x)/LC_MESSAGES/
+	mkdir -p $DESTINATION/share/locale/$(basename -s .gmo $x)/LC_MESSAGES
+	cp $MINGW/share/locale/$(basename -s .gmo $x)/LC_MESSAGES/viking.mo $DESTINATION/share/locale/$(basename -s .gmo $x)/LC_MESSAGES/
 done
 
 echo Copying Viking
