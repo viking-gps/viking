@@ -376,9 +376,8 @@ msgid "couldn't map temp file"
 msgstr "nelze zpracovat dočasný soubor"
 
 #: ../src/geonamessearch.c:459
-#, fuzzy
 msgid "Select articles"
-msgstr "Výběr"
+msgstr ""
 
 #: ../src/geonamessearch.c:459
 msgid "Select the articles you want to add."
@@ -389,9 +388,8 @@ msgid "city"
 msgstr ""
 
 #: ../src/geonamessearch.c:477
-#, fuzzy
 msgid "edu"
-msgstr "konec"
+msgstr ""
 
 #: ../src/geonamessearch.c:479
 msgid "airport"
@@ -424,14 +422,12 @@ msgid "DDD"
 msgstr ""
 
 #: ../src/globals.c:67
-#, fuzzy
 msgid "DMM"
-msgstr "DEM"
+msgstr ""
 
 #: ../src/globals.c:67
-#, fuzzy
 msgid "DMS"
-msgstr "DEM"
+msgstr ""
 
 #: ../src/globals.c:67
 msgid "Raw"
@@ -582,9 +578,8 @@ msgstr ""
 "různými zařízeními."
 
 #: ../src/globals.c:98
-#, fuzzy
 msgid "GPX Creator:"
-msgstr "dle vytvoření"
+msgstr ""
 
 #: ../src/globals.c:99
 msgid ""
@@ -643,9 +638,8 @@ msgid ""
 msgstr ""
 
 #: ../src/globals.c:123
-#, fuzzy
 msgid "Open files in selected layer:"
-msgstr "Smazat vrstvu"
+msgstr ""
 
 #: ../src/globals.c:124
 msgid "Open files (but not .vik ones) into the selected TrackWaypoint layer."
@@ -1022,9 +1016,8 @@ msgid "OSM My Traces"
 msgstr "Moje OSM záznamy"
 
 #: ../src/datasource_osm_my_traces.c:106 ../src/osm-traces.c:684
-#, fuzzy
 msgid "Email/username:"
-msgstr "Uživatelské jméno:"
+msgstr ""
 
 #: ../src/datasource_osm_my_traces.c:111
 msgid "The email or username used to login to OSM"
@@ -1240,9 +1233,8 @@ msgid ""
 msgstr ""
 
 #: ../src/osm-traces.c:315
-#, fuzzy
 msgid "No Authorization."
-msgstr "automatická poloha"
+msgstr ""
 
 #: ../src/osm-traces.c:354
 msgid ""
@@ -1303,14 +1295,11 @@ msgid "OSM upload"
 msgstr "nahrání  do OSM"
 
 #: ../src/osm-traces.c:689
-#, fuzzy
 msgid ""
 "The email/username used as login\n"
 "<small>Enter the email/username you use to login into www.openstreetmap.org."
 "</small>"
 msgstr ""
-"Uživatelské jméno:\n"
-"<small>Zadejte email pro přihlášení na www.openstreetmap.org.</small>"
 
 #: ../src/osm-traces.c:697
 msgid ""
@@ -1497,24 +1486,20 @@ msgid ""
 msgstr ""
 
 #: ../src/osm.c:50
-#, fuzzy
 msgid "OpenStreetMap (Mapnik)"
-msgstr "OpenStreetMap trasy"
+msgstr ""
 
 #: ../src/osm.c:65
-#, fuzzy
 msgid "OpenStreetMap (Cycle)"
-msgstr "OpenStreetMap trasy"
+msgstr ""
 
 #: ../src/osm.c:79
-#, fuzzy
 msgid "OpenStreetMap (Transport)"
-msgstr "OpenStreetMap trasy"
+msgstr ""
 
 #: ../src/osm.c:95
-#, fuzzy
 msgid "OpenStreetMap (Humanitarian)"
-msgstr "OpenStreetMap trasy"
+msgstr ""
 
 #: ../src/osm.c:111
 msgid "On Disk OSM Tile Format"
@@ -1785,9 +1770,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../src/vikaggregatelayer.c:1014
-#, fuzzy, c-format
+#, c-format
 msgid "Empty"
-msgstr "Smazat _vše"
+msgstr ""
 
 #: ../src/vikdemlayer.c:86
 msgid "SRTM Global 90m (3 arcsec)"
@@ -2191,9 +2176,8 @@ msgid "Display information in the statusbar on GPS updates"
 msgstr "Zobrazí informace při změně GPS údajů"
 
 #: ../src/vikgpslayer.c:229
-#, fuzzy
 msgid "Auto Connect"
-msgstr "automatická poloha"
+msgstr ""
 
 #: ../src/vikgpslayer.c:229
 msgid "Automatically connect to GPSD"
@@ -2836,9 +2820,9 @@ msgid "Source: %s"
 msgstr ""
 
 #: ../src/vikmapslayer.c:2038
-#, fuzzy, c-format
+#, c-format
 msgid "Tile File: %s [Not Available]"
-msgstr "Nápověda není dostupná."
+msgstr ""
 
 #: ../src/vikmapslayer.c:2086
 msgid "Redownload _Bad Map(s)"
@@ -2932,9 +2916,8 @@ msgid "Download Maps in _Zoom Levels..."
 msgstr "Stáhnout mapy s rozsahem přiblížení"
 
 #: ../src/vikmapslayer.c:2539
-#, fuzzy
 msgid "_Open MBTiles Files"
-msgstr "O_tevřít nedávné soubory"
+msgstr ""
 
 #: ../src/vikmapslayer.c:2554
 msgid "Flush Map Cache"
@@ -2966,24 +2949,20 @@ msgid "Create Waypoint"
 msgstr "Vytvořit místo"
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit _Track"
-msgstr "Změna bodu"
+msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit Track"
-msgstr "Změna bodu"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit _Route"
-msgstr "Přidat trasu"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit Route"
-msgstr "Přidat trasu"
+msgstr ""
 
 #: ../src/viktrwlayer.c:460
 msgid "Route _Finder"
@@ -2994,9 +2973,8 @@ msgid "Route Finder"
 msgstr "Vyhledání cesty"
 
 #: ../src/viktrwlayer.c:471
-#, fuzzy
 msgid "Splitter"
-msgstr "Zde rozdělit"
+msgstr ""
 
 #: ../src/viktrwlayer.c:482
 msgid "_Edit Waypoint"
@@ -3036,9 +3014,8 @@ msgid "Metadata"
 msgstr ""
 
 #: ../src/viktrwlayer.c:531
-#, fuzzy
 msgid "Filesystem"
-msgstr "Typ souboru:"
+msgstr ""
 
 #: ../src/viktrwlayer.c:534
 msgid "Draw by Track"
@@ -3633,9 +3610,8 @@ msgid "Delete Waypoints From _Selection..."
 msgstr "Odstranit místa z výběru..."
 
 #: ../src/viktrwlayer.c:4512 ../src/viktrwlayer.c:8339
-#, fuzzy
 msgid "Delete Duplicate Waypoints"
-msgstr "Odstranit duplicitní místa"
+msgstr ""
 
 #: ../src/viktrwlayer.c:5198
 #, c-format
@@ -3887,17 +3863,16 @@ msgid "Select waypoints to delete"
 msgstr "Vyberte místa k odstranění"
 
 #: ../src/viktrwlayer.c:7691
-#, fuzzy, c-format
+#, c-format
 msgid "%ld waypoint deleted"
 msgid_plural "%ld waypoints deleted"
-msgstr[0] "%ld místo upraveno"
-msgstr[1] "%ld místa upraveny"
-msgstr[2] "%ld míst upraveno"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
 
 #: ../src/viktrwlayer.c:7697
-#, fuzzy
 msgid "No duplicates found"
-msgstr "Žádné záznamy nenalezeny"
+msgstr ""
 
 #: ../src/viktrwlayer.c:8028
 #, c-format
@@ -4059,9 +4034,8 @@ msgid "_Maximum Speed"
 msgstr "nejvyššší _rychlost"
 
 #: ../src/viktrwlayer.c:8646
-#, fuzzy
 msgid "_Date"
-msgstr "Datum"
+msgstr ""
 
 #: ../src/viktrwlayer.c:8655
 msgid "Co_mbine"
@@ -4345,9 +4319,9 @@ msgid ""
 msgstr ""
 
 #: ../src/viktrwlayer.c:11782
-#, fuzzy, c-format
+#, c-format
 msgid "WARNING: issues encountered loading external layer %s from %s"
-msgstr "Varování: problém při nahrávání %s"
+msgstr ""
 
 #: ../src/viktrwlayer_export.c:47
 msgid "Auto Device GPX Simplify:"
@@ -4431,26 +4405,26 @@ msgid "%.1f knots"
 msgstr "%.1f knots"
 
 #: ../src/viktrwlayer_propwin.c:969 ../src/viktrwlayer_propwin.c:1254
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f s/km"
-msgstr "%.1f km"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:972 ../src/viktrwlayer_propwin.c:1257
 #: ../src/viktrwlayer_analysis.c:389 ../src/viktrwlayer_analysis.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/km"
-msgstr "%.1f km"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:975 ../src/viktrwlayer_propwin.c:1260
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f sec/mi"
-msgstr "%.1f miles"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:978 ../src/viktrwlayer_propwin.c:1263
 #: ../src/viktrwlayer_analysis.c:409 ../src/viktrwlayer_analysis.c:412
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/mi"
-msgstr "%.1f m/s"
+msgstr ""
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:982 ../src/viktrwlayer_propwin.c:1267
@@ -4533,14 +4507,12 @@ msgid "<b>Description:</b>"
 msgstr "<b>Popis:</b>"
 
 #: ../src/viktrwlayer_propwin.c:3271
-#, fuzzy
 msgid "<b>Source:</b>"
-msgstr "<b>Kurz:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3272
-#, fuzzy
 msgid "<b>Type:</b>"
-msgstr "<b>Čas:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3273
 msgid "<b>Color:</b>"
@@ -4916,9 +4888,8 @@ msgid "Comment:"
 msgstr "Poznámka:"
 
 #: ../src/viktrwlayer_wpwin.c:202
-#, fuzzy
 msgid "Source:"
-msgstr "Zdroj stahování:"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:212
 msgid "Image:"
@@ -4946,9 +4917,8 @@ msgstr ""
 #. however I've not been able to achieve this.
 #. Thus simply sensistizing it instead.
 #: ../src/viktrwlayer_wpwin.c:292
-#, fuzzy
 msgid "Image Direction:"
-msgstr "Časová zóna:"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:300
 msgid "Magnetic"
@@ -5114,9 +5084,9 @@ msgid "%.2f miles"
 msgstr "%.2f mil"
 
 #: ../src/viktrwlayer_analysis.c:320
-#, fuzzy, c-format
+#, c-format
 msgid "%.2f NM"
-msgstr "%.2f km"
+msgstr ""
 
 #. VIK_UNITS_DISTANCE_KILOMETRES
 #: ../src/viktrwlayer_analysis.c:324
@@ -5347,9 +5317,9 @@ msgid "Determining location"
 msgstr "Zjišťuji pozici"
 
 #: ../src/vikwindow.c:525
-#, fuzzy, c-format
+#, c-format
 msgid "Location found via geoclue"
-msgstr "Pozice nalezena: %s"
+msgstr ""
 
 #: ../src/vikwindow.c:546
 msgid "Default Map"
@@ -5910,9 +5880,8 @@ msgid "Go to the default location"
 msgstr "Jít na výchozí pozici"
 
 #: ../src/vikwindow.c:4864
-#, fuzzy
 msgid "Go to the _Auto Location"
-msgstr "Jít na výchozí pozici"
+msgstr ""
 
 #: ../src/vikwindow.c:4864
 msgid "Go to a location via automatic lookup"
@@ -5943,9 +5912,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr "Jít na libovolné UTM souřadnice"
 
 #: ../src/vikwindow.c:4868
-#, fuzzy
 msgid "Go to Today"
-msgstr "Jít na souřadnice UTM"
+msgstr ""
 
 #: ../src/vikwindow.c:4868
 msgid "Go to today on the calendar"
@@ -6180,24 +6148,20 @@ msgid "Show Menu"
 msgstr "_Menu"
 
 #: ../src/vikwindow.c:4929
-#, fuzzy
 msgid "Show Side Panel B_uttons"
-msgstr "Boční panel vstev"
+msgstr ""
 
 #: ../src/vikwindow.c:4929
-#, fuzzy
 msgid "Show Side Panel Buttons"
-msgstr "Boční panel vstev"
+msgstr ""
 
 #: ../src/vikwindow.c:4930
-#, fuzzy
 msgid "Show Side Panel Ca_lendar"
-msgstr "Boční panel vstev"
+msgstr ""
 
 #: ../src/vikwindow.c:4930
-#, fuzzy
 msgid "Show Side Panel Calendar"
-msgstr "Boční panel vstev"
+msgstr ""
 
 #: ../src/vikwindow.c:5064
 #, c-format
@@ -6205,9 +6169,8 @@ msgid "New _%s Layer"
 msgstr "nová _%s vrstva"
 
 #: ../src/vikwindow.c:5114
-#, fuzzy
 msgid "..."
-msgstr "Přidat..."
+msgstr ""
 
 #: ../src/viking.desktop.in.h:2
 msgid "GPS Data Manager"

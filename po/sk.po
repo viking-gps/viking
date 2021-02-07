@@ -553,9 +553,8 @@ msgid ""
 msgstr ""
 
 #: ../src/globals.c:98
-#, fuzzy
 msgid "GPX Creator:"
-msgstr "Vytvorenie"
+msgstr ""
 
 #: ../src/globals.c:99
 msgid ""
@@ -2870,24 +2869,20 @@ msgid "Create Waypoint"
 msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit _Track"
-msgstr "Pridať stopu"
+msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit Track"
-msgstr "Pridať stopu"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit _Route"
-msgstr "Pridať trasu"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit Route"
-msgstr "Pridať trasu"
+msgstr ""
 
 #: ../src/viktrwlayer.c:460
 msgid "Route _Finder"
@@ -2939,9 +2934,8 @@ msgid "Metadata"
 msgstr ""
 
 #: ../src/viktrwlayer.c:531
-#, fuzzy
 msgid "Filesystem"
-msgstr "Typ súboru:"
+msgstr ""
 
 #: ../src/viktrwlayer.c:534
 msgid "Draw by Track"
@@ -3782,9 +3776,8 @@ msgstr[1] ""
 msgstr[2] ""
 
 #: ../src/viktrwlayer.c:7697
-#, fuzzy
 msgid "No duplicates found"
-msgstr "Neboli nájdené žiadne záznamy"
+msgstr ""
 
 #: ../src/viktrwlayer.c:8028
 #, c-format
@@ -4323,9 +4316,9 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:972 ../src/viktrwlayer_propwin.c:1257
 #: ../src/viktrwlayer_analysis.c:389 ../src/viktrwlayer_analysis.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/km"
-msgstr "1 min"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:975 ../src/viktrwlayer_propwin.c:1260
 #, c-format
@@ -4334,9 +4327,9 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:978 ../src/viktrwlayer_propwin.c:1263
 #: ../src/viktrwlayer_analysis.c:409 ../src/viktrwlayer_analysis.c:412
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/mi"
-msgstr "1 min"
+msgstr ""
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:982 ../src/viktrwlayer_propwin.c:1267
@@ -4829,9 +4822,8 @@ msgstr ""
 #. however I've not been able to achieve this.
 #. Thus simply sensistizing it instead.
 #: ../src/viktrwlayer_wpwin.c:292
-#, fuzzy
 msgid "Image Direction:"
-msgstr "Prehliadač Obrázkov"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:300
 msgid "Magnetic"

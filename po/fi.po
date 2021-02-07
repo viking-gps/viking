@@ -371,9 +371,8 @@ msgid "couldn't map temp file"
 msgstr "tilapäisen tiedoston kartoittaminen epäonnistui"
 
 #: ../src/geonamessearch.c:459
-#, fuzzy
 msgid "Select articles"
-msgstr "Valintatyökalu"
+msgstr ""
 
 #: ../src/geonamessearch.c:459
 msgid "Select the articles you want to add."
@@ -630,9 +629,8 @@ msgid ""
 msgstr ""
 
 #: ../src/globals.c:123
-#, fuzzy
 msgid "Open files in selected layer:"
-msgstr "Siirrä valittu kerros"
+msgstr ""
 
 #: ../src/globals.c:124
 msgid "Open files (but not .vik ones) into the selected TrackWaypoint layer."
@@ -1003,9 +1001,8 @@ msgid "OSM My Traces"
 msgstr ""
 
 #: ../src/datasource_osm_my_traces.c:106 ../src/osm-traces.c:684
-#, fuzzy
 msgid "Email/username:"
-msgstr "OSM-käyttäjänimi:"
+msgstr ""
 
 #: ../src/datasource_osm_my_traces.c:111
 msgid "The email or username used to login to OSM"
@@ -1283,15 +1280,11 @@ msgid "OSM upload"
 msgstr "OSM-kopiointi palvelimelle"
 
 #: ../src/osm-traces.c:689
-#, fuzzy
 msgid ""
 "The email/username used as login\n"
 "<small>Enter the email/username you use to login into www.openstreetmap.org."
 "</small>"
 msgstr ""
-"Sähköpostiosoitetta käytetty kirjautumiseen\n"
-"<small>Kirjoita sähköpostiosoite, jota käytät kirjautumiseen sivustolle www."
-"openstreetmap.org.</small>"
 
 #: ../src/osm-traces.c:697
 msgid ""
@@ -1477,24 +1470,20 @@ msgid ""
 msgstr ""
 
 #: ../src/osm.c:50
-#, fuzzy
 msgid "OpenStreetMap (Mapnik)"
-msgstr "OpenStreetMap-jäljet"
+msgstr ""
 
 #: ../src/osm.c:65
-#, fuzzy
 msgid "OpenStreetMap (Cycle)"
-msgstr "OpenStreetMap-jäljet"
+msgstr ""
 
 #: ../src/osm.c:79
-#, fuzzy
 msgid "OpenStreetMap (Transport)"
-msgstr "OpenStreetMap-jäljet"
+msgstr ""
 
 #: ../src/osm.c:95
-#, fuzzy
 msgid "OpenStreetMap (Humanitarian)"
-msgstr "OpenStreetMap-jäljet"
+msgstr ""
 
 #: ../src/osm.c:111
 msgid "On Disk OSM Tile Format"
@@ -1766,9 +1755,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../src/vikaggregatelayer.c:1014
-#, fuzzy, c-format
+#, c-format
 msgid "Empty"
-msgstr "Tyhjennä K_aikki"
+msgstr ""
 
 #: ../src/vikdemlayer.c:86
 msgid "SRTM Global 90m (3 arcsec)"
@@ -2881,9 +2870,8 @@ msgid "Download Maps in _Zoom Levels..."
 msgstr ""
 
 #: ../src/vikmapslayer.c:2539
-#, fuzzy
 msgid "_Open MBTiles Files"
-msgstr "A_vaa äskeinen tiedosto"
+msgstr ""
 
 #: ../src/vikmapslayer.c:2554
 msgid "Flush Map Cache"
@@ -2915,23 +2903,20 @@ msgid "Create Waypoint"
 msgstr "Luo välietappi"
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit _Track"
-msgstr "Muokkaa reittipistettä"
+msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit Track"
-msgstr "Muokkaa reittipistettä"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
 msgid "Edit _Route"
 msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit Route"
-msgstr "Muokkaa välietappia"
+msgstr ""
 
 #: ../src/viktrwlayer.c:460
 msgid "Route _Finder"
@@ -2942,9 +2927,8 @@ msgid "Route Finder"
 msgstr "Reittietsijä"
 
 #: ../src/viktrwlayer.c:471
-#, fuzzy
 msgid "Splitter"
-msgstr "Jaa osiin tässä"
+msgstr ""
 
 #: ../src/viktrwlayer.c:482
 msgid "_Edit Waypoint"
@@ -2984,9 +2968,8 @@ msgid "Metadata"
 msgstr ""
 
 #: ../src/viktrwlayer.c:531
-#, fuzzy
 msgid "Filesystem"
-msgstr "Tiedostotyyppi:"
+msgstr ""
 
 #: ../src/viktrwlayer.c:534
 msgid "Draw by Track"
@@ -3581,9 +3564,8 @@ msgid "Delete Waypoints From _Selection..."
 msgstr "Poista _välietapit valinnasta..."
 
 #: ../src/viktrwlayer.c:4512 ../src/viktrwlayer.c:8339
-#, fuzzy
 msgid "Delete Duplicate Waypoints"
-msgstr "Poista välietappien kaksoiskappaleet"
+msgstr ""
 
 #: ../src/viktrwlayer.c:5198
 #, c-format
@@ -3824,16 +3806,15 @@ msgid "Select waypoints to delete"
 msgstr "Valitse poistettavat välietapit"
 
 #: ../src/viktrwlayer.c:7691
-#, fuzzy, c-format
+#, c-format
 msgid "%ld waypoint deleted"
 msgid_plural "%ld waypoints deleted"
-msgstr[0] "Valitse poistettavat välietapit"
-msgstr[1] "Valitse poistettavat välietapit"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../src/viktrwlayer.c:7697
-#, fuzzy
 msgid "No duplicates found"
-msgstr "Välietappeja ei löytynyt"
+msgstr ""
 
 #: ../src/viktrwlayer.c:8028
 #, c-format
@@ -4366,26 +4347,26 @@ msgid "%.1f knots"
 msgstr "%.1f solmua"
 
 #: ../src/viktrwlayer_propwin.c:969 ../src/viktrwlayer_propwin.c:1254
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f s/km"
-msgstr "%.1f km"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:972 ../src/viktrwlayer_propwin.c:1257
 #: ../src/viktrwlayer_analysis.c:389 ../src/viktrwlayer_analysis.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/km"
-msgstr "%.1f km"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:975 ../src/viktrwlayer_propwin.c:1260
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f sec/mi"
-msgstr "%.1f mailia"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:978 ../src/viktrwlayer_propwin.c:1263
 #: ../src/viktrwlayer_analysis.c:409 ../src/viktrwlayer_analysis.c:412
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/mi"
-msgstr "%.1f m/s"
+msgstr ""
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:982 ../src/viktrwlayer_propwin.c:1267
@@ -4468,14 +4449,12 @@ msgid "<b>Description:</b>"
 msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3271
-#, fuzzy
 msgid "<b>Source:</b>"
-msgstr "<b>Alku:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3272
-#, fuzzy
 msgid "<b>Type:</b>"
-msgstr "<b>Aika:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3273
 msgid "<b>Color:</b>"
@@ -4770,11 +4749,10 @@ msgid ""
 msgstr ""
 
 #: ../src/viktrwlayer_tracklist.c:642
-#, fuzzy
 msgid ""
 "Distance\n"
 "(NM)"
-msgstr "Etäisyysaika"
+msgstr ""
 
 #: ../src/viktrwlayer_tracklist.c:645
 msgid ""
@@ -4852,9 +4830,8 @@ msgid "Comment:"
 msgstr "Kommentti:"
 
 #: ../src/viktrwlayer_wpwin.c:202
-#, fuzzy
 msgid "Source:"
-msgstr "Latauslähde:"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:212
 msgid "Image:"
@@ -4882,9 +4859,8 @@ msgstr ""
 #. however I've not been able to achieve this.
 #. Thus simply sensistizing it instead.
 #: ../src/viktrwlayer_wpwin.c:292
-#, fuzzy
 msgid "Image Direction:"
-msgstr "Kuvan aikavyöhyke:"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:300
 msgid "Magnetic"
@@ -5838,9 +5814,8 @@ msgid "Go to the default location"
 msgstr "Siirry oletussijaintiin"
 
 #: ../src/vikwindow.c:4864
-#, fuzzy
 msgid "Go to the _Auto Location"
-msgstr "Siirry _oletusijaintiin"
+msgstr ""
 
 #: ../src/vikwindow.c:4864
 msgid "Go to a location via automatic lookup"
@@ -5871,9 +5846,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr "Siirry satunnaiseen UTM-koordinaattiin"
 
 #: ../src/vikwindow.c:4868
-#, fuzzy
 msgid "Go to Today"
-msgstr "Siirry UTM:ään"
+msgstr ""
 
 #: ../src/vikwindow.c:4868
 msgid "Go to today on the calendar"
@@ -6108,24 +6082,20 @@ msgid "Show Menu"
 msgstr "Näytä valikko"
 
 #: ../src/vikwindow.c:4929
-#, fuzzy
 msgid "Show Side Panel B_uttons"
-msgstr "Näytä sivupaneeli"
+msgstr ""
 
 #: ../src/vikwindow.c:4929
-#, fuzzy
 msgid "Show Side Panel Buttons"
-msgstr "Näytä sivupaneeli"
+msgstr ""
 
 #: ../src/vikwindow.c:4930
-#, fuzzy
 msgid "Show Side Panel Ca_lendar"
-msgstr "Näytä sivupaneeli"
+msgstr ""
 
 #: ../src/vikwindow.c:4930
-#, fuzzy
 msgid "Show Side Panel Calendar"
-msgstr "Näytä sivupaneeli"
+msgstr ""
 
 #: ../src/vikwindow.c:5064
 #, c-format
@@ -6133,9 +6103,8 @@ msgid "New _%s Layer"
 msgstr ""
 
 #: ../src/vikwindow.c:5114
-#, fuzzy
 msgid "..."
-msgstr "Lisää..."
+msgstr ""
 
 #: ../src/viking.desktop.in.h:2
 msgid "GPS Data Manager"

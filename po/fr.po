@@ -575,9 +575,8 @@ msgid ""
 msgstr ""
 
 #: ../src/globals.c:98
-#, fuzzy
 msgid "GPX Creator:"
-msgstr "Création"
+msgstr ""
 
 #: ../src/globals.c:99
 msgid ""
@@ -621,6 +620,7 @@ msgstr "Milieu"
 #: ../src/globals.c:124
 msgid "Top"
 msgstr "Haut"
+
 #: ../src/globals.c:117
 msgid "Save File Reference Mode:"
 msgstr ""
@@ -650,9 +650,8 @@ msgid ""
 msgstr ""
 
 #: ../src/globals.c:123
-#, fuzzy
 msgid "Open files in selected layer:"
-msgstr "Supprimer le calque sélectionné"
+msgstr ""
 
 #: ../src/globals.c:124
 msgid "Open files (but not .vik ones) into the selected TrackWaypoint layer."
@@ -1023,9 +1022,8 @@ msgid "OSM My Traces"
 msgstr "Mes Traces OSM"
 
 #: ../src/datasource_osm_my_traces.c:106 ../src/osm-traces.c:684
-#, fuzzy
 msgid "Email/username:"
-msgstr "Nom d'utilisateur :"
+msgstr ""
 
 #: ../src/datasource_osm_my_traces.c:111
 msgid "The email or username used to login to OSM"
@@ -1244,9 +1242,8 @@ msgid ""
 msgstr ""
 
 #: ../src/osm-traces.c:315
-#, fuzzy
 msgid "No Authorization."
-msgstr "Emplacement automatique"
+msgstr ""
 
 #: ../src/osm-traces.c:354
 msgid ""
@@ -1307,15 +1304,11 @@ msgid "OSM upload"
 msgstr "Émission vers OSM"
 
 #: ../src/osm-traces.c:689
-#, fuzzy
 msgid ""
 "The email/username used as login\n"
 "<small>Enter the email/username you use to login into www.openstreetmap.org."
 "</small>"
 msgstr ""
-"Adresse e-mail ou nom d'utilisateur\n"
-"<small>Entrer l'adresse e-mail ou le nom d'utilisateur que vous utilisez sur "
-"www.openstreetmap.org.</small>"
 
 #: ../src/osm-traces.c:697
 msgid ""
@@ -1501,24 +1494,20 @@ msgid ""
 msgstr ""
 
 #: ../src/osm.c:50
-#, fuzzy
 msgid "OpenStreetMap (Mapnik)"
-msgstr "Traces OpenStreetMap"
+msgstr ""
 
 #: ../src/osm.c:65
-#, fuzzy
 msgid "OpenStreetMap (Cycle)"
-msgstr "Traces OpenStreetMap"
+msgstr ""
 
 #: ../src/osm.c:79
-#, fuzzy
 msgid "OpenStreetMap (Transport)"
-msgstr "Traces OpenStreetMap"
+msgstr ""
 
 #: ../src/osm.c:95
-#, fuzzy
 msgid "OpenStreetMap (Humanitarian)"
-msgstr "Traces OpenStreetMap"
+msgstr ""
 
 #: ../src/osm.c:111
 msgid "On Disk OSM Tile Format"
@@ -1657,7 +1646,8 @@ msgstr "Personnaliser la barre d'outils"
 msgid ""
 "Select items to be displayed on the toolbar. Items can be reordered by drag "
 "and drop."
-msgstr "Sélectionnez les éléments à afficher dans la barre d'outils. Les éléments "
+msgstr ""
+"Sélectionnez les éléments à afficher dans la barre d'outils. Les éléments "
 "peuvent être réordonnés par glisser-déposer."
 
 #: ../src/toolbar.c:1044
@@ -1695,11 +1685,11 @@ msgstr "Regroupement"
 #: ../src/vikaggregatelayer.c:81
 msgid "Blue/Purple"
 msgstr "Bleu/violet"
- 
+
 #: ../src/vikaggregatelayer.c:82
 msgid "Red/Green"
 msgstr "Rouge/vert"
- 
+
 #: ../src/vikaggregatelayer.c:83
 msgid "Yellow/Orange/Red"
 msgstr "Jaune/orange/rouge"
@@ -2859,9 +2849,9 @@ msgid "Source: %s"
 msgstr "Source : %s"
 
 #: ../src/vikmapslayer.c:2038
-#, fuzzy, c-format
+#, c-format
 msgid "Tile File: %s [Not Available]"
-msgstr "Le système d'aide n'est pas disponible."
+msgstr ""
 
 #: ../src/vikmapslayer.c:2086
 msgid "Redownload _Bad Map(s)"
@@ -2956,9 +2946,8 @@ msgid "Download Maps in _Zoom Levels..."
 msgstr ""
 
 #: ../src/vikmapslayer.c:2539
-#, fuzzy
 msgid "_Open MBTiles Files"
-msgstr "Ouvrir un fichier _récent"
+msgstr ""
 
 #: ../src/vikmapslayer.c:2554
 msgid "Flush Map Cache"
@@ -2990,24 +2979,20 @@ msgid "Create Waypoint"
 msgstr "Créer un waypoint"
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit _Track"
-msgstr "Éditer un point de trace"
+msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit Track"
-msgstr "Éditer un point de trace"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit _Route"
-msgstr "Ajouter un itinéraire"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit Route"
-msgstr "Ajouter un itinéraire"
+msgstr ""
 
 #: ../src/viktrwlayer.c:460
 msgid "Route _Finder"
@@ -3018,9 +3003,8 @@ msgid "Route Finder"
 msgstr "Calculateur d'Itinéraire"
 
 #: ../src/viktrwlayer.c:471
-#, fuzzy
 msgid "Splitter"
-msgstr "Découper ici"
+msgstr ""
 
 #: ../src/viktrwlayer.c:482
 msgid "_Edit Waypoint"
@@ -3656,9 +3640,8 @@ msgid "Delete Waypoints From _Selection..."
 msgstr "Supprimer les Waypoints de la _Sélection"
 
 #: ../src/viktrwlayer.c:4512 ../src/viktrwlayer.c:8339
-#, fuzzy
 msgid "Delete Duplicate Waypoints"
-msgstr "Supprimer les waypoints dupliqués"
+msgstr ""
 
 #: ../src/viktrwlayer.c:5198
 #, c-format
@@ -3905,11 +3888,11 @@ msgid "Select waypoints to delete"
 msgstr "Sélectionnez le point de cheminement à supprimer"
 
 #: ../src/viktrwlayer.c:7691
-#, fuzzy, c-format
+#, c-format
 msgid "%ld waypoint deleted"
 msgid_plural "%ld waypoints deleted"
-msgstr[0] "%ld point de cheminement modifié"
-msgstr[1] "%ld points de cheminement modifiés"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../src/viktrwlayer.c:7697
 msgid "No duplicates found"
@@ -4452,26 +4435,26 @@ msgid "%.1f knots"
 msgstr "%.1f nœuds"
 
 #: ../src/viktrwlayer_propwin.c:969 ../src/viktrwlayer_propwin.c:1254
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f s/km"
-msgstr "%.1f km"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:972 ../src/viktrwlayer_propwin.c:1257
 #: ../src/viktrwlayer_analysis.c:389 ../src/viktrwlayer_analysis.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/km"
-msgstr "%.1f km"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:975 ../src/viktrwlayer_propwin.c:1260
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f sec/mi"
-msgstr "%.1f miles"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:978 ../src/viktrwlayer_propwin.c:1263
 #: ../src/viktrwlayer_analysis.c:409 ../src/viktrwlayer_analysis.c:412
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/mi"
-msgstr "%.1f m/s"
+msgstr ""
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:982 ../src/viktrwlayer_propwin.c:1267
@@ -4980,9 +4963,8 @@ msgstr "Afficher le nom"
 #. however I've not been able to achieve this.
 #. Thus simply sensistizing it instead.
 #: ../src/viktrwlayer_wpwin.c:292
-#, fuzzy
 msgid "Image Direction:"
-msgstr "Paramètres de l'image"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:300
 msgid "Magnetic"
@@ -5143,9 +5125,9 @@ msgid "%.2f miles"
 msgstr "%.2f miles"
 
 #: ../src/viktrwlayer_analysis.c:320
-#, fuzzy, c-format
+#, c-format
 msgid "%.2f NM"
-msgstr "%.2f km"
+msgstr ""
 
 #. VIK_UNITS_DISTANCE_KILOMETRES
 #: ../src/viktrwlayer_analysis.c:324
@@ -5219,7 +5201,7 @@ msgstr "Année"
 #: ../src/viktrwlayer_analysis.c:838
 msgid "Totals"
 msgstr "Totaux"
- 
+
 #: ../src/viktrwlayer_analysis.c:843
 msgid "Years"
 msgstr "Années"
@@ -5391,9 +5373,9 @@ msgid "Determining location"
 msgstr ""
 
 #: ../src/vikwindow.c:525
-#, fuzzy, c-format
+#, c-format
 msgid "Location found via geoclue"
-msgstr "Position trouvée : %s"
+msgstr ""
 
 #: ../src/vikwindow.c:546
 msgid "Default Map"
@@ -5949,9 +5931,8 @@ msgid "Go to the default location"
 msgstr "Aller à la position par _défaut"
 
 #: ../src/vikwindow.c:4864
-#, fuzzy
 msgid "Go to the _Auto Location"
-msgstr "Aller à la position par _défaut"
+msgstr ""
 
 #: ../src/vikwindow.c:4864
 msgid "Go to a location via automatic lookup"
@@ -6218,24 +6199,20 @@ msgid "Show Menu"
 msgstr "Afficher le menu"
 
 #: ../src/vikwindow.c:4929
-#, fuzzy
 msgid "Show Side Panel B_uttons"
-msgstr "Afficher le panneau latéral"
+msgstr ""
 
 #: ../src/vikwindow.c:4929
-#, fuzzy
 msgid "Show Side Panel Buttons"
-msgstr "Afficher le panneau latéral"
+msgstr ""
 
 #: ../src/vikwindow.c:4930
-#, fuzzy
 msgid "Show Side Panel Ca_lendar"
-msgstr "Afficher le panneau latéral"
+msgstr ""
 
 #: ../src/vikwindow.c:4930
-#, fuzzy
 msgid "Show Side Panel Calendar"
-msgstr "Afficher le panneau latéral"
+msgstr ""
 
 #: ../src/vikwindow.c:5064
 #, c-format

@@ -2867,14 +2867,12 @@ msgid "Create Waypoint"
 msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit _Track"
-msgstr "Afegir \"Track\""
+msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit Track"
-msgstr "Afegir \"Track\""
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
 msgid "Edit _Route"
@@ -4315,9 +4313,9 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:972 ../src/viktrwlayer_propwin.c:1257
 #: ../src/viktrwlayer_analysis.c:389 ../src/viktrwlayer_analysis.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/km"
-msgstr "1 min"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:975 ../src/viktrwlayer_propwin.c:1260
 #, c-format
@@ -4326,9 +4324,9 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:978 ../src/viktrwlayer_propwin.c:1263
 #: ../src/viktrwlayer_analysis.c:409 ../src/viktrwlayer_analysis.c:412
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/mi"
-msgstr "1 min"
+msgstr ""
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:982 ../src/viktrwlayer_propwin.c:1267
@@ -5792,9 +5790,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr ""
 
 #: ../src/vikwindow.c:4868
-#, fuzzy
 msgid "Go to Today"
-msgstr "Anar a UTM"
+msgstr ""
 
 #: ../src/vikwindow.c:4868
 msgid "Go to today on the calendar"

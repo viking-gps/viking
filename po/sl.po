@@ -2841,9 +2841,8 @@ msgid "Download Maps in _Zoom Levels..."
 msgstr ""
 
 #: ../src/vikmapslayer.c:2539
-#, fuzzy
 msgid "_Open MBTiles Files"
-msgstr "Odpri datoteko"
+msgstr ""
 
 #: ../src/vikmapslayer.c:2554
 msgid "Flush Map Cache"
@@ -2875,14 +2874,12 @@ msgid "Create Waypoint"
 msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit _Track"
-msgstr "Uredi točko sledi"
+msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit Track"
-msgstr "Uredi točko sledi"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
 msgid "Edit _Route"
@@ -2901,9 +2898,8 @@ msgid "Route Finder"
 msgstr ""
 
 #: ../src/viktrwlayer.c:471
-#, fuzzy
 msgid "Splitter"
-msgstr "Razdeli tu"
+msgstr ""
 
 #: ../src/viktrwlayer.c:482
 msgid "_Edit Waypoint"
@@ -3537,9 +3533,8 @@ msgid "Delete Waypoints From _Selection..."
 msgstr ""
 
 #: ../src/viktrwlayer.c:4512 ../src/viktrwlayer.c:8339
-#, fuzzy
 msgid "Delete Duplicate Waypoints"
-msgstr "Odstrani podvojene točke"
+msgstr ""
 
 #: ../src/viktrwlayer.c:5198
 #, c-format
@@ -4327,9 +4322,9 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:972 ../src/viktrwlayer_propwin.c:1257
 #: ../src/viktrwlayer_analysis.c:389 ../src/viktrwlayer_analysis.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/km"
-msgstr "1 min"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:975 ../src/viktrwlayer_propwin.c:1260
 #, c-format
@@ -4338,9 +4333,9 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:978 ../src/viktrwlayer_propwin.c:1263
 #: ../src/viktrwlayer_analysis.c:409 ../src/viktrwlayer_analysis.c:412
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/mi"
-msgstr "1 min"
+msgstr ""
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:982 ../src/viktrwlayer_propwin.c:1267
@@ -4423,14 +4418,12 @@ msgid "<b>Description:</b>"
 msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3271
-#, fuzzy
 msgid "<b>Source:</b>"
-msgstr "<b>Začetek:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3272
-#, fuzzy
 msgid "<b>Type:</b>"
-msgstr "<b>Čas:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3273
 msgid "<b>Color:</b>"
@@ -4806,9 +4799,8 @@ msgid "Comment:"
 msgstr "Opomba:"
 
 #: ../src/viktrwlayer_wpwin.c:202
-#, fuzzy
 msgid "Source:"
-msgstr "Vir prenosa:"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:212
 msgid "Image:"
@@ -4836,9 +4828,8 @@ msgstr ""
 #. however I've not been able to achieve this.
 #. Thus simply sensistizing it instead.
 #: ../src/viktrwlayer_wpwin.c:292
-#, fuzzy
 msgid "Image Direction:"
-msgstr "Nastavitve slike"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:300
 msgid "Magnetic"
@@ -6065,9 +6056,8 @@ msgid "New _%s Layer"
 msgstr ""
 
 #: ../src/vikwindow.c:5114
-#, fuzzy
 msgid "..."
-msgstr "Dodaj..."
+msgstr ""
 
 #: ../src/viking.desktop.in.h:2
 msgid "GPS Data Manager"

@@ -362,23 +362,20 @@ msgid "couldn't map temp file"
 msgstr "无法映射临时文件"
 
 #: ../src/geonamessearch.c:459
-#, fuzzy
 msgid "Select articles"
-msgstr "选择文件格式"
+msgstr ""
 
 #: ../src/geonamessearch.c:459
-#, fuzzy
 msgid "Select the articles you want to add."
-msgstr "选择文件格式。"
+msgstr ""
 
 #: ../src/geonamessearch.c:475
 msgid "city"
 msgstr ""
 
 #: ../src/geonamessearch.c:477
-#, fuzzy
 msgid "edu"
-msgstr "结束"
+msgstr ""
 
 #: ../src/geonamessearch.c:479
 msgid "airport"
@@ -411,14 +408,12 @@ msgid "DDD"
 msgstr ""
 
 #: ../src/globals.c:67
-#, fuzzy
 msgid "DMM"
-msgstr "DEM（数字高程模型）"
+msgstr ""
 
 #: ../src/globals.c:67
-#, fuzzy
 msgid "DMS"
-msgstr "DEM（数字高程模型）"
+msgstr ""
 
 #: ../src/globals.c:67
 msgid "Raw"
@@ -471,9 +466,8 @@ msgid "min/mi"
 msgstr ""
 
 #: ../src/globals.c:70
-#, fuzzy
 msgid "Metres"
-msgstr "公里"
+msgstr ""
 
 #: ../src/globals.c:70
 msgid "Feet"
@@ -570,9 +564,8 @@ msgid ""
 msgstr "以指定大小写保存GPX路标符号名称。对兼容一些设备有用。"
 
 #: ../src/globals.c:98
-#, fuzzy
 msgid "GPX Creator:"
-msgstr "创建时间"
+msgstr ""
 
 #: ../src/globals.c:99
 msgid ""
@@ -629,9 +622,8 @@ msgid ""
 msgstr "仅用于新窗口或重启后的程序。-1指全部文件。"
 
 #: ../src/globals.c:123
-#, fuzzy
 msgid "Open files in selected layer:"
-msgstr "删除所选层"
+msgstr ""
 
 #: ../src/globals.c:124
 msgid "Open files (but not .vik ones) into the selected TrackWaypoint layer."
@@ -1000,9 +992,8 @@ msgid "OSM My Traces"
 msgstr "OSM我的踪迹"
 
 #: ../src/datasource_osm_my_traces.c:106 ../src/osm-traces.c:684
-#, fuzzy
 msgid "Email/username:"
-msgstr "用户名："
+msgstr ""
 
 #: ../src/datasource_osm_my_traces.c:111
 msgid "The email or username used to login to OSM"
@@ -1218,9 +1209,8 @@ msgid ""
 msgstr ""
 
 #: ../src/osm-traces.c:315
-#, fuzzy
 msgid "No Authorization."
-msgstr "自动定位"
+msgstr ""
 
 #: ../src/osm-traces.c:354
 msgid ""
@@ -1281,14 +1271,11 @@ msgid "OSM upload"
 msgstr "OSM上传"
 
 #: ../src/osm-traces.c:689
-#, fuzzy
 msgid ""
 "The email/username used as login\n"
 "<small>Enter the email/username you use to login into www.openstreetmap.org."
 "</small>"
 msgstr ""
-"邮件账户\n"
-"<small>输入要登录www.openstreetmap.org网站的邮件账户。</small>"
 
 #: ../src/osm-traces.c:697
 msgid ""
@@ -1474,24 +1461,20 @@ msgid ""
 msgstr ""
 
 #: ../src/osm.c:50
-#, fuzzy
 msgid "OpenStreetMap (Mapnik)"
-msgstr "OpenStreetMap（开源街图）轨迹"
+msgstr ""
 
 #: ../src/osm.c:65
-#, fuzzy
 msgid "OpenStreetMap (Cycle)"
-msgstr "OpenStreetMap（开源街图）轨迹"
+msgstr ""
 
 #: ../src/osm.c:79
-#, fuzzy
 msgid "OpenStreetMap (Transport)"
-msgstr "OpenStreetMap（开源街图）轨迹"
+msgstr ""
 
 #: ../src/osm.c:95
-#, fuzzy
 msgid "OpenStreetMap (Humanitarian)"
-msgstr "OpenStreetMap（开源街图）轨迹"
+msgstr ""
 
 #: ../src/osm.c:111
 msgid "On Disk OSM Tile Format"
@@ -1761,9 +1744,9 @@ msgid_plural "%d layers"
 msgstr[0] "%d层"
 
 #: ../src/vikaggregatelayer.c:1014
-#, fuzzy, c-format
+#, c-format
 msgid "Empty"
-msgstr "清空全部(_A)"
+msgstr ""
 
 #: ../src/vikdemlayer.c:86
 msgid "SRTM Global 90m (3 arcsec)"
@@ -2167,9 +2150,8 @@ msgid "Display information in the statusbar on GPS updates"
 msgstr "GPS更新时在状态栏显示信息"
 
 #: ../src/vikgpslayer.c:229
-#, fuzzy
 msgid "Auto Connect"
-msgstr "自动定位"
+msgstr ""
 
 #: ../src/vikgpslayer.c:229
 msgid "Automatically connect to GPSD"
@@ -2769,9 +2751,8 @@ msgid "Source: Not available"
 msgstr "来源：不可用"
 
 #: ../src/vikmapslayer.c:2000
-#, fuzzy
 msgid "Source: file://"
-msgstr "来源：不可用"
+msgstr ""
 
 #: ../src/vikmapslayer.c:2012
 #, c-format
@@ -2779,9 +2760,9 @@ msgid "Source: %s"
 msgstr ""
 
 #: ../src/vikmapslayer.c:2038
-#, fuzzy, c-format
+#, c-format
 msgid "Tile File: %s [Not Available]"
-msgstr "瓦片文件时间戳：不可用"
+msgstr ""
 
 #: ../src/vikmapslayer.c:2086
 msgid "Redownload _Bad Map(s)"
@@ -2874,9 +2855,8 @@ msgid "Download Maps in _Zoom Levels..."
 msgstr "下载地图在缩放等级(_Z)…"
 
 #: ../src/vikmapslayer.c:2539
-#, fuzzy
 msgid "_Open MBTiles Files"
-msgstr "MBTiles文件"
+msgstr ""
 
 #: ../src/vikmapslayer.c:2554
 msgid "Flush Map Cache"
@@ -2908,24 +2888,20 @@ msgid "Create Waypoint"
 msgstr "创建路标"
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit _Track"
-msgstr "编辑轨迹点"
+msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit Track"
-msgstr "编辑轨迹点"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit _Route"
-msgstr "添加路线"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit Route"
-msgstr "添加路线"
+msgstr ""
 
 #: ../src/viktrwlayer.c:460
 msgid "Route _Finder"
@@ -2936,9 +2912,8 @@ msgid "Route Finder"
 msgstr "路线查找"
 
 #: ../src/viktrwlayer.c:471
-#, fuzzy
 msgid "Splitter"
-msgstr "在此拆分"
+msgstr ""
 
 #: ../src/viktrwlayer.c:482
 msgid "_Edit Waypoint"
@@ -2978,9 +2953,8 @@ msgid "Metadata"
 msgstr "元数据"
 
 #: ../src/viktrwlayer.c:531
-#, fuzzy
 msgid "Filesystem"
-msgstr "文件类型："
+msgstr ""
 
 #: ../src/viktrwlayer.c:534
 msgid "Draw by Track"
@@ -3202,9 +3176,8 @@ msgid "Keywords"
 msgstr "关键词"
 
 #: ../src/viktrwlayer.c:693
-#, fuzzy
 msgid "External layer:"
-msgstr "外部(_l)"
+msgstr ""
 
 #: ../src/viktrwlayer.c:693
 msgid ""
@@ -3213,9 +3186,8 @@ msgid ""
 msgstr ""
 
 #: ../src/viktrwlayer.c:694
-#, fuzzy
 msgid "Save layer as:"
-msgstr "%d层"
+msgstr ""
 
 #: ../src/viktrwlayer.c:694
 msgid "Specify where layer should be saved.  Overwrites file if it exists."
@@ -3579,9 +3551,8 @@ msgid "Delete Waypoints From _Selection..."
 msgstr "删除所选路标(_S)…"
 
 #: ../src/viktrwlayer.c:4512 ../src/viktrwlayer.c:8339
-#, fuzzy
 msgid "Delete Duplicate Waypoints"
-msgstr "删除重复路标"
+msgstr ""
 
 #: ../src/viktrwlayer.c:5198
 #, c-format
@@ -3820,15 +3791,14 @@ msgid "Select waypoints to delete"
 msgstr "选择路标来删除"
 
 #: ../src/viktrwlayer.c:7691
-#, fuzzy, c-format
+#, c-format
 msgid "%ld waypoint deleted"
 msgid_plural "%ld waypoints deleted"
-msgstr[0] "%ld路标已改变"
+msgstr[0] ""
 
 #: ../src/viktrwlayer.c:7697
-#, fuzzy
 msgid "No duplicates found"
-msgstr "找不到路线"
+msgstr ""
 
 #: ../src/viktrwlayer.c:8028
 #, c-format
@@ -3990,9 +3960,8 @@ msgid "_Maximum Speed"
 msgstr "极速(_M)"
 
 #: ../src/viktrwlayer.c:8646
-#, fuzzy
 msgid "_Date"
-msgstr "日期"
+msgstr ""
 
 #: ../src/viktrwlayer.c:8655
 msgid "Co_mbine"
@@ -4276,9 +4245,9 @@ msgid ""
 msgstr ""
 
 #: ../src/viktrwlayer.c:11782
-#, fuzzy, c-format
+#, c-format
 msgid "WARNING: issues encountered loading external layer %s from %s"
-msgstr "警告：遇到麻烦于加载%s"
+msgstr ""
 
 #: ../src/viktrwlayer_export.c:47
 msgid "Auto Device GPX Simplify:"
@@ -4365,26 +4334,26 @@ msgid "%.1f knots"
 msgstr "%.1f节"
 
 #: ../src/viktrwlayer_propwin.c:969 ../src/viktrwlayer_propwin.c:1254
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f s/km"
-msgstr "%.1f公里"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:972 ../src/viktrwlayer_propwin.c:1257
 #: ../src/viktrwlayer_analysis.c:389 ../src/viktrwlayer_analysis.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/km"
-msgstr "%.1f公里"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:975 ../src/viktrwlayer_propwin.c:1260
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f sec/mi"
-msgstr "%.1f英里"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:978 ../src/viktrwlayer_propwin.c:1263
 #: ../src/viktrwlayer_analysis.c:409 ../src/viktrwlayer_analysis.c:412
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/mi"
-msgstr "%.1f米/秒"
+msgstr ""
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:982 ../src/viktrwlayer_propwin.c:1267
@@ -4467,14 +4436,12 @@ msgid "<b>Description:</b>"
 msgstr "<b>描述：</b>"
 
 #: ../src/viktrwlayer_propwin.c:3271
-#, fuzzy
 msgid "<b>Source:</b>"
-msgstr "<b>航线：</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3272
-#, fuzzy
 msgid "<b>Type:</b>"
-msgstr "<b>时间：</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3273
 msgid "<b>Color:</b>"
@@ -4850,9 +4817,8 @@ msgid "Comment:"
 msgstr "注释："
 
 #: ../src/viktrwlayer_wpwin.c:202
-#, fuzzy
 msgid "Source:"
-msgstr "下载源："
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:212
 msgid "Image:"
@@ -4880,9 +4846,8 @@ msgstr "持续位置"
 #. however I've not been able to achieve this.
 #. Thus simply sensistizing it instead.
 #: ../src/viktrwlayer_wpwin.c:292
-#, fuzzy
 msgid "Image Direction:"
-msgstr "图像时区："
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:300
 msgid "Magnetic"
@@ -5047,9 +5012,9 @@ msgid "%.2f miles"
 msgstr "%.2f英里"
 
 #: ../src/viktrwlayer_analysis.c:320
-#, fuzzy, c-format
+#, c-format
 msgid "%.2f NM"
-msgstr "%.1f海里"
+msgstr ""
 
 #. VIK_UNITS_DISTANCE_KILOMETRES
 #: ../src/viktrwlayer_analysis.c:324
@@ -5280,9 +5245,9 @@ msgid "Determining location"
 msgstr "正在确定位置"
 
 #: ../src/vikwindow.c:525
-#, fuzzy, c-format
+#, c-format
 msgid "Location found via geoclue"
-msgstr "位置已找到：%s"
+msgstr ""
 
 #: ../src/vikwindow.c:546
 msgid "Default Map"
@@ -5842,9 +5807,8 @@ msgid "Go to the default location"
 msgstr "去默认位置"
 
 #: ../src/vikwindow.c:4864
-#, fuzzy
 msgid "Go to the _Auto Location"
-msgstr "去下个位置(_N)"
+msgstr ""
 
 #: ../src/vikwindow.c:4864
 msgid "Go to a location via automatic lookup"
@@ -5875,9 +5839,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr "去任意的UTM（通用横墨卡托投影）座标"
 
 #: ../src/vikwindow.c:4868
-#, fuzzy
 msgid "Go to Today"
-msgstr "去UTM"
+msgstr ""
 
 #: ../src/vikwindow.c:4868
 msgid "Go to today on the calendar"
@@ -6112,24 +6075,20 @@ msgid "Show Menu"
 msgstr "显示菜单"
 
 #: ../src/vikwindow.c:4929
-#, fuzzy
 msgid "Show Side Panel B_uttons"
-msgstr "显示侧边板"
+msgstr ""
 
 #: ../src/vikwindow.c:4929
-#, fuzzy
 msgid "Show Side Panel Buttons"
-msgstr "显示侧边板"
+msgstr ""
 
 #: ../src/vikwindow.c:4930
-#, fuzzy
 msgid "Show Side Panel Ca_lendar"
-msgstr "显示侧边板"
+msgstr ""
 
 #: ../src/vikwindow.c:4930
-#, fuzzy
 msgid "Show Side Panel Calendar"
-msgstr "显示侧边板"
+msgstr ""
 
 #: ../src/vikwindow.c:5064
 #, c-format
@@ -6137,9 +6096,8 @@ msgid "New _%s Layer"
 msgstr "新建%s图层"
 
 #: ../src/vikwindow.c:5114
-#, fuzzy
 msgid "..."
-msgstr "添加…"
+msgstr ""
 
 #: ../src/viking.desktop.in.h:2
 msgid "GPS Data Manager"

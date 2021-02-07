@@ -1002,9 +1002,8 @@ msgid "OSM My Traces"
 msgstr ""
 
 #: ../src/datasource_osm_my_traces.c:106 ../src/osm-traces.c:684
-#, fuzzy
 msgid "Email/username:"
-msgstr "OSM gebruikersnaam:"
+msgstr ""
 
 #: ../src/datasource_osm_my_traces.c:111
 msgid "The email or username used to login to OSM"
@@ -1466,24 +1465,20 @@ msgid ""
 msgstr ""
 
 #: ../src/osm.c:50
-#, fuzzy
 msgid "OpenStreetMap (Mapnik)"
-msgstr "OpenStreetMap Traces"
+msgstr ""
 
 #: ../src/osm.c:65
-#, fuzzy
 msgid "OpenStreetMap (Cycle)"
-msgstr "OpenStreetMap Traces"
+msgstr ""
 
 #: ../src/osm.c:79
-#, fuzzy
 msgid "OpenStreetMap (Transport)"
-msgstr "OpenStreetMap Traces"
+msgstr ""
 
 #: ../src/osm.c:95
-#, fuzzy
 msgid "OpenStreetMap (Humanitarian)"
-msgstr "OpenStreetMap Traces"
+msgstr ""
 
 #: ../src/osm.c:111
 msgid "On Disk OSM Tile Format"
@@ -2896,23 +2891,20 @@ msgid "Create Waypoint"
 msgstr "Maak Waypoint"
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit _Track"
-msgstr "Bewerk Trackpoint"
+msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit Track"
-msgstr "Bewerk Trackpoint"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
 msgid "Edit _Route"
 msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit Route"
-msgstr "Bewerk Waypoint"
+msgstr ""
 
 #: ../src/viktrwlayer.c:460
 msgid "Route _Finder"
@@ -2964,9 +2956,8 @@ msgid "Metadata"
 msgstr ""
 
 #: ../src/viktrwlayer.c:531
-#, fuzzy
 msgid "Filesystem"
-msgstr "Bestandstype:"
+msgstr ""
 
 #: ../src/viktrwlayer.c:534
 msgid "Draw by Track"
@@ -3559,9 +3550,8 @@ msgid "Delete Waypoints From _Selection..."
 msgstr ""
 
 #: ../src/viktrwlayer.c:4512 ../src/viktrwlayer.c:8339
-#, fuzzy
 msgid "Delete Duplicate Waypoints"
-msgstr "Maak Waypoint"
+msgstr ""
 
 #: ../src/viktrwlayer.c:5198
 #, c-format
@@ -3807,9 +3797,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../src/viktrwlayer.c:7697
-#, fuzzy
 msgid "No duplicates found"
-msgstr "Geen ingangen gevonden!"
+msgstr ""
 
 #: ../src/viktrwlayer.c:8028
 #, c-format
@@ -4348,9 +4337,9 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:972 ../src/viktrwlayer_propwin.c:1257
 #: ../src/viktrwlayer_analysis.c:389 ../src/viktrwlayer_analysis.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/km"
-msgstr "1 min"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:975 ../src/viktrwlayer_propwin.c:1260
 #, c-format
@@ -4359,9 +4348,9 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:978 ../src/viktrwlayer_propwin.c:1263
 #: ../src/viktrwlayer_analysis.c:409 ../src/viktrwlayer_analysis.c:412
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/mi"
-msgstr "1 min"
+msgstr ""
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:982 ../src/viktrwlayer_propwin.c:1267
@@ -4854,9 +4843,8 @@ msgstr ""
 #. however I've not been able to achieve this.
 #. Thus simply sensistizing it instead.
 #: ../src/viktrwlayer_wpwin.c:292
-#, fuzzy
 msgid "Image Direction:"
-msgstr "Afbeeldinginstellingen"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:300
 msgid "Magnetic"
@@ -5826,9 +5814,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr ""
 
 #: ../src/vikwindow.c:4868
-#, fuzzy
 msgid "Go to Today"
-msgstr "Ga naar UTM"
+msgstr ""
 
 #: ../src/vikwindow.c:4868
 msgid "Go to today on the calendar"
@@ -6084,9 +6071,8 @@ msgid "New _%s Layer"
 msgstr ""
 
 #: ../src/vikwindow.c:5114
-#, fuzzy
 msgid "..."
-msgstr "Toevoegen..."
+msgstr ""
 
 #: ../src/viking.desktop.in.h:2
 msgid "GPS Data Manager"

@@ -283,8 +283,8 @@ msgstr ""
 "Software Librearen Fundazioak argitaratutako GNU General Public License-aren "
 "baldintzapean; baita ere Lizentziaren 2. edo ondorengo bertsioak.\n"
 "\n"
-"Programa hau banatu da erabilgarria izan dadin, baina INOLAKO BERMERIK GABE; "
-" ez merkatal erabilpenerako ez eta erabilpen pertsonalerako. Xehetasun "
+"Programa hau banatu da erabilgarria izan dadin, baina INOLAKO BERMERIK "
+"GABE;  ez merkatal erabilpenerako ez eta erabilpen pertsonalerako. Xehetasun "
 "gehiago  GNU General Public License-an aurki ditzakezu.\n"
 "\n"
 "Programa honekin batera,  GNU General Public License-aren kopia bat jaso "
@@ -870,8 +870,7 @@ msgstr "Geocaching"
 #, c-format
 msgid ""
 "Can't find %s or %s in path! Check that you have installed it correctly."
-msgstr ""
-"Ezin da aurkitu %s edo %s kokalekuan! Egiaztatu ongi instalatu duzula."
+msgstr "Ezin da aurkitu %s edo %s kokalekuan! Egiaztatu ongi instalatu duzula."
 
 #: ../src/datasource_gc.c:190
 msgid "Number geocaches:"
@@ -1032,8 +1031,7 @@ msgstr "Posta elektronikoa/erabiltzaile-izena"
 
 #: ../src/datasource_osm_my_traces.c:111
 msgid "The email or username used to login to OSM"
-msgstr ""
-"OSM-en sartzeko erabiltzen duzun posta-helbidea edo erabiltzaile-izena"
+msgstr "OSM-en sartzeko erabiltzen duzun posta-helbidea edo erabiltzaile-izena"
 
 #: ../src/datasource_osm_my_traces.c:113 ../src/osm-traces.c:692
 msgid "Password:"
@@ -1315,8 +1313,8 @@ msgstr "OSM karga"
 #: ../src/osm-traces.c:689
 msgid ""
 "The email/username used as login\n"
-"<small>Enter the email/username you use to login into "
-"www.openstreetmap.org.</small>"
+"<small>Enter the email/username you use to login into www.openstreetmap.org."
+"</small>"
 msgstr ""
 "Saioa hasteko erabilitako posta elektronikoa/erabiltzaile-izena\n"
 "<small>Sartu www.openstreetmap.org-en erregistratzeko erabilitako posta "
@@ -1325,8 +1323,8 @@ msgstr ""
 #: ../src/osm-traces.c:697
 msgid ""
 "The password used to login\n"
-"<small>Enter the password you use to login into "
-"www.openstreetmap.org.</small>"
+"<small>Enter the password you use to login into www.openstreetmap.org.</"
+"small>"
 msgstr ""
 "Sartzeko idatzi pasahitza\n"
 "<small>Idatzi www.openstreetmap.org orrian sartzeko erabiltzen duzun "
@@ -2013,8 +2011,7 @@ msgid "The file you requested could not be opened for writing."
 msgstr "Eskatu duzun fitxategia ezin da ireki idazteko."
 
 #: ../src/vikgeoreflayer.c:782
-msgid ""
-"Lower right corner values may not be consistent with upper right values"
+msgid "Lower right corner values may not be consistent with upper right values"
 msgstr ""
 "Baliteke beheko eskuin izkinaren balioak eta goiko eskuinekoarenak "
 "kontsistenteak ez izatea"
@@ -2050,8 +2047,7 @@ msgstr "Izkinako pixela iparrean lerrokatzen:"
 
 #: ../src/vikgeoreflayer.c:864
 msgid "the UTM \"northing\" value of the upper-left corner pixel of the map"
-msgstr ""
-"Maparen goiko ezkerreko izkinako pixelaren UTMren iparraldeko balioa."
+msgstr "Maparen goiko ezkerreko izkinako pixelaren UTMren iparraldeko balioa."
 
 #: ../src/vikgeoreflayer.c:866
 msgid "X (easting) scale (mpp): "
@@ -3200,8 +3196,7 @@ msgstr "Marraztu abiadura faktorearen bidez (%):"
 #: ../src/viktrwlayer.c:670
 msgid ""
 "The percentage factor away from the average speed determining the color used"
-msgstr ""
-"Batez besteko abiadurarekiko faktoreak zehazten du erabilitako kolorea"
+msgstr "Batez besteko abiadurarekiko faktoreak zehazten du erabilitako kolorea"
 
 #: ../src/viktrwlayer.c:671
 msgid "Track Sort Order:"
@@ -3696,8 +3691,7 @@ msgstr ""
 
 #: ../src/viktrwlayer.c:5631
 msgid "No DEM layers available, thus no DEM values can be applied."
-msgstr ""
-"Ez dago DEM geruzarik eskuragarri, beraz ezin da DEM baliorik aplikatu"
+msgstr "Ez dago DEM geruzarik eskuragarri, beraz ezin da DEM baliorik aplikatu"
 
 #: ../src/viktrwlayer.c:5651 ../src/viktrwlayer.c:5692
 #, c-format
@@ -3790,8 +3784,7 @@ msgstr "Errorea. Arrasto honek ez dauka denbora-daturik"
 
 #: ../src/viktrwlayer.c:6442
 msgid "Failed. No other track in this layer has timestamp"
-msgstr ""
-"Errorea. Geruza honetan denbora-daturik duen beste arrastorik ez dago."
+msgstr "Errorea. Geruza honetan denbora-daturik duen beste arrastorik ez dago."
 
 #: ../src/viktrwlayer.c:6449
 msgid "Merge Threshold..."
@@ -4336,8 +4329,7 @@ msgstr "%s kontsultatzen (%.3f, %.3f) eta (%.3f, %.3f) arteko ibilbiderako."
 #: ../src/viktrwlayer.c:10248
 #, c-format
 msgid "%s returned route between (%.3f, %.3f) and (%.3f, %.3f)."
-msgstr ""
-"%s itzulerako ibilbidea (%.3f, %.3f) eta (%.3f, %.3f) puntuen artean."
+msgstr "%s itzulerako ibilbidea (%.3f, %.3f) eta (%.3f, %.3f) puntuen artean."
 
 #: ../src/viktrwlayer.c:10251
 #, c-format
@@ -4799,8 +4791,8 @@ msgstr ""
 #: ../src/viktrwlayer_tpwin.c:254
 msgid "<b>HDOP:</b>"
 msgstr ""
-"<b>HDOP (Horizontal Dilution of Position; Kokapenaren diluzio "
-"horizontala):</b>"
+"<b>HDOP (Horizontal Dilution of Position; Kokapenaren diluzio horizontala):</"
+"b>"
 
 #: ../src/viktrwlayer_tpwin.c:255
 msgid "<b>PDOP:</b>"
@@ -4829,21 +4821,21 @@ msgstr "Moztu hemen"
 msgid "_Copy Data"
 msgstr "Kopiatu datuak"
 
-#. 
+#.
 #. item = gtk_image_menu_item_new_with_mnemonic ( _("_Select") );
 #. gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
 #. g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_track_select), values );
 #. gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 #. gtk_widget_show ( item );
-#. 
+#.
 #. ATM view auto selects, so don't bother with separate select menu entry
-#. 
+#.
 #. item = gtk_image_menu_item_new_with_mnemonic ( _("_Select") );
 #. gtk_image_menu_item_set_image ( (GtkImageMenuItem*)item, gtk_image_new_from_stock (GTK_STOCK_FIND, GTK_ICON_SIZE_MENU) );
 #. g_signal_connect_swapped ( G_OBJECT(item), "activate", G_CALLBACK(trw_layer_waypoint_select), values );
 #. gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 #. gtk_widget_show ( item );
-#. 
+#.
 #. AUTO SELECT NOT TRUE YET...
 #. ATM view auto selects, so don't bother with separate select menu entry
 #: ../src/viktrwlayer_tracklist.c:290 ../src/viktrwlayer_waypointlist.c:341
@@ -5227,8 +5219,7 @@ msgstr "Gehitu elementu ikusezinak"
 
 #: ../src/vikstatus.c:129
 msgid "Current number of background tasks. Click to see the background jobs."
-msgstr ""
-"Atzeko planoko uneko atazen kopurua. Egin klik atzeko atazak ikusteko."
+msgstr "Atzeko planoko uneko atazen kopurua. Egin klik atzeko atazak ikusteko."
 
 #: ../src/vikstatus.c:134
 msgid "Current zoom level. Click to select a new one."

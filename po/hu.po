@@ -628,9 +628,8 @@ msgid ""
 msgstr ""
 
 #: ../src/globals.c:123
-#, fuzzy
 msgid "Open files in selected layer:"
-msgstr "Kiválasztott réteg eltávolítása"
+msgstr ""
 
 #: ../src/globals.c:124
 msgid "Open files (but not .vik ones) into the selected TrackWaypoint layer."
@@ -998,9 +997,8 @@ msgid "OSM My Traces"
 msgstr ""
 
 #: ../src/datasource_osm_my_traces.c:106 ../src/osm-traces.c:684
-#, fuzzy
 msgid "Email/username:"
-msgstr "OSM felhasználónév:"
+msgstr ""
 
 #: ../src/datasource_osm_my_traces.c:111
 msgid "The email or username used to login to OSM"
@@ -1278,15 +1276,11 @@ msgid "OSM upload"
 msgstr "OSM feltöltés"
 
 #: ../src/osm-traces.c:689
-#, fuzzy
 msgid ""
 "The email/username used as login\n"
 "<small>Enter the email/username you use to login into www.openstreetmap.org."
 "</small>"
 msgstr ""
-"A bejelentkezéshez használt e-mail\n"
-"<small>Adja meg az e-mail címét, amelyet a bejelentkezéshez használ a www."
-"openstreetmap.org webhelyen.</small>"
 
 #: ../src/osm-traces.c:697
 msgid ""
@@ -1755,9 +1749,9 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../src/vikaggregatelayer.c:1014
-#, fuzzy, c-format
+#, c-format
 msgid "Empty"
-msgstr "Ö_sszes ürítése"
+msgstr ""
 
 #: ../src/vikdemlayer.c:86
 msgid "SRTM Global 90m (3 arcsec)"
@@ -2870,9 +2864,8 @@ msgid "Download Maps in _Zoom Levels..."
 msgstr ""
 
 #: ../src/vikmapslayer.c:2539
-#, fuzzy
 msgid "_Open MBTiles Files"
-msgstr "_Legutóbbi fájl megnyitása"
+msgstr ""
 
 #: ../src/vikmapslayer.c:2554
 msgid "Flush Map Cache"
@@ -2904,23 +2897,20 @@ msgid "Create Waypoint"
 msgstr "Útpont létrehozása"
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit _Track"
-msgstr "Nyompont szerkesztése"
+msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit Track"
-msgstr "Nyompont szerkesztése"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
 msgid "Edit _Route"
 msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit Route"
-msgstr "Útpont szerkesztése"
+msgstr ""
 
 #: ../src/viktrwlayer.c:460
 msgid "Route _Finder"
@@ -2931,9 +2921,8 @@ msgid "Route Finder"
 msgstr ""
 
 #: ../src/viktrwlayer.c:471
-#, fuzzy
 msgid "Splitter"
-msgstr "Kettévágás itt"
+msgstr ""
 
 #: ../src/viktrwlayer.c:482
 msgid "_Edit Waypoint"
@@ -3569,9 +3558,8 @@ msgid "Delete Waypoints From _Selection..."
 msgstr ""
 
 #: ../src/viktrwlayer.c:4512 ../src/viktrwlayer.c:8339
-#, fuzzy
 msgid "Delete Duplicate Waypoints"
-msgstr "Kettőzött útpontok eltávolítása"
+msgstr ""
 
 #: ../src/viktrwlayer.c:5198
 #, c-format
@@ -3818,9 +3806,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../src/viktrwlayer.c:7697
-#, fuzzy
 msgid "No duplicates found"
-msgstr "Nem található bejegyzés!"
+msgstr ""
 
 #: ../src/viktrwlayer.c:8028
 #, c-format
@@ -4353,15 +4340,15 @@ msgid "%.1f knots"
 msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:969 ../src/viktrwlayer_propwin.c:1254
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f s/km"
-msgstr "%s%.1f km %s"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:972 ../src/viktrwlayer_propwin.c:1257
 #: ../src/viktrwlayer_analysis.c:389 ../src/viktrwlayer_analysis.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/km"
-msgstr "1 perc"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:975 ../src/viktrwlayer_propwin.c:1260
 #, c-format
@@ -4370,9 +4357,9 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:978 ../src/viktrwlayer_propwin.c:1263
 #: ../src/viktrwlayer_analysis.c:409 ../src/viktrwlayer_analysis.c:412
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/mi"
-msgstr "1 perc"
+msgstr ""
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:982 ../src/viktrwlayer_propwin.c:1267
@@ -4455,14 +4442,12 @@ msgid "<b>Description:</b>"
 msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3271
-#, fuzzy
 msgid "<b>Source:</b>"
-msgstr "<b>Kezdet:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3272
-#, fuzzy
 msgid "<b>Type:</b>"
-msgstr "<b>Idő:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3273
 msgid "<b>Color:</b>"
@@ -4838,9 +4823,8 @@ msgid "Comment:"
 msgstr "Megjegyzés:"
 
 #: ../src/viktrwlayer_wpwin.c:202
-#, fuzzy
 msgid "Source:"
-msgstr "Forrás letöltése:"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:212
 msgid "Image:"
@@ -4868,9 +4852,8 @@ msgstr ""
 #. however I've not been able to achieve this.
 #. Thus simply sensistizing it instead.
 #: ../src/viktrwlayer_wpwin.c:292
-#, fuzzy
 msgid "Image Direction:"
-msgstr "Képbeállítások"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:300
 msgid "Magnetic"
@@ -5814,9 +5797,8 @@ msgid "Go to the default location"
 msgstr "Ugrás az alapértelmezett helyre"
 
 #: ../src/vikwindow.c:4864
-#, fuzzy
 msgid "Go to the _Auto Location"
-msgstr "Ugrás az _alapértelmezett helyre"
+msgstr ""
 
 #: ../src/vikwindow.c:4864
 msgid "Go to a location via automatic lookup"
@@ -5847,9 +5829,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr "Ugrás egy megadott UTM koordinátára"
 
 #: ../src/vikwindow.c:4868
-#, fuzzy
 msgid "Go to Today"
-msgstr "Ugrás UTM-re"
+msgstr ""
 
 #: ../src/vikwindow.c:4868
 msgid "Go to today on the calendar"
@@ -6084,24 +6065,20 @@ msgid "Show Menu"
 msgstr "Menü megjelenítése"
 
 #: ../src/vikwindow.c:4929
-#, fuzzy
 msgid "Show Side Panel B_uttons"
-msgstr "Oldalpanel megjelenítése"
+msgstr ""
 
 #: ../src/vikwindow.c:4929
-#, fuzzy
 msgid "Show Side Panel Buttons"
-msgstr "Oldalpanel megjelenítése"
+msgstr ""
 
 #: ../src/vikwindow.c:4930
-#, fuzzy
 msgid "Show Side Panel Ca_lendar"
-msgstr "Oldalpanel megjelenítése"
+msgstr ""
 
 #: ../src/vikwindow.c:4930
-#, fuzzy
 msgid "Show Side Panel Calendar"
-msgstr "Oldalpanel megjelenítése"
+msgstr ""
 
 #: ../src/vikwindow.c:5064
 #, c-format
@@ -6109,9 +6086,8 @@ msgid "New _%s Layer"
 msgstr ""
 
 #: ../src/vikwindow.c:5114
-#, fuzzy
 msgid "..."
-msgstr "Hozzáadás..."
+msgstr ""
 
 #: ../src/viking.desktop.in.h:2
 msgid "GPS Data Manager"

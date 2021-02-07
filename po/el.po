@@ -609,9 +609,8 @@ msgid ""
 msgstr ""
 
 #: ../src/globals.c:123
-#, fuzzy
 msgid "Open files in selected layer:"
-msgstr "Αφαίρεση επιλεγμένου επιπέδου"
+msgstr ""
 
 #: ../src/globals.c:124
 msgid "Open files (but not .vik ones) into the selected TrackWaypoint layer."
@@ -977,9 +976,8 @@ msgid "OSM My Traces"
 msgstr ""
 
 #: ../src/datasource_osm_my_traces.c:106 ../src/osm-traces.c:684
-#, fuzzy
 msgid "Email/username:"
-msgstr "OSM όνομα χρήστη:"
+msgstr ""
 
 #: ../src/datasource_osm_my_traces.c:111
 msgid "The email or username used to login to OSM"
@@ -2834,9 +2832,8 @@ msgid "Download Maps in _Zoom Levels..."
 msgstr ""
 
 #: ../src/vikmapslayer.c:2539
-#, fuzzy
 msgid "_Open MBTiles Files"
-msgstr "Άνοιγμα αρχείου"
+msgstr ""
 
 #: ../src/vikmapslayer.c:2554
 msgid "Flush Map Cache"
@@ -2868,14 +2865,12 @@ msgid "Create Waypoint"
 msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit _Track"
-msgstr "Προσθήκη Ίχνους"
+msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit Track"
-msgstr "Προσθήκη Ίχνους"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
 msgid "Edit _Route"
@@ -2894,9 +2889,8 @@ msgid "Route Finder"
 msgstr ""
 
 #: ../src/viktrwlayer.c:471
-#, fuzzy
 msgid "Splitter"
-msgstr "Διαίρεση εδώ"
+msgstr ""
 
 #: ../src/viktrwlayer.c:482
 msgid "_Edit Waypoint"
@@ -3777,9 +3771,8 @@ msgstr[0] ""
 msgstr[1] ""
 
 #: ../src/viktrwlayer.c:7697
-#, fuzzy
 msgid "No duplicates found"
-msgstr "Δεν βρέθηκαν εγγραφές"
+msgstr ""
 
 #: ../src/viktrwlayer.c:8028
 #, c-format
@@ -4414,14 +4407,12 @@ msgid "<b>Description:</b>"
 msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3271
-#, fuzzy
 msgid "<b>Source:</b>"
-msgstr "<b>Σχόλιο:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3272
-#, fuzzy
 msgid "<b>Type:</b>"
-msgstr "<b>Σχόλιο:</b>"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:3273
 msgid "<b>Color:</b>"
@@ -4826,9 +4817,8 @@ msgstr ""
 #. however I've not been able to achieve this.
 #. Thus simply sensistizing it instead.
 #: ../src/viktrwlayer_wpwin.c:292
-#, fuzzy
 msgid "Image Direction:"
-msgstr "Ρυθμίσεις εικόνας"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:300
 msgid "Magnetic"
@@ -6055,9 +6045,8 @@ msgid "New _%s Layer"
 msgstr ""
 
 #: ../src/vikwindow.c:5114
-#, fuzzy
 msgid "..."
-msgstr "Προσθήκη..."
+msgstr ""
 
 #: ../src/viking.desktop.in.h:2
 msgid "GPS Data Manager"

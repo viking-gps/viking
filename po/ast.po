@@ -574,9 +574,8 @@ msgstr ""
 "ser afayadizo pa la compatibilidá con dellos preseos"
 
 #: ../src/globals.c:98
-#, fuzzy
 msgid "GPX Creator:"
-msgstr "Creación"
+msgstr ""
 
 #: ../src/globals.c:99
 msgid ""
@@ -1228,9 +1227,8 @@ msgid ""
 msgstr ""
 
 #: ../src/osm-traces.c:315
-#, fuzzy
 msgid "No Authorization."
-msgstr "Allugamientu automáticu"
+msgstr ""
 
 #: ../src/osm-traces.c:354
 msgid ""
@@ -2157,9 +2155,8 @@ msgid "Display information in the statusbar on GPS updates"
 msgstr ""
 
 #: ../src/vikgpslayer.c:229
-#, fuzzy
 msgid "Auto Connect"
-msgstr "Allugamientu automáticu"
+msgstr ""
 
 #: ../src/vikgpslayer.c:229
 msgid "Automatically connect to GPSD"
@@ -2902,24 +2899,20 @@ msgid "Create Waypoint"
 msgstr "Crear puntu de vía"
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit _Track"
-msgstr "Amestar track"
+msgstr ""
 
 #: ../src/viktrwlayer.c:437
-#, fuzzy
 msgid "Edit Track"
-msgstr "Amestar track"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit _Route"
-msgstr "Amestar ruta"
+msgstr ""
 
 #: ../src/viktrwlayer.c:449
-#, fuzzy
 msgid "Edit Route"
-msgstr "Amestar ruta"
+msgstr ""
 
 #: ../src/viktrwlayer.c:460
 msgid "Route _Finder"
@@ -2971,9 +2964,8 @@ msgid "Metadata"
 msgstr ""
 
 #: ../src/viktrwlayer.c:531
-#, fuzzy
 msgid "Filesystem"
-msgstr "Tipu de ficheru:"
+msgstr ""
 
 #: ../src/viktrwlayer.c:534
 msgid "Draw by Track"
@@ -3566,9 +3558,8 @@ msgid "Delete Waypoints From _Selection..."
 msgstr "Desaniciar puntos de vía dende _seleición..."
 
 #: ../src/viktrwlayer.c:4512 ../src/viktrwlayer.c:8339
-#, fuzzy
 msgid "Delete Duplicate Waypoints"
-msgstr "Desaniciar puntos de vía duplicaos"
+msgstr ""
 
 #: ../src/viktrwlayer.c:5198
 #, c-format
@@ -3807,16 +3798,15 @@ msgid "Select waypoints to delete"
 msgstr "Seleicione los puntos de vía a desaniciar"
 
 #: ../src/viktrwlayer.c:7691
-#, fuzzy, c-format
+#, c-format
 msgid "%ld waypoint deleted"
 msgid_plural "%ld waypoints deleted"
-msgstr[0] "Seleicione los puntos de vía a desaniciar"
-msgstr[1] "Seleicione los puntos de vía a desaniciar"
+msgstr[0] ""
+msgstr[1] ""
 
 #: ../src/viktrwlayer.c:7697
-#, fuzzy
 msgid "No duplicates found"
-msgstr "Nun s'alcontraron puntos de vía"
+msgstr ""
 
 #: ../src/viktrwlayer.c:8028
 #, c-format
@@ -4357,9 +4347,9 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:972 ../src/viktrwlayer_propwin.c:1257
 #: ../src/viktrwlayer_analysis.c:389 ../src/viktrwlayer_analysis.c:392
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/km"
-msgstr "1 min"
+msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:975 ../src/viktrwlayer_propwin.c:1260
 #, c-format
@@ -4368,9 +4358,9 @@ msgstr ""
 
 #: ../src/viktrwlayer_propwin.c:978 ../src/viktrwlayer_propwin.c:1263
 #: ../src/viktrwlayer_analysis.c:409 ../src/viktrwlayer_analysis.c:412
-#, fuzzy, c-format
+#, c-format
 msgid "%.1f min/mi"
-msgstr "1 min"
+msgstr ""
 
 #. VIK_UNITS_SPEED_METRES_PER_SECOND:
 #: ../src/viktrwlayer_propwin.c:982 ../src/viktrwlayer_propwin.c:1267
@@ -4863,9 +4853,8 @@ msgstr ""
 #. however I've not been able to achieve this.
 #. Thus simply sensistizing it instead.
 #: ../src/viktrwlayer_wpwin.c:292
-#, fuzzy
 msgid "Image Direction:"
-msgstr "Visor d'imaxes:"
+msgstr ""
 
 #: ../src/viktrwlayer_wpwin.c:300
 msgid "Magnetic"
@@ -5804,9 +5793,8 @@ msgid "Go to the default location"
 msgstr ""
 
 #: ../src/vikwindow.c:4864
-#, fuzzy
 msgid "Go to the _Auto Location"
-msgstr "Allugamientu automáticu"
+msgstr ""
 
 #: ../src/vikwindow.c:4864
 msgid "Go to a location via automatic lookup"
@@ -5837,9 +5825,8 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr ""
 
 #: ../src/vikwindow.c:4868
-#, fuzzy
 msgid "Go to Today"
-msgstr "Dir a UTM"
+msgstr ""
 
 #: ../src/vikwindow.c:4868
 msgid "Go to today on the calendar"
