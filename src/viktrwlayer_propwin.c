@@ -328,7 +328,6 @@ static guint get_distance_chunk_index (gdouble length)
 }
 
 static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
-						   gint img_width,
 						   VikTrwLayer *vtl,
 						   VikLayersPanel *vlp,
 						   VikViewport *vvp,
@@ -337,7 +336,7 @@ static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
 						   gint PROFILE_WIDTH)
 {
   VikTrackpoint *trackpoint;
-  gdouble x = event_x - img_width / 2 + PROFILE_WIDTH / 2 - MARGIN_X / 2;
+  gdouble x = event_x - MARGIN_X;
   if (x < 0)
     x = 0;
   if (x > PROFILE_WIDTH)
@@ -735,10 +734,7 @@ static void track_graph_click( GtkWidget *event_box, GdkEventButton *event, Prop
 
   gboolean time_graph = is_time_graph ( graph_type );
 
-  GtkAllocation allocation;
-  gtk_widget_get_allocation ( event_box, &allocation );
-
-  VikTrackpoint *trackpoint = set_center_at_graph_position(event->x, allocation.width, widgets->vtl, widgets->vlp, widgets->vvp, widgets->tr, time_graph, widgets->profile_width);
+  VikTrackpoint *trackpoint = set_center_at_graph_position ( event->x, widgets->vtl, widgets->vlp, widgets->vvp, widgets->tr, time_graph, widgets->profile_width );
   // Unable to get the point so give up
   if ( trackpoint == NULL ) {
     if ( widgets->dialog )
@@ -1069,10 +1065,7 @@ static void track_graph_move ( GtkWidget *event_box, GdkEventMotion *event, Prop
   else
     mouse_x = event->x;
 
-  GtkAllocation allocation;
-  gtk_widget_get_allocation ( event_box, &allocation );
-
-  gdouble x = mouse_x - allocation.width / 2 + widgets->profile_width / 2 - MARGIN_X / 2;
+  gdouble x = mouse_x - MARGIN_X;
   if (x < 0)
     x = 0;
   if (x > widgets->profile_width)
