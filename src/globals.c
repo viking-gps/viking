@@ -184,7 +184,6 @@ gboolean a_vik_very_first_run ()
     return vik_very_first_run;
 
   gchar *dir = a_get_viking_dir_no_create();
-  // NB: will need extra logic if default dir gets changed e.g. from ~/.viking to ~/.config/viking
   if ( dir ) {
     // If directory exists - Viking has been run before
     vik_very_first_run = ! g_file_test ( dir, G_FILE_TEST_EXISTS );
