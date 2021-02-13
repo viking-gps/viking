@@ -2815,7 +2815,7 @@ If it's the initial trackpoint you will be asked to enter a name for the route, 
 Right click or <keycap>Backspace</keycap>: remove the last added route.
 </para>
 <para>
-<keycap>Escape</keycap>: to finish route creation.
+Double click or <keycap>Escape</keycap>: to finish route creation.
 Finishing the track is also available via the right click <xref linkend="TrackWaypoint"/> and track menus.
 </para>
 <para>

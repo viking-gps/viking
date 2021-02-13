@@ -196,6 +196,9 @@ struct _VikTrwLayer {
   gboolean route_finder_check_added_track;
   VikTrack *route_finder_added_track;
   gboolean route_finder_append;
+  VikCoord route_finder_request_coord;
+  guint route_finder_timer_id;
+  gboolean route_finder_end;
 
   gboolean drawlabels;
   gboolean drawimages;
@@ -10632,7 +10635,23 @@ static gboolean tool_plot_route ( VikTrwLayer *vtl, VikCoord *target )
   return find_status;
 }
 
-
+static gboolean tool_plot_route_pending ( VikTrwLayer *vtl )
+{
+  // Extra protection in case vtl removed
+  if ( IS_VIK_TRW_LAYER(vtl) ) {
+    gboolean do_update = FALSE;
+    do_update = tool_plot_route ( vtl, &vtl->route_finder_request_coord ) ;
+    if ( vtl->route_finder_end ) {
+      vtl->current_track = NULL;
+      do_update = TRUE;
+    }
+    vtl->route_finder_end = FALSE;
+    vtl->route_finder_timer_id = 0;
+    if ( do_update )
+      vik_layer_emit_update ( VIK_LAYER(vtl) );
+  }
+  return FALSE;
+}
 
 
 static VikLayerToolFuncStatus tool_edit_track_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data )
@@ -11311,10 +11330,40 @@ static VikLayerToolFuncStatus tool_extended_route_finder_click ( VikTrwLayer *vt
     }
     else
     {
-      VikCoord tmp;
-      vik_viewport_screen_to_coord ( vvp, event->x, event->y, &tmp );
-      tool_plot_route ( vtl, &tmp );
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      vik_viewport_screen_to_coord ( vvp, event->x, event->y, &vtl->route_finder_request_coord );
+
+      if ( vtl->route_finder_timer_id )
+        g_source_remove ( vtl->route_finder_timer_id );
+      vtl->route_finder_timer_id= 0;
+
+      vtl->ct_x2 = event->x;
+      vtl->ct_y2 = event->y;
+
+      vtl->route_finder_end = FALSE;
+      // NB as per normal track/route editing, double click ends this edit
+      //  but only after including this new point
+      if ( event->type == GDK_2BUTTON_PRESS ) {
+        vtl->route_finder_end = TRUE;
+        // However if double click on the endpoint, then end without adding another point
+        if ( vtl->current_track && vtl->current_track->trackpoints &&
+             vtl->ct_x1 == vtl->ct_x2 && vtl->ct_y1 == vtl->ct_y2 ) {
+          vtl->current_track = NULL;
+          vik_layer_emit_update ( VIK_LAYER(vtl) );
+          return VIK_LAYER_TOOL_ACK;
+        }
+      }
+
+      vtl->ct_x1 = vtl->ct_x2;
+      vtl->ct_y1 = vtl->ct_y2;
+
+      // Get double click time
+      GtkSettings *gs = gtk_widget_get_settings ( GTK_WIDGET(vvp) );
+      GValue dct = G_VALUE_INIT;
+      g_value_init ( &dct, G_TYPE_INT );
+      g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &dct );
+      // Give chance for a double click to occur
+      gint timer = g_value_get_int ( &dct ) + 50;
+      vtl->route_finder_timer_id = g_timeout_add ( timer, (GSourceFunc)tool_plot_route_pending, vtl );
     }
   } else {
     vtl->current_track = NULL;
