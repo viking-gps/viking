@@ -29,8 +29,6 @@
 #endif
 
 #define DEFAULT_BACKGROUND_COLOR "#CCCCCC"
-#define DEFAULT_HIGHLIGHT_COLOR "#EEA500"
-/* Default highlight in orange */
 
 #include <gtk/gtk.h>
 #ifdef HAVE_MATH_H
@@ -432,8 +430,8 @@ gboolean vik_viewport_configure ( VikViewport *vvp )
   }
   if ( ! vvp->highlight_gc )
   {
-    vvp->highlight_gc = vik_viewport_new_gc ( vvp, DEFAULT_HIGHLIGHT_COLOR, 1 );
-    vik_viewport_set_highlight_color ( vvp, DEFAULT_HIGHLIGHT_COLOR );
+    vvp->highlight_color = a_vik_get_startup_highlight_color();
+    vvp->highlight_gc = vik_viewport_new_gc_from_color ( vvp, &vvp->highlight_color, 1 );
   }
 
   if ( !vvp->scale_bg_gc) {

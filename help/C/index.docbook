@@ -3280,6 +3280,11 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 <para>When this is enabled, a map layer is automatically added whenever &appname; is opened and a &appname; file is not to be loaded.</para>
 <para>The <xref linkend="Map"/> layer used is defined by the map layer's default values.</para>
 </section>
+<section><title>Highlight Colour</title>
+  <para>Sets the initial colour used for selected items, as used by
+    <menuchoice><guimenu>View</guimenu><guimenuitem>Set Highlight Color</guimenuitem></menuchoice>.
+  </para>
+</section>
 <section><title>Startup Method</title>
 <para>Enables selection of how the startup position should be determined.</para>
 <variablelist>

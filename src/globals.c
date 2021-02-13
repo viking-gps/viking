@@ -156,11 +156,23 @@ static VikLayerParam prefs_advanced[] = {
 
 static gchar * params_startup_methods[] = {N_("Home Location"), N_("Last Location"), N_("Specified File"), N_("Auto Location"), NULL};
 
+static VikLayerParamData highlight_color_default ( void ) {
+  VikLayerParamData data;
+  if ( a_vik_very_first_run() )
+    // New purple default - for better contrast with the default map colorscheme
+    (void)gdk_color_parse ( "#B809A0", &data.c );
+  else
+    // Orange - maintain the previous default
+    (void)gdk_color_parse ( "#EEA500", &data.c );
+  return data;
+}
+
 static VikLayerParam startup_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "restore_window_state", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Restore Window Setup:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
     N_("Restore window size and layout"), NULL, NULL, NULL},
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "add_default_map_layer", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Add a Default Map Layer:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
     N_("The default map layer added is defined by the Layer Defaults. Use the menu Edit->Layer Defaults->Map... to change the map type and other values."), vik_lpd_false_default, NULL, NULL},
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "highlight_color", VIK_LAYER_PARAM_COLOR, VIK_LAYER_GROUP_NONE, N_("Highlight Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, highlight_color_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "startup_method", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Startup Method:"), VIK_LAYER_WIDGET_COMBOBOX, params_startup_methods, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "startup_file", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Startup File:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL,
     N_("The default file to load on startup. Only applies when the startup method is set to 'Specified File'"), NULL, NULL, NULL },
@@ -407,6 +419,11 @@ gboolean a_vik_get_add_default_map_layer ( )
   gboolean data;
   data = a_preferences_get(VIKING_PREFERENCES_STARTUP_NAMESPACE "add_default_map_layer")->b;
   return data;
+}
+
+GdkColor a_vik_get_startup_highlight_color ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_STARTUP_NAMESPACE "highlight_color")->c;
 }
 
 vik_startup_method_t a_vik_get_startup_method ( )

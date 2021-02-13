@@ -24,6 +24,7 @@
 #define __VIKING_GLOBALS_H
 
 #include <glib.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
@@ -270,6 +271,8 @@ gboolean a_vik_get_auto_trackpoint_select ( );
 gboolean a_vik_get_restore_window_state ( );
 
 gboolean a_vik_get_add_default_map_layer ( );
+
+GdkColor a_vik_get_startup_highlight_color ( );
 
 typedef enum {
   VIK_STARTUP_METHOD_HOME_LOCATION,
