@@ -631,6 +631,12 @@ static void open_window ( VikWindow *vw, GSList *files, gboolean external )
 }
 // End signals
 
+/**
+ * vik_window_selected_layer:
+ *
+ * Use to align menu & toolbar layer tool radio buttons to the selected layer
+ * vl maybe NULL - then all layer tool buttons are desensitized
+ */
 void vik_window_selected_layer(VikWindow *vw, VikLayer *vl)
 {
   int i, j, tool_count;
@@ -646,8 +652,8 @@ void vik_window_selected_layer(VikWindow *vw, VikLayer *vl)
     for (j = 0; j < tool_count; j++) {
       action = gtk_action_group_get_action(vw->action_group,
                                            layer_interface->tools[j].radioActionEntry.name);
-      g_object_set(action, "sensitive", i == vl->type, NULL);
-      toolbar_action_set_sensitive ( vw->viking_vtb, vik_layer_get_interface(i)->tools[j].radioActionEntry.name, i == vl->type );
+      g_object_set(action, "sensitive", vl ? i == vl->type : FALSE, NULL);
+      toolbar_action_set_sensitive ( vw->viking_vtb, vik_layer_get_interface(i)->tools[j].radioActionEntry.name, vl ? i == vl->type : FALSE );
     }
   }
 }
@@ -2657,6 +2663,7 @@ static gboolean window_deselect (VikWindow *vw)
         draw_update ( vw );
     }
   }
+  vik_window_selected_layer ( vw, NULL );
   vw->deselect_id = 0;
   return FALSE;
 }
@@ -3606,6 +3613,8 @@ static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event)
     gint ltype = vt->tools[vt->active_tool].layer_type;
     if ( ltype == TOOL_LAYER_TYPE_NONE || (vl && ltype == vl->type) )
       (void)vt->tools[vt->active_tool].ti.click(vl, event, vt->tools[vt->active_tool].state);
+    else
+      g_warning ( "%s: No layer selected", __FUNCTION__ ); // This shouldn't happen
   }
 }
 
