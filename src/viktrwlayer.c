@@ -10918,7 +10918,7 @@ static VikLayerToolFuncStatus tool_edit_track_new ( VikTrwLayer *vtl, GdkEventBu
   return tool_edit_track_or_route_click ( vtl, event, vvp, newsegment );
 }
 
-static gboolean tool_edit_track_or_route_split ( VikTrwLayer *vtl, TPSearchParams *params, gboolean is_track )
+static VikLayerToolFuncStatus tool_edit_track_or_route_split ( VikTrwLayer *vtl, TPSearchParams *params, gboolean is_track )
 {
   if ( tool_select_tp ( vtl, params, is_track, ! is_track ) )
   {
@@ -10931,9 +10931,9 @@ static gboolean tool_edit_track_or_route_split ( VikTrwLayer *vtl, TPSearchParam
     vtl->current_tp_track = NULL;
 
     vik_layer_emit_update(VIK_LAYER(vtl));
-    return TRUE;
+    return VIK_LAYER_TOOL_ACK;
   }
-  return FALSE;
+  return VIK_LAYER_TOOL_IGNORED;
 }
 
 // attempt to join to a track/route
@@ -11320,11 +11320,9 @@ static VikLayerToolFuncStatus tool_extended_route_finder_click ( VikTrwLayer *vt
     vtl->current_track = NULL;
 
     // create a new route where we will add the planned route to
-    gboolean ret = tool_edit_route_click( vtl, event, te );
-
-    return ret;
+    return tool_edit_route_click( vtl, event, te );
   }
-  return TRUE;
+  return VIK_LAYER_TOOL_ACK;
 }
 
 static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEventKey *event, VikViewport *vvp )
