@@ -10553,7 +10553,7 @@ static void statusbar_write (gdouble distance, gdouble elev_gain, gdouble elev_l
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
 
   // Write with full gain/loss information
-  gchar *msg = g_strdup_printf ( "Total %s%s%s", str_total, str_last_step, str_gain_loss);
+  gchar *msg = g_strdup_printf ( _("Total %s%s%s"), str_total, str_last_step, str_gain_loss );
   vik_statusbar_set_message ( vik_window_get_statusbar (vw), VIK_STATUSBAR_INFO, msg );
   g_free ( msg );
   g_free ( str_total );
