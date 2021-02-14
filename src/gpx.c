@@ -423,7 +423,7 @@ static void ext_end_element ( GMarkupParseContext *context,
 {
   // If it is any of the extended tags we are interested in,
   //  then use the text stored in the string buffer to set the appropriate track or trackpoint value
-  tag_type tag = get_tag_ext_specific ( element_name );
+  tag_type_ext tag = get_tag_ext_specific ( element_name );
   switch ( tag ) {
   case ext_tp_heart_rate:
     if ( c_tp ) c_tp->heart_rate = atoi ( gs_ext->str ); // bpm
