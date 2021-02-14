@@ -289,7 +289,7 @@ static void clip_receive_text (GtkClipboard *c, const gchar *text, gpointer p)
 static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer p ) 
 {
   VikLayersPanel *vlp = p;
-  gsize r, w;
+  gssize len = -1;
   GError *err = NULL;
   gchar *s, *span;
   gint tag = 0, i;
@@ -305,9 +305,11 @@ static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer 
   // Some browsers (e.g. older versions of Mozilla?) seem to give html in UTF-16
   //  so only attempt to convert if deemed necessary
   if ( g_strcmp0((gchar*)data, "utf-16") == 0 ) {
+    gsize r, w;
     if (!(s =  g_convert ( (gchar *)data, gtk_selection_data_get_length(sd), "UTF-8", "UTF-16", &r, &w, &err))) {
       return;
     }
+    len = w;
   }
   else {
     s = g_strdup((gchar*)data);
@@ -317,7 +319,7 @@ static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer 
   /* scrape a coordinate pasted from a geocaching.com page: look for a 
    * telltale tag if possible, and then remove tags 
    */
-  if (!(span = g_strstr_len(s, w, "<span id=\"LatLon\">"))) {
+  if (!(span = g_strstr_len(s, len, "<span id=\"LatLon\">"))) {
     span = s;
   }
   for (i=0; i<strlen(span); i++) {
