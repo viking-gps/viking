@@ -2123,7 +2123,7 @@ static void rhomboidal (float *values, unsigned d, unsigned r)
 {
   for (guint y = 0 ; y < d ; ++y) {
     for (guint x = 0 ; x < d ; ++x) {
-      values[y*d+x] = 1.0 - fmin(1.0, (float)(fabs(x-(long)r)+fabs(y-(long)r))/(r+1));
+      values[y*d+x] = 1.0 - fmin(1.0, (float)(labs(x-(long)r)+labs(y-(long)r))/(r+1));
     }
   }
 }
