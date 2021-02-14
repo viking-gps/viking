@@ -271,28 +271,35 @@ static void acquire ( VikWindow *vw,
   /* CREATE INPUT DATA & GET OPTIONS */
   ProcessOptions *po = g_malloc0 ( sizeof(ProcessOptions) );
 
-  GpxWritingOptions gpx_options = { FALSE, FALSE, FALSE, FALSE, vik_trw_layer_get_gpx_version(vtl) };
 
   if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRWLAYER ) {
-    gchar *name_src = a_gpx_write_tmp_file ( vtl, &gpx_options );
 
-    source_interface->get_process_options_func ( pass_along_data, po, NULL, name_src, NULL );
+    if ( vtl ) {
+      GpxWritingOptions gpx_options = { FALSE, FALSE, FALSE, FALSE, vik_trw_layer_get_gpx_version(vtl) };
+      gchar *name_src = a_gpx_write_tmp_file ( vtl, &gpx_options );
+      source_interface->get_process_options_func ( pass_along_data, po, NULL, name_src, NULL );
+      util_add_to_deletion_list ( name_src );
+      g_free ( name_src );
+    } else
+      g_critical ( "%s: vtl not defined", __FUNCTION__ );
 
-    util_add_to_deletion_list ( name_src );
-
-    g_free ( name_src );
   } else if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRWLAYER_TRACK ) {
-    gchar *name_src = a_gpx_write_tmp_file ( vtl, &gpx_options );
-    gchar *name_src_track = a_gpx_write_track_tmp_file ( track, &gpx_options );
 
-    source_interface->get_process_options_func ( pass_along_data, po, NULL, name_src, name_src_track );
+    if ( vtl && track ) {
+      GpxWritingOptions gpx_options = { FALSE, FALSE, FALSE, FALSE, vik_trw_layer_get_gpx_version(vtl) };
+      gchar *name_src = a_gpx_write_tmp_file ( vtl, &gpx_options );
+      gchar *name_src_track = a_gpx_write_track_tmp_file ( track, &gpx_options );
+      source_interface->get_process_options_func ( pass_along_data, po, NULL, name_src, name_src_track );
+      util_add_to_deletion_list ( name_src );
+      util_add_to_deletion_list ( name_src_track );
+      g_free ( name_src );
+      g_free ( name_src_track );
+    } else
+      g_critical ( "%s: vtl and/or track not defined", __FUNCTION__ );
 
-    util_add_to_deletion_list ( name_src );
-    util_add_to_deletion_list ( name_src_track );
-
-    g_free ( name_src );
-    g_free ( name_src_track );
   } else if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRACK ) {
+
+    GpxWritingOptions gpx_options = { FALSE, FALSE, FALSE, FALSE, vtl ? vik_trw_layer_get_gpx_version(vtl) : GPX_V1_0 };
     gchar *name_src_track = a_gpx_write_track_tmp_file ( track, &gpx_options );
 
     source_interface->get_process_options_func ( pass_along_data, po, NULL, NULL, name_src_track );
