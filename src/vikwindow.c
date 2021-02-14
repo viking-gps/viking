@@ -239,6 +239,9 @@ struct _VikWindow {
   gint delayed_pan_x, delayed_pan_y; // Temporary storage
   gboolean single_click_pending;
   guint pending_draw_id;
+  guint move_scroll_timeout;
+  guint zoom_scroll_timeout;
+  gdouble pinch_gesture_factor;
 
   guint draw_image_width, draw_image_height;
   gboolean draw_image_save_as_png;
@@ -928,7 +931,8 @@ static void zoom_gesture_scale_changed_cb ( GtkGesture *gesture,
                                             gdouble    scale,
                                             VikWindow  *vw )
 {
-  gdouble target_zoom = vw->pinch_zoom_begin * ( 1 / scale );
+  gdouble factor = (scale < 1.0) ? scale / vw->pinch_gesture_factor : scale * vw->pinch_gesture_factor;
+  gdouble target_zoom = vw->pinch_zoom_begin * 1.0/factor;
   gdouble new_zoom = 0;
 
   if ( target_zoom <= vw->pinch_zoom_last / 2 )
@@ -1012,6 +1016,9 @@ static void default_tool_enable ( VikWindow *vw )
 #define VIK_SETTINGS_WIN_SAVE_IMAGE_HEIGHT "window_save_image_height"
 #define VIK_SETTINGS_WIN_SAVE_IMAGE_PNG "window_save_image_as_png"
 #define VIK_SETTINGS_WIN_COPY_CENTRE_FULL_FORMAT "window_copy_centre_full_format"
+#define VIK_SETTINGS_WIN_ZOOM_SCROLL_TIMEOUT "window_zoom_scroll_timeout"
+#define VIK_SETTINGS_WIN_MOVE_SCROLL_TIMEOUT "window_move_scroll_timeout"
+#define VIK_SETTINGS_WIN_PINCH_GESTURE_FACTOR "window_pinch_gesture_factor"
 
 #define VIKING_ACCELERATOR_KEY_FILE "keys.rc"
 
@@ -1059,6 +1066,23 @@ static void vik_window_init ( VikWindow *vw )
     vw->draw_image_save_as_png = draw_image_save_as_png;
   else
     vw->draw_image_save_as_png = DRAW_IMAGE_DEFAULT_SAVE_AS_PNG;
+
+  gint zoom_scroll_timeout;
+  if ( a_settings_get_integer ( VIK_SETTINGS_WIN_ZOOM_SCROLL_TIMEOUT, &zoom_scroll_timeout ) )
+    vw->zoom_scroll_timeout = (guint)zoom_scroll_timeout;
+  else
+    vw->zoom_scroll_timeout = 150;
+  gint move_scroll_timeout;
+  if ( a_settings_get_integer ( VIK_SETTINGS_WIN_MOVE_SCROLL_TIMEOUT, &move_scroll_timeout ) )
+    vw->move_scroll_timeout = (guint)move_scroll_timeout;
+  else
+    vw->move_scroll_timeout = 5;
+
+  gdouble pinch_gesture_factor;
+  if ( a_settings_get_double ( VIK_SETTINGS_WIN_PINCH_GESTURE_FACTOR, &pinch_gesture_factor ) )
+    vw->pinch_gesture_factor = fabs(pinch_gesture_factor);
+  else
+    vw->pinch_gesture_factor = 1.5;
 
   vw->main_vbox = gtk_vbox_new(FALSE, 1);
   gtk_container_add (GTK_CONTAINER (vw), vw->main_vbox);
@@ -2012,7 +2036,7 @@ static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
     //  since one path to get here is via touch-pad scrolls which would be generating many events
     if ( vw->pending_draw_id )
       g_source_remove ( vw->pending_draw_id );
-    vw->pending_draw_id = g_timeout_add ( 75, (GSourceFunc)pending_draw_timeout, vw );
+    vw->pending_draw_id = g_timeout_add ( vw->move_scroll_timeout, (GSourceFunc)pending_draw_timeout, vw );
 
     return TRUE;
   }
@@ -2055,7 +2079,7 @@ static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
   //  zoom levels in quick succession, as typical when scroll zooming.
   if ( vw->pending_draw_id )
     g_source_remove ( vw->pending_draw_id );
-  vw->pending_draw_id = g_timeout_add ( 150, (GSourceFunc)pending_draw_timeout, vw );
+  vw->pending_draw_id = g_timeout_add ( vw->zoom_scroll_timeout, (GSourceFunc)pending_draw_timeout, vw );
 
   return TRUE;
 }

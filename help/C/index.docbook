@@ -4628,6 +4628,18 @@ Accept: */*
 	    <para>window_copy_centre_full_format=false</para>
 	  </listitem>
 	  <listitem>
+	    <para>window_move_scroll_timeout=5 (milliseconds)</para>
+	    <para>Time to wait between move scroll events before redrawing</para>
+	  </listitem>
+	  <listitem>
+	    <para>window_zoom_scroll_timeout=150 (milliseconds)</para>
+	    <para>Time to wait between zoom scroll events before redrawing</para>
+	  </listitem>
+	  <listitem>
+	    <para>window_pinch_gesture_factor=1.5</para>
+	    <para>Sensitivity factor for pinch zooming. Best to use keep this value somewhere between 0.5 and 3.0 - a higher value is more sensitive.</para>
+	  </listitem>
+	  <listitem>
 	    <para>version_check_period_days=14</para>
 	  </listitem>
 	  <listitem>
