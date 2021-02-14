@@ -323,7 +323,7 @@ static void aggregate_layer_class_init ( VikAggregateLayerClass *klass )
         break;
       line++;
       // Skip comment style lines
-      if ( buf == NULL || buf[0] == '\0' || buf[0] == '!' || buf[0] == ';' || buf[0] == '#' )
+      if ( buf[0] == '\0' || buf[0] == '!' || buf[0] == ';' || buf[0] == '#' )
         continue;
       if ( sscanf(buf, "%d %d %d", &zz, &xx, &yy) == 3 ) {
         gchar *key = g_strdup_printf ( "%d %d %d", zz, xx, yy );
@@ -2885,7 +2885,7 @@ gboolean vik_aggregate_layer_delete_layer ( VikAggregateLayer *val, VikLayer *vl
 {
   gboolean was_visible = vl->visible;
 
-  if ( vl->realized && &vl->iter )
+  if ( vl->realized )
     vik_treeview_item_delete ( VIK_LAYER(val)->vt, &vl->iter );
   aggregate_layer_delete_common ( val, vl );
 
