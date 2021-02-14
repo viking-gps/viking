@@ -436,7 +436,7 @@ static void trw_layer_track_list_add ( vik_trw_and_track_t *vtt,
 		t1 = VIK_TRACKPOINT(g_list_first(trk->trackpoints)->data)->timestamp;
 		t2 = VIK_TRACKPOINT(g_list_last(trk->trackpoints)->data)->timestamp;
 		if ( !isnan(t1) && !isnan(t2) )
-			trk_len_time = (int)round(labs(t2-t1)/60.0);
+			trk_len_time = (int)round(fabs(t2-t1)/60.0);
 	}
 
 	gdouble av_speed = 0.0;
