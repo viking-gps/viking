@@ -1832,8 +1832,10 @@ static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
   return TRUE;
 }
 
-static const double C15 = cos(DEG2RAD(15.0));
-static const double S15 = sin(DEG2RAD(15.0));
+// Clang compiler (or strict interpretation of C standard?) doesn't allow functions in static initializer,
+//  so manually put in the values - even if GCC accepts it
+static const double C15 = 0.999989561; // cos(DEG2RAD(15.0));
+static const double S15 = 0.004569245; // sin(DEG2RAD(15.0));
 
 /********************************************************************************
  ** Ruler tool code
