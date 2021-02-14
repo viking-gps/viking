@@ -4489,10 +4489,22 @@ static void trw_layer_auto_routes_view ( menu_array_layer values )
   }
 }
 
+// NB vtl->current_track must be valid
+static void remove_current_track_if_only_one_point ( VikTrwLayer *vtl )
+{
+  if ( vik_track_get_tp_count(vtl->current_track) == 1 ) {
+    if ( vtl->current_track->is_route )
+      vik_trw_layer_delete_route ( vtl, vtl->current_track );
+    else
+      vik_trw_layer_delete_track ( vtl, vtl->current_track );
+  }
+}
 
 static void trw_layer_finish_track ( menu_array_layer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+  if ( vtl->current_track )
+    remove_current_track_if_only_one_point ( vtl );
   vtl->current_track = NULL;
   vik_layer_emit_update ( VIK_LAYER(vtl) );
 }
@@ -10794,12 +10806,7 @@ static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event
   gboolean mods = event->state & gtk_accelerator_get_default_mod_mask ();
   if ( vtl->current_track && event->keyval == GDK_KEY_Escape && !mods ) {
     // Bin track if only one point as it's not very useful
-    if ( vik_track_get_tp_count(vtl->current_track) == 1 ) {
-      if ( vtl->current_track->is_route )
-        vik_trw_layer_delete_route ( vtl, vtl->current_track );
-      else
-        vik_trw_layer_delete_track ( vtl, vtl->current_track );
-    }
+    remove_current_track_if_only_one_point ( vtl );
     vtl->current_track = NULL;
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
@@ -11378,6 +11385,8 @@ static VikLayerToolFuncStatus tool_extended_route_finder_click ( VikTrwLayer *vt
 static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEventKey *event, gpointer data )
 {
   if ( vtl->current_track && event->keyval == GDK_KEY_Escape ) {
+    // Bin track if only one point as it's not very useful
+    remove_current_track_if_only_one_point ( vtl );
     vtl->current_track = NULL;
     vik_layer_emit_update ( VIK_LAYER(vtl) );
     return TRUE;
