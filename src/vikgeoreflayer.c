@@ -264,7 +264,7 @@ static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, VikLayerSetParam *
     case PARAM_MN: vgl->mpp_northing = vlsp->data.d; break;
     case PARAM_ME: vgl->mpp_easting = vlsp->data.d; break;
     case PARAM_CZ: if ( vlsp->data.u <= 60 ) vgl->corner.zone = vlsp->data.u; break;
-    case PARAM_CL: if ( vlsp->data.u >= 65 || vlsp->data.u <= 90 ) vgl->corner.letter = vlsp->data.u; break;
+    case PARAM_CL: if ( vlsp->data.u >= 65 && vlsp->data.u <= 90 ) vgl->corner.letter = vlsp->data.u; break;
     case PARAM_AA: if ( vlsp->data.u <= 255 ) vgl->alpha = vlsp->data.u; break;
     default: break;
   }
