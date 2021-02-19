@@ -7466,6 +7466,36 @@ static void trw_layer_delete_point_selected ( menu_array_sublayer values )
 }
 
 /**
+ * Delete the currently selected trackpoint in the currently selected track
+ */
+void vik_trw_layer_delete_trackpoint_selected ( VikTrwLayer *vtl )
+{
+  g_return_if_fail ( IS_VIK_TRW_LAYER(vtl) );
+
+  if ( vtl->current_tp_track && vtl->current_tpl ) {
+    trw_layer_trackpoint_selected_delete ( vtl, vtl->current_tp_track );
+
+    if ( vtl->tpwin && vtl->current_tpl )
+      // Reset dialog with the available adjacent trackpoint
+      my_tpwin_set_tp ( vtl );
+
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+  }
+}
+
+/**
+ * Delete specified waypoint in layer
+ */
+void vik_trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wpt )
+{
+  g_return_if_fail ( IS_VIK_TRW_LAYER(vtl) );
+  g_return_if_fail ( wpt != NULL );
+
+  if ( trw_layer_delete_waypoint(vtl, wpt) )
+    vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+/**
  * Delete adjacent track points at the same position
  * AKA Delete Dulplicates on the Properties Window
  */
@@ -9406,6 +9436,18 @@ static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean b
   }
 
   vik_layer_emit_update ( VIK_LAYER(vtl) );
+}
+
+/**
+ *
+ */
+void vik_trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean before )
+{
+  g_return_if_fail ( IS_VIK_TRW_LAYER(vtl) );
+
+  if ( vtl->current_tp_track ) {
+    trw_layer_insert_tp_beside_current_tp ( vtl, before, vtl->current_tp_track->is_route );
+  }
 }
 
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy )

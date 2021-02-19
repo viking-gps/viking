@@ -133,6 +133,11 @@ void trw_layer_cancel_tps_of_track ( VikTrwLayer *vtl, VikTrack *trk );
 void vik_trw_layer_goto_track_prev_point ( VikTrwLayer *vtl );
 void vik_trw_layer_goto_track_next_point ( VikTrwLayer *vtl );
 
+// Functions for editing primarily from the Select Tool
+void vik_trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean before );
+void vik_trw_layer_delete_trackpoint_selected ( VikTrwLayer *vtl );
+void vik_trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wpt );
+
 void vik_trw_layer_reset_waypoints ( VikTrwLayer *vtl );
 
 void vik_trw_layer_draw_highlight ( VikTrwLayer *vtl, VikViewport *vvp );
