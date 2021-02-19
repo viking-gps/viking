@@ -2775,18 +2775,6 @@ Finishing the track is also available via the right click <xref linkend="TrackWa
 <para>
 One must finish the current track to be able to create another track.
 </para>
-<para>
-<keycap>Keypad Add</keycap> or <keycap>]</keycap>: Insert point after current point.
-</para>
-<para>
-<keycap>Keypad Minus</keycap> or <keycap>[</keycap>: Insert point before current point.
-</para>
-<para>
-<keycap>Left</keycap>: Select the previous point.
-</para>
-<para>
-<keycap>Right</keycap>: Select the next point.
-</para>
 </section>
 
 <section id="route_edit" xreflabel="Edit Route"><title>Edit Route</title>

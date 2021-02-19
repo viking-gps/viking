@@ -10862,22 +10862,6 @@ static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event
     GdkWindow *gdkw = gtk_widget_get_window(GTK_WIDGET(te->vvp));
     gdk_window_set_cursor ( gdkw, vtl->crosshair_cursor );
     return TRUE;
-  } else if ( event->keyval == GDK_KEY_Left && !mods ) {
-    vik_trw_layer_goto_track_prev_point ( vtl );
-    return TRUE;
-  } else if ( event->keyval == GDK_KEY_Right && !mods ) {
-    vik_trw_layer_goto_track_next_point ( vtl );
-    return TRUE;
-  } else if ( ( event->keyval == GDK_KEY_bracketleft || event->keyval == GDK_KEY_KP_Subtract ) && !mods ) {
-    if ( vtl->current_tp_track ) {
-      trw_layer_insert_tp_beside_current_tp ( vtl, TRUE, vtl->current_tp_track->is_route );
-    }
-    return TRUE;
-  } else if ( ( event->keyval == GDK_KEY_bracketright || event->keyval == GDK_KEY_KP_Add ) && !mods ) {
-    if ( vtl->current_tp_track ) {
-      trw_layer_insert_tp_beside_current_tp ( vtl, FALSE, vtl->current_tp_track->is_route );
-    }
-    return TRUE;
   }
 
   return FALSE;
