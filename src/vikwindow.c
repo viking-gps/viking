@@ -2746,8 +2746,8 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
     }
   }
   else if ( ( event->button == 3 ) && ( vl && (vl->type == VIK_LAYER_TRW || vl->type == VIK_LAYER_AGGREGATE) ) ) {
+    t->vw->select_event = *event;
     if ( a_vik_get_select_double_click_to_zoom() && !t->vw->show_menu_id ) {
-      t->vw->select_event = *event;
       // Best if slightly longer than the double click time,
       //  otherwise timeout would get removed, only to be recreated again by the second GTK_BUTTON_PRESS
       GtkSettings *gs = gtk_widget_get_settings ( GTK_WIDGET(t->vw) );
