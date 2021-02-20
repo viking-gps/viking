@@ -493,7 +493,7 @@ Specific GPX 1.1 extensions such as heart rate, cadence, temperature and power a
 </para>
 </note>
 <para>
-By default &appname; opens a default blank window centered on the home location. This behaviour can be changed by the <xref linkend="prefs_startup"/>.
+By default &appname; opens a window centered on the home location with the default <xref linkend="Map"/>. This behaviour can be changed by the <xref linkend="prefs_startup"/>.
 Each window contains menus, a toolbar, a viewport, layers panel and a statusbar.
 Each section (apart from the viewport) can be hidden using the <xref linkend="shortcut_keys"/> or from the
 <menuchoice><guimenu>View</guimenu><guisubmenu>Show</guisubmenu></menuchoice> choices.
