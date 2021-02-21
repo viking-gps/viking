@@ -133,7 +133,6 @@ typedef struct _propwidgets {
   GtkWidget *w_show_speed[PGT_END];
   gboolean  show_speed[PGT_END];
   gboolean  show_dem[PGT_END];
-  gdouble   track_length;
   gdouble   track_length_inc_gaps;
   PropSaved graph_saved_img[PGT_END];
   GtkWidget* event_box[PGT_END];
@@ -2633,7 +2632,7 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
   // NB This value not shown yet - but is used by internal calculations
   widgets->track_length_inc_gaps = vik_track_get_length_including_gaps(tr);
 
-  tr_len = widgets->track_length = vik_track_get_length(tr);
+  tr_len = vik_track_get_length(tr);
   vu_distance_text ( tmp_buf, sizeof(tmp_buf), dist_units, tr_len, TRUE, "%.2f", FALSE );
   widgets->w_track_length = content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
