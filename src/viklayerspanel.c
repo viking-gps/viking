@@ -247,7 +247,7 @@ static void layers_calendar_day_selected_dc_cb ( VikLayersPanel *vlp )
 /**
  *
  */
-gboolean layers_calendar_forward ( VikLayersPanel *vlp )
+static gboolean layers_calendar_forward ( VikLayersPanel *vlp )
 {
   guint year, month, day;
   gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &year, &month, &day );
@@ -294,7 +294,7 @@ gboolean layers_calendar_forward ( VikLayersPanel *vlp )
 /**
  *
  */
-gboolean layers_calendar_back ( VikLayersPanel *vlp )
+static gboolean layers_calendar_back ( VikLayersPanel *vlp )
 {
   guint year, month, day;
   gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &year, &month, &day );
@@ -331,7 +331,7 @@ gboolean layers_calendar_back ( VikLayersPanel *vlp )
 /**
  *
  */
-gboolean layers_calendar_today ( VikLayersPanel *vlp )
+static gboolean layers_calendar_today ( VikLayersPanel *vlp )
 {
   vu_calendar_set_to_today ( vlp->calendar );
   return TRUE;
