@@ -209,6 +209,8 @@ struct _VikWindow {
   gboolean show_side_panel_tabs;
   gboolean show_side_panel_calendar;
   gboolean show_side_panel_goto;
+  gboolean show_side_panel_stats;
+  gboolean show_side_panel_splits;
 
   gboolean select_move;
   gboolean select_double_click;
@@ -378,6 +380,8 @@ static void destroy_window ( GtkWidget *widget,
 #define VIK_SETTINGS_WIN_SIDEPANEL_TABS "window_sidepanel_tabs"
 #define VIK_SETTINGS_WIN_SIDEPANEL_CALENDAR "window_sidepanel_calendar"
 #define VIK_SETTINGS_WIN_SIDEPANEL_GOTO "window_sidepanel_goto"
+#define VIK_SETTINGS_WIN_SIDEPANEL_STATS "window_sidepanel_stats"
+#define VIK_SETTINGS_WIN_SIDEPANEL_SPLITS "window_sidepanel_splits"
 
 VikWindow *vik_window_new_window ()
 {
@@ -395,6 +399,9 @@ VikWindow *vik_window_new_window ()
 		      G_CALLBACK (vik_window_new_window), NULL);
 
     gtk_widget_show_all ( GTK_WIDGET(vw) );
+
+    // NB Default setting of OFF
+    gboolean sidepanel_splits = FALSE;
 
     if ( a_vik_get_restore_window_state() ) {
       // These settings are applied after the show all as these options hide widgets
@@ -470,7 +477,23 @@ VikWindow *vik_window_new_window ()
           gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
         }
 
+      gboolean sidepanel_stats;
+      if ( a_settings_get_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_STATS, &sidepanel_stats ) )
+        if ( ! sidepanel_stats ) {
+          vik_layers_panel_show_stats ( vw->viking_vlp, FALSE );
+          GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanelStats" );
+          gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+        }
+
+      (void)a_settings_get_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_SPLITS, &sidepanel_splits );
     }
+
+    if ( !sidepanel_splits ) {
+      vik_layers_panel_show_splits ( vw->viking_vlp, FALSE );
+      GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewSidePanelSplits" );
+      gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), FALSE );
+    }
+
     window_count++;
 
     return vw;
@@ -1108,6 +1131,8 @@ static void vik_window_init ( VikWindow *vw )
   vw->show_side_panel_tabs = TRUE;
   vw->show_side_panel_calendar = TRUE;
   vw->show_side_panel_goto = TRUE;
+  vw->show_side_panel_stats = TRUE;
+  vw->show_side_panel_splits = TRUE; // Actually defaults to off - see vik_window_new_window()
 
   // Only accept Drag and Drop of files onto the viewport
   gtk_drag_dest_set ( GTK_WIDGET(vw->viking_vvp), GTK_DEST_DEFAULT_ALL, NULL, 0, GDK_ACTION_COPY );
@@ -1360,12 +1385,11 @@ static gboolean delete_event( VikWindow *vw )
       a_settings_set_boolean ( VIK_SETTINGS_WIN_TOOLBAR, gtk_widget_get_visible(toolbar_get_widget(vw->viking_vtb)) );
 
       a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_BUTTONS, vw->show_side_panel_buttons );
-
       a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_TABS, vw->show_side_panel_tabs );
-
       a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_CALENDAR, vw->show_side_panel_calendar );
-
       a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_GOTO, vw->show_side_panel_goto );
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_STATS, vw->show_side_panel_stats );
+      a_settings_set_boolean ( VIK_SETTINGS_WIN_SIDEPANEL_SPLITS, vw->show_side_panel_splits );
 
       // If supersized - no need to save the enlarged width+height values
       if ( ! (state_fullscreen || state_max) ) {
@@ -3315,6 +3339,18 @@ static void toggle_side_panel_goto ( VikWindow *vw )
   vik_layers_panel_show_goto ( vw->viking_vlp, vw->show_side_panel_goto );
 }
 
+static void toggle_side_panel_stats ( VikWindow *vw )
+{
+  vw->show_side_panel_stats = !vw->show_side_panel_stats;
+  vik_layers_panel_show_stats ( vw->viking_vlp, vw->show_side_panel_stats );
+}
+
+static void toggle_side_panel_splits ( VikWindow *vw )
+{
+  vw->show_side_panel_splits = !vw->show_side_panel_splits;
+  vik_layers_panel_show_splits ( vw->viking_vlp, vw->show_side_panel_splits );
+}
+
 // Only for 'view' toggle menu widgets ATM.
 GtkWidget *get_show_widget_by_name(VikWindow *vw, const gchar *name)
 {
@@ -3441,6 +3477,28 @@ static void tb_view_side_panel_goto_cb ( GtkAction *a, VikWindow *vw )
     gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
   else
     toggle_side_panel_goto ( vw );
+}
+
+static void tb_view_side_panel_stats_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean next_state = !vw->show_side_panel_stats;
+  GtkWidget *check_box = get_show_widget_by_name ( vw, gtk_action_get_name(a) );
+  gboolean menu_state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
+  if ( next_state != menu_state )
+    gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
+  else
+    toggle_side_panel_stats ( vw );
+}
+
+static void tb_view_side_panel_splits_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean next_state = !vw->show_side_panel_splits;
+  GtkWidget *check_box = get_show_widget_by_name ( vw, gtk_action_get_name(a) );
+  gboolean menu_state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
+  if ( next_state != menu_state )
+    gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
+  else
+    toggle_side_panel_splits ( vw );
 }
 
 static void tb_set_draw_scale ( GtkAction *a, VikWindow *vw )
@@ -3668,6 +3726,36 @@ static void view_side_panel_goto_cb ( GtkAction *a, VikWindow *vw )
   }
   else
     toggle_side_panel_goto ( vw );
+}
+
+static void view_side_panel_stats_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean next_state = !vw->show_side_panel_stats;
+  GtkToggleToolButton *tbutton = (GtkToggleToolButton *)toolbar_get_widget_by_name ( vw->viking_vtb, gtk_action_get_name(a) );
+  if ( tbutton ) {
+    gboolean tb_state = gtk_toggle_tool_button_get_active ( tbutton );
+    if ( next_state != tb_state )
+      gtk_toggle_tool_button_set_active ( tbutton, next_state );
+    else
+      toggle_side_panel_stats ( vw );
+  }
+  else
+    toggle_side_panel_stats ( vw );
+}
+
+static void view_side_panel_splits_cb ( GtkAction *a, VikWindow *vw )
+{
+  gboolean next_state = !vw->show_side_panel_splits;
+  GtkToggleToolButton *tbutton = (GtkToggleToolButton *)toolbar_get_widget_by_name ( vw->viking_vtb, gtk_action_get_name(a) );
+  if ( tbutton ) {
+    gboolean tb_state = gtk_toggle_tool_button_get_active ( tbutton );
+    if ( next_state != tb_state )
+      gtk_toggle_tool_button_set_active ( tbutton, next_state );
+    else
+      toggle_side_panel_splits ( vw );
+  }
+  else
+    toggle_side_panel_splits ( vw );
 }
 
 /***************************************
@@ -5713,6 +5801,8 @@ static GtkToggleActionEntry toggle_entries[] = {
   { "ViewSidePanelCalendar",   NULL,        N_("Show Side Panel Ca_lendar"), "<shift>F8",  N_("Show Side Panel Calendar"),                (GCallback)view_side_panel_calendar_cb, TRUE },
   { "ViewSidePanelTabs",       NULL,        N_("Show Side Panel Tabs"),      "<shift>F10",  N_("Show Side Panel Tabs"),                    (GCallback)view_side_panel_tabs_cb, TRUE },
   { "ViewSidePanelGoto",       NULL,        N_("Show Side Panel Goto"),      "<shift>F7",  N_("Show Side Panel Goto"),                    (GCallback)view_side_panel_goto_cb, TRUE },
+  { "ViewSidePanelStats",      NULL,        N_("Show Side Panel Statistics"),"<shift>F4",  N_("Show Side Panel Statistics"),              (GCallback)view_side_panel_stats_cb, TRUE },
+  { "ViewSidePanelSplits",     NULL,        N_("Show Side Panel Splits"),    "<shift>F3",  N_("Show Side Panel Splits"),                  (GCallback)view_side_panel_splits_cb, TRUE },
 };
 
 // This must match the toggle entries order above
@@ -5730,6 +5820,8 @@ static gpointer toggle_entries_toolbar_cb[] = {
   (GCallback)tb_view_side_panel_calendar_cb,
   (GCallback)tb_view_side_panel_tabs_cb,
   (GCallback)tb_view_side_panel_goto_cb,
+  (GCallback)tb_view_side_panel_stats_cb,
+  (GCallback)tb_view_side_panel_splits_cb,
 };
 
 #include "menu.xml.h"
@@ -5794,7 +5886,7 @@ static void window_create_ui( VikWindow *window )
   }
 
   if ( G_N_ELEMENTS (toggle_entries) !=  G_N_ELEMENTS (toggle_entries_toolbar_cb) ) {
-    g_print ( "Broken entries definitions\n" );
+    g_critical ( "%s: Broken entries definitions", __FUNCTION__ );
     exit (1);
   }
   for ( i=0; i < G_N_ELEMENTS (toggle_entries); i++ ) {
@@ -5978,6 +6070,7 @@ void vik_window_set_selected_trw_layer ( VikWindow *vw, gpointer vtl )
   vw->selected_tracks    = NULL;
   vw->selected_waypoint  = NULL;
   vw->selected_waypoints = NULL;
+  vik_layers_panel_track_remove ( vw->viking_vlp );
   // Set highlight thickness
   vik_viewport_set_highlight_thickness ( vw->viking_vvp, vik_trw_layer_get_property_tracks_line_thickness (vw->containing_vtl) );
 }
@@ -5996,6 +6089,7 @@ void vik_window_set_selected_tracks ( VikWindow *vw, GHashTable *ght, gpointer v
   vw->selected_track     = NULL;
   vw->selected_waypoint  = NULL;
   vw->selected_waypoints = NULL;
+  vik_layers_panel_track_remove ( vw->viking_vlp );
   // Set highlight thickness
   vik_viewport_set_highlight_thickness ( vw->viking_vvp, vik_trw_layer_get_property_tracks_line_thickness (vw->containing_vtl) );
 }
@@ -6008,6 +6102,8 @@ VikTrack* vik_window_get_selected_track ( VikWindow *vw )
 void vik_window_set_selected_track ( VikWindow *vw, VikTrack *vt, gpointer vtl )
 {
   vw->selected_track = vt;
+  if ( vt )
+    vik_layers_panel_track_add ( vw->viking_vlp, VIK_TRACK(vt) );
   vw->containing_vtl = vtl;
   /* Clear others */
   vw->selected_vtl       = NULL;
@@ -6032,6 +6128,7 @@ void vik_window_set_selected_waypoints ( VikWindow *vw, GHashTable *ght, gpointe
   vw->selected_track     = NULL;
   vw->selected_tracks    = NULL;
   vw->selected_waypoint  = NULL;
+  vik_layers_panel_track_remove ( vw->viking_vlp );
 }
 
 gpointer vik_window_get_selected_waypoint ( VikWindow *vw )
@@ -6048,6 +6145,7 @@ void vik_window_set_selected_waypoint ( VikWindow *vw, gpointer *vwp, gpointer v
   vw->selected_track     = NULL;
   vw->selected_tracks    = NULL;
   vw->selected_waypoints = NULL;
+  vik_layers_panel_track_remove ( vw->viking_vlp );
 }
 
 gboolean vik_window_clear_selected ( VikWindow *vw )
@@ -6064,6 +6162,7 @@ gboolean vik_window_clear_selected ( VikWindow *vw )
   }
   if ( vw->selected_track != NULL ) {
     vw->selected_track = NULL;
+    vik_layers_panel_track_remove ( vw->viking_vlp );
     need_redraw = TRUE;
   }
   if ( vw->selected_tracks != NULL ) {

@@ -22,6 +22,7 @@
 #include "viking.h"
 #include <gdk/gdkkeysyms.h>
 #include "vikgoto.h"
+#include "viktrwlayer_propwin.h"
 
 enum {
   VLP_UPDATE_SIGNAL,
@@ -55,6 +56,10 @@ struct _VikLayersPanel {
   calendar_mu_t cal_markup;
 
   GtkWidget *goto_pane;
+  GtkWidget *stats_pane; GtkWidget *stats_label;
+  GtkWidget *splits_pane; GtkWidget *splits_label;
+
+  VikTrack *trk;
 
   VikAggregateLayer *toplayer;
   GtkTreeIter toplayer_iter;
@@ -96,11 +101,26 @@ static void vik_layers_panel_class_init ( VikLayersPanelClass *klass )
 
   layers_panel_signals[VLP_UPDATE_SIGNAL] = g_signal_new ( "update", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikLayersPanelClass, update), NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
   layers_panel_signals[VLP_DELETE_LAYER_SIGNAL] = g_signal_new ( "delete_layer", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikLayersPanelClass, update), NULL, NULL, g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
-  }
+}
+
+#define VIK_LAYERS_PANEL_TABS_ORDER "layers_panel_tabs_order"
+
+// Enable hook into destroy sequence to enable saving tab order
+static void destroy_panel ( VikLayersPanel *vlp, gpointer data )
+{
+  gint vals[4];
+  vals[0] = gtk_notebook_page_num ( GTK_NOTEBOOK(vlp->tabs), vlp->calendar );
+  vals[1] = gtk_notebook_page_num ( GTK_NOTEBOOK(vlp->tabs), vlp->goto_pane );
+  vals[2] = gtk_notebook_page_num ( GTK_NOTEBOOK(vlp->tabs), vlp->stats_pane );
+  vals[3] = gtk_notebook_page_num ( GTK_NOTEBOOK(vlp->tabs), vlp->splits_pane );
+  a_settings_set_integer_list ( VIK_LAYERS_PANEL_TABS_ORDER, vals, G_N_ELEMENTS(vals) );
+}
 
 VikLayersPanel *vik_layers_panel_new ()
 {
-  return VIK_LAYERS_PANEL ( g_object_new ( VIK_LAYERS_PANEL_TYPE, NULL ) );
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL ( g_object_new ( VIK_LAYERS_PANEL_TYPE, NULL ) );
+  g_signal_connect ( G_OBJECT(vlp), "destroy", G_CALLBACK(destroy_panel), NULL );
+  return vlp;
 }
 
 void vik_layers_panel_set_viewport ( VikLayersPanel *vlp, VikViewport *vvp )
@@ -422,6 +442,25 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
   return NULL;
 }
 
+static gboolean track_tabs_refresh_cb ( VikLayersPanel *vlp )
+{
+  if ( vlp->trk )
+    vik_layers_panel_track_add ( vlp, vlp->trk );
+  return TRUE;
+}
+
+static gboolean track_tabs_button_press_cb ( VikLayersPanel *vlp, GdkEventButton *event )
+{
+  if ( event->button == 3 ) {
+    GtkMenu *menu = GTK_MENU ( gtk_menu_new () );
+    (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_REFRESH, G_CALLBACK(track_tabs_refresh_cb), vlp );
+    gtk_widget_show_all ( GTK_WIDGET(menu) );
+    gtk_menu_popup ( menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
+    return TRUE;
+  }
+  return FALSE;
+}
+
 #define VIK_SETTINGS_CAL_MUM "layers_panel_calendar_markup_mode"
 #define VIK_SETTINGS_LP_VPANE_POS "layers_panel_vpane_position"
 
@@ -540,9 +579,50 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   vlp->tabs = gtk_notebook_new();
 
   gtk_notebook_append_page ( GTK_NOTEBOOK(vlp->tabs), vlp->calendar, gtk_label_new(_("Calendar")) );
+  gtk_notebook_set_tab_reorderable ( GTK_NOTEBOOK(vlp->tabs), vlp->calendar, TRUE );
 
   vlp->goto_pane = vik_goto_panel_widget ( vlp );
   gtk_notebook_append_page ( GTK_NOTEBOOK(vlp->tabs), vlp->goto_pane, gtk_label_new(_("Goto")) );
+  gtk_notebook_set_tab_reorderable ( GTK_NOTEBOOK(vlp->tabs), vlp->goto_pane, TRUE );
+
+  vlp->stats_pane = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(vlp->stats_pane), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  // Enable right click menu on the stats & splits tab
+  // ATM These donn't auto refresh on Track modification (e.g. split, trackpoint add, etc...)
+  //  so at least offer a manual method
+  vlp->stats_label = gtk_label_new ( _("Stats") );
+  GtkWidget *stats_eventbox = gtk_event_box_new ();
+  gtk_container_add ( GTK_CONTAINER(stats_eventbox), vlp->stats_label );
+  gtk_widget_show ( vlp->stats_label );
+  g_signal_connect_swapped ( stats_eventbox, "button-press-event", G_CALLBACK(track_tabs_button_press_cb), vlp ); 
+  gtk_widget_set_sensitive ( vlp->stats_label, FALSE );
+  gtk_notebook_append_page ( GTK_NOTEBOOK(vlp->tabs), vlp->stats_pane, stats_eventbox );
+  gtk_notebook_set_tab_reorderable ( GTK_NOTEBOOK(vlp->tabs), vlp->stats_pane, TRUE );
+
+  vlp->splits_pane = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(vlp->splits_pane), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  vlp->splits_label = gtk_label_new ( _("Splits") );
+  GtkWidget *splits_eventbox = gtk_event_box_new ();
+  gtk_container_add ( GTK_CONTAINER(splits_eventbox), vlp->splits_label );
+  gtk_widget_show ( vlp->splits_label );
+  g_signal_connect_swapped ( splits_eventbox, "button-press-event", G_CALLBACK(track_tabs_button_press_cb), vlp ); 
+  gtk_widget_set_sensitive ( vlp->splits_label, FALSE );
+  gtk_notebook_append_page ( GTK_NOTEBOOK(vlp->tabs), vlp->splits_pane, splits_eventbox );
+  gtk_notebook_set_tab_reorderable ( GTK_NOTEBOOK(vlp->tabs), vlp->splits_pane, TRUE );
+
+  gint *vals;
+  gsize length;
+  if ( a_settings_get_integer_list(VIK_LAYERS_PANEL_TABS_ORDER, &vals, &length) ) {
+    for ( guint nn = 0; nn < length; nn++ ) {
+      switch ( nn ) {
+      case 0: gtk_notebook_reorder_child ( GTK_NOTEBOOK(vlp->tabs), vlp->calendar, vals[nn] ); break;
+      case 1: gtk_notebook_reorder_child ( GTK_NOTEBOOK(vlp->tabs), vlp->goto_pane, vals[nn] ); break;
+      case 2: gtk_notebook_reorder_child ( GTK_NOTEBOOK(vlp->tabs), vlp->stats_pane, vals[nn] ); break;
+      case 3: gtk_notebook_reorder_child ( GTK_NOTEBOOK(vlp->tabs), vlp->splits_pane, vals[nn] ); break;
+      default: break;
+      }
+    }
+  }
 
   gtk_paned_pack1 ( GTK_PANED(vlp->vpaned), scrolledwindow, TRUE, TRUE );
   gtk_paned_pack2 ( GTK_PANED(vlp->vpaned), vlp->tabs, FALSE, TRUE );
@@ -1105,6 +1185,73 @@ void vik_layers_panel_show_goto ( VikLayersPanel *vlp, gboolean show )
   else {
     gtk_widget_hide ( vlp->goto_pane );
   }
+}
+
+void vik_layers_panel_show_stats ( VikLayersPanel *vlp, gboolean show )
+{
+  if ( show )
+    gtk_widget_show ( vlp->stats_pane );
+  else
+    gtk_widget_hide ( vlp->stats_pane );
+}
+
+void vik_layers_panel_show_splits ( VikLayersPanel *vlp, gboolean show )
+{
+  if ( show )
+    gtk_widget_show ( vlp->splits_pane );
+  else
+    gtk_widget_hide ( vlp->splits_pane );
+}
+
+
+static void remove_container_widgets ( GtkWidget *widget, gpointer data )
+{
+  gtk_widget_destroy ( widget );
+}
+
+static void layers_panel_stats_remove ( VikLayersPanel *vlp )
+{
+  gtk_container_foreach ( GTK_CONTAINER(vlp->stats_pane), (GtkCallback)remove_container_widgets, NULL );
+}
+
+static void layers_panel_splits_remove ( VikLayersPanel *vlp )
+{
+  gtk_container_foreach ( GTK_CONTAINER(vlp->splits_pane), (GtkCallback)remove_container_widgets, NULL );
+}
+
+/**
+ *
+ */
+void vik_layers_panel_track_add ( VikLayersPanel *vlp, VikTrack *trk )
+{
+  vlp->trk = trk;
+
+  layers_panel_stats_remove ( vlp );
+  (void)vik_trw_propwin_attach_statistics_table ( vlp->stats_pane, trk );
+  if ( gtk_widget_get_visible(vlp->stats_pane) )
+    gtk_widget_show_all ( vlp->stats_pane );
+  gtk_widget_set_sensitive ( vlp->stats_label, TRUE );
+
+  layers_panel_splits_remove ( vlp );
+  if ( vik_track_get_duration(trk,FALSE) > 1 ) {
+    GtkWidget *widget = vik_trw_propwin_create_splits_tabs ( trk );
+    gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(vlp->splits_pane), widget );
+    if ( gtk_widget_get_visible(vlp->splits_pane) )
+      gtk_widget_show_all ( vlp->splits_pane );
+    gtk_widget_set_sensitive ( vlp->splits_label, TRUE );
+  }
+}
+
+/**
+ *
+ */
+void vik_layers_panel_track_remove ( VikLayersPanel *vlp )
+{
+  vlp->trk = NULL;
+  layers_panel_stats_remove ( vlp );
+  layers_panel_splits_remove ( vlp );
+  gtk_widget_set_sensitive ( vlp->stats_label, FALSE );
+  gtk_widget_set_sensitive ( vlp->splits_label, FALSE );
 }
 
 /**
