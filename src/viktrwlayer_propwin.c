@@ -168,7 +168,6 @@ typedef struct _propwidgets {
 static gboolean split_at_marker ( PropWidgets *widgets );
 static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean resized );
 static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr );
-static GtkWidget *create_splits_tables ( VikTrack *trk );
 
 static PropWidgets *prop_widgets_new()
 {
@@ -533,7 +532,7 @@ static gboolean menu_statistics_cb ( PropWidgets *widgets )
   gtk_notebook_append_page ( GTK_NOTEBOOK(nb), create_statistics_page(widgets, widgets->tr), gtk_label_new(_("Statistics")) );
 
   if ( widgets->event_box[PGT_SPEED_TIME] )
-    gtk_notebook_append_page ( GTK_NOTEBOOK(nb), create_splits_tables(widgets->tr), gtk_label_new(_("Splits")) );
+    gtk_notebook_append_page ( GTK_NOTEBOOK(nb), vik_trw_propwin_create_splits_tabs(widgets->tr), gtk_label_new(_("Splits")) );
 
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), nb, TRUE, TRUE, 0 );
 
@@ -2587,7 +2586,10 @@ static GtkWidget *create_a_split_table ( VikTrack *trk, guint split_factor )
   return scrolledwindow;
 }
 
-static GtkWidget *create_splits_tables ( VikTrack *trk )
+/**
+ * Create a GtkNotebook containing a few tabs of speed split information
+ */
+GtkWidget *vik_trw_propwin_create_splits_tabs ( VikTrack *trk )
 {
   // Standard distance splits (in whatever the preferred distance units are)
   int index[3] = {1, 5, 10};
