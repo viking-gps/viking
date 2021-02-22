@@ -111,19 +111,6 @@ typedef struct _propwidgets {
   GtkWidget *w_source;
   GtkWidget *w_number;
   GtkWidget *w_type;
-  GtkWidget *w_track_length;
-  GtkWidget *w_tp_count;
-  GtkWidget *w_segment_count;
-  GtkWidget *w_duptp_count;
-  GtkWidget *w_max_speed;
-  GtkWidget *w_avg_speed;
-  GtkWidget *w_mvg_speed;
-  GtkWidget *w_avg_dist;
-  GtkWidget *w_elev_range;
-  GtkWidget *w_elev_gain;
-  GtkWidget *w_time_start;
-  GtkWidget *w_time_end;
-  GtkWidget *w_time_dur;
   GtkWidget *w_color;
   GtkWidget *w_namelabel;
   GtkWidget *w_number_distlabels;
@@ -2620,9 +2607,14 @@ GtkWidget *vik_trw_propwin_create_splits_tabs ( VikTrack *trk )
 }
 
 /**
+ * Create a table of statistics for this track which is put into the supplied scrolled window
+ * ATM the widgets are generated in a local array hence the widget attachment is performed in this function
  *
+ * As a bonus of track processing the TimeZone of the track is calculated and so exposed for reuse.
+ *
+ * Returns: TimeZone; which may be NULL
  */
-static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
+gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
 {
   GtkWidget *content[20];
   int cnt = 0;
@@ -2649,32 +2641,29 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
     N_("<b>Duration:</b>"),
   };
 
-  guint seg_count = vik_track_get_segment_count ( widgets->tr );
+  guint seg_count = vik_track_get_segment_count ( tr );
 
   // Don't use minmax_array(widgets->values[PGT_ELEVATION_DISTANCE]), as that is a simplified representative of the points
   //  thus can miss the highest & lowest values by a few metres
   gdouble min_alt, max_alt;
-  if ( !vik_track_get_minmax_alt (widgets->tr, &min_alt, &max_alt) )
+  if ( !vik_track_get_minmax_alt (tr, &min_alt, &max_alt) )
     min_alt = max_alt = NAN;
 
   vik_units_distance_t dist_units = a_vik_get_units_distance ();
 
-  // NB This value not shown yet - but is used by internal calculations
-  widgets->track_length_inc_gaps = vik_track_get_length_including_gaps(tr);
-
   tr_len = vik_track_get_length(tr);
   vu_distance_text ( tmp_buf, sizeof(tmp_buf), dist_units, tr_len, TRUE, "%.2f", FALSE );
-  widgets->w_track_length = content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   tp_count = vik_track_get_tp_count(tr);
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", tp_count );
-  widgets->w_tp_count = content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%u", seg_count );
-  widgets->w_segment_count = content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", vik_track_get_dup_point_count(tr) );
-  widgets->w_duptp_count = content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
   tmp_speed = vik_track_get_max_speed(tr);
@@ -2683,7 +2672,7 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
   else {
     vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, tmp_speed, TRUE, "%.2f", FALSE );
   }
-  widgets->w_max_speed = content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   tmp_speed = vik_track_get_average_speed(tr);
   if ( tmp_speed == 0 )
@@ -2691,7 +2680,7 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
   else {
     vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, tmp_speed, TRUE, "%.2f", FALSE );
   }
-  widgets->w_avg_speed = content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   // Use 60sec as the default period to be considered stopped
   //  this is the TrackWaypoint draw stops default value 'vtl->stop_length'
@@ -2703,12 +2692,12 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
   else {
     vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, tmp_speed, TRUE, "%.2f", FALSE );
   }
-  widgets->w_mvg_speed = content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   // The average distance between points is going to be quite small use the smaller units
   gdouble adbp = (tp_count - seg_count) == 0 ? 0 : tr_len / ( tp_count - seg_count );
   vu_distance_text_precision ( tmp_buf, sizeof(tmp_buf), dist_units, adbp, "%.2f" );
-  widgets->w_avg_dist = content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   vik_units_height_t height_units = a_vik_get_units_height ();
   if ( isnan(min_alt) && isnan(max_alt) )
@@ -2726,7 +2715,7 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
       g_critical("Houston, we've had a problem. height=%d", height_units);
     }
   }
-  widgets->w_elev_range = content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
   vik_track_get_total_elevation_gain(tr, &max_alt, &min_alt );
   if ( isnan(min_alt) && isnan(max_alt) )
@@ -2744,7 +2733,7 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
       g_critical("Houston, we've had a problem. height=%d", height_units);
     }
   }
-  widgets->w_elev_gain = content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  content[cnt++] = ui_label_new_selectable ( tmp_buf );
 
 #if 0
 #define PACK(w) gtk_box_pack_start (GTK_BOX(right_vbox), w, FALSE, FALSE, 0);
@@ -2761,26 +2750,25 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
 #undef PACK;
 #endif
 
+  gchar *tz = NULL;
+
   if ( tr->trackpoints && !isnan(VIK_TRACKPOINT(tr->trackpoints->data)->timestamp) )
   {
     gdouble t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
     gdouble t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
 
-    // Notional center of a track is simply an average of the bounding box extremities
-    struct LatLon center = { (tr->bbox.north+tr->bbox.south)/2, (tr->bbox.east+tr->bbox.west)/2 };
-    vik_coord_load_from_latlon ( &widgets->vc, vik_trw_layer_get_coord_mode(widgets->vtl), &center );
-
-    widgets->tz = vu_get_tz_at_location ( &widgets->vc );
+    VikCoord vc = vik_track_get_center ( tr, VIK_COORD_LATLON );
+    tz = vu_get_tz_at_location ( &vc );
 
     time_t ts1 = round ( t1 );
     time_t ts2 = round ( t2 );
     gchar *msg;
-    msg = vu_get_time_string ( &ts1, "%c", &widgets->vc, widgets->tz );
-    widgets->w_time_start = content[cnt++] = ui_label_new_selectable(msg);
+    msg = vu_get_time_string ( &ts1, "%c", &vc, tz );
+    content[cnt++] = ui_label_new_selectable(msg);
     g_free ( msg );
 
-    msg = vu_get_time_string ( &ts2, "%c", &widgets->vc, widgets->tz );
-    widgets->w_time_end = content[cnt++] = ui_label_new_selectable(msg);
+    msg = vu_get_time_string ( &ts2, "%c", &vc, tz );
+    content[cnt++] = ui_label_new_selectable(msg);
     g_free ( msg );
 
     gint total_duration_s = (gint)(t2-t1);
@@ -2788,7 +2776,7 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
     gint total_duration_m = total_duration_s/60;
     gint segments_duration_m = segments_duration_s/60;
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d minutes - %d minutes moving"), total_duration_m, segments_duration_m);
-    widgets->w_time_dur = content[cnt++] = ui_label_new_selectable(tmp_buf);
+    content[cnt++] = ui_label_new_selectable(tmp_buf);
 
     // A tooltip to show in more readable hours:minutes:seconds
     gchar tip_buf_total[20];
@@ -2802,12 +2790,12 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
     g_snprintf(tip_buf_segments, sizeof(tip_buf_segments), "%d:%02d:%02d", h_seg, m_seg, s_tot);
 
     gchar *tip = g_strdup_printf (_("%s total - %s in segments"), tip_buf_total, tip_buf_segments);
-    gtk_widget_set_tooltip_text ( GTK_WIDGET(widgets->w_time_dur), tip );
+    gtk_widget_set_tooltip_text ( content[cnt-1], tip );
     g_free (tip);
   } else {
-    widgets->w_time_start = content[cnt++] = gtk_label_new(_("No Data"));
-    widgets->w_time_end = content[cnt++] = gtk_label_new(_("No Data"));
-    widgets->w_time_dur = content[cnt++] = gtk_label_new(_("No Data"));
+    content[cnt++] = gtk_label_new(_("No Data"));
+    content[cnt++] = gtk_label_new(_("No Data"));
+    content[cnt++] = gtk_label_new(_("No Data"));
   }
 
   // ATM just appending extra information at the bottom
@@ -2870,11 +2858,22 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
     attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Avg. Power:</b>") );
   }
 
+  gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(sw), table );
+
+  return tz;
+}
+
+static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
+{
+  // NB This value not shown yet - but is used by internal calculations
+  widgets->track_length_inc_gaps = vik_track_get_length_including_gaps ( widgets->tr );
+
   GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
   gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
-  gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(sw), table );
+  widgets->tz = vik_trw_propwin_attach_statistics_table ( sw, tr );
+  if ( tr->trackpoints )
+    widgets->vc = vik_track_get_center ( tr, vik_trw_layer_get_coord_mode(widgets->vtl) );
   return sw;
-  //return table;
 }
 
 gboolean bool_pref_get ( const gchar *pref )
@@ -3051,7 +3050,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   // Only bother showing timing splits if track has some kind of timespan
   if ( bool_pref_get(TPW_PREFS_NS"show_splits") )
     if ( vik_track_get_duration(tr,FALSE) > 1 )
-      gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_splits_tables(tr), gtk_label_new(_("Splits")));
+      gtk_notebook_append_page(GTK_NOTEBOOK(graphs), vik_trw_propwin_create_splits_tabs(tr), gtk_label_new(_("Splits")));
 
   if ( widgets->event_box[PGT_ELEVATION_DISTANCE] ) {
     widgets->page[PGT_ELEVATION_DISTANCE] = create_graph_page ( widgets, PGT_ELEVATION_DISTANCE,

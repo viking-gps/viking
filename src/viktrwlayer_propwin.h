@@ -63,6 +63,8 @@ void vik_trw_layer_propwin_main_close ( gpointer self );
  */
 void vik_trw_layer_propwin_update ( VikTrack *trk );
 
+gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr );
+
 GtkWidget* vik_trw_propwin_create_splits_tabs ( VikTrack *trk );
 
 G_END_DECLS
