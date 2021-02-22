@@ -135,6 +135,8 @@ guint vik_track_merge_segments(VikTrack *tr);
 void vik_track_reverse(VikTrack *tr);
 gdouble vik_track_get_duration(const VikTrack *trk, gboolean include_segments);
 
+VikCoord vik_track_get_center ( VikTrack *trk, VikCoordMode cmode );
+
 gulong vik_track_get_dup_point_count ( const VikTrack *vt );
 gulong vik_track_remove_dup_points ( VikTrack *vt );
 gulong vik_track_get_same_time_point_count ( const VikTrack *vt );

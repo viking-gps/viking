@@ -715,6 +715,21 @@ gdouble vik_track_get_duration(const VikTrack *trk, gboolean segment_gaps)
   return duration;
 }
 
+/**
+ * Notional center of a track is simply an average of the bounding box extremities
+ * ATM this shouldn't be used if the track has no trackpoints
+ */
+VikCoord vik_track_get_center ( VikTrack *trk, VikCoordMode cmode )
+{
+  VikCoord vc = { 0.0, 0.0, 0, 0, cmode };
+  g_return_val_if_fail ( trk->trackpoints, vc );
+
+  struct LatLon center = { (trk->bbox.north+trk->bbox.south)/2, (trk->bbox.east+trk->bbox.west)/2 };
+  vik_coord_load_from_latlon ( &vc, cmode, &center );
+
+  return vc;
+}
+
 gdouble vik_track_get_average_speed(const VikTrack *tr)
 {
   gdouble len = 0.0;
