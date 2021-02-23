@@ -2364,6 +2364,18 @@ static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[])
   return GTK_WIDGET (table);
 }
 
+static GtkWidget *create_table_from_arrays ( GPtrArray *paw, GPtrArray *pat )
+{
+  g_return_val_if_fail ( paw->len == pat->len, NULL );
+
+  GtkTable *table = GTK_TABLE(gtk_table_new(paw->len, 2, FALSE));
+  gtk_table_set_col_spacing (table, 0, 10);
+  for ( guint ii=0; ii < paw->len; ii++ )
+    attach_to_table ( table, ii, g_ptr_array_index(pat, ii), g_ptr_array_index(paw, ii) );
+
+  return GTK_WIDGET (table);
+}
+
 static void attach_to_table_extra ( GtkWidget *table, gchar *text, int ii, char *mylabel )
 {
   GtkWidget *wgt = ui_label_new_selectable ( text );
@@ -2616,8 +2628,7 @@ GtkWidget *vik_trw_propwin_create_splits_tabs ( VikTrack *trk )
  */
 gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
 {
-  GtkWidget *content[20];
-  int cnt = 0;
+  GPtrArray *paw = g_ptr_array_new();
   GtkWidget *table;
   gdouble tr_len;
   gulong tp_count;
@@ -2640,6 +2651,9 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
     N_("<b>End:</b>"),
     N_("<b>Duration:</b>"),
   };
+  GPtrArray *pat = g_ptr_array_new();
+  for ( guint nn = 0; nn < G_N_ELEMENTS(stats_texts); nn++ )
+    g_ptr_array_add ( pat, stats_texts[nn] );
 
   guint seg_count = vik_track_get_segment_count ( tr );
 
@@ -2653,17 +2667,17 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
 
   tr_len = vik_track_get_length(tr);
   vu_distance_text ( tmp_buf, sizeof(tmp_buf), dist_units, tr_len, TRUE, "%.2f", FALSE );
-  content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
   tp_count = vik_track_get_tp_count(tr);
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", tp_count );
-  content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%u", seg_count );
-  content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
   g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", vik_track_get_dup_point_count(tr) );
-  content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
   tmp_speed = vik_track_get_max_speed(tr);
@@ -2672,7 +2686,7 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
   else {
     vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, tmp_speed, TRUE, "%.2f", FALSE );
   }
-  content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
   tmp_speed = vik_track_get_average_speed(tr);
   if ( tmp_speed == 0 )
@@ -2680,7 +2694,7 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
   else {
     vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, tmp_speed, TRUE, "%.2f", FALSE );
   }
-  content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
   // Use 60sec as the default period to be considered stopped
   //  this is the TrackWaypoint draw stops default value 'vtl->stop_length'
@@ -2692,12 +2706,12 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
   else {
     vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, tmp_speed, TRUE, "%.2f", FALSE );
   }
-  content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
   // The average distance between points is going to be quite small use the smaller units
   gdouble adbp = (tp_count - seg_count) == 0 ? 0 : tr_len / ( tp_count - seg_count );
   vu_distance_text_precision ( tmp_buf, sizeof(tmp_buf), dist_units, adbp, "%.2f" );
-  content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
   vik_units_height_t height_units = a_vik_get_units_height ();
   if ( isnan(min_alt) && isnan(max_alt) )
@@ -2715,7 +2729,7 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
       g_critical("Houston, we've had a problem. height=%d", height_units);
     }
   }
-  content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
   vik_track_get_total_elevation_gain(tr, &max_alt, &min_alt );
   if ( isnan(min_alt) && isnan(max_alt) )
@@ -2733,7 +2747,7 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
       g_critical("Houston, we've had a problem. height=%d", height_units);
     }
   }
-  content[cnt++] = ui_label_new_selectable ( tmp_buf );
+  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
 #if 0
 #define PACK(w) gtk_box_pack_start (GTK_BOX(right_vbox), w, FALSE, FALSE, 0);
@@ -2764,11 +2778,11 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
     time_t ts2 = round ( t2 );
     gchar *msg;
     msg = vu_get_time_string ( &ts1, "%c", &vc, tz );
-    content[cnt++] = ui_label_new_selectable(msg);
+    g_ptr_array_add ( paw, ui_label_new_selectable(msg) );
     g_free ( msg );
 
     msg = vu_get_time_string ( &ts2, "%c", &vc, tz );
-    content[cnt++] = ui_label_new_selectable(msg);
+    g_ptr_array_add ( paw, ui_label_new_selectable(msg) );
     g_free ( msg );
 
     gint total_duration_s = (gint)(t2-t1);
@@ -2776,7 +2790,8 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
     gint total_duration_m = total_duration_s/60;
     gint segments_duration_m = segments_duration_s/60;
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("%d minutes - %d minutes moving"), total_duration_m, segments_duration_m);
-    content[cnt++] = ui_label_new_selectable(tmp_buf);
+    GtkWidget *wdur = ui_label_new_selectable(tmp_buf);
+    g_ptr_array_add ( paw, wdur );
 
     // A tooltip to show in more readable hours:minutes:seconds
     gchar tip_buf_total[20];
@@ -2790,19 +2805,20 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
     g_snprintf(tip_buf_segments, sizeof(tip_buf_segments), "%d:%02d:%02d", h_seg, m_seg, s_tot);
 
     gchar *tip = g_strdup_printf (_("%s total - %s in segments"), tip_buf_total, tip_buf_segments);
-    gtk_widget_set_tooltip_text ( content[cnt-1], tip );
+    gtk_widget_set_tooltip_text ( wdur, tip );
     g_free (tip);
   } else {
-    content[cnt++] = gtk_label_new(_("No Data"));
-    content[cnt++] = gtk_label_new(_("No Data"));
-    content[cnt++] = gtk_label_new(_("No Data"));
+    g_ptr_array_add ( paw, gtk_label_new(_("No Data")) );
+    g_ptr_array_add ( paw, gtk_label_new(_("No Data")) );
+    g_ptr_array_add ( paw, gtk_label_new(_("No Data")) );
   }
 
   // ATM just appending extra information at the bottom
   // TODO only if it's there (i.e. no 'No Data') to keep the dialog from getting too big
   //  and less need for scrollling...
   // However if made optional need way to align value to text label...
-  table = create_table (cnt, stats_texts, content);
+  table = create_table_from_arrays ( paw, pat );
+  int cnt = paw->len-1;
 
   guint max_cad = vik_track_get_max_cadence ( tr );
   if ( max_cad != VIK_TRKPT_CADENCE_NONE ) {
@@ -2859,6 +2875,9 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
   }
 
   gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(sw), table );
+
+  g_ptr_array_free ( paw, TRUE );
+  g_ptr_array_free ( pat, TRUE );
 
   return tz;
 }
