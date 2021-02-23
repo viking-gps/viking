@@ -588,8 +588,8 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   vlp->stats_pane = gtk_scrolled_window_new ( NULL, NULL );
   gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(vlp->stats_pane), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
   // Enable right click menu on the stats & splits tab
-  // ATM These donn't auto refresh on Track modification (e.g. split, trackpoint add, etc...)
-  //  so at least offer a manual method
+  // ATM These don't auto refresh on Track modification (e.g. split, trackpoint add, etc...)
+  //  so at least offer a manual method for now
   vlp->stats_label = gtk_label_new ( _("Stats") );
   GtkWidget *stats_eventbox = gtk_event_box_new ();
   gtk_container_add ( GTK_CONTAINER(stats_eventbox), vlp->stats_label );
@@ -1227,7 +1227,7 @@ void vik_layers_panel_track_add ( VikLayersPanel *vlp, VikTrack *trk )
   vlp->trk = trk;
 
   layers_panel_stats_remove ( vlp );
-  (void)vik_trw_propwin_attach_statistics_table ( vlp->stats_pane, trk );
+  (void)vik_trw_propwin_attach_statistics_table ( vlp->stats_pane, trk, TRUE );
   if ( gtk_widget_get_visible(vlp->stats_pane) )
     gtk_widget_show_all ( vlp->stats_pane );
   gtk_widget_set_sensitive ( vlp->stats_label, TRUE );

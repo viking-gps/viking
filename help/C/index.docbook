@@ -229,9 +229,7 @@ drag and drop, or by selecting a layer and using the up and down
 buttons at the bottom of the layers panel.
 </para>
 <para>
-  The panel also contains a calendar to show when <xref linkend="TrackWaypoint"/> Layers occurred.
-  Double clicking on the day will select and move the viewport display to that layer.
-  Right clicking brings up a menu from which you can select to go to the previous or next layer in time.
+  The panel also contains tabs for <xref linkend="Calendar"/>, <xref linkend="Goto"/> and <xref linkend="PanelStats"/> features.
 </para>
 </section>
 <section id="viewport"><title>Viewport</title>
@@ -852,7 +850,7 @@ Note that Garmin GPSr devices have limits in using images if they are too large 
 </para>
 </section>
 
-<section><title>Calendar</title>
+<section id="Calendar"><title>Calendar</title>
 <para>
 The calendar marks days when any activity in Tracks occurred. Hovering the mouse pointer over a marked day shows the name of the corresponding <xref linkend="TrackWaypoint"/> Layer. Double clicking on a marked day moves the <xref linkend="viewport"/> to view the first track of that day.
 </para>
@@ -861,7 +859,7 @@ Right clicking on the calendar offers further options to navigate in time, inclu
 </para>
 </section>
 
-<section><title>Goto</title>
+<section id="Goto"><title>Goto</title>
 <para>
 This offers to search locations using the selected online providers, by default either <ulink url="https://nominatim.org/">OSM Nominatim</ulink> or <ulink url="https://www.geonames.org/">Geonames</ulink>.
 One may click on the an entry in the list of returned results to move the <xref linkend="viewport"/> to that location.
@@ -875,6 +873,25 @@ See the section <xref linkend="search_provider"/> to configure additional search
   <graphic format="PNG" fileref="figures/Goto_Main_Window.png"/>
 </screenshot>
 </figure>
+</section>
+
+<section id="PanelStats"><title>Track/Route Statistics</title>
+<para>
+  This offers a compact view of statistics of the selected Track or Route.
+  Currently this does not refresh if the Track/Route changes but there is a right click menu on the tab,
+  which offers a way to manually refresh the values.
+</para>
+<figure>
+<title>Screenshot: Stats Tab</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Panel_Stats_Tab.png"/>
+</screenshot>
+</figure>
+<para>
+  Also available is a tab to shows <xref linkend="track_time_splits"/>.
+  Since this is a more detailed display that is of interest only to a subset of users and takes up more space, the tab is hidden by default.
+  Use <menuchoice><guimenu>View</guimenu><guimenuitem>Show</guimenuitem><guimenuitem>Show Side Panel Splits</guimenuitem></menuchoice> to enable it.
+  </para>
 </section>
 
 </section> <!-- End File Types -->

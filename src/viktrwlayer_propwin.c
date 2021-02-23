@@ -2622,11 +2622,13 @@ GtkWidget *vik_trw_propwin_create_splits_tabs ( VikTrack *trk )
  * Create a table of statistics for this track which is put into the supplied scrolled window
  * ATM the widgets are generated in a local array hence the widget attachment is performed in this function
  *
+ * @compact: if TRUE then a compact statistic table is created - intended for side panel usage
+ *
  * As a bonus of track processing the TimeZone of the track is calculated and so exposed for reuse.
  *
  * Returns: TimeZone; which may be NULL
  */
-gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
+gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr, gboolean compact )
 {
   GPtrArray *paw = g_ptr_array_new();
   GtkWidget *table;
@@ -2651,9 +2653,30 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
     N_("<b>End:</b>"),
     N_("<b>Duration:</b>"),
   };
+
+  // Since this is aimed for display in the side panel
+  // The idea is to keep the text more compact
+  //  (and remove some fields of less interest)
+  // Also by mostly repeating the text from above, any existing i18n translations should still apply
+  static gchar *stats_texts_compact[] = {
+    N_("<b>Track Length:</b>"),
+    N_("<b>Max Speed:</b>"),
+    N_("<b>Avg. Speed:</b>"),
+    N_("<b>Mvg. Avg. Spd:</b>"),
+    N_("<b>Elevation Range:</b>"),
+    N_("<b>Elev. Gain/Loss:</b>"),
+    N_("<b>Start:</b>"),
+    N_("<b>End:</b>"),
+    N_("<b>Duration:</b>"),
+  };
+
   GPtrArray *pat = g_ptr_array_new();
-  for ( guint nn = 0; nn < G_N_ELEMENTS(stats_texts); nn++ )
-    g_ptr_array_add ( pat, stats_texts[nn] );
+  if ( compact )
+    for ( guint nn = 0; nn < G_N_ELEMENTS(stats_texts_compact); nn++ )
+      g_ptr_array_add ( pat, stats_texts_compact[nn] );
+  else
+    for ( guint nn = 0; nn < G_N_ELEMENTS(stats_texts); nn++ )
+      g_ptr_array_add ( pat, stats_texts[nn] );
 
   guint seg_count = vik_track_get_segment_count ( tr );
 
@@ -2667,17 +2690,23 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
 
   tr_len = vik_track_get_length(tr);
   vu_distance_text ( tmp_buf, sizeof(tmp_buf), dist_units, tr_len, TRUE, "%.2f", FALSE );
-  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
+  GtkWidget *wtl = ui_label_new_selectable ( tmp_buf );
+  g_ptr_array_add ( paw, wtl );
 
   tp_count = vik_track_get_tp_count(tr);
-  g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", tp_count );
-  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
+  if ( !compact ) {
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", tp_count );
+    g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
-  g_snprintf(tmp_buf, sizeof(tmp_buf), "%u", seg_count );
-  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%u", seg_count );
+    g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
-  g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", vik_track_get_dup_point_count(tr) );
-  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%lu", vik_track_get_dup_point_count(tr) );
+    g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
+  } else {
+    g_snprintf(tmp_buf, sizeof(tmp_buf), "%s %lu\n%s %u", stats_texts[1], tp_count, stats_texts[2], seg_count );
+    gtk_widget_set_tooltip_markup ( wtl, tmp_buf );
+  }
 
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
   tmp_speed = vik_track_get_max_speed(tr);
@@ -2708,10 +2737,12 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
   }
   g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
-  // The average distance between points is going to be quite small use the smaller units
-  gdouble adbp = (tp_count - seg_count) == 0 ? 0 : tr_len / ( tp_count - seg_count );
-  vu_distance_text_precision ( tmp_buf, sizeof(tmp_buf), dist_units, adbp, "%.2f" );
-  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
+  if ( !compact ) {
+    // The average distance between points is going to be quite small use the smaller units
+    gdouble adbp = (tp_count - seg_count) == 0 ? 0 : tr_len / ( tp_count - seg_count );
+    vu_distance_text_precision ( tmp_buf, sizeof(tmp_buf), dist_units, adbp, "%.2f" );
+    g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
+  }
 
   vik_units_height_t height_units = a_vik_get_units_height ();
   if ( isnan(min_alt) && isnan(max_alt) )
@@ -2835,7 +2866,10 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
       g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f%sC / %.1f%sC"), min_temp, DEGREE_SYMBOL, max_temp, DEGREE_SYMBOL);
     else
       g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f%sF / %.1f%sF"), VIK_CELSIUS_TO_FAHRENHEIT(min_temp), DEGREE_SYMBOL, VIK_CELSIUS_TO_FAHRENHEIT(max_temp), DEGREE_SYMBOL);
-    attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Min/Max Temperature:</b>") );
+    if ( compact )
+      attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Min/Max Temp.:</b>") );
+    else
+      attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Min/Max Temperature:</b>") );
   }
 
   gdouble avg_temp = vik_track_get_avg_temp ( tr );
@@ -2844,7 +2878,10 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
       g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f%sC"), avg_temp, DEGREE_SYMBOL);
     else
       g_snprintf(tmp_buf, sizeof(tmp_buf), _("%.1f%sF"), VIK_CELSIUS_TO_FAHRENHEIT(avg_temp), DEGREE_SYMBOL);
-    attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Avg. Temperature:</b>") );
+    if ( compact )
+      attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Avg. Temp.:</b>") );
+    else
+      attach_to_table_extra ( table, tmp_buf, ++cnt, _("<b>Avg. Temperature:</b>") );
   }
 
   guint max_pow = vik_track_get_max_power ( tr );
@@ -2874,7 +2911,7 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
 
   GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
   gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
-  widgets->tz = vik_trw_propwin_attach_statistics_table ( sw, tr );
+  widgets->tz = vik_trw_propwin_attach_statistics_table ( sw, tr, FALSE );
   if ( tr->trackpoints )
     widgets->vc = vik_track_get_center ( tr, vik_trw_layer_get_coord_mode(widgets->vtl) );
   return sw;

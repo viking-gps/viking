@@ -6070,7 +6070,11 @@ void vik_window_set_selected_trw_layer ( VikWindow *vw, gpointer vtl )
   vw->selected_tracks    = NULL;
   vw->selected_waypoint  = NULL;
   vw->selected_waypoints = NULL;
-  vik_layers_panel_track_remove ( vw->viking_vlp );
+  VikTrack *one = vik_trw_layer_get_only_track ( vtl );
+  if ( one )
+    vik_layers_panel_track_add ( vw->viking_vlp, one );
+  else
+    vik_layers_panel_track_remove ( vw->viking_vlp );
   // Set highlight thickness
   vik_viewport_set_highlight_thickness ( vw->viking_vvp, vik_trw_layer_get_property_tracks_line_thickness (vw->containing_vtl) );
 }
@@ -6103,7 +6107,7 @@ void vik_window_set_selected_track ( VikWindow *vw, VikTrack *vt, gpointer vtl )
 {
   vw->selected_track = vt;
   if ( vt )
-    vik_layers_panel_track_add ( vw->viking_vlp, VIK_TRACK(vt) );
+    vik_layers_panel_track_add ( vw->viking_vlp, vt );
   vw->containing_vtl = vtl;
   /* Clear others */
   vw->selected_vtl       = NULL;
@@ -6158,6 +6162,7 @@ gboolean vik_window_clear_selected ( VikWindow *vw )
   vw->containing_vtl = NULL;
   if ( vw->selected_vtl != NULL ) {
     vw->selected_vtl = NULL;
+    vik_layers_panel_track_remove ( vw->viking_vlp );
     need_redraw = TRUE;
   }
   if ( vw->selected_track != NULL ) {
