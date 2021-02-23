@@ -2749,21 +2749,6 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr )
   }
   g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
-#if 0
-#define PACK(w) gtk_box_pack_start (GTK_BOX(right_vbox), w, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX(right_vbox), e_cmt, FALSE, FALSE, 0); 
-  PACK(l_len);
-  PACK(l_tps);
-  PACK(l_segs);
-  PACK(l_dups);
-  PACK(l_maxs);
-  PACK(l_avgs);
-  PACK(l_avgd);
-  PACK(l_elev);
-  PACK(l_galo);
-#undef PACK;
-#endif
-
   gchar *tz = NULL;
 
   if ( tr->trackpoints && !isnan(VIK_TRACKPOINT(tr->trackpoints->data)->timestamp) )
