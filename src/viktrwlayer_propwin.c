@@ -1870,7 +1870,7 @@ static gboolean configure_event ( GtkWidget *widget, GdkEventConfigure *event, P
     gtk_widget_set_size_request ( widget, widgets->profile_width+widgets->profile_width_offset, widgets->profile_height+widgets->profile_height_offset );
 
     // Allow resizing back down to a minimal size (especially useful if the initial size has been made bigger after restoring from the saved settings)
-    GdkGeometry geom = { 600+widgets->profile_width_offset, 300+widgets->profile_height_offset, 0, 0, 0, 0, 0, 0, 0, 0, GDK_GRAVITY_STATIC };
+    GdkGeometry geom = { 600+widgets->profile_width_offset, 200+widgets->profile_height_offset, 0, 0, 0, 0, 0, 0, 0, 0, GDK_GRAVITY_STATIC };
     gdk_window_set_geometry_hints ( gtk_widget_get_window(widget), &geom, GDK_HINT_MIN_SIZE );
   }
   else {
@@ -2910,7 +2910,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     if ( profile_size_value > widgets->profile_width )
       widgets->profile_width = profile_size_value;
 
-  widgets->profile_height = 300 * vik_viewport_get_scale(vvp);
+  widgets->profile_height = 200 * vik_viewport_get_scale(vvp);
   if ( a_settings_get_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, &profile_size_value ) )
     if ( profile_size_value > widgets->profile_height )
       widgets->profile_height = profile_size_value;
