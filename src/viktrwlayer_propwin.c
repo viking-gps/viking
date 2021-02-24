@@ -102,6 +102,7 @@ typedef struct _propwidgets {
   gint      profile_width_offset;
   gint      profile_height_offset;
   GtkWidget *dialog;
+  GtkWidget *tabs;   // When in dialog
   GtkWidget *graphs; // When embedded in main window
   GtkWidget *self; // When embedded in main window
   gboolean  stats_configured;
@@ -136,6 +137,7 @@ typedef struct _propwidgets {
   gdouble   track_length_inc_gaps;
   PropSaved graph_saved_img[PGT_END];
   GtkWidget* event_box[PGT_END];
+  GtkWidget* page[PGT_END];
   GtkWidget* image[PGT_END];
   gdouble   alt_create_time;
   gdouble   min_value[PGT_END];
@@ -2089,12 +2091,38 @@ GtkWidget *vik_trw_layer_create_powdiag ( GtkWidget *window, PropWidgets *widget
 
 #define VIK_SETTINGS_TRACK_PROFILE_WIDTH "track_profile_display_width"
 #define VIK_SETTINGS_TRACK_PROFILE_HEIGHT "track_profile_display_height"
+#define VIK_PROPWIN_TABS_ORDER "propwin_tabs_order"
 
 static void save_values ( PropWidgets *widgets )
 {
   // Session settings
   a_settings_set_integer ( VIK_SETTINGS_TRACK_PROFILE_WIDTH, widgets->profile_width );
   a_settings_set_integer ( VIK_SETTINGS_TRACK_PROFILE_HEIGHT, widgets->profile_height );
+
+  // Set latest values from current dialog, but try to retain tab positions for pages
+  //  that may not be shown right now but have been in the past
+  gint vals[PGT_END];
+  // Set defaults
+  for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ )
+    vals[pwgt] = -1;
+
+  gint *prevvs;
+  gsize length;
+  if ( a_settings_get_integer_list(VIK_PROPWIN_TABS_ORDER, &prevvs, &length) ) {
+    // Copy previous values if available
+    for ( guint nn = 0; nn < length; nn++ )
+      if ( nn < PGT_END )
+        vals[nn] = prevvs[nn];
+    g_free ( prevvs );
+  }
+
+  // Set new values
+  for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ ) {
+    if ( widgets->page[pwgt] )
+      vals[pwgt] = gtk_notebook_page_num ( GTK_NOTEBOOK(widgets->tabs), widgets->page[pwgt] );
+  }
+
+  a_settings_set_integer_list ( VIK_PROPWIN_TABS_ORDER, vals, PGT_END );
 
   // Just for this session ATM
   for ( VikPropWinGraphType_t pwgt = 0; pwgt < PGT_END; pwgt++ ) {
@@ -2853,6 +2881,12 @@ gboolean bool_pref_get ( const gchar *pref )
   return vlpd->b;
 }
 
+static void add_reorderable_page ( GtkNotebook *notebook, GtkWidget *page, GtkWidget *label )
+{
+  gtk_notebook_append_page ( notebook, page, label );
+  gtk_notebook_set_tab_reorderable ( notebook, page, TRUE );
+}
+
 /**
  *
  */
@@ -2923,6 +2957,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   if ( bool_pref_get(TPW_PREFS_NS"tabs_on_side") )
     gtk_notebook_set_tab_pos ( GTK_NOTEBOOK(graphs), GTK_POS_LEFT );
+
+  gtk_notebook_set_scrollable ( GTK_NOTEBOOK(graphs), TRUE );
 
   GtkWidget *content_prop[5];
   int cnt_prop = 0;
@@ -3006,7 +3042,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   }
 
   gtk_notebook_append_page ( GTK_NOTEBOOK(graphs), GTK_WIDGET(props), gtk_label_new(_("Properties")) );
-  gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_statistics_page(widgets, widgets->tr), gtk_label_new(_("Statistics")));
+  GtkWidget *stats_page = create_statistics_page ( widgets, widgets->tr );
+  gtk_notebook_append_page ( GTK_NOTEBOOK(graphs), stats_page, gtk_label_new(_("Statistics")) );
 
   // TODO: One day might be nice to have bar chart equivalent of the simple table values.
   // Only bother showing timing splits if track has some kind of timespan
@@ -3015,103 +3052,103 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
       gtk_notebook_append_page(GTK_NOTEBOOK(graphs), create_splits_tables(tr), gtk_label_new(_("Splits")));
 
   if ( widgets->event_box[PGT_ELEVATION_DISTANCE] ) {
-    GtkWidget *page = create_graph_page ( widgets, PGT_ELEVATION_DISTANCE,
+    widgets->page[PGT_ELEVATION_DISTANCE] = create_graph_page ( widgets, PGT_ELEVATION_DISTANCE,
                                           _("<b>Track Distance:</b>"),
                                           _("<b>Track Height:</b>"),
                                           NULL,
                                           TRUE, DEM_available,
                                           _("Show _GPS Speed") );
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-distance")));
+    add_reorderable_page ( GTK_NOTEBOOK(graphs), widgets->page[PGT_ELEVATION_DISTANCE], gtk_label_new(_("Elevation-distance")) );
   }
 
   if ( widgets->event_box[PGT_GRADIENT_DISTANCE] ) {
-    GtkWidget *page = create_graph_page ( widgets, PGT_GRADIENT_DISTANCE,
+    widgets->page[PGT_GRADIENT_DISTANCE] = create_graph_page ( widgets, PGT_GRADIENT_DISTANCE,
                                           _("<b>Track Distance:</b>"),
                                           _("<b>Track Gradient:</b>"),
                                           NULL,
                                           FALSE, FALSE,
                                           _("Show _GPS Speed") );
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Gradient-distance")));
+    add_reorderable_page ( GTK_NOTEBOOK(graphs), widgets->page[PGT_GRADIENT_DISTANCE], gtk_label_new(_("Gradient-distance")) );
   }
 
   if ( widgets->event_box[PGT_SPEED_TIME] ) {
-    GtkWidget *page = create_graph_page ( widgets, PGT_SPEED_TIME,
+    widgets->page[PGT_SPEED_TIME] = create_graph_page ( widgets, PGT_SPEED_TIME,
                                           _("<b>Track Time:</b>"),
                                           _("<b>Track Speed:</b>"),
                                           _("<b>Time/Date:</b>"),
                                           FALSE, FALSE,
                                           _("Show _GPS Speed") );
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-time")));
+    add_reorderable_page ( GTK_NOTEBOOK(graphs), widgets->page[PGT_SPEED_TIME], gtk_label_new(_("Speed-time")) );
   }
 
   if ( widgets->event_box[PGT_DISTANCE_TIME] ) {
-    GtkWidget *page = create_graph_page ( widgets, PGT_DISTANCE_TIME,
+    widgets->page[PGT_DISTANCE_TIME] = create_graph_page ( widgets, PGT_DISTANCE_TIME,
                                           _("<b>Track Distance:</b>"),
                                           _("<b>Track Time:</b>"),
                                           _("<b>Time/Date:</b>"),
                                          FALSE, FALSE,
                                          _("Show S_peed") );
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Distance-time")));
+    add_reorderable_page ( GTK_NOTEBOOK(graphs), widgets->page[PGT_DISTANCE_TIME], gtk_label_new(_("Distance-time")) );
   }
 
   if ( widgets->event_box[PGT_ELEVATION_TIME] ) {
-    GtkWidget *page = create_graph_page ( widgets, PGT_ELEVATION_TIME,
+    widgets->page[PGT_ELEVATION_TIME] = create_graph_page ( widgets, PGT_ELEVATION_TIME,
                                           _("<b>Track Time:</b>"),
                                           _("<b>Track Height:</b>"),
                                           _("<b>Time/Date:</b>"),
                                           TRUE, DEM_available,
                                           _("Show S_peed") );
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Elevation-time")));
+    add_reorderable_page ( GTK_NOTEBOOK(graphs), widgets->page[PGT_ELEVATION_TIME], gtk_label_new(_("Elevation-time")) );
   }
 
   if ( widgets->event_box[PGT_SPEED_DISTANCE] ) {
-    GtkWidget *page = create_graph_page ( widgets, PGT_SPEED_DISTANCE,
+    widgets->page[PGT_SPEED_DISTANCE] = create_graph_page ( widgets, PGT_SPEED_DISTANCE,
                                           _("<b>Track Distance:</b>"),
                                           _("<b>Track Speed:</b>"),
                                           NULL,
                                           FALSE, FALSE,
                                          _("Show _GPS Speed") );
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Speed-distance")));
+    add_reorderable_page ( GTK_NOTEBOOK(graphs), widgets->page[PGT_SPEED_DISTANCE], gtk_label_new(_("Speed-distance")) );
   }
 
   if ( widgets->event_box[PGT_HEART_RATE] ) {
-    GtkWidget *page = create_graph_page ( widgets, PGT_HEART_RATE,
+    widgets->page[PGT_HEART_RATE] = create_graph_page ( widgets, PGT_HEART_RATE,
                                           _("<b>Heart Rate:</b>"),
                                           _("<b>Track Time:</b>"),
                                           NULL,
                                           TRUE, DEM_available,
                                           _("Show _GPS Speed") );
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Heart Rate")));
+    add_reorderable_page ( GTK_NOTEBOOK(graphs), widgets->page[PGT_HEART_RATE], gtk_label_new(_("Heart Rate")) );
   }
 
   if ( widgets->event_box[PGT_CADENCE] ) {
-    GtkWidget *page = create_graph_page ( widgets, PGT_CADENCE,
+    widgets->page[PGT_CADENCE] = create_graph_page ( widgets, PGT_CADENCE,
                                           _("<b>Cadence:</b>"),
                                           _("<b>Track Time:</b>"),
                                           NULL,
                                           TRUE, DEM_available,
                                           _("Show _GPS Speed") );
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Cadence")));
+    add_reorderable_page ( GTK_NOTEBOOK(graphs), widgets->page[PGT_CADENCE], gtk_label_new(_("Cadence")) );
   }
 
   if ( widgets->event_box[PGT_TEMP] ) {
-    GtkWidget *page = create_graph_page ( widgets, PGT_TEMP,
+    widgets->page[PGT_TEMP] = create_graph_page ( widgets, PGT_TEMP,
                                           _("<b>Temperature:</b>"),
                                           _("<b>Track Time:</b>"),
                                           NULL,
                                           TRUE, DEM_available,
                                           _("Show _GPS Speed") );
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Temperature")));
+    add_reorderable_page ( GTK_NOTEBOOK(graphs), widgets->page[PGT_TEMP], gtk_label_new(_("Temperature")) );
   }
 
   if ( widgets->event_box[PGT_POWER] ) {
-    GtkWidget *page = create_graph_page ( widgets, PGT_POWER,
+    widgets->page[PGT_POWER] = create_graph_page ( widgets, PGT_POWER,
                                           _("<b>Power:</b>"),
                                           _("<b>Track Time:</b>"),
                                           NULL,
                                           TRUE, DEM_available,
                                           _("Show _GPS Speed") );
-    gtk_notebook_append_page(GTK_NOTEBOOK(graphs), page, gtk_label_new(_("Power")));
+    add_reorderable_page ( GTK_NOTEBOOK(graphs), widgets->page[PGT_POWER], gtk_label_new(_("Power")) );
   }
 
   // All checkboxes goto the same callback
@@ -3140,9 +3177,25 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   gtk_widget_show_all ( dialog );
 
+  widgets->tabs = graphs;
+
+  gint *vals;
+  gsize length;
+  if ( a_settings_get_integer_list(VIK_PROPWIN_TABS_ORDER, &vals, &length) ) {
+    for ( guint nn = 0; nn < length; nn++ ) {
+      if ( nn < PGT_END )
+        if ( widgets->page[nn] )
+          gtk_notebook_reorder_child ( GTK_NOTEBOOK(graphs), widgets->page[nn], vals[nn] );
+    }
+    g_free ( vals );
+  }
+  // Note despite potential reordering above, the notebook seems to default to showing the first added page
+  //  i.e. thus it maintains showing the Property tab by default
+
   // Gtk note: due to historical reasons, this must be done after widgets are shown
   if ( start_on_stats )
-    gtk_notebook_set_current_page ( GTK_NOTEBOOK(graphs), 1 );
+    gtk_notebook_set_current_page ( GTK_NOTEBOOK(graphs),
+                                    gtk_notebook_page_num(GTK_NOTEBOOK(graphs), stats_page) );
 }
 
 

@@ -1266,6 +1266,11 @@ Opens a new dialog with the list. As described in the Aggregate layer <xref link
 <section id='track_properties' xreflabel="Track and Route Properties"><title>Track and Route Properties</title>
 <para>
 This shows several tabs for properties and useful statistics about a track or a route, including elevation, speed, heart rate, cadence, temperature and power graphs (if the data is available and the graph has not been disabled via <xref linkend="prefs_trackprops"/>).
+</para>
+<para>
+The tabs can be reordered via drag 'n' drop of the tab label. The ordering is retained between new invocations of the properties dialog.
+</para>
+<para>
 Moving the mouse pointer over the graph displays values related to that point along the track.
 You can click on these graphs to jump to the point in the track.
 You can reverse it, delete duplicates, split at marked position or split a track from its component segments (discontinuous breaks in a track) into separate tracks.
@@ -1283,7 +1288,7 @@ This is due to the reporting of speed values in source data is not mandatory and
 <section xreflabel="Track and Route Properties"><title>Track and Route Properties Tab</title>
 <para>
 <figure>
-<title>Properties Tab: Example</title>
+<title>Properties Tab: Example (Tabs at side option and reordered)</title>
 <screenshot>
   <graphic format="PNG" fileref="figures/Track_properties.png"/>
 </screenshot>

@@ -220,12 +220,12 @@ static gboolean settings_get_integer_list ( const gchar *group, const gchar *nam
 /*
  * The returned list of integers should be freed when no longer needed
  */
-static gboolean a_settings_get_integer_list ( const gchar *name, gint **vals, gsize* length )
+gboolean a_settings_get_integer_list ( const gchar *name, gint **vals, gsize* length )
 {
 	return settings_get_integer_list ( VIKING_SETTINGS_GROUP, name, vals, length );
 }
 
-static void a_settings_set_integer_list ( const gchar *name, gint vals[], gsize length )
+void a_settings_set_integer_list ( const gchar *name, gint vals[], gsize length )
 {
 	g_key_file_set_integer_list ( keyfile, VIKING_SETTINGS_GROUP, name, vals, length );
 }
