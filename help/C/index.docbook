@@ -411,7 +411,8 @@ Other function keys control turn on/off visibility of various elements:
 </itemizedlist>
 <para>
 Standard shortcuts are provided for normal GUI operations: such as creating new files, opening, saving and exiting.
-Then there are shortcuts specific to &appname; to switch projection modes, zoom in/out, create layers,switch the active tool mode and move the map:
+Then there are shortcuts specific to &appname; to switch projection modes, zoom in/out, create layers, switch the active tool mode and move the map:
+</para>
 <itemizedlist>
 <listitem><para><keycap>Ctrl+Up</keycap> Pan the viewport North</para></listitem>
 <listitem><para><keycap>Ctrl+Right</keycap> Pan the viewport East</para></listitem>
@@ -421,6 +422,10 @@ Then there are shortcuts specific to &appname; to switch projection modes, zoom 
 <listitem><para><keycap>Ctrl+Keypad-</keycap> Zoom Out</para></listitem>
 </itemizedlist>
 <important><para>These work irrespective of the <xref linkend="tools"/> mode selected</para></important>
+<para>
+  <keycap>Up</keycap>,<keycap>Left</keycap>,<keycap>Right</keycap> and <keycap>Down</keycap> also pan the viewport in the respective direction when any of the primary window tools is active (<xref linkend="selecttool"/> (when nothing is selected), <xref linkend="pantool"/>, <xref linkend="zoomtool"/> or <xref linkend="rulertool"/>)
+</para>
+<para>
 For other combinations see the menu entry themselves.
 </para>
 </section>
@@ -2628,7 +2633,7 @@ You can use the scroll wheel, the middle-click, the middle-click+drag to zoom, c
 <keycap>Shift-scroll</keycap>: pan east-west (also <keycap>Ctrl-left</keycap>, <keycap>Ctrl-right</keycap>)
 </para>
 <para>
-<keycap>Ctrl-shift-scroll</keycap>: zoom in and out, without changing the center (also <keycap>Ctrl+</keycap>, <keycap>Ctrl-</keycap> [*not* KeyPad +/-])
+<keycap>Ctrl-shift-scroll</keycap>: zoom in and out, without changing the center (also <keycap>Ctrl+</keycap>, <keycap>Ctrl-</keycap>)
 </para>
 <para>
 <keycap>Middle-click</keycap>: make the clicked point on the map the center
@@ -2639,8 +2644,11 @@ You can use the scroll wheel, the middle-click, the middle-click+drag to zoom, c
 <para>
 Also see <xref linkend="prefs_advanced"/> for options that effect the scrolling behaviour.
 </para>
+<para>
+  When any of the primary window tools is active (Select, Pan, Zoom or Ruler), the viewport can be moved by pressing the arrow keys: <keycap>Up</keycap>, <keycap>Left</keycap>, <keycap>Right</keycap> and <keycap>Down</keycap>.
+</para>
 
-<section id="select" xreflabel="Select"><title>Select (Version1.9+)</title>
+<section id="selecttool" xreflabel="Select"><title>Select (Version1.9+)</title>
 <para>
 This is the default mode of operation for &appname;.
 </para>
@@ -2663,17 +2671,30 @@ If <keycap>Ctrl</keycap> or <keycap>Shift</keycap> is held down at the same time
 Note that whole tracks cannot be moved.
 </para>
 <para>
+  When a trackpoint is selected pressing <keycap>Left</keycap> or <keycap>Right</keycap> moves to the previous or next trackpoint respectively.
+</para>
+<para>
+  <keycap>[</keycap> or <keycap>Keypad-</keycap> inserts a point before the selected trackpoint, whereas
+  <keycap>]</keycap> or <keycap>Keypad+</keycap> inserts a point after the selected trackpoint.
+</para>
+<para>
+  <keycap>Ctrl+d</keycap> will delete the selected trackpoint or waypoint without any additional confirmation of the action. Since there is no undo system - this shortcut is delibrately a two key operation.
+</para>
+<para>
+  Currently these keyboard shortcuts are not configurable.
+</para>
+<para>
   By default double click zooming is disabled - see <xref linkend="prefs_advanced"/> to enable it.
 Double clicking the left mouse button will zoom the map in.
 <keycap>Shift</keycap> + double clicking the left mouse button will zoom the map out.
 Double clicking the right mouse button will also zoom the map out.
 </para>
 <para>
-This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+S</keycap>
+This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+C</keycap> or now more simply just <keycap>s</keycap>.
 </para>
 </section>
 
-<section><title>Pan</title>
+<section id="pantool" xreflabel="Pan"><title>Pan</title>
 <para>
 This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/mover_22.png"/></guiicon>
 </para>
@@ -2681,14 +2702,14 @@ This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fi
 Pan moves the viewpoint. A single click centers the viewport at that point, whereas click and drag dynamically moves the view around.
 </para>
 <para>
-This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+P</keycap>
+This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+P</keycap> or now more simply just <keycap>p</keycap>.
 </para>
 <para>
 The double click behaviour is the same as in the Select mode described above (i.e. zooms in or out), however it is always enabled.
 </para>
 </section>
 
-<section><title>Zoom</title>
+<section id="zoomtool" xreflabel="Zoom"><title>Zoom</title>
 <para>
 This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/zoom_18.png"/></guiicon>
 </para>
@@ -2696,7 +2717,7 @@ This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fi
 Zooms in and out on the clicked part of the map or by the selected area.
 </para>
 <para>
-This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+Z</keycap>
+This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+Z</keycap> or now more simply just <keycap>z</keycap>.
 </para>
 <para>
 <keycap>Ctrl</keycap> + left or right click: Zoom in/out and center the map on the clicked location
@@ -2712,7 +2733,7 @@ This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+Z</key
 </para>
 </section>
 
-<section><title>Ruler</title>
+<section id="rulertool" xreflabel="Ruler"><title>Ruler</title>
 <para>
 This mode is entered by clicking on the toolbar icon: <guiicon><inlinegraphic fileref="figures/ruler_18.png"/></guiicon>
 </para>
@@ -2733,7 +2754,7 @@ The viewport label option is controlled by <xref linkend="prefs_advanced"/>.
 </listitem>
 </itemizedlist>
 <para>
-This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+U</keycap>
+This mode can also be entered by the keyboard shortcut <keycap>Ctrl+Shift+U</keycap> or now more simply just <keycap>r</keycap>.
 </para>
 </section>
 
@@ -3694,7 +3715,7 @@ This list can be sorted on each column so that it easier to find an individual t
 	Create a new waypoint (or move an existing one) to exact location desired:
 <itemizedlist>
 	<listitem><para>Select the <xref linkend="createwptool"/> tool, then left click on the map at the location desired, choosing an image to associate with it in the new waypoint dialog</para></listitem>
-	<listitem><para>Select the <xref linkend="select"/> tool, then left click on waypoint to be moved. Left click again and drag the waypoint to the location desired</para></listitem>
+	<listitem><para>Select the <xref linkend="selecttool"/> tool, then left click on waypoint to be moved. Left click again and drag the waypoint to the location desired</para></listitem>
 </itemizedlist>
 	Then using the Select tool left click on waypoint to select it, then right click to access the Waypoint properties menu, then choose
 	<menuchoice><guimenu>Update Geotag on Image</guimenu><guisubmenu>Update</guisubmenu></menuchoice>
@@ -3711,7 +3732,7 @@ This list can be sorted on each column so that it easier to find an individual t
 	It helps if this is the track that was recorded at the time you took some photographs!
 </para>
 <para>
-	Select the track either from the layers panel on the left or via the viewport using the <xref linkend="select"/> tool.
+	Select the track either from the layers panel on the left or via the viewport using the <xref linkend="selecttool"/> tool.
 	Then right click on it and chose the <menuchoice><guimenu>Geotag Images...</guimenu></menuchoice> leading you to the <xref linkend="geotagging"/> Dialog.
 </para>
 <para>

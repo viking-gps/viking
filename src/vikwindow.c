@@ -89,6 +89,8 @@ static gboolean delete_event( VikWindow *vw );
 
 static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer data );
 static gboolean key_release_event( VikWindow *vw, GdkEventKey *event, gpointer data );
+static gboolean key_press_event_vlp ( VikWindow *vw, GdkEventKey *event, gpointer data );
+static gboolean key_release_event_vlp ( VikWindow *vw, GdkEventKey *event, gpointer data );
 
 static void center_changed_cb ( VikWindow *vw );
 static gboolean window_configure_event ( VikWindow *vw, GdkEventConfigure *event, gpointer user_data );
@@ -865,6 +867,24 @@ static void map_signal_cb ( VikWindow *vw )
   gtk_widget_show_all ( vw->graphs );
 }
 
+static void action_activate_current_tool ( VikWindow *vw )
+{
+  switch ( vw->current_tool ) {
+  case TOOL_ZOOM:
+    gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Zoom" ) );
+    break;
+  case TOOL_RULER:
+    gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Ruler" ) );
+    break;
+  case TOOL_SELECT:
+    gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Select" ) );
+    break;
+  default:
+    gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Pan" ) );
+    break;
+  }
+}
+
 static void default_tool_enable ( VikWindow *vw )
 {
   gchar *tool_str = NULL;
@@ -885,21 +905,9 @@ static void default_tool_enable ( VikWindow *vw )
   else
     vw->current_tool = TOOL_SELECT;
 
-  switch ( vw->current_tool ) {
-  case TOOL_ZOOM:
-    gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Zoom" ) );
-    break;
-  case TOOL_RULER:
-    gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Ruler" ) );
-    break;
-  case TOOL_SELECT:
-    gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Select" ) );
-    break;
-  default:
-    gtk_action_activate ( gtk_action_group_get_action ( vw->action_group, "Pan" ) );
-    break;
-  }
   g_free ( tool_str );
+
+  action_activate_current_tool ( vw );
 }
 
 #define VIK_SETTINGS_WIN_MAX "window_maximized"
@@ -1006,9 +1014,10 @@ static void vik_window_init ( VikWindow *vw )
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "button_release_event", G_CALLBACK(draw_release), vw);
   g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "motion_notify_event", G_CALLBACK(draw_mouse_motion), vw);
 
-  // Allow key presses to be processed anywhere
-  g_signal_connect_swapped (G_OBJECT (vw), "key_press_event", G_CALLBACK (key_press_event), vw);
-  g_signal_connect_swapped (G_OBJECT (vw), "key_release_event", G_CALLBACK (key_release_event), vw);
+  g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "key_press_event", G_CALLBACK(key_press_event), vw);
+  g_signal_connect_swapped (G_OBJECT(vw->viking_vvp), "key_release_event", G_CALLBACK(key_release_event), vw);
+  g_signal_connect_swapped (G_OBJECT(vw->viking_vlp), "key_press_event", G_CALLBACK(key_press_event_vlp), vw);
+  g_signal_connect_swapped (G_OBJECT(vw->viking_vlp), "key_release_event", G_CALLBACK(key_release_event_vlp), vw);
 
   // Set initial button sensitivity
   center_changed_cb ( vw );
@@ -1117,6 +1126,10 @@ static void vik_window_init ( VikWindow *vw )
   gchar *accel_file_name = g_build_filename ( a_get_viking_dir(), VIKING_ACCELERATOR_KEY_FILE, NULL );
   gtk_accel_map_load ( accel_file_name );
   g_free ( accel_file_name );
+
+  // Set initial focus to the viewport,
+  //  so if you have map you can start to move around with the arrow keys immediately
+  gtk_widget_grab_focus ( GTK_WIDGET(vw->viking_vvp) );
 }
 
 static VikWindow *window_new ()
@@ -1152,8 +1165,34 @@ static void simple_map_update ( VikWindow *vw, gboolean only_new )
 	vik_maps_layer_download ( VIK_MAPS_LAYER(vl), vw->viking_vvp, only_new );
 }
 
+static gboolean key_press_event_common ( VikWindow *vw, GdkEventKey *event, gpointer data )
+{
+  /* Restore Main Menu via Escape key if the user has hidden it */
+  /* This key is more likely to be used as they may not remember the function key */
+  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewMainMenu" );
+  if ( check_box ) {
+    gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
+    if ( !state ) {
+      if ( event->keyval == GDK_KEY_Escape ) {
+	gtk_widget_show ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
+	gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), TRUE );
+	return TRUE; // handled keypress
+      }
+    }
+  }
+  return FALSE; // don't handle the keypress
+}
+
+static gboolean key_press_event_vlp ( VikWindow *vw, GdkEventKey *event, gpointer data )
+{
+  if ( key_press_event_common(vw, event, data) )
+    return TRUE; // handled keypress
+
+  return FALSE; // don't handle the keypress
+}
+
 /**
- * This is the global key press handler
+ * This is the viewport key press handler
  *  Global shortcuts are available at any time and hence are not restricted to when a certain tool is enabled
  */
 static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer data )
@@ -1166,31 +1205,51 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
   gboolean map_download = FALSE;
   gboolean map_download_only_new = TRUE; // Only new or reload
 
-  GdkModifierType modifiers = gtk_accelerator_get_default_mod_mask();
+  GdkModifierType modifiers = event->state & gtk_accelerator_get_default_mod_mask();
 
   // Standard 'Refresh' keys: F5 or Ctrl+r
   // Note 'F5' is actually handled via draw_refresh_cb() later on
   //  (not 'R' it's 'r' notice the case difference!!)
-  if ( event->keyval == GDK_KEY_r && (event->state & modifiers) == GDK_CONTROL_MASK ) {
+  if ( event->keyval == GDK_KEY_r && modifiers == GDK_CONTROL_MASK ) {
 	map_download = TRUE;
 	map_download_only_new = TRUE;
   }
   // Full cache reload with Ctrl+F5 or Ctrl+Shift+r [This is not in the menu system]
   // Note the use of uppercase R here since shift key has been pressed
-  else if ( (event->keyval == GDK_KEY_F5 && (event->state & modifiers) == GDK_CONTROL_MASK ) ||
-           ( event->keyval == GDK_KEY_R && (event->state & modifiers) == (GDK_CONTROL_MASK + GDK_SHIFT_MASK) ) ) {
+  else if ( (event->keyval == GDK_KEY_F5 && modifiers == GDK_CONTROL_MASK ) ||
+           ( event->keyval == GDK_KEY_R && modifiers == (GDK_CONTROL_MASK + GDK_SHIFT_MASK) ) ) {
 	map_download = TRUE;
 	map_download_only_new = FALSE;
   }
   // Standard Ctrl+KP+ / Ctrl+KP- to zoom in/out respectively
-  else if ( event->keyval == GDK_KEY_KP_Add && (event->state & modifiers) == GDK_CONTROL_MASK ) {
+  else if ( event->keyval == GDK_KEY_KP_Add && modifiers == GDK_CONTROL_MASK ) {
     vik_viewport_zoom_in ( vw->viking_vvp );
     draw_update(vw);
     return TRUE; // handled keypress
   }
-  else if ( event->keyval == GDK_KEY_KP_Subtract && (event->state & modifiers) == GDK_CONTROL_MASK ) {
+  else if ( event->keyval == GDK_KEY_KP_Subtract && modifiers == GDK_CONTROL_MASK ) {
     vik_viewport_zoom_out ( vw->viking_vvp );
     draw_update(vw);
+    return TRUE; // handled keypress
+  }
+  else if ( event->keyval == GDK_KEY_p && !modifiers ) {
+    vw->current_tool = TOOL_PAN;
+    action_activate_current_tool ( vw );
+    return TRUE; // handled keypress
+  }
+  else if ( event->keyval == GDK_KEY_z && !modifiers ) {
+    vw->current_tool = TOOL_ZOOM;
+    action_activate_current_tool ( vw );
+    return TRUE; // handled keypress
+  }
+  else if ( event->keyval == GDK_KEY_r && !modifiers ) {
+    vw->current_tool = TOOL_RULER;
+    action_activate_current_tool ( vw );
+    return TRUE; // handled keypress
+  }
+  else if ( event->keyval == GDK_KEY_s && !modifiers ) {
+    vw->current_tool = TOOL_SELECT;
+    action_activate_current_tool ( vw );
     return TRUE; // handled keypress
   }
 
@@ -1209,20 +1268,8 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
       return TRUE;
   }
 
-
-  /* Restore Main Menu via Escape key if the user has hidden it */
-  /* This key is more likely to be used as they may not remember the function key */
-  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ViewMainMenu" );
-  if ( check_box ) {
-    gboolean state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
-    if ( !state ) {
-      if ( event->keyval == GDK_KEY_Escape ) {
-	gtk_widget_show ( gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu" ) );
-	gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), TRUE );
-	return TRUE; /* handled keypress */
-      }
-    }
-  }
+  if ( key_press_event_common(vw, event, data) )
+    return TRUE; // handled keypress
 
   // Ensure called only on window tools (i.e. not on any of the Layer tools since the layer is NULL)
   if ( vw->current_tool < TOOL_LAYER ) {
@@ -1241,6 +1288,12 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
   }
 
   return FALSE; /* don't handle the keypress */
+}
+
+static gboolean key_release_event_vlp ( VikWindow *vw, GdkEventKey *event, gpointer data )
+{
+  // Nothing ATM
+  return FALSE;
 }
 
 static gboolean key_release_event( VikWindow *vw, GdkEventKey *event, gpointer data )
@@ -2273,6 +2326,62 @@ static VikLayerToolFuncStatus ruler_release (VikLayer *vl, GdkEventButton *event
   return VIK_LAYER_TOOL_ACK;
 }
 
+// Common handler for all tools
+static gboolean tool_key_press_common ( VikLayer *vl, GdkEventKey *event, gpointer unused_data )
+{
+  // Pretend to handle arrow keys to avoid GTK widget focus change away from the viewport
+  if ( event->keyval == GDK_KEY_Right || event->keyval == GDK_KEY_Left ||
+       event->keyval == GDK_KEY_Up || event->keyval == GDK_KEY_Down )
+    return TRUE;
+  return FALSE;
+}
+
+/**
+ * Generic move viewport on an arrow key event (i.e. could be either press or release)
+ */
+static gboolean move_arrow_key_event ( VikWindow *vw, guint keyval )
+{
+  gboolean ans = FALSE;
+  if ( keyval == GDK_KEY_Up ) {
+    vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, 0 );
+    ans = TRUE;
+  }
+  else if ( keyval == GDK_KEY_Right ) {
+    vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp), vik_viewport_get_height(vw->viking_vvp)/2 );
+    ans = TRUE;
+  }
+  else if ( keyval == GDK_KEY_Down ) {
+    vik_viewport_set_center_screen ( vw->viking_vvp, vik_viewport_get_width(vw->viking_vvp)/2, vik_viewport_get_height(vw->viking_vvp) );
+    ans = TRUE;
+  }
+  else if ( keyval == GDK_KEY_Left ) {
+    vik_viewport_set_center_screen ( vw->viking_vvp, 0, vik_viewport_get_height(vw->viking_vvp)/2 );
+    ans = TRUE;
+  }
+
+  if ( ans )
+    draw_update ( vw );
+
+  return ans;
+}
+
+static gboolean tool_key_release_common ( VikLayer *vl, GdkEventKey *event, VikWindow *vw )
+{
+  // NB not only do we get standard single key events,
+  //  it also still gets called after the action callback draw_pan_cb() from ctrl+arrow key
+  gboolean cmask = event->state & GDK_CONTROL_MASK;
+  // So don't do anything if ctrl+arrow (as already viewport has already been moved)
+  if ( !cmask )
+    if ( move_arrow_key_event(vw, event->keyval) )
+      return TRUE;
+  return FALSE;
+}
+
+static gboolean tool_key_release_common_tool_edit ( VikLayer *vl, GdkEventKey *event, tool_ed_t *te )
+{
+  return tool_key_release_common ( vl, event, te->vw );
+}
+
 static void ruler_deactivate (VikLayer *ignore, tool_ed_t *s)
 {
   draw_update ( s->vw );
@@ -2288,6 +2397,8 @@ static gboolean ruler_key_press (VikLayer *vl, GdkEventKey *event, tool_ed_t *s)
       return TRUE;
     }
   }
+  if ( tool_key_press_common(vl, event, s) )
+    return TRUE;
   // Regardless of whether we used it, return false so other GTK things may use it
   return FALSE;
 }
@@ -2304,7 +2415,7 @@ static VikToolInterface ruler_tool =
     (VikToolMouseMoveFunc) ruler_move,
     (VikToolMouseFunc) ruler_release,
     (VikToolKeyFunc) ruler_key_press,
-    (VikToolKeyFunc) NULL,
+    (VikToolKeyFunc) tool_key_release_common_tool_edit,
     FALSE,
     GDK_CURSOR_IS_PIXMAP,
     "cursor_ruler",
@@ -2545,8 +2656,8 @@ static VikToolInterface zoom_tool =
     (VikToolMouseFunc) zoomtool_click, 
     (VikToolMouseMoveFunc) zoomtool_move,
     (VikToolMouseFunc) zoomtool_release,
-    NULL,
-    NULL,
+    (VikToolKeyFunc) tool_key_press_common,
+    (VikToolKeyFunc) tool_key_release_common_tool_edit,
     FALSE,
     GDK_CURSOR_IS_PIXMAP,
     "cursor_zoom",
@@ -2612,8 +2723,8 @@ static VikToolInterface pan_tool =
     (VikToolMouseFunc) pantool_click, 
     (VikToolMouseMoveFunc) pantool_move,
     (VikToolMouseFunc) pantool_release,
-    NULL,
-    NULL,
+    (VikToolKeyFunc) tool_key_press_common,
+    (VikToolKeyFunc) tool_key_release_common,
     FALSE,
     GDK_FLEUR,
     NULL,
@@ -2843,6 +2954,27 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
   return VIK_LAYER_TOOL_ACK;
 }
 
+// Fast response / multiple rapid reptitions useful
+static gboolean selecttool_key_press ( VikLayer *vl, GdkEventKey *event, tool_ed_t *te )
+{
+  if (vl && (vl->type == VIK_LAYER_TRW) && (vl->visible) ) {
+    if ( te->vw->containing_vtl ) {
+      if ( event->keyval == GDK_KEY_Left ) {
+        vik_trw_layer_goto_track_prev_point ( te->vw->containing_vtl );
+        return TRUE;
+      }
+      else if ( event->keyval == GDK_KEY_Right ) {
+        vik_trw_layer_goto_track_next_point ( te->vw->containing_vtl );
+        return TRUE;
+      }
+    }
+  }
+
+  if ( tool_key_press_common(vl, event, te) )
+    return TRUE;
+  return FALSE;
+}
+
 static gboolean selecttool_key_release (VikLayer *vl, GdkEventKey *event, tool_ed_t *t)
 {
   if (vl && (vl->type == VIK_LAYER_TRW)) {
@@ -2852,18 +2984,29 @@ static gboolean selecttool_key_release (VikLayer *vl, GdkEventKey *event, tool_e
         if ( t->vw->selected_track || t->vw->selected_waypoint )
           if ( vik_layer_get_interface(vl->type)->show_viewport_menu )
             return vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, NULL, t->vw->viking_vvp );
-      } else if ( event->keyval == GDK_KEY_Left ) {
-	if ( t->vw->containing_vtl ) {
-          vik_trw_layer_goto_track_prev_point ( t->vw->containing_vtl );
+      }
+      else if ( t->vw->containing_vtl ) {
+        if ( (event->keyval == GDK_KEY_bracketleft) || (event->keyval == GDK_KEY_KP_Subtract) ) {
+          vik_trw_layer_insert_tp_beside_current_tp ( t->vw->containing_vtl, TRUE );
           return TRUE;
         }
-     } else if ( event->keyval == GDK_KEY_Right ) {
-        if ( t->vw->containing_vtl ) {
-          vik_trw_layer_goto_track_next_point ( t->vw->containing_vtl );
+        else if ( (event->keyval == GDK_KEY_bracketright) || (event->keyval == GDK_KEY_KP_Add) ) {
+          vik_trw_layer_insert_tp_beside_current_tp ( t->vw->containing_vtl, FALSE );
+          return TRUE;
+        }
+        // Ctrl-D to delete (rather than delete key or BackSpace)
+        else if ( (event->keyval == GDK_KEY_d) && (event->state & GDK_CONTROL_MASK) ) {
+          if ( t->vw->selected_waypoint )
+            vik_trw_layer_delete_waypoint ( t->vw->containing_vtl, t->vw->selected_waypoint );
+          else
+            vik_trw_layer_delete_trackpoint_selected ( t->vw->containing_vtl );
           return TRUE;
         }
       }
     }
+  } else {
+    if ( tool_key_release_common(vl, event, t->vw) )
+      return TRUE;
   }
   return FALSE;
 }
@@ -2878,7 +3021,7 @@ static VikToolInterface select_tool =
     (VikToolMouseFunc) selecttool_click,
     (VikToolMouseMoveFunc) selecttool_move,
     (VikToolMouseFunc) selecttool_release,
-    (VikToolKeyFunc) NULL,
+    (VikToolKeyFunc) selecttool_key_press,
     (VikToolKeyFunc) selecttool_key_release,
     FALSE,
     GDK_LEFT_PTR,
