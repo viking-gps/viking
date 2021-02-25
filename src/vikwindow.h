@@ -29,6 +29,7 @@
 
 #include "vikviewport.h"
 #include "vikstatus.h"
+#include "viktrack.h"
 
 G_BEGIN_DECLS
 
@@ -83,8 +84,8 @@ gpointer vik_window_get_selected_trw_layer ( VikWindow *vw ); /* return type Vik
 void vik_window_set_selected_trw_layer ( VikWindow *vw, gpointer vtl ); /* input VikTrwLayer */
 GHashTable *vik_window_get_selected_tracks ( VikWindow *vw );
 void vik_window_set_selected_tracks ( VikWindow *vw, GHashTable *ght, gpointer vtl ); /* gpointer is a VikTrwLayer */
-gpointer vik_window_get_selected_track ( VikWindow *vw ); /* return type VikTrack */
-void vik_window_set_selected_track ( VikWindow *vw, gpointer *vt, gpointer vtl ); /* gpointer is a VikTrwLayer */
+VikTrack *vik_window_get_selected_track ( VikWindow *vw );
+void vik_window_set_selected_track ( VikWindow *vw, VikTrack *vt, gpointer vtl ); /* gpointer is a VikTrwLayer */
 GHashTable *vik_window_get_selected_waypoints ( VikWindow *vw );
 void vik_window_set_selected_waypoints ( VikWindow *vw, GHashTable *ght, gpointer vtl ); /* gpointer is a VikTrwLayer */
 gpointer vik_window_get_selected_waypoint ( VikWindow *vw ); /* return type VikWaypoint */

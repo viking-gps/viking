@@ -243,7 +243,7 @@ struct _VikWindow {
   /* Only one of these items can be selected at the same time */
   gpointer selected_vtl; /* notionally VikTrwLayer */
   GHashTable *selected_tracks;
-  gpointer selected_track; /* notionally VikTrack */
+  VikTrack *selected_track;
   GHashTable *selected_waypoints;
   gpointer selected_waypoint; /* notionally VikWaypoint */
   /* only use for individual track or waypoint */
@@ -6000,12 +6000,12 @@ void vik_window_set_selected_tracks ( VikWindow *vw, GHashTable *ght, gpointer v
   vik_viewport_set_highlight_thickness ( vw->viking_vvp, vik_trw_layer_get_property_tracks_line_thickness (vw->containing_vtl) );
 }
 
-gpointer vik_window_get_selected_track ( VikWindow *vw )
+VikTrack* vik_window_get_selected_track ( VikWindow *vw )
 {
   return vw->selected_track;
 }
 
-void vik_window_set_selected_track ( VikWindow *vw, gpointer *vt, gpointer vtl )
+void vik_window_set_selected_track ( VikWindow *vw, VikTrack *vt, gpointer vtl )
 {
   vw->selected_track = vt;
   vw->containing_vtl = vtl;
