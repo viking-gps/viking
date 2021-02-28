@@ -711,11 +711,7 @@ static void kml_cdata ( xml_data *xd, const XML_Char *ss, int len )
  * @VikTrwLayer: The Layer to put the geo data in
  *
  * Returns:
- *  -1 if KMZ not supported (this shouldn't happen)
- *  0 on success
- *  >0 <128 ZIP error code
- *  128 - No doc.kml file in KMZ
- *  129 - Couldn't understand the doc.kml file
+ *  TRUE on success
  */
 gboolean a_kml_read_file ( VikTrwLayer *vtl, FILE *ff )
 {

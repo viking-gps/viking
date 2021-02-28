@@ -32,6 +32,7 @@
 
 #include "viking.h"
 #include "gpx.h"
+#include "kml.h"
 #include "babel.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -384,8 +385,11 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
  *
  * Download the file pointed by the URL and optionally uses GPSBabel to convert from input_type.
  * If input_type and babelfilters are %NULL, gpsbabel is not used.
+ * If input_type is 'gpx' of 'kml' then we will use our own native parsers.
+ * NB TCX and indeed Vikings own files aren't available via this method since they can only be
+ * loaded into an aggregate layer (i.e. not into a %VikTrwLayer which is all that is available here)
  *
- * Returns: %TRUE on successful invocation of GPSBabel or read of the GPX
+ * Returns: %TRUE on successful invocation of GPSBabel or read of the downloaded file
  *
  */
 gboolean a_babel_convert_from_url_filter ( VikTrwLayer *vt, const char *url, const char *input_type, const char *babelfilters, BabelStatusFunc cb, gpointer user_data, DownloadFileOptions *options )
@@ -409,16 +413,31 @@ gboolean a_babel_convert_from_url_filter ( VikTrwLayer *vt, const char *url, con
 
     fetch_ret = a_http_download_get_url(url, "", name_src, &myoptions, NULL);
     if (fetch_ret == DOWNLOAD_SUCCESS) {
-      if (input_type != NULL || babelfilters != NULL) {
-        babelargs = (input_type) ? g_strdup_printf(" -i %s", input_type) : g_strdup("");
-        ret = a_babel_convert_from_filter( vt, babelargs, name_src, babelfilters, NULL, NULL, NULL );
-      } else {
+      gboolean do_gpx = FALSE;
+      gboolean do_kml = FALSE;
+      if ( g_strcmp0(input_type, "gpx") == 0 )
+        do_gpx = TRUE;
+      if ( g_strcmp0(input_type, "kml") == 0 )
+        do_kml = TRUE;
+
+      if ( !do_gpx && !do_kml ) {
+        if (input_type != NULL || babelfilters != NULL) {
+          babelargs = (input_type) ? g_strdup_printf(" -i %s", input_type) : g_strdup("");
+          ret = a_babel_convert_from_filter( vt, babelargs, name_src, babelfilters, NULL, NULL, NULL );
+        } else
+          // No input_type specified - resort to GPX
+          do_gpx = TRUE;
+      }
+      if ( do_gpx || do_kml ) {
         /* Process directly the retrieved file */
-        g_debug("%s: directly read GPX file %s", __FUNCTION__, name_src);
+        g_debug ( "%s: directly read file %s", __FUNCTION__, name_src );
         FILE *f = g_fopen(name_src, "r");
         if (f) {
           gchar *dirpath = g_path_get_dirname ( name_src );
-          ret = a_gpx_read_file ( vt, f, dirpath, FALSE );
+          if ( do_kml )
+            ret = a_kml_read_file ( vt, f );
+          else
+            ret = a_gpx_read_file ( vt, f, dirpath, FALSE );
           g_free ( dirpath );
           fclose(f);
         }

@@ -1114,6 +1114,9 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
 // like gpspoint's separated like /gpx/wpt/whatever
 // @append: Whether the read is to append to the vtl (or otherwise a new layer)
 //  i.e. primarily to decide what to do regarding appending files with different GPX versions
+// Returns:
+//  TRUE on success
+//
 gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath, gboolean append ) {
   XML_Parser parser = XML_ParserCreate(NULL);
   int done=0, len;
