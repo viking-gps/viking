@@ -117,6 +117,7 @@ GHashTable *vik_trw_layer_get_tracks ( VikTrwLayer *l );
 GHashTable *vik_trw_layer_get_routes ( VikTrwLayer *l );
 GHashTable *vik_trw_layer_get_waypoints ( VikTrwLayer *l );
 gboolean vik_trw_layer_is_empty ( VikTrwLayer *vtl );
+VikTrack *vik_trw_layer_get_only_track ( VikTrwLayer *vtl );
 LatLonBBox vik_trw_layer_get_bbox ( VikTrwLayer *vtl );
 
 gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikCoord *def_coord );

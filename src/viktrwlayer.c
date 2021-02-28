@@ -3632,22 +3632,7 @@ static void maybe_show_graph ( VikWindow *vw, VikTrwLayer *vtl, gpointer gw )
   VikTrack *trk = NULL;
 
   if ( a_vik_get_show_graph_for_trwlayer() ) {
-
-    // Get the track or route if there is only one of these in the layer
-    GHashTableIter iter;
-    gpointer key, value;
-
-    guint szr = g_hash_table_size ( vtl->routes );
-    guint szt = g_hash_table_size ( vtl->tracks );
-    if ( szr == 1 && szt == 0 ) {
-      g_hash_table_iter_init ( &iter, vtl->routes );
-      g_hash_table_iter_next ( &iter, &key, &value );
-      trk = VIK_TRACK(value);
-    } else if ( szr == 0 && szt == 1 ) {
-      g_hash_table_iter_init ( &iter, vtl->tracks );
-      g_hash_table_iter_next ( &iter, &key, &value );
-      trk = VIK_TRACK(value);
-    }
+    trk = vik_trw_layer_get_only_track ( vtl );
   }
 
   if ( trk )
@@ -3789,6 +3774,33 @@ gboolean vik_trw_layer_is_empty ( VikTrwLayer *vtl )
   return ! ( g_hash_table_size ( vtl->tracks ) ||
              g_hash_table_size ( vtl->routes ) ||
              g_hash_table_size ( vtl->waypoints ) );
+}
+
+/**
+ * Returns: a #VikTrack if there is only one track or only one route in the layer
+ * (irrespective of the number of waypoints), otherwise returns NULL
+ */
+VikTrack *vik_trw_layer_get_only_track ( VikTrwLayer *vtl )
+{
+   VikTrack *trk = NULL;
+
+   GHashTableIter iter;
+   gpointer key, value;
+
+   // Get the track or route if there is only one of these in the layer
+   guint szr = g_hash_table_size ( vtl->routes );
+   guint szt = g_hash_table_size ( vtl->tracks );
+   if ( szr == 1 && szt == 0 ) {
+     g_hash_table_iter_init ( &iter, vtl->routes );
+     g_hash_table_iter_next ( &iter, &key, &value );
+     trk = VIK_TRACK(value);
+   } else if ( szr == 0 && szt == 1 ) {
+     g_hash_table_iter_init ( &iter, vtl->tracks );
+     g_hash_table_iter_next ( &iter, &key, &value );
+     trk = VIK_TRACK(value);
+   }
+
+   return trk;
 }
 
 gboolean vik_trw_layer_get_tracks_visibility ( VikTrwLayer *vtl )
