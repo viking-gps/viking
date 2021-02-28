@@ -995,6 +995,38 @@ It is possible to convert between Tracks and Routes, although converting from a 
 Also see <xref linkend="trw_tools"/> for use in conjunction with this layer.
 </para>
 
+<section><title>Layer Properties</title>
+<para>
+This layer has many configurable properties split into several parts:
+</para>
+<section><title>Waypoints</title>
+  <para>Options that effect the drawing of waypoints.</para>
+</section>
+<section><title>Tracks</title>
+  <para>Basic options that effect the drawing of tracks and routes.</para>
+</section>
+<section><title>Tracks Advanced</title>
+  <para>More detailed options that effect the drawing and processing of tracks and routes.</para>
+  <para>Options that effect the processing of tracks and routes are:</para>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>Apply DEM Automatically</guilabel></term>
+      <listitem><para>Mainly intended for use with External layers, such that elevations values from DEM supercede those in the source file. This needs a DEM layer with a DEM file covering the area of the track for this to take affect.</para></listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><guilabel>Remove Duplicate Trackpoint</guilabel></term>
+      <listitem><para>Mainly intended for use with External layers, remove duplicate trackpoints when loading in from the source file.</para></listitem>
+    </varlistentry>
+  </variablelist>
+</section>
+<section><title>Metadata</title>
+  <para>Metadata such as Description, Author and Keywords for this TrackWaypoint Layer.</para>
+</section>
+<section><title>Filesystem</title>
+  <para>Shows the GPX version of the TrackWaypoint Layer and External Layer type information.</para>
+</section>
+</section><!-- Prop END -->
+
 <section><title>Layer Operations</title>
 <para>
 The layer has a context menu with several operations.
