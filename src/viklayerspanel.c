@@ -59,6 +59,8 @@ struct _VikLayersPanel {
   GtkWidget *stats_pane; GtkWidget *stats_label;
   GtkWidget *splits_pane; GtkWidget *splits_label;
 
+  // Effectively vik_trw_and_track_t:
+  VikTrwLayer *vtl;
   VikTrack *trk;
 
   VikAggregateLayer *toplayer;
@@ -445,7 +447,7 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
 static gboolean track_tabs_refresh_cb ( VikLayersPanel *vlp )
 {
   if ( vlp->trk )
-    vik_layers_panel_track_add ( vlp, vlp->trk );
+    vik_layers_panel_track_add ( vlp, vlp->trk, (gpointer)vlp->vtl );
   return TRUE;
 }
 
@@ -1222,12 +1224,13 @@ static void layers_panel_splits_remove ( VikLayersPanel *vlp )
 /**
  *
  */
-void vik_layers_panel_track_add ( VikLayersPanel *vlp, VikTrack *trk )
+void vik_layers_panel_track_add ( VikLayersPanel *vlp, VikTrack *trk, gpointer vtl )
 {
   vlp->trk = trk;
+  vlp->vtl = VIK_TRW_LAYER(vtl);
 
   layers_panel_stats_remove ( vlp );
-  (void)vik_trw_propwin_attach_statistics_table ( vlp->stats_pane, trk, TRUE );
+  (void)vik_trw_propwin_attach_statistics_table ( vlp->stats_pane, trk, vlp->vtl, TRUE );
   if ( gtk_widget_get_visible(vlp->stats_pane) )
     gtk_widget_show_all ( vlp->stats_pane );
   gtk_widget_set_sensitive ( vlp->stats_label, TRUE );

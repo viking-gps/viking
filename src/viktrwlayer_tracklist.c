@@ -443,11 +443,17 @@ static void trw_layer_track_list_add ( vik_trw_and_track_t *vtt,
 	gdouble max_speed = 0.0;
 	gdouble max_alt = 0.0;
 
-	av_speed = vik_track_get_average_speed ( trk );
-	av_speed = vu_speed_convert ( speed_units, av_speed );
+	// Routes clearly don't have speeds
+	if ( !trk->is_route ) {
+		av_speed = vik_track_get_average_speed ( trk );
+		av_speed = vu_speed_convert ( speed_units, av_speed );
 
-	max_speed = vik_track_get_max_speed ( trk );
-	max_speed = vu_speed_convert ( speed_units, max_speed );
+		max_speed = vu_track_get_max_speed ( trk, vik_trw_layer_get_prefer_gps_speed(vtl) );
+		if ( isnan(max_speed) )
+			max_speed = 0.0;
+		else
+			max_speed = vu_speed_convert ( speed_units, max_speed );
+	}
 
 	// TODO - make this a function to get min / max values?
 	gdouble *altitudes = NULL;

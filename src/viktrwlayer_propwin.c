@@ -2628,7 +2628,7 @@ GtkWidget *vik_trw_propwin_create_splits_tabs ( VikTrack *trk )
  *
  * Returns: TimeZone; which may be NULL
  */
-gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr, gboolean compact )
+gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr, VikTrwLayer *vtl, gboolean compact )
 {
   GPtrArray *paw = g_ptr_array_new();
   GtkWidget *table;
@@ -2709,8 +2709,8 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr, gb
   }
 
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
-  tmp_speed = vik_track_get_max_speed(tr);
-  if ( tmp_speed == 0 )
+  tmp_speed = vu_track_get_max_speed ( tr, vik_trw_layer_get_prefer_gps_speed(vtl) );
+  if ( isnan(tmp_speed) )
     g_snprintf(tmp_buf, sizeof(tmp_buf), _("No Data"));
   else {
     vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, tmp_speed, TRUE, "%.2f", FALSE );
@@ -2911,7 +2911,7 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
 
   GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
   gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
-  widgets->tz = vik_trw_propwin_attach_statistics_table ( sw, tr, FALSE );
+  widgets->tz = vik_trw_propwin_attach_statistics_table ( sw, tr, widgets->vtl, FALSE );
   if ( tr->trackpoints )
     widgets->vc = vik_track_get_center ( tr, vik_trw_layer_get_coord_mode(widgets->vtl) );
   return sw;

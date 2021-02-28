@@ -789,9 +789,20 @@ gdouble vik_track_get_average_speed_moving (const VikTrack *tr, int stop_length_
   return (time == 0) ? 0 : ABS(len/time);
 }
 
+/**
+ * This uses the raw positioning and so can give improbably high maximum speeds due to either
+ *  general inaccuracy in the position and/or if timestamps are rounded to nearest second
+ *  or a high sample rates with small variances in the position
+ *  Analysing every point is susceptible to single point causing a high value.
+ *
+ * Potentially max speed is available in a GPX Extension lap data summary
+ *  but Viking does not support that yet
+ *
+ * Returns: speed in m/s or NAN if not available
+ */
 gdouble vik_track_get_max_speed(const VikTrack *tr)
 {
-  gdouble maxspeed = 0.0, speed = 0.0;
+  gdouble maxspeed = -1.0, speed = 0.0;
   if ( tr->trackpoints )
   {
     GList *iter = tr->trackpoints->next;
@@ -809,6 +820,36 @@ gdouble vik_track_get_max_speed(const VikTrack *tr)
       iter = iter->next;
     }
   }
+  if ( maxspeed < 0.0 )
+    maxspeed = NAN;
+  return maxspeed;
+}
+
+/**
+ * This uses the speed as reported in the data itself (if available),
+ *  rather than being derived from coordinate differences (as above).
+ * Using speeds in the data itself may be more reliable.
+ * Analysing every point and taking it at face value is of course still susceptible rogue values.
+ *
+ * Returns: speed in m/s or NAN if not available
+ */
+gdouble vik_track_get_max_speed_by_gps(const VikTrack *tr)
+{
+  gdouble maxspeed = -1.0, speed;
+  if ( tr->trackpoints ) {
+    // NB skips first point (unlikely to be maximum speed / possible false reading anyway)
+    GList *iter = tr->trackpoints->next;
+    while (iter) {
+      if ( !isnan(VIK_TRACKPOINT(iter->data)->speed) ) {
+        speed = VIK_TRACKPOINT(iter->data)->speed;
+        if ( speed > maxspeed )
+          maxspeed = speed;
+      }
+      iter = iter->next;
+    }
+  }
+  if ( maxspeed < 0.0 )
+    maxspeed = NAN;
   return maxspeed;
 }
 
@@ -1781,30 +1822,50 @@ VikTrackpoint *vik_track_get_closest_tp_by_percentage_time ( VikTrack *tr, gdoub
   return VIK_TRACKPOINT(iter->data);
 }
 
-VikTrackpoint* vik_track_get_tp_by_max_speed ( const VikTrack *tr )
+/**
+ * vik_track_get_tp_by_max_speed:
+ * @by_gps_speed: If TRUE then use the speed value in the data in preference to inferring from trackpoint positions
+ *
+ * Returns: The trackpoint of the maximum speed, if no speeds found then it returns NULL
+ */
+VikTrackpoint* vik_track_get_tp_by_max_speed ( const VikTrack *tr, gboolean by_gps_speed )
 {
   gdouble maxspeed = 0.0, speed = 0.0;
 
   if ( !tr->trackpoints )
     return NULL;
 
-  GList *iter = tr->trackpoints;
+  GList *iter = tr->trackpoints->next;
   VikTrackpoint *max_speed_tp = NULL;
 
-  while (iter) {
-    if (iter->prev) {
+  if ( by_gps_speed ) {
+    while (iter) {
+      if ( !isnan(VIK_TRACKPOINT(iter->data)->speed) ) {
+        speed = VIK_TRACKPOINT(iter->data)->speed;
+        if ( speed > maxspeed ) {
+          maxspeed = speed;
+          max_speed_tp = VIK_TRACKPOINT(iter->data);
+        }
+      }
+      iter = iter->next;
+    }
+  }
+
+  if ( !max_speed_tp ) {
+    iter = tr->trackpoints->next;
+    while (iter) {
       if ( !isnan(VIK_TRACKPOINT(iter->data)->timestamp) &&
            !isnan(VIK_TRACKPOINT(iter->prev->data)->timestamp) &&
-	   (! VIK_TRACKPOINT(iter->data)->newsegment) ) {
-	speed =  vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord), &(VIK_TRACKPOINT(iter->prev->data)->coord) )
-	  / ABS(VIK_TRACKPOINT(iter->data)->timestamp - VIK_TRACKPOINT(iter->prev->data)->timestamp);
-	if ( speed > maxspeed ) {
-	  maxspeed = speed;
-	  max_speed_tp = VIK_TRACKPOINT(iter->data);
-	}
+           (! VIK_TRACKPOINT(iter->data)->newsegment) ) {
+        speed =  vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord), &(VIK_TRACKPOINT(iter->prev->data)->coord) )
+          / ABS(VIK_TRACKPOINT(iter->data)->timestamp - VIK_TRACKPOINT(iter->prev->data)->timestamp);
+        if ( speed > maxspeed ) {
+          maxspeed = speed;
+          max_speed_tp = VIK_TRACKPOINT(iter->data);
+        }
       }
+      iter = iter->next;
     }
-    iter = iter->next;
   }
   
   return max_speed_tp;

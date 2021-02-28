@@ -1428,3 +1428,17 @@ gboolean vu_check_confirm_external_use ( GtkWindow *parent )
 	                "See the manual for more detail.%s" );
 	return a_dialog_yes_or_no_suppress ( parent, txt, _("\n\nDo you wish to continue?") );
 }
+
+/**
+ *
+ */
+gdouble vu_track_get_max_speed ( VikTrack *trk, gboolean prefer_gps_speed )
+{
+	gdouble mspeed = NAN;
+	g_return_val_if_fail ( trk, mspeed );
+	if ( prefer_gps_speed )
+		mspeed = vik_track_get_max_speed_by_gps ( trk );
+	if ( isnan(mspeed) )
+		mspeed = vik_track_get_max_speed ( trk );
+	return mspeed;
+}

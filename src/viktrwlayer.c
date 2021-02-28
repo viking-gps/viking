@@ -135,6 +135,7 @@ struct _VikTrwLayer {
   vik_layer_sort_order_t track_sort_order;
   gboolean auto_dem;
   gboolean auto_dedupl;
+  gboolean prefer_gps_speed;
 
   // Metadata
   VikTRWMetadata *metadata;
@@ -694,6 +695,8 @@ VikLayerParam trw_layer_params[] = {
     N_("Automatically apply DEM to trackpoints on file load"), vik_lpd_false_default, NULL, NULL },
   { VIK_LAYER_TRW, "trackautodedupl", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS_ADV, N_("Remove Duplicate Trackpoints"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
     N_("Automatically delete duplicate trackpoints on file load"), vik_lpd_false_default, NULL, NULL },
+  { VIK_LAYER_TRW, "preferGPSspeed", VIK_LAYER_PARAM_BOOLEAN, GROUP_TRACKS_ADV, N_("Use GPS Speed"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Use reported GPS speed values - particularly for maximum speed"), vik_lpd_true_default, NULL, NULL },
 
   { VIK_LAYER_TRW, "drawlabels", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Labels"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpfontsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Font Size:"), VIK_LAYER_WIDGET_COMBOBOX, params_font_sizes, NULL, NULL, wpfontsize_default, NULL, NULL },
@@ -751,6 +754,7 @@ enum {
   PARAM_TSO,
   PARAM_TADEM,
   PARAM_TRDUP,
+  PARAM_PGS,
   // Waypoints
   PARAM_DLA,
   PARAM_WPFONTSIZE,
@@ -1450,6 +1454,7 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
       break;
     case PARAM_TADEM: vtl->auto_dem = vlsp->data.b; break;
     case PARAM_TRDUP: vtl->auto_dedupl = vlsp->data.b; break;
+    case PARAM_PGS: vtl->prefer_gps_speed = vlsp->data.b; break;
     case PARAM_DLA: vtl->drawlabels = vlsp->data.b; break;
     case PARAM_DI: vtl->drawimages = vlsp->data.b; break;
     case PARAM_IS:
@@ -3816,6 +3821,11 @@ gboolean vik_trw_layer_get_routes_visibility ( VikTrwLayer *vtl )
 gboolean vik_trw_layer_get_waypoints_visibility ( VikTrwLayer *vtl )
 {
   return vtl->waypoints_visible;
+}
+
+gboolean vik_trw_layer_get_prefer_gps_speed ( VikTrwLayer *vtl )
+{
+  return vtl->prefer_gps_speed;
 }
 
 /*
@@ -6388,7 +6398,7 @@ static void trw_layer_goto_track_max_speed ( menu_array_sublayer values )
   if ( !track )
     return;
 
-  VikTrackpoint* vtp = vik_track_get_tp_by_max_speed ( track );
+  VikTrackpoint* vtp = vik_track_get_tp_by_max_speed ( track, vik_trw_layer_get_prefer_gps_speed(vtl) );
   if ( !vtp )
     return;
   trw_layer_select_trackpoint ( vtl, track, vtp, TRUE );

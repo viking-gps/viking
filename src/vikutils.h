@@ -100,6 +100,8 @@ GList* vu_sorted_list_from_hash_table ( GHashTable *hash_table, vik_layer_sort_o
 
 gboolean vu_check_confirm_external_use ( GtkWindow *parent );
 
+gdouble vu_track_get_max_speed ( VikTrack *trk, gboolean prefer_gps_speed );
+
 G_END_DECLS
 
 #endif

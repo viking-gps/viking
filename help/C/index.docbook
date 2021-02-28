@@ -1017,6 +1017,10 @@ This layer has many configurable properties split into several parts:
       <term><guilabel>Remove Duplicate Trackpoint</guilabel></term>
       <listitem><para>Mainly intended for use with External layers, remove duplicate trackpoints when loading in from the source file.</para></listitem>
     </varlistentry>
+    <varlistentry>
+      <term><guilabel>Prefer GPS Speed</guilabel></term>
+      <listitem><para>Mainly for Maximum speed calculations: use speed from the .</para></listitem>
+    </varlistentry>
   </variablelist>
 </section>
 <section><title>Metadata</title>

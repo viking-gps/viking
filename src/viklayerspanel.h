@@ -76,7 +76,7 @@ void vik_layers_panel_show_calendar ( VikLayersPanel *vlp, gboolean show );
 void vik_layers_panel_show_goto ( VikLayersPanel *vlp, gboolean show );
 void vik_layers_panel_show_stats ( VikLayersPanel *vlp, gboolean show );
 void vik_layers_panel_show_splits ( VikLayersPanel *vlp, gboolean show );
-void vik_layers_panel_track_add ( VikLayersPanel *vlp, VikTrack *trk );
+void vik_layers_panel_track_add ( VikLayersPanel *vlp, VikTrack *trk, gpointer vtl );
 void vik_layers_panel_track_remove ( VikLayersPanel *vlp );
 void vik_layers_panel_calendar_update ( VikLayersPanel *vlp );
 void vik_layers_panel_calendar_today ( VikLayersPanel *vlp );

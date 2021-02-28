@@ -6072,7 +6072,7 @@ void vik_window_set_selected_trw_layer ( VikWindow *vw, gpointer vtl )
   vw->selected_waypoints = NULL;
   VikTrack *one = vik_trw_layer_get_only_track ( vtl );
   if ( one )
-    vik_layers_panel_track_add ( vw->viking_vlp, one );
+    vik_layers_panel_track_add ( vw->viking_vlp, one, vtl );
   else
     vik_layers_panel_track_remove ( vw->viking_vlp );
   // Set highlight thickness
@@ -6107,7 +6107,7 @@ void vik_window_set_selected_track ( VikWindow *vw, VikTrack *vt, gpointer vtl )
 {
   vw->selected_track = vt;
   if ( vt )
-    vik_layers_panel_track_add ( vw->viking_vlp, vt );
+    vik_layers_panel_track_add ( vw->viking_vlp, vt, vtl );
   vw->containing_vtl = vtl;
   /* Clear others */
   vw->selected_vtl       = NULL;

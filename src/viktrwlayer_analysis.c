@@ -117,14 +117,14 @@ static void val_reset_months ( void )
  *
  * Function to collect statistics, using the internal track functions
  */
-static void val_analyse_track ( VikTrack *trk, gboolean include_no_times )
+static void val_analyse_track ( VikTrack *trk, VikTrwLayer *vtl, gboolean include_no_times )
 {
 	//val_reset ( TS_TRACK );
 	gdouble min_alt, max_alt, up, down;
 
 	//gdouble  length_gaps = vik_track_get_length_including_gaps (trk);
 	gdouble  length      = 0.0;
-	gdouble  max_speed   = 0.0;
+	gdouble  max_speed   = NAN;
 	//gulong   trackpoints = vik_track_get_tp_count (trk);
 	//guint    segments    = vik_track_get_segment_count (trk);
 
@@ -168,7 +168,7 @@ static void val_analyse_track ( VikTrack *trk, gboolean include_no_times )
 		tracks_stats[TS_TRACKS].count++;
 
 		length    = vik_track_get_length (trk);
-		max_speed = vik_track_get_max_speed (trk);
+		max_speed = vu_track_get_max_speed ( trk, vik_trw_layer_get_prefer_gps_speed(vtl) );
 
 		// NB A route shouldn't have times anyway
 		if ( !trk->is_route ) {
@@ -191,8 +191,9 @@ static void val_analyse_track ( VikTrack *trk, gboolean include_no_times )
 			//tracks_stats[ii].segments    += segments;
 			tracks_stats[ii].length      += length;
 			//tracks_stats[ii].length_gaps += length_gaps;
-			if ( max_speed > tracks_stats[ii].max_speed )
-				tracks_stats[ii].max_speed = max_speed;
+			if ( !isnan(max_speed) )
+				if ( max_speed > tracks_stats[ii].max_speed )
+					tracks_stats[ii].max_speed = max_speed;
 		}
 
 		if ( vik_track_get_minmax_alt (trk, &min_alt, &max_alt) ) {
@@ -227,8 +228,9 @@ static void val_analyse_track ( VikTrack *trk, gboolean include_no_times )
 			tracks_years[yi].elev_gain += up;
 			if ( max_alt > tracks_years[yi].max_alt )
 				tracks_years[yi].max_alt = max_alt;
-			if ( max_speed > tracks_years[yi].max_speed )
-				tracks_years[yi].max_speed = max_speed;
+			if ( !isnan(max_speed) )
+				 if ( max_speed > tracks_years[yi].max_speed )
+					 tracks_years[yi].max_speed = max_speed;
 		}
 		g_date_free ( gdate );
 	}
@@ -409,7 +411,7 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 
 	vik_units_speed_t speed_units = a_vik_get_units_speed ();
 	g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-	if ( ts.max_speed > 0 )
+	if ( !isnan(ts.max_speed) )
 		vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, ts.max_speed, TRUE, "%.1f", FALSE );
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 
@@ -512,7 +514,7 @@ static void val_analyse_item_maybe ( vik_trw_and_track_t *vtlist, const gpointer
 			return;
 	}
 
-	val_analyse_track ( trk, tot->include_no_times );
+	val_analyse_track ( trk, vtl, tot->include_no_times );
 }
 
 /**
