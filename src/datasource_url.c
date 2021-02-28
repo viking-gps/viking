@@ -34,6 +34,7 @@ typedef struct {
 
 /* The last file format selected */
 static int last_type = -1;
+static gchar *last_url = NULL;
 
 static gpointer datasource_url_init ( acq_vik_t *avt );
 static void datasource_url_add_setup_widgets ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
@@ -95,7 +96,7 @@ static void datasource_url_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
 {
 	datasource_url_widgets_t *widgets = (datasource_url_widgets_t *)user_data;
 	GtkWidget *label = gtk_label_new (_("URL:"));
-	widgets->url = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+	widgets->url = ui_entry_new ( last_url, GTK_ENTRY_ICON_SECONDARY );
 	// 'ok' when press return in the entry
 	g_signal_connect_swapped ( widgets->url, "activate", G_CALLBACK(a_dialog_response_accept), dialog );
 
@@ -142,7 +143,7 @@ static void datasource_url_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
 static void datasource_url_get_process_options ( datasource_url_widgets_t *widgets, ProcessOptions *po, DownloadFileOptions *download_options, const gchar *not_used2, const gchar *not_used3 )
 {
 	// Retrieve the user entered value
-	const gchar *value = gtk_entry_get_text ( GTK_ENTRY(widgets->url) );
+	last_url = g_strdup ( gtk_entry_get_text ( GTK_ENTRY(widgets->url) ) );
 
 	if (GTK_IS_COMBO_BOX (widgets->type) )
 		last_type = gtk_combo_box_get_active ( GTK_COMBO_BOX (widgets->type) );
@@ -151,7 +152,7 @@ static void datasource_url_get_process_options ( datasource_url_widgets_t *widge
 	if ( a_babel_file_list_get() )
 		po->input_file_type = g_strdup ( ((BabelFile*)g_list_nth_data(a_babel_file_list_get(), last_type))->name );
 
-	po->url = g_strdup ( value );
+	po->url = g_strdup ( last_url );
 
 	// Support .zip + bzip2 files directly
 	download_options->convert_file = a_try_decompress_file;
