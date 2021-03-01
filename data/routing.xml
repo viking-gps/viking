@@ -1,5 +1,25 @@
 <objects>
   <object class="VikRoutingWebEngine">
+    <property name="id">brouter</property>
+    <property name="label">brouter</property>
+    <property name="format">gpx</property>
+    <property name="url-base">http://h2096617.stratoserver.net:443/brouter?nogos=&amp;profile=hiking-beta&amp;alternativeidx=0&amp;format=gpx</property>
+    <property name="url-start-ll">&amp;lonlats=%s,%s</property>
+    <property name="url-stop-ll">|%s,%s</property>
+    <property name="url-via-ll"></property>
+    <property name="url-ll-lat-first">FALSE</property>
+  </object>
+  <object class="VikRoutingWebEngine">
+    <property name="id">brouterCar</property>
+    <property name="label">brouter Car</property>
+    <property name="format">gpx</property>
+    <property name="url-base">http://h2096617.stratoserver.net:443/brouter?nogos=&amp;profile=car-fast&amp;alternativeidx=0&amp;format=gpx</property>
+    <property name="url-start-ll">&amp;lonlats=%s,%s</property>
+    <property name="url-stop-ll">|%s,%s</property>
+    <property name="url-via-ll"></property>
+    <property name="url-ll-lat-first">FALSE</property>
+  </object>
+  <object class="VikRoutingWebEngine">
     <property name="id">yourscar</property>
     <property name="label">Yours: Car</property>
     <property name="format">kml</property>
@@ -14,15 +34,5 @@
     <property name="url-base">http://www.yournavigation.org/api/1.0/gosmore.php?format=kml</property>
     <property name="url-start-ll">&amp;flat=%s&amp;flon=%s</property>
     <property name="url-stop-ll">&amp;tlat=%s&amp;tlon=%s&amp;v=bicycle&amp;fast=1&amp;layer=mapnik</property>
-  </object>
-  <object class="VikRoutingWebEngine">
-    <property name="id">brouter</property>
-    <property name="label">brouter</property>
-    <property name="format">gpx</property>
-    <property name="url-base">http://h2096617.stratoserver.net:443/brouter?nogos=&amp;profile=hiking-beta&amp;alternativeidx=0&amp;format=gpx</property>
-    <property name="url-start-ll">&amp;lonlats=%s,%s</property>
-    <property name="url-stop-ll">|%s,%s</property>
-    <property name="url-via-ll"></property>
-    <property name="url-ll-lat-first">FALSE</property>
   </object>
 </objects>
