@@ -1708,8 +1708,16 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
       gboolean replace = FALSE;
       int heading = isnan(vgl->realtime_fix.fix.track) ? 0 : (int)floor(vgl->realtime_fix.fix.track);
       int last_heading = isnan(vgl->last_fix.fix.track) ? 0 : (int)floor(vgl->last_fix.fix.track);
+#if GPSD_API_MAJOR_VERSION >= 9
+      // We currently support one altitude value, whereas GPSD has shifted to HAE & MSL options
+      //  (Height Above Ellipsoid & Mean Sea Level)
+      // and the original 'altitude' is apparently undefined
+      int alt = isnan(vgl->realtime_fix.fix.altHAE) ? 0 : (int)floor(vgl->realtime_fix.fix.altHAE);
+      int last_alt = isnan(vgl->last_fix.fix.altHAE) ? 0 : (int)floor(vgl->last_fix.fix.altHAE);
+#else
       int alt = isnan(vgl->realtime_fix.fix.altitude) ? 0 : (int)floor(vgl->realtime_fix.fix.altitude);
       int last_alt = isnan(vgl->last_fix.fix.altitude) ? 0 : (int)floor(vgl->last_fix.fix.altitude);
+#endif
       if (((last_tp = g_list_last(vgl->realtime_track->trackpoints)) != NULL) &&
           (vgl->realtime_fix.fix.mode > MODE_2D) &&
           (vgl->last_fix.fix.mode <= MODE_2D) &&
