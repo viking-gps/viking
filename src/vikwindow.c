@@ -1739,6 +1739,17 @@ static gboolean draw_click (VikWindow *vw, GdkEventButton *event)
   return FALSE;
 }
 
+/**
+ * Perform screen redraw after a little delay
+ * (particularly from scroll events)
+ */
+static gboolean pending_draw_timeout ( VikWindow *vw )
+{
+  vw->pending_draw_id = 0;
+  draw_update ( vw );
+  return FALSE;
+}
+
 static void vik_window_pan_move (VikWindow *vw, GdkEventMotion *event)
 {
   if ( vw->pan_x != -1 ) {
@@ -1750,7 +1761,9 @@ static void vik_window_pan_move (VikWindow *vw, GdkEventMotion *event)
     vw->pan_move = TRUE;
     vw->pan_x = new_pan_x;
     vw->pan_y = new_pan_y;
-    draw_update ( vw );
+    if ( vw->pending_draw_id )
+      g_source_remove ( vw->pending_draw_id );
+    vw->pending_draw_id = g_timeout_add ( vw->move_scroll_timeout, (GSourceFunc)pending_draw_timeout, vw );
   }
 }
 
@@ -2001,17 +2014,6 @@ static void zoom_at_xy ( VikWindow *vw, guint point_x, guint point_y, gboolean s
   }
   vik_viewport_coord_to_screen ( vw->viking_vvp, &coord, &x, &y );
   vik_viewport_set_center_screen ( vw->viking_vvp, center_x + (x - point_x), center_y + (y - point_y) );
-}
-
-/**
- * Perform screen redraw after a little delay
- * (particularly from scroll events)
- */
-static gboolean pending_draw_timeout ( VikWindow *vw )
-{
-  vw->pending_draw_id = 0;
-  draw_update ( vw );
-  return FALSE;
 }
 
 static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
