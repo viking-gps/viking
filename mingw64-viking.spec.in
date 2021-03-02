@@ -33,6 +33,7 @@ BuildRequires:	mingw64-gtk3-devel
 # ATM gtk3-devel auto includes at least devel versions of glib2, gobject, zlib and more
 
 # Mandatory libraries
+BuildRequires:	mingw64-json-glib-devel
 BuildRequires:	mingw64-libexpat-devel
 BuildRequires:	mingw64-libcurl-devel
 # Optional libraries
@@ -49,6 +50,7 @@ BuildRequires:	mingw64-liboauth-devel
 
 # Libs for runtime (and thus also available for the NSIS installer to include the dependencies)
 Requires:	mingw64-gtk3
+Requires:	mingw64-json-glib
 Requires:	mingw64-libexpat1
 Requires:	mingw64-libcurl4
 Requires:	mingw64-libgexiv2

@@ -4376,6 +4376,7 @@ Accept: */*
 		<para>The <application>GPSBabel</application> format code to interpret the service response. By default a GPX response is expected and processed internally. However if the service returns a different format then <application>GPSBabel</application> is used to transform the text into something that &appname; can understand. Only formats that <application>GPSBabel</application> supports can be used: e.g. <emphasis>gtrnctr</emphasis> (for Garmin Training Center .tcx files), etc...</para>
 		<para>Use <command>gpsbabel --help</command> on the command line to find out the supported file types and their codes to process them.</para>
 		<para>Some format codes are handled natively by &appname; such as <emphasis>gpx</emphasis> and <emphasis>kml</emphasis>.</para>
+		<para>A special format code of <emphasis>viking-geojson-osrm</emphasis> is available for handling responses by <ulink url="http://project-osrm.org/">OSRM</ulink> route servers.</para>
 	      </listitem>
             </varlistentry>
             <varlistentry>

@@ -19,6 +19,7 @@ TESTS = check_degrees_conversions.sh \
 	check_babel.sh \
 	check_vik2vik.sh \
 	check_gpx.sh \
+	check_geojson_osrm.sh \
 	check_help_xml.sh \
 	check_metatile.sh
 if GEOTAG
@@ -29,6 +30,7 @@ TESTS += check_md5_hash.sh
 endif
 
 check_PROGRAMS = degrees_converter \
+	geojson_osrm_to_gpx \
 	gpx2gpx \
 	vik2vik \
 	test_vikgotoxmltool \
@@ -49,6 +51,7 @@ check_SCRIPTS = check_degrees_conversions.sh \
 	check_parse_latlon.sh \
 	check_vik2vik.sh \
 	check_gpx.sh \
+	check_geojson_osrm.sh \
 	check_help_xml.sh \
 	check_metatile.sh
 if GEOTAG
@@ -71,6 +74,8 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	check_md5_hash.sh \
 	check_metatile.sh \
 	metatile_example/13/0/0/250/220/0.meta \
+	check_geojson_osrm.sh \
+	OSRM_sample_response.txt \
 	check_geotag.sh \
 	Stonehenge.jpg \
 	ViewFromCribyn-Wales-GPS.jpg
@@ -119,6 +124,11 @@ test_decimal_output_LDADD = \
 
 test_coord_conversion_SOURCES = test_coord_conversion.c
 test_coord_conversion_LDADD = \
+  $(top_builddir)/src/libviking.a \
+  $(LDADD)
+
+geojson_osrm_to_gpx_SOURCES = geojson_osrm_to_gpx.c
+geojson_osrm_to_gpx_LDADD = \
   $(top_builddir)/src/libviking.a \
   $(LDADD)
 

@@ -30,6 +30,7 @@
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
+#include <json-glib/json-glib.h>
 
 /**
  * Perform any cleanup actions once program has completed running
@@ -185,4 +186,92 @@ gchar* a_geojson_import_to_gpx ( const gchar *filename )
 	g_strfreev (argv);
 
 	return gpx_filename;
+}
+
+/**
+ * Handle response from
+ * http://project-osrm.org/docs/v5.23.0/api/#route-service
+ * ATM only try to get the geometry out of the response
+ * i.e. no handling of 'code' response or 'message'
+ */
+gboolean a_geojson_read_file_OSRM ( VikTrwLayer *vtl, const gchar *filename )
+{
+	JsonParser *jp = json_parser_new();
+	GError *error = NULL;
+	gboolean ans = json_parser_load_from_file ( jp, filename, &error );
+	if ( error ) {
+		g_warning ( "%s: parse load failed: %s", __FUNCTION__, error->message );
+		g_error_free ( error );
+		return FALSE;
+	}
+
+	JsonNode *result;
+	JsonPath *path = json_path_new ();
+	json_path_compile ( path, "$.routes..geometry..coordinates", NULL );
+	result = json_path_match ( path, json_parser_get_root(jp) );
+
+	JsonGenerator *generator = json_generator_new ();
+	json_generator_set_root ( generator, result );
+
+	// Not sure of a good way to use native glib types (or GObjects etc...)
+	//  so simply hack apart this returned string
+	gchar *str = json_generator_to_data ( generator, NULL );
+	//g_debug ( "%s result: %s\n", __FUNCTION__, str );
+
+	if ( strlen(str) > 8 ) {
+		// Not sure how efficient this is; but should suffice for our use cases
+		gchar *ptr = GINT_TO_POINTER(1);
+		while ( ptr ) {
+			// Remove the inbetween brackets
+			ptr = g_strrstr ( str, "],[" );
+			if ( ptr )
+				// NB using memcpy() as compiler moans about not nul-terminated for strncpy(),
+				//  but here we definitely want just a direct substitution
+				//strncpy ( ptr, "   ", 3 );
+				memcpy ( ptr, "   ", 3 );
+		}
+
+		// Tidy up beginning and ending brackets
+		ptr = g_strrstr ( str, "]]]" );
+		if ( ptr )
+			memcpy ( ptr, "   ", 3 ); // as above		
+		ptr = g_strrstr ( str, "[[[" );
+		if ( ptr )
+			memcpy ( ptr, "   ", 3 ); // as above
+
+		gchar **coords = g_strsplit ( str, " ", -1 );
+
+		gint gi = 0;
+		gchar *coord = coords[0];
+		if ( coord ) {
+			ans = TRUE;
+			VikCoordMode coord_mode = vik_trw_layer_get_coord_mode ( vtl );
+			VikTrack *trk = vik_track_new ();
+			trk->is_route = TRUE;
+			VikTrackpoint *tp;
+			struct LatLon ll;
+			while ( coord ) {
+				gchar **vals = g_strsplit ( coord, ",", -1 );
+				guint nn = g_strv_length ( vals );
+				if ( nn == 2 ) {
+					tp = vik_trackpoint_new ();
+					// Remember geojson coordinates are in the 'lon,lat' order
+					ll.lat = g_ascii_strtod ( vals[1], NULL );
+					ll.lon = g_ascii_strtod ( vals[0], NULL );
+					vik_coord_load_from_latlon ( &tp->coord, coord_mode, &ll );
+					trk->trackpoints = g_list_prepend ( trk->trackpoints, tp );
+				}
+				g_strfreev ( vals );
+				//gi++;
+				coord = coords[gi++];
+			}
+			trk->trackpoints = g_list_reverse ( trk->trackpoints );
+            // Potentially could try to be more clever with the name...
+			vik_trw_layer_filein_add_track ( vtl, N_("OSRM Route"), trk );
+		}		
+		g_strfreev ( coords );
+	}
+	g_object_unref ( jp );
+	
+	return ans;
 }

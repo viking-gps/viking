@@ -3,6 +3,7 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (c) 2014, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (c) 2021, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +33,8 @@ const gchar* a_geojson_program_export ( void );
 const gchar* a_geojson_program_import ( void );
 
 gchar* a_geojson_import_to_gpx ( const gchar *filename );
+
+gboolean a_geojson_read_file_OSRM ( VikTrwLayer *vtl, const gchar *filename );
 
 G_END_DECLS
 

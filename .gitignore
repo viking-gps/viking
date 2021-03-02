@@ -116,6 +116,7 @@ src/misc/*.o
 /test/*.sh.log
 /test/*.sh.trs
 /test/test-suite.log
+/test/geojson_osrm_to_gpx
 /test/geotag_read
 /test/geotag_write
 /test/gpx2gpx

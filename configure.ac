@@ -98,11 +98,14 @@ dnl  ------------------
 dnl | Pkgconfig checks |---------------------------------------
 dnl  ------------------
 
+# ATM JSON not used by much of our code, so could be made optional
+#  but it seems to be available on all relevant platforms
 PKG_CHECK_MODULES(PACKAGE, [
         glib-2.0          >= 2.44
         gthread-2.0       >= 2.2
         gio-2.0           >= 2.32
         gdk-pixbuf-2.0    >= 2.26
+        json-glib-1.0     >= 0.16
 ])
 
 AC_SUBST(PACKAGE_CFLAGS)

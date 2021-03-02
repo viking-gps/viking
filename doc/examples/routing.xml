@@ -1,14 +1,4 @@
 <objects>
-  <!-- Note that OSRM no longer supports GPX output, so this example no longer works -->
-  <object class="VikRoutingWebEngine">
-    <property name="id">osrm</property>
-    <property name="label">OSRM</property>
-    <property name="format">gpx</property>
-    <property name="url-base">http://router.project-osrm.org/viaroute?output=gpx</property>
-    <property name="url-start-ll">&amp;loc=%s,%s</property>
-    <property name="url-stop-ll">&amp;loc=%s,%s</property>
-    <property name="url-via-ll">&amp;loc=%s,%s</property>
-  </object>
   <!-- Note this no longer works as Google format has changed and GPSBabel (at time of writing) doesn't understand it -->
   <object class="VikRoutingWebEngine">
     <property name="id">google</property>

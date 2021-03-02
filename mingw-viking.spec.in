@@ -35,6 +35,7 @@ BuildRequires:	mingw32-gtk2-devel
 # Mandatory libraries
 BuildRequires:	mingw32-libexpat-devel
 BuildRequires:	mingw32-libcurl-devel
+BuildRequires:	mingw32-json-glib-devel
 # Optional libraries
 BuildRequires:	mingw32-libgexiv2-devel
 BuildRequires:	mingw32-libbz2-devel
@@ -51,6 +52,7 @@ BuildRequires:	mingw32-liboauth-devel
 Requires:	mingw32-gtk2
 Requires:	mingw32-libexpat1
 Requires:	mingw32-libcurl4
+Requires:	mingw32-json-glib
 Requires:	mingw32-libgexiv2
 Requires:	mingw32-libstdc++6
 Requires:	mingw32-libsqlite3-0

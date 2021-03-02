@@ -129,7 +129,7 @@ if [ "$HOSTTYPE" == "x86_64" ]; then
 else
 	cp /usr/share/doc/packages/mingw32-libcurl-devel/COPYING $DESTINATION/COPYING_curl.txt
 fi
-
+cp $MINGW_BIN/libjson-glib*.dll $DESTINATION
 cp $MINGW_BIN/libexiv2.dll $DESTINATION
 cp $MINGW_BIN/libgexiv2*.dll $DESTINATION
 cp $MINGW_BIN/libstdc++*.dll $DESTINATION

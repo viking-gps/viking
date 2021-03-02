@@ -990,6 +990,7 @@ void a_dialog_license ( GtkWindow *parent, const gchar *map, const gchar *licens
 #ifdef HAVE_OAUTH_H
 #include <oauth.h>
 #endif
+#include <json-glib/json-glib.h>
 
 void a_dialog_build_info ( GtkWindow *parent )
 {
@@ -1042,6 +1043,9 @@ void a_dialog_build_info ( GtkWindow *parent )
 #ifdef LIBOAUTH_VERSION
   g_string_append_printf ( msg, "liboauth version: %s\n", LIBOAUTH_VERSION );
 #endif
+#endif
+#ifdef JSON_VERSION_S
+  g_string_append_printf ( msg, "json-glib version: %s\n", JSON_VERSION_S );
 #endif
 
   // https://docs.flatpak.org/en/latest/flatpak-command-reference.html#flatpak-metadata
