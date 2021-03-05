@@ -44,5 +44,5 @@ env:
 #
 script: >
     if [ ! -z "${DOCKERHUB_USERNAME:-}" ]; then set -x; echo "${DOCKERHUB_PASSWORD}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin; set +x; fi &&    
-    docker run --rm=true -v $HOME:$HOME:rw $BUILD_IMG /bin/sh -c "sed -i '/^#\sdeb-src /s/^#//' /etc/apt/sources.list && apt-get update && apt-get build-dep --yes viking && apt-get install --yes $COMMON_DEPS $DEPS && cd $PWD && ./autogen.sh $OPTS && make -j && make -j check && make install"
+    docker run --rm=true -v $HOME:$HOME:rw $BUILD_IMG /bin/sh -c "sed -i '/^#\sdeb-src /s/^#//' /etc/apt/sources.list && apt-get update && apt-get build-dep --yes viking && apt-get install --yes $COMMON_DEPS $DEPS && cd $PWD && ./autogen.sh $OPTS && make -j && make -j check || (cat test/test-suite.log ; false) && make install"
 # Further packages are installed as these are new dependencies for the latest source code, compared to the dependencies listed in the distribution version (`apt-get build-dep` always refers to the version which is built for the OS rather than the up-to-date source)
