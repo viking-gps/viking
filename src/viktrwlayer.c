@@ -1606,6 +1606,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_TSO: rv.u = vtl->track_sort_order; break;
     case PARAM_TADEM: rv.b = vtl->auto_dem; break;
     case PARAM_TRDUP: rv.b = vtl->auto_dedupl; break;
+    case PARAM_PGS: rv.b = vtl->prefer_gps_speed; break;
     case PARAM_IS: rv.u = vtl->image_size; break;
     case PARAM_IA: rv.u = vtl->image_alpha; break;
     case PARAM_ICS: rv.u = vtl->image_cache_size; break;
