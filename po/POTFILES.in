@@ -27,6 +27,7 @@ src/datasource_routing.c
 src/datasource_url.c
 src/datasource_wikipedia.c
 src/dem.c
+src/dems.c
 src/download.c
 src/file.c
 src/geotag_exif.c

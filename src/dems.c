@@ -20,6 +20,7 @@
  *
  */
 #include <glib.h>
+#include <glib/gi18n.h>
 
 #include "dems.h"
 #include "background.h"
@@ -97,7 +98,7 @@ VikDEM *a_dems_get(const gchar *filename)
 
 
 /* Load a string list (GList of strings) of dems. You have to use get to at them later.
- * When updating a list as a parameter, this should be bfore freeing the list so
+ * When updating a list as a parameter, this should be before freeing the list so
  * the same DEMs won't be loaded & unloaded.
  * Modifies the list to remove DEMs which did not load.
  */
@@ -114,6 +115,7 @@ int a_dems_load_list ( GList **dems, gpointer threaddata )
   const guint dem_total = g_list_length ( *dems );
   while ( iter ) {
     if ( ! a_dems_load((const gchar *) (iter->data)) ) {
+      g_warning ( _("Could not load DEM from file: %s"), (gchar*)(iter->data) );
       GList *iter_temp = iter->next;
       g_free ( iter->data );
       (*dems) = g_list_remove_link ( (*dems), iter );
