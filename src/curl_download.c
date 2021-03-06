@@ -48,6 +48,7 @@
 #include "globals.h"
 #include "curl_download.h"
 #include "settings.h"
+#include "util.h"
 
 gchar *curl_download_user_agent = NULL;
 
@@ -85,6 +86,19 @@ static int curl_progress_func(void *clientp, double dltotal, double dlnow, doubl
   return a_background_testcancel(NULL);
 }
 
+static char *get_cookie_file ( gboolean init )
+{
+  static char *cookie_file = NULL;
+
+  if ( init ) {
+    const gchar *viking_dir = a_get_viking_dir();
+    cookie_file = g_build_filename ( viking_dir, "cookies.txt", NULL );
+    return NULL;
+  }
+
+  return cookie_file;
+}
+
 static gint curl_ssl_verifypeer = 1; // https://curl.haxx.se/libcurl/c/CURLOPT_SSL_VERIFYPEER.html
 static gchar* curl_cainfo = NULL;    // https://curl.haxx.se/libcurl/c/CURLOPT_CAINFO.html
 
@@ -92,6 +106,7 @@ static gchar* curl_cainfo = NULL;    // https://curl.haxx.se/libcurl/c/CURLOPT_C
 void curl_download_init()
 {
   curl_global_init(CURL_GLOBAL_ALL);
+  (void)get_cookie_file ( TRUE );
   curl_download_user_agent = g_strdup_printf ("%s/%s %s", PACKAGE, VERSION, curl_version());
 
 #ifdef CURL_NO_SSL_VERIFYPEER
@@ -112,6 +127,8 @@ void curl_download_uninit()
 {
   curl_global_cleanup();
   g_free ( curl_cainfo );
+  // Cookie file does not persist between sessions
+  (void)util_remove ( get_cookie_file(FALSE) );
 }
 
 /**
@@ -128,6 +145,7 @@ static void common_opts ( CURL *curl, const char *uri, DownloadFileOptions *opti
     if ( options->user_pass != NULL ) {
       curl_easy_setopt ( curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY );
       curl_easy_setopt ( curl, CURLOPT_USERPWD, options->user_pass );
+      curl_easy_setopt ( curl, CURLOPT_UNRESTRICTED_AUTH, (long)options->allow_credential_follow );
     }
     if ( options->referer != NULL )
       curl_easy_setopt ( curl, CURLOPT_REFERER, options->referer );
@@ -184,6 +202,13 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
       for (int ii = 0; ii < g_strv_length(headers); ii++)
           curl_send_headers = curl_slist_append ( curl_send_headers, headers[ii] );
       g_strfreev ( headers );
+    }
+    if ( options->use_cookies ) {
+      const gchar *cookie_file = get_cookie_file ( FALSE );
+      if ( cookie_file ) {
+        curl_easy_setopt ( curl, CURLOPT_COOKIEFILE, cookie_file );
+        curl_easy_setopt ( curl, CURLOPT_COOKIEJAR, cookie_file );
+      }
     }
   }
   curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );

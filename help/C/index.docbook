@@ -3068,6 +3068,12 @@ This includes the remote source URL for the file and the cached version on the l
 </figure>
 This is for block 51N, 003W - covering Bristol in the UK.
 </para>
+<note>
+  <para>
+    The Source URL is generated from the current configuration settings;
+    it is not necessarily the URL that was used to acquire the DEM file, as that information is not saved.
+  </para>
+</note>
 </section>
 
 <section><title>Webtools</title>
@@ -3383,6 +3389,15 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 <section><title>Check For New Version</title>
 <para>Periodically (no more than once every 14 days), check to see if there is a new version of &appname; available.</para>
 </section>
+</section>
+
+<section id="prefs_dem_server" xreflabel="DEM Server"><title>DEM Server</title>
+<para>Store your NASA Earth login details which uses HTTP Basic Authentication.</para>
+<warning>
+<para>
+Your password will be stored in plain text.
+</para>
+</warning>
 </section>
 
 <section id="prefs_toolbar" xreflabel="Toolbar Preferences"><title>Toolbar</title>

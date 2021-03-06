@@ -41,8 +41,22 @@
 #define DEM_FIXED_NAME "DEM"
 #define MAPS_CACHE_DIR maps_layer_default_dir()
 #define SRTM_CACHE_TEMPLATE "%ssrtm3-%s%s%c%02d%c%03d.hgt.zip"
+// Legacy USGS location that stopped in 2021
+//#define SRTM_HTTP_BASE_URL "https://dds.cr.usgs.gov/srtm/version2_1/SRTM3"
 
-#define SRTM_HTTP_BASE_URL "https://dds.cr.usgs.gov/srtm/version2_1/SRTM3"
+// Now no longer uses the continent scheme & uses extra stuff in the filename
+// <url>/N12E034.SRTMGL1.hgt.zip
+#define SRTM_HTTP_BASE_URL "https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11"
+// And needs at least http username:password authentication and cookie handling to persist session across redirects
+// https://wiki.earthdata.nasa.gov/display/EL/How+To+Access+Data+With+cURL+And+Wget
+// At time of writing, cURL command in wiki is not complete as it also requires '--location-trusted'
+//  (libcurl equivalent CURLOPT_UNRESTRICTED_AUTH)
+
+// Potentially can use OAuth, but unclear how to register application
+
+// A different alternative - which uses a different server layout - 'DEM_SCHEME_LATITUDE'
+//#define SRTM_HTTP_BASE_URL "https://bailu.ch/dem3"
+
 static gchar *base_url = NULL;
 #define VIK_SETTINGS_SRTM_HTTP_BASE_URL "srtm_http_base_url"
 
@@ -107,6 +121,18 @@ typedef enum {
   DEM_CS_DELINEATE,
 } dem_color_style_type;
 
+typedef enum {
+  DEM_SCHEME_NONE = 0,
+  DEM_SCHEME_LATITUDE,
+  DEM_SCHEME_CONTINENT,
+} dem_dir_scheme_type;
+
+// Potentially could try to make this more flexible/freeform
+typedef enum {
+  DEM_FILENAME_SRTMGL1 = 0,
+  DEM_FILENAME_NORMAL,
+} dem_filename_style_type;
+
 static VikLayerParamData color_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "blue", &data.c ); return data;
 }
@@ -127,35 +153,57 @@ static VikLayerParamData max_elev_default ( void ) { return VIK_LPD_DOUBLE ( 100
 static VikLayerParamData color_scheme_default ( void ) { return VIK_LPD_UINT ( DEM_CS_DEFAULT ); }
 static VikLayerParamData alpha_default ( void ) { return VIK_LPD_UINT ( 255 ); }
 
-static void reset_cb ( GtkWidget *widget, gpointer ptr )
+static VikLayerParamData dir_scheme_default ( void ) { return VIK_LPD_UINT ( DEM_SCHEME_NONE ); }
+static VikLayerParamData filename_style_default ( void ) { return VIK_LPD_UINT ( DEM_FILENAME_SRTMGL1 ); }
+
+static gchar *params_groups[] = { N_("Drawing"), N_("Download"), N_("Files") };
+typedef enum { GROUP_DRAWING, GROUP_DOWNLOAD, GROUP_FILES } DEM_groups_t;
+
+static VikLayerParamData url_default ( void )
 {
-  a_layer_defaults_reset_show ( DEM_FIXED_NAME, ptr, VIK_LAYER_GROUP_NONE );
+  VikLayerParamData data; data.s = g_strdup ( base_url ); return data;
 }
 
+static void reset_cb ( GtkWidget *widget, gpointer ptr )
+{
+  a_layer_defaults_reset_show ( DEM_FIXED_NAME, ptr, GROUP_FILES );
+  a_layer_defaults_reset_show ( DEM_FIXED_NAME, ptr, GROUP_DRAWING );
+  a_layer_defaults_reset_show ( DEM_FIXED_NAME, ptr, GROUP_DOWNLOAD );
+}
 static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(reset_cb); }
 
-static gchar *params_schemes[] = { N_("Default"), N_("Delineate"), NULL };
+static gchar *params_color_schemes[] = { N_("Default"), N_("Delineate"), NULL };
+static gchar *params_dir_schemes[] = { N_("None"), N_("Latitude"), N_("Continent"), NULL }; // dem_dir_scheme_type
+static gchar *params_filename_styles[] = { N_("SRTMGL1"), N_("Normal"), NULL }; // dem_filename_style_type
 
 static VikLayerParam dem_layer_params[] = {
-  { VIK_LAYER_DEM, "files", VIK_LAYER_PARAM_STRING_LIST, VIK_LAYER_GROUP_NONE, N_("DEM Files:"), VIK_LAYER_WIDGET_FILELIST, NULL, NULL, NULL, NULL, NULL, NULL },
-  { VIK_LAYER_DEM, "source", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Download Source:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_source, NULL, NULL, source_default, NULL, NULL },
-  { VIK_LAYER_DEM, "color", VIK_LAYER_PARAM_COLOR, VIK_LAYER_GROUP_NONE, N_("Min Elev Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_default, NULL, NULL },
-  { VIK_LAYER_DEM, "color_scheme", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Color Scheme:"), VIK_LAYER_WIDGET_COMBOBOX, params_schemes, NULL, NULL, color_scheme_default, NULL, NULL },
-  { VIK_LAYER_DEM, "color_min", VIK_LAYER_PARAM_COLOR, VIK_LAYER_GROUP_NONE, N_("Start Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_min_default, NULL, NULL },
-  { VIK_LAYER_DEM, "color_max", VIK_LAYER_PARAM_COLOR, VIK_LAYER_GROUP_NONE, N_("End Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_max_default, NULL, NULL },
-  { VIK_LAYER_DEM, "type", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Type:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_type, NULL, NULL, type_default, NULL, NULL },
-  { VIK_LAYER_DEM, "min_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Min Elev:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0, NULL, NULL, min_elev_default, NULL, NULL },
-  { VIK_LAYER_DEM, "max_elev", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Max Elev:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0, NULL, NULL, max_elev_default, NULL, NULL },
-  { VIK_LAYER_DEM, "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, param_scales+2, NULL,
+  { VIK_LAYER_DEM, "files", VIK_LAYER_PARAM_STRING_LIST, GROUP_FILES, N_("DEM Files:"), VIK_LAYER_WIDGET_FILELIST, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_DEM, "source", VIK_LAYER_PARAM_UINT, GROUP_DOWNLOAD, N_("Download Source:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_source, NULL, NULL, source_default, NULL, NULL },
+  { VIK_LAYER_DEM, "srtm_url_base", VIK_LAYER_PARAM_STRING, GROUP_DOWNLOAD, N_("Base URL:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, url_default, NULL, NULL },
+  { VIK_LAYER_DEM, "srtm_server_dir_scheme", VIK_LAYER_PARAM_UINT, GROUP_DOWNLOAD, N_("Layout:"), VIK_LAYER_WIDGET_COMBOBOX, params_dir_schemes, NULL, NULL, dir_scheme_default, NULL, NULL },
+  { VIK_LAYER_DEM, "srtm_server_filename_style", VIK_LAYER_PARAM_UINT, GROUP_DOWNLOAD, N_("Filename Convention:"), VIK_LAYER_WIDGET_COMBOBOX, params_filename_styles, NULL, NULL, filename_style_default, NULL, NULL },
+  { VIK_LAYER_DEM, "color", VIK_LAYER_PARAM_COLOR, GROUP_DRAWING, N_("Min Elev Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_default, NULL, NULL },
+  { VIK_LAYER_DEM, "color_scheme", VIK_LAYER_PARAM_UINT, GROUP_DRAWING, N_("Color Scheme:"), VIK_LAYER_WIDGET_COMBOBOX, params_color_schemes, NULL, NULL, color_scheme_default, NULL, NULL },
+  { VIK_LAYER_DEM, "color_min", VIK_LAYER_PARAM_COLOR, GROUP_DRAWING, N_("Start Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_min_default, NULL, NULL },
+  { VIK_LAYER_DEM, "color_max", VIK_LAYER_PARAM_COLOR, GROUP_DRAWING, N_("End Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_max_default, NULL, NULL },
+  { VIK_LAYER_DEM, "type", VIK_LAYER_PARAM_UINT, GROUP_DRAWING, N_("Type:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_type, NULL, NULL, type_default, NULL, NULL },
+  { VIK_LAYER_DEM, "min_elev", VIK_LAYER_PARAM_DOUBLE, GROUP_DRAWING, N_("Min Elev:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0, NULL, NULL, min_elev_default, NULL, NULL },
+  { VIK_LAYER_DEM, "max_elev", VIK_LAYER_PARAM_DOUBLE, GROUP_DRAWING, N_("Max Elev:"), VIK_LAYER_WIDGET_SPINBUTTON, param_scales + 0, NULL, NULL, max_elev_default, NULL, NULL },
+  { VIK_LAYER_DEM, "alpha", VIK_LAYER_PARAM_UINT, GROUP_DRAWING, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, param_scales+2, NULL,
     N_("Control the Alpha value for transparency effects"), alpha_default, NULL, NULL },
   { VIK_LAYER_DEM, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
     VIK_LAYER_WIDGET_BUTTON, N_("Reset to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
 
-
+// ENUMERATION MUST BE IN THE SAME ORDER AS THE NAMED PARAMS ABOVE
 enum {
       PARAM_FILES=0,
+      // Download options
       PARAM_SOURCE,
+      PARAM_SRTM_BASE_URL,
+      PARAM_SVR_DIR_SCHEME,
+      PARAM_SVR_FILENAME_STYLE,
+      // Drawing options
       PARAM_COLOR,
       PARAM_COLOR_SCHEME,
       PARAM_COLOR_MIN,
@@ -235,8 +283,8 @@ VikLayerInterface vik_dem_layer_interface = {
 
   dem_layer_params,
   NUM_PARAMS,
-  NULL,
-  0,
+  params_groups,
+  G_N_ELEMENTS(params_groups),
 
   VIK_MENU_ITEM_ALL,
 
@@ -302,6 +350,12 @@ struct _VikDEMLayer {
   guint type;
   guint alpha;
 
+  gchar *srtm_base_url;
+  // Server side only
+  dem_dir_scheme_type dir_scheme;
+  dem_filename_style_type filename_style;
+  // ATM we always use the CONTINENT style for local disk storage
+
   GdkColor *height_colors;
   GdkColor *gradient_colors;
 
@@ -311,14 +365,60 @@ struct _VikDEMLayer {
   GtkMenu *right_click_menu;
 };
 
-// NB Only performed once per program run
-static void vik_dem_class_init ( VikDEMLayerClass *klass )
+#define VIKING_DEM_PARAMS_GROUP_KEY "dem_srtm"
+#define VIKING_DEM_PARAMS_NAMESPACE "dem_srtm."
+
+#define DEM_USERNAME VIKING_DEM_PARAMS_NAMESPACE"username"
+#define DEM_PASSWORD VIKING_DEM_PARAMS_NAMESPACE"password"
+
+static VikLayerParam prefs[] = {
+  { VIK_LAYER_NUM_TYPES, DEM_USERNAME, VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Username:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, N_("HTTP Basic Authorization"), NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, DEM_PASSWORD, VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Password:"), VIK_LAYER_WIDGET_PASSWORD, NULL, NULL, NULL, NULL, NULL, NULL },
+};
+
+/**
+ * Very early initialization, even before vik_dem_class_init()
+ * Thus values available for the layer initialization
+ */
+void vik_dem_layer_init ()
 {
+  // Preferences
+  a_preferences_register_group ( VIKING_DEM_PARAMS_GROUP_KEY, _("DEM Server") );
+  guint ii = 0;
+  VikLayerParamData tmp;
+  tmp.s = NULL;
+  a_preferences_register ( &prefs[ii++], tmp, VIKING_DEM_PARAMS_GROUP_KEY );
+  a_preferences_register ( &prefs[ii++], tmp, VIKING_DEM_PARAMS_GROUP_KEY );
+
   // Note if suppling your own base URL - the site must still follow the Continent directory layout
   if ( ! a_settings_get_string ( VIK_SETTINGS_SRTM_HTTP_BASE_URL, &base_url ) ) {
     // Otherwise use the default
     base_url = g_strdup ( SRTM_HTTP_BASE_URL );
   }
+}
+
+// NB Only performed once per program run
+static void vik_dem_class_init ( VikDEMLayerClass *klass )
+{
+}
+
+#define VIK_SETTINGS_DEM_USERNAME "dem_basic_auth_username"
+#define VIK_SETTINGS_DEM_PASSWORD "dem_basic_auth_password"
+
+// Since have not proved this to work anywhere;
+//  ATM it is only offered via advanced config via the .ini file
+static gchar *dem_get_login ( VikDEMLayer *vdl )
+{
+  VikLayerParamData *pref_user = a_preferences_get ( DEM_USERNAME );
+  VikLayerParamData *pref_password = a_preferences_get ( DEM_PASSWORD );
+
+  gchar *up = NULL;
+  if ( pref_user && pref_user->s && pref_user->s[0] != '\0') {
+    if ( pref_password && pref_password->s ) {
+      up = g_strdup_printf ( "%s:%s", pref_user->s, pref_password->s );
+    }
+  }
+  return up;
 }
 
 GType vik_dem_layer_get_type ()
@@ -447,7 +547,7 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp )
   {
     case PARAM_COLOR: vdl->color = vlsp->data.c; break;
     case PARAM_COLOR_SCHEME:
-      if ( vlsp->data.u < G_N_ELEMENTS(params_schemes) ) {
+      if ( vlsp->data.u < G_N_ELEMENTS(params_color_schemes) ) {
         vdl->color_scheme = vlsp->data.u;
       } else
         g_warning ( "%s: Unknown color scheme", __FUNCTION__ );
@@ -455,6 +555,24 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp )
     case PARAM_COLOR_MIN: vdl->color_min = vlsp->data.c; break;
     case PARAM_COLOR_MAX: vdl->color_max = vlsp->data.c; break;
     case PARAM_SOURCE: vdl->source = vlsp->data.u; break;
+    case PARAM_SRTM_BASE_URL:
+      if ( vlsp->data.s ) {
+        g_free ( vdl->srtm_base_url );
+        vdl->srtm_base_url = g_strdup ( vlsp->data.s );
+      }
+      break;
+    case PARAM_SVR_DIR_SCHEME:
+      if ( vlsp->data.u < G_N_ELEMENTS(params_dir_schemes) ) {
+        vdl->dir_scheme = vlsp->data.u;
+      } else
+        g_warning ( "%s: Unknown dir scheme", __FUNCTION__ );
+      break;
+    case PARAM_SVR_FILENAME_STYLE:
+      if ( vlsp->data.u < G_N_ELEMENTS(params_filename_styles) ) {
+        vdl->filename_style = vlsp->data.u;
+      } else
+        g_warning ( "%s: Unknown filename style", __FUNCTION__ );
+      break;
     case PARAM_TYPE: vdl->type = vlsp->data.u; break;
     case PARAM_MIN_ELEV:
       /* Convert to store internally
@@ -528,6 +646,24 @@ static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gbo
           rv.sl = dem_layer_convert_to_relative_filenaming ( rv.sl );
       break;
     case PARAM_SOURCE: rv.u = vdl->source; break;
+    case PARAM_SRTM_BASE_URL:
+      rv.s = vdl->srtm_base_url;
+      if ( !is_file_operation ) {
+        if ( g_strcmp0(vdl->srtm_base_url, SRTM_HTTP_BASE_URL) == 0 ) {
+          gchar *user_pass = dem_get_login ( vdl );
+          if ( !user_pass ) {
+            if ( a_dialog_yes_or_no_suppress ( NULL, //VIK_GTK_WINDOW_FROM_LAYER(vdl),
+                                               _("To use the server %s,\n \
+you must register with the service and provide those login details in the Viking's preferences for the DEM Server.\n \
+Go to the registration website now?"), vdl->srtm_base_url) )
+              open_url ( NULL, "https://urs.earthdata.nasa.gov" );
+          } else
+            g_free ( user_pass );
+        }
+      }
+      break;
+    case PARAM_SVR_DIR_SCHEME: rv.u = vdl->dir_scheme; break;
+    case PARAM_SVR_FILENAME_STYLE: rv.u = vdl->filename_style; break;
     case PARAM_TYPE: rv.u = vdl->type; break;
     case PARAM_COLOR: rv.c = vdl->color; break;
     case PARAM_COLOR_SCHEME: rv.u = vdl->color_scheme; break;
@@ -1085,38 +1221,86 @@ typedef struct {
   guint source;
 } DEMDownloadParams;
 
-
 /**************************************************
  *  SOURCE: SRTM                                  *
  **************************************************/
 
-static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata )
+// Free returned string after use
+static gchar *srtm_server_url ( gchar *b_url, dem_dir_scheme_type scheme, dem_filename_style_type style, gdouble lat, gdouble lon )
 {
   gint intlat, intlon;
-  const gchar *continent_dir;
+  intlat = (int)floor(lat);
+  intlon = (int)floor(lon);
+  gchar *src_url = NULL;
 
-  intlat = (int)floor(p->lat);
-  intlon = (int)floor(p->lon);
-  continent_dir = srtm_continent_dir(intlat, intlon);
-
-  if (!continent_dir) {
-    if ( p->vdl ) {
-      gchar *msg = g_strdup_printf ( _("No SRTM data available for %f, %f"), p->lat, p->lon );
-      vik_window_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(p->vdl), msg, VIK_STATUSBAR_INFO );
-      g_free ( msg );
+  // Check to see if we get a valid directory, even if we don't use it in the URL anymore
+  //  since it will us if the request has any chance of being furfilled
+  const gchar *continent_dir = srtm_continent_dir (intlat, intlon);
+  if ( continent_dir ) {
+    switch ( scheme ) {
+    case DEM_SCHEME_CONTINENT:
+      // USGS up until late 2020
+      // eg. <url>/srtm3-Eurasia/N12E034.hgt.zip
+      src_url = g_strdup_printf("%s/%s/%c%02d%c%03d.hgt.zip",
+                                b_url,
+                                continent_dir,
+                                (intlat >= 0) ? 'N' : 'S',
+                                ABS(intlat),
+                                (intlon >= 0) ? 'E' : 'W',
+                                ABS(intlon) );
+      break;
+    case DEM_SCHEME_LATITUDE:
+      // eg. <url>/N12/N12E034.hgt.zip
+      src_url = g_strdup_printf ( "%s/%c%02d/%c%02d%c%03d.hgt.zip",
+                                b_url,
+                                (intlat >= 0) ? 'N' : 'S',
+                                ABS(intlat),
+                                (intlat >= 0) ? 'N' : 'S',
+                                ABS(intlat),
+                                (intlon >= 0) ? 'E' : 'W',
+                                ABS(intlon) );      
+      break;
+    default:
+      // NB also file name can be different too
+      if ( style == DEM_FILENAME_SRTMGL1 )
+        // Location as of 2021
+        // https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11/N47E008.SRTMGL1.hgt.zip
+        src_url = g_strdup_printf ( "%s/%c%02d%c%03d.SRTMGL1.hgt.zip",
+                                    b_url,
+                                    (intlat >= 0) ? 'N' : 'S',
+                                    ABS(intlat),
+                                    (intlon >= 0) ? 'E' : 'W',
+                                    ABS(intlon) );
+      else
+        src_url = g_strdup_printf ( "%s/%c%02d%c%03d.hgt.zip",
+                                    b_url,
+                                    (intlat >= 0) ? 'N' : 'S',
+                                    ABS(intlat),
+                                    (intlon >= 0) ? 'E' : 'W',
+                                    ABS(intlon) );
     }
+  }
+  return src_url;
+}
+
+static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata )
+{
+  if ( !p->vdl )
+    return;
+
+  gchar *src_url = srtm_server_url ( p->vdl->srtm_base_url, p->vdl->dir_scheme, p->vdl->filename_style, p->lat, p->lon );
+                                     
+  // TODO: Might be better practice that the valid location request check is made before creating this thread
+  if ( !src_url ) {
+    gchar *msg = g_strdup_printf ( _("No SRTM data available for %f, %f"), p->lat, p->lon );
+    vik_window_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(p->vdl), msg, VIK_STATUSBAR_INFO );
+    g_free ( msg );
     return;
   }
 
-  gchar *src_url = g_strdup_printf("%s/%s/%c%02d%c%03d.hgt.zip",
-                base_url,
-                continent_dir,
-		(intlat >= 0) ? 'N' : 'S',
-		ABS(intlat),
-		(intlon >= 0) ? 'E' : 'W',
-		ABS(intlon) );
-
-  static DownloadFileOptions options = { FALSE, FALSE, NULL, 5, NULL, a_check_map_file, NULL, NULL };
+  gchar *user_pass = dem_get_login ( p->vdl );
+  // For USGS DEM Server usage, we need to make credentials follow redirects + use cookies --vvvv--vvvv
+  DownloadFileOptions options = { FALSE, FALSE, NULL, 10, NULL, a_check_map_file, user_pass, TRUE, TRUE, NULL };
   DownloadResult_t result = a_http_download_get_url ( src_url, NULL, p->dest, &options, NULL );
   switch ( result ) {
     case DOWNLOAD_PARAMETERS_ERROR:
@@ -1138,6 +1322,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
     default:
       break;
   }
+  g_free ( user_pass );
   g_free ( src_url );
 }
 
@@ -1350,28 +1535,19 @@ static gpointer dem_layer_download_create ( VikWindow *vw, VikViewport *vvp)
   return vvp;
 }
 
+
+typedef enum { MA_LL = 0, MA_VDL, MA_LAST } menu_array_index;
+typedef gpointer menu_array_data[MA_LAST];
+
 /**
  * Display a simple dialog with information about the DEM file at this location
  */
-static void dem_layer_file_info ( GtkWidget *widget, struct LatLon *ll )
+static void dem_layer_file_info ( menu_array_data values )
 {
-  gint intlat, intlon;
-  const gchar *continent_dir;
-
-  intlat = (int)floor(ll->lat);
-  intlon = (int)floor(ll->lon);
-  continent_dir = srtm_continent_dir(intlat, intlon);
-
-  gchar *source = NULL;
-  if ( continent_dir )
-    source = g_strdup_printf ( "%s/%s/%c%02d%c%03d.hgt.zip",
-                               base_url,
-                               continent_dir,
-                               (intlat >= 0) ? 'N' : 'S',
-                               ABS(intlat),
-                               (intlon >= 0) ? 'E' : 'W',
-                               ABS(intlon) );
-  else
+  struct LatLon *ll = values[MA_LL];
+  VikDEMLayer *vdl = VIK_DEM_LAYER(values[MA_VDL]);
+  gchar *source = srtm_server_url ( vdl->srtm_base_url, vdl->dir_scheme, vdl->filename_style, ll->lat, ll->lon );
+  if ( !source )
     // Probably not over any land...
     source = g_strdup ( _("No DEM File Available") );
 
@@ -1399,7 +1575,7 @@ static void dem_layer_file_info ( GtkWidget *widget, struct LatLon *ll )
     message = g_strdup_printf ( _("Source: %s\n\nNo DEM File!"), source );
 
   // Show the info
-  a_dialog_info_msg ( GTK_WINDOW(gtk_widget_get_toplevel(widget)), message );
+  a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vdl), message );
 
   g_free ( message );
   g_free ( source );
@@ -1410,7 +1586,11 @@ static void dem_layer_file_info ( GtkWidget *widget, struct LatLon *ll )
 static VikLayerToolFuncStatus dem_layer_download_release ( VikDEMLayer *vdl, GdkEventButton *event, VikViewport *vvp )
 {
   VikCoord coord;
+  // Data made available for the right click menu
   static struct LatLon ll;
+  static menu_array_data data;
+  data[MA_LL] = &ll;
+  data[MA_VDL] = vdl;
 
   gchar *full_path;
   gchar *dem_file = NULL;
@@ -1459,8 +1639,7 @@ static VikLayerToolFuncStatus dem_layer_download_release ( VikDEMLayer *vdl, Gdk
   else {
     if ( !vdl->right_click_menu ) {
       vdl->right_click_menu = GTK_MENU ( gtk_menu_new () );
-      GtkWidget *item = vu_menu_add_item ( vdl->right_click_menu, _("_Show DEM File Information"), GTK_STOCK_INFO, NULL, NULL );
-      g_signal_connect ( G_OBJECT(item), "activate", G_CALLBACK(dem_layer_file_info), &ll );
+      vu_menu_add_item ( vdl->right_click_menu, _("_Show DEM File Information"), GTK_STOCK_INFO, G_CALLBACK(dem_layer_file_info), data );
     }
 
     gtk_menu_popup ( vdl->right_click_menu, NULL, NULL, NULL, NULL, event->button, event->time );

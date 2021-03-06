@@ -31,6 +31,7 @@
 #include "babel.h"
 #include "curl_download.h"
 #include "logging.h"
+#include "vikdemlayer.h"
 #include "vikmapslayer.h"
 #include "vikgeoreflayer.h"
 #include "viktrwlayer_propwin.h"
@@ -145,6 +146,7 @@ int main( int argc, char *argv[] )
 
   vik_georef_layer_init ();
   maps_layer_init ();
+  vik_dem_layer_init ();
   a_mapcache_init ();
   a_background_init ();
 

@@ -78,6 +78,17 @@ typedef struct {
   gchar *user_pass;
 
   /**
+   * https://curl.se/libcurl/c/CURLOPT_UNRESTRICTED_AUTH.html
+   * Send credentials to other hosts too
+   */
+  gboolean allow_credential_follow;
+
+  /**
+   * ATM a single cookie jar is used between all connections that desire cookie usage
+   */
+  gboolean use_cookies;
+
+  /**
    * File manipulation if necessary such as uncompressing the downloaded file.
    */
   VikFileContentConvertFunc convert_file;

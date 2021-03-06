@@ -529,7 +529,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
           gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
           gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(sw), tables[current_group] );
           // Ensure it doesn't start off too small
-          gtk_widget_set_size_request ( sw, -1, 200 * vik_viewport_get_scale(NULL) );
+          gtk_widget_set_size_request ( sw, -1, 325 * vik_viewport_get_scale(NULL) );
           gtk_notebook_append_page ( GTK_NOTEBOOK(notebook), sw, gtk_label_new(groups[current_group]) );
         }
       }

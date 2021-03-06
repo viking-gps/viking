@@ -15,13 +15,71 @@ Elevation data can be useful in planning trips, as you many wish to avoid/minimi
 To download the data use the <xref linkend="dem_tool_dl"/> tool (shown on the toolbar), and then click on a area of the viewport. Once files have been downloaded they can then be loaded from disk via the DEM properties in future application runs.
 </para>
 <para>
-The current data server is: <ulink url="https://dds.cr.usgs.gov/srtm/version2_1/">NASA STRM 2.1</ulink>.
+  The default data server is the official <ulink url="https://earthdata.nasa.gov/">NASA site</ulink>,
+  however (as of 2021) to download from NASA's Land Processes Distributed Active Archive Center (LP DAAC) you must
+  <ulink url="https://urs.earthdata.nasa.gov/users/new/">Register</ulink> and then provide your login details to &appname;
+  in the <xref linkend="prefs_dem_server"/> preferences.
 </para>
+<para>
+  In order to support alternative DEM servers, the Downloads Property tab contains settings to change the URL and to configure how requests are made to the DEM since different servers store the files in different locations and names. The defaults in using NASA Earthdata are:
+</para>
+<variablelist>
+  <varlistentry>
+    <listitem>
+      <para>
+        <guilabel>Base URL</guilabel> set to <userinput>https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11</userinput>
+      </para>
+    </listitem>
+</varlistentry>
+<varlistentry>
+  <listitem>
+      <para>
+        <guilabel>Layout</guilabel> set to <userinput>None</userinput>
+      </para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <listitem>
+      <para>
+        <guilabel>Filename Convention</guilabel> set to <userinput>SRTMGL1</userinput>
+      </para>
+  </listitem>
+</varlistentry>
+</variablelist>
+
+<para>
+  One currently known alternative DEM server is provided by <ulink url="https://bailu.ch/">Another Activity Tracker (AAT)</ulink>.
+  This is supported by the following settings:
+</para>
+<variablelist>
+  <varlistentry>
+    <listitem>
+      <para>
+        <guilabel>Base URL</guilabel> set to <userinput>https://bailu.ch/dem3</userinput>
+      </para>
+    </listitem>
+</varlistentry>
+<varlistentry>
+  <listitem>
+      <para>
+        <guilabel>Layout</guilabel> set to <userinput>Latitude</userinput>
+      </para>
+  </listitem>
+</varlistentry>
+<varlistentry>
+  <listitem>
+      <para>
+        <guilabel>Filename Convention</guilabel> set to <userinput>Normal</userinput>
+      </para>
+  </listitem>
+</varlistentry>
+</variablelist>
 <para>
 ATM &appname; does not auto download DEM data. If you want to get lots of data blocks, you may wish to use some other program get such as <application>curl</application> or <application>wget</application> to download them for an area.
 </para>
 <para>
-  The location for DEM files stored on local disk is under the <xref linkend="Map"/> Layer <xref linkend="cache_location"/>.
+  The location for DEM files stored on local disk is under the <xref linkend="Map"/> Layer <xref linkend="cache_location"/>,
+  using the <userinput>Continent</userinput> style as this was how the original DEM server (pre 2021) worked.
 </para>
 <note>
 <para>
@@ -31,15 +89,11 @@ Using many DEMs is memory intensive as every DEM block is loaded into memory. De
 
 <section><title>Layer Properties</title>
 <para>
-Configurable properties:
+Configurable properties are split into several sections:
 </para>
+
+<section><title>Drawing</title>
 <variablelist>
-<varlistentry>
-<term><guilabel>DEM Files</guilabel></term>
-<listitem>
-	<para>The list of files in use.</para>
-</listitem>
-</varlistentry>
 <varlistentry>
 <term><guilabel>Min Elev Colour</guilabel></term>
 <listitem>
@@ -85,11 +139,48 @@ Configurable properties:
 </varlistentry>
 </variablelist>
 
-
 <para>
 Colours for drawing the DEM are allocated in discrete units between the Min Elev and Max Elev heights.
 Thus to see differences more clearly you may want to adjust these values to match the height variance around the area of interest.
 </para>
+
+</section>
+
+<section><title>Download</title>
+<variablelist>
+<varlistentry>
+<term><guilabel>Base URL</guilabel></term>
+<listitem>
+  <para>The server URL including the root location of the DEM files</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Layout</guilabel></term>
+<listitem>
+  <para>Describes how the DEM file directory structure on the server is laid out.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Filename Convention</guilabel></term>
+<listitem>
+  <para><userinput>Normal</userinput> means the filenames on the server are named like <filename>N12E034.hgt.zip</filename></para>
+  <para><userinput>SRTMGL1</userinput> means the filenames on the server are named like <filename>N12E034.SRTMGL1.hgt.zip</filename></para>
+</listitem>
+</varlistentry>
+</variablelist>
+</section>
+
+<section><title>Files</title>
+<variablelist>
+<varlistentry>
+<term><guilabel>DEM Files</guilabel></term>
+<listitem>
+	<para>The list of files in use.</para>
+	<para>Normally you do not need to manually edit this list.</para>
+</listitem>
+</varlistentry>
+</variablelist>
+</section>
 
 </section><!-- Prop END -->
 
