@@ -48,6 +48,7 @@
 #include "dem.h"
 #include "coords.h"
 #include "fileutils.h"
+#include "file_magic.h"
 
 #define DEM_BLOCK_SIZE 1024
 #define GET_COLUMN(dem,n) ((VikDEMColumn *)g_ptr_array_index( (dem)->columns, (n) ))
@@ -345,8 +346,6 @@ static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basena
   return dem;
 }
 
-#define IS_SRTM_HGT(fn) (strlen((fn))==11 && (fn)[7]=='.' && (fn)[8]=='h' && (fn)[9]=='g' && (fn)[10]=='t' && ((fn)[0]=='N' || (fn)[0]=='S') && ((fn)[3]=='E' || (fn)[3]=='W'))
-
 VikDEM *vik_dem_new_from_file(const gchar *file)
 {
   FILE *f=NULL;
@@ -361,10 +360,11 @@ VikDEM *vik_dem_new_from_file(const gchar *file)
   if ( g_access ( file, R_OK ) != 0 )
     return NULL;
 
-  if ( (strlen(basename)==11 || ((strlen(basename) == 15) && (basename[11] == '.' && basename[12] == 'z' && basename[13] == 'i' && basename[14] == 'p'))) &&
-       basename[7]=='.' && basename[8]=='h' && basename[9]=='g' && basename[10]=='t' &&
-       (basename[0] == 'N' || basename[0] == 'S') && (basename[3] == 'E' || basename[3] =='W')) {
-    gboolean is_zip_file = (strlen(basename) == 15);
+  // Not entirely sure the point of enforcing filenames must have this convention
+  if ( strlen(basename) > 4 &&
+       (basename[0] == 'N' || basename[0] == 'S') && (basename[3] == 'E' || basename[3] =='W') &&
+       g_strrstr(file, "hgt") ) {
+    gboolean is_zip_file = file_magic_check ( file, "application/zip", ".zip" );
     rv = vik_dem_read_srtm_hgt(file, basename, is_zip_file);
     return(rv);
   }
