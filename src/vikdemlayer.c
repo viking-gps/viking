@@ -481,27 +481,10 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp )
       break;
     case PARAM_FILES:
     {
+      // If no change in the DEMs used, we can skip reloading them again
       if ( util_glist_of_strings_compare(vdl->files, vlsp->data.sl) )
         break;
-        /*
-      if ( g_list_length(vdl->files) == g_list_length(vlsp->data.sl) ) {
-        gboolean same = TRUE;
-        // Compare lists (of strings) to see if actually changed
-        GList *aa = vdl->files;
-        GList *bb = vlsp->data.sl;
-        while ( aa ) {
-          if ( g_strcmp0((gchar*)aa->data,(gchar*)bb->data) != 0 ) {
-            same = FALSE;
-            break;
-          }
-          aa = aa->next;
-          bb = bb->next;
-        }
-        // Thus if no change in the DEMs used, we can skip reloading them again
-        if ( same )
-          break;
-      }
-        */
+
       // Clear out old settings - if any commonalities with new settings they will have to be read again
       a_dems_list_free ( vdl->files );
 
