@@ -654,15 +654,23 @@ If used from the <xref linkend="TrackWaypoint"/> layer menu these methods place 
 <title>From GPS</title>
 <para>
 <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From GPS</guimenuitem></menuchoice>
-Probably the easiest way of getting information from a GPS Device.
+A way of getting information from GPS Devices using <application>GPSBabel</application> to perform the transfer, typically via serial link connections.
 </para>
 <para>
 Select the GPS Device communication settings and then hit <guibutton>OK</guibutton>.
-See the <link linkend="method_c">Getting Started</link> section for more info about the settings.
+See the <link linkend="method_b">Getting Started</link> section for more info about the settings.
 </para>
 <note>
 <para>
-Some GPS devices (such as the <trademark>Garmin Nuvi 255</trademark>) support a native file system and write information to a <filename>Current.gpx</filename> file or similar. You will have to browse the file system on the device and open it directly.
+  Only a limited number of devices are supported this way (e.g. Garmin Etrex Legend devices first available ~2003).
+</para>
+<para>
+  For the majority of current (circa 2010-2020) Garmin handheld devices and many other consumer handheld GPS devices (including SatNav style devices sush as the <trademark>Garmin Nuvi 255</trademark>) only support a native file system and write information to a <filename>Current.gpx</filename> file or similar. You will have to browse the file system on the device, opening it directly via <menuchoice><guimenu>File</guimenu><guimenuitem>Open</guimenuitem></menuchoice>.
+</para>
+<para>
+  For modern (circa 2015 onwards) wearable devices such as Garmin Forerunner, Fitbit, Suuntu etc...,
+  often have their own propriety binary (often wireless) protocols - not compatibile with GPSBabel and thus not &appname; directly either.
+  You would need to use their programs / apps to export to an open standard (such as GPX) for use with &appname;.
 </para>
 </note>
 </section>
@@ -3442,19 +3450,36 @@ If you select no or you have upgraded from an earlier version you can choose to 
 <para>
 Some other general use cases for using &appname;, are as follows:
 </para>
-<section><title>Go to an area of interest</title>
+<section><title>Go to an Area of Interest - Simple Ways</title>
 <para>
 &appname;'s default location is a Manhattan, New York, USA, so you may need to pick another place that interests you - such as where you live.
 </para>
+
 <procedure>
 <title>Method A</title>
+<step>
+<para>
+  The No Effort Approach
+</para>
+<para>
+  If you have accepted &appname;'s defaults then it will attempt to automatically find your location via IP lookup methods.
+</para>
+<note>
+  <para>You will need an internet connection for this to work!</para>
+</note>
+</step>
+</procedure>
+
+<procedure>
+<title>Method B</title>
 <step>
 <para>
   Use the online location address/place search.
 </para>
 <para>
   Use the <guibutton>Go to Location</guibutton> toolbar button or from the menus
-  <menuchoice><guimenu>View</guimenu><guimenuitem>Go to Location</guimenuitem></menuchoice>.
+  <menuchoice><guimenu>View</guimenu><guimenuitem>Go to Location</guimenuitem></menuchoice>
+  or from the Goto tab on the left hand panel.
   You can change the search location provider if desired.
   Enter the name of place you wish to go to (you may need to specify the country to refine the search).
   Also you can enter a post code or a ZIP code instead.
@@ -3464,8 +3489,43 @@ Some other general use cases for using &appname;, are as follows:
 </note>
 </step>
 </procedure>
+
 <procedure>
-<title>Method B</title>
+<title>Method C</title>
+<step>
+<para>
+Get data from files in GPX, TCX or KML format, which can be opened directly.
+Use <menuchoice><guimenu>File</guimenu><guimenuitem>Open</guimenuitem></menuchoice>
+This could be directly from a GPS device if supports a file system / mass storage mode.
+</para>
+<para>
+  The file location for a GPS device is device and Operating System dependent.
+  Assuming the device automounts (most Operating Systems/Desktop Enviroment do this automatically).
+  For example with an Etrex 20, using (this is for Debian/Ubuntu) - use <menuchoice><guimenu>File</guimenu><guimenuitem>Open</guimenuitem></menuchoice> to browse to:
+</para>
+<para>
+  <filename>/media/username/GARMIN/Garmin/GPS/Current/Current.gpx</filename>
+</para>
+<para>
+  For Windows it is typically something like:
+  <filename>E:\GARMIN\Garmin\GPX\Current\Current.gpx</filename>
+</para>
+<para>
+Other file formats can be imported that are those supported by GPSBabel.
+<menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>Import File With GPSBabel...</guimenuitem></menuchoice>
+</para>
+<note>
+<para>
+The viewport will be automatically moved and resized to view the contents of the file.
+</para>
+</note>
+</step>
+</procedure>
+</section>
+
+<section><title>Go to an Area of Interest - More Advanced Ways</title>
+<procedure>
+<title>Method A</title>
 <step>
 <para>
 	If you know the coordinates of where you want to view:
@@ -3475,11 +3535,12 @@ Use <menuchoice><guimenu>View</guimenu></menuchoice> and select from either <men
 </para>
 </step>
 </procedure>
+
 <procedure>
-<title id="method_c">Method C</title>
+<title id="method_b">Method B</title>
 <step>
 <para>Use the GPS Layer or <menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>From GPS</guimenuitem></menuchoice>
-to load data directly from your GPS into &appname;.
+to load data directly from a limited set of GPS Devices that are supported by <application>GPSBabel</application>.
 </para>
 <para>You can specify the types of data to acquire: Tracks, Routes and/or Waypoints.
 </para>
@@ -3498,31 +3559,29 @@ to load data directly from your GPS into &appname;.
 </itemizedlist>
 </note>
 <note>
-	<para>The GPS devices supported are those supported by <application>GPSBabel</application>.</para>
-	<para>Garmin and Magellan GPS devices supported by all versions, later versions of GPSBabel support more devices such as DeLorme and Navilink.</para>
+  <para>Garmin and Magellan GPS devices supported by all versions of GPSBabel, later versions support more devices such as NaviGPS (Navilink protocol).</para>
+  <para>See <ulink url="https://www.gpsbabel.org/capabilities.html">GPSBabel Capabilities</ulink> which includes the devices supported.</para>
 </note>
 </step>
 </procedure>
+
 <procedure>
-<title>Method D</title>
+<title>Method C</title>
 <step>
 <para>
-Get data from files in GPX or KML format, which can be opened directly.
-Use <menuchoice><guimenu>File</guimenu><guimenuitem>Open</guimenuitem></menuchoice>
+  Use a GPS's real time location:
 </para>
 <para>
-Other formats can be imported that are supported by GPSBabel.
-<menuchoice><guimenu>File</guimenu><guimenuitem>Acquire</guimenuitem><guimenuitem>Import File With GPSBabel...</guimenuitem></menuchoice>
+  See <xref linkend="gpsd"/> for more information.
 </para>
-<note>
-<para>
-The viewport will be automatically moved and resized to view the contents of the file.
-</para>
-</note>
 </step>
 </procedure>
 </section>
+
 <section><title>Add a Map Layer</title>
+<para>
+  By default &appname; will add a map layer for you that will automatically download map tile images, but you can of course change it or add additional map layers.
+</para>
 <para>
 Use <menuchoice><guimenu>Layers</guimenu><guimenuitem>New Map Layer</guimenuitem></menuchoice>, and choose a suitable cache directory
 where you would like to store your tracks and click <guilabel>OK</guilabel>. Zoom to a
@@ -3650,7 +3709,7 @@ In order to save this setting for later usage
 </para>
 <procedure>
 <step><para>click <guilabel>OK</guilabel> in the <guilabel>Track Properties</guilabel> dialog</para></step>
-<step><para><menuchoice><guimenu>File</guimenu><guimenuitem>Save As</guimenuitem></menuchoice>, choose a name (you can open this <emphasis>view</emphasis> later via <menuchoice><guimenu>file</guimenu><guimenuitem>Open</guimenuitem></menuchoice>).</para></step>
+<step><para><menuchoice><guimenu>File</guimenu><guimenuitem>Save As</guimenuitem></menuchoice>, choose a name (you can open this <emphasis>view</emphasis> later via <menuchoice><guimenu>File</guimenu><guimenuitem>Open</guimenuitem></menuchoice>).</para></step>
 </procedure>
 
 </section>
@@ -3826,7 +3885,7 @@ This list can be sorted on each column so that it easier to find an individual t
 </section>
 </section>
 
-<section><title>GPS Real Time Location</title>
+<section id="gpsd"><title>GPS Real Time Location</title>
 <para>
 	&appname; relies on <ulink url="https://gpsd.gitlab.io/gpsd">gpsd</ulink> to provide the current location from a real time feed from a GPS device.
 </para>
@@ -3860,8 +3919,14 @@ This list can be sorted on each column so that it easier to find an individual t
 </section>
 
 <section><title>What to Do if &appname; Does Not Seem to Work</title>
+<important>
 <para>
-In order to get some information about what &appname; is doing, start it in verbose debug mode via the command line:
+  The latest versions of &appname; now captures logging messages, which can be accessed via a button in the middle of the statusbar, or via <menuchoice><guimenu>View</guimenu><guimenuitem>Log</guimenuitem></menuchoice>. The statusbar shows the number of log messages. The debug status itself can also be controlled from the GUI itself, use <menuchoice><guimenu>Help</guimenu><guimenuitem>Debug</guimenuitem></menuchoice> to toggle the setting in order to capture more messages. The log window displays the newest messages at the top.
+</para>
+</important>
+
+<para>
+  For older versions of &appname;, in order to get some information about what it is doing, start it in verbose debug mode via the command line:
 <programlisting>viking -dV</programlisting>
 </para>
 <para>
@@ -3874,6 +3939,7 @@ viking -dV 2>1 > %TMP%\viking.log
 Then close &appname; before viewing the output file, such as:
 <programlisting>notepad %TMP%\viking.log</programlisting>
 </para>
+
 <para>
 For instance you can check the correct URLs &appname; is using in requesting remote data for DEMs or map tiles in the verbose debug output.
 E.g. Something like this for DEMs:
