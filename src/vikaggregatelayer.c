@@ -89,6 +89,7 @@ static VikLayerParamScale params_scales[] = {
 };
 
 static VikLayerParamData width_default ( void ) { return VIK_LPD_UINT ( 10 ); }
+static VikLayerParamData combo_1st_default ( void ) { return VIK_LPD_UINT ( 0 ); }
 
 static VikLayerParamData color_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "orange", &data.c ); return data;
@@ -149,12 +150,12 @@ VikLayerParam aggregate_layer_params[] = {
   { VIK_LAYER_AGGREGATE, "tilearealevel", VIK_LAYER_PARAM_UINT, GROUP_TAC, N_("Tile Area Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_tile_area_levels, NULL,
     N_("Area size. A higher level means a smaller grid."), tile_area_level_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "tileareatimerange", VIK_LAYER_PARAM_UINT, GROUP_TAC, N_("Within Years:"), VIK_LAYER_WIDGET_COMBOBOX, params_tac_time_ranges, NULL,
-    N_("Only include tracks that are within this time range."), NULL, tac_time_to_display, tac_time_to_internal },
+    N_("Only include tracks that are within this time range."), combo_1st_default, tac_time_to_display, tac_time_to_internal },
   { VIK_LAYER_AGGREGATE, "hm_alpha", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
     N_("Control the Alpha value for transparency effects"), hm_alpha_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "hm_factor", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Width Factor:"), VIK_LAYER_WIDGET_HSCALE, &params_scales[1], NULL,
     N_("Note higher values means the heatmap takes longer to generate"), width_default, NULL, NULL },
-  { VIK_LAYER_AGGREGATE, "hm_style", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Color Style:"), VIK_LAYER_WIDGET_COMBOBOX, params_styles, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "hm_style", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Color Style:"), VIK_LAYER_WIDGET_COMBOBOX, params_styles, NULL, NULL, combo_1st_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
     VIK_LAYER_WIDGET_BUTTON, N_("Reset All to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
