@@ -405,8 +405,7 @@ static void vik_dem_class_init ( VikDEMLayerClass *klass )
 #define VIK_SETTINGS_DEM_USERNAME "dem_basic_auth_username"
 #define VIK_SETTINGS_DEM_PASSWORD "dem_basic_auth_password"
 
-// Since have not proved this to work anywhere;
-//  ATM it is only offered via advanced config via the .ini file
+// Free after use
 static gchar *dem_get_login ( VikDEMLayer *vdl )
 {
   VikLayerParamData *pref_user = a_preferences_get ( DEM_USERNAME );

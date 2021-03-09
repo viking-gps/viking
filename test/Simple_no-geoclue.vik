@@ -192,6 +192,9 @@ type="waypointlistend"
 ~Layer DEM
 name=DEM
 source=0
+srtm_url_base=https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11
+srtm_server_dir_scheme=0
+srtm_server_filename_style=0
 color=#0000ff
 color_scheme=0
 color_min=#cd6934

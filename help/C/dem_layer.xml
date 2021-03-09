@@ -25,6 +25,7 @@ To download the data use the <xref linkend="dem_tool_dl"/> tool (shown on the to
 </para>
 <variablelist>
   <varlistentry>
+  <term></term>
     <listitem>
       <para>
         <guilabel>Base URL</guilabel> set to <userinput>https://e4ftl01.cr.usgs.gov/MEASURES/SRTMGL1.003/2000.02.11</userinput>
@@ -32,6 +33,7 @@ To download the data use the <xref linkend="dem_tool_dl"/> tool (shown on the to
     </listitem>
 </varlistentry>
 <varlistentry>
+  <term></term>
   <listitem>
       <para>
         <guilabel>Layout</guilabel> set to <userinput>None</userinput>
@@ -39,6 +41,7 @@ To download the data use the <xref linkend="dem_tool_dl"/> tool (shown on the to
   </listitem>
 </varlistentry>
 <varlistentry>
+  <term></term>
   <listitem>
       <para>
         <guilabel>Filename Convention</guilabel> set to <userinput>SRTMGL1</userinput>
@@ -52,14 +55,16 @@ To download the data use the <xref linkend="dem_tool_dl"/> tool (shown on the to
   This is supported by the following settings:
 </para>
 <variablelist>
-  <varlistentry>
-    <listitem>
-      <para>
-        <guilabel>Base URL</guilabel> set to <userinput>https://bailu.ch/dem3</userinput>
-      </para>
-    </listitem>
+<varlistentry>
+  <term></term>
+  <listitem>
+    <para>
+      <guilabel>Base URL</guilabel> set to <userinput>https://bailu.ch/dem3</userinput>
+    </para>
+  </listitem>
 </varlistentry>
 <varlistentry>
+  <term></term>
   <listitem>
       <para>
         <guilabel>Layout</guilabel> set to <userinput>Latitude</userinput>
@@ -67,6 +72,7 @@ To download the data use the <xref linkend="dem_tool_dl"/> tool (shown on the to
   </listitem>
 </varlistentry>
 <varlistentry>
+  <term></term>
   <listitem>
       <para>
         <guilabel>Filename Convention</guilabel> set to <userinput>Normal</userinput>
