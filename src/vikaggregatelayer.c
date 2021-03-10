@@ -531,6 +531,7 @@ static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, gui
     case PARAM_HM_ALPHA: rv.u = val->hm_alpha; break;
     case PARAM_HM_STAMP_FACTOR: rv.u = val->hm_stamp_factor; break;
     case PARAM_HM_STYLE: rv.u = val->hm_style; break;
+    case PARAM_RESET: rv.ptr = aggregate_reset_cb; break;
     default: break;
   }
   return rv;

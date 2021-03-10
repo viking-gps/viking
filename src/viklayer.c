@@ -623,7 +623,7 @@ static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp, gb
 					    have_apply,
 					    layer_emit_update_internal,
 					    (gpointer)vl,
-					    FALSE) ) {
+					    have_apply) ) {
     case 0:
     case 3:
       return FALSE;
@@ -744,6 +744,8 @@ void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp )
         if ( vli->params[i].type == VIK_LAYER_PARAM_STRING )
           g_free ( (gchar*)vlsp.data.s );
       }
+      else
+        g_debug ( "%s: No files list default", __FUNCTION__ );
     }
   }
 }

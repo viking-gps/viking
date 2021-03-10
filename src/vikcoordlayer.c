@@ -199,6 +199,7 @@ static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id,
     case PARAM_COLOR: rv.c = vcl->color; break;
     case PARAM_MIN_INC: rv.d = vcl->deg_inc * 60.0; break;
     case PARAM_LINE_THICKNESS: rv.i = vcl->line_thickness; break;
+    case PARAM_RESET: rv.ptr = reset_cb; break;
     default: break;
   }
   return rv;

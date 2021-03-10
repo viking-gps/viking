@@ -304,6 +304,7 @@ static VikLayerParamData geoclue_layer_get_param ( VikGeoclueLayer *vgl, guint16
 	case PARAM_POSITION:         rv.u = vgl->position; break;
 	case PARAM_UPDATE_STATUSBAR: rv.u = vgl->update_statusbar; break;
 	case PARAM_COLOR:            rv.c = vgl->color; break;
+	case PARAM_RESET:            rv.ptr = reset_cb; break;
 	default: break;
 	}
 	return rv;

@@ -1629,6 +1629,8 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_GPXV: rv.u = vtl->gpx_version; break;
     case PARAM_EXTL: rv.u = vtl->external_layer; break;
     case PARAM_EXTF: rv.s = vtl->external_file; break;
+    // Reset
+    case PARAM_RESET: rv.ptr = reset_cb; break;
     default: break;
   }
   return rv;

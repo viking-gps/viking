@@ -704,6 +704,7 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
       rv.b = vgl->realtime_update_statusbar;
       break;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
+    case PARAM_RESET: rv.ptr = reset_cb; break;
     default: break;
   }
 

@@ -164,6 +164,11 @@ static VikLayerParamData url_default ( void )
   VikLayerParamData data; data.s = g_strdup ( base_url ); return data;
 }
 
+static VikLayerParamData no_files_default ( void )
+{
+  VikLayerParamData data; data.sl = NULL; return data;
+}
+
 static void reset_cb ( GtkWidget *widget, gpointer ptr )
 {
   a_layer_defaults_reset_show ( DEM_FIXED_NAME, ptr, GROUP_FILES );
@@ -177,7 +182,7 @@ static gchar *params_dir_schemes[] = { N_("None"), N_("Latitude"), N_("Continent
 static gchar *params_filename_styles[] = { N_("SRTMGL1"), N_("Normal"), NULL }; // dem_filename_style_type
 
 static VikLayerParam dem_layer_params[] = {
-  { VIK_LAYER_DEM, "files", VIK_LAYER_PARAM_STRING_LIST, GROUP_FILES, N_("DEM Files:"), VIK_LAYER_WIDGET_FILELIST, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_DEM, "files", VIK_LAYER_PARAM_STRING_LIST, GROUP_FILES, N_("DEM Files:"), VIK_LAYER_WIDGET_FILELIST, NULL, NULL, NULL, no_files_default, NULL, NULL },
   { VIK_LAYER_DEM, "source", VIK_LAYER_PARAM_UINT, GROUP_DOWNLOAD, N_("Download Source:"), VIK_LAYER_WIDGET_RADIOGROUP_STATIC, params_source, NULL, NULL, source_default, NULL, NULL },
   { VIK_LAYER_DEM, "srtm_url_base", VIK_LAYER_PARAM_STRING, GROUP_DOWNLOAD, N_("Base URL:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, url_default, NULL, NULL },
   { VIK_LAYER_DEM, "srtm_server_dir_scheme", VIK_LAYER_PARAM_UINT, GROUP_DOWNLOAD, N_("Layout:"), VIK_LAYER_WIDGET_COMBOBOX, params_dir_schemes, NULL, NULL, dir_scheme_default, NULL, NULL },
@@ -685,6 +690,7 @@ Go to the registration website now?"), vdl->srtm_base_url) )
         rv.d = vdl->max_elev;
       break;
     case PARAM_ALPHA: rv.u = vdl->alpha; break;
+    case PARAM_RESET: rv.ptr = reset_cb; break;
     default: break;
   }
   return rv;

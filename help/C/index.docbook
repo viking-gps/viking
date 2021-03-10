@@ -926,7 +926,14 @@ Layers supported by &appname; are:
 For each layer there are a few standard options:
 </para>
 <itemizedlist>
-<listitem><para>Properties - Layer setup / configuration settings</para></listitem>
+<listitem><para>Properties - Layer setup / configuration settings dialog:</para>
+  <itemizedlist>
+    <listitem><para>OK: Applies the new values and closes the dialog</para></listitem>
+    <listitem><para>Cancel: Dismiss the changes and closes the dialog</para></listitem>
+    <listitem><para>Apply: Applies the new values and keeps the dialog open - thus you can see the effect of the new values.</para></listitem>
+    <listitem><para>Reset to Defaults: Change the values back to the Layer Defaults. You will still need to then Apply/OK these changed values to take effect.</para></listitem>
+  </itemizedlist>
+</listitem>
 <listitem><para>Cut</para></listitem>
 <listitem><para>Copy</para></listitem>
 <listitem><para>Paste</para></listitem>
@@ -944,6 +951,7 @@ The cut/copy/paste options can be accessed in a variety of ways once the layer h
 </itemizedlist>
 <para>
 Default values used for each layer's properties can be altered via the <menuchoice><guimenu>Edit</guimenu><guisubmenu>Layer Defaults</guisubmenu></menuchoice> menu options.
+These 'User' Defaults settings themselves can be reset back to the original &appname; default values via the <guibutton>Reset to Default</guibutton> button for each layer.
 </para>
 <para>
 See the individual section for detail about each layer.

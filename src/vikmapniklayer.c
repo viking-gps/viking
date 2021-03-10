@@ -457,6 +457,7 @@ static VikLayerParamData mapnik_layer_get_param ( VikMapnikLayer *vml, guint16 i
 		case PARAM_ALPHA: data.u = vml->alpha; break;
 		case PARAM_USE_FILE_CACHE: data.b = vml->use_file_cache; break;
 		case PARAM_FILE_CACHE_DIR: data.s = vml->file_cache_dir; break;
+		case PARAM_RESET: data.ptr = reset_cb; break;
 		default: break;
 	}
 	return data;

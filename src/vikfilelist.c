@@ -228,8 +228,19 @@ GList *vik_file_list_get_files ( VikFileList *vfl )
   return list;
 }
 
+/**
+ * NB This set files specifically does not clear out previous values if the list is NULL
+ * (not clear if this was a previous oversight but in some ways OK)
+ * As a useful benefit is that the list is maintained e.g.
+ *   when otherwise resetting to default values, (although perhaps not obvious behaviour)
+ * ATM Users can use select all entries manually (e.g. Ctrl+a) and use 'Delete' if they wish
+ *  (rather than providing a specific 'Remove All' button which could be accidentally invoked)
+ */
 void vik_file_list_set_files ( VikFileList *vfl, GList *files )
 {
+  // if ( !files )
+  //   gtk_list_store_clear ( GTK_LIST_STORE(vfl->model) );
+
   while (files) {
     GtkTreeIter iter;
     gtk_list_store_append ( GTK_LIST_STORE(vfl->model), &iter );

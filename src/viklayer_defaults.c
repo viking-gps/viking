@@ -190,20 +190,23 @@ static void use_internal_defaults_if_missing_default ( VikLayerTypeEnum type )
 	// Process each parameter
 	for ( i = 0; i < params_count; i++ ) {
 		if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES ) {
-			gpointer success = GINT_TO_POINTER (FALSE);
-			// Check current default is available
-			VikLayerParamData data = get_default_data_answer ( vik_layer_get_interface(type)->fixed_layer_name, params[i].name, params[i].type, &success );
-			// If no longer have a viable default
-			if ( ! GPOINTER_TO_INT (success) ) {
-				// Reset value
-				if ( params[i].default_value ) {
-					VikLayerParamData paramd = params[i].default_value();
-					set_default_data ( paramd, vik_layer_get_interface(type)->fixed_layer_name, params[i].name, params[i].type );
+			// Don't attempt to refresh pointers
+			if ( params[i].type <= VIK_LAYER_PARAM_STRING_LIST ) {
+				gpointer success = GINT_TO_POINTER (FALSE);
+				// Check current default is available
+				VikLayerParamData data = get_default_data_answer ( vik_layer_get_interface(type)->fixed_layer_name, params[i].name, params[i].type, &success );
+				// If no longer have a viable default
+				if ( ! GPOINTER_TO_INT (success) ) {
+					// Reset value
+					if ( params[i].default_value ) {
+						VikLayerParamData paramd = params[i].default_value();
+						set_default_data ( paramd, vik_layer_get_interface(type)->fixed_layer_name, params[i].name, params[i].type );
+					}
+				} else {
+					// Need to free data (which is otherwise unused) if its a dynamic type (i.e. strings)
+					if ( params[i].type == VIK_LAYER_PARAM_STRING )
+						g_free ( (gchar*)data.s );
 				}
-			} else {
-				// Need to free data (which is otherwise unused) if its a dynamic type (i.e. strings)
-				if ( params[i].type == VIK_LAYER_PARAM_STRING )
-					g_free ( (gchar*)data.s );
 			}
 		}
 	}
@@ -307,7 +310,7 @@ static VikLayerParam* allocate_params_for_layer ( VikLayerTypeEnum layer, guint 
 			}
 		}
 	}
-	VikLayerParam *params = g_new(VikLayerParam,layer_params_count);
+	VikLayerParam *params = g_new0(VikLayerParam,layer_params_count);
 	for ( i = 0; i < layer_params_count; i++ ) {
 		params[i] = *((VikLayerParam*)(g_ptr_array_index(paramsVD,i+index)));
 	}
@@ -465,22 +468,33 @@ gboolean a_layer_defaults_save ()
 }
 
 /**
- * a_layer_defaults_reset_show
+ * a_layer_defaults_reset_show:
  *
  * Update displayed properties with the default values for the specified layer
+ * @index_ptr: Either a pointer to an integer value of the layers parameter index
+ *              - and thus reset widget parameters to Viking's system default values
+ *             Or a pointer to a #VikLayer
+ *              - in which case the widgets are reset to the User's Layer default values
  */
 void a_layer_defaults_reset_show ( const gchar *layername, gpointer index_ptr, gint16 group )
 {
 	VikLayerTypeEnum layer = vik_layer_type_from_string ( layername );
 	guint layer_params_count = 0;
-	gint unused = 0;
-	VikLayerParam *params = allocate_params_for_layer ( layer, &layer_params_count, &unused );
+	gint index = 0;
+	VikLayerParam *params = allocate_params_for_layer ( layer, &layer_params_count, &index );
 	// No parameters!
 	if ( !layer_params_count )
 		return;
 
 	// Refresh view - with defaults values for the params on display
-	a_uibuilder_factory_refresh ( params, layer_params_count, group, getparam_default_value, index_ptr );
+	// Since we always calculate the index value above,
+	//  we can use the incoming parameter value to control the conditional behaviour
+	if ( GPOINTER_TO_INT(index_ptr) != index )
+		// Reset to user layer defaults
+		a_uibuilder_factory_refresh ( params, layer_params_count, group, defaults_run_getparam, GINT_TO_POINTER(index) );
+	else
+		// Reset to system default
+		a_uibuilder_factory_refresh ( params, layer_params_count, group, getparam_default_value, GINT_TO_POINTER(index) );
 
 	g_free ( params );
 }
