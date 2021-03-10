@@ -284,7 +284,7 @@ tidy:
 /**
  * Free returned array after use if anything was created
  */
-VikLayerParam* allocate_params_for_layer ( VikLayerTypeEnum layer, guint *layer_params_count_return, gint *indexer )
+static VikLayerParam* allocate_params_for_layer ( VikLayerTypeEnum layer, guint *layer_params_count_return, gint *indexer )
 {
 	// Need to know where the params start and they finish for this layer
 
