@@ -285,6 +285,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
   GHashTable *string_lists = g_hash_table_new(g_direct_hash,g_direct_equal);
 
   gboolean successful_read = TRUE;
+  gint toplayer_number = 0;
 
   push(&stack);
   stack->under = NULL;
@@ -319,6 +320,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
         continue;
       else if ( str_starts_with ( line, "TopLayer ", 9, TRUE ) )
       {
+        toplayer_number++;
         // No need to create the Top Layer, values replace the current
         push(&stack);
         stack->data = (gpointer)top;
@@ -433,6 +435,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
       }
       else if ( str_starts_with ( line, "EndTopLayer", 11, FALSE ) )
       {
+        toplayer_number--;
         if ( stack )
           pop(&stack);
       }
@@ -570,6 +573,17 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
 name=this
 #comment
 */
+  }
+
+  // Missing "~EndTopLayer" at end of file? - e.g. you've been manually messing around with .vik files
+  // Really don't think should have more than one toplayer in a file anyway
+  //  check at least open and close markers evenly matched
+  if ( toplayer_number != 0 ) {
+    g_warning ( "%s: Mismatched number of toplayer markers %d", __FUNCTION__, toplayer_number );
+    if ( toplayer_number > 0 )
+      // Force a pop() otherwise stack->data pointing to wrong place
+      if ( stack )
+        pop(&stack);
   }
 
   while ( stack )
