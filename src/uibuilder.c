@@ -434,8 +434,11 @@ void a_uibuilder_factory_refresh ( VikLayerParam *params,
   for ( i = 0, j = 0; i < params_count; i++ ) {
     if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES ) {
       if ( params[i].group == group ) {
-        VikLayerParamData data = getparam ( getparam1, i, FALSE );
-        refresh_widget ( RefreshWidgets[j], &(params[i]), data );
+        // Don't attempt to refresh pointers
+        if ( params[i].type <= VIK_LAYER_PARAM_STRING_LIST ) {
+          VikLayerParamData data = getparam ( getparam1, i, FALSE );
+          refresh_widget ( RefreshWidgets[j], &(params[i]), data );
+        }
       }
       j++;
     }
@@ -625,16 +628,19 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
 	vlsp.dirpath = NULL;
 	for ( i = 0, j = 0; i < params_count; i++ ) {
 	  if ( params[i].group != VIK_LAYER_NOT_IN_PROPERTIES ) {
-            vlsp.id = i;
-            vlsp.vp = pass_along2;
-            vlsp.data = a_uibuilder_widget_get_value ( widgets[j], &(params[i]) );
-            // Main callback into each layer's setparam
-            if ( setparam && setparam ( pass_along1, &vlsp ) )
-              must_redraw = TRUE;
-            // Or a basic callback for each parameter
-            else if ( setparam4 && setparam4 ( pass_along1, i, vlsp.data, pass_along2 ) )
-              must_redraw = TRUE;
-            j++;
+            // Don't attempt to change pointers
+            if ( params[i].type <= VIK_LAYER_PARAM_STRING_LIST ) {
+              vlsp.id = i;
+              vlsp.vp = pass_along2;
+              vlsp.data = a_uibuilder_widget_get_value ( widgets[j], &(params[i]) );
+              // Main callback into each layer's setparam
+              if ( setparam && setparam ( pass_along1, &vlsp ) )
+                must_redraw = TRUE;
+              // Or a basic callback for each parameter
+              else if ( setparam4 && setparam4 ( pass_along1, i, vlsp.data, pass_along2 ) )
+                must_redraw = TRUE;
+              j++;
+            }
           }
         }
 
