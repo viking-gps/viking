@@ -639,8 +639,8 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
               // Or a basic callback for each parameter
               else if ( setparam4 && setparam4 ( pass_along1, i, vlsp.data, pass_along2 ) )
                 must_redraw = TRUE;
-              j++;
             }
+            j++;
           }
         }
 
