@@ -3217,12 +3217,14 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr, Vi
   g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
 
   gchar *tz = NULL;
+  gdouble t1 = NAN;
+  gdouble t2 = NAN;
 
-  if ( tr->trackpoints && !isnan(VIK_TRACKPOINT(tr->trackpoints->data)->timestamp) )
-  {
-    gdouble t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
-    gdouble t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
-
+  if ( tr->trackpoints ) {
+    t1 = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
+    t2 = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
+  }
+  if ( !isnan(t1) && !isnan(t2) ) {
     VikCoord vc = vik_track_get_center ( tr, VIK_COORD_LATLON );
     tz = vu_get_tz_at_location ( &vc );
 
