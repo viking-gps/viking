@@ -1007,19 +1007,20 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
     // Grid lines if wanted and otherwise doesn't dominate the display either...
     // TODO Probably better to determine a value based on the display / HD
     if ( val->draw_grid && tilesize > 4 ) {
+      guint scale = vik_viewport_get_scale ( vvp );
       // Grid drawing here so it gets drawn on top of the previous tiles
       // Thus loop around x & y again, but this time separately
       GdkGC *black_gc = vik_viewport_get_black_gc ( vvp );
       // Draw single grid lines across the whole screen
       xx = base_xx;
       for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
-         vik_viewport_draw_line ( vvp, black_gc, xx, base_yy, xx, height, &black_color, 1 );
+         vik_viewport_draw_line ( vvp, black_gc, xx, base_yy, xx, height, &black_color, scale );
          xx += tilesize;
       }
 
       yy = base_yy;
       for ( y = ((yinc == 1) ? ymin : ymax); y != yend; y+=yinc ) {
-        vik_viewport_draw_line ( vvp, black_gc, base_xx, yy, width, yy, &black_color, 1 );
+        vik_viewport_draw_line ( vvp, black_gc, base_xx, yy, width, yy, &black_color, scale );
         yy += tilesize;
       }
     }

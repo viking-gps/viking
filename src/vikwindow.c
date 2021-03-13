@@ -2535,7 +2535,7 @@ static void ruler_move_normal (VikLayer *vl, GdkEventMotion *event, tool_ed_t *s
     vik_coord_to_latlon ( &coord, &ll );
 
 #if GTK_CHECK_VERSION (3,0,0)
-    tool_resize_drawing_area ( s, 1, "#000000" );
+    tool_resize_drawing_area ( s, vik_viewport_get_scale(vvp), "#000000" );
     if ( s->gc ) {
       draw_ruler ( vvp, NULL, s->gc, &s->oldcoord, &coord );
       gtk_widget_queue_draw ( GTK_WIDGET(vvp) );
@@ -2621,15 +2621,16 @@ static void draw_boxed_label (VikViewport *vvp, GdkDrawable *d, GdkGC *gc, gint 
 
 static void ruler_move_shift (VikLayer *vl, GdkEventMotion *event, tool_ed_t *te)
 {
-  tool_resize_drawing_area ( te, 2, "#000000" );
+  VikViewport *vvp = te->vw->viking_vvp;
+  tool_resize_drawing_area ( te, 2*vik_viewport_get_scale(vvp), "#000000" );
   tool_redraw_drawing_area_box ( te, event);
   gchar *str;
-  gdouble zoom = vik_viewport_get_zoom ( te->vw->viking_vvp );
+  gdouble zoom = vik_viewport_get_zoom ( vvp );
   if ( zoom < 64.0 ) {
     VikCoord tl,tr,bl;
-    vik_viewport_screen_to_coord ( te->vw->viking_vvp, te->start_x, te->start_y, &tl );
-    vik_viewport_screen_to_coord ( te->vw->viking_vvp, (gint)event->x, te->start_y, &bl );
-    vik_viewport_screen_to_coord ( te->vw->viking_vvp, te->start_y, (gint)event->y, &tr );
+    vik_viewport_screen_to_coord ( vvp, te->start_x, te->start_y, &tl );
+    vik_viewport_screen_to_coord ( vvp, (gint)event->x, te->start_y, &bl );
+    vik_viewport_screen_to_coord ( vvp, te->start_y, (gint)event->y, &tr );
 
     gdouble ydiff = vik_coord_diff ( &tl, &bl );
     gdouble xdiff = vik_coord_diff ( &tl, &tr );
@@ -2656,9 +2657,9 @@ static void ruler_move_shift (VikLayer *vl, GdkEventMotion *event, tool_ed_t *te
     vik_positional_t label_pos = a_vik_get_ruler_area_label_pos();
     if ( label_pos != VIK_POSITIONAL_NONE ) {
 #if GTK_CHECK_VERSION (3,0,0)
-      draw_boxed_label ( te->vw->viking_vvp, NULL, te->gc, te->start_x, te->start_y, (gint)event->x, (gint)event->y, label_pos, str );
+      draw_boxed_label ( vvp, NULL, te->gc, te->start_x, te->start_y, (gint)event->x, (gint)event->y, label_pos, str );
 #else
-      draw_boxed_label ( te->vw->viking_vvp, te->pixmap, vik_viewport_get_black_gc(te->vw->viking_vvp), te->start_x, te->start_y, (gint)event->x, (gint)event->y, label_pos, str );
+      draw_boxed_label ( vvp, te->pixmap, vik_viewport_get_black_gc(te->vw->viking_vvp), te->start_x, te->start_y, (gint)event->x, (gint)event->y, label_pos, str );
 #endif
     }
   }
