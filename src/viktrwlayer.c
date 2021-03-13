@@ -404,6 +404,7 @@ static gboolean tool_edit_track_key_release ( VikTrwLayer *vtl, GdkEventKey *eve
 static gpointer tool_new_waypoint_create ( VikWindow *vw, VikViewport *vvp);
 static VikLayerToolFuncStatus tool_new_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static void tool_edit_track_deactivate ( VikTrwLayer *vtl, tool_ed_t *te );
+static void tool_edit_route_finder_activate ( VikTrwLayer *vtl, tool_ed_t *te );
 static VikLayerToolFuncStatus tool_extended_route_finder_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
 static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEventKey *event, gpointer data );
 static gpointer tool_splitter_create ( VikWindow *vw, VikViewport *vvp);
@@ -470,7 +471,7 @@ static VikToolInterface trw_layer_tools[] = {
     { "ExtendedRouteFinder", "route_finder_18", N_("Route _Finder"), "<control><shift>F", N_("Route Finder"), 0 },
     (VikToolConstructorFunc) tool_edit_create,
     (VikToolDestructorFunc) tool_edit_destroy,
-    NULL,
+    (VikToolActivationFunc) tool_edit_route_finder_activate,
     (VikToolActivationFunc) tool_edit_track_deactivate,
     (VikToolMouseFunc) tool_extended_route_finder_click,
     (VikToolMouseMoveFunc) tool_edit_track_move, // -\#
@@ -11440,6 +11441,17 @@ static VikLayerToolFuncStatus tool_edit_track_release ( VikTrwLayer *vtl, GdkEve
     vtl->draw_sync_done = TRUE;
   }
   return VIK_LAYER_TOOL_ACK;
+}
+
+static void tool_edit_route_finder_activate ( VikTrwLayer *vtl, tool_ed_t *te )
+{
+  VikStatusbar *sb = vik_window_get_statusbar ( te->vw );
+  VikRoutingEngine *engine = vik_routing_default_engine ( );
+  if ( engine ) {
+    gchar *msg = g_strdup_printf ( _("Route Finder using: %s"), vik_routing_engine_get_label(engine) );
+    vik_statusbar_set_message ( sb, VIK_STATUSBAR_INFO, msg );
+    g_free ( msg );
+  }
 }
 
 static void tool_edit_track_deactivate ( VikTrwLayer *ignore, tool_ed_t *te )
