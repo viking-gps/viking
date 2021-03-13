@@ -4247,7 +4247,7 @@ static void toolbox_click (toolbox_tools_t *vt, GdkEventButton *event)
     if ( ltype == TOOL_LAYER_TYPE_NONE || (vl && ltype == vl->type) )
       (void)vt->tools[vt->active_tool].ti.click(vl, event, vt->tools[vt->active_tool].state);
     else
-      g_warning ( "%s: No layer selected", __FUNCTION__ ); // This shouldn't happen
+      g_debug ( "%s: No layer selected", __FUNCTION__ ); // This shouldn't happen often
   }
 }
 
