@@ -230,6 +230,7 @@ struct _VikWindow {
   gboolean select_double_click;
   guint select_double_click_button;
   gboolean select_pan;
+  gboolean deselect_on_release;
   guint deselect_id;
   guint show_menu_id;
   GdkEventButton select_event;
@@ -3194,6 +3195,7 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
 {
   t->vw->select_double_click = (event->type == GDK_2BUTTON_PRESS);
   t->vw->select_double_click_button = event->button;
+  t->vw->deselect_on_release = FALSE;
 
   // Don't process these any further
   if ( event->type == GDK_2BUTTON_PRESS || event->type == GDK_3BUTTON_PRESS ) {
@@ -3226,19 +3228,8 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
         VikTreeview *vtv = vik_layers_panel_get_treeview ( t->vw->viking_vlp );
 
         if ( vik_treeview_get_selected_iter ( vtv, &iter ) ) {
-          // Only have one pending deselection timeout
-          if ( a_vik_get_select_double_click_to_zoom() && !t->vw->deselect_id ) {
-            // Best if slightly longer than the double click time,
-            //  otherwise timeout would get removed, only to be recreated again by the second GTK_BUTTON_PRESS
-            GtkSettings *gs = gtk_widget_get_settings ( GTK_WIDGET(t->vw) );
-            GValue gto = G_VALUE_INIT;
-            g_value_init ( &gto, G_TYPE_INT );
-            g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &gto );
-            gint timer = g_value_get_int ( &gto ) + 50;
-            t->vw->deselect_id = g_timeout_add ( timer, (GSourceFunc)window_deselect, t->vw );
-          } else
-            // Not using double clicks - so no need to wait and thus apply now
-            (void)window_deselect ( t->vw );
+          // Deselecton now performed on release (if mouse not moved in between)
+          t->vw->deselect_on_release = TRUE;
         }
 
         // Go into pan mode as nothing found
@@ -3282,6 +3273,7 @@ static VikLayerToolFuncStatus selecttool_move (VikLayer *vl, GdkEventMotion *eve
     // Optional Panning
     if ( t->vw->select_pan || event->state & VIK_MOVE_MODIFIER ) {
       // Abort deselection
+      t->vw->deselect_on_release = FALSE;
       if ( t->vw->deselect_id ) {
         g_source_remove ( t->vw->deselect_id );
         t->vw->deselect_id = 0;
@@ -3301,7 +3293,22 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
       if ( vik_layer_get_interface(VIK_LAYER_TRW)->select_release )
         (void)vik_layer_get_interface(VIK_LAYER_TRW)->select_release ( (VikLayer*)t->vtl, event, t->vvp, t );
   } else {
-    if ( event->button == 1 && event->state & VIK_MOVE_MODIFIER )
+    if ( t->vw->deselect_on_release ) {
+      // Only have one pending deselection timeout
+      if ( a_vik_get_select_double_click_to_zoom() && !t->vw->deselect_id ) {
+        // Best if slightly longer than the double click time,
+        //  otherwise timeout would get removed, only to be recreated again by the second GTK_BUTTON_PRESS
+        GtkSettings *gs = gtk_widget_get_settings ( GTK_WIDGET(t->vw) );
+        GValue gto = G_VALUE_INIT;
+        g_value_init ( &gto, G_TYPE_INT );
+        g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &gto );
+        gint timer = g_value_get_int ( &gto ) + 50;
+        t->vw->deselect_id = g_timeout_add ( timer, (GSourceFunc)window_deselect, t->vw );
+      } else
+        // Not using double clicks - so no need to wait and thus apply now
+        (void)window_deselect ( t->vw );
+    }
+    else if ( event->button == 1 && event->state & VIK_MOVE_MODIFIER )
       vik_window_pan_release ( t->vw, event );
     else {
       if ( a_vik_get_select_double_click_to_zoom() && t->vw->select_double_click ) {
@@ -3339,6 +3346,7 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
 
   // End of this select movement
   t->vw->select_move = FALSE;
+  t->vw->deselect_on_release = FALSE;
 
   // Final end of the select movement
   //  (redraw to trigger potential map downloads as now 'pan_move' is off)
