@@ -4327,9 +4327,6 @@ msgstr "Erdiko gunea, hasiera eta bukaera"
 msgid "Maximum number of distance labels to be shown"
 msgstr "Erakutsi behar den distantzia-etiketen gehienezko kopurua"
 
-msgid "Drawing"
-msgstr ""
-
 msgid "GPX Extensions"
 msgstr ""
 
