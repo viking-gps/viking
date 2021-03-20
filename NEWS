@@ -1,3 +1,35 @@
+Viking 1.8 (2021-03-20)
+New features since 1.8
+* GPX 1.1 Support for most common Extensions (inc. Heart Rate, Power, Temperature & Cadence)
+* GTK3
+** Pinch Zoom support on Touchpads/Touchscreens (not GTK2 build)
+* Select Tool is now the default with more intuitive behaviour to enable moving the map
+* [OpenTopoMap](https://opentopomap.org) is the new Map Default
+* Online Search in Left Hand Pane
+* Track Statistics in Left Hand Pane
+* [OSRM](http://project-osrm.org) Routing Support
+* Log diagnostic Window
+* DEM Colour options
+* DEM Server enhanced support (NASA Earthdata login and alternative DEM server configuration)
+* Ruler uses Great Circle drawing and distance.
+* Single key Shortcuts support
+* Improved Track Area Coverage (faster drawing, option to limit years of coverage)
+* Monthly Statistics Analysis
+* Native KML Parser enabling support for more KML features
+* More KML export options
+* Ability to convert Tracks/Routes to Waypoints and vice versa.
+* Ability to 'Rotate' Routes/Tracks, i.e. to shift the start/end point of circular routes.
+* Ability to Reset Preferences and Layer Defaults
+* Ability to Reset Layers back to the Layer Default.
+* Enable Filtering on some List Displays (hence a basic internal search).
+* Support more GPX 1.0 Waypoint fields - the less commonally encountered ones.
+* Flatpak Version - also available on [Flathub](https://flathub.org/apps/details/org.viking.Viking)
+
+Fixes since 1.8
+* SF Bugs#157: Waypoint Properties dialog shows wrong waypoint symbol
+* SF Bugs#149: HTTPS Does not work on Windows install
+* SF Bugs#84: Losses Extended Waypoint Information on Save/Export
+
 Viking 1.8 (2020-02-02)
 New features since 1.7
 * New GeoClue Layer to Track Position from the GeoClue service

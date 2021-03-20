@@ -28,6 +28,7 @@
       <li>Follow Realtime GPS Position</li>
       <li>Visualization and Statistics</li>
       <li>Digitial Elevation Model (DEM) Support</li>
+      <li>OSRM Routing Support</li>
       <!-- Currently not in Flatpak Version -->
       <!-- <li>Generate Maps (using Mapnik)</li> -->
     </ul>
@@ -43,6 +44,7 @@
   <update_contact>rw_norris_AT_hotmail.com</update_contact>
   <translation type="gettext">viking</translation>
   <releases>
+    <release version="1.9.0" date="2021-03-20"/>
     <release version="1.8.0" date="2020-02-03"/>
   </releases>
   <content_rating type="oars-1.1"/>

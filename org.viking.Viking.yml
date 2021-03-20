@@ -158,8 +158,8 @@ modules:
 # Hence creation of v1.8 flatpak version with a few fixes to get build working.
       - type: git
         url: git://git.code.sf.net/p/viking/code
-        branch: "viking-1.8-flatpak"
-#        branch: "viking-1.9"
+#        branch: "viking-1.8-flatpak"
+        branch: "viking-1.9"
 # Local path for testing
 #      - type: archive
 #        path: viking-1.8.zip
