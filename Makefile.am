@@ -34,7 +34,8 @@ dist-hook: viking.spec generate-changelog
 DISTCLEANFILES = \
 	intltool-extract \
 	intltool-merge \
-	intltool-update
+	intltool-update \
+	po/.intltool-merge-cache.lock
 
 ACLOCAL_AMFLAGS = -I m4
 
