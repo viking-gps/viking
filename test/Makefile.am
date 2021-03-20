@@ -69,6 +69,8 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	check_help_xml.sh \
 	check_vik2vik.sh \
 	Simple.vik \
+	Simple_no-geoclue.vik \
+	Simple_no-realtime-gps-tracking.vik \
 	check_gpx.sh \
 	SF\#022.gpx \
 	check_md5_hash.sh \
