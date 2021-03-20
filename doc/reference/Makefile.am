@@ -67,8 +67,8 @@ expand_content_files=
 # signals and properties.
 # e.g. INCLUDES=-I$(top_srcdir) -I$(top_builddir) $(GTK_DEBUG_FLAGS)
 # e.g. GTKDOC_LIBS=$(top_builddir)/gtk/$(gtktargetlib)
-INCLUDES        = @PACKAGE_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@
-GTKDOC_LIBS     =  -L$(top_srcdir)/src -lviking -L$(top_srcdir)/src/icons -licons @PACKAGE_LIBS@ @EXPAT_LIBS@ @LIBCURL@ $(LIBS)
+INCLUDES        = @PACKAGE_CFLAGS@ @EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@ $(GTK_CFLAGS)
+GTKDOC_LIBS     =  -L$(top_srcdir)/src -lviking -L$(top_srcdir)/src/icons -licons $(GTK_LIBS) @PACKAGE_LIBS@ @EXPAT_LIBS@ @LIBCURL@ $(LIBS)
 
 # This includes the standard gtk-doc make rules, copied by gtkdocize.
 if ENABLE_GTK_DOC
