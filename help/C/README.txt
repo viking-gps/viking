@@ -63,7 +63,7 @@ sed -i s/DHPACKAGE//g vikhelp.md
 
 [DEM (Digital Elevation Model) Layer](#DEM)
 
-[Maps Layer](#Maps)
+[Map Layer](#Map)
 
 [Aggregate Layer](#Aggregate)
 
