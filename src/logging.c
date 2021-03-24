@@ -125,7 +125,7 @@ static void log_it ( const gchar *log_domain,
 	log_update();
 }
 
-#if HAVE_X11_XLIB_H
+#if HAVE_LIBX11
 static int myXErrorHandler(Display *display, XErrorEvent *theEvent)
 {
 	// No exit on X errors!
