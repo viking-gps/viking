@@ -85,7 +85,7 @@ AM_CONDITIONAL([WINDOWS], [test x$ac_cv_enable_windows = xyes])
 AM_WITH_EXPAT
 
 # Curl
-LIBCURL_CHECK_CONFIG([yes],[],[],[AC_MSG_ERROR([libcurl is needed but not found])])
+LIBCURL_CHECK_CONFIG([yes],[],[],[AC_MSG_ERROR([libcurl is needed but not found - you will need to install package 'libcurl4-gnutls-dev' or similar.])])
 
 # glib-compile-resources
 AC_CHECK_PROG([GLIB_COMPILE_RESOURCES],glib-compile-resources,[yes])
