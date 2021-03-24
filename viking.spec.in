@@ -31,6 +31,7 @@ BuildRequires:  libmapnik-devel
 BuildRequires:  libzip-devel
 BuildRequires:  liboauth-devel
 BuildRequires:	json-glib-devel
+BuildRequires:  yelp-tools
 
 %description
 Viking is a free/open source program to manage GPS data.
