@@ -9438,11 +9438,11 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     GtkWidget *itemro = vu_menu_add_item ( transform_submenu, _("_Rotate..."), NULL, G_CALLBACK(trw_layer_rotate), data );
     gtk_widget_set_tooltip_text ( itemro, _("Shift trackpoints to move the first points to the end") );
 
-    (void)vu_menu_add_item ( menu, (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK) ? _("_Reverse Track") : _("_Reverse Route"),
+    (void)vu_menu_add_item ( transform_submenu, (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK) ? _("_Reverse Track") : _("_Reverse Route"),
                              GTK_STOCK_GO_BACK, G_CALLBACK(trw_layer_reverse), data );
 
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_ROUTE ) {
-      (void)vu_menu_add_item ( menu, _("Refine Route..."), GTK_STOCK_FIND, G_CALLBACK(trw_layer_route_refine), data );
+      (void)vu_menu_add_item ( transform_submenu, _("Refine Route..."), GTK_STOCK_FIND, G_CALLBACK(trw_layer_route_refine), data );
     }
 
     /* ATM This function is only available via the layers panel, due to the method in finding out the maps in use */
