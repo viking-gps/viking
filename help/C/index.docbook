@@ -4728,6 +4728,16 @@ Accept: */*
 	    <para>gpx_comment_time_format="%d-%B-%y %H:%M:%S"</para>
 	    <para>The fallback format used in generating timestamps for waypoints from their comment</para>
 	  </listitem>
+	  <listitem>
+	    <para>use_env_browser=false</para>
+	    <para>By default &appname; uses the low level function gtk_show_uri_on_window() function to open URLs, which typically results in opening a new instance of a web browser.</para>
+	    <para>This can be overridden by setting this configuration value to true and setting the environment variable <envar>BROWSER</envar> to invoke the desired browser, optionally including command line parameters to invoke the desired behaviour; such as "firefox --new-tab".</para>
+	    <para>One could even have a more complicated string to run a specific version with a specific profile, e.g.
+              <command>BROWSER="/home/rob/Downloads/firefox/firefox -P 'Nightly' --new-tab" viking</command>
+            </para>
+            <para>Note that if you set <envar>BROWSER</envar>, other programs may also use this value.</para>
+	    <para>This is not applicable on Windows as currently &appname; uses the low level function ShellExecute() method to open URLs.</para>
+	  </listitem>
 	</itemizedlist>
 
 	<section>
