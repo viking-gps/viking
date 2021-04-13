@@ -398,10 +398,7 @@ VikTrwLayerTpwin *vik_trw_layer_tpwin_new ( GtkWindow *parent )
 
   tpwin->cur_tp = NULL;
 
-  GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(tpwin), VIK_TRW_LAYER_TPWIN_CLOSE );
-#endif
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(tpwin), VIK_TRW_LAYER_TPWIN_CLOSE );
   if ( response_w )
     gtk_widget_grab_focus ( response_w );
 

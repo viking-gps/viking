@@ -614,11 +614,7 @@ static gboolean menu_axis_cb ( PropWidgets *widgets )
 						    GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_APPLY, GTK_RESPONSE_APPLY, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
 						    NULL );
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-  GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-#endif
-
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   GtkWidget *dlabel = gtk_label_new ( _("Height Divisions:") );
   GtkWidget *combo = vik_combo_box_text_new();
   for ( guint xx = 0; xx < G_N_ELEMENTS(chunks); xx++ ) {

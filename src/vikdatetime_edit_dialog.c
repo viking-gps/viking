@@ -166,11 +166,7 @@ gdouble vik_datetime_edit_dialog ( GtkWindow *parent, const gchar *title, gdoubl
 	                                                  NULL );
 
 	gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-	GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-	response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-#endif
-
+	GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 	GtkWidget *label;
 	GtkWidget *cal = gtk_calendar_new ();
 
