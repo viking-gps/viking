@@ -131,6 +131,8 @@ gboolean vik_viewport_get_half_drawn( VikViewport *vp );
  *  Drawing-related operations 
  ***************************************************************************************************/
 
+GdkPixbuf *vik_viewport_get_pixbuf ( VikViewport *vvp, gint ww, gint hh );
+
 /* Viewport buffer management/drawing to screen */
 cairo_t *vik_viewport_surface_tool_create ( VikViewport *vvp );
 cairo_surface_t *vik_viewport_surface_tool_get ( VikViewport *vvp );

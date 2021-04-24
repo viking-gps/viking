@@ -5356,7 +5356,6 @@ static void zoom_to_cb ( GtkAction *a, VikWindow *vw )
 static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, gdouble zoom, gboolean save_as_png, gboolean save_kmz )
 {
   /* more efficient way: stuff draws directly to pixbuf (fork viewport) */
-  GdkPixbuf *pixbuf_to_save;
   gdouble old_xmpp, old_ympp;
   GError *error = NULL;
 
@@ -5389,11 +5388,7 @@ static void save_image_file ( VikWindow *vw, const gchar *fn, guint w, guint h, 
   draw_redraw ( vw );
 
   /* save buffer as file. */
-#if GTK_CHECK_VERSION (3,0,0)
-  pixbuf_to_save = gdk_pixbuf_get_from_window ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), 0, 0, w, h );
-#else
-  pixbuf_to_save = gdk_pixbuf_get_from_drawable ( NULL, GDK_DRAWABLE(vik_viewport_get_pixmap ( vw->viking_vvp )), NULL, 0, 0, 0, 0, w, h);
-#endif
+  GdkPixbuf *pixbuf_to_save = vik_viewport_get_pixbuf ( vw->viking_vvp, w, h );
   if ( !pixbuf_to_save ) {
     g_warning("Failed to generate internal pixmap size: %d x %d", w, h);
     gtk_message_dialog_set_markup ( GTK_MESSAGE_DIALOG(msgbox), _("Failed to generate internal image.\n\nTry creating a smaller image.") );
@@ -5443,7 +5438,6 @@ static void save_image_dir ( VikWindow *vw, const gchar *fn, guint w, guint h, g
   struct UTM utm_orig, utm;
 
   /* *** copied from above *** */
-  GdkPixbuf *pixbuf_to_save;
   gdouble old_xmpp, old_ympp;
   GError *error = NULL;
 
@@ -5484,11 +5478,7 @@ static void save_image_dir ( VikWindow *vw, const gchar *fn, guint w, guint h, g
       draw_redraw ( vw );
 
       /* save buffer as file. */
-#if GTK_CHECK_VERSION (3,0,0)
-      pixbuf_to_save = gdk_pixbuf_get_from_window ( gtk_widget_get_window(GTK_WIDGET(vw->viking_vvp)), 0, 0, w, h );
-#else
-      pixbuf_to_save = gdk_pixbuf_get_from_drawable ( NULL, GDK_DRAWABLE(vik_viewport_get_pixmap ( vw->viking_vvp )), NULL, 0, 0, 0, 0, w, h);
-#endif
+      GdkPixbuf *pixbuf_to_save = vik_viewport_get_pixbuf ( vw->viking_vvp, w, h );
       gdk_pixbuf_save ( pixbuf_to_save, name_of_file, save_as_png ? "png" : "jpeg", &error, NULL );
       if (error)
       {
