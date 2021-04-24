@@ -100,15 +100,25 @@ typedef struct zip_file zip_file_t;
 #define ZIP_RDONLY 0
 #endif
 
+#ifdef WINDOWS
+	GError *err = NULL;
+	char *zip_filename = g_locale_from_utf8 ( filename, -1, NULL, NULL, &err );
+	if ( err ) {
+		g_warning ( "%s: UTF8 issues for '%s' %s", __FUNCTION__, filename, err->message );
+		g_error_free ( err );
+	}
+#else
+	char *zip_filename = g_strdup ( filename );
+#endif
 	int zans = ZIP_ER_OK;
-	zip_t *archive = zip_open ( filename, ZIP_RDONLY, &zans );
+	zip_t *archive = zip_open ( zip_filename, ZIP_RDONLY, &zans );
 	if ( !archive ) {
-		g_warning ( "%s: Unable to open archive: '%s' Error code %d", __FUNCTION__, filename, zans );
+		g_warning ( "%s: Unable to open archive: '%s' Error code %d", __FUNCTION__, zip_filename, zans );
 		goto cleanup;
 	}
 
 	int entries = zip_get_num_entries ( archive, ZIP_FL_UNCHANGED );
-	g_debug ( "%s: zip file %s entries %d", __FUNCTION__, filename, entries );
+	g_debug ( "%s: zip file %s entries %d", __FUNCTION__, zip_filename, entries );
 	if ( entries == 0 )
 		ans = LOAD_TYPE_OTHER_FAILURE_NON_FATAL;
 
@@ -128,7 +138,7 @@ typedef struct zip_file zip_file_t;
 						(void)fclose ( ff );
 					}
 					else {
-						g_warning ( "%s: Unable to load stream: %d in '%s'", __FUNCTION__, ii, filename );
+						g_warning ( "%s: Unable to load stream: %d in '%s'", __FUNCTION__, ii, zip_filename );
 					}
 #else
 					// For example, Windows doesn't have fmemopen()
@@ -141,21 +151,22 @@ typedef struct zip_file zip_file_t;
 					ans = figure_out_answer ( current_ans, ans, ii, entries );
 				}
 				else {
-					g_warning ( "%s: Unable to read index: %d in '%s', got %d, wanted %ld", __FUNCTION__, ii, filename, len, zs.size );
+					g_warning ( "%s: Unable to read index: %d in '%s', got %d, wanted %ld", __FUNCTION__, ii, zip_filename, len, zs.size );
 				}
 			}
 			else {
-				g_warning ( "%s: Unable to open index: %d in '%s'", __FUNCTION__, ii, filename );
+				g_warning ( "%s: Unable to open index: %d in '%s'", __FUNCTION__, ii, zip_filename );
 			}
 		}
 		else {
-			g_warning ( "%s: Unable to stat index: %d in '%s'", __FUNCTION__, ii, filename );
+			g_warning ( "%s: Unable to stat index: %d in '%s'", __FUNCTION__, ii, zip_filename );
 		}
 	}
 	zip_discard ( archive );
 
  cleanup:
 #endif
+	g_free ( zip_filename );
 	return ans;
 }
 

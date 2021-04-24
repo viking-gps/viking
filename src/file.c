@@ -632,6 +632,8 @@ static FILE *xfopen ( const char *fn )
   if ( strcmp(fn,"-") == 0 )
     return stdin;
   else
+    // NB File names passed into Viking should already be converted into UFT8
+    //  by g_win32_get_command_line() in main.c for Windows systems
     return g_fopen(fn, "r");
 }
 

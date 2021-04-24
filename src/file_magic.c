@@ -60,11 +60,22 @@ gboolean file_magic_check ( const gchar *filename, const gchar *magic_string, co
 		int ml = magic_load ( myt, NULL );
 #endif
 		if ( ml == 0 ) {
-			const char* magic = magic_file ( myt, filename );
-			g_debug ("%s: magic output: %s", __FUNCTION__, magic );
+#ifdef WINDOWS
+			GError *err = NULL;
+			char *magic_filename = g_locale_from_utf8 ( filename, -1, NULL, NULL, &err );
+			if ( err ) {
+				g_warning ( "%s: UTF8 issues for '%s' %s", __FUNCTION__, filename, err->message );
+				g_error_free ( err );
+			}
+#else
+			char *magic_filename = g_strdup ( filename );
+#endif
+			const char* magic = magic_file ( myt, magic_filename );
+			g_debug ("%s: magic output: %s for file '%s'", __FUNCTION__, magic, magic_filename );
 			if ( magic )
 				if ( g_ascii_strncasecmp ( magic, magic_string, strlen(magic_string) ) == 0 )
 					is_requested_file_type = TRUE;
+			g_free ( magic_filename );
 		}
 		else {
 			g_critical ("%s: magic load database failure", __FUNCTION__ );

@@ -18,6 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  */
+#include <gmodule.h>
 
 #ifdef HAVE_CONFIG
 #include "config.h"
@@ -107,6 +108,14 @@ int main( int argc, char *argv[] )
     (void)g_printf (_("%s %s\nCopyright (c) 2003-2008 Evan Battaglia\nCopyright (c) 2008-%s Viking's contributors\n"), PACKAGE_NAME, PACKAGE_VERSION, THEYEAR);
     return EXIT_SUCCESS;
   }
+
+  // Normally on Windows the command line arguments are passed in in the system codepage encoding.
+  // This converts it to the GLib filename encoding (which is UTF-8 on Windows).
+  // Doing this here also helps when the filename is used for the displayed main window title
+  //  and saving into the recently used documents list
+#ifdef G_OS_WIN32
+  argv = g_win32_get_command_line ();
+#endif
 
   // Ensure correct capitalization of the program name
   g_set_application_name ("Viking");
@@ -247,6 +256,10 @@ int main( int argc, char *argv[] )
   
   // Clean up any temporary files
   util_remove_all_in_deletion_list ();
+
+#ifdef G_OS_WIN32
+  g_strfreev ( argv );
+#endif
 
   return 0;
 }
