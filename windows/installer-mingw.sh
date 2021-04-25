@@ -153,8 +153,9 @@ else
     echo "Preparing GTK3 Version"
     mkdir -p $DESTINATION/share/icons
     # Copy entirity of icon set for ease (when we only need a few Open / Save / Exit, etc...)
-    # ignore loads of warnings about not copying symbolic links --v
-    cp -a /usr/share/icons/Adwaita $DESTINATION/share/icons > /dev/null 2>&1
+    # Force derefence of stupid hard links, otherwise they don't get copied
+    #  which meant go-previous PNGs went missing and so no Go Back icon on the Toolbar
+    cp -rL /usr/share/icons/Adwaita $DESTINATION/share/icons
 
     mkdir -p $DESTINATION/share/icons/hicolor/48x48/apps
     cp -a ../src/icons/viking.png $DESTINATION/share/icons/hicolor/48x48/apps
