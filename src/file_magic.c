@@ -29,6 +29,7 @@
 #include <magic.h>
 #endif
 #include <string.h>
+#include <gmodule.h>
 
 /**
  * file_magic_check:
@@ -53,8 +54,17 @@ gboolean file_magic_check ( const gchar *filename, const gchar *magic_string, co
 	if ( myt ) {
 #ifdef WINDOWS
 		// We have to 'package' the magic database ourselves :(
+		gchar *dir = g_win32_get_package_installation_directory_of_module ( NULL );
+		g_debug ( "%s: Running on Windows - %s", __FUNCTION__, dir );
 		//  --> %PROGRAM FILES%\Viking\magic.mgc
-		int ml = magic_load ( myt, ".\\magic.mgc" );
+		//int ml = magic_load ( myt, ".\\magic.mgc" );
+		gchar *mgc = g_build_filename ( dir, "magic.mgc", NULL);
+
+		//int ml = magic_load ( myt, ".\\magic.mgc" );
+		int ml = magic_load ( myt, mgc );
+
+		g_free ( mgc );
+		g_free ( dir );
 #else
 		// Use system default
 		int ml = magic_load ( myt, NULL );
