@@ -4115,7 +4115,7 @@ Accept: */*
                 <para>Custom HTTP headers to be added to the download request. The default is none.</para>
                 <para>Multiple headers can be specified by separating each part with an '\n'.</para>
                 <para>The header allows of substition of values of the positional Z, X and Y (in that order) values, as per the <emphasis>url</emphasis> option above. Using multiple and/or different ordered values can be acheived via printf() positional argument specifiers. For example:</para>
-                <para><literal>DNT: 1\nLine2: %d %d %d\nReordered: %3$d %1$d %2$d</literal></para>
+                <para><literal>DNT: 1\nLine2: %d %d %d\nReordered: %3$d %1$d %2$d\nUser-Agent: Mozilla/5.0</literal></para>
               </listitem>
             </varlistentry>
             <varlistentry>
@@ -4561,6 +4561,12 @@ Accept: */*
 	    <para>curl_ssl_verifypeer=1</para>
 	    <para>See <ulink url="https://curl.haxx.se/libcurl/c/CURLOPT_SSL_VERIFYPEER.html">CURLOPT_SSL_VERIFYPEER</ulink></para>
 	    <note><para>If you encounter issues downloading from https sources (particularly on <trademark>Windows</trademark>, setting this to 0 should get HTTPS connections to work. For <trademark>UNIX</trademark> like operating systems SSL Certificate management is typically handled system wide and trusted certficate issuers updated regularly. Whereas for &appname; under Windows this is only done at installation/version update time and so may become out of date or encounter unknown sources and thus more likely to raise verification failures.</para></note>
+	  </listitem>
+	  <listitem>
+	    <para>curl_user_agent=NULL</para>
+            <para>Override the default HTTP User-Agent (which is otherwise generated automatically from a combination of &appname;'s name, the version and curl information) set in all download requests with the value specified.</para>
+	    <para>Also see <ulink url="https://curl.se/libcurl/c/CURLOPT_USERAGENT.html">CURLOPT_USERAGENT</ulink></para>
+            <para>NB The User Agent for individual map downloads can be set via the map property <emphasis>custom-http-headers</emphasis></para>
 	  </listitem>
 	  <listitem>
 	    <para>geoclue_accuracy_level=4</para>

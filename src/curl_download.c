@@ -107,7 +107,14 @@ void curl_download_init()
 {
   curl_global_init(CURL_GLOBAL_ALL);
   (void)get_cookie_file ( TRUE );
-  curl_download_user_agent = g_strdup_printf ("%s/%s %s", PACKAGE, VERSION, curl_version());
+
+  gchar *cua_str = NULL;
+  if ( a_settings_get_string ( "curl_user_agent", &cua_str ) ) {
+    curl_download_user_agent = g_strdup ( cua_str );
+    g_free ( cua_str );
+  } else
+    curl_download_user_agent = g_strdup_printf ("%s/%s %s", PACKAGE, VERSION, curl_version());
+  g_debug ( "%s: Using user_agent=%s", __FUNCTION__, curl_download_user_agent );
 
 #ifdef CURL_NO_SSL_VERIFYPEER
   curl_ssl_verifypeer = 0;
@@ -129,6 +136,7 @@ void curl_download_uninit()
   g_free ( curl_cainfo );
   // Cookie file does not persist between sessions
   (void)util_remove ( get_cookie_file(FALSE) );
+  g_free ( curl_download_user_agent );
 }
 
 /**
