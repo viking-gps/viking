@@ -4336,7 +4336,7 @@ static void trw_layer_new_wikipedia_wp_viewport ( menu_array_layer values )
   VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
   VikViewport *vvp = vik_window_viewport(vw);
   LatLonBBox bbox = vik_viewport_get_bbox ( vvp );
-  a_geonames_wikipedia_box ( (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, bbox );
+  a_geonames_wikipedia_box ( vw, vtl, bbox );
   trw_layer_calculate_bounds_waypoints ( vtl );
   vik_layers_panel_emit_update ( vlp );
 }
