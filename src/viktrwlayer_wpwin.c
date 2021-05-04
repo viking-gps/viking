@@ -723,6 +723,11 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
       a_dialog_warning_msg ( ww->parent, _("Course value must be between 0 and 360.") );
     else {
       // Do It
+      // Detect if anything has actually changed
+      // Note that gtk_entry_get_text() returns "" for empty boxes rather NULL
+      //  however we don't store that, hence the strlen() checks
+      gboolean changed = FALSE;
+      VikCoord coord = wp->coord;
       vik_units_height_t height_units = a_vik_get_units_height ();
       const gchar *txt = gtk_entry_get_text ( GTK_ENTRY(ww->latentry) );
       // Try getting extended lat/lon formats in just the lat
@@ -731,6 +736,10 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
         ll.lon = convert_dms_to_dec ( gtk_entry_get_text ( GTK_ENTRY(ww->lonentry) ) );
       }
       vik_coord_load_from_latlon ( &(wp->coord), ww->coord_mode, &ll );
+      if ( !vik_coord_equals(&coord, &(wp->coord)) )
+        changed = TRUE;
+
+      gdouble old = wp->altitude;
       gchar const *alttext = gtk_entry_get_text ( GTK_ENTRY(ww->altentry) );
       if ( alttext && strlen(alttext) ) {
         // Always store in metres
@@ -749,33 +758,78 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
       else {
         wp->altitude = NAN;
       }
-      vik_waypoint_set_name ( wp, gtk_entry_get_text ( GTK_ENTRY(ww->nameentry) ) );
-      wp->hide_name = !gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(ww->nameshowcb) );
-      if ( g_strcmp0 ( wp->comment, gtk_entry_get_text ( GTK_ENTRY(ww->commententry) ) ) )
-        vik_waypoint_set_comment ( wp, gtk_entry_get_text ( GTK_ENTRY(ww->commententry) ) );
-      if ( g_strcmp0 ( wp->description, gtk_entry_get_text ( GTK_ENTRY(ww->descriptionentry) ) ) )
-        vik_waypoint_set_description ( wp, gtk_entry_get_text ( GTK_ENTRY(ww->descriptionentry) ) );
-      if ( g_strcmp0 ( wp->image, vik_file_entry_get_filename ( VIK_FILE_ENTRY(ww->imageentry) ) ) )
-        vik_waypoint_set_image ( wp, vik_file_entry_get_filename ( VIK_FILE_ENTRY(ww->imageentry) ) );
-      if ( ww->sourceentry && g_strcmp0 ( wp->source, gtk_entry_get_text ( GTK_ENTRY(ww->sourceentry) ) ) )
-        vik_waypoint_set_source ( wp, gtk_entry_get_text ( GTK_ENTRY(ww->sourceentry) ) );
-      if ( ww->typeentry && g_strcmp0 ( wp->type, gtk_entry_get_text ( GTK_ENTRY(ww->typeentry) ) ) )
-        vik_waypoint_set_type ( wp, gtk_entry_get_text ( GTK_ENTRY(ww->typeentry) ) );
+      if ( util_gdouble_different(old, wp->altitude) )
+        changed = TRUE;
+
+      const gchar *str = NULL;
+      str = gtk_entry_get_text ( GTK_ENTRY(ww->nameentry) );
+      if ( g_strcmp0(wp->name, str) ) {
+        if ( wp->name || (str && strlen(str)) ) {
+          vik_waypoint_set_name ( wp, str );
+          changed = TRUE;
+        }
+      }
+      if ( wp->hide_name != !gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(ww->nameshowcb)) ) {
+        wp->hide_name = !gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(ww->nameshowcb) );
+        changed = TRUE;
+      }
+      str = gtk_entry_get_text ( GTK_ENTRY(ww->commententry) );
+      if ( g_strcmp0(wp->comment, str) ) {
+        if ( wp->comment || (str && strlen(str)) ) {
+          vik_waypoint_set_comment ( wp, str );
+          changed = TRUE;
+        }
+      }
+      str = gtk_entry_get_text ( GTK_ENTRY(ww->descriptionentry) );
+      if ( g_strcmp0(wp->description, str) ) {
+        if ( wp->description || (str && strlen(str)) ) {
+          vik_waypoint_set_description ( wp, str );
+          changed = TRUE;
+        }
+      }
+      str = vik_file_entry_get_filename ( VIK_FILE_ENTRY(ww->imageentry) );
+      if ( g_strcmp0(wp->image, str) ) {
+        if ( wp->image || (str && strlen(str)) ) {
+          vik_waypoint_set_image ( wp, str );
+          changed = TRUE;
+        }
+      }
+      str = gtk_entry_get_text ( GTK_ENTRY(ww->sourceentry) );
+      if ( g_strcmp0(wp->source, str) ) {
+        if ( wp->source || (str && strlen(str)) ) {
+          vik_waypoint_set_source ( wp, str );
+          changed = TRUE;
+        }
+      }
+      str = gtk_entry_get_text ( GTK_ENTRY(ww->typeentry) );
+      if ( g_strcmp0(wp->type, str) ) {
+        if ( wp->type || (str && strlen(str)) ) {
+          vik_waypoint_set_type ( wp, str );
+          changed = TRUE;
+        }
+      }
       if ( wp->image && *(wp->image) && (!a_thumbnails_exists(wp->image)) )
         a_thumbnails_create ( wp->image );
 
-      wp->timestamp = edit_wp->timestamp;
+      if ( util_gdouble_different(wp->timestamp, edit_wp->timestamp) ) {
+        wp->timestamp = edit_wp->timestamp;
+        changed = TRUE;
+      }
 
       if ( ww->direction_sb ) {
         if ( gtk_widget_get_sensitive (ww->direction_sb) ) {
+          old = wp->image_direction;
           wp->image_direction = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(ww->direction_sb) );
 #ifdef VIK_CONFIG_GEOTAG
           if ( wp->image && wp->image_direction != edit_wp->image_direction )
             a_geotag_write_exif_gps ( wp->image, wp->coord, wp->altitude, wp->image_direction, wp->image_direction_ref, TRUE );
 #endif
+          if ( util_gdouble_different(old, wp->image_direction) )
+            changed = TRUE;
         }
       }
 
+      gchar *tmp = g_strdup ( wp->symbol );
       g_free ( last_sym );
       GtkTreeIter iter, first;
       gtk_tree_model_get_iter_first ( GTK_TREE_MODEL(ww->store), &first );
@@ -789,11 +843,18 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
         last_sym = g_strdup ( sym );
         g_free(sym);
       }
+      if ( g_strcmp0(tmp, wp->symbol) )
+        changed = TRUE;
+      g_free ( tmp );
 
       // Extra tab data
       vik_units_speed_t speed_units = a_vik_get_units_speed ();
-      wp->course = crsd;
+      if ( util_gdouble_different(crsd, wp->course) ) {
+        wp->course = crsd;
+        changed = TRUE;
+      }
 
+      old = wp->speed;
       gchar const *spdtext = gtk_entry_get_text ( GTK_ENTRY(ww->speedentry) );
       if ( spdtext && strlen(spdtext) ) {
         wp->speed = get_speed_from_text ( speed_units, spdtext );
@@ -801,7 +862,10 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
       else {
         wp->speed = NAN;
       }
+      if ( util_gdouble_different(old, wp->speed) )
+        changed = TRUE;
 
+      old = wp->geoidheight;
       gchar const *ghtext = gtk_entry_get_text ( GTK_ENTRY(ww->geoidhgtentry) );
       if ( ghtext && strlen(ghtext) ) {
         // Always store in metres
@@ -817,15 +881,28 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
       else {
         wp->geoidheight = NAN;
       }
+      if ( util_gdouble_different(old, wp->geoidheight) )
+        changed = TRUE;
 
-      if ( g_strcmp0 ( wp->url, gtk_entry_get_text ( GTK_ENTRY(ww->urlentry) ) ) )
-        vik_waypoint_set_url ( wp, gtk_entry_get_text ( GTK_ENTRY(ww->urlentry) ) );
-      if ( g_strcmp0 ( wp->url_name, gtk_entry_get_text ( GTK_ENTRY(ww->urlnameentry) ) ) )
-        vik_waypoint_set_url_name ( wp, gtk_entry_get_text ( GTK_ENTRY(ww->urlnameentry) ) );
+      str = gtk_entry_get_text ( GTK_ENTRY(ww->urlentry) );
+      if ( g_strcmp0(wp->url, str) ) {
+        if ( wp->url || (str && strlen(str)) ) {
+          vik_waypoint_set_url ( wp, str );
+          changed = TRUE;
+        }
+      }
+      str = gtk_entry_get_text ( GTK_ENTRY(ww->urlnameentry) );
+      if ( g_strcmp0(wp->url_name, str) ) {
+        if ( wp->url_name || (str && strlen(str)) ) {
+          vik_waypoint_set_url_name ( wp, str );
+          changed = TRUE;
+        }
+      }
 
       // Now that the wpt itself has been updated, need to update the display
       //  could use a signal method, but a direct function call is simple
-      trw_layer_waypoint_properties_changed ( ww->vtl, ww->wpt );
+      if ( changed )
+        trw_layer_waypoint_properties_changed ( ww->vtl, ww->wpt );
     }
   }
 

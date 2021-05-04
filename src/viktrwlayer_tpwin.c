@@ -133,6 +133,7 @@ static void tpwin_sync_alt_to_tp ( VikTrwLayerTpwin *tpwin )
       tpwin->cur_tp->altitude = gtk_spin_button_get_value ( tpwin->alt );
       g_critical("Houston, we've had a problem. height=%d", height_units);
     }
+    gtk_dialog_response ( GTK_DIALOG(tpwin), VIK_TRW_LAYER_TPWIN_DATA_CHANGED );
   }
 }
 
@@ -146,6 +147,7 @@ static void tpwin_sync_ts_to_tp ( VikTrwLayerTpwin *tpwin )
     if ( !isnan(tpwin->cur_tp->timestamp) ) {
       tpwin->cur_tp->timestamp = gtk_spin_button_get_value ( tpwin->ts );
       tpwin_update_times ( tpwin, tpwin->cur_tp );
+      gtk_dialog_response ( GTK_DIALOG(tpwin), VIK_TRW_LAYER_TPWIN_DATA_CHANGED );
     }
   }
 }
@@ -161,6 +163,7 @@ static void time_remove_cb ( VikTrwLayerTpwin *tpwin )
   GtkWidget *img = gtk_image_new_from_stock ( GTK_STOCK_ADD, GTK_ICON_SIZE_MENU );
   gtk_button_set_image ( GTK_BUTTON(tpwin->time), img );
   tpwin_update_times ( tpwin, tpwin->cur_tp );
+  gtk_dialog_response ( GTK_DIALOG(tpwin), VIK_TRW_LAYER_TPWIN_DATA_CHANGED );
 }
 
 /**
@@ -223,12 +226,19 @@ static void tpwin_sync_time_to_tp ( GtkWidget* widget, GdkEventButton *event, Vi
     gtk_button_set_image ( GTK_BUTTON(tpwin->time), NULL );
 
   tpwin_update_times ( tpwin, tpwin->cur_tp );
+  gtk_dialog_response ( GTK_DIALOG(tpwin), VIK_TRW_LAYER_TPWIN_DATA_CHANGED );
 }
 
 static gboolean tpwin_set_name ( VikTrwLayerTpwin *tpwin )
 {
   if ( tpwin->cur_tp && (!tpwin->sync_to_tp_block) ) {
-    vik_trackpoint_set_name ( tpwin->cur_tp, gtk_entry_get_text(GTK_ENTRY(tpwin->trkpt_name)) );
+    const gchar *str = gtk_entry_get_text(GTK_ENTRY(tpwin->trkpt_name));
+    if ( g_strcmp0(tpwin->cur_tp->name, str) ) {
+      if ( tpwin->cur_tp->name || (str && strlen(str)) ) {
+        vik_trackpoint_set_name ( tpwin->cur_tp, str );
+        gtk_dialog_response ( GTK_DIALOG(tpwin), VIK_TRW_LAYER_TPWIN_DATA_CHANGED );
+      }
+    }
   }
   return FALSE;
 }

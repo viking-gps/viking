@@ -354,13 +354,13 @@ static VikTrackpoint *set_center_at_graph_position(gdouble event_x,
     VikCoord coord = trackpoint->coord;
     if ( vlp ) {
       vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), &coord, TRUE );
-      vik_layers_panel_emit_update ( vlp );
+      vik_layers_panel_emit_update ( vlp, FALSE );
     }
     else {
       /* since vlp not set, vvp should be valid instead! */
       if ( vvp )
         vik_viewport_set_center_coord ( vvp, &coord, TRUE );
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
     }
   }
   return trackpoint;
@@ -2692,7 +2692,7 @@ static gboolean split_at_marker ( PropWidgets *widgets )
 
         g_free ( r_name );
 
-        vik_layer_emit_update ( VIK_LAYER(vtl) );
+        vik_layer_emit_update ( VIK_LAYER(vtl), trw_layer_modified(vtl) );
       }
 
       return FALSE;
@@ -2711,21 +2711,67 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
     case GTK_RESPONSE_DELETE_EVENT: /* received delete event (not from buttons) */
     case GTK_RESPONSE_REJECT:
       break;
-    case GTK_RESPONSE_ACCEPT:
-      vik_track_set_comment(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_comment)));
-      vik_track_set_description(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_description)));
-      vik_track_set_source(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_source)));
-      vik_track_set_type(tr, gtk_entry_get_text(GTK_ENTRY(widgets->w_type)));
-      gtk_color_button_get_color ( GTK_COLOR_BUTTON(widgets->w_color), &(tr->color) );
-      tr->draw_name_mode = gtk_combo_box_get_active ( GTK_COMBO_BOX(widgets->w_namelabel) );
-      tr->max_number_dist_labels = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->w_number_distlabels) );
-      tr->number = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->w_number) );
+    case GTK_RESPONSE_ACCEPT: {
+      // Detect if anything has actually changed,
+      //  rather than just blindly (re)applying the same values
+      // Note that gtk_entry_get_text() returns "" for empty boxes rather NULL
+      //  however we don't store that, hence the strlen() checks
+      gboolean changed = FALSE;
+      const gchar *str = NULL;
+      str = gtk_entry_get_text(GTK_ENTRY(widgets->w_comment));
+      if ( g_strcmp0(tr->comment, str) ) {
+        if ( tr->comment || (str && strlen(str)) ) {
+          vik_track_set_comment ( tr, str );
+          changed = TRUE;
+        }
+      }
+      str = gtk_entry_get_text(GTK_ENTRY(widgets->w_description));
+      if ( g_strcmp0(tr->description, str) ) {
+        if ( tr->description || (str && strlen(str)) ) {
+          vik_track_set_description ( tr, str );
+          changed = TRUE;
+        }
+      }
+      str = gtk_entry_get_text(GTK_ENTRY(widgets->w_source));
+      if ( g_strcmp0(tr->source, str) ) {
+        if ( tr->source || (str && strlen(str)) ) {
+          vik_track_set_source ( tr, str );
+          changed = TRUE;
+        }
+      }
+      str = gtk_entry_get_text(GTK_ENTRY(widgets->w_type));
+      if ( g_strcmp0(tr->type, str) ) {
+        if ( tr->type || (str && strlen(str)) ) {
+          vik_track_set_type ( tr, str );
+          changed = TRUE;
+        }
+      }
+      GdkColor color;
+      gtk_color_button_get_color ( GTK_COLOR_BUTTON(widgets->w_color), &color );
+      if ( !gdk_color_equal(&color, &(tr->color)) ) {
+        gtk_color_button_get_color ( GTK_COLOR_BUTTON(widgets->w_color), &(tr->color) );
+        changed = TRUE;
+      }
+      if ( tr->draw_name_mode != gtk_combo_box_get_active(GTK_COMBO_BOX(widgets->w_namelabel)) ) {
+        tr->draw_name_mode = gtk_combo_box_get_active ( GTK_COMBO_BOX(widgets->w_namelabel) );
+        changed = TRUE;
+      }
+      if ( tr->max_number_dist_labels != gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(widgets->w_number_distlabels)) ) {
+        tr->max_number_dist_labels = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->w_number_distlabels) );
+        changed = TRUE;
+      }
+      if ( tr->number != gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(widgets->w_number)) ) {
+        tr->number = gtk_spin_button_get_value_as_int ( GTK_SPIN_BUTTON(widgets->w_number) );
+        changed = TRUE;
+      }
       trw_layer_update_treeview ( widgets->vtl, widgets->tr, (old_number != tr->number) );
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      if ( changed )
+        vik_layer_emit_update ( VIK_LAYER(vtl), trw_layer_modified(vtl) );
       break;
+    }
     case VIK_TRW_LAYER_PROPWIN_REVERSE:
       vik_track_reverse(tr);
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      vik_layer_emit_update ( VIK_LAYER(vtl), trw_layer_modified(vtl) );
       break;
     case VIK_TRW_LAYER_PROPWIN_DEL_DUP:
       (void)vik_track_remove_dup_points(tr); // NB ignore the returned answer
@@ -2734,7 +2780,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
 
       /* above operation could have deleted current_tp or last_tp */
       trw_layer_cancel_tps_of_track ( vtl, tr );
-      vik_layer_emit_update ( VIK_LAYER(vtl) );
+      vik_layer_emit_update ( VIK_LAYER(vtl), trw_layer_modified(vtl) );
       break;
     case VIK_TRW_LAYER_PROPWIN_SPLIT:
       {
@@ -2768,7 +2814,7 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
             vik_trw_layer_delete_route ( vtl, tr );
           else
             vik_trw_layer_delete_track ( vtl, tr );
-          vik_layer_emit_update ( VIK_LAYER(vtl) ); /* chase thru the hoops */
+          vik_layer_emit_update ( VIK_LAYER(vtl), trw_layer_modified(vtl) );
         }
       }
       break;

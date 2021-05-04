@@ -184,7 +184,7 @@ static void trw_layer_waypoint_view ( menu_array_values values )
 
 	trw_layer_waypoint_select (values);
 
-	vik_layer_emit_update ( VIK_LAYER(vtl) );
+	vik_layer_emit_update ( VIK_LAYER(vtl), FALSE );
 }
 
 static void trw_layer_show_picture ( menu_array_values values )

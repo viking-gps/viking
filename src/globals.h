@@ -247,6 +247,8 @@ gboolean a_vik_get_create_track_tooltip ( );
 
 gboolean a_vik_get_show_graph_for_trwlayer ( );
 
+gboolean a_vik_get_warn_unsaved_changes_on_exit ( );
+
 gboolean a_vik_get_open_files_in_selected_layer ( );
 
 gboolean a_vik_get_calendar_show_day_names ( );
@@ -313,6 +315,12 @@ gint a_vik_get_recent_number_files ( );
 #define VIK_ICON_FILTER       "filter_32"
 #define VIK_ICON_GLOBE        "globe_32"
 #define VIK_ICON_SHOW_PICTURE "showpic_18"
+
+// Particularly if one often views large .vik files,
+//  then changing the visibility of items may be considered just part of the viewing process
+// So maybe you then don't want to be notified on exit about such things
+// ATM This is a 'setting' rather than a preference, since it's very advanced usage
+#define VIK_SETTINGS_IGNORE_VIS_MOD "modifications_ignore_visibility_toggle"
 
 G_END_DECLS
 

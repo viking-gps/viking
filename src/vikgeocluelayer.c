@@ -627,7 +627,7 @@ notify_location ( GClueSimple *simple,
 		vgl->trkpt_prev = vgl->trkpt;
 	}
 
-	vik_layer_emit_update ( update_all ? VIK_LAYER(vgl) : VIK_LAYER(vgl->trw) ); // NB update from background thread
+	vik_layer_emit_update ( update_all ? VIK_LAYER(vgl) : VIK_LAYER(vgl->trw), vgl->trkpt ? TRUE : FALSE ); // NB update from background thread
 }
 
 static void

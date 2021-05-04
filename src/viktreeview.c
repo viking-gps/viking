@@ -489,7 +489,7 @@ static void select_cb(GtkTreeSelection *selection, gpointer data)
 			    tmp_type,
 			    vik_window_layers_panel(vw) ) ) {
     /* Redraw required */
-    vik_layers_panel_emit_update ( vik_window_layers_panel(vw) );
+    vik_layers_panel_emit_update ( vik_window_layers_panel(vw), FALSE );
   }
 
 }
@@ -937,7 +937,6 @@ static gboolean vik_treeview_drag_data_received (GtkTreeDragDest *drag_dest, Gtk
     TREEVIEW_GET(tree_model, &root_iter, ITEM_POINTER_COLUMN, &vl);
     vt = vl->vt;
 
-
     if (gtk_tree_path_get_depth(dest_cp)>1) { /* can't be sibling of top layer */
       VikLayer *vl_src, *vl_dest;
 
@@ -955,15 +954,15 @@ static gboolean vik_treeview_drag_data_received (GtkTreeDragDest *drag_dest, Gtk
 
       /* TODO: might want to allow different types, and let the clients handle how they want */
       if (vl_src->type == vl_dest->type && vik_layer_get_interface(vl_dest->type)->drag_drop_request) {
-	//	g_print("moving an item from layer '%s' into layer '%s'\n", vl_src->name, vl_dest->name);
-	vik_layer_get_interface(vl_dest->type)->drag_drop_request(vl_src, vl_dest, &src_iter, dest);
+        // g_print("moving an item from layer '%s' into layer '%s'\n", vl_src->name, vl_dest->name);
+        vik_layer_get_interface(vl_dest->type)->drag_drop_request(vl_src, vl_dest, &src_iter, dest);
+
+        // Update as things have changed - this needs to be performed at the root level
+        //  due to visibility settings of the heirachy effects what needs drawing (and removing)
+        //  so can't be in drag_drop_request() as an update on either vl_src or vl_dest layers isn't enough
+        vik_layer_emit_update ( vl, TRUE );
       }    
     }
-
-    // Update as things have changed - this needs to be performed at the root level
-    //  due to visibility settings of the heirachy effects what needs drawing (and removing)
-    //  so can't be in drag_drop_request() as an update on either vl_src or vl_dest layers isn't enough
-    vik_layer_emit_update ( vl );
   }
 
  out:

@@ -128,9 +128,10 @@ void vik_layer_redraw ( VikLayer *vl )
 
 /**
  * An update event
+ * @is_modified: Whether the layer has been modified
  * Redraw specified layer and a notification about the update
  */
-void vik_layer_emit_update ( VikLayer *vl )
+void vik_layer_emit_update ( VikLayer *vl, gboolean is_modified )
 {
   if ( vl->visible && vl->realized ) {
     GThread *thread = vik_window_get_thread ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl)) );
@@ -159,6 +160,12 @@ void vik_layer_emit_update ( VikLayer *vl )
 	(void)g_idle_add ( (GSourceFunc)vik_layer_interfaces[vl->type]->refresh, vl );
     }
   }
+
+  // Check for realized (similar to as above) is mainly to detect layers that in the process of being created
+  // As the widget doesn't exist yet, we can't get the owning vikwindow
+  // The modified status for new layers is generally handled in viklayerspanel instead.
+  if ( is_modified && vl->realized )
+    vik_window_set_modified ( (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vl)) );
 }
 
 /**
@@ -595,9 +602,15 @@ GdkPixbuf *vik_layer_load_icon ( VikLayerTypeEnum type )
 
 gboolean vik_layer_set_param ( VikLayer *vl, VikLayerSetParam *vlsp )
 {
+  gboolean ans = FALSE;
   if ( vik_layer_interfaces[vl->type]->set_param )
-    return vik_layer_interfaces[vl->type]->set_param ( vl, vlsp );
-  return FALSE;
+    ans = vik_layer_interfaces[vl->type]->set_param ( vl, vlsp );
+  if ( ans && !vlsp->is_file_operation && vl->realized ) {
+    VikWindow *vw = (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(vl);
+    if ( vw )
+      vik_window_set_modified ( vw );
+  }
+  return ans;
 }
 
 void vik_layer_post_read ( VikLayer *layer, VikViewport *vp, gboolean from_file )
@@ -606,10 +619,9 @@ void vik_layer_post_read ( VikLayer *layer, VikViewport *vp, gboolean from_file 
     vik_layer_interfaces[layer->type]->post_read ( layer, vp, from_file );
 }
 
-// Wrapper function to keep compiler happy
 static void layer_emit_update_internal ( gpointer gp )
 {
-  vik_layer_emit_update ( VIK_LAYER(gp));
+  vik_layer_emit_update ( VIK_LAYER(gp), TRUE );
 }
 
 static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp, gboolean have_apply )
@@ -620,7 +632,7 @@ static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp, gb
 					    vik_layer_interfaces[vl->type]->params_count,
 					    vik_layer_interfaces[vl->type]->params_groups,
 					    vik_layer_interfaces[vl->type]->params_groups_count,
-					    (gpointer) vik_layer_interfaces[vl->type]->set_param,
+					    (gpointer) vik_layer_set_param,
 					    NULL,
 					    vl, 
 					    vp,
@@ -632,10 +644,9 @@ static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp, gb
 					    (gpointer)vl,
 					    have_apply) ) {
     case 0:
-    case 3:
       return FALSE;
-      /* redraw (?) */
     case 2:
+    case 3:
       vik_layer_post_read ( vl, vp, FALSE ); /* update any gc's */
     default:
       return TRUE;
@@ -763,4 +774,61 @@ void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp )
 void vik_layer_expand_tree ( VikLayer *vl )
 {
   vik_treeview_expand ( vl->vt, &vl->iter );
+}
+
+/**
+ * Returns whether the new value is an actual change
+ */
+gboolean vik_layer_param_change_boolean ( VikLayerParamData val, gboolean *current )
+{
+  gboolean old = *current;
+  *current = val.b;
+  return (old != val.b);
+}
+
+gboolean vik_layer_param_change_uint ( VikLayerParamData val, guint *current )
+{
+  guint old = *current;
+  *current = val.u;
+  return (old != val.u);
+}
+
+gboolean vik_layer_param_change_uint8 ( VikLayerParamData val, guint8 *current )
+{
+  guint8 old = *current;
+  *current = val.u;
+  return (old != val.u);
+}
+
+gboolean vik_layer_param_change_int ( VikLayerParamData val, gint *current )
+{
+  gint old = *current;
+  *current = val.i;
+  return (old != val.i);
+}
+
+gboolean vik_layer_param_change_color ( VikLayerParamData val, GdkColor *current )
+{
+  GdkColor old = *current;
+  *current = val.c;
+  return !gdk_color_equal ( &old, &val.c );
+}
+
+// Doubles may be in some kind of units - metres/feet etc...
+//  and in that case should not use this function directly
+gboolean vik_layer_param_change_double ( VikLayerParamData val, gdouble *current )
+{
+  gdouble old = *current;
+  *current = val.d;
+  return util_gdouble_different ( old, val.d );
+}
+
+gboolean vik_layer_param_change_string ( VikLayerParamData val, gchar **current )
+{
+  gchar* old = g_strdup ( *current );
+  g_free ( *current );
+  *current = g_strdup ( val.s );
+  gboolean changed = g_strcmp0 ( old, val.s );
+  g_free ( old );
+  return changed;
 }

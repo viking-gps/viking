@@ -374,3 +374,13 @@ gboolean util_glist_of_strings_compare ( GList *aa, GList *bb )
 
   return ans;
 }
+
+// NB directly comparing "NaN != NaN" results in true!!
+//  so need to check isnan() first
+//  and further directly comparing floating point numbers is not wise
+gboolean util_gdouble_different ( gdouble aa, gdouble bb )
+{
+  static const gdouble TOL = 0.000005; // Tolerance
+  return ( ( !isnan(aa) || !isnan(bb) ) &&
+           ( (aa < (bb - TOL)) || (aa > (bb + TOL)) ) );
+}

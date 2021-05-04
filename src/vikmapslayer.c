@@ -602,13 +602,6 @@ static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir )
   }
 }
 
-static void maps_layer_set_file ( VikMapsLayer *vml, const gchar *name )
-{
-  if ( vml->filename )
-    g_free (vml->filename);
-  vml->filename = g_strdup (name);
-}
-
 /****************************************/
 /******** GOBJECT STUFF *****************/
 /****************************************/
@@ -671,12 +664,25 @@ static void maps_show_license ( GtkWindow *parent, VikMapSource *map )
 
 static gboolean maps_layer_set_param ( VikMapsLayer *vml, VikLayerSetParam *vlsp )
 {
+  gboolean changed = FALSE;
   switch ( vlsp->id )
   {
-    case PARAM_CACHE_DIR: maps_layer_set_cache_dir ( vml, vlsp->data.s ); break;
-    case PARAM_CACHE_LAYOUT: if ( vlsp->data.u < VIK_MAPS_CACHE_LAYOUT_NUM ) vml->cache_layout = vlsp->data.u; break;
-    case PARAM_FILE: maps_layer_set_file ( vml, vlsp->data.s ); break;
+    case PARAM_CACHE_DIR: {
+      gchar* old = g_strdup ( vml->cache_dir );
+      maps_layer_set_cache_dir ( vml, vlsp->data.s );
+      changed = g_strcmp0 ( old, vlsp->data.s );
+      g_free ( old );
+      break;
+    }
+    case PARAM_CACHE_LAYOUT:
+      if ( vlsp->data.u < VIK_MAPS_CACHE_LAYOUT_NUM )
+        changed = vik_layer_param_change_uint ( vlsp->data, &vml->cache_layout );
+      break;
+    case PARAM_FILE:
+      changed = vik_layer_param_change_string ( vlsp->data, &vml->filename );
+      break;
     case PARAM_MAPTYPE: {
+      guint old = vml->maptype;
       guint maptype = map_uniq_id_to_index(vlsp->data.u);
       if ( maptype == NUM_MAP_TYPES )
         g_warning ( _("%s: Unknown map type %d"), __FUNCTION__, vlsp->data.u );
@@ -699,14 +705,24 @@ static gboolean maps_layer_set_param ( VikMapsLayer *vml, VikLayerSetParam *vlsp
           }
         }
       }
+      // NB using the vml variable for comparison
+      //  (rather than passed in variable) - as the id/type is converted to the maptype
+      changed = (old != vml->maptype);
       break;
     }
-    case PARAM_ALPHA: if ( vlsp->data.u <= 255 ) vml->alpha = vlsp->data.u; break;
-    case PARAM_AUTODOWNLOAD: vml->autodownload = vlsp->data.b; break;
-    case PARAM_ONLYMISSING: vml->adl_only_missing = vlsp->data.b; break;
+    case PARAM_ALPHA:
+      if ( vlsp->data.u <= 255 )
+        changed = vik_layer_param_change_uint8 ( vlsp->data, &vml->alpha );
+      break;
+    case PARAM_AUTODOWNLOAD:
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vml->autodownload );
+      break;
+    case PARAM_ONLYMISSING:
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vml->adl_only_missing );
+      break;
     case PARAM_MAPZOOM:
       if ( vlsp->data.u < NUM_MAPZOOMS ) {
-        vml->mapzoom_id = vlsp->data.u;
+        changed = vik_layer_param_change_uint ( vlsp->data, &vml->mapzoom_id );
         vml->xmapzoom = __mapzooms_x [vlsp->data.u];
         vml->ymapzoom = __mapzooms_y [vlsp->data.u];
       } else
@@ -714,7 +730,9 @@ static gboolean maps_layer_set_param ( VikMapsLayer *vml, VikLayerSetParam *vlsp
       break;
     default: break;
   }
-  return TRUE;
+  if ( vik_debug && changed )
+    g_debug ( "%s: Detected change on param %d", __FUNCTION__, vlsp->id );
+  return changed;
 }
 
 static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, gboolean is_file_operation )
@@ -1811,7 +1829,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
         if (mdi->refresh_display && mdi->map_layer_alive) {
           /* TODO: check if it's on visible area */
           if ( need_download ) {
-            vik_layer_emit_update ( VIK_LAYER(mdi->vml) ); // NB update display from background
+            vik_layer_emit_update ( VIK_LAYER(mdi->vml), FALSE ); // NB update display from background
           }
         }
         g_mutex_unlock(mdi->mutex);
@@ -2332,7 +2350,7 @@ static void maps_layer_mbtiles_open_cb ( menu_array_values values )
   VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
 
   maps_layer_mbtiles_open ( vml, vvp, map );
-  vik_layer_emit_update ( VIK_LAYER(vml) );
+  vik_layer_emit_update ( VIK_LAYER(vml), FALSE );
 }
 #endif
 

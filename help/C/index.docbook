@@ -506,6 +506,9 @@ One may consider each &appname; window to be a separate project - each with it's
 However generally one window is enough for most purposes!
 </para>
 <para>
+  To indicate when changes have been made the name is preceded by an '*'.
+</para>
+<para>
 Several operations apply at the window level as follows next.
 Also see <xref linkend="tools"/> for the operational modes that generally work in conjunction with a selected layer.
 </para>
@@ -3303,6 +3306,9 @@ When no TrackWaypoint Layer is selected (or the layer is invisibile) then the fi
 <section><title>Auto Select Trackpoint</title>
 <para>A setting to control whether when moving the mouse over the track graph on the main display, it updates the selected trackpoint in the viewport.
 </para>
+<section><title>Warn Unsaved Changes on Exit</title>
+  <para>If you don't want &appname; to warn about unsaved changes on exit then you can turn this off.</para>
+</section>
 </section>
 </section>
 </section>
@@ -4635,6 +4641,14 @@ Accept: */*
 	  </listitem>
 	  <listitem>
 	    <para>maps_scale_smaller_zoom_first=true</para>
+	  </listitem>
+	  <listitem>
+	    <para>modifications_ignore_visibility_toggle=false</para>
+            <para>Particularly if one often views large .vik files,
+              then changing the visibility of items may be considered just part of the viewing process.
+              Thus maybe you don't want to be notified on exit about such things -
+              in this case you can set this value to true.
+            </para>
 	  </listitem>
 	  <listitem>
 	    <para>srtm_http_base_url=https://dds.cr.usgs.gov/srtm/version2_1/SRTM3</para>

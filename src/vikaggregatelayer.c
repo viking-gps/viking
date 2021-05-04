@@ -451,67 +451,95 @@ static void tac_apply ( VikAggregateLayer *val, VikLayerSetParam *vlsp )
 
 static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetParam *vlsp )
 {
+  gboolean changed = FALSE;
   switch ( vlsp->id ) {
-    case PARAM_DO_TAC: val->on[BASIC] = vlsp->data.b; break;
-    case PARAM_ALPHA: if ( vlsp->data.u <= 255 ) val->alpha[BASIC] = vlsp->data.u; break;
-    case PARAM_DRAW_GRID: val->draw_grid = vlsp->data.b; break;
-    case PARAM_COLOR: val->color[BASIC] = vlsp->data.c; break;
-    case PARAM_MAX_SQR_ON: val->on[MAX_SQR] = vlsp->data.b; break;
-    case PARAM_MAX_SQR_ALPHA: if ( vlsp->data.u <= 255 ) val->alpha[MAX_SQR] = vlsp->data.u; break;
-    case PARAM_MAX_SQR_COLOR: val->color[MAX_SQR] = vlsp->data.c; break;
-    case PARAM_CONTIG_ON: val->on[CONTIG] = vlsp->data.b; break;
-    case PARAM_CONTIG_ALPHA: if ( vlsp->data.u <= 255 ) val->alpha[CONTIG] = vlsp->data.u; break;
-    case PARAM_CONTIG_COLOR: val->color[CONTIG] = vlsp->data.c; break;
-    case PARAM_CLUSTER_ON: val->on[CLUSTER] = vlsp->data.b; break;
-    case PARAM_CLUSTER_ALPHA: if ( vlsp->data.u <= 255 ) val->alpha[CLUSTER] = vlsp->data.u; break;
-    case PARAM_CLUSTER_COLOR: val->color[CLUSTER] = vlsp->data.c; break;
+    case PARAM_DO_TAC:
+      changed = vik_layer_param_change_boolean ( vlsp->data, &val->on[BASIC] );
+      break;
+    case PARAM_ALPHA:
+      if ( vlsp->data.u <= 255 )
+        changed = vik_layer_param_change_uint8 ( vlsp->data, &val->alpha[BASIC] );
+      break;
+    case PARAM_DRAW_GRID:
+      changed = vik_layer_param_change_boolean ( vlsp->data, &val->draw_grid );
+      break;
+    case PARAM_COLOR:
+      changed = vik_layer_param_change_color ( vlsp->data, &val->color[BASIC] );
+      break;
+    case PARAM_MAX_SQR_ON:
+      changed = vik_layer_param_change_boolean ( vlsp->data, &val->on[MAX_SQR] );
+      break;
+    case PARAM_MAX_SQR_ALPHA:
+      if ( vlsp->data.u <= 255 )
+        changed = vik_layer_param_change_uint8 ( vlsp->data, &val->alpha[MAX_SQR] );
+      break;
+    case PARAM_MAX_SQR_COLOR:
+      changed = vik_layer_param_change_color ( vlsp->data, &val->color[MAX_SQR] );
+      break;
+    case PARAM_CONTIG_ON:
+      changed = vik_layer_param_change_boolean ( vlsp->data, &val->on[CONTIG] );
+      break;
+    case PARAM_CONTIG_ALPHA:
+      if ( vlsp->data.u <= 255 )
+        changed = vik_layer_param_change_uint8 ( vlsp->data, &val->alpha[CONTIG] );
+      break;
+    case PARAM_CONTIG_COLOR:
+      changed = vik_layer_param_change_color ( vlsp->data, &val->color[CONTIG] );
+      break;
+    case PARAM_CLUSTER_ON:
+      changed = vik_layer_param_change_boolean ( vlsp->data, &val->on[CLUSTER] );
+      break;
+    case PARAM_CLUSTER_ALPHA:
+      if ( vlsp->data.u <= 255 )
+        changed = vik_layer_param_change_uint8 ( vlsp->data, &val->alpha[CLUSTER] );
+      break;
+    case PARAM_CLUSTER_COLOR:
+      changed = vik_layer_param_change_color ( vlsp->data, &val->color[CLUSTER] );
+      break;
     case PARAM_TILE_AREA_LEVEL:
       if ( vlsp->data.u <= G_N_ELEMENTS(params_tile_area_levels) ) {
         guint old = val->zoom_level;
         val->zoom_level = pow ( 2, vlsp->data.u + 1);
         // Ensure when 'apply' button is clicked the TAC is recalculated for the new area value
-        if ( val->zoom_level != old )
+        if ( val->zoom_level != old ) {
           tac_apply ( val, vlsp );
+          changed = TRUE;
+        }
       }
       break;
     case PARAM_TAC_TIME_RANGE:
-      {
-	guint8 old = val->tac_time_range;
-        val->tac_time_range = vlsp->data.u;
-        if ( val->tac_time_range != old )
-          tac_apply ( val, vlsp );
-      }
+      changed = vik_layer_param_change_uint8 ( vlsp->data, &val->tac_time_range );
+      if ( changed )
+        tac_apply ( val, vlsp );
       break;
     case PARAM_HM_ALPHA:
       if ( vlsp->data.u <= 255 ) {
-	guint8 old = val->hm_alpha;
-	val->hm_alpha = vlsp->data.u;
-	if ( val->hm_alpha != old )
+        changed = vik_layer_param_change_uint8 ( vlsp->data, &val->hm_alpha );
+	if ( changed )
 	  if ( !vlsp->is_file_operation )
 	    hm_apply ( val );
       }
       break;
     case PARAM_HM_STAMP_FACTOR:
       if ( vlsp->data.u <= 255 ) {
-        guint8 old = val->hm_stamp_factor;
-        val->hm_stamp_factor = vlsp->data.u;
-        if ( val->hm_stamp_factor != old )
+        changed = vik_layer_param_change_uint8 ( vlsp->data, &val->hm_stamp_factor );
+        if ( changed ) {
           if ( !vlsp->is_file_operation )
             hm_apply ( val );
+        }
       }
       break;
     case PARAM_HM_STYLE:
-      {
-      guint8 old = val->hm_style;
-      val->hm_style = vlsp->data.u;
-      if ( val->hm_style != old )
+      changed = vik_layer_param_change_uint8 ( vlsp->data, &val->hm_style );
+      if ( changed )
         if ( !vlsp->is_file_operation )
           hm_apply ( val );
-      }
       break;
     default: break;
   }
-  return TRUE;
+  if ( vik_debug && changed )
+    g_debug ( "%s: Detected change on param %d", __FUNCTION__, vlsp->id );
+  return changed;
 }
 
 static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, guint16 id, gboolean is_file_operation )
@@ -1204,6 +1232,17 @@ typedef enum {
 
 typedef gpointer menu_array_values[MA_LAST];
 
+/**
+ * May not want to monitor visibility changes
+ */
+static void vis_change_update ( VikAggregateLayer *val )
+{
+  gboolean ignore_toggle = FALSE;
+  (void)a_settings_get_boolean ( VIK_SETTINGS_IGNORE_VIS_MOD, &ignore_toggle );
+  // Redraw as view may have changed
+  vik_layer_emit_update ( VIK_LAYER(val), !ignore_toggle );
+}
+
 static void aggregate_layer_child_visible_toggle ( menu_array_values values )
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
@@ -1221,7 +1260,7 @@ static void aggregate_layer_child_visible_toggle ( menu_array_values values )
     iter = iter->next;
   }
   // Redraw as view may have changed
-  vik_layer_emit_update ( VIK_LAYER ( val ) );
+  vis_change_update ( val );
 }
 
 static void aggregate_layer_child_visible ( menu_array_values values, gboolean on_off)
@@ -1242,7 +1281,7 @@ static void aggregate_layer_child_visible ( menu_array_values values, gboolean o
     iter = iter->next;
   }
   // Redraw as view may have changed
-  vik_layer_emit_update ( VIK_LAYER ( val ) );
+  vis_change_update ( val );
 }
 
 static void aggregate_layer_child_visible_on ( menu_array_values values )
@@ -1519,7 +1558,7 @@ static void aggregate_layer_load_external_file_cb ( menu_array_values values )
   }
   g_slist_free (files);
 
-  vik_layer_emit_update ( VIK_LAYER(val) );
+  vik_layer_emit_update ( VIK_LAYER(val), TRUE );
 }
 
 static void aggregate_layer_save_layer_as_cb ( menu_array_values values )
@@ -1562,7 +1601,7 @@ static void aggregate_layer_file_load ( menu_array_values values )
     g_slist_free ( files );
   }
 
-  vik_layer_emit_update ( VIK_LAYER ( val ) );
+  vik_layer_emit_update ( VIK_LAYER(val), TRUE );
 }
 
 /**
@@ -1650,7 +1689,7 @@ static void ct_free ( CalculateThreadT *ct )
 static void ct_cancel ( CalculateThreadT *ct )
 {
   // Draw as much as we have processed so far
-  vik_layer_emit_update ( VIK_LAYER(ct->val) ); // NB update display from background
+  vik_layer_emit_update ( VIK_LAYER(ct->val), FALSE ); // NB update display from background
 }
 
 // Since previous square should have been checked, only need to consider the next outer row+column
@@ -2060,7 +2099,7 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
   }
   
   ct->val->calculating = FALSE;
-  vik_layer_emit_update ( VIK_LAYER(ct->val) ); // NB update display from background
+  vik_layer_emit_update ( VIK_LAYER(ct->val), FALSE ); // NB update display from background
 
   return 0;
 }
@@ -2242,7 +2281,7 @@ static gint hm_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
   g_debug ( "%s: %f", __FUNCTION__, time_spent );
 
   ct->val->hm_calculating = FALSE;
-  vik_layer_emit_update ( VIK_LAYER(ct->val) ); // NB update display from background
+  vik_layer_emit_update ( VIK_LAYER(ct->val), FALSE ); // NB update display from background
 
   return 0;
 }
@@ -2322,7 +2361,7 @@ static void tac_clear_cb ( menu_array_values values )
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
   tac_clear ( val );
-  vik_layer_emit_update ( VIK_LAYER(val) ); // NB update display from background
+  vik_layer_emit_update ( VIK_LAYER(val), FALSE ); // NB update display from background
 }
 
 /**
@@ -2542,7 +2581,7 @@ static void aggregate_view_all_trw ( menu_array_values values )
 
   if ( have_bbox ) {
     vu_zoom_to_show_latlons ( vik_viewport_get_coord_mode(vvp), vvp, maxmin );
-    vik_layers_panel_emit_update ( vlp );
+    vik_layers_panel_emit_update ( vlp, FALSE );
   }
 }
 
@@ -2557,8 +2596,9 @@ static void tac_on_off_cb ( menu_array_values values )
   }
   else
     // Redraw to clear previous display
-    vik_layer_emit_update ( VIK_LAYER(val) );
+    vik_layer_emit_update ( VIK_LAYER(val), FALSE );
 
+  vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
 }
 
 static void tac_increase_cb ( menu_array_values values )
@@ -2569,6 +2609,8 @@ static void tac_increase_cb ( menu_array_values values )
   if ( val->on[BASIC] )
     if ( !val->calculating )
       tac_calculate ( val );
+
+  vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
 }
 
 static void tac_decrease_cb ( menu_array_values values )
@@ -2579,6 +2621,8 @@ static void tac_decrease_cb ( menu_array_values values )
   if ( val->on[BASIC] )
     if ( !val->calculating )
       tac_calculate ( val );
+
+  vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
 }
 
 // This shouldn't be called when already running
@@ -2605,7 +2649,7 @@ static void hm_clear_cb ( menu_array_values values )
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
   hm_clear ( val );
-  vik_layer_emit_update ( VIK_LAYER(val) );
+  vik_layer_emit_update ( VIK_LAYER(val), FALSE );
 }
 
 /**

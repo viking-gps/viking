@@ -145,6 +145,8 @@ static gboolean layers_panel_new_layer ( gpointer lpnl[2] )
   return vik_layers_panel_new_layer ( lpnl[0], GPOINTER_TO_INT(lpnl[1]) );
 }
 
+static void layers_panel_emit_update ( VikLayersPanel *vlp );
+
 /**
  * Create menu popup on demand
  * @full: offer cut/copy options as well - not just the new layer options
@@ -493,7 +495,7 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
 
   vlp->toplayer = vik_aggregate_layer_new ();
   vik_layer_rename ( VIK_LAYER(vlp->toplayer), _("Top Layer"));
-  g_signal_connect_swapped ( G_OBJECT(vlp->toplayer), "update", G_CALLBACK(vik_layers_panel_emit_update), vlp );
+  g_signal_connect_swapped ( G_OBJECT(vlp->toplayer), "update", G_CALLBACK(layers_panel_emit_update), vlp );
 
   vik_treeview_add_layer ( vlp->vt, NULL, &(vlp->toplayer_iter), VIK_LAYER(vlp->toplayer)->name, NULL, TRUE, vlp->toplayer, VIK_LAYER_AGGREGATE, VIK_LAYER_AGGREGATE, 0 );
   vik_layer_realize ( VIK_LAYER(vlp->toplayer), vlp->vt, &(vlp->toplayer_iter) );
@@ -651,7 +653,7 @@ static gboolean idle_draw_panel ( VikLayersPanel *vlp )
   return FALSE; // Nothing else to do
 }
 
-void vik_layers_panel_emit_update ( VikLayersPanel *vlp )
+void layers_panel_emit_update ( VikLayersPanel *vlp )
 {
   GThread *thread = vik_window_get_thread (VIK_WINDOW(VIK_GTK_WINDOW_FROM_WIDGET(vlp)));
   if ( !thread )
@@ -664,6 +666,19 @@ void vik_layers_panel_emit_update ( VikLayersPanel *vlp )
     (void)gdk_threads_add_idle ( (GSourceFunc)idle_draw_panel, vlp );
   else
     (void)g_idle_add ( (GSourceFunc)idle_draw_panel, vlp );
+}
+
+/**
+ * vik_layers_panel_emit_update:
+ * @is_modified: Whether a layer has been modified
+ *  i.e. for a change of view (e.g. center, zoom level, selected item, etc...) - this is not a change to any layer
+ *
+ */
+void vik_layers_panel_emit_update ( VikLayersPanel *vlp, gboolean is_modified )
+{
+  layers_panel_emit_update ( vlp );
+  if ( is_modified )
+    vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_WIDGET(vlp)) );
 }
 
 static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter)
@@ -697,6 +712,11 @@ static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter)
   }
 
   vik_treeview_item_set_visible ( vlp->vt, iter, visible );
+
+  gboolean ignore_toggle = FALSE;
+  (void)a_settings_get_boolean ( VIK_SETTINGS_IGNORE_VIS_MOD, &ignore_toggle );
+  if ( !ignore_toggle )
+    vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_WIDGET(vlp)) );
 }
 
 static void layers_item_edited (VikLayersPanel *vlp, GtkTreeIter *iter, const gchar *new_text)
@@ -720,13 +740,16 @@ static void layers_item_edited (VikLayersPanel *vlp, GtkTreeIter *iter, const gc
     {
       vik_layer_rename ( l, new_text );
       vik_treeview_item_set_name ( vlp->vt, iter, l->name );
+      vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_WIDGET(vlp)) );
     }
   }
   else
   {
     const gchar *name = vik_layer_sublayer_rename_request ( vik_treeview_item_get_parent ( vlp->vt, iter ), new_text, vlp, vik_treeview_item_get_data ( vlp->vt, iter ), vik_treeview_item_get_pointer ( vlp->vt, iter ), iter );
-    if ( name )
+    if ( name ) {
       vik_treeview_item_set_name ( vlp->vt, iter, name);
+      vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_WIDGET(vlp)) );
+    }
   }
 }
 
@@ -905,7 +928,7 @@ void vik_layers_panel_add_layer ( VikLayersPanel *vlp, VikLayer *l )
       vik_aggregate_layer_add_layer ( addtoagg, l, TRUE );
   }
 
-  vik_layers_panel_emit_update ( vlp );
+  vik_layers_panel_emit_update ( vlp, TRUE );
 }
 
 static void layers_move_item ( VikLayersPanel *vlp, gboolean up )
@@ -925,7 +948,7 @@ static void layers_move_item ( VikLayersPanel *vlp, gboolean up )
     if ( parent ) /* not toplevel */
     {
       vik_aggregate_layer_move_layer ( parent, &iter, up );
-      vik_layers_panel_emit_update ( vlp );
+      vik_layers_panel_emit_update ( vlp, TRUE );
     }
   }
 }
@@ -938,9 +961,8 @@ gboolean vik_layers_panel_properties ( VikLayersPanel *vlp )
   if ( vik_treeview_get_selected_iter ( vlp->vt, &iter ) && vik_treeview_item_get_type ( vlp->vt, &iter ) == VIK_TREEVIEW_TYPE_LAYER )
   {
     VikLayer *layer = VIK_LAYER( vik_treeview_item_get_pointer ( vlp->vt, &iter ) );
-    if ( vik_layer_properties ( layer, vlp->vvp, TRUE ))
-      vik_layer_emit_update ( layer );
-    return TRUE;
+    // NB vik_layer_emit_update() is called by vik_layer_properties() if necessary
+    return vik_layer_properties ( layer, vlp->vvp, TRUE );
   }
   else
     return FALSE;
@@ -984,8 +1006,9 @@ void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
 
         g_signal_emit ( G_OBJECT(vlp), layers_panel_signals[VLP_DELETE_LAYER_SIGNAL], 0 );
 
-        if ( vik_aggregate_layer_delete ( parent, &iter ) )
-          vik_layers_panel_emit_update ( vlp );
+        if ( vik_aggregate_layer_delete ( parent, &iter ) ) {
+          vik_layers_panel_emit_update ( vlp, TRUE );
+        }
       }
     }
     else
@@ -1049,8 +1072,9 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
 
         g_signal_emit ( G_OBJECT(vlp), layers_panel_signals[VLP_DELETE_LAYER_SIGNAL], 0 );
 
-        if ( vik_aggregate_layer_delete ( parent, &iter ) )
-	  vik_layers_panel_emit_update ( vlp );	
+        if ( vik_aggregate_layer_delete ( parent, &iter ) ) {
+	  vik_layers_panel_emit_update ( vlp, TRUE );
+        }
       }
     }
     else

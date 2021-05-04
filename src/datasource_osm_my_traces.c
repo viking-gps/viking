@@ -688,7 +688,7 @@ static gboolean datasource_osm_my_traces_process ( VikTrwLayer *vtl, ProcessOpti
 	// Would prefer to keep the update in acquire.c,
 	//  however since we may create the layer - need to do the update here
 	if ( got_something )
-		vik_layer_emit_update ( VIK_LAYER(vtl_last) );
+		vik_layer_emit_update ( VIK_LAYER(vtl_last), TRUE );
 
 	// ATM The user is only informed if all getting *all* of the traces failed
 	if ( selected )

@@ -382,20 +382,6 @@ static void mapnik_layer_set_file_xml ( VikMapnikLayer *vml, const gchar *name )
 		vml->filename_xml = g_strdup (name);
 }
 
-static void mapnik_layer_set_file_css ( VikMapnikLayer *vml, const gchar *name )
-{
-	if ( vml->filename_css )
-		g_free (vml->filename_css);
-	vml->filename_css = g_strdup (name);
-}
-
-static void mapnik_layer_set_cache_dir ( VikMapnikLayer *vml, const gchar *name )
-{
-	if ( vml->file_cache_dir )
-		g_free (vml->file_cache_dir);
-	vml->file_cache_dir = g_strdup (name);
-}
-
 static void mapnik_layer_marshall( VikMapnikLayer *vml, guint8 **data, guint *len )
 {
 	vik_layer_marshall_params ( VIK_LAYER(vml), data, len );
@@ -410,14 +396,32 @@ static VikMapnikLayer *mapnik_layer_unmarshall( guint8 *data, guint len, VikView
 
 static gboolean mapnik_layer_set_param ( VikMapnikLayer *vml, VikLayerSetParam *vlsp )
 {
+	gboolean changed = FALSE;
 	switch ( vlsp->id ) {
-		case PARAM_CONFIG_CSS: mapnik_layer_set_file_css (vml, vlsp->data.s); break;
-		case PARAM_CONFIG_XML: mapnik_layer_set_file_xml (vml, vlsp->data.s); break;
-		case PARAM_ALPHA: if ( vlsp->data.u <= 255 ) vml->alpha = vlsp->data.u; break;
-		case PARAM_USE_FILE_CACHE: vml->use_file_cache = vlsp->data.b; break;
-		case PARAM_FILE_CACHE_DIR: mapnik_layer_set_cache_dir (vml, vlsp->data.s); break;
+		case PARAM_CONFIG_CSS:
+			changed = vik_layer_param_change_string ( vlsp->data, &vml->filename_css );
+			break;
+		case PARAM_CONFIG_XML: {
+			gchar* old = g_strdup ( vml->filename_xml );
+			mapnik_layer_set_file_xml ( vml, vlsp->data.s );
+			changed = g_strcmp0 ( old, vlsp->data.s );
+			g_free ( old );
+			break;
+		}
+		case PARAM_ALPHA:
+			if ( vlsp->data.u <= 255 )
+				changed = vik_layer_param_change_uint8 ( vlsp->data, &vml->alpha );
+			break;
+		case PARAM_USE_FILE_CACHE:
+			changed = vik_layer_param_change_boolean ( vlsp->data, &vml->use_file_cache );
+			break;
+		case PARAM_FILE_CACHE_DIR:
+			changed = vik_layer_param_change_string ( vlsp->data, &vml->file_cache_dir );
+			break;
 		default: break;
 	}
+	if ( vik_debug && changed )
+		g_debug ( "%s: Detected change on param %d", __FUNCTION__, vlsp->id );
 	return TRUE;
 }
 
@@ -701,7 +705,7 @@ static void background ( RenderInfo *data, gpointer threaddata )
 	g_mutex_unlock(tp_mutex);
 
 	if (res == 0)
-		vik_layer_emit_update ( VIK_LAYER(data->vml) ); // NB update display from background
+		vik_layer_emit_update ( VIK_LAYER(data->vml), FALSE ); // NB update display from background
 }
 
 static void render_cancel_cleanup (RenderInfo *data)
@@ -816,7 +820,7 @@ static GdkPixbuf *get_pixbuf ( VikMapnikLayer *vml, MapCoord *ulm, MapCoord *brm
 			else {
 				// Run in the foreground
 				render ( vml, &ul, &br, ulm );
-				vik_layer_emit_update ( VIK_LAYER(vml) );
+				vik_layer_emit_update ( VIK_LAYER(vml), FALSE );
 			}
 		}
 	}

@@ -63,7 +63,7 @@ VikLayer *vik_layers_panel_get_layer_of_type ( VikLayersPanel *vlp, VikLayerType
 void vik_layers_panel_set_viewport ( VikLayersPanel *vlp, VikViewport *vvp );
 //gboolean vik_layers_panel_tool ( VikLayersPanel *vlp, guint16 layer_type, VikToolInterfaceFunc tool_func, GdkEventButton *event, VikViewport *vvp );
 VikViewport *vik_layers_panel_get_viewport ( VikLayersPanel *vlp );
-void vik_layers_panel_emit_update ( VikLayersPanel *vlp );
+void vik_layers_panel_emit_update ( VikLayersPanel *vlp, gboolean is_modified );
 gboolean vik_layers_panel_properties ( VikLayersPanel *vlp );
 gboolean vik_layers_panel_new_layer ( VikLayersPanel *vlp, VikLayerTypeEnum type );
 void vik_layers_panel_clear ( VikLayersPanel *vlp );

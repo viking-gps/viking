@@ -177,6 +177,7 @@ void trw_layer_calculate_bounds_waypoints ( VikTrwLayer *vtl );
 void trw_layer_calculate_bounds_tracks ( VikTrwLayer *vtl );
 void trw_layer_waypoint_properties_changed ( VikTrwLayer *vtl, VikWaypoint *wp );
 void trw_layer_wpwin_set ( VikTrwLayer *vtl, VikWaypoint *wp, gpointer wpwin );
+gboolean trw_layer_modified ( VikTrwLayer *vtl );
 
 gboolean vik_trw_layer_get_tracks_visibility ( VikTrwLayer *vtl );
 gboolean vik_trw_layer_get_routes_visibility ( VikTrwLayer *vtl );

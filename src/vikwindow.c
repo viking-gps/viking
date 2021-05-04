@@ -248,7 +248,9 @@ struct _VikWindow {
   gboolean draw_image_save_as_png;
 
   gchar *filename;
-  gboolean modified;
+  // Generally used in a boolean manner,
+  //  but can be useful for debugging to see how many modifications have been registered
+  guint modified;
   VikLoadType_t loaded_type;
 
   gboolean only_updating_coord_mode_ui; /* hack for a bug in GTK */
@@ -321,6 +323,36 @@ VikStatusbar * vik_window_get_statusbar ( VikWindow *vw )
 const gchar *vik_window_get_filename (VikWindow *vw)
 {
   return vw->filename;
+}
+
+/**
+ * To indicate modification an '*' is inserted at the beginning of the title
+ * i.e. same as programs such as gedit, geany, etc...
+ */
+static void set_modified_title ( VikWindow *vw )
+{
+  const gchar *file = window_get_filename ( vw );
+  gchar *title = g_strdup_printf ( "*%s - Viking", file );
+  gtk_window_set_title ( GTK_WINDOW(vw), title );
+  g_free ( title );
+}
+
+static gboolean set_modified_title_idle ( VikWindow *vw )
+{
+  set_modified_title ( vw );
+  return FALSE;
+}
+
+void vik_window_set_modified ( VikWindow *vw )
+{
+  vw->modified++;
+  // Set indication of modification in title
+  // NB ATM not changing the sensitivity of the Save button
+  if ( vw->thread == g_thread_self() ) {
+    set_modified_title ( vw );
+  } else {
+    (void)gdk_threads_add_idle ( (GSourceFunc)set_modified_title_idle, vw );
+  }
 }
 
 typedef struct {
@@ -567,7 +599,7 @@ static int determine_location_thread ( VikWindow *vw, gpointer threaddata )
     g_free ( message );
 
     // Signal to redraw from the background
-    vik_layers_panel_emit_update ( vw->viking_vlp );
+    vik_layers_panel_emit_update ( vw->viking_vlp, FALSE );
   }
   else
     vik_window_statusbar_update ( vw, _("Unable to determine location"), VIK_STATUSBAR_INFO );
@@ -614,7 +646,7 @@ void update_from_geoclue ( VikWindow *vw, struct LatLon ll, gdouble accuracy )
   g_free ( message );
 
   // Signal to redraw from the background
-  vik_layers_panel_emit_update ( vw->viking_vlp );
+  vik_layers_panel_emit_update ( vw->viking_vlp, FALSE );
 }
 #endif
 
@@ -1041,7 +1073,7 @@ static void vik_window_init ( VikWindow *vw )
 
   vw->filename = NULL;
   vw->loaded_type = LOAD_TYPE_READ_FAILURE; //AKA none
-  vw->modified = FALSE;
+  vw->modified = 0;
   vw->only_updating_coord_mode_ui = FALSE;
 
   vw->select_double_click = FALSE;
@@ -1460,12 +1492,13 @@ static gboolean key_release_event( VikWindow *vw, GdkEventKey *event, gpointer d
 
 static gboolean delete_event( VikWindow *vw )
 {
-#ifdef VIKING_PROMPT_IF_MODIFIED
-  if ( vw->modified )
-#else
-  if (0)
-#endif
-  {
+  // Preference in case one really wants to maintain old Viking behaviour for some reason
+  if ( vw->modified && a_vik_get_warn_unsaved_changes_on_exit() ) {
+    if ( vik_debug ) {
+      gchar *chg = g_strdup_printf ( "%d changes have been registered", vw->modified );
+      a_dialog_info_msg ( GTK_WINDOW(vw), chg );
+      g_free ( chg );
+    }
     GtkDialog *dia;
     dia = GTK_DIALOG ( gtk_message_dialog_new ( GTK_WINDOW(vw), GTK_DIALOG_DESTROY_WITH_PARENT, GTK_MESSAGE_QUESTION, GTK_BUTTONS_NONE,
       _("Do you want to save the changes you made to the document \"%s\"?\n"
@@ -2890,7 +2923,6 @@ static void tool_redraw_drawing_area_box (tool_ed_t *te, GdkEventMotion *event)
 
 static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *event, tool_ed_t *te)
 {
-  te->vw->modified = TRUE;
   guint modifiers = event->state & (GDK_SHIFT_MASK | GDK_CONTROL_MASK);
 
   gint center_x = vik_viewport_get_width ( te->vw->viking_vvp ) / 2;
@@ -3071,8 +3103,6 @@ static gpointer pantool_create (VikWindow *vw, VikViewport *vvp)
 // NB Double clicking means this gets called THREE times!!!
 static VikLayerToolFuncStatus pantool_click (VikLayer *vl, GdkEventButton *event, VikWindow *vw)
 {
-  vw->modified = TRUE;
-
   if ( event->type == GDK_2BUTTON_PRESS ) {
     // Zoom in / out on double click
     // No need to change the center as that has already occurred in the first click of a double click occurrence
@@ -3595,7 +3625,7 @@ static void menu_addlayer_cb ( GtkAction *a, VikWindow *vw )
     if (!strcmp(vik_layer_get_interface(type)->fixed_layer_name, gtk_action_get_name(a))) {
       if ( vik_layers_panel_new_layer ( vw->viking_vlp, type ) ) {
         draw_update ( vw );
-        vw->modified = TRUE;
+        vw->modified++;
       }
     }
   }
@@ -3609,14 +3639,14 @@ static void menu_copy_layer_cb ( GtkAction *a, VikWindow *vw )
 static void menu_cut_layer_cb ( GtkAction *a, VikWindow *vw )
 {
   vik_layers_panel_cut_selected ( vw->viking_vlp );
-  vw->modified = TRUE;
+  vw->modified++;
 }
 
 static void menu_paste_layer_cb ( GtkAction *a, VikWindow *vw )
 {
   if ( vik_layers_panel_paste_selected ( vw->viking_vlp ) )
   {
-    vw->modified = TRUE;
+    vw->modified++;
   }
 }
 
@@ -3971,7 +4001,7 @@ static void menu_delete_layer_cb ( GtkAction *a, VikWindow *vw )
   if ( vik_layers_panel_get_selected ( vw->viking_vlp ) )
   {
     vik_layers_panel_delete_selected ( vw->viking_vlp );
-    vw->modified = TRUE;
+    vw->modified++;
   }
   else
     a_dialog_info_msg ( GTK_WINDOW(vw), _("You must select a layer to delete.") );
@@ -4334,10 +4364,16 @@ static void menu_cb ( GtkAction *old, GtkAction *a, VikWindow *vw )
   draw_status_tool ( vw );
 }
 
+// The unmodified title
+static void window_refresh_title ( VikWindow *vw )
+{
+  gchar *title = g_strdup_printf ( "%s - Viking", window_get_filename(vw) );
+  gtk_window_set_title ( GTK_WINDOW(vw), title );
+  g_free ( title );
+}
+
 static void window_set_filename ( VikWindow *vw, const gchar *filename )
 {
-  gchar *title;
-  const gchar *file;
   if ( vw->filename )
     g_free ( vw->filename );
   if ( filename == NULL )
@@ -4349,11 +4385,7 @@ static void window_set_filename ( VikWindow *vw, const gchar *filename )
     vw->filename = g_strdup(filename);
   }
 
-  /* Refresh window's title */
-  file = window_get_filename ( vw );
-  title = g_strdup_printf( "%s - Viking", file );
-  gtk_window_set_title ( GTK_WINDOW(vw), title );
-  g_free ( title );
+  window_refresh_title ( vw );
 }
 
 static const gchar *window_get_filename ( VikWindow *vw )
@@ -4764,11 +4796,7 @@ static void load_file ( GtkAction *a, VikWindow *vw )
   files = vu_get_ui_selected_gps_files ( vw, external );
 
   if ( files ) {
-#ifdef VIKING_PROMPT_IF_MODIFIED
-    if ( (vw->modified || vw->filename) && !append ) {
-#else
     if ( vw->filename && !append ) {
-#endif
       open_window ( vw, files, external );
       // NB: GSList & contents of 'files' are freed by open_window()
     }
@@ -4859,7 +4887,7 @@ static gboolean window_save_file_as ( VikWindow *vw, VikAggregateLayer *agg, gbo
         window_set_filename ( vw, fn );
       rv = window_save ( vw, agg, fn );
       if ( rv ) {
-        vw->modified = FALSE;
+        vw->modified = 0;
         vu_set_last_folder_files_uri ( gtk_file_chooser_get_current_folder_uri(GTK_FILE_CHOOSER(dialog)) );
       }
       g_free ( fn );
@@ -4906,8 +4934,12 @@ static gboolean save_file ( GtkAction *a, VikWindow *vw )
     return save_file_as ( NULL, vw );
   else
   {
-    vw->modified = FALSE;
-    return window_save ( vw, vik_layers_panel_get_top_layer(vw->viking_vlp), vw->filename );
+    gboolean saved = window_save ( vw, vik_layers_panel_get_top_layer(vw->viking_vlp), vw->filename );
+    if ( saved ) {
+      window_refresh_title ( vw );
+      vw->modified = 0;
+    }
+    return saved;
   }
 }
 
@@ -5139,7 +5171,7 @@ static void goto_default_location( GtkAction *a, VikWindow *vw)
   ll.lat = a_vik_get_default_lat();
   ll.lon = a_vik_get_default_long();
   vik_viewport_set_center_latlon(vw->viking_vvp, &ll, TRUE);
-  vik_layers_panel_emit_update(vw->viking_vlp);
+  vik_layers_panel_emit_update(vw->viking_vlp, FALSE);
 }
 
 static void goto_auto_location( GtkAction *a, VikWindow *vw)
@@ -5156,7 +5188,7 @@ static void goto_auto_location( GtkAction *a, VikWindow *vw)
 static void goto_address( GtkAction *a, VikWindow *vw)
 {
   a_vik_goto ( vw, vw->viking_vvp );
-  vik_layers_panel_emit_update ( vw->viking_vlp );
+  vik_layers_panel_emit_update ( vw->viking_vlp, FALSE );
 }
 
 static void mapcache_flush_cb ( GtkAction *a, VikWindow *vw )
@@ -5320,6 +5352,7 @@ static void clear_cb ( GtkAction *a, VikWindow *vw )
   if ( ! vik_aggregate_layer_is_empty(top) ) {
     if ( a_dialog_yes_or_no ( GTK_WINDOW(vw), _("Are you sure you wish to delete all layers?"), NULL ) ) {
       vik_layers_panel_clear ( vw->viking_vlp );
+      vik_window_set_modified ( vw );
       window_set_filename ( vw, NULL );
       draw_update ( vw );
     }

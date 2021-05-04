@@ -179,7 +179,7 @@ static gboolean vik_goto_search_list_select ( GtkTreeSelection *sel, GtkTreeMode
     gtk_tree_model_get ( model, &iter, VIK_GOTO_SEARCH_DESC_COL, &last_successful_goto_str, -1 );
 
     vik_viewport_set_center_coord ( vik_layers_panel_get_viewport(vlp), last_coord, !path_currently_selected );
-    vik_layers_panel_emit_update ( vlp );
+    vik_layers_panel_emit_update ( vlp, FALSE );
   }
 
   return TRUE;

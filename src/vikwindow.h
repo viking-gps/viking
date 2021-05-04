@@ -102,6 +102,8 @@ void vik_window_clear_busy_cursor ( VikWindow *vw );
 void vik_window_set_busy_cursor_widget ( GtkWidget *widget, VikWindow *vw );
 void vik_window_clear_busy_cursor_widget ( GtkWidget *widget, VikWindow *vw );
 
+void vik_window_set_modified ( VikWindow *vw );
+
 typedef struct {
   VikWindow *vw;
   VikViewport *vvp;

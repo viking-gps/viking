@@ -177,19 +177,30 @@ static VikCoordLayer *coord_layer_unmarshall( guint8 *data, guint len, VikViewpo
 // NB VikViewport can be null as it's not used ATM
 gboolean coord_layer_set_param ( VikCoordLayer *vcl, VikLayerSetParam *vlsp )
 {
+  gboolean changed = FALSE;
   switch ( vlsp->id )
   {
     case PARAM_COLOR:
-      vcl->color = vlsp->data.c;
+      changed = vik_layer_param_change_color ( vlsp->data, &vcl->color );
       // Apply setting
       if ( vcl->gc )
         coord_layer_update_gc ( vcl, vlsp->vp );
       break;
-    case PARAM_MIN_INC: vcl->deg_inc = vlsp->data.d / 60.0; break;
-    case PARAM_LINE_THICKNESS: if ( vlsp->data.u >= 1 && vlsp->data.u <= 15 ) vcl->line_thickness = vlsp->data.u; break;
+    case PARAM_MIN_INC: {
+      gdouble old = vcl->deg_inc;
+      vcl->deg_inc = vlsp->data.d / 60.0;
+      changed = util_gdouble_different ( old, vcl->deg_inc );
+      break;
+    }
+    case PARAM_LINE_THICKNESS:
+      if ( vlsp->data.u >= 1 && vlsp->data.u <= 15 )
+        changed = vik_layer_param_change_uint8 ( vlsp->data, &vcl->line_thickness );
+      break;
     default: break;
   }
-  return TRUE;
+  if ( vik_debug && changed )
+    g_debug ( "%s: Detected change on param %d", __FUNCTION__, vlsp->id );
+  return changed;
 }
 
 static VikLayerParamData coord_layer_get_param ( VikCoordLayer *vcl, guint16 id, gboolean is_file_operation )

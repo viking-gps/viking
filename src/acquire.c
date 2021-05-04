@@ -118,7 +118,7 @@ static void on_complete_process (w_and_interface_t *wi)
       if ( wi->w->source_interface->autoview ) {
 	vik_trw_layer_auto_set_view ( wi->vtl, vik_layers_panel_get_viewport(wi->w->vlp) );
       }
-      vik_layers_panel_emit_update ( wi->w->vlp );
+      vik_layers_panel_emit_update ( wi->w->vlp, TRUE );
     }
   } else {
     /* cancelled */

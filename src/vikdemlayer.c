@@ -498,7 +498,7 @@ static int dem_layer_load_list_thread ( dem_load_thread_data *dltd, gpointer thr
   // Thus force draw only at the end, as loading is complete/aborted
   // Test is helpful to prevent Gtk-CRITICAL warnings if the program is exitted whilst loading
   if ( IS_VIK_LAYER(dltd->vdl) )
-    vik_layer_emit_update ( VIK_LAYER(dltd->vdl) ); // NB update requested from background thread
+    vik_layer_emit_update ( VIK_LAYER(dltd->vdl), FALSE ); // NB update requested from background thread
 
   return result;
 }
@@ -552,55 +552,70 @@ static GList *dem_layer_convert_to_relative_filenaming ( GList *files )
 
 gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp )
 {
+  gdouble oldd;
+  gboolean changed = FALSE;
+
   switch ( vlsp->id )
   {
-    case PARAM_COLOR: vdl->color = vlsp->data.c; break;
+    case PARAM_COLOR:
+      changed = vik_layer_param_change_color ( vlsp->data, &vdl->color );
+      break;
     case PARAM_COLOR_SCHEME:
-      if ( vlsp->data.u < G_N_ELEMENTS(params_color_schemes) ) {
-        vdl->color_scheme = vlsp->data.u;
-      } else
+      if ( vlsp->data.u < G_N_ELEMENTS(params_color_schemes) )
+        changed = vik_layer_param_change_uint ( vlsp->data, &vdl->color_scheme );
+      else
         g_warning ( "%s: Unknown color scheme", __FUNCTION__ );
       break;
-    case PARAM_COLOR_MIN: vdl->color_min = vlsp->data.c; break;
-    case PARAM_COLOR_MAX: vdl->color_max = vlsp->data.c; break;
-    case PARAM_SOURCE: vdl->source = vlsp->data.u; break;
+    case PARAM_COLOR_MIN:
+      changed = vik_layer_param_change_color ( vlsp->data, &vdl->color_min );
+      break;
+    case PARAM_COLOR_MAX:
+      changed = vik_layer_param_change_color ( vlsp->data, &vdl->color_max );
+      break;
+    case PARAM_SOURCE:
+      changed = vik_layer_param_change_uint ( vlsp->data, &vdl->source );
+      break;
     case PARAM_SRTM_BASE_URL:
-      if ( vlsp->data.s ) {
-        g_free ( vdl->srtm_base_url );
-        vdl->srtm_base_url = g_strdup ( vlsp->data.s );
-      }
+      changed = vik_layer_param_change_string ( vlsp->data, &vdl->srtm_base_url );
       break;
     case PARAM_SVR_DIR_SCHEME:
-      if ( vlsp->data.u < G_N_ELEMENTS(params_dir_schemes) ) {
-        vdl->dir_scheme = vlsp->data.u;
-      } else
+      if ( vlsp->data.u < G_N_ELEMENTS(params_dir_schemes) )
+        changed = vik_layer_param_change_uint ( vlsp->data, &vdl->dir_scheme );
+      else
         g_warning ( "%s: Unknown dir scheme", __FUNCTION__ );
       break;
     case PARAM_SVR_FILENAME_STYLE:
-      if ( vlsp->data.u < G_N_ELEMENTS(params_filename_styles) ) {
-        vdl->filename_style = vlsp->data.u;
-      } else
+      if ( vlsp->data.u < G_N_ELEMENTS(params_filename_styles) )
+        changed = vik_layer_param_change_uint ( vlsp->data, &vdl->filename_style );
+      else
         g_warning ( "%s: Unknown filename style", __FUNCTION__ );
       break;
-    case PARAM_TYPE: vdl->type = vlsp->data.u; break;
+    case PARAM_TYPE:
+      changed = vik_layer_param_change_uint ( vlsp->data, &vdl->type );
+      break;
     case PARAM_MIN_ELEV:
+      oldd = vdl->min_elev;
       /* Convert to store internally
          NB file operation always in internal units (metres) */
       if (!vlsp->is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
         vdl->min_elev = VIK_FEET_TO_METERS(vlsp->data.d);
       else
         vdl->min_elev = vlsp->data.d;
+      changed = util_gdouble_different ( oldd, vdl->min_elev );
       break;
     case PARAM_MAX_ELEV:
+      oldd = vdl->max_elev;
       /* Convert to store internally
          NB file operation always in internal units (metres) */
       if (!vlsp->is_file_operation && a_vik_get_units_height () == VIK_UNITS_HEIGHT_FEET )
         vdl->max_elev = VIK_FEET_TO_METERS(vlsp->data.d);
       else
         vdl->max_elev = vlsp->data.d;
+      changed = util_gdouble_different ( oldd, vdl->max_elev );
       break;
     case PARAM_ALPHA:
-      if ( vlsp->data.u <= 255 ) vdl->alpha = vlsp->data.u;
+      if ( vlsp->data.u <= 255 )
+        changed = vik_layer_param_change_uint ( vlsp->data, &vdl->alpha );
       // Note since dem_layer_set_param() will be called for every parameter,
       //  only need to change colors once and this is the last associated colour parameter
       if ( !vlsp->is_file_operation )
@@ -612,6 +627,7 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp )
       if ( util_glist_of_strings_compare(vdl->files, vlsp->data.sl) )
         break;
 
+      changed = TRUE;
       // Clear out old settings - if any commonalities with new settings they will have to be read again
       a_dems_list_free ( vdl->files );
 
@@ -639,7 +655,9 @@ gboolean dem_layer_set_param ( VikDEMLayer *vdl, VikLayerSetParam *vlsp )
     }
     default: break;
   }
-  return TRUE;
+  if ( vik_debug && changed )
+    g_debug ( "%s: Detected change on param %d", __FUNCTION__, vlsp->id );
+  return changed;
 }
 
 static VikLayerParamData dem_layer_get_param ( VikDEMLayer *vdl, guint16 id, gboolean is_file_operation )
@@ -1526,8 +1544,9 @@ static void dem_download_thread ( DEMDownloadParams *p, gpointer threaddata )
   if ( p->vdl ) {
     g_object_weak_unref ( G_OBJECT(p->vdl), weak_ref_cb, p );
 
-    if ( dem_layer_add_file ( p->vdl, p->dest ) )
-      vik_layer_emit_update ( VIK_LAYER(p->vdl) ); // NB update requested from background thread
+    if ( dem_layer_add_file ( p->vdl, p->dest ) ) {
+      vik_layer_emit_update ( VIK_LAYER(p->vdl), TRUE ); // NB update requested from background thread
+    }
   }
   g_mutex_unlock ( p->mutex );
 }
@@ -1644,7 +1663,7 @@ static VikLayerToolFuncStatus dem_layer_download_release ( VikDEMLayer *vdl, Gdk
       g_free ( tmp );
     }
     else
-      vik_layer_emit_update ( VIK_LAYER(vdl) );
+      vik_layer_emit_update ( VIK_LAYER(vdl), FALSE );
   }
   else {
     if ( !vdl->right_click_menu ) {

@@ -257,6 +257,7 @@ static VikGeorefLayer *georef_layer_unmarshall( guint8 *data, guint len, VikView
 
 static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, VikLayerSetParam *vlsp )
 {
+  //gboolean changed = FALSE;
   switch ( vlsp->id )
   {
     case PARAM_IMAGE: georef_layer_set_image ( vgl, vlsp->data.s ); break;
@@ -267,8 +268,42 @@ static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, VikLayerSetParam *
     case PARAM_CZ: if ( vlsp->data.u <= 60 ) vgl->corner.zone = vlsp->data.u; break;
     case PARAM_CL: if ( vlsp->data.u >= 65 && vlsp->data.u <= 90 ) vgl->corner.letter = vlsp->data.u; break;
     case PARAM_AA: if ( vlsp->data.u <= 255 ) vgl->alpha = vlsp->data.u; break;
+/*
+  case PARAM_IMAGE: {
+      gchar* old = g_strdup ( vgl->image );
+      georef_layer_set_image ( vgl, vlsp->data.s );
+      changed = g_strcmp0 ( old, vlsp->data.s );
+      g_free ( old );
+      break;
+    }
+    case PARAM_CN:
+      changed = vik_layer_param_change_double ( vlsp->data, &vgl->corner.northing );
+      break;
+    case PARAM_CE:
+      changed = vik_layer_param_change_double ( vlsp->data, &vgl->corner.easting );
+      break;
+    case PARAM_MN:
+      changed = vik_layer_param_change_double ( vlsp->data, &vgl->mpp_northing );
+      break;
+    case PARAM_ME:
+      changed = vik_layer_param_change_double ( vlsp->data, &vgl->mpp_easting );
+      break;
+    case PARAM_CZ:
+      if ( vlsp->data.u <= 60 )
+        changed = vik_layer_param_change_gchar ( vlsp->data, &vgl->corner.zone );
+      break;
+    case PARAM_CL:
+      if ( vlsp->data.u >= 65 && vlsp->data.u <= 90 )
+        changed = vik_layer_param_change_gchar ( vlsp->data, &vgl->corner.letter );
+      break;
+    case PARAM_AA:
+      if ( vlsp->data.u <= 255 )
+        changed = vik_layer_param_change_uint8 ( vlsp->data, &vgl->alpha );
+      break;
+*/
     default: break;
   }
+  //return changed;
   return TRUE;
 }
 
@@ -475,7 +510,12 @@ static VikGeorefLayer *georef_layer_create ( VikViewport *vp )
 
 static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp, gboolean have_apply )
 {
-  return georef_layer_dialog ( vgl, vp, VIK_GTK_WINDOW_FROM_WIDGET(vp), have_apply );
+  // TODO Determine if anything actually changed;
+  // For simplicity 
+  gboolean OKed = georef_layer_dialog ( vgl, vp, VIK_GTK_WINDOW_FROM_WIDGET(vp), have_apply );
+  if ( OKed )
+    vik_window_set_modified ( (VikWindow *)(VIK_GTK_WINDOW_FROM_WIDGET(vp)) );
+  return OKed;
 }
 
 static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboolean from_file )
@@ -999,7 +1039,7 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
       a_settings_set_integer ( VIK_SETTINGS_GEOREF_TAB, gtk_notebook_get_current_page(GTK_NOTEBOOK(cw.tabs)) );
 
       if ( resp == GTK_RESPONSE_APPLY ) {
-        vik_layer_emit_update ( VIK_LAYER(vgl) );
+        vik_layer_emit_update ( VIK_LAYER(vgl), TRUE );
         answer = FALSE;
       }
       else
@@ -1014,7 +1054,7 @@ static void georef_layer_zoom_to_fit ( gpointer vgl_vlp[2] )
 {
   vik_viewport_set_xmpp ( vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vgl_vlp[1])), VIK_GEOREF_LAYER(vgl_vlp[0])->mpp_easting );
   vik_viewport_set_ympp ( vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vgl_vlp[1])), VIK_GEOREF_LAYER(vgl_vlp[0])->mpp_northing );
-  vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(vgl_vlp[1]) );
+  vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(vgl_vlp[1]), FALSE );
 }
 
 static void georef_layer_goto_center ( gpointer vgl_vlp[2] )
@@ -1032,7 +1072,7 @@ static void georef_layer_goto_center ( gpointer vgl_vlp[2] )
   vik_coord_load_from_utm ( &coord, vik_viewport_get_coord_mode ( vp ), &utm );
   vik_viewport_set_center_coord ( vp, &coord, TRUE );
 
-  vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(vgl_vlp[1]) );
+  vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(vgl_vlp[1]), FALSE );
 }
 
 static void georef_layer_add_menu_items ( VikGeorefLayer *vgl, GtkMenu *menu, gpointer vlp )
@@ -1063,7 +1103,7 @@ static VikLayerToolFuncStatus georef_layer_move_release ( VikGeorefLayer *vgl, G
   {
     vgl->corner.easting += (event->x - vgl->click_x) * vik_viewport_get_xmpp (vvp);
     vgl->corner.northing -= (event->y - vgl->click_y) * vik_viewport_get_ympp (vvp);
-    vik_layer_emit_update ( VIK_LAYER(vgl) );
+    vik_layer_emit_update ( VIK_LAYER(vgl), TRUE );
     return VIK_LAYER_TOOL_ACK;
   }
   return VIK_LAYER_TOOL_IGNORED; // I didn't move anything on this layer!
@@ -1096,7 +1136,7 @@ static VikLayerToolFuncStatus georef_layer_zoom_press ( VikGeorefLayer *vgl, Gdk
   }
   vik_viewport_set_xmpp ( vvp, vgl->mpp_easting );
   vik_viewport_set_ympp ( vvp, vgl->mpp_northing );
-  vik_layer_emit_update ( VIK_LAYER(vgl) );
+  vik_layer_emit_update ( VIK_LAYER(vgl), FALSE );
   return VIK_LAYER_TOOL_ACK;
 }
 

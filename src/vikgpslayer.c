@@ -546,10 +546,12 @@ static VikGpsLayer *gps_layer_unmarshall( guint8 *data, guint len, VikViewport *
 
 static gboolean gps_layer_set_param ( VikGpsLayer *vgl, VikLayerSetParam *vlsp )
 {
+  gboolean changed = FALSE;
   switch ( vlsp->id )
   {
     case PARAM_PROTOCOL:
       if (vlsp->data.s) {
+        gchar* old = g_strdup ( vgl->protocol );
         g_free(vgl->protocol);
         // Backwards Compatibility: previous versions <v1.4 stored protocol as an array index
         int index = vlsp->data.s[0] - '0';
@@ -561,6 +563,8 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, VikLayerSetParam *vlsp )
           vgl->protocol = g_strdup(protocols_args[index]);
         else
           vgl->protocol = g_strdup(vlsp->data.s);
+        changed = g_strcmp0 ( old, vgl->protocol );
+        g_free ( old );
         g_debug("%s: %s", __FUNCTION__, vgl->protocol);
       }
       else
@@ -568,6 +572,7 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, VikLayerSetParam *vlsp )
       break;
     case PARAM_PORT:
       if (vlsp->data.s) {
+        gchar* old = g_strdup ( vgl->serial_port );
         g_free(vgl->serial_port);
         // Backwards Compatibility: previous versions <v0.9.91 stored serial_port as an array index
         int index = vlsp->data.s[0] - '0';
@@ -579,73 +584,71 @@ static gboolean gps_layer_set_param ( VikGpsLayer *vgl, VikLayerSetParam *vlsp )
           vgl->serial_port = g_strdup(old_params_ports[index]);
         else
           vgl->serial_port = g_strdup(vlsp->data.s);
+        changed = g_strcmp0 ( old, vgl->serial_port );
+        g_free ( old );
         g_debug("%s: %s", __FUNCTION__, vgl->serial_port);
       }
       else
         g_warning(_("Unknown serial port device"));
       break;
     case PARAM_DOWNLOAD_TRACKS:
-      vgl->download_tracks = vlsp->data.b;
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vgl->download_tracks );
       break;
     case PARAM_UPLOAD_TRACKS:
-      vgl->upload_tracks = vlsp->data.b;
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vgl->upload_tracks );
       break;
     case PARAM_DOWNLOAD_ROUTES:
-      vgl->download_routes = vlsp->data.b;
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vgl->download_routes );
       break;
     case PARAM_UPLOAD_ROUTES:
-      vgl->upload_routes = vlsp->data.b;
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vgl->upload_routes );
       break;
     case PARAM_DOWNLOAD_WAYPOINTS:
-      vgl->download_waypoints = vlsp->data.b;
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vgl->download_waypoints );
       break;
     case PARAM_UPLOAD_WAYPOINTS:
-      vgl->upload_waypoints = vlsp->data.b;
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vgl->upload_waypoints );
       break;
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
     case PARAM_GPSD_CONNECT:
-      vgl->auto_connect_to_gpsd = vlsp->data.b;
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vgl->auto_connect_to_gpsd );
       break;
     case PARAM_GPSD_HOST:
-      if (vlsp->data.s) {
-        if (vgl->gpsd_host)
-          g_free(vgl->gpsd_host);
-        vgl->gpsd_host = g_strdup(vlsp->data.s);
-      }
+      changed = vik_layer_param_change_string ( vlsp->data, &vgl->gpsd_host );
       break;
     case PARAM_GPSD_PORT:
-      if (vlsp->data.s) {
-        if (vgl->gpsd_port)
-          g_free(vgl->gpsd_port);
-        vgl->gpsd_port = g_strdup(vlsp->data.s);
-      }
+      changed = vik_layer_param_change_string ( vlsp->data, &vgl->gpsd_port );
       break;
-    case PARAM_GPSD_RETRY_INTERVAL:
+    case PARAM_GPSD_RETRY_INTERVAL: {
+      gint old = vgl->gpsd_retry_interval;
       vgl->gpsd_retry_interval = strtol(vlsp->data.s, NULL, 10);
+      changed = (old != vgl->gpsd_retry_interval);
       break;
+    }
     case PARAM_REALTIME_REC:
-      vgl->realtime_record = vlsp->data.b;
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vgl->realtime_record );
       break;
     case PARAM_REALTIME_CENTER_START:
-      vgl->realtime_jump_to_start = vlsp->data.b;
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vgl->realtime_jump_to_start );
       break;
     case PARAM_VEHICLE_POSITION:
-      vgl->vehicle_position = vlsp->data.u;
+      changed = vik_layer_param_change_uint ( vlsp->data, &vgl->vehicle_position );
       break;
     case PARAM_INDICATOR_COLOR:
-      vgl->indicator_color = vlsp->data.c;
+      changed = vik_layer_param_change_color ( vlsp->data, &vgl->indicator_color );
       // Apply setting
       if ( vgl->realtime_track_gc )
         layer_update_indictor_gc ( vgl, vlsp->vp );
       break;
     case PARAM_REALTIME_UPDATE_STATUSBAR:
-      vgl->realtime_update_statusbar = vlsp->data.b;
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vgl->realtime_update_statusbar );
       break;
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
     default: break;
   }
-
-  return TRUE;
+  if ( vik_debug && changed )
+    g_debug ( "%s: Detected change on param %d", __FUNCTION__, vlsp->id );
+  return changed;
 }
 
 static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gboolean is_file_operation )
@@ -1413,7 +1416,7 @@ static void gps_comm_thread(GpsSession *sess)
           vik_layer_post_read ( VIK_LAYER(sess->vtl), sess->vvp, TRUE );
           /* View the data available */
           vik_trw_layer_auto_set_view ( sess->vtl, sess->vvp ) ;
-          vik_layer_emit_update ( VIK_LAYER(sess->vtl) ); // NB update request from background thread
+          vik_layer_emit_update ( VIK_LAYER(sess->vtl), TRUE ); // NB update request from background thread
         }
       }
     } else {
@@ -1791,6 +1794,7 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
         vgl->realtime_fix.dirty = FALSE;
         vgl->realtime_fix.satellites_used = 0;
         vgl->last_fix = vgl->realtime_fix;
+
         return tp;
       }
     }
@@ -1878,7 +1882,7 @@ static void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
       vgl->trkpt_prev = vgl->trkpt;
     }
 
-    vik_layer_emit_update ( update_all ? VIK_LAYER(vgl) : VIK_LAYER(vgl->trw_children[TRW_REALTIME]) ); // NB update from background thread
+    vik_layer_emit_update ( update_all ? VIK_LAYER(vgl) : VIK_LAYER(vgl->trw_children[TRW_REALTIME]), vgl->trkpt ? TRUE : FALSE ); // NB update from background thread
   }
 }
 

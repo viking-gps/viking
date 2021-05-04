@@ -82,6 +82,8 @@ gchar* util_frob ( gchar *str, guint ii );
 
 gboolean util_glist_of_strings_compare ( GList *aa, GList *bb );
 
+gboolean util_gdouble_different ( gdouble aa, gdouble bb );
+
 G_END_DECLS
 
 #endif

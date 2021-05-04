@@ -289,7 +289,7 @@ gboolean vik_layer_set_param ( VikLayer *vl, VikLayerSetParam *vlsp );
 
 void vik_layer_set_defaults ( VikLayer *vl, VikViewport *vvp );
 
-void vik_layer_emit_update ( VikLayer *vl );
+void vik_layer_emit_update ( VikLayer *vl, gboolean is_modified );
 
 void vik_layer_redraw ( VikLayer *vl );
 
@@ -341,6 +341,14 @@ typedef struct {
 void vik_layer_typed_param_data_free ( gpointer gp );
 VikLayerTypedParamData *vik_layer_typed_param_data_copy_from_data ( VikLayerParamType type, VikLayerParamData val );
 VikLayerTypedParamData *vik_layer_data_typed_param_copy_from_string ( VikLayerParamType type, const gchar *str );
+
+gboolean vik_layer_param_change_boolean ( VikLayerParamData val, gboolean *current );
+gboolean vik_layer_param_change_uint ( VikLayerParamData val, guint *current );
+gboolean vik_layer_param_change_uint8 ( VikLayerParamData val, guint8 *current );
+gboolean vik_layer_param_change_int ( VikLayerParamData val, gint *current );
+gboolean vik_layer_param_change_color ( VikLayerParamData val, GdkColor *current );
+gboolean vik_layer_param_change_double ( VikLayerParamData val, gdouble *current );
+gboolean vik_layer_param_change_string ( VikLayerParamData val, gchar **current );
 
 G_END_DECLS
 
