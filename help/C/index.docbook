@@ -1979,7 +1979,9 @@ It uses <application>GPSBabel</application> in the background to perform the low
 Modern GPS devices don't support serial connections any more and typically expose a file system interface and you can simply use the standard File->Open and Export to GPX File methods to transfer data.
 </para>
 <para>
-This layer is also responsible for realtime GPS tracking.
+  This layer is also responsible for realtime GPS tracking using <ulink url="https://gpsd.gitlab.io/gpsd">GPSD</ulink>
+</para>
+<para>
 Expand the GPS layer in the layers panel to see the two <xref linkend="TrackWaypoint"/> layers it
 uses for uploading and downloading. To upload, download, or use
 realtime tracking, right-click the GPS layer and click the appropriate
@@ -2003,9 +2005,14 @@ Then right-click the GPS layer and click <guimenuitem>Upload to GPS</guimenuitem
 
 <section><title>Realtime Tracking</title>
 <para>
-You must set up gpsd correctly or use a GPSD server and put the
-correct information in the GPS layer properties dialog. Then right-click
-the layer and select <guimenuitem>Start Realtime Tracking</guimenuitem>.
+  You must put the correct information to connect to an instance of GPSD in the GPS Layer properties - Realtime Tracking Mode tab.
+</para>
+<para>
+By default &appname; will automatically continually attempt to connect to GPSD using the specified host and port values,
+otherwise if necessary use right-click on the layer and select <guimenuitem>Start Realtime Tracking</guimenuitem>.
+</para>
+<para>
+  See <xref linkend="gpsd"/> for more detail.
 </para>
 </section>
 
@@ -3911,8 +3918,19 @@ This list can be sorted on each column so that it easier to find an individual t
 
 <section id="gpsd"><title>GPS Real Time Location</title>
 <para>
-	&appname; relies on <ulink url="https://gpsd.gitlab.io/gpsd">gpsd</ulink> to provide the current location from a real time feed from a GPS device.
+	&appname; relies on <ulink url="https://gpsd.gitlab.io/gpsd">GPSD</ulink> (via the GPSD service library client) to provide the current location from a real time feed from a GPS device. 
 </para>
+<note>
+<para>
+  At the time of writing the GPSD service itself is supported on the following platforms: "Presently Linux, OpenBSD and NetBSD are directly supported... Apple's OS X is supported in a limited fashion.". i.e. Explicitly <emphasis>not on Windows</emphasis>.
+</para>
+<para>
+  On Windows &appname; provides a GPSD client to connect with the server (service daemon) instance of the GPSD which would be running on different (supported platform) machine. For instance notionally one could run a virtual machine instance of a BSD variant on the Windows host, run GPSD on this BSD instance and then make &appname; connect to that GPSD instance.
+</para>
+<para>
+  Running the GPSD service is outside the scope of &appname;.
+</para>
+</note>
 <para>
 	This assumes you already have a <xref linkend="Map"/> layer enabled for ease of use (if not see above to get one).
 </para>
@@ -3930,8 +3948,8 @@ This list can be sorted on each column so that it easier to find an individual t
   Current Linux distributions should run <application>gpsd</application> automatically when a GPS Device is plugged in. Otherwise you may have to run <application>gpsd</application> manually.
 </para>
 <para>
-  Then right-click the layer and select <guimenuitem>Start Realtime Tracking</guimenuitem>.
-  Hopefully the viewport should jump to the GPS location.
+  The viewport should jump to the GPS location as by default &appname; continually attempts to connect to GPSD.
+  Otherwise right-click the layer and select <guimenuitem>Start Realtime Tracking</guimenuitem>.
 </para>
 <para>
   Troubleshooting checklist:
