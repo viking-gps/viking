@@ -901,7 +901,6 @@ static gboolean vik_treeview_drag_data_received (GtkTreeDragDest *drag_dest, Gtk
   GtkTreeModel *tree_model;
   GtkTreeModel *src_model = NULL;
   GtkTreePath *src_path = NULL, *dest_cp = NULL;
-  gboolean retval = FALSE;
   GtkTreeIter src_iter, root_iter, dest_parent;
   VikTreeview *vt;
   VikLayer *vl;
@@ -973,7 +972,7 @@ static gboolean vik_treeview_drag_data_received (GtkTreeDragDest *drag_dest, Gtk
   if (src_path)
     gtk_tree_path_free (src_path);
 
-  return retval;
+  return FALSE;
 }
 
 /* 
