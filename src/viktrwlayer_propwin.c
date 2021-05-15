@@ -393,7 +393,7 @@ static void draw_graph_marks ( PropWidgets *widgets,
 
     // Draw a square blob to indicate where we are on track for this graph
     if ( (blob_x >= MARGIN_X) && (blob_x < (widgets->profile_width + MARGIN_X)) && (blob_y < widgets->profile_height+MARGIN_Y) ) {
-      ui_cr_draw_rectangle ( gc, TRUE, blob_x-3, blob_y-3, blob_size, blob_size );
+      ui_cr_draw_rectangle ( gc, TRUE, blob_x-(blob_size/2), blob_y-(blob_size/2), blob_size, blob_size );
       cairo_stroke ( gc );
     }
 
@@ -442,7 +442,7 @@ static void save_image_and_draw_graph_marks (GtkWidget *image,
 
   // Draw a square blob to indicate where we are on track for this graph
   if ( (blob_x >= MARGIN_X) && (blob_x < (PROFILE_WIDTH + MARGIN_X)) && (blob_y < PROFILE_HEIGHT+MARGIN_Y) ) {
-    gdk_draw_rectangle (GDK_DRAWABLE(pix), gc, TRUE, blob_x-3, blob_y-3, blob_size, blob_size);
+    gdk_draw_rectangle (GDK_DRAWABLE(pix), gc, TRUE, blob_x-(blob_size/2), blob_y-(blob_size/2), blob_size, blob_size);
     *blob_drawn = TRUE;
   }
   else
@@ -1188,6 +1188,7 @@ static void track_graph_leave ( GtkWidget *event_box, GdkEventMotion *event, Pro
 static void draw_dem_alt_speed_dist ( VikTrack *tr,
 #if GTK_CHECK_VERSION (3,0,0)
                                       cairo_t *cr,
+                                      VikViewport *vvp,
 #else
                                       GdkDrawable *pix,
                                       GdkGC *alt_gc,
@@ -1565,6 +1566,7 @@ static void draw_dem_gps_speed ( PropWidgets *widgets, GtkWidget *window, cairo_
 
   draw_dem_alt_speed_dist ( widgets->tr,
                             cr,
+                            widgets->vvp,
                             min,
                             0.0,
                             ci,
@@ -1660,6 +1662,7 @@ static void draw_gps_speed_by_dist ( PropWidgets *widgets, GtkWidget *window, ca
 {
   draw_dem_alt_speed_dist ( widgets->tr,
                             cr,
+                            widgets->vvp,
                             0.0,
                             widgets->draw_min[PGT_SPEED_TIME],
                             0,
@@ -1893,7 +1896,7 @@ static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets 
   GdkRGBA *rgbaOC; // Outline Colour
   GdkRGBA *rgbaBC; // Border Colour / Background Colour
 
-  cairo_set_line_width ( cr, 1.0 );
+  cairo_set_line_width ( cr, 1.0 * vik_viewport_get_scale(widgets->vvp) );
   cairo_set_line_cap ( cr, CAIRO_LINE_CAP_SQUARE );
 
   gtk_style_context_get ( gsc, gtk_style_context_get_state(gsc), "outline-color", &rgbaOC, NULL );
@@ -1915,7 +1918,16 @@ static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets 
   else    
     draw_distance_divisions ( window, pl, cr, widgets, a_vik_get_units_distance(), rgbaOC, rgbaBC );
   cairo_stroke ( cr );
+
+  guint height = MARGIN_Y+widgets->profile_height-1;
+
+  // Draw border
+  gdk_cairo_set_source_rgba ( cr, rgbaBC );
+  ui_cr_draw_rectangle ( cr, FALSE, MARGIN_X, MARGIN_Y, widgets->profile_width-1, height );
+
+  cairo_stroke ( cr );
   gdk_rgba_free ( rgbaBC );
+  gdk_rgba_free ( rgbaOC );
   
   // Unknown how to get theme colour in GTK3
   // Crashes if provide unknown text like  "theme-selected-bg-color"    
@@ -1938,7 +1950,6 @@ static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets 
      g_message ( "%s %d", __FUNCTION__, g_value_get_boolean(&val) );
   */
  
-  guint height = MARGIN_Y+widgets->profile_height-1;
   gboolean nanny = FALSE;
 
   for ( i = 0; i < widgets->profile_width; i++ ) {
@@ -1962,11 +1973,6 @@ static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets 
 
   if ( widgets->draw_extra[pwgt] )
     widgets->draw_extra[pwgt] ( widgets, window, cr, pwgt );
-
-  // Draw border
-  gdk_cairo_set_source_rgba ( cr, rgbaOC );
-  ui_cr_draw_rectangle ( cr, FALSE, MARGIN_X, MARGIN_Y, widgets->profile_width-1, height );
-  cairo_stroke ( cr );
 
 #else
   GdkPixmap *pix = gdk_pixmap_new ( gtk_widget_get_window(window), widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y, -1 );
