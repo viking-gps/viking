@@ -283,12 +283,9 @@ VikTrwLayerWpwin *vik_trw_layer_wpwin_show ( GtkWindow *parent, VikTrwLayerWpwin
   vik_units_height_t height_units = a_vik_get_units_height ();
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
 
-  if ( !edit_wp )
-    edit_wp = vik_waypoint_new ();
-  else {
+  if ( edit_wp )
     vik_waypoint_free ( edit_wp );
-    edit_wp = vik_waypoint_copy ( wp );
-  }
+  edit_wp = vik_waypoint_copy ( wp );
 
   if ( cur_wpwin ) {
     ww = cur_wpwin;
