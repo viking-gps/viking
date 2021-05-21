@@ -10798,7 +10798,21 @@ void vik_trw_layer_trackpoint_draw ( VikTrwLayer *vtl, VikViewport *vvp, VikTrac
   gint tp_size = vtl->drawpoints_size * 2;
 
 #if GTK_CHECK_VERSION (3,0,0)
-  cairo_t *cr = vik_viewport_surface_tool_create ( vvp );
+  // Draw on existing tool surface if available
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  VikToolInterface *vti = (VikToolInterface*)vik_window_get_active_tool_interface ( vw );
+  cairo_t *cr = NULL;
+  if ( vti )
+    if ( vti->create == (VikToolConstructorFunc)tool_edit_create ) {
+      tool_ed_t *te = (tool_ed_t*)vik_window_get_active_tool_data ( vw );
+      if ( te && te->gc ) {
+        cr = te->gc;
+        tool_edit_remove_image ( te );
+      }
+    }
+  // Otherwise create surface to draw on
+  if ( !cr )
+    cr = vik_viewport_surface_tool_create ( vvp );
   if ( cr ) {
     ui_cr_set_color ( cr, color );
     ui_cr_draw_rectangle ( cr, TRUE, xd-tp_size, yd-tp_size, 2*tp_size, 2*tp_size );
