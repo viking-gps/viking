@@ -106,6 +106,9 @@ static VikLayerParamData color_default_contig ( void ) {
 static VikLayerParamData color_default_cluster ( void ) {
   VikLayerParamData data; gdk_color_parse ( "darkgreen", &data.c ); return data;
 }
+static VikLayerParamData color_default_new ( void ) {
+  VikLayerParamData data; gdk_color_parse ( "#4365B8", &data.c ); return data; // A kind of blue
+}
 
 static VikLayerParamData hm_alpha_default ( void ) { return VIK_LPD_UINT ( 127 ); }
 
@@ -146,6 +149,10 @@ VikLayerParam aggregate_layer_params[] = {
   { VIK_LAYER_AGGREGATE, "cluster_alpha", VIK_LAYER_PARAM_UINT, GROUP_TAC_ADV, N_("Cluster Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
     N_("Control the Alpha value for transparency effects"), alpha_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "cluster_color", VIK_LAYER_PARAM_COLOR, GROUP_TAC_ADV, N_("Cluster Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_default_cluster, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "new_on", VIK_LAYER_PARAM_BOOLEAN, GROUP_TAC_ADV, N_("New On:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "new_alpha", VIK_LAYER_PARAM_UINT, GROUP_TAC_ADV, N_("New Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
+    N_("Control the Alpha value for transparency effects"), alpha_default, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "new_color", VIK_LAYER_PARAM_COLOR, GROUP_TAC_ADV, N_("New Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_default_new, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "drawgrid", VIK_LAYER_PARAM_BOOLEAN, GROUP_TAC, N_("Draw Grid:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "tilearealevel", VIK_LAYER_PARAM_UINT, GROUP_TAC, N_("Tile Area Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_tile_area_levels, NULL,
     N_("Area size. A higher level means a smaller grid."), tile_area_level_default, NULL, NULL },
@@ -160,7 +167,7 @@ VikLayerParam aggregate_layer_params[] = {
     VIK_LAYER_WIDGET_BUTTON, N_("Reset All to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
 
-typedef enum { BASIC, CONTIG, CLUSTER, MAX_SQR, CP_NUM } common_property_types;
+typedef enum { BASIC, CONTIG, CLUSTER, MAX_SQR, TNEW, CP_NUM } common_property_types;
 
 enum {
       PARAM_DO_TAC=0,
@@ -175,6 +182,9 @@ enum {
       PARAM_CLUSTER_ON,
       PARAM_CLUSTER_ALPHA,
       PARAM_CLUSTER_COLOR,
+      PARAM_NEW_ON,
+      PARAM_NEW_ALPHA,
+      PARAM_NEW_COLOR,
       PARAM_DRAW_GRID,
       PARAM_TILE_AREA_LEVEL,
       PARAM_TAC_TIME_RANGE,
@@ -261,6 +271,7 @@ struct _VikAggregateLayer {
   gboolean calculating;
   guint zoom_level;
   gboolean draw_grid;
+  guint zoom_level_prev;
 
   gboolean on[CP_NUM];
   guint8 alpha[CP_NUM];
@@ -269,10 +280,13 @@ struct _VikAggregateLayer {
   GdkPixbuf *full_pixbuf[CP_NUM]; // Whole screen
   GdkPixbuf *unreachable_pixbuf; // Whole screen
   guint num_tiles[CP_NUM];
+  guint num_prev[CP_NUM]; // Counts to determine change after a new calculation
+  guint num_calcs;
 
   guint cont_label;
   guint clust_label;
   guint max_square;
+  guint max_square_prev;
   gint xx,yy; // Location of top left max square tile
 
   guint8 tac_time_range; // Years
@@ -280,6 +294,10 @@ struct _VikAggregateLayer {
   //  but this seems to work OK at least if all tracks are confined within a not too diverse area
   GHashTable *tiles;
   GHashTable *tiles_clust;
+
+  // Enable to determine changed tiles (mainly for those added rather than removed)
+  GHashTable *prev;
+  GHashTable *tiles_new;
 
   // Heatmap
   gboolean hm_calculating;
@@ -496,6 +514,16 @@ static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetP
     case PARAM_CLUSTER_COLOR:
       changed = vik_layer_param_change_color ( vlsp->data, &val->color[CLUSTER] );
       break;
+    case PARAM_NEW_ON:
+      changed = vik_layer_param_change_boolean ( vlsp->data, &val->on[TNEW] );
+      break;
+    case PARAM_NEW_ALPHA:
+      if ( vlsp->data.u <= 255 )
+        changed = vik_layer_param_change_uint8 ( vlsp->data, &val->alpha[TNEW] );
+      break;
+    case PARAM_NEW_COLOR:
+      changed = vik_layer_param_change_color ( vlsp->data, &val->color[TNEW] );
+      break;
     case PARAM_TILE_AREA_LEVEL:
       if ( vlsp->data.u <= G_N_ELEMENTS(params_tile_area_levels) ) {
         guint old = val->zoom_level;
@@ -559,6 +587,9 @@ static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, gui
     case PARAM_CLUSTER_ON: rv.b = val->on[CLUSTER]; break;
     case PARAM_CLUSTER_ALPHA: rv.u = val->alpha[CLUSTER]; break;
     case PARAM_CLUSTER_COLOR: rv.c = val->color[CLUSTER]; break;
+    case PARAM_NEW_ON: rv.b = val->on[TNEW]; break;
+    case PARAM_NEW_ALPHA: rv.u = val->alpha[TNEW]; break;
+    case PARAM_NEW_COLOR: rv.c = val->color[TNEW]; break;
     case PARAM_TILE_AREA_LEVEL: rv.u = map_utils_mpp_to_scale ( val->zoom_level ) - 1; break;
     case PARAM_TAC_TIME_RANGE: rv.u = val->tac_time_range; break;
     case PARAM_HM_ALPHA: rv.u = val->hm_alpha; break;
@@ -600,6 +631,9 @@ VikAggregateLayer *vik_aggregate_layer_create (VikViewport *vp)
   VikAggregateLayer *rv = vik_aggregate_layer_new (vp);
   vik_layer_rename ( VIK_LAYER(rv), vik_aggregate_layer_interface.name );
   vik_layer_set_defaults ( VIK_LAYER(rv), vp );
+
+  for (gint x = 0; x<CP_NUM; x++ )
+    rv->num_prev[x] = 0;
   return rv;
 }
 
@@ -671,6 +705,8 @@ VikAggregateLayer *vik_aggregate_layer_new (VikViewport *vvp)
   val->children = NULL;
   val->tiles = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
   val->tiles_clust = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
+  val->tiles_new = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
+  val->prev = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
 
   return val;
 }
@@ -922,6 +958,7 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
       val->pixbuf[MAX_SQR] = layer_pixbuf_update ( val->pixbuf[MAX_SQR], val->color[MAX_SQR], tilesize <= 256 ? 256 : tilesize, tilesize <= 256 ? 256 : tilesize, val->alpha[MAX_SQR] );
       val->pixbuf[CONTIG] = layer_pixbuf_update ( val->pixbuf[CONTIG], val->color[CONTIG], tilesize <= 256 ? 256 : tilesize, tilesize <= 256 ? 256 : tilesize, val->alpha[CONTIG] );
       val->pixbuf[CLUSTER] = layer_pixbuf_update ( val->pixbuf[CLUSTER], val->color[CLUSTER], tilesize <= 256 ? 256 : tilesize, tilesize <= 256 ? 256 : tilesize, val->alpha[CLUSTER] );
+      val->pixbuf[TNEW] = layer_pixbuf_update ( val->pixbuf[TNEW], val->color[TNEW], tilesize <= 256 ? 256 : tilesize, tilesize <= 256 ? 256 : tilesize, val->alpha[TNEW] );
     }
 
     // Create pixbufs the size of the screen
@@ -949,6 +986,9 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
             guint sizex, sizey, destx, desty;
             get_pixel_limits ( &sizex, &sizey, &destx, &desty, xx, yy, width, height, tilesize_ceil );
 
+            // Note ATM each type is simply drawn on top of each other,
+            //  hence colours and alpha values will get blended into the final output
+
             gdk_pixbuf_copy_area ( val->pixbuf[BASIC], 0, 0, sizex, sizey, val->full_pixbuf[BASIC], destx, desty );
 
             if ( val->cont_label && (tile_label(val->tiles, x, y) == val->cont_label) )
@@ -963,7 +1003,12 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
             if ( val->on[MAX_SQR] )
               if ( ( x >= val->xx && x < (val->xx + val->max_square) )
                      && ( y >= val->yy && y < (val->yy + val->max_square) ) ) {
-                gdk_pixbuf_copy_area ( val->pixbuf[MAX_SQR], 0, 0, sizex, sizey, val->full_pixbuf[MAX_SQR], destx, desty );                
+                gdk_pixbuf_copy_area ( val->pixbuf[MAX_SQR], 0, 0, sizex, sizey, val->full_pixbuf[MAX_SQR], destx, desty );
+              }
+
+            if ( val->on[TNEW] )
+              if ( is_tile_occupied(val->tiles_new, x, y) ) {
+                gdk_pixbuf_copy_area ( val->pixbuf[TNEW], 0, 0, sizex, sizey, val->full_pixbuf[TNEW], destx, desty );
               }
           } else {
             gint x2 = xx;
@@ -2039,12 +2084,45 @@ static void tac_unreachable ( VikAggregateLayer *val )
   }
 }
 
+// Fwd declaration
+static void tac_clear ( VikAggregateLayer *val );
+
 /**
  *
  */
 static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
 {
   clock_t begin = clock();
+
+  g_hash_table_remove_all ( ct->val->prev );
+  g_hash_table_remove_all ( ct->val->tiles_new );
+  ct->val->num_tiles[TNEW] = 0;
+
+  // Only if there's something before then 'turn on' detection of new tiles...
+  //  (too otherwise avoid marking everything new on first time calculation
+  //   on particularly initial file loads)
+  // Also don't try to find new ones when the zoom level has changed
+  //  and discount the number of unreachable tiles
+  gboolean zoom_level_chgd = (ct->val->zoom_level_prev != ct->val->zoom_level);
+  if ( zoom_level_chgd )
+    ct->val->zoom_level_prev = ct->val->zoom_level;
+  guint sz = 0;
+  if ( tiles_unreachable )
+    sz = g_hash_table_size ( tiles_unreachable );
+  if ( (ct->val->num_tiles[BASIC] > sz) && ct->val->on[TNEW]) {
+    // Copy current tiles into prev
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init ( &iter, ct->val->tiles );
+    while ( g_hash_table_iter_next(&iter, &key, &value) )
+      (void)g_hash_table_insert ( ct->val->prev, g_strdup(key), GUINT_TO_POINTER(0) );
+
+    for (gint x = 0; x<CP_NUM; x++ )
+      ct->val->num_prev[x] = ct->val->num_tiles[x];
+  }
+  ct->val->max_square_prev = ct->val->max_square;
+
+  tac_clear ( ct->val );
 
   tac_unreachable ( ct->val );
 
@@ -2065,11 +2143,6 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
     check_track ( ct->val, tl->data );
     tracks_processed++;
   }
-
-  // Timing for basic tile coverage
-  clock_t end = clock();
-  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-  g_debug ( "%s: %f", __FUNCTION__, time_spent );
 
   if ( ct->val->on[MAX_SQR] ) {
     gdouble percent = (gdouble)tracks_processed/(gdouble)(ct->num_of_tracks+extras);
@@ -2097,7 +2170,31 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
     tac_cluster_calc ( ct->val );
     tracks_processed = tracks_processed + ct->num_of_tracks;
   }
-  
+
+  if ( (ct->val->num_prev[BASIC] > sz) && ct->val->on[TNEW] && !zoom_level_chgd ) {
+    // Determine difference in latest tiles vs prev
+    // Could be slow, but seems not too bad
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init ( &iter, ct->val->tiles );
+    while ( g_hash_table_iter_next(&iter, &key, &value) ) {
+      gboolean contained = g_hash_table_contains ( ct->val->prev, key );
+      if ( !contained ) {
+        (void)g_hash_table_insert ( ct->val->tiles_new, g_strdup(key), GUINT_TO_POINTER(0) );
+        ct->val->num_tiles[TNEW]++;
+      }
+    }
+    // Also doing it here means the detection is only done for the 'first' calculation update
+    // (this calculation alsootherwise gets done for any config change - even if just colour changed).
+    //  so ATM the new tiles get reset for such subsequent recalculations
+    g_hash_table_remove_all ( ct->val->prev );
+  }
+
+  // Timing for all tile calcs
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  g_debug ( "%s: %f", __FUNCTION__, time_spent );
+
   ct->val->calculating = FALSE;
   vik_layer_emit_update ( VIK_LAYER(ct->val), FALSE ); // NB update display from background
 
@@ -2117,6 +2214,7 @@ static void tac_clear ( VikAggregateLayer *val )
   val->clust_label = 0;
   g_hash_table_remove_all ( val->tiles ); // No memory to remove ATM
   g_hash_table_remove_all ( val->tiles_clust ); // No memory to remove ATM
+  g_hash_table_remove_all ( val->tiles_new ); // No memory to remove ATM
 }
 
 /**
@@ -2124,8 +2222,8 @@ static void tac_clear ( VikAggregateLayer *val )
  */
 static void tac_calculate ( VikAggregateLayer *val )
 {
-  tac_clear ( val );
   val->calculating = TRUE;
+  val->num_calcs++;
 
   GDate *now = g_date_new ();
   g_date_set_time_t ( now, time(NULL) );
@@ -2898,6 +2996,7 @@ void vik_aggregate_layer_free ( VikAggregateLayer *val )
   if ( val->unreachable_pixbuf )
     g_object_unref ( val->unreachable_pixbuf );
   g_hash_table_destroy ( val->tiles_clust );
+  g_hash_table_destroy ( val->tiles_new );
 
   if ( val->hm_pixbuf )
     g_object_unref ( val->hm_pixbuf );
@@ -3158,12 +3257,27 @@ static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val )
     if ( val->calculating ) {
       g_string_append ( gs, _("\nTAC: Calculating") );
     } else {
-      g_string_append_printf ( gs,
-                   _("\nTAC: Area Level %s\nTotal tiles %d\nMax Square %d\nContiguous count %d\nCluster size %d"),
-                   params_tile_area_levels[map_utils_mpp_to_scale(val->zoom_level)-1], val->num_tiles[BASIC], val->max_square, val->num_tiles[CONTIG], val->num_tiles[CLUSTER] );
+      g_string_append_printf ( gs, _("\nTAC: Area Level %s\nTotal tiles %d"),
+                               params_tile_area_levels[map_utils_mpp_to_scale(val->zoom_level)-1], val->num_tiles[BASIC] );
+      // Changes only shown after initial calculation
+      //  mainly for the idea to prevent showing that everything has initially changed (e.g. on file load)
+      if ( (val->num_calcs > 1) && val->num_tiles[TNEW] )
+        g_string_append_printf ( gs, _(" (%+d)"), val->num_tiles[TNEW] );
+
+      g_string_append_printf ( gs, _("\nMax Square %d"), val->max_square );
+      if ( (val->num_calcs > 1) && (val->max_square != val->max_square_prev) )
+        g_string_append_printf ( gs, " (%+d)", (val->max_square-val->max_square_prev) );
+
+      g_string_append_printf ( gs, _("\nContiguous count %d"), val->num_tiles[CONTIG] );
+      if ( (val->num_calcs > 1) && (val->num_tiles[CONTIG] != val->num_prev[CONTIG]) )
+        g_string_append_printf ( gs, " (%+d)", (val->num_tiles[CONTIG]-val->num_prev[CONTIG]) );
+
+      g_string_append_printf ( gs, _("\nCluster size %d"), val->num_tiles[CLUSTER] );
+      if ( (val->num_calcs > 1) && (val->num_tiles[CLUSTER] != val->num_prev[CLUSTER]) )
+        g_string_append_printf ( gs, " (%+d)", (val->num_tiles[CLUSTER]-val->num_prev[CLUSTER]) );
     }
   }
-  g_snprintf (tmp_buf, sizeof(tmp_buf), "%s", gs->str );
+  g_snprintf ( tmp_buf, sizeof(tmp_buf), "%s", gs->str );
   g_string_free ( gs, TRUE );
   return tmp_buf;
 }
