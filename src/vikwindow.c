@@ -6440,7 +6440,7 @@ static void window_create_ui( VikWindow *window )
     if ( widget ) {
       g_object_set ( widget, "sensitive", FALSE, NULL );
     }
-    g_warning ( "No direction routing engines available" );
+    g_debug ( "No direction routing engines available" );
   }
 }
 
