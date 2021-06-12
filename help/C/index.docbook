@@ -4431,7 +4431,7 @@ Accept: */*
             </varlistentry>
             <varlistentry>
               <term>url-stop-dir (optional)</term>
-              <listitem><para>the part of the URL setting the end point location for direction based routing, parametrized in the spirit of C printf format, with one "%s" for direction (eg. "&amp;start=%s")</para></listitem>
+              <listitem><para>the part of the URL setting the end point location for direction based routing, parametrized in the spirit of C printf format, with one "%s" for direction (eg. "&amp;stop=%s")</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>url-ll-lat-first (optional)</term>
