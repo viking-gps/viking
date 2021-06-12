@@ -165,8 +165,8 @@ typedef struct zip_file zip_file_t;
 	zip_discard ( archive );
 
  cleanup:
-#endif
 	g_free ( zip_filename );
+#endif
 	return ans;
 }
 
