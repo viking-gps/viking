@@ -331,7 +331,7 @@ static void aggregate_layer_class_init ( VikAggregateLayerClass *klass )
         continue;
       if ( sscanf(buf, "%d %d %d", &zz, &xx, &yy) == 3 ) {
         gchar *key = g_strdup_printf ( "%d %d %d", zz, xx, yy );
-        g_hash_table_insert ( tiles_unreachable, key, GUINT_TO_POINTER(0) );
+        (void)g_hash_table_insert ( tiles_unreachable, key, GUINT_TO_POINTER(0) );
       }
       else
         g_warning ( "%s: %s line %d does not contain 3 numbers", __FUNCTION__, fn, line );
@@ -1580,7 +1580,7 @@ static void aggregate_layer_export_gpx ( menu_array_values values )
 static void add_tile_label ( GHashTable *ght, gint x, gint y, guint id )
 {
   gchar *key = g_strdup_printf ( "%d:%d", x, y );
-  g_hash_table_insert ( ght, key, GUINT_TO_POINTER(id) );
+  (void)g_hash_table_insert ( ght, key, GUINT_TO_POINTER(id) );
 }
 
 /**
