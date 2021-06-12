@@ -1,7 +1,13 @@
 #%% Fedora style spec file written by Michael A. Peters
 #%% It is released under Public Domain
 #%% May be redistributed without this notice.
-
+#%%
+#%% THIS FILE IS JUST AN EXAMPLE!
+#%%  it is not actively used (thus not guaranteed to work),
+#%%  but offered to show typical changes needed when dependencies change
+#%%
+#%%  c.f. with the equivalent mingw64-viking.spec file as this is used
+#%%  (currently to generate the Windows build)
 Name:		viking
 Version:	@VERSION@
 Release:	1
@@ -12,9 +18,10 @@ Group:		Applications/Productivity
 License:	GPLv2
 URL:		http://sourceforge.net/projects/viking/
 Source0:	%{name}-%{version}.tar.gz
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-build
 
 BuildRequires:	curl-devel
+BuildRequires:	file-devel
 BuildRequires:	expat-devel
 BuildRequires:	glib2-devel
 BuildRequires:	gtk3-devel >= 3.22
@@ -44,14 +51,11 @@ It is written in mainly in C with some C++ and uses the GTK+3 toolkit.
 
 %build
 %configure
-make 
+make %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
-make DESTDIR=%{buildroot} install
+%make_install
 %find_lang %{name}
-rm -f doc/Makefile*
-rm -f doc/dev/Makefile*
 
 %check
 make test
@@ -59,12 +63,12 @@ make test
 %clean
 rm -rf %{buildroot}
 
-%find_lang %{name} --with-gnome
-
 %files -f %{name}.lang
 %defattr(-,root,root,-)
+%license COPYING
 %doc AUTHORS ChangeLog COPYING NEWS README.md TODO doc/
 %{_bindir}/viking
+%{_datadir}/viking
 %{_datadir}/applications/viking.desktop
 %{_datadir}/icons/hicolor/48x48/apps/viking.png
 %{_mandir}/man1/*
