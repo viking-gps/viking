@@ -451,7 +451,7 @@ For other combinations see the menu entry themselves.
 
 <section><title>Tracks vs Routes</title>
 <para>
-In theory a route is path you are planning to follow and a track is of where you have actually been. The GPX specification splits these into two separate categories, although tracks contain everything route may have.
+In theory a route is path you are planning to follow and a track is of where you have actually been. The GPX specification splits these into two separate categories, although tracks contain everything a route may have.
 </para>
 <para>
 Q. When planning a <emphasis>route</emphasis> what difference does it make if it's a route or a track?
@@ -471,7 +471,7 @@ This generally not a problem for shorter routes, but needs managing for longer o
 The number of track points is normally alot higher (e.g. 500 or typically with latest devices 10,000 or more) and less of a problem.
 </para>
 <para>
-  See <xref linkend="gpx_simplify"/> for helping to manage this.
+  See <xref linkend="gpx_simplify"/> for help to manage this.
 </para></note>
 </section>
 
