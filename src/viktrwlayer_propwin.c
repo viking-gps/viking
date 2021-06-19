@@ -163,6 +163,8 @@ typedef struct _propwidgets {
   cairo_surface_t *surface_2nd[PGT_END];  //       "       "
 } PropWidgets;
 
+static const double GRAPH_OVERLAY_LINE_WIDTH = 2.0;
+
 // Local functions
 static gboolean split_at_marker ( PropWidgets *widgets );
 static void draw_all_graphs ( GtkWidget *widget, PropWidgets *widgets, gboolean resized );
@@ -1213,10 +1215,24 @@ static void draw_dem_alt_speed_dist ( VikTrack *tr,
   gdouble schunk = chunks[cis]*LINES;
   vik_units_speed_t speed_units = a_vik_get_units_speed ();
 
-  for (iter = tr->trackpoints->next; iter; iter = iter->next) {
-    dist += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
-			     &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+#if GTK_CHECK_VERSION (3,0,0)
+  gboolean first_point_alt = TRUE;
+  gboolean first_point_speed = TRUE;
+  int last_x_alt, last_y_alt;
+  int last_x_speed, last_y_speed;
+
+  cairo_set_line_width ( cr, GRAPH_OVERLAY_LINE_WIDTH * vik_viewport_get_scale(vvp) );
+#endif
+
+  for (iter = tr->trackpoints; iter; iter = iter->next) {
+    if (iter->prev) {
+      dist += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord), &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+    }
+
     int x = (width * dist)/total_length + margin;
+
+    int y_alt, y_speed;
+
     if (do_dem) {
       gint16 elev = a_dems_get_elev_by_coord(&(VIK_TRACKPOINT(iter->data)->coord), VIK_DEM_INTERPOL_BEST);
       if ( elev != VIK_DEM_INVALID_ELEVATION ) {
@@ -1229,27 +1245,56 @@ static void draw_dem_alt_speed_dist ( VikTrack *tr,
         elev -= alt_offset;
 
         // consider chunk size
-        int y_alt = h2 - ((height * elev)/achunk );
+        y_alt = h2 - ((height * elev)/achunk );
 #if GTK_CHECK_VERSION (3,0,0)
-        ui_cr_set_color ( cr, "green" );
-        ui_cr_draw_rectangle ( cr, TRUE, x-2, y_alt-2, 4, 4 );
-        cairo_stroke ( cr );
+        if ( y_alt >= 0 ) {
+          ui_cr_set_color ( cr, "green" );
+          if ( first_point_alt ) {
+            first_point_alt = FALSE;
+          } else if ( ! VIK_TRACKPOINT(iter->data)->newsegment ) {
+            ui_cr_draw_line( cr, last_x_alt, last_y_alt, x, y_alt );
+            cairo_stroke ( cr );
+          }
+          last_x_alt = x;
+          last_y_alt = y_alt;
+        } else {
+          first_point_alt = TRUE;
+        }
 #else
         gdk_draw_rectangle(GDK_DRAWABLE(pix), alt_gc, TRUE, x-2, y_alt-2, 4, 4);
 #endif
+      } else {
+#if GTK_CHECK_VERSION (3,0,0)
+        first_point_alt = TRUE;
+#endif
       }
     }
+
     if (do_speed) {
       // This is just a speed indicator - no actual values can be inferred by user
       if (!isnan(VIK_TRACKPOINT(iter->data)->speed)) {
 	gdouble spd = vu_speed_convert ( speed_units, VIK_TRACKPOINT(iter->data)->speed ) ;
-        int y_speed = h2 - (height * (spd-draw_min_speed))/schunk;
+        y_speed = h2 - (height * (spd-draw_min_speed))/schunk;
 #if GTK_CHECK_VERSION (3,0,0)
-        ui_cr_set_color ( cr, "red" );
-        ui_cr_draw_rectangle ( cr, TRUE, x-2, y_speed-2, 4, 4 );
-        cairo_stroke ( cr );
+        if ( y_speed > 0 ) {
+          ui_cr_set_color ( cr, "red" );
+          if ( first_point_speed ) {
+            first_point_speed = FALSE;
+          } else {
+            ui_cr_draw_line( cr, last_x_speed, last_y_speed, x, y_speed );
+            cairo_stroke ( cr );
+          }
+          last_x_speed = x;
+          last_y_speed = y_speed;
+        } else {
+          first_point_speed = TRUE;
+        }
 #else
         gdk_draw_rectangle(GDK_DRAWABLE(pix), speed_gc, TRUE, x-2, y_speed-2, 4, 4);
+#endif
+      } else {
+#if GTK_CHECK_VERSION (3,0,0)
+        first_point_speed = TRUE;
 #endif
       }
     }
@@ -1720,13 +1765,18 @@ static void draw_gps_speed_extra ( gpointer ptr, GtkWidget *window, GdkPixmap *p
 #if GTK_CHECK_VERSION (3,0,0)
 static void draw_speed_indicator ( PropWidgets *widgets, GtkWidget *window, cairo_t *cr )
 {
+  cairo_set_line_width ( cr, GRAPH_OVERLAY_LINE_WIDTH * vik_viewport_get_scale(widgets->vvp) );
   ui_cr_set_color ( cr, "red" );
   gdouble max_speed = widgets->max_value[PGT_SPEED_TIME] * 110 / 100;
+  int last_speed;
 
   // This is just an indicator - no actual values can be inferred by user
   for (int i = 0; i < widgets->profile_width; i++ ) {
+    int x = i + MARGIN_X;
     int y_speed = widgets->profile_height - (widgets->profile_height * widgets->values[PGT_SPEED_TIME][i])/max_speed;
-    ui_cr_draw_rectangle ( cr, TRUE, i+MARGIN_X-2, y_speed-2, 4, 4 );
+    if ( i > 0 )
+      ui_cr_draw_line ( cr, x-1, last_speed, x, y_speed );
+    last_speed = y_speed;
   }
   cairo_stroke ( cr );
 }
@@ -1759,6 +1809,7 @@ static void draw_gps_speed_by_time ( PropWidgets *widgets, GtkWidget *window, Gd
   //  although the drawing is put on whatever the pixmap/cr is passed in
   VikPropWinGraphType_t pwgt = PGT_SPEED_TIME;
 #if GTK_CHECK_VERSION (3,0,0)
+  cairo_set_line_width ( cr, GRAPH_OVERLAY_LINE_WIDTH * vik_viewport_get_scale(widgets->vvp) );
   ui_cr_set_color ( cr, "red" );
 #else
   GdkGC *gps_speed_gc = gdk_gc_new ( gtk_widget_get_window(window) );
@@ -1774,17 +1825,35 @@ static void draw_gps_speed_by_time ( PropWidgets *widgets, GtkWidget *window, Gd
   guint height = widgets->profile_height + MARGIN_Y;
   gdouble mins = widgets->draw_min[pwgt];
 
+#if GTK_CHECK_VERSION (3,0,0)
+  gboolean first_point = TRUE;
+  int last_x, last_y;
+#endif
+
   for (GList *iter = widgets->tr->trackpoints; iter; iter = iter->next) {
     gdouble gps_speed = VIK_TRACKPOINT(iter->data)->speed;
-    if (isnan(gps_speed))
+    if (isnan(gps_speed)) {
+#if GTK_CHECK_VERSION (3,0,0)
+      first_point = TRUE;
+#endif
       continue;
+    }
 
     gps_speed = vu_speed_convert ( speed_units, gps_speed );
 
     int x = MARGIN_X + widgets->profile_width * (VIK_TRACKPOINT(iter->data)->timestamp - beg_time) / dur;
     int y = height - widgets->profile_height*(gps_speed - mins)/(chunk*LINES);
 #if GTK_CHECK_VERSION (3,0,0)
-    ui_cr_draw_rectangle ( cr, TRUE, x-2, y-2, 4, 4 );
+    if ( y > 0 ) {
+      if ( first_point )
+        first_point = FALSE;
+      else if ( ! VIK_TRACKPOINT(iter->data)->newsegment )
+        ui_cr_draw_line( cr, last_x, last_y, x, y );
+      last_x = x;
+      last_y = y;
+    } else {
+      first_point = TRUE;
+    }
 #else
     gdk_draw_rectangle(GDK_DRAWABLE(pix), gps_speed_gc, TRUE, x-2, y-2, 4, 4);
 #endif
@@ -2055,7 +2124,10 @@ static void draw_dem_by_time ( PropWidgets *widgets, GtkWidget *window, GdkPixma
 #endif
 {
 #if GTK_CHECK_VERSION (3,0,0)
+  cairo_set_line_width ( cr, GRAPH_OVERLAY_LINE_WIDTH * vik_viewport_get_scale(widgets->vvp) );
   ui_cr_set_color ( cr, "green" );
+  gboolean first_point = TRUE;
+  int last_x, last_y_alt;
 #else
   GdkColor color;
   GdkGC *dem_alt_gc = gdk_gc_new ( gtk_widget_get_window(window) );
@@ -2086,12 +2158,27 @@ static void draw_dem_by_time ( PropWidgets *widgets, GtkWidget *window, GdkPixma
 
 	// consider chunk size
 	int y_alt = h2 - ((widgets->profile_height * elev)/achunk );
+    int x = i + MARGIN_X;
 #if GTK_CHECK_VERSION (3,0,0)
-        ui_cr_draw_rectangle ( cr, TRUE, i+MARGIN_X-2, y_alt-2, 4, 4 );
+    if ( y_alt > 0 ) {
+      if ( first_point )
+          first_point = FALSE;
+      else
+          ui_cr_draw_line ( cr, last_x, last_y_alt, x, y_alt );
+
+      last_x = x;
+      last_y_alt = y_alt;
+    } else {
+      first_point = TRUE;
+    }
 #else
-	gdk_draw_rectangle(GDK_DRAWABLE(pix), dem_alt_gc, TRUE, i+MARGIN_X-2, y_alt-2, 4, 4);
+	gdk_draw_rectangle(GDK_DRAWABLE(pix), dem_alt_gc, TRUE, x-2, y_alt-2, 4, 4);
 #endif
       }
+    } else {
+#if GTK_CHECK_VERSION (3,0,0)
+      first_point = TRUE;
+#endif
     }
   }
 #if GTK_CHECK_VERSION (3,0,0)
