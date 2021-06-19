@@ -96,7 +96,7 @@ enum {
 static const gchar* mapnik_layer_tooltip ( VikMapnikLayer *vml );
 static void mapnik_layer_marshall( VikMapnikLayer *vml, guint8 **data, guint *len );
 static VikMapnikLayer *mapnik_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );
-static gboolean mapnik_layer_set_param ( VikMapnikLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation );
+static gboolean mapnik_layer_set_param ( VikMapnikLayer *vml, VikLayerSetParam *vlsp );
 static VikLayerParamData mapnik_layer_get_param ( VikMapnikLayer *vml, guint16 id, gboolean is_file_operation );
 static VikMapnikLayer *mapnik_layer_new ( VikViewport *vvp );
 static VikMapnikLayer *mapnik_layer_create ( VikViewport *vp );
@@ -408,14 +408,14 @@ static VikMapnikLayer *mapnik_layer_unmarshall( guint8 *data, guint len, VikView
 	return rv;
 }
 
-static gboolean mapnik_layer_set_param ( VikMapnikLayer *vml, guint16 id, VikLayerParamData data, VikViewport *vp, gboolean is_file_operation )
+static gboolean mapnik_layer_set_param ( VikMapnikLayer *vml, VikLayerSetParam *vlsp )
 {
-	switch ( id ) {
-		case PARAM_CONFIG_CSS: mapnik_layer_set_file_css (vml, data.s); break;
-		case PARAM_CONFIG_XML: mapnik_layer_set_file_xml (vml, data.s); break;
-		case PARAM_ALPHA: if ( data.u <= 255 ) vml->alpha = data.u; break;
-		case PARAM_USE_FILE_CACHE: vml->use_file_cache = data.b; break;
-		case PARAM_FILE_CACHE_DIR: mapnik_layer_set_cache_dir (vml, data.s); break;
+	switch ( vlsp->id ) {
+		case PARAM_CONFIG_CSS: mapnik_layer_set_file_css (vml, vlsp->data.s); break;
+		case PARAM_CONFIG_XML: mapnik_layer_set_file_xml (vml, vlsp->data.s); break;
+		case PARAM_ALPHA: if ( vlsp->data.u <= 255 ) vml->alpha = vlsp->data.u; break;
+		case PARAM_USE_FILE_CACHE: vml->use_file_cache = vlsp->data.b; break;
+		case PARAM_FILE_CACHE_DIR: mapnik_layer_set_cache_dir (vml, vlsp->data.s); break;
 		default: break;
 	}
 	return TRUE;

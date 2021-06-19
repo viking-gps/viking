@@ -30,6 +30,7 @@
 #endif
 #include <glib.h>
 #include <glib/gstdio.h>
+#include <gmodule.h>
 
 /**
  * For external use, free the result
@@ -119,9 +120,9 @@ gchar **
 a_get_viking_data_path()
 {
 #ifdef WINDOWS
-  // Try to use from the install directory - normally the working directory of Viking is where ever it's install location is
-  const gchar *xdg_data_dirs = "./data";
-  //const gchar *xdg_data_dirs = g_strdup ( "%s/%s/data", g_getenv("ProgramFiles"), PACKAGE );
+  gchar *inst_dir = g_win32_get_package_installation_directory_of_module ( NULL );
+  const gchar *xdg_data_dirs = g_build_filename ( inst_dir, "data", G_DIR_SEPARATOR_S, NULL );
+  g_free ( inst_dir );
 #else
   const gchar *xdg_data_dirs = g_getenv("XDG_DATA_DIRS");
 #endif
@@ -144,6 +145,9 @@ a_get_viking_data_path()
     *path = g_build_filename(dir, PACKAGE, NULL);
     g_free(dir);
   }
+#else
+  // This string is allocated in Windows, hence needs to be freed
+  g_free ( xdg_data_dirs );
 #endif
   return data_path;
 }

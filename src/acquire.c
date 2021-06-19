@@ -239,10 +239,7 @@ static void acquire ( VikWindow *vw,
     dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
 
     gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-    GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-    response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-#endif
+    GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
     source_interface->add_setup_widgets_func(dialog, vvp, user_data);
     gtk_window_set_title ( GTK_WINDOW(dialog), _(source_interface->window_title) );

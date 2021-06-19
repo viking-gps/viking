@@ -43,7 +43,7 @@
     <property name="id">osrmFoot</property>
     <property name="label">OSRM Foot</property>
     <property name="format">viking-geojson-osrm</property>
-    <property name="url-base">https://routing.openstreetmap.de/routed-foot/route/v1/driving</property>
+    <property name="url-base">https://routing.openstreetmap.de/routed-foot/route/v1/driving/</property>
     <property name="url-ll-lat-first">FALSE</property>
     <property name="url-start-ll">%s,%s</property>
     <property name="url-stop-ll">;%s,%s?geometries=geojson&amp;overview=full</property>

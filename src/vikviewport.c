@@ -434,6 +434,32 @@ GdkGC* vik_viewport_get_black_gc ( VikViewport *vvp )
   return vvp->black_gc;
 }
 
+void configure_common ( VikViewport *vvp )
+{
+  if ( vvp->background_gc )
+    ui_gc_unref ( vvp->background_gc );
+  vvp->background_gc = vik_viewport_new_gc ( vvp, DEFAULT_BACKGROUND_COLOR, 1 );
+
+  if ( vvp->highlight_gc )
+    ui_gc_unref ( vvp->highlight_gc );
+  vvp->highlight_gc = vik_viewport_new_gc_from_color ( vvp, &vvp->highlight_color, 1 );
+
+  if ( vvp->scale_bg_gc )
+    ui_gc_unref ( vvp->scale_bg_gc );
+  vvp->scale_bg_gc = vik_viewport_new_gc ( vvp, "grey", 3*vvp->scale );
+  gdk_color_parse ( "grey", &vvp->scale_bg_color );
+
+  if ( vvp->black_gc )
+    ui_gc_unref ( vvp->black_gc );
+  vvp->black_gc = vik_viewport_new_gc ( vvp, "black", vvp->scale );
+  gdk_color_parse ( "black", &vvp->black_color );
+}
+
+/**
+ * A specific viewport resize with the size specified
+ * Intended for temporary use, generally to enable an image snapshot of an arbitary size
+ *  (not just the window or display size otherwise currently in use)
+ */
 void vik_viewport_configure_manually ( VikViewport *vvp, gint width, guint height )
 {
   vvp->width = width;
@@ -461,6 +487,36 @@ void vik_viewport_configure_manually ( VikViewport *vvp, gint width, guint heigh
     g_object_unref ( G_OBJECT ( vvp->snapshot_buffer ) );
   vvp->snapshot_buffer = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), vvp->width, vvp->height, -1 );
 #endif
+
+  configure_common ( vvp );
+
+#if GTK_CHECK_VERSION (3,0,0)
+  // Performed after above gc's are reset
+  vik_layers_panel_configure_layers ( vik_window_layers_panel(VIK_WINDOW_FROM_WIDGET(vvp)) );
+#endif
+}
+
+/**
+ * vik_viewport_get_pixbuf:
+ *
+ * Returns a #GdkPixbuf of the size specified (aligned from the top left)
+ * Typically the size requested should be the full viewport size.
+ *
+ * The returned pixbuf maybe NULL,
+ *  such as if the size requested is too large and the gdk_pixbuf_*() call fails.
+ */
+GdkPixbuf *vik_viewport_get_pixbuf ( VikViewport *vvp, gint ww, gint hh )
+{
+  GdkPixbuf *pixbuf;
+#if GTK_CHECK_VERSION (3,0,0)
+  vik_viewport_sync ( vvp, vvp->crt );
+  // Force flushing the image in case otherwise not updated immediately
+  cairo_surface_flush ( vvp->surface_main );
+  pixbuf = gdk_pixbuf_get_from_surface ( vvp->surface_main, 0, 0, ww, hh );
+#else
+  pixbuf = gdk_pixbuf_get_from_drawable ( NULL, GDK_DRAWABLE(vvp->scr_buffer), NULL, 0, 0, 0, 0, ww, hh );
+#endif
+  return pixbuf;
 }
 
 /**
@@ -575,23 +631,7 @@ gboolean vik_viewport_configure ( VikViewport *vvp )
   /* TODO trigger */
 #endif
 
-  if ( vvp->background_gc )
-    ui_gc_unref ( vvp->background_gc );
-  vvp->background_gc = vik_viewport_new_gc ( vvp, DEFAULT_BACKGROUND_COLOR, 1 );
-
-  if ( vvp->highlight_gc )
-    ui_gc_unref ( vvp->highlight_gc );
-  vvp->highlight_gc = vik_viewport_new_gc_from_color ( vvp, &vvp->highlight_color, 1 );
-
-  if ( vvp->scale_bg_gc )
-    ui_gc_unref ( vvp->scale_bg_gc );
-  vvp->scale_bg_gc = vik_viewport_new_gc ( vvp, "grey", 3*vvp->scale );
-  gdk_color_parse ( "grey", &vvp->scale_bg_color );
-
-  if ( vvp->black_gc )
-    ui_gc_unref ( vvp->black_gc );
-  vvp->black_gc = vik_viewport_new_gc ( vvp, "black", vvp->scale );
-  gdk_color_parse ( "black", &vvp->black_color );
+  configure_common ( vvp );
 
 #if GTK_CHECK_VERSION (3,0,0)
   // Performed after above gc's are reset

@@ -828,10 +828,7 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
 
   /* Default to reject as user really needs to specify map file first */
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
-  GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
-#endif
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
   GtkWidget *table, *wfp_hbox, *wfp_label, *wfp_button, *ce_label, *cn_label, *xlabel, *ylabel, *imagelabel;
   changeable_widgets cw;
 

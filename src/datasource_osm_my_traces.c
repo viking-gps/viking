@@ -381,11 +381,8 @@ static GList *select_from_list (GtkWindow *parent, GList *list, const gchar *tit
 													 NULL);
 	/* When something is selected then OK */
 	gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-	GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
 	/* Default to not apply - as initially nothing is selected! */
-	response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
-#endif
+	GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
 	GtkWidget *label = gtk_label_new ( msg );
 	GtkTreeStore *store = gtk_tree_store_new ( 6, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_BOOLEAN );
 	GList *list_runner = list;

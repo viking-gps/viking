@@ -4336,7 +4336,7 @@ static void trw_layer_new_wikipedia_wp_viewport ( menu_array_layer values )
   VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
   VikViewport *vvp = vik_window_viewport(vw);
   LatLonBBox bbox = vik_viewport_get_bbox ( vvp );
-  a_geonames_wikipedia_box ( (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vtl, bbox );
+  a_geonames_wikipedia_box ( vw, vtl, bbox );
   trw_layer_calculate_bounds_waypoints ( vtl );
   vik_layers_panel_emit_update ( vlp );
 }
@@ -4558,11 +4558,7 @@ static void trw_layer_gps_upload_any ( menu_array_sublayer values )
                                                     NULL );
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-  GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-#endif
-
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   if ( response_w )
     gtk_widget_grab_focus ( response_w );
 
@@ -4689,9 +4685,9 @@ static void clear_tool_draw ( VikTrwLayer *vtl, tool_ed_t *te )
 }
 
 // NB vtl->current_track must be valid
-static void remove_current_track_if_only_one_point ( VikTrwLayer *vtl )
+static void remove_current_track_if_not_enough_points ( VikTrwLayer *vtl )
 {
-  if ( vik_track_get_tp_count(vtl->current_track) == 1 ) {
+  if ( vik_track_get_tp_count(vtl->current_track) <= 1 ) {
     if ( vtl->current_track->is_route )
       vik_trw_layer_delete_route ( vtl, vtl->current_track );
     else
@@ -4703,7 +4699,7 @@ static void trw_layer_finish_track ( menu_array_layer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
   if ( vtl->current_track )
-    remove_current_track_if_only_one_point ( vtl );
+    remove_current_track_if_not_enough_points ( vtl );
   vtl->current_track = NULL;
   VikWindow *vw = (VikWindow *)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
   VikToolInterface *vti = vik_window_get_active_tool_interface ( vw );
@@ -6330,6 +6326,124 @@ static void trw_layer_rotate ( menu_array_sublayer values )
     
     vik_layer_emit_update ( VIK_LAYER(vtl) );
   }
+}
+
+/**
+ * trw_layer_track_rename:
+ *
+ * Suggest new name based on track characteristics.
+ *
+ * Mainly to address Etrex naming if the track hasn't been reset/auto archived
+ *  - everything is saved under '<first date after reset>'
+ * such that splitting a track recording over multi days can become something like:
+ * 20 DEC 20#1
+ * 20 DEC 20#2 --> But might be on the 30th - so would be nice to be e.g. '30 DEC 20'
+ * 20 DEC 20#3 --> But could be the 2nd Jan the following year - so would be nice to be e.g. '02 JAN 21'
+ *
+ * This intelligence could be put into the split operation,
+ * but for now has to be manually requested
+ */
+static void trw_layer_track_rename ( menu_array_sublayer values )
+{
+#define VIK_SETTINGS_TRACK_RENAME_FMT "track_rename_format"
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  VikTrack *trk;
+  if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    trk = (VikTrack*)g_hash_table_lookup ( vtl->routes, values[MA_SUBLAYER_ID] );
+  else
+    trk = (VikTrack*)g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+
+  if ( !trk )
+    return;
+
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Rename"),
+                                                    VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_CANCEL,
+                                                    GTK_RESPONSE_REJECT,
+                                                    _("Preview"),
+                                                    GTK_RESPONSE_APPLY,
+                                                    GTK_STOCK_OK,
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    NULL );
+
+  GtkWidget *lname = gtk_label_new ( _("Old Name:") );
+  GtkWidget *aname = gtk_label_new ( trk->name );
+
+  // Default - read from settings
+  gchar *dfmt = NULL;
+  if ( ! a_settings_get_string ( VIK_SETTINGS_TRACK_RENAME_FMT, &dfmt ) )
+    dfmt = g_strdup ( "%d %b %y %H:%M" );
+
+  GtkWidget *entry = ui_entry_new ( dfmt, GTK_ENTRY_ICON_SECONDARY );
+  gtk_widget_set_tooltip_text ( entry, _("Transform name using strftime() format") );
+
+  GtkWidget *nname = gtk_label_new ( NULL );
+
+  GtkWidget *hbox_name = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(hbox_name), lname, FALSE, FALSE, 2 );
+  gtk_box_pack_end ( GTK_BOX(hbox_name), aname, TRUE, TRUE, 2 );
+
+  GtkWidget *lfmt = gtk_label_new ( _("Format:") );
+  GtkWidget *hbox_fmt = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(hbox_fmt), lfmt, FALSE, FALSE, 2 );
+  gtk_box_pack_end ( GTK_BOX(hbox_fmt), entry, TRUE, TRUE, 2 );
+
+  GtkWidget *lnn = gtk_label_new ( _("New Name:") );
+  GtkWidget *hbox_new = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(hbox_new), lnn, FALSE, FALSE, 2 );
+  gtk_box_pack_end ( GTK_BOX(hbox_new), nname, TRUE, TRUE, 2 );
+
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_name, TRUE, TRUE, 2 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_fmt, TRUE, TRUE, 2 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_new, TRUE, TRUE, 2 );
+
+  gtk_widget_show_all ( dialog );
+
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
+
+  gint response;
+  do {
+    // Preview...
+    gchar date_buf[128];
+    date_buf[0] = '-'; date_buf[1] = '-'; date_buf[2] = '\0';
+    if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
+      time_t time = round(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp);
+      const gchar *fmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
+      if ( fmt && strlen(fmt) == 0 ) {
+        // Reset if entry is blank
+        gtk_entry_set_text ( GTK_ENTRY(entry), "%d %b %y %H:%M" );
+        fmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
+      }
+      if ( fmt )
+        strftime ( date_buf, sizeof(date_buf), fmt, localtime(&time) );
+    }
+    gtk_label_set_text ( GTK_LABEL(nname), date_buf );
+
+    response = gtk_dialog_run (GTK_DIALOG (dialog));
+
+  } while ( response == GTK_RESPONSE_APPLY );
+
+  if ( response == GTK_RESPONSE_ACCEPT ) {
+    const gchar *newname = gtk_label_get_text(GTK_LABEL(nname));
+    if ( newname && strlen(newname) && g_strcmp0("--", newname) ) {
+      (void)trw_layer_sublayer_rename_request ( vtl,
+                                                newname,
+                                                values[MA_VLP],
+                                                MA_SUBTYPE,
+                                                values[MA_SUBLAYER_ID],
+                                                values[MA_TV_ITER] );
+      // Save format for use next time (even if the same as the default)
+      const gchar *sfmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
+      if ( sfmt )
+        a_settings_set_string ( VIK_SETTINGS_TRACK_RENAME_FMT, sfmt );
+    }
+  }
+
+  gtk_widget_destroy ( dialog );
 }
 
 static void trw_layer_extend_track_end ( menu_array_sublayer values )
@@ -9443,7 +9557,8 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_ROUTE ) {
       (void)vu_menu_add_item ( transform_submenu, _("Refine Route..."), GTK_STOCK_FIND, G_CALLBACK(trw_layer_route_refine), data );
-    }
+    } else
+      (void)vu_menu_add_item ( transform_submenu, _("Rename..."), GTK_STOCK_EDIT, G_CALLBACK(trw_layer_track_rename), data );
 
     /* ATM This function is only available via the layers panel, due to the method in finding out the maps in use */
     if ( vlp ) {
@@ -10683,7 +10798,21 @@ void vik_trw_layer_trackpoint_draw ( VikTrwLayer *vtl, VikViewport *vvp, VikTrac
   gint tp_size = vtl->drawpoints_size * 2;
 
 #if GTK_CHECK_VERSION (3,0,0)
-  cairo_t *cr = vik_viewport_surface_tool_create ( vvp );
+  // Draw on existing tool surface if available
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  VikToolInterface *vti = (VikToolInterface*)vik_window_get_active_tool_interface ( vw );
+  cairo_t *cr = NULL;
+  if ( vti )
+    if ( vti->create == (VikToolConstructorFunc)tool_edit_create ) {
+      tool_ed_t *te = (tool_ed_t*)vik_window_get_active_tool_data ( vw );
+      if ( te && te->gc ) {
+        cr = te->gc;
+        tool_edit_remove_image ( te );
+      }
+    }
+  // Otherwise create surface to draw on
+  if ( !cr )
+    cr = vik_viewport_surface_tool_create ( vvp );
   if ( cr ) {
     ui_cr_set_color ( cr, color );
     ui_cr_draw_rectangle ( cr, TRUE, xd-tp_size, yd-tp_size, 2*tp_size, 2*tp_size );
@@ -11142,8 +11271,8 @@ static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event
 {
   gboolean mods = event->state & gtk_accelerator_get_default_mod_mask ();
   if ( vtl->current_track && event->keyval == GDK_KEY_Escape && !mods ) {
-    // Bin track if only one point as it's not very useful
-    remove_current_track_if_only_one_point ( vtl );
+    // Bin track if not very useful
+    remove_current_track_if_not_enough_points ( vtl );
     vtl->current_track = NULL;
     clear_tool_draw ( vtl, vik_window_get_active_tool_data(VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))) );
     vik_layer_emit_update ( VIK_LAYER(vtl) );
@@ -11731,8 +11860,8 @@ static VikLayerToolFuncStatus tool_extended_route_finder_click ( VikTrwLayer *vt
 static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEventKey *event, gpointer data )
 {
   if ( vtl->current_track && event->keyval == GDK_KEY_Escape ) {
-    // Bin track if only one point as it's not very useful
-    remove_current_track_if_only_one_point ( vtl );
+    // Bin track if not very useful
+    remove_current_track_if_not_enough_points ( vtl );
     vtl->current_track = NULL;
     clear_tool_draw ( vtl, vik_window_get_active_tool_data(VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))) );
     vik_layer_emit_update ( VIK_LAYER(vtl) );

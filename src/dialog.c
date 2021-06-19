@@ -102,10 +102,7 @@ gboolean a_dialog_goto_latlon ( GtkWindow *parent, struct LatLon *ll, const stru
   g_signal_connect_swapped (lon, "activate", G_CALLBACK(a_dialog_response_accept), dialog);
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-  GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-#endif
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   if ( response_w )
     gtk_widget_grab_focus ( response_w );
 
@@ -220,11 +217,8 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean mul
                                                   NULL);
   /* When something is selected then OK */
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-  GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
   /* Default to not apply - as initially nothing is selected! */
-  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
-#endif
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
   GtkListStore *store = gtk_list_store_new(1, G_TYPE_STRING);
 
   GtkWidget *scrolledwindow;
@@ -438,10 +432,7 @@ gboolean a_dialog_yes_or_no_suppress ( GtkWindow *parent, const gchar *message, 
                                                     NULL );
 
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
-  GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
-#endif
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
   if ( response_w )
     gtk_widget_grab_focus ( response_w );
 
@@ -645,10 +636,7 @@ guint a_dialog_get_positive_number ( GtkWindow *parent, gchar *title_text, gchar
 						   GTK_RESPONSE_ACCEPT,
 						   NULL);
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-  GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-#endif
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
   GtkWidget *table, *spin, *label;
   guint result = default_num;
@@ -697,10 +685,7 @@ gint a_dialog_get_non_zero_number ( GtkWindow *parent, gchar *title_text, gchar 
 						   GTK_RESPONSE_ACCEPT,
 						   NULL);
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-  GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-#endif
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
   GtkWidget *table, *spin, *label;
   gint result = default_num;
@@ -886,10 +871,7 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
                                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                     GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-  GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-#endif
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
   GtkWidget *map_label = gtk_label_new(_("Map type:"));
   GtkWidget *map_combo = vik_combo_box_text_new();

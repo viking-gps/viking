@@ -2454,10 +2454,7 @@ gboolean maps_dialog_zoom_between ( GtkWindow *parent,
                                                     GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT,
                                                     NULL );
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-  GtkWidget *response_w = NULL;
-#if GTK_CHECK_VERSION (2, 20, 0)
-  response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-#endif
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   GtkWidget *zoom_label1 = gtk_label_new ( _("Zoom Start:") );
   GtkWidget *zoom_combo1 = vik_combo_box_text_new();
   gchar **s;

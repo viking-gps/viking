@@ -259,7 +259,7 @@ static void string_list_set_param (gint i, GList *list, gpointer *layer_and_vp)
   vlsp.is_file_operation   = TRUE;
   vlsp.dirpath             = (const gchar*)layer_and_vp[2];
 
-  vik_layer_set_param ( VIK_LAYER(layer_and_vp[0]), &vlsp );
+  (void)vik_layer_set_param ( VIK_LAYER(layer_and_vp[0]), &vlsp );
 }
 
 /**
@@ -547,7 +547,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
               vlsp.vp                  = vp;
               vlsp.is_file_operation   = TRUE;
               vlsp.dirpath             = dirpath;
-              vik_layer_set_param ( VIK_LAYER(stack->data), &vlsp );
+              (void)vik_layer_set_param ( VIK_LAYER(stack->data), &vlsp );
             }
             found_match = TRUE;
             break;
@@ -632,6 +632,8 @@ static FILE *xfopen ( const char *fn )
   if ( strcmp(fn,"-") == 0 )
     return stdin;
   else
+    // NB File names passed into Viking should already be converted into UFT8
+    //  by g_win32_get_command_line() in main.c for Windows systems
     return g_fopen(fn, "r");
 }
 
