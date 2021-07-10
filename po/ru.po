@@ -172,7 +172,7 @@ msgid "Question"
 msgstr ""
 
 msgid "Do not show this message again"
-msgstr ""
+msgstr "Не показывать больше это сообщение"
 
 msgid "\"Yes\" will be applied automatically in the future"
 msgstr ""
@@ -199,7 +199,7 @@ msgid "1 hour"
 msgstr "1 час"
 
 msgid "6 hours"
-msgstr ""
+msgstr "6 часов"
 
 msgid "1 day"
 msgstr "1 день"
@@ -325,19 +325,19 @@ msgid "Select the articles you want to add."
 msgstr ""
 
 msgid "city"
-msgstr ""
+msgstr "город"
 
 msgid "edu"
 msgstr ""
 
 msgid "airport"
-msgstr ""
+msgstr "аэропорт"
 
 msgid "mountain"
 msgstr ""
 
 msgid "forest"
-msgstr ""
+msgstr "лес"
 
 msgid "church"
 msgstr ""
@@ -385,10 +385,10 @@ msgid "knots"
 msgstr "узлов"
 
 msgid "s/km"
-msgstr ""
+msgstr "с/км"
 
 msgid "min/km"
-msgstr ""
+msgstr "мин/км"
 
 msgid "s/mi"
 msgstr ""
@@ -397,16 +397,16 @@ msgid "min/mi"
 msgstr ""
 
 msgid "Metres"
-msgstr ""
+msgstr "Метры"
 
 msgid "Feet"
 msgstr ""
 
 msgid "Celsius"
-msgstr ""
+msgstr "Цельсий"
 
 msgid "Fahrenheit"
-msgstr ""
+msgstr "Фаренгейт"
 
 msgid "Locale"
 msgstr "Местное"
@@ -430,7 +430,7 @@ msgid "Height units:"
 msgstr "Единица высоты:"
 
 msgid "Temperature units:"
-msgstr ""
+msgstr "Единицы температуры:"
 
 msgid "Use large waypoint icons:"
 msgstr "Крупные значки путевых точек:"
@@ -1227,10 +1227,10 @@ msgid "Critical"
 msgstr ""
 
 msgid "Warning"
-msgstr ""
+msgstr "Предупреждение"
 
 msgid "Message"
-msgstr ""
+msgstr "Сообщение"
 
 msgid "Info"
 msgstr ""
@@ -1249,10 +1249,10 @@ msgid "_Copy Data"
 msgstr "_Копировать данные"
 
 msgid "Category"
-msgstr ""
+msgstr "Категория"
 
 msgid "Messages"
-msgstr ""
+msgstr "Сообщения"
 
 msgid "Log"
 msgstr ""
@@ -1289,13 +1289,13 @@ msgid ""
 msgstr ""
 
 msgid "OpenStreetMap (Mapnik)"
-msgstr ""
+msgstr "OpenStreetMap (стандартный)"
 
 msgid "OpenStreetMap (Cycle)"
-msgstr ""
+msgstr "OpenStreetMap (вело)"
 
 msgid "OpenStreetMap (Transport)"
-msgstr ""
+msgstr "OpenStreetMap (транспорт)"
 
 msgid "OpenStreetMap (Humanitarian)"
 msgstr ""
@@ -1310,7 +1310,7 @@ msgid "OSM Metatiles"
 msgstr "Метафайлы OSM"
 
 msgid "OpenTopoMap"
-msgstr ""
+msgstr "OpenTopoMap"
 
 msgid "OSM (view)"
 msgstr "OSM (просмотр)"
@@ -1445,7 +1445,7 @@ msgid "Blue/Purple"
 msgstr ""
 
 msgid "Red/Green"
-msgstr ""
+msgstr "Красный/зелёный"
 
 msgid "Yellow/Orange/Red"
 msgstr ""
@@ -1541,7 +1541,7 @@ msgstr "%s: Список треков и маршрутов"
 
 #, c-format
 msgid "Failed to open %s"
-msgstr ""
+msgstr "Не удалось открыть %s"
 
 #. Since we can process certain other files with issues (e.g. zip files) just show a warning in the status bar
 #. Not that a user can do much about it... or tells them what this issue is yet...
@@ -4405,6 +4405,8 @@ msgid ""
 "Distance\n"
 "(miles)"
 msgstr ""
+"Расстояние\n"
+"(миль)"
 
 msgid ""
 "Distance\n"
@@ -4415,6 +4417,8 @@ msgid ""
 "Distance\n"
 "(km)"
 msgstr ""
+"Расстояние\n"
+"(км)"
 
 msgid ""
 "Length\n"
