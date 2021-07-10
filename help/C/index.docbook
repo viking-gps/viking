@@ -3309,6 +3309,9 @@ When no TrackWaypoint Layer is selected (or the layer is invisibile) then the fi
 <section><title>Warn Unsaved Changes on Exit</title>
   <para>If you don't want &appname; to warn about unsaved changes on exit then you can turn this off.</para>
 </section>
+<section><title>Select Newly Created Layer</title>
+  <para>A setting to control when a new layer is created that it is selected; otherwise the current selection is unchanged.</para>
+</section>
 </section>
 </section>
 </section>

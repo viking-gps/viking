@@ -249,6 +249,8 @@ gboolean a_vik_get_show_graph_for_trwlayer ( );
 
 gboolean a_vik_get_warn_unsaved_changes_on_exit ( );
 
+gboolean a_vik_get_select_newly_created_layer ( );
+
 gboolean a_vik_get_open_files_in_selected_layer ( );
 
 gboolean a_vik_get_calendar_show_day_names ( );

@@ -928,6 +928,10 @@ void vik_layers_panel_add_layer ( VikLayersPanel *vlp, VikLayer *l )
       vik_aggregate_layer_add_layer ( addtoagg, l, TRUE );
   }
 
+  // Choose whether the new layer should be selected
+  if ( a_vik_get_select_newly_created_layer() )
+    vik_treeview_item_select ( l->vt, &l->iter );
+
   vik_layers_panel_emit_update ( vlp, TRUE );
 }
 

@@ -153,6 +153,7 @@ static VikLayerParam prefs_advanced[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "auto_trackpoint_select", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Auto Select Trackpoint:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
     N_("Select trackpoint from mouse over graph on main display"), vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "warn_unsaved_changes_on_exit", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Warn Unsaved Changes on Exit:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "select_newly_created_layer", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Select Newly Created Layer:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("Automatically select the newly created layer"), vik_lpd_true_default, NULL, NULL },
 };
 
 static gchar * params_startup_methods[] = {N_("Home Location"), N_("Last Location"), N_("Specified File"), N_("Auto Location"), NULL};
@@ -370,6 +371,11 @@ gboolean a_vik_get_show_graph_for_trwlayer ( )
 gboolean a_vik_get_warn_unsaved_changes_on_exit ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "warn_unsaved_changes_on_exit")->b;
+}
+
+gboolean a_vik_get_select_newly_created_layer ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "select_newly_created_layer")->b;
 }
 
 gint a_vik_get_recent_number_files ( )
