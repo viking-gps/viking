@@ -51,8 +51,8 @@
 #endif
 
 // Default values that won't actually get applied unless changed by command line parameter values
-static gdouble latitude = 0.0;
-static gdouble longitude = 0.0;
+static gdouble latitude = NAN;
+static gdouble longitude = NAN;
 static gint zoom_level_osm = -1;
 static gint map_id = -1;
 static gboolean external = FALSE;

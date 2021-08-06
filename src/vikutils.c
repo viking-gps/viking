@@ -771,11 +771,15 @@ void vu_command_line ( VikWindow *vw, gdouble latitude, gdouble longitude, gint 
 
 	VikViewport *vvp = vik_window_viewport(vw);
 
-	if ( latitude != 0.0 || longitude != 0.0 ) {
-		struct LatLon ll;
-		ll.lat = latitude;
-		ll.lon = longitude;
-		vik_viewport_set_center_latlon ( vvp, &ll, TRUE );
+	if ( !isnan(latitude) && !isnan(longitude) ) {
+		if ( latitude > -90.0 && latitude < 90.0 && longitude > -180.0 && longitude < 180.0 ) {
+			struct LatLon ll;
+			ll.lat = latitude;
+			ll.lon = longitude;
+			vik_viewport_set_center_latlon ( vvp, &ll, TRUE );
+		}
+		else
+			g_warning ( "%s: Invalid lat/lon values %f/%f", __FUNCTION__, latitude, longitude );
 	}
 
 	if ( zoom_osm_level >= 0 ) {
