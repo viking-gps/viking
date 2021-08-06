@@ -65,7 +65,7 @@ and docbook-xsl in your Build-Depends control field.
       <holder>Guilhem Bonnefille</holder>
     </copyright>
     <copyright>
-      <year>2020</year>
+      <year>2021</year>
       <holder>Rob Norris</holder>
     </copyright>
     &dhdate;
@@ -143,7 +143,7 @@ and docbook-xsl in your Build-Depends control field.
     <para>  
       You can import and plot tracks, routes and waypoints, show OpenStreetMap (OSM) and/or other maps, generate maps (using Mapnik),
        geotag images, add coordinate lines, make new tracks, routes and waypoints, hide different things, etc.
-      It is written mainly in C with some C++ and uses the GTK+ 2 toolkit. It is available for Linux, other POSIX operating systems and Windows.
+      It is written mainly in C with some C++ and uses the GTK+ 3 toolkit. It is available for Linux, other POSIX operating systems and Windows.
     </para>
     <para>  
       Homepage: <ulink type="http" url="http://viking.sf.net">http://viking.sf.net</ulink>
