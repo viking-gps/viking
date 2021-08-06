@@ -71,6 +71,50 @@ static GOptionEntry entries[] =
   { NULL }
 };
 
+/**
+ * Basic 'geo:' URI RFC5870
+ * https://datatracker.ietf.org/doc/html/rfc5870
+ * https://en.wikipedia.org/wiki/Geo_URI_scheme
+ * ATM ignore any CRS parameters - assume always on earth in WGS-84
+ * Support optional zoom level parameter ('?z=n')
+ */
+gboolean check_for_geo_uri ( char *argv )
+{
+  GError *error = NULL;
+  GRegex *regex = g_regex_new ( "^geo:[\\-\\.0-9]*,[\\.\\-0-9]*", G_REGEX_CASELESS, 0, &error );
+  if ( error ) {
+    g_critical ("%s: %s", __FUNCTION__, error->message );
+    return FALSE;
+  }
+  if ( g_regex_match(regex, argv, 0, NULL) ) {
+    g_debug ( "%s: Geo URI detected in %s", __FUNCTION__, argv );
+    // Drop the 'geo:' bit
+    gchar *geostr = g_strdup ( argv+4 );
+    // Modify latitude, longitude & potentially zoom value
+    gchar **tokens = g_strsplit ( geostr, ",", 2 );
+    if ( tokens[0] && tokens[1] ) {
+      latitude = g_ascii_strtod ( tokens[0], NULL );
+      longitude = g_ascii_strtod ( tokens[1], NULL );
+      // May be a better way of extracting the z value, but this should suffice
+      gchar **exts = g_strsplit ( tokens[1], "?", 0 );
+      if ( exts[0] && exts[1] ) {
+        g_debug ( "%s: extensions %s", __FUNCTION__, exts[1] );
+        gchar **zs = g_strsplit ( exts[1], "z=", 0 );
+        if ( zs[0] && zs[1] ) {
+          g_debug ( "%s: z %s", __FUNCTION__, zs[1] );
+          zoom_level_osm = atoi ( zs[1] );
+        }
+      }
+    } else
+      g_warning ( "%s: no coordinates found in %s", __FUNCTION__, geostr );
+    g_free ( geostr );
+    g_strfreev ( tokens );
+    return TRUE;
+  }
+  g_regex_unref ( regex );
+  return FALSE;
+}
+
 int main( int argc, char *argv[] )
 {
   VikWindow *first_window;
@@ -223,7 +267,10 @@ int main( int argc, char *argv[] )
         change_filename = TRUE;
       }
 
-      vik_window_open_file ( newvw, argv[i], change_filename, (i==1), (i+1 == argc), TRUE, external );
+      // Check if the file parameter is a 'geo:' URI
+      //  if so then then don't try to load this parameter as a file
+      if ( !check_for_geo_uri(argv[i]) )
+        vik_window_open_file ( newvw, argv[i], change_filename, (i==1), (i+1 == argc), TRUE, external );
     }
   }
 

@@ -160,7 +160,9 @@ and docbook-xsl in your Build-Depends control field.
       <varlistentry>
         <term><option>file</option></term>
         <listitem>
-          <para>Specify file to load at start.</para>
+          <para>Specify file(s) to load at start.</para>
+          <para>If a filename is in the 'geo' URI sheme (<ulink url="https://tools.ietf.org/html/rfc5870">RFC5870</ulink>) then the positional information will be used
+                (and it will not attempt to load it as a file)</para>
         </listitem>
       </varlistentry>
       <varlistentry>
