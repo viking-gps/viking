@@ -47,6 +47,10 @@
         <arg choice="plain"><option>-m</option></arg>
         <arg choice="plain"><option>--map</option> <replaceable>MapId</replaceable></arg>
       </group>
+      <group choice="opt">
+        <arg choice="plain"><option>-e</option></arg>
+        <arg choice="plain"><option>--external</option></arg>
+      </group>
       <sbr/>
       <arg rep="repeat"><replaceable>file</replaceable></arg>
     </cmdsynopsis>
@@ -137,6 +141,11 @@ This also enables some extra information features in the GUI itself, primarily o
   <entry>--map</entry>
   <entry>Add a map layer by specifying the map id. The value needs to match one of the internal ids or an id from the <xref linkend="map_source"/>.
    Specifying a value of 0 will use the map layer default.</entry>
+</row>
+<row>
+  <entry>-e</entry>
+  <entry>--external</entry>
+  <entry>The GPX files specified on the command line will be loaded in as <emphasis>external files</emphasis> as per the <xref linkend="open_gpx_external"/> method.</entry>
 </row>
 </tbody>
 </tgroup>
