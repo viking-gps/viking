@@ -3170,6 +3170,10 @@ This feature is called <guilabel>Webtools</guilabel>. It is also known as Extern
 <para>You can set the <emphasis>Home</emphasis> location directly by inputting the latitude and longitude in decimal degrees.
 </para>
 </section>
+<section><title>Default Zoom Level</title>
+<para>An option to set the default <xref linkend="zoom"/>.
+</para>
+</section>
 <section><title>Time Display</title>
 <para>This controls the reference timezone that times are shown in.</para>
 <para><emphasis>Locale</emphasis> is the current user's system preference. This was how all times were shown up to version 1.5.</para>

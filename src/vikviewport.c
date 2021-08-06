@@ -234,8 +234,8 @@ vik_viewport_init ( VikViewport *vvp )
   struct LatLon ll;
   ll.lat = a_vik_get_default_lat();
   ll.lon = a_vik_get_default_long();
-  gdouble zoom_x = 4.0;
-  gdouble zoom_y = 4.0;
+  gdouble zoom_x = a_vik_get_default_zoom();
+  gdouble zoom_y = a_vik_get_default_zoom();
 
   if ( a_vik_get_startup_method ( ) == VIK_STARTUP_METHOD_LAST_LOCATION ) {
     gdouble lat, lon, dzoom;

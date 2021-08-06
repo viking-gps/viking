@@ -183,6 +183,7 @@ typedef enum {
 
 gdouble a_vik_get_default_lat ( );
 gdouble a_vik_get_default_long ( );
+gdouble a_vik_get_default_zoom ( );
 
 // Time display format
 typedef enum {

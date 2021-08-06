@@ -55,7 +55,8 @@ static void refresh_widget ( GtkWidget *widget, VikLayerParam *param, VikLayerPa
       gtk_toggle_button_set_active ( GTK_TOGGLE_BUTTON(widget), vlpd.b );
       break;
     case VIK_LAYER_WIDGET_COMBOBOX:
-      if ( param->type == VIK_LAYER_PARAM_UINT ) {
+      // NB for double usage the convert_to_display() should have returned an integer to index into the combobox
+      if ( param->type == VIK_LAYER_PARAM_UINT || param->type == VIK_LAYER_PARAM_DOUBLE ) {
         gtk_combo_box_set_active ( GTK_COMBO_BOX(widget), 0 ); // In case value not found
         // map of alternate uint values for options
         if ( param->extra_widget_data ) {
@@ -190,7 +191,8 @@ GtkWidget *new_widget ( VikLayerParam *param, VikLayerParamData data, gboolean s
       rv = gtk_check_button_new ();
       break;
     case VIK_LAYER_WIDGET_COMBOBOX:
-      if ( param->type == VIK_LAYER_PARAM_UINT && param->widget_data )
+      if ( (param->type == VIK_LAYER_PARAM_UINT && param->widget_data) ||
+           (param->type == VIK_LAYER_PARAM_DOUBLE && param->widget_data) )
       {
         /* Build a simple combobox */
         gchar **pstr = param->widget_data;
@@ -329,7 +331,10 @@ VikLayerParamData a_uibuilder_widget_get_value ( GtkWidget *widget, VikLayerPara
       rv.b = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
       break;
     case VIK_LAYER_WIDGET_COMBOBOX:
-      if ( param->type == VIK_LAYER_PARAM_UINT )
+      // NB for a double the subsequent convert_to_internal() should convert
+      //  from the passed in integer index back to the double value
+      if ( param->type == VIK_LAYER_PARAM_UINT ||
+           param->type == VIK_LAYER_PARAM_DOUBLE )
       {
         rv.i = gtk_combo_box_get_active ( GTK_COMBO_BOX(widget) );
         if ( rv.i == -1 ) rv.i = 0;

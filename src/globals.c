@@ -71,12 +71,34 @@ static gchar * params_units_height[] = {N_("Metres"), N_("Feet"), NULL};
 static gchar * params_units_temp[] = {N_("Celsius"), N_("Fahrenheit"), NULL};
 static VikLayerParamScale params_scales_lat[] = { {-90.0, 90.0, 0.05, 2} };
 static VikLayerParamScale params_scales_long[] = { {-180.0, 180.0, 0.05, 2} };
+// c.f. vikwindow.c create_zoom_menu_all_levels()
+// However since properties are statically constructed and currently no method to attach a handler like zoom_changed()
+//  we'll simply create all possible zoom values here as well
+static gchar * params_zooms[] = { "0.031", "0.063", "0.125", "0.25", "0.5", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768", NULL };
 static gchar * params_time_ref_frame[] = {N_("Locale"), N_("World"), N_("UTC"), NULL};
 
 static VikLayerParamData deg_format_default ( void ) { return VIK_LPD_UINT(VIK_DEGREE_FORMAT_DMS); }
 // Maintain the default location to New York
 static VikLayerParamData lat_default ( void ) { return VIK_LPD_DOUBLE(40.714490); }
 static VikLayerParamData lon_default ( void ) { return VIK_LPD_DOUBLE(-74.007130); }
+static VikLayerParamData zoom_default ( void ) { return VIK_LPD_DOUBLE(4.0); }
+
+static VikLayerParamData zoom_convert_to_display ( VikLayerParamData value )
+{
+  // Convert from zoom mpp value into index for combobox values
+  guint dd = 5 + round ( log(value.d) / log(2) );
+  // Ensure value derived is in bounds of the array
+  if ( dd >= G_N_ELEMENTS(params_zooms) )
+    dd = G_N_ELEMENTS(params_zooms)-1;
+  return VIK_LPD_UINT ( dd );
+}
+
+static VikLayerParamData zoom_convert_to_internal ( VikLayerParamData value )
+{
+  // Convert from array index into the zoom mpp value
+  gdouble dd = pow (2, value.u-5 );
+  return VIK_LPD_DOUBLE ( dd );
+}
 
 static VikLayerParam general_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "degree_format", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Degree format:"), VIK_LAYER_WIDGET_COMBOBOX, params_degree_formats, NULL, NULL, deg_format_default, NULL, NULL },
@@ -87,6 +109,7 @@ static VikLayerParam general_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "use_large_waypoint_icons", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Use large waypoint icons:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "default_latitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default latitude:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales_lat, NULL, NULL, lat_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "default_longitude", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default longitude:"), VIK_LAYER_WIDGET_SPINBUTTON, params_scales_long, NULL, NULL, lon_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "default_zoom_level", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_GROUP_NONE, N_("Default zoom level:"), VIK_LAYER_WIDGET_COMBOBOX, params_zooms, NULL, NULL, zoom_default, zoom_convert_to_display, zoom_convert_to_internal },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "time_reference_frame", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Time Display:"), VIK_LAYER_WIDGET_COMBOBOX, params_time_ref_frame, NULL,
     N_("Display times according to the reference frame. Locale is the user's system setting. World is relative to the location of the object."), NULL, NULL, NULL },
 };
@@ -283,6 +306,11 @@ gdouble a_vik_get_default_long ( )
   gdouble data;
   data = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "default_longitude")->d;
   return data;
+}
+
+gdouble a_vik_get_default_zoom ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_NAMESPACE "default_zoom_level")->d;
 }
 
 vik_time_ref_frame_t a_vik_get_time_ref_frame ( )
