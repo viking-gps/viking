@@ -495,7 +495,7 @@ msgstr ""
 "быть полезно для совместимости с различными устройствами"
 
 msgid "GPX Creator:"
-msgstr ""
+msgstr "Создатель GPX:"
 
 msgid ""
 "The creator value when writing a GPX file. Otherwise when blank a default is "
@@ -563,13 +563,13 @@ msgstr ""
 "доступные фалы"
 
 msgid "Open files in selected layer:"
-msgstr ""
+msgstr "Открыть файлы в выбранном слое:"
 
 msgid "Open files (but not .vik ones) into the selected TrackWaypoint layer."
 msgstr ""
 
 msgid "Show calendar day names:"
-msgstr ""
+msgstr "Показать названия календарных дней:"
 
 msgid "Ruler area label position:"
 msgstr ""
@@ -590,7 +590,7 @@ msgid "Select Tool Double Click to Zoom:"
 msgstr ""
 
 msgid "Auto Select Trackpoint:"
-msgstr ""
+msgstr "Автоматический выбор точки слежения:"
 
 msgid "Select trackpoint from mouse over graph on main display"
 msgstr ""
