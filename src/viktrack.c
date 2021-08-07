@@ -622,6 +622,8 @@ VikTrack **vik_track_split_into_segments(VikTrack *t, guint *ret_len)
       i++;
     }
   }
+  // Reset bounds of the original track since that may have changed
+  vik_track_calculate_bounds ( tr );
   *ret_len = segs;
   return rv;
 }
