@@ -496,7 +496,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
   {
     /* create widgets and titles; place in table */
     dialog = gtk_dialog_new_with_buttons ( dialog_name, parent,
-                                           GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, NULL );
+                                           GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT, NULL, NULL );
     gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
     GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
     GtkWidget *table = NULL;
