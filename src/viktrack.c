@@ -2011,6 +2011,7 @@ void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *datalen)
   while (tps) {
     g_byte_array_append(b, (guint8 *)tps->data, sizeof(VikTrackpoint));
     vtm_append(VIK_TRACKPOINT(tps->data)->name);
+    vtm_append(VIK_TRACKPOINT(tps->data)->extensions);
     tps = tps->next;
     ntp++;
   }
@@ -2070,6 +2071,7 @@ VikTrack *vik_track_unmarshall (const guint8 *data_in, guint datalen)
     memcpy(new_tp, data, sizeof(*new_tp));
     data += sizeof(*new_tp);
     vtu_get(new_tp->name);
+    vtu_get(new_tp->extensions);
     new_tr->trackpoints = g_list_prepend(new_tr->trackpoints, new_tp);
   }
   if ( new_tr->trackpoints )
