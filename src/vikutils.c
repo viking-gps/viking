@@ -1160,7 +1160,7 @@ void vu_distance_text ( gchar* buf, guint size, vik_units_distance_t distance_un
 		full_str = g_strdup_printf ( "%s%s", tbuf, units_str );
 	else
 		full_str = g_strdup_printf ( "%s %s", tbuf, units_str );
-	g_snprintf ( buf, size, full_str );
+	g_snprintf ( buf, size, full_str, NULL );
 	g_free ( full_str );
 	g_free ( units_str );
 }
@@ -1195,7 +1195,7 @@ void vu_distance_text_precision ( gchar* buf, guint size, vik_units_distance_t d
 	g_snprintf ( tbuf, sizeof(tbuf), format, my_distance );
 
 	gchar *full_str = g_strdup_printf ( "%s %s", tbuf, units_str );
-	g_snprintf ( buf, size, full_str );
+	g_snprintf ( buf, size, full_str, NULL );
 	g_free ( full_str );
 	g_free ( units_str );
 }
