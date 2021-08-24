@@ -616,14 +616,24 @@ VikTrack **vik_track_split_into_segments(VikTrack *t, guint *ret_len)
       iter->prev = NULL;
       rv[i] = vik_track_copy ( tr, FALSE );
       rv[i]->trackpoints = iter;
-
-      vik_track_calculate_bounds ( rv[i] );
-
       i++;
     }
   }
-  // Reset bounds of the original track since that may have changed
-  vik_track_calculate_bounds ( tr );
+
+  // Reset bounds of all tracks (including the original track since that may have changed)
+  //  this must be performed once all tracks have been split;
+  //  otherwise if done inside the while loop above,
+  //  the current track analysed would still contain subsequent segments
+  if ( segs == i ) {
+    for ( gint jj=0; jj<segs; jj++ ) {
+      if ( rv[jj] )
+        vik_track_calculate_bounds ( rv[jj] );
+    }
+  } else {
+    g_critical ( "Split segments (%d) does not match iterated value (%d)", segs, i );
+    vik_track_calculate_bounds ( tr ); // Only safe to recalc just this track
+  }
+
   *ret_len = segs;
   return rv;
 }
