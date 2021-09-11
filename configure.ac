@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.64)
-AC_INIT(viking, 1.9, , viking, http://viking.sf.net/)
+AC_INIT([viking],[1.9],[],[viking],[http://viking.sf.net/])
 
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
@@ -19,7 +19,6 @@ AM_CONDITIONAL([ENABLE_GTK_DOC], false)
 ])
 
 AC_PROG_CC
-AC_PROG_CC_STDC
 # Checks for programs.
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
@@ -73,7 +72,7 @@ AC_CHECK_LIB(X11, XSetErrorHandler)
 # So pass in as an option instead
 # This is only to perform slightly different build steps
 #  (the code uses standard WINDOWS defines for any specific different behaviour)
-AC_ARG_ENABLE(windows, AC_HELP_STRING([--enable-windows],
+AC_ARG_ENABLE(windows, AS_HELP_STRING([--enable-windows],
               [Perform specific Windows build steps (default is no)]),
               [ac_cv_enable_windows=$enableval],
               [ac_cv_enable_windows=no])
@@ -123,7 +122,7 @@ dnl - Use deprecated options (default enabled for devs, disabled in releases)
 dnl ---------------------------------------------------------------------------
 
 AC_ARG_ENABLE(deprecations,
-              [AC_HELP_STRING([--enable-deprecations],
+              [AS_HELP_STRING([--enable-deprecations],
                               [warn about deprecated usages [default=no]])],
                               [ac_cv_enable_deprecations=$enableval],
                               [ac_cv_enable_deprecations=no])
@@ -147,7 +146,7 @@ fi
 # GTK
 #
 # GTK version 3 (default) or 2
-AC_ARG_ENABLE(gtk2, AC_HELP_STRING([--enable-gtk2],
+AC_ARG_ENABLE(gtk2, AS_HELP_STRING([--enable-gtk2],
               [enable GTK2 build (default is disabled)]),
               [ac_cv_enable_gtk2=$enableval],
               [ac_cv_enable_gtk2=no])
@@ -163,7 +162,7 @@ case $ac_cv_enable_gtk2 in
 esac
 
 
-AC_ARG_ENABLE(bing, AC_HELP_STRING([--enable-bing],
+AC_ARG_ENABLE(bing, AS_HELP_STRING([--enable-bing],
               [enable Bing stuff (default is enable)]),
               [ac_cv_enable_bing=$enableval],
               [ac_cv_enable_bing=yes])
@@ -176,7 +175,7 @@ case $ac_cv_enable_bing in
 esac
 AM_CONDITIONAL([BING], [test x$ac_cv_enable_bing = xyes])
 
-AC_ARG_ENABLE(google, AC_HELP_STRING([--enable-google],
+AC_ARG_ENABLE(google, AS_HELP_STRING([--enable-google],
               [enable Google stuff (default is enable)]),
               [ac_cv_enable_google=$enableval],
               [ac_cv_enable_google=yes])
@@ -189,7 +188,7 @@ case $ac_cv_enable_google in
 esac
 AM_CONDITIONAL([GOOGLE], [test x$ac_cv_enable_google = xyes])
 
-AC_ARG_ENABLE(terraserver, AC_HELP_STRING([--enable-terraserver],
+AC_ARG_ENABLE(terraserver, AS_HELP_STRING([--enable-terraserver],
               [enable Terraserver stuff (default is disabled as the tileserver is no longer available)]),
               [ac_cv_enable_terraserver=$enableval],
               [ac_cv_enable_terraserver=no])
@@ -202,7 +201,7 @@ case $ac_cv_enable_terraserver in
 esac
 AM_CONDITIONAL([TERRASERVER], [test x$ac_cv_enable_terraserver = xyes])
 
-AC_ARG_ENABLE(expedia, AC_HELP_STRING([--enable-expedia],
+AC_ARG_ENABLE(expedia, AS_HELP_STRING([--enable-expedia],
               [enable Expedia stuff (default is disable)]),
               [ac_cv_enable_expedia=$enableval],
               [ac_cv_enable_expedia=no])
@@ -216,7 +215,7 @@ esac
 AM_CONDITIONAL([EXPEDIA], [test x$ac_cv_enable_expedia = xyes])
 
 # OpenStreetMap http://www.openstreetmap.org/
-AC_ARG_ENABLE(openstreetmap, AC_HELP_STRING([--enable-openstreetmap],
+AC_ARG_ENABLE(openstreetmap, AS_HELP_STRING([--enable-openstreetmap],
               [enable OpenStreetMap stuff (default is enable)]),
               [ac_cv_enable_openstreetmap=$enableval],
               [ac_cv_enable_openstreetmap=yes])
@@ -230,7 +229,7 @@ esac
 AM_CONDITIONAL([OPENSTREETMAP], [test x$ac_cv_enable_openstreetmap = xyes])
 
 # BlueMarble
-AC_ARG_ENABLE(bluemarble, AC_HELP_STRING([--enable-bluemarble],
+AC_ARG_ENABLE(bluemarble, AS_HELP_STRING([--enable-bluemarble],
               [enable BlueMarble stuff (default is enable)]),
               [ac_cv_enable_bluemarble=$enableval],
               [ac_cv_enable_bluemarble=yes])
@@ -244,7 +243,7 @@ esac
 AM_CONDITIONAL([BLUEMARBLE], [test x$ac_cv_enable_bluemarble = xyes])
 
 # GeoNames http://www.geonames.org/
-AC_ARG_ENABLE(geonames, AC_HELP_STRING([--enable-geonames],
+AC_ARG_ENABLE(geonames, AS_HELP_STRING([--enable-geonames],
               [enable Geonames stuff (default is enable)]),
               [ac_cv_enable_geonames=$enableval],
               [ac_cv_enable_geonames=yes])
@@ -257,7 +256,7 @@ case $ac_cv_enable_geonames in
 esac
 AM_CONDITIONAL([GEONAMES], [test x$ac_cv_enable_geonames = xyes])
 
-AC_ARG_ENABLE(geocaches, AC_HELP_STRING([--enable-geocaches],
+AC_ARG_ENABLE(geocaches, AS_HELP_STRING([--enable-geocaches],
 	      [enable Geocaches Acquire (default is disable).]),
               [ac_cv_enable_geocaches=$enableval],
               [ac_cv_enable_geocaches=no])
@@ -271,7 +270,7 @@ esac
 AM_CONDITIONAL([GEOCACHES], [test x$ac_cv_enable_geocaches = xyes])
 
 # GeoClue
-AC_ARG_ENABLE(geoclue, AC_HELP_STRING([--enable-geoclue],
+AC_ARG_ENABLE(geoclue, AS_HELP_STRING([--enable-geoclue],
               [enable GeoClue support (default is enable).]),
               [ac_cv_enable_geoclue=$enableval],
               [ac_cv_enable_geoclue=yes])
@@ -286,8 +285,8 @@ esac
 AM_CONDITIONAL([GEOCLUE], [test x$ac_cv_enable_geoclue = xyes])
 
 # Geotagging
-AC_ARG_WITH(libexif, AC_HELP_STRING([--with-libexif], [Force usage of libexif instead of libgexiv2]))
-AC_ARG_ENABLE(geotag, AC_HELP_STRING([--enable-geotag],
+AC_ARG_WITH(libexif, AS_HELP_STRING([--with-libexif], [Force usage of libexif instead of libgexiv2]))
+AC_ARG_ENABLE(geotag, AS_HELP_STRING([--enable-geotag],
 	      [enable Geotag Support (default is enable).]),
               [ac_cv_enable_geotag=$enableval],
               [ac_cv_enable_geotag=yes])
@@ -311,7 +310,7 @@ AM_CONDITIONAL([GEXIV2], [test x$ac_cv_lib_gexiv2_gexiv2_metadata_new = xyes] )
 #AM_COND_IF([GEXIV2], [PKG_CHECK_MODULES([GEXIV2], [gexiv2 >= 0.6.1])])
 AM_CONDITIONAL([LIBEXIF], [test x$ac_cv_lib_exif_exif_loader_new = xyes] )
 
-AC_ARG_ENABLE(dem24k, AC_HELP_STRING([--enable-dem24k],
+AC_ARG_ENABLE(dem24k, AS_HELP_STRING([--enable-dem24k],
 	      [enable USGS 24k DEM (default is disable) download source. Requires dem24k.pl script in path.]),
               [ac_cv_enable_dem24k=$enableval],
               [ac_cv_enable_dem24k=no])
@@ -325,7 +324,7 @@ esac
 AM_CONDITIONAL([DEM24K], [test x$ac_cv_enable_dem24k = xyes])
 
 # OAuth
-AC_ARG_ENABLE(oauth, AC_HELP_STRING([--enable-oauth],
+AC_ARG_ENABLE(oauth, AS_HELP_STRING([--enable-oauth],
               [enable OAuth Support (default is enable).]),
               [ac_cv_enable_oauth=$enableval],
               [ac_cv_enable_oauth=yes])
@@ -340,7 +339,7 @@ esac
 AM_CONDITIONAL([OAUTH], [test x$ac_cv_enable_oauth = xyes])
 
 # Realtime GPS tracking
-AC_ARG_ENABLE(realtime-gps-tracking, AC_HELP_STRING([--enable-realtime-gps-tracking],
+AC_ARG_ENABLE(realtime-gps-tracking, AS_HELP_STRING([--enable-realtime-gps-tracking],
               [enable realtime GPS tracking (default is enable)]),
               [ac_cv_enable_realtimegpstracking=$enableval],
               [ac_cv_enable_realtimegpstracking=yes])
@@ -362,7 +361,7 @@ esac
 AM_CONDITIONAL([REALTIME_GPS_TRACKING], [test x$ac_cv_enable_realtimegpstracking = xyes])
 
 # BZIP2
-AC_ARG_ENABLE(bzip2, AC_HELP_STRING([--enable-bzip2],
+AC_ARG_ENABLE(bzip2, AS_HELP_STRING([--enable-bzip2],
 	      [enable bzip2 Support (default is enable).]),
               [ac_cv_enable_bzip2=$enableval],
               [ac_cv_enable_bzip2=yes])
@@ -386,7 +385,7 @@ esac
 AM_CONDITIONAL([BZIP2], [test x$ac_cv_enable_bzip2 = xyes])
 
 # FILE MAGIC
-AC_ARG_ENABLE(magic, AC_HELP_STRING([--enable-magic],
+AC_ARG_ENABLE(magic, AS_HELP_STRING([--enable-magic],
 	      [enable File Magic support via libmagic (default is enable).]),
               [ac_cv_enable_magic=$enableval],
               [ac_cv_enable_magic=yes])
@@ -408,7 +407,7 @@ esac
 AM_CONDITIONAL([MAGIC], [test x$ac_cv_enable_magic = xyes])
 
 # SQL for MBTiles
-AC_ARG_ENABLE(mbtiles, AC_HELP_STRING([--enable-mbtiles],
+AC_ARG_ENABLE(mbtiles, AS_HELP_STRING([--enable-mbtiles],
               [enable MBTiles support via libsqlite3 (default is enable).]),
               [ac_cv_enable_mbtiles=$enableval],
               [ac_cv_enable_mbtiles=yes])
@@ -432,7 +431,7 @@ AM_CONDITIONAL([SQLITE], [test x$ac_cv_enable_mbtiles = xyes])
 # libzip enables a friendlier file based interface
 # libzip itself depends on libz (which is required in the Viking build ATM)
 # ZIP
-AC_ARG_ENABLE(zip, AC_HELP_STRING([--enable-zip],
+AC_ARG_ENABLE(zip, AS_HELP_STRING([--enable-zip],
               [enable zip support (default is enable).]),
               [ac_cv_enable_zip=$enableval],
               [ac_cv_enable_zip=yes])
@@ -460,7 +459,7 @@ esac
 AM_CONDITIONAL([ZIP], [test x$ac_cv_enable_zip = xyes])
 
 # ATM only for MD5 Hashing which is currently only used for filename of image thumbnails
-AC_ARG_ENABLE(nettle, AC_HELP_STRING([--enable-nettle],
+AC_ARG_ENABLE(nettle, AS_HELP_STRING([--enable-nettle],
               [enable MD5 Hash support (default is enable)]),
               [ac_cv_enable_nettle=$enableval],
               [ac_cv_enable_nettle=yes])
@@ -481,7 +480,7 @@ esac
 AM_CONDITIONAL([MD5_HASH], [test x$ac_cv_enable_nettle = xyes])
 
 # Mapnik rendering layer
-AC_ARG_ENABLE(mapnik, AC_HELP_STRING([--enable-mapnik],
+AC_ARG_ENABLE(mapnik, AS_HELP_STRING([--enable-mapnik],
               [enable Mapnik (default is enable)]),
               [ac_cv_enable_mapnik=$enableval],
               [ac_cv_enable_mapnik=yes])
@@ -490,8 +489,7 @@ AC_CACHE_CHECK([whether to enable Mapnik],
 case $ac_cv_enable_mapnik in
   yes)
     # C++
-    AC_LANG_CPLUSPLUS
-    AC_LANG_SAVE
+    AC_LANG_PUSH([C++])
     AC_PROG_CXX
     # Mapnik3 requires C++11. Viking will use C++11 as well.
     CXXFLAGS="$CXXFLAGS -std=c++11"
@@ -504,7 +502,7 @@ case $ac_cv_enable_mapnik in
     # Required for Mapnik3 build (it's also in Mapnik2 but does not need to be specified for some reason)
     #  it's part of libmapnik install dependencies
     AC_CHECK_LIB([icuuc], [main], [], [AC_MSG_ERROR([libicuuc is needed but not found.])])
-    AC_LANG_RESTORE
+    AC_LANG_POP([C++])
     ;;
 esac
 AM_CONDITIONAL([MAPNIK], [test x$ac_cv_enable_mapnik = xyes])
@@ -518,7 +516,7 @@ m4_popdef([AC_MSG_ERROR])
 
 dnl Compile time defined key
 AC_ARG_WITH(thunderforest_apikey,
-            [AC_HELP_STRING([--with-thunderforest_apikey],
+            [AS_HELP_STRING([--with-thunderforest_apikey],
 	     [API Key for Thunderforest (OSM Cyclemap) tiles.
               Please register your own if you're going to distribute the
               package, as requests are limited per key.])],
@@ -527,7 +525,7 @@ AC_ARG_WITH(thunderforest_apikey,
 AC_DEFINE_UNQUOTED(VIK_CONFIG_THUNDERFOREST_KEY, ${VIK_CONFIG_THUNDERFOREST_KEY}, [Thunderforest key])
 
 AC_ARG_WITH(geonames_username,
-            [AC_HELP_STRING([--with-geonames_username],
+            [AS_HELP_STRING([--with-geonames_username],
 	     [Username for the GeoNames webservice.
               Please register your own if you're going to distribute the
               package, as requests are limited per username.])],
@@ -537,7 +535,7 @@ AC_DEFINE_UNQUOTED(VIK_CONFIG_GEONAMES_USERNAME, ${VIK_CONFIG_GEONAMES_USERNAME}
 
 
 AC_ARG_WITH(mapcache,
-            [AC_HELP_STRING([--with-mapcache],
+            [AS_HELP_STRING([--with-mapcache],
                             [specify the size of the map cache in MB (default is 256)])],
             [if test "x$withval" = "xno"; then
                 VIK_CONFIG_MAPCACHE_SIZE=0;
@@ -552,7 +550,7 @@ AC_DEFINE_UNQUOTED(VIK_CONFIG_MAPCACHE_SIZE, ${VIK_CONFIG_MAPCACHE_SIZE},
 
 
 AC_ARG_WITH(tileage,
-            [AC_HELP_STRING([--with-tileage],
+            [AS_HELP_STRING([--with-tileage],
                             [specify the age of a tile before checking it (default is 7 days)])],
             [if test "x$withval" = "xno"; then
                 VIK_CONFIG_DEFAULT_TILE_AGE=0;
