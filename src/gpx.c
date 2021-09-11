@@ -1556,7 +1556,10 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   write_double ( f, WPT_SPACES, "ageofdgpsdata", wp->ageofdgpsdata );
   write_positive_uint ( f, WPT_SPACES, "dgpsid", wp->dgpsid );
 
-  write_string_as_is ( f, WPT_SPACES, "extensions", wp->extensions );
+  // NB if 'extensions' have been read in yet the GPX version is V1.0
+  //  then ensure extension fields are not written
+  if ( context->options && context->options->version == GPX_V1_1 )
+    write_string_as_is ( f, WPT_SPACES, "extensions", wp->extensions );
 
   fprintf ( f, "</wpt>\n" );
 }
@@ -1635,7 +1638,9 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   write_double ( f, TRKPT_SPACES, "pdop", tp->pdop );
 
   // If have the raw extensions - then save that (which should include all of the individual values we use)
-  if ( tp->extensions )
+  // NB if 'extensions' have been read in yet the GPX version is V1.0
+  //  then ensure extension fields are not written
+  if ( tp->extensions && context->options && context->options->version == GPX_V1_1 )
     write_string_as_is ( f, TRKPT_SPACES, "extensions", tp->extensions );
   else {
     // Otherwise write the individual values we are supporting (in Garmin TrackPointExtension/v2 format)
