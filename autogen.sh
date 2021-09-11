@@ -7,25 +7,25 @@ test -n "$srcdir" || srcdir=.
 olddir=`pwd`
 cd "$srcdir"
 
-INTLTOOLIZE=`which intltoolize`
+INTLTOOLIZE=`command -v intltoolize`
 if test -z $INTLTOOLIZE; then
         echo "*** No intltoolize found, please install the intltool package ***"
         exit 1
 fi
 
-GTK_DOC=`which gtkdocize`
+GTK_DOC=`command -v gtkdocize`
 if test -z $GTK_DOC; then
         echo "*** No gtkdocize found, please install the gtk-doc-tools package ***"
         exit 1
 fi
 
-AUTORECONF=`which autoreconf`
+AUTORECONF=`command -v autoreconf`
 if test -z $AUTORECONF; then
         echo "*** No autoreconf found, please install it ***"
         exit 1
 fi
 
-if test -z `which autopoint`; then
+if test -z `command -v autopoint`; then
         echo "*** No autopoint found, please install it ***"
         exit 1
 fi
