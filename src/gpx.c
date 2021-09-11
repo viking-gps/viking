@@ -1825,6 +1825,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
       write_string ( f, 4, "desc", md->description );
       if ( md->url && strlen(md->url) > 0 )
         fprintf ( f, "    <link href=\"%s\"></link>\n", md->url );
+      write_string ( f, 4, "time", md->timestamp );
       write_string ( f, 4, "keywords", md->keywords );
       fprintf ( f, "  </metadata>\n" );
     }
