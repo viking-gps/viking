@@ -1759,7 +1759,14 @@ static void gpx_write_header( FILE *f, VikTrwLayer *vtl, GpxWritingContext *cont
   }
 
   fprintf(f, "<?xml version=\"1.0\"?>\n");
-  if ( context->options && context->options->version == GPX_V1_1 ) {
+
+  gpx_version_t version = GPX_V1_0;
+  if ( vtl )
+    version = vik_trw_layer_get_gpx_version(vtl);
+  if ( context->options )
+    version = context->options->version;
+
+  if ( version == GPX_V1_1 ) {
     fprintf(f, "<gpx version=\"1.1\"\n");
     fprintf(f, "creator=\"%s\"\n", creator);
     // If we already have a ready to use header then use that
@@ -1816,9 +1823,13 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
   const gchar *name = vik_layer_get_name(VIK_LAYER(vtl));
   write_string ( f, TRK_SPACES, "name", name );
 
+  gpx_version_t version = vik_trw_layer_get_gpx_version(vtl);
+  if ( options )
+    version = options->version;
+
   VikTRWMetadata *md = vik_trw_layer_get_metadata (vtl);
   if ( md ) {
-    if ( options && options->version == GPX_V1_1 ) {
+    if ( version == GPX_V1_1 ) {
       fprintf ( f, "  <metadata>\n" );
       if ( md->author && strlen(md->author) > 0 )
         fprintf ( f, "    <author><name>%s</name></author>\n", md->author );
@@ -1879,7 +1890,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
   // so process each list separately
 
   GpxWritingContext context_tmp = context;
-  GpxWritingOptions opt_tmp = { FALSE, FALSE, FALSE, FALSE, vik_trw_layer_get_gpx_version(vtl) };
+  GpxWritingOptions opt_tmp = { FALSE, FALSE, FALSE, FALSE, version };
   // Force trackpoints on tracks
   if ( !context.options )
     context_tmp.options = &opt_tmp;

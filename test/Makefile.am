@@ -73,6 +73,7 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	Simple_no-realtime-gps-tracking.vik \
 	check_gpx.sh \
 	SF\#022.gpx \
+	GPXv1.1-sample.gpx \
 	check_md5_hash.sh \
 	check_metatile.sh \
 	metatile_example/13/0/0/250/220/0.meta \

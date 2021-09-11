@@ -14,3 +14,19 @@ if [ $? != 0 ]; then
   exit 1
 fi
 rm ./SF#022-creator.gpx
+
+count=0
+count=`expr $count + 1`
+# --- GPXv1.1 test ---
+# NB also ignore the GPX name that is inserted
+grep -v "^creator=" $srcdir/GPXv1.1-sample.gpx > ./GPXv1.1-sample-nocreator.gpx
+result=$(./gpx2gpx < $srcdir/GPXv1.1-sample.gpx | \
+             grep -v "^creator=" | \
+             grep -vF "<desc>Created by:" | \
+             grep -vF "<name>TrackWaypoint</name>" | \
+             diff -w ./GPXv1.1-sample-nocreator.gpx -)
+if [ $? != 0 ]; then
+  echo "gpx2gpx failure $count"
+  exit 1
+fi
+rm ./GPXv1.1-sample-nocreator.gpx
