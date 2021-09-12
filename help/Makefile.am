@@ -44,6 +44,7 @@ HELP_MEDIA = \
     figures/showpic_18.png \
     figures/DEM_Example.png \
     figures/Goto_Main_Window.png \
+    figures/Panel_Stats_Tab.png \
     figures/Trackpoint_edit_dialog.png \
     figures/Track_elevation_graph.png \
     figures/Track_properties.png \
