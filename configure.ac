@@ -568,10 +568,10 @@ dnl man pages processing
 AC_PATH_PROG(XSLTPROC,xsltproc)
 #AM_CONDITIONAL([HAVE_XSLTPROC],[test "x$XSLTPROC" != "x"])
 
-ISODATE="$(date --utc --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y-%m-%d)"
+ISODATE="$(date --utc --date=@${SOURCE_DATE_EPOCH:-$(date +%s)} +%Y-%m-%d)"
 AC_SUBST(ISODATE)
 
-AC_DEFINE_UNQUOTED(THEYEAR, "$(date --utc --date="@${SOURCE_DATE_EPOCH:-$(date +%s)}" +%Y)", [The Year])
+AC_DEFINE_UNQUOTED(THEYEAR, "$(date --utc --date=@${SOURCE_DATE_EPOCH:-$(date +%s)} +%Y)", [The Year])
 
 # Configuration
 AC_CONFIG_FILES([
