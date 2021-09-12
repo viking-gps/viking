@@ -22,9 +22,7 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_MATH_H
 #include <math.h>
-#endif
 #include <string.h>
 #include "degrees_converters.h"
 

@@ -34,13 +34,8 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_MATH_H
 #include <math.h>
-#endif
-
-#ifdef HAVE_STDLIB_H
 #include <stdlib.h>
-#endif
 #include <glib.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>

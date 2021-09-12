@@ -22,9 +22,7 @@
 #endif
 
 #include <stdio.h>
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
 
 #include <glib.h>
 #include <glib/gstdio.h>

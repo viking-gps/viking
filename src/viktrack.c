@@ -25,12 +25,8 @@
 
 #include <glib.h>
 #include <stdlib.h>
-#ifdef HAVE_STRING_H
 #include <string.h>
-#endif
-#ifdef HAVE_MATH_H
 #include <math.h>
-#endif
 
 #include "coords.h"
 #include "vikcoord.h"

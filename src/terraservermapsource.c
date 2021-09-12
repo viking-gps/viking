@@ -20,9 +20,7 @@
 #include "config.h"
 #endif
 
-#ifdef HAVE_MATH_H
 #include <math.h>
-#endif
 
 #include "globals.h"
 #include "terraservermapsource.h"

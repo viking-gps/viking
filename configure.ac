@@ -53,8 +53,7 @@ ACLOCAL_AMFLAGS="\${ACLOCAL_FLAGS}"
 AC_SUBST(ACLOCAL_AMFLAGS)
 
 # Checks for header files.
-AC_HEADER_STDC
-AC_CHECK_HEADERS([malloc.h stdlib.h string.h sys/param.h sys/types.h unistd.h math.h utime.h X11/Xlib.h])
+AC_CHECK_HEADERS([malloc.h sys/param.h sys/types.h unistd.h utime.h X11/Xlib.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
