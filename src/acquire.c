@@ -285,7 +285,7 @@ static void acquire ( VikWindow *vw,
     if ( vtl && track ) {
       GpxWritingOptions gpx_options = { FALSE, FALSE, FALSE, FALSE, vik_trw_layer_get_gpx_version(vtl) };
       gchar *name_src = a_gpx_write_tmp_file ( vtl, &gpx_options );
-      gchar *name_src_track = a_gpx_write_track_tmp_file ( track, &gpx_options );
+      gchar *name_src_track = a_gpx_write_track_tmp_file ( vtl, track, &gpx_options );
       source_interface->get_process_options_func ( pass_along_data, po, NULL, name_src, name_src_track );
       util_add_to_deletion_list ( name_src );
       util_add_to_deletion_list ( name_src_track );
@@ -297,7 +297,7 @@ static void acquire ( VikWindow *vw,
   } else if ( source_interface->inputtype == VIK_DATASOURCE_INPUTTYPE_TRACK ) {
 
     GpxWritingOptions gpx_options = { FALSE, FALSE, FALSE, FALSE, vtl ? vik_trw_layer_get_gpx_version(vtl) : GPX_V1_0 };
-    gchar *name_src_track = a_gpx_write_track_tmp_file ( track, &gpx_options );
+    gchar *name_src_track = a_gpx_write_track_tmp_file ( vtl, track, &gpx_options );
 
     source_interface->get_process_options_func ( pass_along_data, po, NULL, NULL, name_src_track );
 

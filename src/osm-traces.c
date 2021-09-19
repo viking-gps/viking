@@ -532,11 +532,11 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
     {
       VikTrack *trk = vik_track_copy(oti->trk, TRUE);
       vik_track_anonymize_times(trk);
-      filename = a_gpx_write_track_tmp_file(trk, &options);
+      filename = a_gpx_write_track_tmp_file (oti->vtl, trk, &options);
       vik_track_free(trk);
     }
     else
-      filename = a_gpx_write_track_tmp_file (oti->trk, &options);
+      filename = a_gpx_write_track_tmp_file (oti->vtl, oti->trk, &options);
   }
   else
   {

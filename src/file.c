@@ -954,7 +954,7 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
         case FILE_TYPE_GPX:
           // trk defined so can set the option
           options.is_route = trk->is_route;
-          a_gpx_write_track_file ( trk, f, &options );
+          a_gpx_write_track_file ( vtl, trk, f, &options );
           break;
         default:
           g_critical("Houston, we've had a problem. file_type=%d", file_type);

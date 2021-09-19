@@ -1924,10 +1924,18 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
   gpx_write_footer ( f );
 }
 
-void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options )
+/*
+ * a_gpx_write_track_file:
+ * @vtl:     The #VikTrwLayer (can be NULL) that contains the track
+ * @trk:     The #VikTrack to write
+ * @f:       The #FILE to write to
+ * @options: Possible ways of writing the file data (can be NULL)
+ *
+ */
+void a_gpx_write_track_file ( VikTrwLayer *vtl, VikTrack *trk, FILE *f, GpxWritingOptions *options )
 {
   GpxWritingContext context = { options, f, NULL, NULL };
-  gpx_write_header ( f, NULL, &context );
+  gpx_write_header ( f, vtl, &context );
   gpx_write_track ( trk, &context );
   gpx_write_footer ( f );
 }
@@ -1951,7 +1959,7 @@ static gchar* write_tmp_file ( VikTrwLayer *vtl, VikTrack *trk, GpxWritingOption
 	FILE *ff = fdopen (fd, "w");
 
 	if ( trk )
-		a_gpx_write_track_file ( trk, ff, options );
+		a_gpx_write_track_file ( vtl, trk, ff, options );
 	else
 		a_gpx_write_file ( vtl, ff, options, NULL );
 
@@ -1976,6 +1984,7 @@ gchar* a_gpx_write_tmp_file ( VikTrwLayer *vtl, GpxWritingOptions *options )
 
 /*
  * a_gpx_write_track_tmp_file:
+ * @vtl:     The #VikTrwLayer (can be NULL) that contains the track
  * @trk:     The #VikTrack to write
  * @options: Possible ways of writing the file data (can be NULL)
  *
@@ -1983,9 +1992,9 @@ gchar* a_gpx_write_tmp_file ( VikTrwLayer *vtl, GpxWritingOptions *options )
  *          This file should be removed once used and the string freed.
  *          If NULL then the process failed.
  */
-gchar* a_gpx_write_track_tmp_file ( VikTrack *trk, GpxWritingOptions *options )
+gchar* a_gpx_write_track_tmp_file ( VikTrwLayer *vtl, VikTrack *trk, GpxWritingOptions *options )
 {
-	return write_tmp_file ( NULL, trk, options );
+	return write_tmp_file ( vtl, trk, options );
 }
 
 static int waypoint_compare_vtwl(const void *x, const void *y)

@@ -40,10 +40,10 @@ typedef struct {
 
 gboolean a_gpx_read_file ( VikTrwLayer *trw, FILE *f, const gchar* dirpath, gboolean append );
 void a_gpx_write_file ( VikTrwLayer *trw, FILE *f, GpxWritingOptions *options, const gchar *dirpath );
-void a_gpx_write_track_file ( VikTrack *trk, FILE *f, GpxWritingOptions *options );
+void a_gpx_write_track_file ( VikTrwLayer *trw, VikTrack *trk, FILE *f, GpxWritingOptions *options );
 
 gchar* a_gpx_write_tmp_file ( VikTrwLayer *vtl, GpxWritingOptions *options );
-gchar* a_gpx_write_track_tmp_file ( VikTrack *trk, GpxWritingOptions *options );
+gchar* a_gpx_write_track_tmp_file ( VikTrwLayer *vtl, VikTrack *trk, GpxWritingOptions *options );
 
 void a_gpx_write_combined_file ( const gchar *name, GList *vtt, GList *vtwl, FILE *ff, GpxWritingOptions *options, const gchar *dirpath );
 
