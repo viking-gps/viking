@@ -1,0 +1,45 @@
+From a1534d54d9f3ab70f6f0155b8999bb5616ab722a Mon Sep 17 00:00:00 2001
+From: Rob Norris <rw_norris@hotmail.com>
+Date: Fri, 17 Sep 2021 20:02:02 +0100
+Subject: [PATCH] build: move usp10 before gdi32
+
+Moving usp10 before gdi32 makes things work.
+
+This might be related to the warning in the uniscribe docs:
+"Important Starting with Windows 8: To maintain the ability to run on
+Windows 7, a module that uses Uniscribe must specify Usp10.lib
+before gdi32.lib in its library list."
+
+https://bugzilla.gnome.org/show_bug.cgi?id=795045
+---
+ pango/Makefile.in | 2 +-
+ pangowin32.pc.in  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/pango/Makefile.in b/pango/Makefile.in
+index 0760e01..5206fef 100644
+--- a/pango/Makefile.in
++++ b/pango/Makefile.in
+@@ -1005,7 +1005,7 @@ libpangowin32_1_0_la_LDFLAGS = $(LIBRARY_LIBTOOL_OPTIONS) \
+ libpangowin32_1_0_la_LIBADD = \
+ 	libpango-$(PANGO_API_VERSION).la	\
+ 	$(GLIB_LIBS)				\
+-	-lgdi32 -lusp10
++	-lusp10 -lgdi32
+ 
+ libpangowin32_1_0_la_DEPENDENCIES = libpango-$(PANGO_API_VERSION).la \
+ 	$(am__append_33)
+diff --git a/pangowin32.pc.in b/pangowin32.pc.in
+index 4c9b879..34ea6a3 100644
+--- a/pangowin32.pc.in
++++ b/pangowin32.pc.in
+@@ -8,5 +8,5 @@ Description: Win32 GDI font support for Pango
+ Version: @VERSION@
+ Requires: pango
+ Libs: -L${libdir} -lpangowin32-@PANGO_API_VERSION@
+-Libs.private: -lgdi32 -lusp10
++Libs.private: -lusp10 -lgdi32
+ Cflags: -I${includedir}/pango-1.0
+--
+libgit2 1.1.0
+

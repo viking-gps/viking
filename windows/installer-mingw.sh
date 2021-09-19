@@ -110,6 +110,10 @@ cp $MINGW_BIN/libtiff*.dll $DESTINATION
 cp $MINGW_BIN/libxml2*.dll $DESTINATION
 cp $MINGW_BIN/libz*.dll $DESTINATION
 
+# Overwrite system supplied libpango with own patched build item for Windows 7 compatibility
+# See pango-build-move-usp10-before-gdi32.patch
+cp /home/build/rpmbuild/BUILD/pango-1.38.1/pango/.libs/libpangowin32-1.0-0.dll $DESTINATION
+
 # Extras
 cp $MINGW_BIN/libexpat*.dll $DESTINATION
 # Curl 7.17+ has quite a few dependencies for SSL support
