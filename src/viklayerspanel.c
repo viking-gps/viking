@@ -198,6 +198,13 @@ static void calendar_mark_layer_in_month ( VikLayersPanel *vlp, VikTrwLayer *vtl
   guint year, month, day;
   gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &year, &month, &day );
   GDate *gd = g_date_new();
+  // Beginning and end of month values as date strings in ISO8601 format
+  gchar *ds1 = g_strdup_printf ( "%d-%02d-%02dT00:00:00", year, month+1, 1 );
+  gchar *ds2 = NULL;
+  if ( month < 11 )
+    ds2 = g_strdup_printf ( "%d-%02d-%02dT00:00:00", year, month+2, 1 );
+  else
+    ds2 = g_strdup_printf ( "%d-%02d-%02dT00:00:00", year+1, 1, 1 );
   GHashTable *trks = vik_trw_layer_get_tracks ( vtl ); 
   GHashTableIter iter;
   gpointer key, value;
@@ -205,17 +212,43 @@ static void calendar_mark_layer_in_month ( VikLayersPanel *vlp, VikTrwLayer *vtl
   g_hash_table_iter_init ( &iter, trks );
   while ( g_hash_table_iter_next ( &iter, &key, &value ) ) {
     VikTrack *trk = VIK_TRACK(value);
-    // First trackpoint
     if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
       // Not worried about subsecond resolution here!
       g_date_set_time_t ( gd, (time_t)VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
-      // Is in selected month?
+      // Is first trackpoint in selected month?
       if ( g_date_get_year(gd) == year && (g_date_get_month(gd) == (month+1)) ) {
 	gtk_calendar_mark_day ( GTK_CALENDAR(vlp->calendar), g_date_get_day(gd) );
-	break;
+      }
+      // Now scan rest of track...
+      GTimeVal tv1, tv2;
+      // See also g_date_time_new_from_iso8601() but glib 2.56 needed
+      // NB the time val for each is the beginning of day,
+      //  so even as ds2 is on the next month - it's effectively equivalent to the end of the previous month
+      if ( g_time_val_from_iso8601(ds1, &tv1) && g_time_val_from_iso8601(ds2, &tv2) ) {
+        GList *tp_iter = trk->trackpoints;
+        guint count = 0;
+        // Step through the track to mark all the potential days that the track might cover
+        // Check every 100th point in order to speed up processing (also include the very last point too)
+        while ( tp_iter ) {
+          count++;
+          if ( count % 100 == 0 || tp_iter->next == NULL ) {
+            VikTrackpoint *tpt = VIK_TRACKPOINT(tp_iter->data);
+            if ( !isnan(tpt->timestamp) &&
+                 tpt->timestamp < tv2.tv_sec &&
+                 tpt->timestamp > tv1.tv_sec ) {
+              g_date_set_time_t ( gd, (time_t)tpt->timestamp );
+              if ( g_date_get_year(gd) == year && (g_date_get_month(gd) == (month+1)) )
+                if ( !gtk_calendar_get_day_is_marked(GTK_CALENDAR(vlp->calendar), g_date_get_day(gd)) )
+                  gtk_calendar_mark_day ( GTK_CALENDAR(vlp->calendar), g_date_get_day(gd) );
+            }
+          }
+            tp_iter = tp_iter->next;
+        }  
       }
     }
   }
+  g_free ( ds1 );
+  g_free ( ds2 );
   g_date_free ( gd );
 }
 
@@ -405,6 +438,7 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
   if ( amonth != month )
     return NULL;
 
+
   GList *layers = vik_layers_panel_get_all_layers_of_type ( vlp, VIK_LAYER_TRW, TRUE );
   if ( !layers )
     return NULL;
@@ -434,6 +468,8 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
 	  break;
 	}
       }
+      // Note that this does not attempt to analyse the tracks for multi day support
+      //  in order to keep this tooltip function as fast as possible
     }
     // Fully exit
     if ( need_to_break )

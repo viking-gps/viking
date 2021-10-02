@@ -1144,12 +1144,15 @@ typedef struct {
   gpointer wpt_id;
 } date_finder_type;
 
+#define SECS_IN_DAY 86400
+
 static gboolean trw_layer_find_date_track ( const gpointer id, const VikTrack *trk, date_finder_type *df )
 {
   gchar date_buf[20];
   date_buf[0] = '\0';
   // Might be an easier way to compare dates rather than converting the strings all the time...
   if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
+    // Simple start of track comparison
     time_t time = round(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp);
     strftime (date_buf, sizeof(date_buf), "%Y-%m-%d", gmtime(&time));
 
@@ -1157,6 +1160,37 @@ static gboolean trw_layer_find_date_track ( const gpointer id, const VikTrack *t
       df->found = TRUE;
       df->trk = trk;
       df->trk_id = id;
+    }
+    // Extended test - slower as analyses whole track
+    if ( TRUE ) {
+      GTimeVal tv;
+      // See also g_date_time_new_from_iso8601() but glib 2.56 needed
+      // NB the time val is for the beginning of day
+      // Force date_str into value considered to be ISO8601 by this function
+      gchar *ds = g_strdup_printf ( "%sT00:00:00", df->date_str );
+      if ( g_time_val_from_iso8601(ds, &tv) ) {
+        // Step through track to find parts that may be on this date
+        // Process in chunks for every 100th point in order to speed up search
+        GList *tp_iter;
+        tp_iter = trk->trackpoints;
+        guint count = 0;
+        while ( tp_iter ) {
+          count++;
+          if ( count % 100 == 0 || tp_iter->next == NULL ) {
+            VikTrackpoint *tpt = VIK_TRACKPOINT(tp_iter->data);
+            if ( !isnan(tpt->timestamp) &&
+                 tpt->timestamp < tv.tv_sec+86400 &&
+                 tpt->timestamp > tv.tv_sec ) {
+              df->found = TRUE;
+              df->trk = trk;
+              df->trk_id = id;
+              break;
+            }
+          }
+          tp_iter = tp_iter->next;
+        }
+      }
+      g_free ( ds );
     }
   }
   return df->found;
