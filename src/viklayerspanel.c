@@ -53,10 +53,6 @@ struct _VikLayersPanel {
   GtkWidget *vpaned;
   GtkWidget *tabs;
   GtkWidget *calendar;
-  // Could use gtk_widget_get_visible () instead, but needs Gtk2.18
-  // ATM still using Gtk2.16 - so manually track the state for now
-  // NB Doesn't consider if the layers panel is shown or not.
-  gboolean cal_shown;
   calendar_mu_t cal_markup;
 
   GtkWidget *goto_pane;
@@ -258,7 +254,7 @@ static void calendar_mark_layer_in_month ( VikLayersPanel *vlp, VikTrwLayer *vtl
 void layers_panel_calendar_update ( VikLayersPanel *vlp )
 {
   // Skip if not shown...
-  if ( !vlp->cal_shown )
+  if ( !gtk_widget_get_visible(GTK_WIDGET(vlp)) )
     return;
 
   gtk_calendar_clear_marks ( GTK_CALENDAR(vlp->calendar) );
@@ -423,7 +419,7 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
 {
   VikLayersPanel *vlp = (VikLayersPanel*)user_data;
   // Skip if not shown...
-  if ( !vlp->cal_shown )
+  if ( !gtk_widget_get_visible(GTK_WIDGET(vlp)) )
     return NULL;
 
   // Check that detail is wanted
@@ -613,7 +609,6 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   // (and then possibly this results in selecting a track) which would be counter intuitive
   g_signal_connect_swapped ( vlp->calendar, "day-selected-double-click", G_CALLBACK(layers_calendar_day_selected_dc_cb), vlp);
   g_signal_connect_swapped ( vlp->calendar, "button-press-event", G_CALLBACK(layers_calendar_button_press_cb), vlp );
-  vlp->cal_shown = TRUE;
 
   // Ensure any detail results in a tooltip rather than embedded in the calendar display
   GValue sd = G_VALUE_INIT;
@@ -1252,7 +1247,6 @@ void vik_layers_panel_show_tabs ( VikLayersPanel *vlp, gboolean show )
 
 void vik_layers_panel_show_calendar ( VikLayersPanel *vlp, gboolean show )
 {
-  vlp->cal_shown = show;
   if ( show ) {
     vik_layers_panel_calendar_update ( vlp );
     gtk_widget_show ( vlp->calendar );
