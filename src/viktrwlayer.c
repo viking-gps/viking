@@ -2406,14 +2406,14 @@ static void trw_layer_draw_track_name_labels ( struct DrawingParams *dp, VikTrac
 
   if ( trk->draw_name_mode == TRACK_DRAWNAME_CENTRE )
     // No other labels to draw
-    return;
+    goto end;
 
   VikTrackpoint *tp_end = vik_track_get_tp_last ( trk );
   if ( !tp_end )
-    return;
+    goto end;
   VikTrackpoint *tp_begin = vik_track_get_tp_first ( trk );
   if ( !tp_begin )
-    return;
+    goto end;
   VikCoord begin_coord = tp_begin->coord;
   VikCoord end_coord = tp_end->coord;
 
@@ -2463,6 +2463,7 @@ static void trw_layer_draw_track_name_labels ( struct DrawingParams *dp, VikTrac
     }
   }
 
+ end:
   g_free ( fgcolour );
   g_free ( bgcolour );
   g_free ( ename );
