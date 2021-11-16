@@ -587,6 +587,12 @@ msgid ""
 "Edit->Layer Defaults->Map... to change the map type and other values."
 msgstr ""
 
+msgid "Show Scale:"
+msgstr "Prikaži merilo"
+
+msgid "Show Center Mark:"
+msgstr "Prikaži oznako središča"
+
 msgid "Startup Method:"
 msgstr ""
 

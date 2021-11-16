@@ -582,6 +582,12 @@ msgid ""
 "Edit->Layer Defaults->Map... to change the map type and other values."
 msgstr ""
 
+msgid "Show Scale:"
+msgstr "察看比例尺:"
+
+msgid "Show Center Mark:"
+msgstr "察看中心記號:"
+
 msgid "Startup Method:"
 msgstr ""
 

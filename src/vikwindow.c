@@ -6286,6 +6286,11 @@ static void window_create_ui( VikWindow *window )
     exit (1);
   }
 
+  // Modify toggle_entries (before it is used) with the latest viewport states
+  toggle_entries[0].is_active = vik_viewport_get_draw_scale ( window->viking_vvp );
+  toggle_entries[1].is_active = vik_viewport_get_draw_centermark ( window->viking_vvp );
+  toggle_entries[2].is_active = vik_viewport_get_draw_highlight ( window->viking_vvp );
+
   action_group = gtk_action_group_new ("MenuActions");
   gtk_action_group_set_translation_domain(action_group, PACKAGE_NAME);
   gtk_action_group_add_actions (action_group, entries, G_N_ELEMENTS (entries), window);

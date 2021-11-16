@@ -279,9 +279,9 @@ vik_viewport_init ( VikViewport *vvp )
   if ( a_settings_get_integer ( VIK_SETTINGS_VIEW_HISTORY_DIFF_DIST, &tmp ) )
     vvp->centers_radius = tmp;
 
-  vvp->draw_scale = TRUE;
-  vvp->draw_centermark = TRUE;
-  vvp->draw_highlight = TRUE;
+  vvp->draw_scale = a_vik_get_startup_show_scale();
+  vvp->draw_centermark = a_vik_get_startup_show_centermark();
+  vvp->draw_highlight = a_vik_get_startup_show_highlight();
 
   vvp->trigger = NULL;
   vvp->highlight_color = a_vik_get_startup_highlight_color();

@@ -279,6 +279,12 @@ gboolean a_vik_get_add_default_map_layer ( );
 
 GdkColor a_vik_get_startup_highlight_color ( );
 
+gboolean a_vik_get_startup_show_centermark ( );
+
+gboolean a_vik_get_startup_show_scale ( );
+
+gboolean a_vik_get_startup_show_highlight ( );
+
 typedef enum {
   VIK_STARTUP_METHOD_HOME_LOCATION,
   VIK_STARTUP_METHOD_LAST_LOCATION,

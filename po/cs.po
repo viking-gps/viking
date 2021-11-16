@@ -617,6 +617,15 @@ msgstr ""
 "Výchozí mapa a další výchozí nastavení jsou předefinovány  v Upravit-"
 ">Výchozí nastevení vrstev->Mapa."
 
+msgid "Show Center Mark:"
+msgstr "Zobrazit s_třed:"
+
+msgid "Show Scale:"
+msgstr "Zobrazit měřítko:"
+
+msgid "Show Highlight:"
+msgstr "Zvýraznit:"
+
 msgid "Startup Method:"
 msgstr "Metoda spuštění:"
 

@@ -601,6 +601,15 @@ msgstr ""
 "默认地图层由图层默认设置决定。用菜单->图层默认设置->地图...来改变地图类型及其"
 "他值。"
 
+msgid "Show Scale:"
+msgstr "显示比例尺:"
+
+msgid "Show Center Mark:"
+msgstr "显示中心记号:"
+
+msgid "Show Highlight:"
+msgstr "显示高亮:"
+
 msgid "Startup Method:"
 msgstr "启动方法："
 

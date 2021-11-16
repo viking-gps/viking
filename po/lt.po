@@ -603,6 +603,12 @@ msgid ""
 "Edit->Layer Defaults->Map... to change the map type and other values."
 msgstr ""
 
+msgid "Show Scale:"
+msgstr "Rodyti padalas"
+
+msgid "Show Center Mark:"
+msgstr "Rodyti centrinį žymeklį"
+
 msgid "Startup Method:"
 msgstr ""
 

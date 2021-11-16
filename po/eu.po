@@ -638,6 +638,15 @@ msgstr ""
 msgid "Highlight Color:"
 msgstr "Nabarmentze-kolorea"
 
+msgid "Show Scale:"
+msgstr "Erakutsi eskala"
+
+msgid "Show Center Mark:"
+msgstr "Erakutsi erdiko marka"
+
+msgid "Show Highlight:"
+msgstr "Erakutsi nabarmen"
+
 msgid "Startup Method:"
 msgstr "Abio-metodoa"
 

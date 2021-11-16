@@ -195,6 +195,9 @@ static VikLayerParam startup_prefs[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "add_default_map_layer", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Add a Default Map Layer:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
     N_("The default map layer added is defined by the Layer Defaults. Use the menu Edit->Layer Defaults->Map... to change the map type and other values."), vik_lpd_false_default, NULL, NULL},
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "highlight_color", VIK_LAYER_PARAM_COLOR, VIK_LAYER_GROUP_NONE, N_("Highlight Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, highlight_color_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "show_centermark", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Center Mark:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL},
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "show_scale", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Scale:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL},
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "show_highlight", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Highlight:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL},
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "startup_method", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Startup Method:"), VIK_LAYER_WIDGET_COMBOBOX, params_startup_methods, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_STARTUP_NAMESPACE "startup_file", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Startup File:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL,
     N_("The default file to load on startup. Only applies when the startup method is set to 'Specified File'"), NULL, NULL, NULL },
@@ -461,6 +464,21 @@ gboolean a_vik_get_add_default_map_layer ( )
 GdkColor a_vik_get_startup_highlight_color ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_STARTUP_NAMESPACE "highlight_color")->c;
+}
+
+gboolean a_vik_get_startup_show_centermark ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_STARTUP_NAMESPACE "show_centermark")->b;
+}
+
+gboolean a_vik_get_startup_show_scale ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_STARTUP_NAMESPACE "show_scale")->b;
+}
+
+gboolean a_vik_get_startup_show_highlight ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_STARTUP_NAMESPACE "show_highlight")->b;
 }
 
 vik_startup_method_t a_vik_get_startup_method ( )

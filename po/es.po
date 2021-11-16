@@ -606,6 +606,12 @@ msgid ""
 "Edit->Layer Defaults->Map... to change the map type and other values."
 msgstr ""
 
+msgid "Show Scale:"
+msgstr "Mostrar escala:"
+
+msgid "Show Center Mark:"
+msgstr "Mostrar marca central:"
+
 msgid "Startup Method:"
 msgstr ""
 

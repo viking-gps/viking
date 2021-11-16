@@ -589,6 +589,9 @@ msgstr ""
 msgid "Highlight Color:"
 msgstr "Highlight Colour:"
 
+msgid "Show Center Mark:"
+msgstr "Show Centre Mark:"
+
 msgid "Startup Method:"
 msgstr ""
 

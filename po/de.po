@@ -629,6 +629,15 @@ msgstr ""
 "bestimmt. Verwenden Sie das Menü 'Bearbeiten' -> 'Ebenen-Standards' -> "
 "'Karte...', um den Kartentyp und andere Werte zu ändern."
 
+msgid "Show Scale:"
+msgstr "Maßstab anzeigen:"
+
+msgid "Show Center Mark:"
+msgstr "Zentrumsmarkierung anzeigen:"
+
+msgid "Show Highlight:"
+msgstr "Hervorhebung anzeigen:"
+
 msgid "Startup Method:"
 msgstr "Startmethode:"
 
