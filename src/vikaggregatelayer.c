@@ -926,7 +926,7 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
       return;
     }
 
-    const gdouble tilesize = 256 * shrinkfactor;
+    const gdouble tilesize = 256 * shrinkfactor * vik_viewport_get_scale ( vvp );
     gint xx_tmp, yy_tmp;
     map_utils_iTMS_to_center_vikcoord ( &ulm, &coord );
     vik_viewport_coord_to_screen ( vvp, &coord, &xx_tmp, &yy_tmp );
