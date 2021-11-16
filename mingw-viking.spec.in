@@ -85,7 +85,7 @@ popd
   --disable-mapnik \
   --disable-geoclue \
   --enable-windows \
-  CFLAGS="-DWINDOWS -DWIN32 -mwindows"
+  CFLAGS="-DWINDOWS -DWIN32 -mwindows -DCURL_NO_SSL_VERIFYPEER"
 
 %{_mingw32_make} %{?_smp_mflags}
 

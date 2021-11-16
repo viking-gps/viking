@@ -4589,9 +4589,10 @@ Accept: */*
 	    <para>See <ulink url="https://curl.haxx.se/libcurl/c/CURLOPT_CAINFO.html">CURLOPT_CAINFO</ulink></para>
 	  </listitem>
 	  <listitem>
-	    <para>curl_ssl_verifypeer=1</para>
+	    <para>For <trademark>UNIX</trademark> like systems: curl_ssl_verifypeer=1</para>
+	    <para>For <trademark>Windows</trademark> systems: curl_ssl_verifypeer=0</para>
 	    <para>See <ulink url="https://curl.haxx.se/libcurl/c/CURLOPT_SSL_VERIFYPEER.html">CURLOPT_SSL_VERIFYPEER</ulink></para>
-	    <note><para>If you encounter issues downloading from https sources (particularly on <trademark>Windows</trademark>, setting this to 0 should get HTTPS connections to work. For <trademark>UNIX</trademark> like operating systems SSL Certificate management is typically handled system wide and trusted certficate issuers updated regularly. Whereas for &appname; under Windows this is only done at installation/version update time and so may become out of date or encounter unknown sources and thus more likely to raise verification failures.</para></note>
+	    <note><para>If you encounter issues downloading from https sources, setting this to 0 should get HTTPS connections to work. For <trademark>UNIX</trademark> like operating systems SSL Certificate management is typically handled system wide and trusted certficate issuers updated regularly. Whereas for &appname; under Windows this is only done at installation/version update time and so may become out of date or encounter unknown sources and thus more likely to raise verification failures. Hence this is why is is turned off by default on <trademark>Windows</trademark> - especially to ensure the default Maps of OpenTopoMap work without manual user intervention.</para></note>
 	  </listitem>
 	  <listitem>
 	    <para>curl_user_agent=NULL</para>
