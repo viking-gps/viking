@@ -886,7 +886,11 @@ static void vik_gps_layer_free ( VikGpsLayer *vgl )
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   rt_gpsd_disconnect(vgl);
   gcs_free(vgl);
+  g_free ( vgl->gpsd_host );
+  g_free ( vgl->gpsd_port );
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
+  g_free ( vgl->protocol );
+  g_free ( vgl->serial_port );
 }
 
 static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter )

@@ -2215,6 +2215,7 @@ static void tac_clear ( VikAggregateLayer *val )
   g_hash_table_remove_all ( val->tiles ); // No memory to remove ATM
   g_hash_table_remove_all ( val->tiles_clust ); // No memory to remove ATM
   g_hash_table_remove_all ( val->tiles_new ); // No memory to remove ATM
+  // NB val->prev is not cleared at this point as needed for the later comparison
 }
 
 /**
@@ -2997,6 +2998,7 @@ void vik_aggregate_layer_free ( VikAggregateLayer *val )
     g_object_unref ( val->unreachable_pixbuf );
   g_hash_table_destroy ( val->tiles_clust );
   g_hash_table_destroy ( val->tiles_new );
+  g_hash_table_destroy ( val->prev );
 
   if ( val->hm_pixbuf )
     g_object_unref ( val->hm_pixbuf );

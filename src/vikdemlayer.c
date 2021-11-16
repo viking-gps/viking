@@ -1227,6 +1227,7 @@ static void dem_layer_free ( VikDEMLayer *vdl )
 {
   a_dems_list_free ( vdl->files );
 
+  g_free ( vdl->srtm_base_url );
   g_free ( vdl->height_colors );
   g_free ( vdl->gradient_colors );
 }
