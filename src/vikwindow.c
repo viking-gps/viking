@@ -5361,6 +5361,15 @@ static void clear_cb ( GtkAction *a, VikWindow *vw )
 
 static void window_close ( GtkAction *a, VikWindow *vw )
 {
+#if GTK_CHECK_VERSION (3,0,0)
+  // Deactivate current tool
+  if ( vw->vt->active_tool >= 0 && vw->vt->active_tool < vw->vt->n_tools )
+    if (vw->vt->tools[vw->vt->active_tool].ti.deactivate)
+      vw->vt->tools[vw->vt->active_tool].ti.deactivate ( NULL, vw->vt->tools[vw->vt->active_tool].state );
+  if ( vw->graphs_widgets )
+    vik_trw_layer_propwin_main_close ( vw->graphs_widgets );
+  vw->graphs_widgets = NULL;
+#endif
   if ( ! delete_event ( vw ) )
     gtk_widget_destroy ( GTK_WIDGET(vw) );
 }

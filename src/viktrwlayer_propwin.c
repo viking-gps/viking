@@ -183,6 +183,16 @@ static void prop_widgets_free(PropWidgets *widgets)
 #if !GTK_CHECK_VERSION (3,0,0)
     if ( widgets->graph_saved_img[pwgt].img )
       g_object_unref ( widgets->graph_saved_img[pwgt].img );
+#else
+    // Manually destroy cairo things
+    if ( widgets->cr_main[pwgt] )
+      cairo_destroy ( widgets->cr_main[pwgt] );
+    if ( widgets->surface_main[pwgt] )
+      cairo_surface_destroy ( widgets->surface_main[pwgt] );
+    if ( widgets->cr_2nd[pwgt] )
+      cairo_destroy ( widgets->cr_2nd[pwgt] );
+    if ( widgets->surface_2nd[pwgt] )
+      cairo_surface_destroy ( widgets->surface_2nd[pwgt] );
 #endif
     if ( widgets->values[pwgt] )
      g_free ( widgets->values[pwgt] );

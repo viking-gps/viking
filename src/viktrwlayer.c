@@ -247,6 +247,10 @@ struct _VikTrwLayer {
   gchar *external_file;
   gboolean external_loaded;
   gchar *external_dirpath;
+
+#if GTK_CHECK_VERSION (3,0,0)
+  cairo_t *cr; // Reference into vvp - thus do not free this here
+#endif
 };
 
 struct DrawingParams {
@@ -10893,13 +10897,14 @@ void vik_trw_layer_trackpoint_draw ( VikTrwLayer *vtl, VikViewport *vvp, VikTrac
   }
 
   // Workout the colour (NB ignoring 'by speed' mode as that requires more information)
-  const gchar *color;
-  if ( vtl->drawmode == DRAWMODE_BY_TRACK )
-    color = gdk_color_to_string ( &(trk->color) );
-  else
-    color = gdk_color_to_string ( &(vtl->track_color) );
+  gchar *color;
   if ( vik_viewport_get_draw_highlight(vvp) )
-    color = vik_viewport_get_highlight_color ( vvp );
+    color = g_strdup ( vik_viewport_get_highlight_color ( vvp ) );
+  else
+    if ( vtl->drawmode == DRAWMODE_BY_TRACK )
+      color = gdk_color_to_string ( &(trk->color) );
+    else
+      color = gdk_color_to_string ( &(vtl->track_color) );
 
   gint xd, yd;
   vik_viewport_coord_to_screen ( vvp, &(tpt->coord), &xd, &yd );
@@ -10909,22 +10914,32 @@ void vik_trw_layer_trackpoint_draw ( VikTrwLayer *vtl, VikViewport *vvp, VikTrac
   // Draw on existing tool surface if available
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
   VikToolInterface *vti = (VikToolInterface*)vik_window_get_active_tool_interface ( vw );
-  cairo_t *cr = NULL;
+  gboolean use_tool_surface = FALSE;
+  cairo_t *trkpt_cr = NULL;
   if ( vti )
     if ( vti->create == (VikToolConstructorFunc)tool_edit_create ) {
       tool_ed_t *te = (tool_ed_t*)vik_window_get_active_tool_data ( vw );
       if ( te && te->gc ) {
-        cr = te->gc;
+        use_tool_surface = TRUE;
+        trkpt_cr = te->gc;
         tool_edit_remove_image ( te );
       }
     }
   // Otherwise create surface to draw on
-  if ( !cr )
-    cr = vik_viewport_surface_tool_create ( vvp );
-  if ( cr ) {
-    ui_cr_set_color ( cr, color );
-    ui_cr_draw_rectangle ( cr, TRUE, xd-tp_size, yd-tp_size, 2*tp_size, 2*tp_size );
-    cairo_stroke ( cr );
+  if ( !use_tool_surface ) {
+    // For reasons I don't understand if we don't forceably remove and recreate the surface
+    //  i.e. the when the surface is reused, then GTK may choose to not redraw the viewport
+    ///  despite the queue_redraw() request below;
+    //  otherwise it only updates later on, e.g. when the mouse is moved back over the viewport.
+    if ( vtl->cr )
+      vik_viewport_surface_tool_destroy ( vvp );
+    vtl->cr = vik_viewport_surface_tool_create ( vvp );
+    trkpt_cr = vtl->cr;
+  }
+  if ( trkpt_cr ) {
+    ui_cr_set_color ( trkpt_cr, color );
+    ui_cr_draw_rectangle ( trkpt_cr, TRUE, xd-tp_size, yd-tp_size, 2*tp_size, 2*tp_size );
+    cairo_stroke ( trkpt_cr );
     gtk_widget_queue_draw ( GTK_WIDGET(vvp) );
   }
 #else
@@ -10963,6 +10978,7 @@ void vik_trw_layer_trackpoint_draw ( VikTrwLayer *vtl, VikViewport *vvp, VikTrac
   (void)g_idle_add_full ( G_PRIORITY_HIGH_IDLE + 10, draw_sync, passalong, NULL );
   vtl->draw_sync_done = FALSE;
 #endif
+  g_free ( color );
 }
 
 static gchar* distance_string (gdouble distance)
