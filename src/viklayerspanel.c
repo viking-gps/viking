@@ -284,11 +284,13 @@ void vik_layers_panel_calendar_update ( VikLayersPanel *vlp )
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   g_debug ( "%s: %f", __FUNCTION__, time_spent );
   // Downgrade automatic detail if taking too long
-  // Since ATM the detail method invokes x30 searches,
+  // Since ATM the detail method may invoke upto x30 searches,
   //  it could get noticably slow
   if ( vlp->cal_markup == VLP_CAL_MU_AUTO )
-    if ( time_spent > (0.5/30.0) )
+    if ( time_spent > (0.5/30.0) ) {
+      g_message ( "%s: detail level reduced as taking too long (%.5fs)", __FUNCTION__, time_spent );
       vlp->cal_markup = VLP_CAL_MU_MARKED;
+    }
 }
 
 static void layers_calendar_day_selected_dc_cb ( VikLayersPanel *vlp )
@@ -434,47 +436,52 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
   if ( amonth != month )
     return NULL;
 
-
-  GList *layers = vik_layers_panel_get_all_layers_of_type ( vlp, VIK_LAYER_TRW, TRUE );
-  if ( !layers )
-    return NULL;
-
-  gboolean need_to_break = FALSE;
   VikTrwLayer *vtl = NULL;
-  GDate *gd = g_date_new();
-  for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
-    vtl = VIK_TRW_LAYER(layer->data);
 
-    GHashTable *trks = vik_trw_layer_get_tracks ( vtl ); 
-    GHashTableIter iter;
-    gpointer key, value;
-    // Foreach Track
-    g_hash_table_iter_init ( &iter, trks );
-    while ( g_hash_table_iter_next ( &iter, &key, &value ) ) {
-      VikTrack *trk = VIK_TRACK(value);
-      // First trackpoint
-      if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
-        // Not worried about subsecond resolution here!
-        g_date_set_time_t ( gd, (time_t)VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
-        // Is of this day?
-        if ( g_date_get_year(gd) == year &&
-             g_date_get_month(gd) == (month+1) &&
-             g_date_get_day(gd) == day ) {
-          need_to_break = TRUE;
-	  break;
-	}
+  // By performing a check against only those days already marked we
+  //  can skip needless full searches - as it would not find any matches
+  if ( gtk_calendar_get_day_is_marked(calendar, day) ) {
+
+    GList *layers = vik_layers_panel_get_all_layers_of_type ( vlp, VIK_LAYER_TRW, TRUE );
+    if ( !layers )
+      return NULL;
+
+    gboolean need_to_break = FALSE;
+    GDate *gd = g_date_new();
+    for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
+      vtl = VIK_TRW_LAYER(layer->data);
+
+      GHashTable *trks = vik_trw_layer_get_tracks ( vtl );
+      GHashTableIter iter;
+      gpointer key, value;
+      // Foreach Track
+      g_hash_table_iter_init ( &iter, trks );
+      while ( g_hash_table_iter_next ( &iter, &key, &value ) ) {
+        VikTrack *trk = VIK_TRACK(value);
+        // First trackpoint
+        if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
+          // Not worried about subsecond resolution here!
+          g_date_set_time_t ( gd, (time_t)VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
+          // Is of this day?
+          if ( g_date_get_year(gd) == year &&
+               g_date_get_month(gd) == (month+1) &&
+               g_date_get_day(gd) == day ) {
+            need_to_break = TRUE;
+            break;
+          }
+        }
+        // Note that this does not attempt to analyse the tracks for multi day support
+        //  in order to keep this tooltip function as fast as possible
       }
-      // Note that this does not attempt to analyse the tracks for multi day support
-      //  in order to keep this tooltip function as fast as possible
-    }
-    // Fully exit
-    if ( need_to_break )
-      break;
+      // Fully exit
+      if ( need_to_break )
+        break;
     
-    vtl = NULL;
+      vtl = NULL;
+    }
+    g_date_free ( gd );
+    g_list_free ( layers );
   }
-  g_date_free ( gd );
-  g_list_free ( layers );
 
   if ( vtl)
     return g_strdup (vik_layer_get_name ( VIK_LAYER(vtl) ));

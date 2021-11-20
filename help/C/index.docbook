@@ -4627,7 +4627,10 @@ Accept: */*
 	  </listitem>
 	  <listitem>
 	    <para>layers_panel_calendar_markup_mode=3</para>
-	    <para>0=No markups. 1=Day marked. 2=Day marked and tooltips created. 3=Auto (timed tooltip creation, so if too slow it reverts to 1)</para>
+	    <para>0=No markups. 1=Day marked. 2=Day marked and tooltips created. 3=Auto (timed tooltip creation, so if too slow it reverts to 1).</para>
+            <para>
+              If the following message is shown in the message log:<blockquote><para><emphasis>vik_layers_panel_calendar_update: detail level reduced as taking too long</emphasis></para></blockquote>then consider setting this value to 2 - although with the caveat that calendar refreshes may introduce noticable delays.
+            </para>
 	  </listitem>
 	  <listitem>
 	    <para>maps_max_tiles=1000</para>
