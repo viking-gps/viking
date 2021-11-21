@@ -668,7 +668,7 @@ See the <link linkend="method_b">Getting Started</link> section for more info ab
   Only a limited number of devices are supported this way (e.g. Garmin Etrex Legend devices first available ~2003).
 </para>
 <para>
-  For the majority of current (circa 2010-2020) Garmin handheld devices and many other consumer handheld GPS devices (including SatNav style devices sush as the <trademark>Garmin Nuvi 255</trademark>) only support a native file system and write information to a <filename>Current.gpx</filename> file or similar. You will have to browse the file system on the device, opening it directly via <menuchoice><guimenu>File</guimenu><guimenuitem>Open</guimenuitem></menuchoice>.
+  For the majority of current (circa 2010-2020) Garmin handheld devices and many other consumer handheld GPS devices (including SatNav style devices such as the <trademark>Garmin Nuvi 255</trademark>) only support a native file system and write information to a <filename>Current.gpx</filename> file or similar. You will have to browse the file system on the device, opening it directly via <menuchoice><guimenu>File</guimenu><guimenuitem>Open</guimenuitem></menuchoice>.
 </para>
 <para>
   For modern (circa 2015 onwards) wearable devices such as Garmin Forerunner, Fitbit, Suuntu etc...,
