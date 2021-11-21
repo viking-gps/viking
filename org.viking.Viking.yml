@@ -46,8 +46,8 @@ modules:
     buildsystem: cmake-ninja
     sources:
       - type: archive
-        url: https://libzip.org/download/libzip-1.7.3.tar.xz
-        sha256: a60473ffdb7b4260c08bfa19c2ccea0438edac11193c3afbbb1f17fbcf6c6132
+        url: https://libzip.org/download/libzip-1.8.0.tar.xz
+        sha256: f0763bda24ba947e80430be787c4b068d8b6aa6027a26a19923f0acfa3dac97e
     cleanup:
       - /include
       - /lib/pkgconfig/
@@ -85,6 +85,10 @@ modules:
       - -Dintrospection=false
       - -Dlibdir=lib
     sources:
+# Note tried to update to gexiv2-0.14.0
+# But get ../meson.build:26:0: ERROR: python3 is missing modules: gi
+# Which I don't know how to resolve easily - the following might be relevant but I'm not going to pursue this any further ATM
+# https://docs.flatpak.org/en/latest/python.html
       - type: archive
         url: https://download.gnome.org/sources/gexiv2/0.12/gexiv2-0.12.1.tar.xz
         sha256: 8aeafd59653ea88f6b78cb03780ee9fd61a2f993070c5f0d0976bed93ac2bd77
@@ -99,15 +103,15 @@ modules:
 #
 # scons shamelessly copied from
 # https://github.com/scx/gpick-flatpak/blob/master/scons.yaml
-#  but revised cleanup
+#  but revised cleanup and updated version
 #
     modules:
       - name: scons
         buildsystem: simple
         sources:
         - type: archive
-          url: http://download.sourceforge.net/scons/scons-3.0.1.tar.gz
-          sha256: 24475e38d39c19683bc88054524df018fe6949d70fbd4c69e298d39a0269f173
+          url: http://download.sourceforge.net/scons/scons-3.1.2.tar.gz
+          sha256: 7801f3f62f654528e272df780be10c0e9337e897650b62ddcee9f39fde13f8fb
         build-commands:
           - python3 setup.py install --prefix="${FLATPAK_DEST}";
         cleanup:
@@ -118,8 +122,8 @@ modules:
     buildsystem: simple
     sources:
       - type: archive
-        url: http://download-mirror.savannah.gnu.org/releases/gpsd/gpsd-3.21.tar.xz
-        sha256: 5512a7d3c2e86be83c5555652e5b4cc9049e8878a4320be7f039eb1a7203e5f0
+        url: http://download-mirror.savannah.gnu.org/releases/gpsd/gpsd-3.23.1.tar.xz
+        sha256: ca2c466df783c57b8a07ad3f5c67943186d05befdc377de938ed111d1358a8c1
     build-commands:
       - scons minimal=yes shared=True gpsd=False gpsdclients=False prefix="${FLATPAK_DEST}" && scons install
     cleanup:
