@@ -179,8 +179,8 @@ else
 fi
 
 if [ "$HOSTTYPE" == "x86_64" ]; then
-	rename viking viking-win64 viking-[0-9].[0-9].[0-9].[0-9].exe
+	rename viking viking-win64 viking-[0-9]*.[0-9]*.[0-9]*.[0-9]*.exe
 else
-	rename viking viking-win32 viking-[0-9].[0-9].[0-9].[0-9].exe
+	rename viking viking-win32 viking-[0-9]*.[0-9]*.[0-9]*.[0-9]*.exe
 fi
 popd
