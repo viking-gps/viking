@@ -381,8 +381,9 @@ static void trw_layer_goto_waypoint ( menu_array_sublayer values );
 static void trw_layer_waypoint_gc_webpage ( menu_array_sublayer values );
 static void trw_layer_waypoint_webpage ( menu_array_sublayer values );
 
-static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer pass_along[5] );
-static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pass_along[5] );
+typedef gpointer menu_array_realize[5];
+static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, menu_array_realize pass_along );
+static void trw_layer_realize_track ( gpointer id, VikTrack *track, menu_array_realize pass_along );
 
 static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean before, gboolean is_route );
 static void trw_layer_cancel_current_tp ( VikTrwLayer *vtl, gboolean destroy );
@@ -3257,7 +3258,7 @@ GdkPixbuf* get_wp_sym_small ( gchar *symbol )
   return wp_icon;
 }
 
-static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pass_along[5] )
+static void trw_layer_realize_track ( gpointer id, VikTrack *track, menu_array_realize pass_along )
 {
   GtkTreeIter *new_iter = g_malloc(sizeof(GtkTreeIter));
 
@@ -3286,7 +3287,7 @@ static void trw_layer_realize_track ( gpointer id, VikTrack *track, gpointer pas
     vik_treeview_item_set_visible ( (VikTreeview *) pass_along[3], (GtkTreeIter *) pass_along[1], FALSE );
 }
 
-static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, gpointer pass_along[5] )
+static void trw_layer_realize_waypoint ( gpointer id, VikWaypoint *wp, menu_array_realize pass_along )
 {
   GtkTreeIter *new_iter = g_malloc(sizeof(GtkTreeIter));
 
@@ -3321,7 +3322,7 @@ static void trw_layer_add_sublayer_routes ( VikTrwLayer *vtl, VikTreeview *vt, G
 static void trw_layer_realize ( VikTrwLayer *vtl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
   GtkTreeIter iter2;
-  gpointer pass_along[5] = { &(vtl->tracks_iter), &iter2, vtl, vt, GINT_TO_POINTER(VIK_TRW_LAYER_SUBLAYER_TRACK) };
+  menu_array_realize pass_along = { &(vtl->tracks_iter), &iter2, vtl, vt, GINT_TO_POINTER(VIK_TRW_LAYER_SUBLAYER_TRACK) };
 
   if ( g_hash_table_size (vtl->tracks) > 0 ) {
     trw_layer_add_sublayer_tracks ( vtl, vt , layer_iter );
