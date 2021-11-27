@@ -376,7 +376,7 @@ static void trw_layer_delete_all_routes ( menu_array_layer values );
 static void trw_layer_delete_routes_from_selection ( menu_array_layer values );
 
 /* pop-up items */
-static void trw_layer_properties_item ( gpointer pass_along[7] ); //TODO??
+static void trw_layer_properties_item ( menu_array_sublayer values );
 static void trw_layer_goto_waypoint ( menu_array_sublayer values );
 static void trw_layer_waypoint_gc_webpage ( menu_array_sublayer values );
 static void trw_layer_waypoint_webpage ( menu_array_sublayer values );
