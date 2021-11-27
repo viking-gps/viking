@@ -234,6 +234,19 @@ msgid ""
 "this program; if not, write to the Free Software Foundation, Inc., 59 Temple "
 "Place, Suite 330, Boston, MA 02111-1307, USA"
 msgstr ""
+"Dette program er fri software; du kan redistribuere det og/eller modificere "
+"det under betingelserne i GNU General Public License som er publiceret af "
+"Free Software Foundation; enten version 2 af licensen, eller (efter dit "
+"valg) enhver senere version deraf.\n"
+"\n"
+"Dette program er distribueret i håb om at det vil gøre nytte, men UDEN NOGEN "
+"GARANTI; selv uden den Stiltiende garanti i købeloven eller tilpasning til "
+"noget bestemt formål. Læs GNU General Public License for yderligere "
+"detaljer.\n"
+"\n"
+"Du skulle have modtaget en kopi af GNU General Public License sammen med "
+"dette program, hvis ikke så skriv til Free Software Foundation, Inc., 59 "
+"Temple Place, Suite 330, Boston, MA 02111-1307, USA"
 
 msgid "Translation is coordinated on http://launchpad.net/viking"
 msgstr "Oversættelse er koordineret på http://launchpad.net/viking"
@@ -411,63 +424,65 @@ msgid "UTC"
 msgstr "UTC"
 
 msgid "Degree format:"
-msgstr ""
+msgstr "Gradformatt:"
 
 msgid "Distance units:"
-msgstr ""
+msgstr "Distanceenheder:"
 
 msgid "Speed units:"
-msgstr ""
+msgstr "Hastighedsenheder:"
 
 msgid "Height units:"
-msgstr ""
+msgstr "Højdeenheder:"
 
 msgid "Temperature units:"
-msgstr ""
+msgstr "Temperaturenheder:"
 
 msgid "Use large waypoint icons:"
-msgstr ""
+msgstr "Brug store waypoint ikoner:"
 
 msgid "Default latitude:"
-msgstr ""
+msgstr "Standard breddegrad:"
 
 msgid "Default longitude:"
-msgstr ""
+msgstr "Standard længdegrad:"
 
 msgid "Time Display:"
-msgstr ""
+msgstr "Tidsvisning:"
 
 msgid ""
 "Display times according to the reference frame. Locale is the user's system "
 "setting. World is relative to the location of the object."
 msgstr ""
+"Skærmtider ifølge referencerammen. Lokal er brugerens systemindstilling. "
+"Verden er relativ for lokationen af objektet."
 
 msgid "Alphabetical"
-msgstr ""
+msgstr "Alfabetisk"
 
 msgid "Time"
-msgstr ""
+msgstr "Tidspunkt"
 
 msgid "Creation"
-msgstr ""
+msgstr "Oprettelse"
 
 msgid "Title Case"
-msgstr ""
+msgstr "Titel STORE/små bogstaver"
 
 msgid "Lowercase"
-msgstr ""
+msgstr "Små bogstaver"
 
 msgid "KML File Export Units:"
-msgstr ""
+msgstr "KML Fil Eksportenheder:"
 
 msgid "KML File Export Track:"
-msgstr ""
+msgstr "KML fileksport spor:"
 
 msgid "Controls whether the <Track> tag is created"
-msgstr ""
+msgstr "Kontroller om <spor> mærket er oprettet"
 
 msgid "KML File Export Points:"
-msgstr ""
+msgstr "KML fileksportpoint:"
 
 msgid "Controls whether placemarks are created for every trackpoint"
 msgstr ""
