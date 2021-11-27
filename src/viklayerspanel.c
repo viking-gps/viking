@@ -234,7 +234,9 @@ static void calendar_mark_layer_in_month ( VikLayersPanel *vlp, VikTrwLayer *vtl
                  tpt->timestamp > tv1.tv_sec ) {
               g_date_set_time_t ( gd, (time_t)tpt->timestamp );
               if ( g_date_get_year(gd) == year && (g_date_get_month(gd) == (month+1)) )
+#if GTK_CHECK_VERSION(3,0,0)
                 if ( !gtk_calendar_get_day_is_marked(GTK_CALENDAR(vlp->calendar), g_date_get_day(gd)) )
+#endif
                   gtk_calendar_mark_day ( GTK_CALENDAR(vlp->calendar), g_date_get_day(gd) );
             }
           }
@@ -440,7 +442,10 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
 
   // By performing a check against only those days already marked we
   //  can skip needless full searches - as it would not find any matches
-  if ( gtk_calendar_get_day_is_marked(calendar, day) ) {
+#if GTK_CHECK_VERSION(3,0,0)
+  if ( gtk_calendar_get_day_is_marked(calendar, day) )
+#endif
+  {
 
     GList *layers = vik_layers_panel_get_all_layers_of_type ( vlp, VIK_LAYER_TRW, TRUE );
     if ( !layers )
