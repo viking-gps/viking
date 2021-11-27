@@ -3,9 +3,9 @@
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
   <!ENTITY appname          "Viking">
   <!ENTITY app "<application>Viking</application>">
-  <!ENTITY appversion   "1.9">
-  <!ENTITY manrevision  "1.9">
-  <!ENTITY date "March 2021">
+  <!ENTITY appversion   "1.10">
+  <!ENTITY manrevision  "1.10">
+  <!ENTITY date "November 2021">
   <!ENTITY extfiles    "<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>, <filename>datasources.xml</filename>, <filename>external_tools.xml</filename>, <filename>routing.xml</filename>">
 ]>
 <!-- =============Document Header ============================= -->

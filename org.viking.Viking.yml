@@ -163,7 +163,7 @@ modules:
       - type: git
         url: git://git.code.sf.net/p/viking/code
 #        branch: "viking-1.8-flatpak"
-        branch: "viking-1.9"
+        branch: "viking-1.10"
 # Local path for testing
 #      - type: archive
 #        path: viking-1.8.zip

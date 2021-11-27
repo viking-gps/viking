@@ -1,3 +1,29 @@
+Viking 1.10 (2021-11-27)
+New features since 1.9
+* SF Features #11: Add Exit Warning if something modified.
+* TAC: Ability to count and display newly covered tiles
+* Github #134: Support 'geo:' URIs on the commmand line
+* Calendar supports marking of multi-day tracks
+* More Preferences for initial conditions
+** Including the default zoom, showing of the centermark and the scale
+* Ability to rename a track based on it's start date
+* Allow global HTTP User-Agent override
+* Draw overlays on track graphs as a line
+* Many Internal Improvements + Fixes
+* Large Basque and Danish language translation updates
+
+Fixes since 1.9
+* SF Bugs#160: Windows - Fix handling special characters in filenames
+* Github #68: Windows - Improved Data Path Determination
+* Github #119: Fix build on OpenBSD
+* Github #122: Fix Image Generation under GTK3
+* Github #126: Fix URL for OSRM Foot routing
+* Github #128: Maintain datasource_gc.c such that it at least compiles
+* Github #131: Fix build error with --disable-libzip
+* Github #136: [WINDOWS] Build compatibility for Windows 7
+* Github #137: Ensure don't create invalid GPX export when given invalid input
+* Github #139: [WINDOWS] Ensure the default map (OpenTopoMap) works.
+
 Viking 1.9 (2021-03-20)
 New features since 1.8
 * GPX 1.1 Support for most common Extensions (inc. Heart Rate, Power, Temperature & Cadence)
