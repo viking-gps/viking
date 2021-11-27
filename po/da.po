@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>\n"
+"Last-Translator: Jimmy Frydkær Jensen <jimmy@frydkaer.net>\n"
 "Language-Team: Danish <da@li.org>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
@@ -19,10 +19,10 @@ msgid "Done."
 msgstr "Færdig."
 
 msgid "No data."
-msgstr ""
+msgstr "Ingen data"
 
 msgid "Error: acquisition failed."
-msgstr ""
+msgstr "Fejl: erhvervelse mislykkedes"
 
 msgid "Working..."
 msgstr "Arbejder..."
@@ -32,49 +32,55 @@ msgid ""
 "Unable to create command\n"
 "Acquire method failed."
 msgstr ""
+"Kan ikke oprette kommando\n"
+"erhvervelse metode mislykkedes."
 
 msgid "_Filter"
-msgstr ""
+msgstr "_Filter"
 
 #, c-format
 msgid "Filter with %s"
-msgstr ""
+msgstr "Filtrer med %s"
 
 msgid "Filter"
-msgstr ""
+msgstr "Filtrer"
 
 msgid "GPSBabel:"
-msgstr ""
+msgstr "GPSBabel:"
 
 msgid ""
 "Allow setting the specific instance of GPSBabel. You must restart Viking for "
 "this value to take effect."
 msgstr ""
+"Tillad at indstille det specifikke eksempel af GPSBabel. Du skal genstarte "
+"Viking for at denne værdi kan har effekt."
 
 msgid "Select a file format"
-msgstr ""
+msgstr "Vælg et filformat"
 
 msgid "Tracks"
 msgstr "Spor"
 
 msgid "Routes"
-msgstr ""
+msgstr "Ruter"
 
 #. ***** PARAMETERS *****
 msgid "Waypoints"
-msgstr ""
+msgstr "Waypoints"
 
 #, c-format
 msgid "%d items"
 msgstr "%d emner"
 
 msgid "Threads:"
-msgstr ""
+msgstr "Tråde:"
 
 msgid ""
 "Number of threads to use for Mapnik tasks. You need to restart Viking for a "
 "change to this value to be used"
 msgstr ""
+"Antal tråde til brug for Mapnik opgaver. Du skal genstarte Viking for at "
+"dette har effekt."
 
 msgid "Job"
 msgstr "Opgave"
@@ -86,70 +92,73 @@ msgid "Viking Background Jobs"
 msgstr "Viking baggrundsjob"
 
 msgid "Bing Aerial"
-msgstr ""
+msgstr "Bing Antenne"
 
 msgid "Bing"
-msgstr ""
+msgstr "Bing"
 
 #. VIK_GTK_WINDOW_FROM_WIDGET(vp)
 msgid "Bing attribution Loading"
-msgstr ""
+msgstr "Bing attribution indlæser"
 
 msgid "paste failed"
-msgstr ""
+msgstr "Indsæt mislykkedes"
 
 msgid "wrong clipboard data size"
-msgstr ""
+msgstr "Forkert udklipsholderdata størrelse"
 
 #, c-format
 msgid ""
 "The clipboard contains sublayer data for %s layers. You must select a layer "
 "of this type to paste the clipboard data."
 msgstr ""
+"Udklipsholderen indeholder Underlags-data for %s lag. Du skal vælge et lag "
+"af denne type for at indsætte udklipsholderens data."
 
 msgid ""
 "In order to paste a waypoint, please select an appropriate layer to paste "
 "into."
 msgstr ""
+"For at indsætte et waypoint, venligst vælg et passende lag at indsætte ind i."
 
 msgid "Go to Lat/Lon"
-msgstr ""
+msgstr "Gå til Lat/Lon"
 
 msgid "Latitude:"
 msgstr "Breddegrad:"
 
 msgid "This can accept extended lat/lon formats"
-msgstr ""
+msgstr "Dette kan acceptere udviddet lat/lon formater"
 
 msgid "Longitude:"
 msgstr "Længdegrad:"
 
 msgid "Go to UTM"
-msgstr ""
+msgstr "Gå til UTM"
 
 msgid "Northing:"
-msgstr ""
+msgstr "Nordpå:"
 
 msgid "Easting:"
-msgstr ""
+msgstr "Østpå:"
 
 msgid "Zone:"
 msgstr "Zone:"
 
 msgid "Letter:"
-msgstr ""
+msgstr "Brev:"
 
 msgid "Nothing was selected"
-msgstr ""
+msgstr "Ingenting er vælgt"
 
 msgid "Add Route"
-msgstr ""
+msgstr "Tilføj rute"
 
 msgid "Add Track"
 msgstr "Tilføj spor"
 
 msgid "Route Name:"
-msgstr ""
+msgstr "Rutenavn"
 
 msgid "Track Name:"
 msgstr "Spornavn:"
@@ -158,31 +167,31 @@ msgid "Please enter a name for the track."
 msgstr "Indtast venligst et navn for sporet."
 
 msgid "Today"
-msgstr ""
+msgstr "I dag"
 
 msgid "Question"
-msgstr ""
+msgstr "Spørgsmål"
 
 msgid "Do not show this message again"
-msgstr ""
+msgstr "Vis ikke meddelelsen igen"
 
 msgid "\"Yes\" will be applied automatically in the future"
-msgstr ""
+msgstr "\"Ja\" vil blive tilføjet automatisk i fremtiden"
 
 msgid "Zoom Factors..."
 msgstr "Zoom faktor..."
 
 msgid "Zoom factor (in meters per pixel):"
-msgstr ""
+msgstr "Zoom factor (i meter per pixel):"
 
 msgid "X (easting): "
-msgstr ""
+msgstr "X (østpå): "
 
 msgid "Y (northing): "
-msgstr ""
+msgstr "Y (nordpå): "
 
 msgid "X and Y zoom factors must be equal"
-msgstr ""
+msgstr "X og Y zoomfaktor skal være lige"
 
 msgid "1 min"
 msgstr "1 min"
@@ -191,22 +200,24 @@ msgid "1 hour"
 msgstr "1 time"
 
 msgid "6 hours"
-msgstr ""
+msgstr "6 timer"
 
 msgid "1 day"
 msgstr "1 dag"
 
 msgid "Custom (in minutes):"
-msgstr ""
+msgstr "Tilfældig ( i minutter):"
 
 #, c-format
 msgid ""
 "2003-2008, Evan Battaglia\n"
 "2008-%s, Viking's contributors"
 msgstr ""
+"2003-2008, Evan Battaglia\n"
+"2008-%s, Viking's contributors"
 
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
-msgstr ""
+msgstr "GPS Data og Topo Analyzer, Explorer, and Manager."
 
 msgid ""
 "This program is free software; you can redistribute it and/or modify it "
@@ -225,10 +236,10 @@ msgid ""
 msgstr ""
 
 msgid "Translation is coordinated on http://launchpad.net/viking"
-msgstr ""
+msgstr "Oversættelse er koordineret på http://launchpad.net/viking"
 
 msgid "Download along track"
-msgstr ""
+msgstr "Download langs spor"
 
 msgid "Map type:"
 msgstr "Korttype:"
@@ -238,157 +249,166 @@ msgstr "Zoom niveau:"
 
 #, c-format
 msgid "The map data is licensed: %s."
-msgstr ""
+msgstr "Kortdataene er licenseret: %s"
 
 #, c-format
 msgid ""
 "The data provided by '<b>%s</b>' are licensed under the following license: "
 "<b>%s</b>."
 msgstr ""
+"Data givet af '<b>%s</b>er udgivet under den følgende licens: <b>%s</b>"
 
 msgid "Open license"
-msgstr ""
+msgstr "Åben licens"
 
 msgid "Expedia Street Maps"
 msgstr "Expedia vejkort"
 
 msgid "Invalid expedia altitude"
-msgstr ""
+msgstr "Ugyldig expedia højde"
 
 #, c-format
 msgid ""
 "Couldn't open EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
+"Kunne ikke åbne EXPEDIA billedefil (lige efter succesfuld download! Venligst "
+"rapporter og slet billedefil!): %s"
 
 #, c-format
 msgid ""
 "Couldn't save EXPEDIA image file (right after successful download! Please "
 "report and delete image file!): %s"
 msgstr ""
+"Kunne ikke gemme EXPEDIA billedefil (lige efter succesfuld download! "
+"Venligst rapporter og slet billedefil!): %s"
 
 msgid "(none)"
 msgstr "(ingen)"
 
 msgid "Search"
-msgstr "Søgning"
+msgstr "Søg"
 
 msgid "No entries found!"
-msgstr ""
+msgstr "Ingen poster fundet!"
 
 #. NB could allow columns to be shifted around by doing this after each new
 #. gtk_tree_view_column_set_reorderable ( column, TRUE );
 #. However I don't think is that useful, so I haven't put it in
 msgid "Name"
-msgstr ""
+msgstr "Navn"
 
 msgid "Feature"
-msgstr ""
+msgstr "Funktioner"
 
 msgid "Lat/Lon"
-msgstr ""
+msgstr "Lat/Lon"
 
 msgid "couldn't map temp file"
-msgstr ""
+msgstr "Kunne ikke kortlægge tempfil"
 
 msgid "Select articles"
-msgstr ""
+msgstr "Vælg artikler"
 
 msgid "Select the articles you want to add."
-msgstr ""
+msgstr "Vælg de artiker du ønsker at tilføje."
 
 msgid "city"
-msgstr ""
+msgstr "by"
 
 msgid "edu"
-msgstr ""
+msgstr "edu"
 
 msgid "airport"
-msgstr ""
+msgstr "lufthavn"
 
 msgid "mountain"
-msgstr ""
+msgstr "bjerg"
 
 msgid "forest"
-msgstr ""
+msgstr "skov"
 
 msgid "church"
-msgstr ""
+msgstr "kirke"
 
 #, c-format
 msgid "%s command failed: %s"
-msgstr ""
+msgstr "%s kommando fejlede: %s"
 
 #, c-format
 msgid "failed to open temporary file: %s"
 msgstr "det mislykkedes at åbne midlertidig fil: %s"
 
+#. Potentially could try to be more clever with the name...
+msgid "OSRM Route"
+msgstr "OSRM Rute"
+
 msgid "DDD"
-msgstr ""
+msgstr "DDD"
 
 msgid "DMM"
-msgstr ""
+msgstr "DMM"
 
 msgid "DMS"
-msgstr ""
+msgstr "DMS"
 
 msgid "Raw"
-msgstr ""
+msgstr "Rå"
 
 msgid "Kilometres"
-msgstr ""
+msgstr "Kilometer"
 
 msgid "Miles"
-msgstr ""
+msgstr "Mil"
 
 msgid "Nautical Miles"
-msgstr ""
+msgstr "Sømil"
 
 #. VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
 msgid "km/h"
-msgstr ""
+msgstr "km/t"
 
 msgid "mph"
-msgstr ""
+msgstr "mph"
 
 msgid "m/s"
-msgstr ""
+msgstr "m/s"
 
 msgid "knots"
-msgstr ""
+msgstr "knob"
 
 msgid "s/km"
-msgstr ""
+msgstr "s/km"
 
 msgid "min/km"
-msgstr ""
+msgstr "min/km"
 
 msgid "s/mi"
-msgstr ""
+msgstr "s/mi"
 
 msgid "min/mi"
-msgstr ""
+msgstr "min/mi"
 
 msgid "Metres"
-msgstr ""
+msgstr "Meter"
 
 msgid "Feet"
-msgstr ""
+msgstr "Fod"
 
 msgid "Celsius"
-msgstr ""
+msgstr "Celsius"
 
 msgid "Fahrenheit"
-msgstr ""
+msgstr "Fahrenheit"
 
 msgid "Locale"
-msgstr ""
+msgstr "National"
 
 msgid "World"
-msgstr ""
+msgstr "Verden"
 
 msgid "UTC"
-msgstr ""
+msgstr "UTC"
 
 msgid "Degree format:"
 msgstr ""
