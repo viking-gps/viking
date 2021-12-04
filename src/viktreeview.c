@@ -985,3 +985,38 @@ static gboolean vik_treeview_drag_data_delete ( GtkTreeDragSource *drag_source, 
   g_free(s_dest);
   return FALSE;
 }
+
+#define VIK_SETTINGS_TV_DISABLE_KEY_F2 "treeview_disable_key_F2"
+/**
+ * vik_treeview_key_press:
+ *
+ *  Specific key handling
+ *
+ * Returns: Whether the key press was handled
+ */
+gboolean vik_treeview_key_press ( VikTreeview *vt, GdkEventKey *event )
+{
+  // If one is used to using Windows a lot; or indeed you are using Windows
+  //   you want 'F2' to enable edit of the name (i.e. 'rename')
+  //  GTK doesn't seem to support this - even though 'F2' is part of the HIGv2.0
+  // Remember to check for 'F2' on it's own, i.e. ignore Alt+F2 etc...
+  GdkModifierType modifiers = event->state & gtk_accelerator_get_default_mod_mask();
+  if ( event->keyval == GDK_KEY_F2 && !modifiers ) {
+    // AFAIK 'F2' is not used elsewhere - but allow disabling it in case of conflicts
+    gboolean disable_F2;
+    (void)a_settings_get_boolean ( VIK_SETTINGS_TV_DISABLE_KEY_F2, &disable_F2 );
+    if ( !disable_F2 ) {
+      GtkTreeView *tree_view = GTK_TREE_VIEW ( vt );
+      GtkTreePath *path;
+      gtk_tree_view_get_cursor ( tree_view, &path, NULL );
+      if ( path ) {
+        GtkTreeIter iter;
+        if ( gtk_tree_model_get_iter (GTK_TREE_MODEL(vt->model), &iter, path) )
+          gtk_tree_view_set_cursor ( tree_view, path, gtk_tree_view_get_column(tree_view, NAME_COLUMN), !vt->editing );
+        gtk_tree_path_free ( path );
+      }
+      return TRUE;
+    }
+  }
+  return FALSE;
+}

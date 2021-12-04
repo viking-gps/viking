@@ -381,6 +381,7 @@ By default some function keys follow standard GUI behaviour:
 </para>
 <itemizedlist>
 <listitem><para><keycap>F1</keycap> Help (view this manual)</para></listitem>
+<listitem><para><keycap>F2</keycap> Rename (the selected layer - only in the Layers Panel)</para></listitem>
 <listitem><para><keycap>F5</keycap> or <keycap>Ctrl+R</keycap> Refresh the maps on screen</para></listitem>
 <listitem><para><keycap>F10</keycap> Select the Menubar (in built behaviour)</para></listitem>
 <listitem><para><keycap>F11</keycap> Full Screen</para></listitem>

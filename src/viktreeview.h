@@ -102,6 +102,8 @@ gboolean vik_treeview_get_iter_with_name ( VikTreeview *vt, GtkTreeIter *iter, G
 
 void vik_treeview_sort_children ( VikTreeview *vt, GtkTreeIter *parent, vik_layer_sort_order_t order );
 
+gboolean vik_treeview_key_press ( VikTreeview *vt, GdkEventKey *event );
+
 G_END_DECLS
 
 #endif

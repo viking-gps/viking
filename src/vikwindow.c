@@ -1360,6 +1360,9 @@ static gboolean key_press_event_vlp ( VikWindow *vw, GdkEventKey *event, gpointe
   if ( key_press_event_common(vw, event, data) )
     return TRUE; // handled keypress
 
+  if ( vik_layers_panel_key_press(vw->viking_vlp, event) )
+    return TRUE; // handled keypress
+
   return FALSE; // don't handle the keypress
 }
 

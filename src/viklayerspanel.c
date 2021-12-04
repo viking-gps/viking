@@ -1377,3 +1377,15 @@ void vik_layers_panel_set_preferences ( VikLayersPanel *vlp )
   g_value_set_boolean ( &sd, a_vik_get_calendar_show_day_names() );
   g_object_set_property ( G_OBJECT(vlp->calendar), "show-day-names", &sd );
 }
+
+/**
+ * vik_layers_panel_press:
+ *
+ *  Specific key handling
+ *
+ * Returns: Whether the key press was handled
+ */
+gboolean vik_layers_panel_key_press ( VikLayersPanel *vlp, GdkEventKey *event )
+{
+  return vik_treeview_key_press ( vlp->vt, event );
+}

@@ -83,6 +83,7 @@ void vik_layers_panel_calendar_update ( VikLayersPanel *vlp );
 void vik_layers_panel_calendar_today ( VikLayersPanel *vlp );
 void vik_layers_panel_calendar_date ( VikLayersPanel *vlp, time_t timestamp );
 void vik_layers_panel_set_preferences ( VikLayersPanel *vlp );
+gboolean vik_layers_panel_key_press ( VikLayersPanel *vlp, GdkEventKey *event );
 
 G_END_DECLS
 
