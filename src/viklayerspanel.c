@@ -1088,6 +1088,9 @@ gboolean vik_layers_panel_paste_selected ( VikLayersPanel *vlp )
   if ( ! vik_treeview_get_selected_iter ( vlp->vt, &iter ) )
     /* Nothing to do */
     return FALSE;
+  // Do not try to perform own specialist paste when editing
+  if ( vik_treeview_get_editing(vlp->vt) )
+    return FALSE;
   return a_clipboard_paste ( vlp );
 }
 
