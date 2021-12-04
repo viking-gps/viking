@@ -608,9 +608,9 @@ gboolean vik_treeview_get_iter_at_pos ( VikTreeview *vt, GtkTreeIter *iter, gint
   if ( ! path )
     return FALSE;
 
-  gtk_tree_model_get_iter (GTK_TREE_MODEL(vt->model), iter, path);
+  gboolean ans = gtk_tree_model_get_iter (GTK_TREE_MODEL(vt->model), iter, path);
   gtk_tree_path_free ( path );
-  return TRUE;
+  return ans;
 }
 
 /* Option to ensure visible */
@@ -933,7 +933,8 @@ static gboolean vik_treeview_drag_data_received (GtkTreeDragDest *drag_dest, Gtk
 
     dest_cp = gtk_tree_path_copy (dest);
 
-    gtk_tree_model_get_iter_first(tree_model, &root_iter);
+    if ( !gtk_tree_model_get_iter_first(tree_model, &root_iter) )
+      goto out;
     TREEVIEW_GET(tree_model, &root_iter, ITEM_POINTER_COLUMN, &vl);
     vt = vl->vt;
 
@@ -943,7 +944,7 @@ static gboolean vik_treeview_drag_data_received (GtkTreeDragDest *drag_dest, Gtk
       /* Find the first ancestor that is a full layer, and store in dest_parent. */
       do {
 	gtk_tree_path_up(dest_cp);
-	gtk_tree_model_get_iter (src_model, &dest_parent, dest_cp);
+	(void)gtk_tree_model_get_iter (src_model, &dest_parent, dest_cp);
       } while (gtk_tree_path_get_depth(dest_cp)>1 &&
 	       vik_treeview_item_get_type(vt, &dest_parent) != VIK_TREEVIEW_TYPE_LAYER);
 
