@@ -6104,9 +6104,11 @@ a_register_icon ( GtkIconFactory *icon_factory, const gchar *name )
 }
 
 // NB Also see GNOME/GTK Standard keys
-// https://developer.gnome.org/hig/stable/keyboard-input.html.en
+//  GNOME Human Interface Guidelines (HIG) (v2.0)
 // So for example that's why F8 & F10 aren't used.
 //  (some of these are handled externally, thus Viking doesn't get notified anyway)
+// NB the latest (unspecified version? / reflects GTK4 at time of writing) doesn't even mention any Function keys at all!
+//  https://developer.gnome.org/hig/reference/keyboard.html
 // Unfortunately F6 was used (for the 'Show Center Mark') starting back in 2010,
 //  so this is left as is in case anyone is used to it.
 
