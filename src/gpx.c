@@ -1824,18 +1824,20 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
 
   gpx_write_header ( f, vtl, &context );
 
-  //gchar *tmp;
   const gchar *name = vik_layer_get_name(VIK_LAYER(vtl));
-  write_string ( f, TRK_SPACES, "name", name );
 
   gpx_version_t version = vik_trw_layer_get_gpx_version(vtl);
   if ( options )
     version = options->version;
 
+  if ( version == GPX_V1_0 )
+    write_string ( f, TRK_SPACES, "name", name );
+
   VikTRWMetadata *md = vik_trw_layer_get_metadata (vtl);
   if ( md ) {
     if ( version == GPX_V1_1 ) {
       fprintf ( f, "  <metadata>\n" );
+      write_string ( f, 4, "name", name );
       if ( md->author && strlen(md->author) > 0 )
         fprintf ( f, "    <author><name>%s</name></author>\n", md->author );
       write_string ( f, 4, "desc", md->description );
@@ -1851,6 +1853,13 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
       write_string ( f, TRK_SPACES, "url", md->url );
       write_string ( f, TRK_SPACES, "time", md->timestamp );
       write_string ( f, TRK_SPACES, "keywords", md->keywords );
+    }
+  }
+  else {
+    if ( version == GPX_V1_1 ) {
+      fprintf ( f, "  <metadata>\n" );
+      write_string ( f, 4, "name", name );
+      fprintf ( f, "  </metadata>\n" );
     }
   }
 
