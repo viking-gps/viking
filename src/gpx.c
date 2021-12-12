@@ -168,6 +168,7 @@ static tag_mapping tag_path_map[] = {
         { tt_wpt_url, "/gpx/wpt/url" },
         { tt_wpt_url_name, "/gpx/wpt/url_name" },            // GPX 1.0 only
         { tt_wpt_link, "/gpx/wpt/link" },                    /* GPX 1.1 */
+        { tt_wpt_url_name, "/gpx/wpt/link/text" },           /* GPX 1.1 */
         { tt_wpt_fix,  "/gpx/wpt/fix" },
         { tt_wpt_sat, "/gpx/wpt/sat" },
         { tt_wpt_hdop, "/gpx/wpt/hdop" },
@@ -1525,7 +1526,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   write_string ( f, WPT_SPACES, "src", wp->source );
 
   if ( wp->url && context->options && context->options->version == GPX_V1_1 ) {
-    write_link ( f, WPT_SPACES, wp->url, NULL );
+    write_link ( f, WPT_SPACES, wp->url, wp->url_name );
   } else {
     write_string ( f, WPT_SPACES, "url", wp->url );
     write_string ( f, WPT_SPACES, "urlname", wp->url_name );
