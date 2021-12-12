@@ -415,6 +415,12 @@ static gboolean layers_calendar_button_press_cb ( VikLayersPanel *vlp, GdkEventB
   return FALSE;
 }
 
+/**
+ * calendar_detail:
+ *
+ *  Returns: a string for the specific day for use as a tooltip
+ *
+ */
 static gchar *calendar_detail ( GtkCalendar *calendar,
                                 guint year,
                                 guint month,
@@ -489,7 +495,7 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
   }
 
   if ( vtl)
-    return g_strdup (vik_layer_get_name ( VIK_LAYER(vtl) ));
+    return g_markup_escape_text ( vik_layer_get_name(VIK_LAYER(vtl)), -1 );
 
   return NULL;
 }
