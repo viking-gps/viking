@@ -1444,6 +1444,17 @@ static void write_string_as_is ( FILE *ff, guint spaces, const gchar *tag, const
   }
 }
 
+static void write_link ( FILE *ff, guint spaces, const gchar *link, const gchar *text )
+{
+  if ( link && strlen(link) && text && strlen(text) ) {
+    gchar *tmp = entitize ( text );
+    fprintf ( ff, "%*s<link href=\"%s\"><text>%s</text></link>\n", spaces, "", link, text );
+    g_free ( tmp );
+  } else if ( link && strlen(link) ) {
+    fprintf ( ff, "%*s<link href=\"%s\"></link>\n", spaces, "", link );
+  }
+}
+
 #define WPT_SPACES 2
 
 /**
@@ -1502,7 +1513,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   write_string ( f, WPT_SPACES, "src", wp->source );
 
   if ( wp->url && context->options && context->options->version == GPX_V1_1 ) {
-    fprintf ( f, "  <link href=\"%s\"></link>\n", wp->url );
+    write_link ( f, WPT_SPACES, wp->url, NULL );
   } else {
     write_string ( f, WPT_SPACES, "url", wp->url );
     write_string ( f, WPT_SPACES, "urlname", wp->url_name );
@@ -1521,7 +1532,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
     }
     if ( !tmp )
       tmp = gtk_html_filename_to_uri ( wp->image );
-    fprintf ( f, "  <link href=\"%s\"></link>\n", tmp );
+    write_link ( f, WPT_SPACES, tmp, NULL );
     g_free ( tmp );
   }
 
@@ -1841,8 +1852,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
       if ( md->author && strlen(md->author) > 0 )
         fprintf ( f, "    <author><name>%s</name></author>\n", md->author );
       write_string ( f, 4, "desc", md->description );
-      if ( md->url && strlen(md->url) > 0 )
-        fprintf ( f, "    <link href=\"%s\"></link>\n", md->url );
+      write_link ( f, 4, md->url, NULL );
       write_string ( f, 4, "time", md->timestamp );
       write_string ( f, 4, "keywords", md->keywords );
       fprintf ( f, "  </metadata>\n" );
