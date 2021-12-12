@@ -748,6 +748,7 @@ VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "metadatatime", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Creation Time"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
   { VIK_LAYER_TRW, "metadatakeywords", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("Keywords"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
   { VIK_LAYER_TRW, "metadataurl", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("URL"), VIK_LAYER_WIDGET_ENTRY_URL, NULL, NULL, NULL, string_default, NULL, NULL },
+  { VIK_LAYER_TRW, "metadataurlname", VIK_LAYER_PARAM_STRING, GROUP_METADATA, N_("URL Text"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, string_default, NULL, NULL },
 
   { VIK_LAYER_TRW, "gpx_version_enum", VIK_LAYER_PARAM_UINT, GROUP_FILESYSTEM, N_("GPX Version"), VIK_LAYER_WIDGET_COMBOBOX, params_gpx_version, NULL, NULL, gpx_version_default, NULL, NULL },
   { VIK_LAYER_TRW, "external_layer", VIK_LAYER_PARAM_UINT, GROUP_FILESYSTEM, N_("External layer:"), VIK_LAYER_WIDGET_COMBOBOX, params_external_type, NULL, N_("Layer data stored in the Viking file, in an external file, or in an external file but changes are not written to the file (file only loaded at startup)"), external_layer_default, NULL, NULL },
@@ -806,6 +807,7 @@ enum {
   PARAM_MDTIME,
   PARAM_MDKEYS,
   PARAM_MDURL,
+  PARAM_MDURLNAME,
   // Filesystem
   PARAM_GPXV,
   PARAM_EXTL,
@@ -1092,6 +1094,7 @@ void vik_trw_metadata_free ( VikTRWMetadata *metadata)
   g_free (metadata->timestamp);
   g_free (metadata->keywords);
   g_free (metadata->url);
+  g_free (metadata->url_name);
   g_free (metadata);
 }
 
@@ -1664,6 +1667,11 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
         changed = vik_layer_param_change_string ( vlsp->data, &vtl->metadata->url );
       }
       break;
+    case PARAM_MDURLNAME:
+      if ( vlsp->data.s && vtl->metadata ) {
+        changed = vik_layer_param_change_string ( vlsp->data, &vtl->metadata->url_name );
+      }
+      break;
     // Filesystem
     case PARAM_GPXV:
       if ( vlsp->data.u <= GPX_V1_1 )
@@ -1738,6 +1746,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_MDTIME: if (vtl->metadata) { rv.s = vtl->metadata->timestamp; } break;
     case PARAM_MDKEYS: if (vtl->metadata) { rv.s = vtl->metadata->keywords; } break;
     case PARAM_MDURL:  if (vtl->metadata) { rv.s = vtl->metadata->url; } break;
+    case PARAM_MDURLNAME: if (vtl->metadata) { rv.s = vtl->metadata->url_name; } break;
     // Filesystem
     case PARAM_GPXV: rv.u = vtl->gpx_version; break;
     case PARAM_EXTL: rv.u = vtl->external_layer; break;

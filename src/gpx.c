@@ -39,6 +39,7 @@ typedef enum {
         tt_gpx_desc,
         tt_gpx_author,
         tt_gpx_url,
+        tt_gpx_url_name,
         tt_gpx_time,
         tt_gpx_keywords,
         tt_gpx_extensions,      // GPX 1.1
@@ -132,6 +133,7 @@ static tag_mapping tag_path_map[] = {
         { tt_gpx_desc, "/gpx/desc" },
         { tt_gpx_author, "/gpx/author" },
         { tt_gpx_url, "/gpx/url" },
+        { tt_gpx_url_name, "/gpx/urlname" },
         { tt_gpx_time, "/gpx/time" },
         { tt_gpx_keywords, "/gpx/keywords" },
 
@@ -141,6 +143,7 @@ static tag_mapping tag_path_map[] = {
         { tt_gpx_author, "/gpx/metadata/author/name" },
         { tt_gpx_time, "/gpx/metadata/time" },
         { tt_gpx_url, "/gpx/metadata/link" },
+        { tt_gpx_url_name, "/gpx/metadata/link/text" },
         { tt_gpx_keywords, "/gpx/metadata/keywords" },
 
         { tt_wpt, "/gpx/wpt" },
@@ -571,6 +574,7 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
      case tt_wpt_link:
        c_link = get_attr ( attr, "href" );
        break;
+     case tt_gpx_url_name:
      case tt_gpx_name:
      case tt_gpx_author:
      case tt_gpx_desc:
@@ -739,6 +743,13 @@ static void gpx_end(UserDataT *ud, const char *el)
          c_md->url = g_strdup ( c_cdata->str );
          g_string_erase ( c_cdata, 0, -1 );
        }
+       break;
+
+     case tt_gpx_url_name:
+       if ( c_md->url_name )
+         g_free ( c_md->url_name );
+       c_md->url_name = g_strdup ( c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
        break;
 
      case tt_waypoint:
@@ -1051,6 +1062,7 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_gpx_keywords:
     case tt_gpx_time:
     case tt_gpx_url:
+    case tt_gpx_url_name:
     case tt_wpt_name:
     case tt_trk_name:
     case tt_wpt_ele:
@@ -1852,7 +1864,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
       if ( md->author && strlen(md->author) > 0 )
         fprintf ( f, "    <author><name>%s</name></author>\n", md->author );
       write_string ( f, 4, "desc", md->description );
-      write_link ( f, 4, md->url, NULL );
+      write_link ( f, 4, md->url, md->url_name );
       write_string ( f, 4, "time", md->timestamp );
       write_string ( f, 4, "keywords", md->keywords );
       fprintf ( f, "  </metadata>\n" );
@@ -1861,6 +1873,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
       write_string ( f, TRK_SPACES, "author", md->author );
       write_string ( f, TRK_SPACES, "desc", md->description );
       write_string ( f, TRK_SPACES, "url", md->url );
+      write_string ( f, TRK_SPACES, "urlname", md->url_name );
       write_string ( f, TRK_SPACES, "time", md->timestamp );
       write_string ( f, TRK_SPACES, "keywords", md->keywords );
     }

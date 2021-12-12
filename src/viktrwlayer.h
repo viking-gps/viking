@@ -71,6 +71,7 @@ typedef struct {
   gchar *timestamp; // TODO: Consider storing as proper time_t.
   gchar *keywords; // TODO: handling/storing a GList of individual tags?
   gchar *url;
+  gchar *url_name; // AKA url_text
 } VikTRWMetadata;
 
 VikTRWMetadata *vik_trw_metadata_new();
