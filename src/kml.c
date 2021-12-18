@@ -284,24 +284,29 @@ end:
 	end_leaf_tag ( xd );
 }
 
+static void add_track ( xml_data *xd )
+{
+	if ( xd->track ) {
+		if ( xd->name && strlen(xd->name) > 0 ) {
+			vik_track_set_name ( xd->track, xd->name );
+		} else {
+			gchar *name = g_strdup_printf ( "TRK%04d", unnamed_tracks++ );
+			vik_track_set_name ( xd->track, name );
+			g_free ( name );
+		}
+		if ( xd->desc ) {
+			vik_track_set_description ( xd->track, xd->desc );
+		}
+		xd->track->trackpoints = g_list_reverse ( xd->track->trackpoints );
+		xd->track->visible = xd->vis;
+		vik_trw_layer_filein_add_track ( xd->vtl, NULL, xd->track );
+	}
+}
+
 static void linestring_end ( xml_data *xd, const char *el )
 {
 	if ( g_strcmp0 ( el, "LineString" ) == 0 ) {
-		if ( xd->track ) {
-			if ( xd->name && strlen(xd->name) > 0 ) {
-				vik_track_set_name ( xd->track, xd->name );
-			} else {
-				gchar *name = g_strdup_printf ( "TRK%04d", unnamed_tracks++ );
-				vik_track_set_name ( xd->track, name );
-				g_free ( name );
-			}
-			if ( xd->desc ) {
-				vik_track_set_description ( xd->track, xd->desc );
-			}
-			xd->track->trackpoints = g_list_reverse ( xd->track->trackpoints );
-			xd->track->visible = xd->vis;
-			vik_trw_layer_filein_add_track ( xd->vtl, NULL, xd->track );
-		}
+		add_track ( xd );
 		parse_tag_reset ( xd );
 	}
 }
@@ -314,24 +319,14 @@ static void linestring_start ( xml_data *xd, const char *el, const char **attr )
 	}
 }
 
-// hardly any different to linestring handling
+// No different to linestring handling
+// Notionally a LinearRing is closed line string;
+//  i.e. the last coordinate should be the same as the first
+//  but ATM we do not enforce that
 static void linearring_end ( xml_data *xd, const char *el )
 {
 	if ( g_strcmp0 ( el, "LinearRing" ) == 0 ) {
-		if ( xd->track ) {
-			if ( xd->name && strlen(xd->name) > 0 ) {
-				vik_track_set_name ( xd->track, xd->name );
-			} else {
-				gchar *name = g_strdup_printf ( "TRK%04d", unnamed_tracks++ );
-				vik_track_set_name ( xd->track, name );
-				g_free ( name );
-			}
-			if ( xd->desc ) {
-				vik_track_set_description ( xd->track, xd->desc );
-			}
-			xd->track->trackpoints = g_list_reverse ( xd->track->trackpoints );
-			vik_trw_layer_filein_add_track ( xd->vtl, NULL, xd->track );
-		}
+		add_track ( xd );
 		parse_tag_reset ( xd );
 	}
 }
@@ -344,17 +339,20 @@ static void linearring_start ( xml_data *xd, const char *el, const char **attr )
 	}
 }
 
+static void reset_xd ( xml_data *xd )
+{
+	xd->vis = TRUE;
+	xd->timestamp = NAN;
+	g_free ( xd->name );
+	xd->name = NULL;
+	g_free ( xd->desc );
+	xd->desc = NULL;
+}
+
 static void placemark_end ( xml_data *xd, const char *el )
 {
 	if ( g_strcmp0 ( el, "Placemark" ) == 0 ) {
-		// Reset
-		xd->vis = TRUE;
-		g_free ( xd->name );
-		xd->name = NULL;
-		g_free ( xd->desc );
-		xd->desc = NULL;
-		xd->timestamp = NAN;
-
+		reset_xd ( xd );
 		parse_tag_reset ( xd );
 	}
 }
@@ -724,14 +722,14 @@ gboolean a_kml_read_file ( VikTrwLayer *vtl, FILE *ff )
 	unnamed_routes = 1;
 
 	xml_data *xd = g_malloc0 ( sizeof (xml_data) );
-	// Set default values;
+	// Set default allocations / settings:
 	xd->c_cdata = g_string_new ( "" );
-	xd->vis = TRUE;
-	xd->timestamp = NAN;
 	xd->vtl = vtl;
 	xd->gq_start = g_queue_new();
 	xd->gq_end = g_queue_new();
 	xd->parser = parser;
+	// Other default values
+	reset_xd ( xd );
 
 	// Always force V1.1, since we may read in 'extended' data like cadence, etc...
 	vik_trw_layer_set_gpx_version ( vtl, GPX_V1_1 );
