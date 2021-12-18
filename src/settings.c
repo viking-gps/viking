@@ -33,6 +33,7 @@
   */
 #include "settings.h"
 #include "dir.h"
+#include "globals.h"
 
 static GKeyFile *keyfile;
 
@@ -106,7 +107,8 @@ static gboolean settings_get_boolean ( const gchar *group, const gchar *name, gb
 	gboolean bb = g_key_file_get_boolean ( keyfile, group, name, &error );
 	if ( error ) {
 		// Only print on debug - as often may have requests for keys not in the file
-		g_debug ( "%s", error->message );
+		if ( vik_debug && vik_verbose )
+			g_message ( "%s", error->message );
 		g_error_free ( error );
 		success = FALSE;
 	}
@@ -131,7 +133,8 @@ static gboolean settings_get_string ( const gchar *group, const gchar *name, gch
 	gchar *str = g_key_file_get_string ( keyfile, group, name, &error );
 	if ( error ) {
 		// Only print on debug - as often may have requests for keys not in the file
-		g_debug ( "%s", error->message );
+		if ( vik_debug && vik_verbose )
+			g_message ( "%s", error->message );
 		g_error_free ( error );
 		success = FALSE;
 	}
@@ -159,7 +162,8 @@ static gboolean settings_get_integer ( const gchar *group, const gchar *name, gi
 	gint ii = g_key_file_get_integer ( keyfile, group, name, &error );
 	if ( error ) {
 		// Only print on debug - as often may have requests for keys not in the file
-		g_debug ( "%s", error->message );
+		if ( vik_debug && vik_verbose )
+			g_message ( "%s", error->message );
 		g_error_free ( error );
 		success = FALSE;
 	}
@@ -184,7 +188,8 @@ static gboolean settings_get_double ( const gchar *group, const gchar *name, gdo
 	gdouble dd = g_key_file_get_double ( keyfile, group, name, &error );
 	if ( error ) {
 		// Only print on debug - as often may have requests for keys not in the file
-		g_debug ( "%s", error->message );
+		if ( vik_debug && vik_verbose )
+			g_message ( "%s", error->message );
 		g_error_free ( error );
 		success = FALSE;
 	}
@@ -209,7 +214,8 @@ static gboolean settings_get_integer_list ( const gchar *group, const gchar *nam
 	gint *ints = g_key_file_get_integer_list ( keyfile, group, name, length, &error );
 	if ( error ) {
 		// Only print on debug - as often may have requests for keys not in the file
-		g_debug ( "%s", error->message );
+		if ( vik_debug && vik_verbose )
+			g_message ( "%s", error->message );
 		g_error_free ( error );
 		success = FALSE;
 	}
@@ -305,7 +311,8 @@ static gchar** settings_get_string_list ( const gchar *group, const gchar *name,
 	gchar **msgs = g_key_file_get_string_list ( keyfile, group, name, length, &error );
 	if ( error ) {
 		// Only print on debug - as often may have requests for keys not in the file
-		g_debug ( "%s", error->message );
+		if ( vik_debug && vik_verbose )
+			g_message ( "%s", error->message );
 		g_error_free ( error );
 	}
 	return msgs;
