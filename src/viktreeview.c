@@ -528,6 +528,13 @@ void vik_treeview_init ( VikTreeview *vt )
   /* create tree view */
   gtk_tree_selection_set_select_function(gtk_tree_view_get_selection (GTK_TREE_VIEW(vt)), vik_treeview_selection_filter, vt, NULL);
 
+  // NB the GTK3 guide @https://docs.gtk.org/gtk3/treeview-tutorial.html
+  // Suggests that the treeview model should be deattached when inserting a large number of rows
+  //  i.e. on file loading - particularly if a large .vik file
+  // However in my testing (on my relatively modern desktop machine at least)
+  //  detaching and reattaching the model makes no noticeable timing difference
+  // So ATM not going to do that - as it introduces some subtle effects which would need to be addressed/understood
+  //  such as the treeview not being expanded after loading and a segmentation fault on program exit
   gtk_tree_view_set_model ( GTK_TREE_VIEW(vt), vt->model );
   vik_treeview_add_columns ( vt );
 
