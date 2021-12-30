@@ -4151,28 +4151,19 @@ msgstr "Inve_rser"
 msgid "_Delete Dupl."
 msgstr ""
 
-msgid "<b>Comment:</b>"
-msgstr "<b>Commentaire :</b>"
+msgid "Comment:"
+msgstr "Commentaire :"
 
-msgid "<b>Description:</b>"
-msgstr "<b>Description :</b>"
+msgid "Source:"
+msgstr "Source :"
 
-msgid "<b>Source:</b>"
-msgstr "<b>Source :</b>"
-
-msgid "<b>Type:</b>"
-msgstr "<b>Type :</b>"
-
-msgid "<b>Number:</b>"
+msgid "Number:"
 msgstr ""
 
-msgid "<b>Color:</b>"
-msgstr "<b>Couleur :</b>"
-
-msgid "<b>Draw Name:</b>"
+msgid "Draw Name:"
 msgstr ""
 
-msgid "<b>Distance Labels:</b>"
+msgid "Distance Labels:"
 msgstr ""
 
 msgid "Centre"
@@ -4422,12 +4413,6 @@ msgstr "Afficher le nom"
 
 msgid "Altitude:"
 msgstr "Altitude :"
-
-msgid "Comment:"
-msgstr "Commentaire :"
-
-msgid "Source:"
-msgstr "Source :"
 
 msgid "Image:"
 msgstr "Image :"

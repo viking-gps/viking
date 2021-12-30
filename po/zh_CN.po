@@ -4105,29 +4105,20 @@ msgstr "反转(_R)"
 msgid "_Delete Dupl."
 msgstr "删除重复(_D)"
 
-msgid "<b>Comment:</b>"
-msgstr "<b>注释：</b>"
+msgid "Comment:"
+msgstr "注释："
 
-msgid "<b>Description:</b>"
-msgstr "<b>描述：</b>"
-
-msgid "<b>Source:</b>"
+msgid "Source:"
 msgstr ""
 
-msgid "<b>Type:</b>"
+msgid "Number:"
 msgstr ""
 
-msgid "<b>Number:</b>"
-msgstr ""
+msgid "Draw Name:"
+msgstr "绘制名字："
 
-msgid "<b>Color:</b>"
-msgstr "<b>颜色：</b>"
-
-msgid "<b>Draw Name:</b>"
-msgstr "<b>绘制名字：</b>"
-
-msgid "<b>Distance Labels:</b>"
-msgstr "<b>距离标签：</b>"
+msgid "Distance Labels:"
+msgstr "距离标签："
 
 msgid "Centre"
 msgstr "居中"
@@ -4376,12 +4367,6 @@ msgstr ""
 
 msgid "Altitude:"
 msgstr "海拔："
-
-msgid "Comment:"
-msgstr "注释："
-
-msgid "Source:"
-msgstr ""
 
 msgid "Image:"
 msgstr "图像："

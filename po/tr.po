@@ -4065,28 +4065,16 @@ msgstr ""
 msgid "_Delete Dupl."
 msgstr ""
 
-msgid "<b>Comment:</b>"
-msgstr "<b>Açıklama:</b>"
-
-msgid "<b>Description:</b>"
+msgid "Source:"
 msgstr ""
 
-msgid "<b>Source:</b>"
+msgid "Number:"
 msgstr ""
 
-msgid "<b>Type:</b>"
+msgid "Draw Name:"
 msgstr ""
 
-msgid "<b>Number:</b>"
-msgstr ""
-
-msgid "<b>Color:</b>"
-msgstr ""
-
-msgid "<b>Draw Name:</b>"
-msgstr ""
-
-msgid "<b>Distance Labels:</b>"
+msgid "Distance Labels:"
 msgstr ""
 
 msgid "Centre"
@@ -4329,9 +4317,6 @@ msgstr "Rakım:"
 
 msgid "Comment:"
 msgstr "Yorum:"
-
-msgid "Source:"
-msgstr ""
 
 msgid "Image:"
 msgstr "Görüntü:"

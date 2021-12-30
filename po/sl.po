@@ -4087,28 +4087,19 @@ msgstr ""
 msgid "_Delete Dupl."
 msgstr ""
 
-msgid "<b>Comment:</b>"
-msgstr "<b>Opomba:</b>"
+msgid "Comment:"
+msgstr "Opomba:"
 
-msgid "<b>Description:</b>"
+msgid "Source:"
 msgstr ""
 
-msgid "<b>Source:</b>"
+msgid "Number:"
 msgstr ""
 
-msgid "<b>Type:</b>"
+msgid "Draw Name:"
 msgstr ""
 
-msgid "<b>Number:</b>"
-msgstr ""
-
-msgid "<b>Color:</b>"
-msgstr ""
-
-msgid "<b>Draw Name:</b>"
-msgstr ""
-
-msgid "<b>Distance Labels:</b>"
+msgid "Distance Labels:"
 msgstr ""
 
 msgid "Centre"
@@ -4348,12 +4339,6 @@ msgstr ""
 
 msgid "Altitude:"
 msgstr "Višina:"
-
-msgid "Comment:"
-msgstr "Opomba:"
-
-msgid "Source:"
-msgstr ""
 
 msgid "Image:"
 msgstr "Slika:"

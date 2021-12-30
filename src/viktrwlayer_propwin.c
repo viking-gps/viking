@@ -2913,14 +2913,43 @@ static GtkWidget *create_graph_page ( PropWidgets *widgets,
   return vbox;
 }
 
-static void attach_to_table ( GtkTable *table, int i, char *mylabel, GtkWidget *content )
+/**
+ * Create clickable link buttons if the associated entry value is a URL,
+ *  otherwise use standard labels as before.
+ * Since link buttons don't support pango markup in the label,
+ *  the boldness settings (for labels that may be associated with a URLs) is now configured by a specific parameter
+ *  otherwise markup values are shown in the link button label.
+ */
+static void attach_to_table ( GtkTable *table, int i, char *mylabel, GtkWidget *content, gchar *value_potentialURL, gboolean embolden )
 {
   // Settings so the text positioning only moves around vertically when the dialog is resized
   // This also gives more room to see the track comment
-  GtkWidget *label = gtk_label_new(NULL);
-  gtk_misc_set_alignment ( GTK_MISC(label), 1, 0.5 ); // Position text centrally in vertical plane
-  gtk_label_set_markup ( GTK_LABEL(label), _(mylabel) );
-  gtk_table_attach ( table, label, 0, 1, i, i+1, GTK_FILL, GTK_SHRINK, 0, 0 );
+  GtkWidget *ww = NULL;
+  gboolean isURL = FALSE;
+
+  if ( value_potentialURL ) {
+    gchar *scheme = g_uri_parse_scheme ( value_potentialURL );
+    if ( scheme )
+      isURL = TRUE;
+    g_free ( scheme );
+  }
+
+  if ( isURL ) {
+    // NB apparently no control over label positioning & markup
+    //  when in a link button :(
+    ww = gtk_link_button_new_with_label ( value_potentialURL, _(mylabel) );
+  } else {
+    gchar *text = NULL;
+    ww = gtk_label_new ( NULL );
+    if ( embolden )
+      text = g_strdup_printf ( "<b>%s</b>", _(mylabel) );
+    else
+      text = g_strdup ( _(mylabel) );
+    gtk_label_set_markup ( GTK_LABEL(ww), text );
+    gtk_misc_set_alignment ( GTK_MISC(ww), 1, 0.5 ); // Position text centrally in vertical plane
+    g_free ( text );
+  }
+  gtk_table_attach ( table, ww, 0, 1, i, i+1, GTK_FILL, GTK_SHRINK, 0, 0 );
   if ( GTK_IS_MISC(content) ) {
     gtk_misc_set_alignment ( GTK_MISC(content), 0, 0.5 );
   }
@@ -2935,12 +2964,12 @@ static void attach_to_table ( GtkTable *table, int i, char *mylabel, GtkWidget *
   }
 }
 
-static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[])
+static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[], gchar *value_potentialURL[] )
 {
   GtkTable *table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);
   for (guint i=0; i<cnt; i++)
-    attach_to_table ( table, i, labels[i], contents[i] );
+    attach_to_table ( table, i, labels[i], contents[i], value_potentialURL[i], TRUE );
 
   return GTK_WIDGET (table);
 }
@@ -2952,7 +2981,7 @@ static GtkWidget *create_table_from_arrays ( GPtrArray *paw, GPtrArray *pat )
   GtkTable *table = GTK_TABLE(gtk_table_new(paw->len, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);
   for ( guint ii=0; ii < paw->len; ii++ )
-    attach_to_table ( table, ii, g_ptr_array_index(pat, ii), g_ptr_array_index(paw, ii) );
+    attach_to_table ( table, ii, g_ptr_array_index(pat, ii), g_ptr_array_index(paw, ii), NULL, FALSE );
 
   return GTK_WIDGET (table);
 }
@@ -2960,7 +2989,7 @@ static GtkWidget *create_table_from_arrays ( GPtrArray *paw, GPtrArray *pat )
 static void attach_to_table_extra ( GtkWidget *table, gchar *text, int ii, char *mylabel )
 {
   GtkWidget *wgt = ui_label_new_selectable ( text );
-  attach_to_table ( GTK_TABLE(table), ii, mylabel, wgt );
+  attach_to_table ( GTK_TABLE(table), ii, mylabel, wgt, NULL, FALSE );
 }
 
 #define SPLIT_COLS 5
@@ -3597,11 +3626,20 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   int cnt_prop = 0;
 
   static gchar *label_texts[] = {
-    N_("<b>Comment:</b>"),
-    N_("<b>Description:</b>"),
-    N_("<b>Source:</b>"),
-    N_("<b>Type:</b>"),
-    N_("<b>Number:</b>"),
+    N_("Comment:"),
+    N_("Description:"),
+    N_("Source:"),
+    N_("Type:"),
+    N_("Number:"),
+  };
+
+  // Allow any textual entry to be considered as a URL
+  gchar *label_text_value_maybe_URLs[] = {
+    tr->comment,
+    tr->description,
+    tr->source,
+    tr->type,
+    NULL,
   };
 
   // Properties
@@ -3632,10 +3670,11 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
   guint cnt_draw = 0;
 
   static gchar *draw_texts[] = {
-    N_("<b>Color:</b>"),
-    N_("<b>Draw Name:</b>"),
-    N_("<b>Distance Labels:</b>"),
+    N_("Color:"),
+    N_("Draw Name:"),
+    N_("Distance Labels:"),
   };
+  gchar *draw_text_value_is_URLs[] = { NULL, NULL, NULL };
 
   widgets->w_color = content_draw[cnt_draw++] = gtk_color_button_new_with_color ( &(tr->color) );
 
@@ -3659,8 +3698,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
    gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new(tr->max_number_dist_labels, 0, 100, 1, 1, 0)), 1, 0 );
   gtk_widget_set_tooltip_text ( GTK_WIDGET(widgets->w_number_distlabels), _("Maximum number of distance labels to be shown") );
 
-  GtkWidget *table = create_table ( cnt_prop, label_texts, content_prop );
-  GtkWidget *table_draw = create_table ( cnt_draw, draw_texts, content_draw );
+  GtkWidget *table = create_table ( cnt_prop, label_texts, content_prop, label_text_value_maybe_URLs );
+  GtkWidget *table_draw = create_table ( cnt_draw, draw_texts, content_draw, draw_text_value_is_URLs );
   GtkWidget *props = gtk_notebook_new();
   gtk_notebook_append_page ( GTK_NOTEBOOK(props), table, gtk_label_new(_("General")));
   gtk_notebook_append_page ( GTK_NOTEBOOK(props), table_draw, gtk_label_new(_("Drawing")));

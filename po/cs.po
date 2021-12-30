@@ -4178,29 +4178,20 @@ msgstr "O_brátit"
 msgid "_Delete Dupl."
 msgstr "Smazat _duplicitní"
 
-msgid "<b>Comment:</b>"
-msgstr "<b>Komentář:</b>"
+msgid "Comment:"
+msgstr "Komentář:"
 
-msgid "<b>Description:</b>"
-msgstr "<b>Popis:</b>"
-
-msgid "<b>Source:</b>"
+msgid "Source:"
 msgstr ""
 
-msgid "<b>Type:</b>"
+msgid "Number:"
 msgstr ""
 
-msgid "<b>Number:</b>"
-msgstr ""
+msgid "Draw Name:"
+msgstr "Zobrazit jméno:"
 
-msgid "<b>Color:</b>"
-msgstr "<b>Barva:</b>"
-
-msgid "<b>Draw Name:</b>"
-msgstr "<b>Zobrazit jméno:</b>"
-
-msgid "<b>Distance Labels:</b>"
-msgstr "<b>značek vzdálenosti:</b>"
+msgid "Distance Labels:"
+msgstr "značek vzdálenosti:"
 
 msgid "Centre"
 msgstr "uprostřed"
@@ -4449,12 +4440,6 @@ msgstr ""
 
 msgid "Altitude:"
 msgstr "Výška:"
-
-msgid "Comment:"
-msgstr "Poznámka:"
-
-msgid "Source:"
-msgstr ""
 
 msgid "Image:"
 msgstr "Obrázek:"

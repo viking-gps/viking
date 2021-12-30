@@ -4215,28 +4215,19 @@ msgstr "О_братить"
 msgid "_Delete Dupl."
 msgstr "У_далить дубли"
 
-msgid "<b>Comment:</b>"
-msgstr "<b>Комментарий:</b>"
+msgid "Comment:"
+msgstr "Комментарий:"
 
-msgid "<b>Description:</b>"
-msgstr "<b>Описание:</b>"
-
-msgid "<b>Source:</b>"
+msgid "Source:"
 msgstr ""
 
-msgid "<b>Type:</b>"
+msgid "Number:"
 msgstr ""
 
-msgid "<b>Number:</b>"
-msgstr ""
-
-msgid "<b>Color:</b>"
-msgstr "<b>Цвет:</b>"
-
-msgid "<b>Draw Name:</b>"
+msgid "Draw Name:"
 msgstr "Писать имя:"
 
-msgid "<b>Distance Labels:</b>"
+msgid "Distance Labels:"
 msgstr "Отметки расстояния:"
 
 msgid "Centre"
@@ -4491,12 +4482,6 @@ msgstr ""
 
 msgid "Altitude:"
 msgstr "Высота:"
-
-msgid "Comment:"
-msgstr "Комментарий:"
-
-msgid "Source:"
-msgstr ""
 
 msgid "Image:"
 msgstr "Изображение:"

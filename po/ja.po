@@ -4066,28 +4066,16 @@ msgstr ""
 msgid "_Delete Dupl."
 msgstr ""
 
-msgid "<b>Comment:</b>"
+msgid "Source:"
 msgstr ""
 
-msgid "<b>Description:</b>"
+msgid "Number:"
 msgstr ""
 
-msgid "<b>Source:</b>"
+msgid "Draw Name:"
 msgstr ""
 
-msgid "<b>Type:</b>"
-msgstr ""
-
-msgid "<b>Number:</b>"
-msgstr ""
-
-msgid "<b>Color:</b>"
-msgstr ""
-
-msgid "<b>Draw Name:</b>"
-msgstr ""
-
-msgid "<b>Distance Labels:</b>"
+msgid "Distance Labels:"
 msgstr ""
 
 msgid "Centre"
@@ -4330,9 +4318,6 @@ msgstr "高度:"
 
 msgid "Comment:"
 msgstr "コメント:"
-
-msgid "Source:"
-msgstr ""
 
 msgid "Image:"
 msgstr "画像:"

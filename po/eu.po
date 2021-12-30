@@ -4343,29 +4343,20 @@ msgstr "_Alderantzikatu"
 msgid "_Delete Dupl."
 msgstr "_Ezabatu bikoiztutakoak"
 
-msgid "<b>Comment:</b>"
-msgstr "<b>Iruzkina:</b>"
+msgid "Comment:"
+msgstr "Iruzkina:"
 
-msgid "<b>Description:</b>"
-msgstr "<b>Deskribapena:</b>"
+msgid "Source:"
+msgstr "Jatorria:"
 
-msgid "<b>Source:</b>"
-msgstr "<b>Jatorria:</b>"
+msgid "Number:"
+msgstr "Kopurua:"
 
-msgid "<b>Type:</b>"
-msgstr "<b>Mota:</b>"
+msgid "Draw Name:"
+msgstr "Marraztu izena:"
 
-msgid "<b>Number:</b>"
-msgstr "<b>Kopurua:</b>"
-
-msgid "<b>Color:</b>"
-msgstr "<b>Kolorea::</b>"
-
-msgid "<b>Draw Name:</b>"
-msgstr "<b>Marraztu izena:</b>"
-
-msgid "<b>Distance Labels:</b>"
-msgstr "<b>Distantzia-etiketak:</b>"
+msgid "Distance Labels:"
+msgstr "Distantzia-etiketak:"
 
 msgid "Centre"
 msgstr "Erdiko gunea"
@@ -4620,12 +4611,6 @@ msgstr "Erakutsi izena"
 
 msgid "Altitude:"
 msgstr "Altitudea:"
-
-msgid "Comment:"
-msgstr "Iruzkina:"
-
-msgid "Source:"
-msgstr "Iturburua:"
 
 msgid "Image:"
 msgstr "Irudia:"

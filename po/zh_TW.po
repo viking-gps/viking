@@ -4065,28 +4065,19 @@ msgstr ""
 msgid "_Delete Dupl."
 msgstr ""
 
-msgid "<b>Comment:</b>"
-msgstr "<b>説明:</b>"
+msgid "Comment:"
+msgstr "説明:"
 
-msgid "<b>Description:</b>"
+msgid "Source:"
 msgstr ""
 
-msgid "<b>Source:</b>"
+msgid "Number:"
 msgstr ""
 
-msgid "<b>Type:</b>"
+msgid "Draw Name:"
 msgstr ""
 
-msgid "<b>Number:</b>"
-msgstr ""
-
-msgid "<b>Color:</b>"
-msgstr ""
-
-msgid "<b>Draw Name:</b>"
-msgstr ""
-
-msgid "<b>Distance Labels:</b>"
+msgid "Distance Labels:"
 msgstr ""
 
 msgid "Centre"
@@ -4326,12 +4317,6 @@ msgstr ""
 
 msgid "Altitude:"
 msgstr "海拔:"
-
-msgid "Comment:"
-msgstr "註釋:"
-
-msgid "Source:"
-msgstr ""
 
 msgid "Image:"
 msgstr "圖片:"

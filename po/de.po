@@ -4215,29 +4215,20 @@ msgstr "_Umkehren"
 msgid "_Delete Dupl."
 msgstr "_Doppelte Daten löschen"
 
-msgid "<b>Comment:</b>"
-msgstr "<b>Kommentar:</b>"
+msgid "Comment:"
+msgstr "Kommentar:"
 
-msgid "<b>Description:</b>"
-msgstr "<b>Beschreibung:</b>"
-
-msgid "<b>Source:</b>"
+msgid "Source:"
 msgstr ""
 
-msgid "<b>Type:</b>"
+msgid "Number:"
 msgstr ""
 
-msgid "<b>Number:</b>"
-msgstr ""
+msgid "Draw Name:"
+msgstr "Namen zeichnen:"
 
-msgid "<b>Color:</b>"
-msgstr "<b>Farbe:</b>"
-
-msgid "<b>Draw Name:</b>"
-msgstr "<b>Namen zeichnen:</b>"
-
-msgid "<b>Distance Labels:</b>"
-msgstr "<b>Distanz-Beschriftung:</b>"
+msgid "Distance Labels:"
+msgstr "Distanz-Beschriftung:"
 
 msgid "Centre"
 msgstr "Zentrieren"
@@ -4486,12 +4477,6 @@ msgstr ""
 
 msgid "Altitude:"
 msgstr "Höhe:"
-
-msgid "Comment:"
-msgstr "Kommentar:"
-
-msgid "Source:"
-msgstr ""
 
 msgid "Image:"
 msgstr "Bild:"
