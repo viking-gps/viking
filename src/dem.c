@@ -194,7 +194,7 @@ static void dem_parse_block_as_header ( gchar *buffer, VikDEM *dem, gint *cur_co
     g_warning(_("Incorrect DEM Class B record: expected 1"));
     return;
   }
-  
+
   if ( !get_double_and_continue(&buffer, &east_west, TRUE) )
     return;
   if ( !get_double_and_continue(&buffer, &south, TRUE) )
@@ -283,7 +283,7 @@ static VikDEM *vik_dem_read_srtm_hgt(const gchar *file_name, const gchar *basena
   }
   file_size = g_mapped_file_get_length(mf);
   dem_file = g_mapped_file_get_contents(mf);
-  
+
   if (zip) {
     void *unzip_mem = NULL;
     gulong ucsize;

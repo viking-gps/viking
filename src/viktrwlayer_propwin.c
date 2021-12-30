@@ -459,7 +459,7 @@ static void save_image_and_draw_graph_marks (GtkWidget *image,
   }
   else
     *blob_drawn = FALSE;
-  
+
   // Anywhere on image could have changed
   if (*marker_drawn || *blob_drawn)
     gtk_widget_queue_draw(image);
@@ -1667,7 +1667,7 @@ static void draw_dem_gps_speed ( PropWidgets *widgets, GtkWidget *window, GdkPix
                             MARGIN_X,
                             widgets->show_dem[PGT_ELEVATION_DISTANCE],
                             widgets->show_speed[PGT_ELEVATION_DISTANCE] );
-    
+
   g_object_unref ( G_OBJECT(dem_alt_gc) );
   g_object_unref ( G_OBJECT(gps_speed_gc) );
 }
@@ -1908,7 +1908,7 @@ static gboolean is_light ( GdkRGBA *rgba )
 static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets *widgets, GtkWidget *window, VikPropWinGraphType_t pwgt )
 {
   guint i;
-  
+
   if ( widgets->values[pwgt] )
     g_free ( widgets->values[pwgt] );
 
@@ -1980,7 +1980,7 @@ static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets 
 
   gtk_style_context_get ( gsc, gtk_style_context_get_state(gsc), "outline-color", &rgbaOC, NULL );
   gtk_style_context_get ( gsc, gtk_style_context_get_state(gsc), GTK_STYLE_PROPERTY_BORDER_COLOR, &rgbaBC, NULL );
-  
+
   pango_layout_set_alignment ( pl, PANGO_ALIGN_RIGHT );
 
   // draw grid
@@ -2007,7 +2007,7 @@ static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets 
   cairo_stroke ( cr );
   gdk_rgba_free ( rgbaBC );
   gdk_rgba_free ( rgbaOC );
-  
+
   // Unknown how to get theme colour in GTK3
   // Crashes if provide unknown text like  "theme-selected-bg-color"    
   gtk_style_context_get ( gsc, gtk_style_context_get_state(gsc), GTK_STYLE_PROPERTY_BACKGROUND_COLOR, &rgbaBC, NULL );
@@ -2028,7 +2028,7 @@ static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets 
      g_object_get_property ( G_OBJECT(gs), "gtk-application-prefer-dark-theme", &val );
      g_message ( "%s %d", __FUNCTION__, g_value_get_boolean(&val) );
   */
- 
+
   gboolean nanny = FALSE;
 
   for ( i = 0; i < widgets->profile_width; i++ ) {
@@ -2098,7 +2098,7 @@ static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets 
 
   // Draw border
   gdk_draw_rectangle ( GDK_DRAWABLE(pix), gtk_widget_get_style(window)->black_gc, FALSE, MARGIN_X, MARGIN_Y, widgets->profile_width-1, widgets->profile_height-1 );
- 
+
   g_object_unref ( G_OBJECT(no_info_gc) );
   g_object_unref ( G_OBJECT(pix) );
 #endif
@@ -4213,7 +4213,7 @@ gpointer vik_trw_layer_propwin_main ( GtkWindow *parent,
   recreate_surfaces ( PGT_ELEVATION_DISTANCE, widgets, widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y );
   recreate_surfaces ( PGT_SPEED_TIME, widgets, widgets->profile_width+MARGIN_X, widgets->profile_height+MARGIN_Y );
 #endif
-  
+
   widgets->event_box[PGT_ELEVATION_DISTANCE] = vik_trw_layer_create_profile ( GTK_WIDGET(parent), widgets );
   widgets->event_box[PGT_SPEED_TIME] = vik_trw_layer_create_vtdiag ( GTK_WIDGET(parent), widgets );
 

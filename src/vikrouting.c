@@ -21,7 +21,7 @@
 /**
  * SECTION:vikrouting
  * @short_description: the routing framework
- * 
+ *
  * This module handles the list of #VikRoutingEngine.
  * It also handles the "default" functions.
  */
@@ -59,7 +59,7 @@ gchar **routing_engine_ids = NULL;
 
 /**
  * vik_routing_prefs_init:
- * 
+ *
  * Initialize the preferences of the routing feature.
  */
 void
@@ -87,7 +87,7 @@ search_by_id (gconstpointer a,
 /**
  * vik_routing_find_engine:
  * @id: the id of the engine we are looking for
- * 
+ *
  * Returns: the found engine or %NULL
  */
 VikRoutingEngine *
@@ -102,9 +102,9 @@ vik_routing_find_engine ( const gchar *id )
 
 /**
  * vik_routing_default_engine:
- * 
+ *
  * Retrieve the default engine, based on user's preferences.
- * 
+ *
  * Returns: the default engine
  */
 VikRoutingEngine *
@@ -121,7 +121,7 @@ vik_routing_default_engine ( void )
 
 /**
  * vik_routing_default_find:
- * 
+ *
  * Route computation with default engine.
  *
  * Return indicates success or not
@@ -138,7 +138,7 @@ vik_routing_default_find(VikTrwLayer *vt, struct LatLon start, struct LatLon end
 /**
  * vik_routing_register:
  * @engine: new routing engine to register
- * 
+ *
  * Register a new routing engine.
  */
 void
@@ -166,14 +166,14 @@ vik_routing_register( VikRoutingEngine *engine )
     /* Update the label (possibly different */
     g_free (routing_engine_labels[len-1]);
     routing_engine_labels[len-1] = g_strdup (label);
-    
+
   } else {
     g_debug("%s: %s is new: append", __FUNCTION__, id);
     routing_engine_list = g_list_append ( routing_engine_list, g_object_ref ( engine ) );
 
     if (routing_engine_labels)
       len = g_strv_length (routing_engine_labels);
-  
+
     /* Add the label */
     routing_engine_labels = g_realloc (routing_engine_labels, (len+2)*sizeof(gchar*));
     routing_engine_labels[len] = g_strdup (label);
@@ -183,7 +183,7 @@ vik_routing_register( VikRoutingEngine *engine )
     routing_engine_ids = g_realloc (routing_engine_ids, (len+2)*sizeof(gchar*));
     routing_engine_ids[len] = g_strdup (id);
     routing_engine_ids[len+1] = NULL;
-  
+
     /* Hack
        We have to ensure the mode LayerParam references the up-to-date
        GLists.
@@ -199,7 +199,7 @@ vik_routing_register( VikRoutingEngine *engine )
 
 /**
  * vik_routing_unregister_all:
- * 
+ *
  * Unregister all registered routing engines.
  */
 void

@@ -262,7 +262,7 @@ static gboolean layer_defaults_save_to_file()
 	//	 g_error_free ( error );
 	//  answer = FALSE; 
 	//	goto tidy;
-	// } 
+	// }
 
 	FILE *ff;
 	if ( !(ff = g_fopen ( fn, "w")) ) {
@@ -348,7 +348,7 @@ gboolean a_layer_defaults_show_window ( GtkWindow *parent, const gchar *layernam
 		return FALSE;
 
     gchar *title = g_strconcat ( layername, ": ", _("Layer Defaults"), NULL );
-    
+
 	if ( a_uibuilder_properties_factory ( title,
 	                                      parent,
 	                                      params,
@@ -369,10 +369,10 @@ gboolean a_layer_defaults_show_window ( GtkWindow *parent, const gchar *layernam
 		// Save
 		layer_defaults_save_to_file();
     }
-    
+
     g_free ( title );
     g_free ( params );
-    
+
     return TRUE;
 }
 
@@ -441,7 +441,7 @@ VikLayerParamData a_layer_defaults_get ( const gchar *layername, const gchar *pa
 		defaults_load_from_file();
 		loaded = TRUE;
 	}
-  
+
 	return get_default_data ( layername, param_name, param_type );
 }
 

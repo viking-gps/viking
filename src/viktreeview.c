@@ -106,11 +106,9 @@ static void vik_treeview_class_init ( VikTreeviewClass *klass )
 {
   /* Destructor */
   GObjectClass *object_class;
-                                                                                                                                 
+
   object_class = G_OBJECT_CLASS (klass);
-                                                                                                                                 
   object_class->finalize = vik_treeview_finalize;
-                                                                                                                                 
   parent_class = g_type_class_peek_parent (klass);
 
   treeview_signals[VT_ITEM_EDITED_SIGNAL] = g_signal_new ( "item_edited", G_TYPE_FROM_CLASS (klass), G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikTreeviewClass, item_edited), NULL, NULL, 
@@ -955,7 +953,6 @@ static gboolean vik_treeview_drag_data_received (GtkTreeDragDest *drag_dest, Gtk
       } while (gtk_tree_path_get_depth(dest_cp)>1 &&
 	       vik_treeview_item_get_type(vt, &dest_parent) != VIK_TREEVIEW_TYPE_LAYER);
 
-      
       vl_src = vik_treeview_item_get_parent(vt, &src_iter);
       g_assert ( vl_src );
       vl_dest = vik_treeview_item_get_pointer(vt, &dest_parent);
@@ -982,7 +979,7 @@ static gboolean vik_treeview_drag_data_received (GtkTreeDragDest *drag_dest, Gtk
   return FALSE;
 }
 
-/* 
+/*
  * This may not be necessary.
  */
 static gboolean vik_treeview_drag_data_delete ( GtkTreeDragSource *drag_source, GtkTreePath *path )

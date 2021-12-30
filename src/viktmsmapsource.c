@@ -2,17 +2,17 @@
 /*
  * viking
  * Copyright (C) 2010, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
- * 
+ *
  * viking is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * viking is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -20,19 +20,19 @@
  /**
   * SECTION:viktmsmapsource
   * @short_description: the class for TMS oriented map sources
-  * 
+  *
   * The #VikTmsMapSource class handles TMS oriented map sources.
-  * 
+  *
   * The tiles are in 'equirectangular'.
   * http://en.wikipedia.org/wiki/Equirectangular_projection
-  * 
+  *
   * Such service is also a type of TMS (Tile Map Service) as defined in
   * OSGeo's wiki.
   * http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification
   * Following this specification, the protocol handled by this class
   * follows the global-geodetic profile.
   */
-  
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -503,7 +503,7 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
 	gchar *uri = g_strdup_printf (priv->url, 17 - src->scale - 1, src->x, nb_tiles - src->y - 1);
 	
 	return uri;
-} 
+}
 
 static gchar *
 _get_hostname( VikMapSourceDefault *self )

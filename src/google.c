@@ -60,7 +60,7 @@ void google_post_init ()
 {
   // Routing
   /* Google Directions service as routing engine.
-   * 
+   *
    * Technical details are available here:
    * https://developers.google.com/maps/documentation/directions/#DirectionsResponses
    *

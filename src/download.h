@@ -59,7 +59,7 @@ typedef struct {
    * to follow a redirect while downloading a page.
    */
   glong follow_location;
-  
+
   /**
    * Custom http headers in the send request.
    * Separate multiple requests with '\n'

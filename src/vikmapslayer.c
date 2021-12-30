@@ -413,7 +413,7 @@ void _update_map_source ( const char *label, VikMapSource *map, int index )
 void maps_layer_register_map_source ( VikMapSource *map )
 {
   g_assert(map != NULL);
-  
+
   guint16 id = vik_map_source_get_uniq_id(map);
   const char *label = vik_map_source_get_label(map);
   g_assert(label != NULL);
@@ -927,7 +927,7 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
       g_free(msg);
     }
   }
-  
+
   // Performed in post read as we now know the map type
   maps_layer_mbtiles_open ( vml, vp, map );
 
@@ -1046,7 +1046,7 @@ static GdkPixbuf *get_pixbuf_sql_exec ( sqlite3 *sql, gint xx, gint yy, gint zoo
     }
   }
   (void)sqlite3_finalize ( sql_stmt );
-  
+
   g_free ( statement );
 
   return pixbuf;
@@ -1430,7 +1430,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
     gchar *path_buf = g_malloc ( max_path_len * sizeof(char) );
 
     guint vp_scale = vik_viewport_get_scale ( vvp );
-    
+
     if ( (!existence_only) && vml->autodownload  && should_start_autodownload(vml, vvp)) {
       g_debug("%s: Starting autodownload", __FUNCTION__);
       if ( !vml->adl_only_missing && vik_map_source_supports_download_only_new (map) )
@@ -1958,7 +1958,7 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
         tmp_str = ngettext("Downloading %d %s map...", "Downloading %d %s maps...", mdi->mapstoget);
       }
       tmp = g_strdup_printf ( tmp_str, mdi->mapstoget, MAPS_LAYER_NTH_LABEL(vml->maptype));
- 
+
       g_object_weak_ref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
       /* launch the thread */
       a_background_thread ( BACKGROUND_POOL_REMOTE,
@@ -2544,7 +2544,6 @@ static void maps_layer_download_all ( menu_array_values values )
 
   gint selected_zoom1, selected_zoom2, default_zoom, lower_zoom;
   gint selected_download_method;
-  
   gdouble cur_zoom = vik_viewport_get_zoom(vvp);
 
   for (default_zoom = 0; default_zoom < sizeof(zoom_vals)/sizeof(gdouble); default_zoom++) {

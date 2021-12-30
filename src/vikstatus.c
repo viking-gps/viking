@@ -106,7 +106,7 @@ vik_statusbar_init (VikStatusbar *vs)
 
   for ( i = 0; i < VIK_STATUSBAR_NUM_TYPES; i++ ) {
     vs->empty[i] = TRUE;
-    
+
     if (i == VIK_STATUSBAR_ITEMS || i == VIK_STATUSBAR_ZOOM || i == VIK_STATUSBAR_LOG )
       vs->status[i] = gtk_button_new();
     else if ( i == VIK_STATUSBAR_INFO )

@@ -39,14 +39,12 @@ static guint print_rgn_stuff ( const gchar *nm, FILE *f )
   name = g_strdup ( nm );
 
   len = strlen(name);
-  
 
-  
   /* --------------------------------------------- */
   /* added by oddgeir@oddgeirkvien.com, 2005.02.02 */
   /* Format may also be: Name RGN40 0x40 Layers=1  */
   /* or: Name RGN10 0x2f06 Layers=1                */
-  
+
   if ( len > 20 && strncasecmp(name+len-8,"LAYERS=",7) == 0 ) /* Layers is added to the description */
   {
     layers=name+len-8;
@@ -59,8 +57,6 @@ static guint print_rgn_stuff ( const gchar *nm, FILE *f )
   } 
   /* --------------------------------------------- */
 
-
-  
   if ( len > 11 && strncasecmp(name+len-10,"RGN",3) == 0 &&
 strncasecmp(name+len-4,"0x",2) == 0 )
   {
@@ -146,5 +142,3 @@ void a_gpsmapper_write_file ( VikTrwLayer *trw, FILE *f )
   g_hash_table_foreach ( waypoints, (GHFunc) write_waypoint, f );
   g_hash_table_foreach ( tracks, (GHFunc) write_track, f );
 }
-
-

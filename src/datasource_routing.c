@@ -87,12 +87,12 @@ static void datasource_routing_add_setup_widgets ( GtkWidget *dialog, VikViewpor
 {
   datasource_routing_widgets_t *widgets = (datasource_routing_widgets_t *)user_data;
   GtkWidget *engine_label, *from_label, *to_label;
-  
+
   /* Engine selector */
   engine_label = gtk_label_new (_("Engine:"));
   widgets->engines_combo = vik_routing_ui_selector_new ((Predicate)vik_routing_engine_supports_direction, NULL);
   gtk_combo_box_set_active (GTK_COMBO_BOX (widgets->engines_combo), last_engine);
-  
+
   /* From and To entries */
   from_label = gtk_label_new (_("From:"));
   to_label = gtk_label_new (_("To:"));
@@ -113,7 +113,7 @@ static void datasource_routing_add_setup_widgets ( GtkWidget *dialog, VikViewpor
 static void datasource_routing_get_process_options ( datasource_routing_widgets_t *widgets, ProcessOptions *po, DownloadFileOptions *options, const gchar *not_used2, const gchar *not_used3 )
 {
   const gchar *from, *to;
-  
+
   /* Retrieve directions */
   from = gtk_entry_get_text ( GTK_ENTRY(widgets->from_entry) );
   to = gtk_entry_get_text ( GTK_ENTRY(widgets->to_entry) );

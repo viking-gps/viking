@@ -690,7 +690,7 @@ static void viewport_finalize ( GObject *gob )
 /**
  * vik_viewport_clear:
  * @vvp: self object
- * 
+ *
  * Clear the whole viewport.
  */
 void vik_viewport_clear ( VikViewport *vvp )
@@ -726,7 +726,7 @@ void vik_viewport_clear ( VikViewport *vvp )
  * vik_viewport_set_draw_scale:
  * @vvp: self
  * @draw_scale: new value
- * 
+ *
  * Enable/Disable display of scale.
  */
 void vik_viewport_set_draw_scale ( VikViewport *vvp, gboolean draw_scale )
@@ -920,7 +920,7 @@ void vik_viewport_draw_copyright ( VikViewport *vvp )
  * vik_viewport_set_draw_centermark:
  * @vvp: self object
  * @draw_centermark: new value
- * 
+ *
  * Enable/Disable display of center mark.
  */
 void vik_viewport_set_draw_centermark ( VikViewport *vvp, gboolean draw_centermark )
@@ -1886,7 +1886,7 @@ const gchar *vik_viewport_get_drawmode_name(VikViewport *vv, VikViewportDrawMode
   VikWindow *vw = NULL;
   GtkWidget *mode_button;
   GtkWidget *label;
-  
+
   vw = VIK_WINDOW_FROM_WIDGET(vv);
   mode_button = vik_window_get_drawmode_button(vw, mode);
   label = gtk_bin_get_child(GTK_BIN(mode_button));
@@ -1958,7 +1958,7 @@ void vik_viewport_reset_copyrights ( VikViewport *vp )
  * vik_viewport_add_copyright:
  * @vp: self object
  * @copyright: new copyright to display
- * 
+ *
  * Add a copyright to display on viewport.
  */
 void vik_viewport_add_copyright ( VikViewport *vp, const gchar *copyright ) 
@@ -2005,7 +2005,7 @@ void vik_viewport_add_logo ( VikViewport *vp, const GdkPixbuf *logo )
  * @y2: screen coord
  * @angle: bearing in Radian (output)
  * @baseangle: UTM base angle in Radian (output)
- * 
+ *
  * Compute bearing.
  */
 void vik_viewport_compute_bearing ( VikViewport *vp, gint x1, gint y1, gint x2, gint y2, gdouble *angle, gdouble *baseangle )

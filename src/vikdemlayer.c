@@ -1318,7 +1318,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
     return;
 
   gchar *src_url = srtm_server_url ( p->vdl->srtm_base_url, p->vdl->dir_scheme, p->vdl->filename_style, p->lat, p->lon );
-                                     
+
   // TODO: Might be better practice that the valid location request check is made before creating this thread
   if ( !src_url ) {
     gchar *msg = g_strdup_printf ( _("No SRTM data available for %f, %f"), p->lat, p->lon );
@@ -1628,7 +1628,6 @@ static VikLayerToolFuncStatus dem_layer_download_release ( VikDEMLayer *vdl, Gdk
   vik_viewport_screen_to_coord ( vvp, event->x, event->y, &coord );
   vik_coord_to_latlon ( &coord, &ll );
 
-  
   if ( vdl->source == DEM_SOURCE_SRTM )
     dem_file = srtm_lat_lon_to_dest_fn ( ll.lat, ll.lon );
 #ifdef VIK_CONFIG_DEM24K

@@ -301,7 +301,6 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
 
     if ( line[0] == '#' )
       continue;
-    
 
     len = strlen(line);
     if ( len > 0 && line[len-1] == '\n' )
@@ -894,7 +893,7 @@ gboolean a_file_save ( VikAggregateLayer *top, gpointer vp, const gchar *filenam
 }
 
 
-/* example: 
+/* example:
      gboolean is_gpx = a_file_check_ext ( "a/b/c.gpx", ".gpx" );
 */
 gboolean a_file_check_ext ( const gchar *filename, const gchar *fileext )

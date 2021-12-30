@@ -221,7 +221,7 @@ static void datasource_gps_get_process_options ( gpointer user_data, ProcessOpti
   if (gps_acquire_in_progress) {
     po->babelargs = po->filename = NULL;
   }
-  
+
   gps_acquire_in_progress = TRUE;
 
   device = datasource_gps_get_protocol ( user_data );
@@ -280,7 +280,7 @@ static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **
   if (!datasource_gps_get_off ( user_data )){
     return;
   }
-  
+
   if (!a_babel_device_list_get())
     return;
   last_active = gtk_combo_box_get_active(GTK_COMBO_BOX(w->proto_b));
@@ -298,7 +298,7 @@ static void datasource_gps_off ( gpointer user_data, gchar **babelargs, gchar **
   *babelargs = g_strdup_printf("-i %s", device);
   /* device points to static content => no free */
   device = NULL;
-  
+
 #if GTK_CHECK_VERSION (2, 24, 0)
   ser = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(w->ser_b));
 #else
@@ -426,8 +426,8 @@ static gboolean show_gps_status(acq_dialog_widgets_t *w)
   return FALSE;
 }
 
-/* 
- * This routine relies on gpsbabel's diagnostic output to display the progress information. 
+/**
+ * This routine relies on gpsbabel's diagnostic output to display the progress information.
  * These outputs differ when different GPS devices are used, so we will need to test
  * them on several and add the corresponding support.
  */

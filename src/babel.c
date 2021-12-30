@@ -207,7 +207,7 @@ static gboolean babel_general_convert( BabelStatusFunc cb, gchar **args, gpointe
     g_debug ( "%s: last received line is=\"%s\"", __FUNCTION__, line );
     ret = TRUE;
   }
-    
+
   return ret;
 }
 
@@ -232,7 +232,7 @@ static gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb,
 {
   gboolean ret = FALSE;
   FILE *f = NULL;
-    
+
   if (babel_general_convert(cb, args, user_data)) {
 
     /* No data actually required but still need to have run gpsbabel anyway
@@ -248,7 +248,7 @@ static gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb,
       fclose(f);
     }
   }
-    
+
   return ret;
 }
 
@@ -258,7 +258,7 @@ static gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb,
  * @babelargs:    A string containing gpsbabel command line options. This string
  *                must include the input file type (-i) option.
  * @from          the file name to convert from
- * @babelfilters: A string containing gpsbabel filter command line options 
+ * @babelfilters: A string containing gpsbabel filter command line options
  * @cb:	          Optional callback function. Same usage as in a_babel_convert().
  * @user_data:    passed along to cb
  * @not_used:     Must use NULL
@@ -502,7 +502,7 @@ static gboolean babel_general_convert_to( VikTrwLayer *vt, VikTrack *trk, BabelS
     g_critical("Error exporting to %s", name_src);
     return FALSE;
   }
-       
+
   return babel_general_convert (cb, args, user_data);
 }
 
@@ -577,7 +577,7 @@ static void set_mode(BabelMode *mode, gchar *smode)
 
 /**
  * load_feature_parse_line:
- * 
+ *
  * Load a single feature stored in the given line.
  */
 static void load_feature_parse_line (gchar *line)
@@ -681,7 +681,7 @@ static VikLayerParam prefs[] = {
 
 /**
  * a_babel_init:
- * 
+ *
  * Just setup preferences first
  */
 void a_babel_init ()
@@ -726,7 +726,7 @@ void a_babel_post_init ()
 
 /**
  * a_babel_uninit:
- * 
+ *
  * Free resources acquired by a_babel_init.
  */
 void a_babel_uninit ()

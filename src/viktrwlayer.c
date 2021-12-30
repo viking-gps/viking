@@ -921,7 +921,7 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncCopyItem)                trw_layer_copy_item,
   (VikLayerFuncPasteItem)               trw_layer_paste_item,
   (VikLayerFuncFreeCopiedItem)          trw_layer_free_copied_item,
-  
+
   (VikLayerFuncDragDropRequest)         trw_layer_drag_drop_request,
 
   (VikLayerFuncSelectClick)             trw_layer_select_click,
@@ -2142,7 +2142,6 @@ static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, Vi
     w2 = dp->xmpp * (dp->width / 2) + 1600 / dp->xmpp; 
     h2 = dp->ympp * (dp->height / 2) + 1600 / dp->ympp;
     /* leniency -- for tracks. Obviously for waypoints this SHOULD be a lot smaller */
- 
     dp->ce1 = dp->center->east_west-w2; 
     dp->ce2 = dp->center->east_west+w2;
     dp->cn1 = dp->center->north_south-h2;
@@ -2593,7 +2592,7 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
   if (list) {
     int x, y, oldx, oldy;
     VikTrackpoint *tp = VIK_TRACKPOINT(list->data);
-  
+
     tp_size = (list == dp->vtl->current_tpl) ? tp_size_cur : tp_size_reg;
 
     vik_viewport_coord_to_screen ( dp->vp, &(tp->coord), &x, &y );
@@ -3188,7 +3187,7 @@ static void trw_layer_edit_track_gcs ( VikTrwLayer *vtl, VikViewport *vp )
   // Ensure new track drawing heeds line thickness setting
   //  however always have a minium of 2, as 1 pixel is really narrow
   gint new_track_width = (vtl->line_thickness < 2) ? 2 : vtl->line_thickness;
-  
+
   if ( vtl->current_track_gc )
     ui_gc_unref ( vtl->current_track_gc );
   vtl->current_track_gc = vik_viewport_new_gc ( vp, "#FF0000", new_track_width );
@@ -3824,7 +3823,7 @@ static void set_statusbar_msg_info_wpt ( VikTrwLayer *vtl, VikWaypoint *wpt )
       g_snprintf(tmp_buf1, sizeof(tmp_buf1), _("Wpt: Alt %dm"), (int)round(wpt->altitude));
     }
   }
-  
+
   // Position part
   // Position is put last, as this bit is most likely not to be seen if the display is not big enough,
   //   one can easily use the current pointer position to see this if needed
@@ -3907,7 +3906,7 @@ static void maybe_show_graph ( VikWindow *vw, VikTrwLayer *vtl, gpointer gw )
 static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer sublayer, gint type, gpointer vlp )
 {
   trw_ensure_layer_loaded ( l );
-  
+
   // Reset
   l->current_wp    = NULL;
   l->current_wp_id = NULL;
@@ -4400,7 +4399,7 @@ gboolean vik_trw_layer_new_waypoint ( VikTrwLayer *vtl, GtkWindow *w, const VikC
   gchar *default_name = highest_wp_number_get(vtl);
   VikWaypoint *wp = vik_waypoint_new();
   wp->coord = *def_coord;
-  
+
   // Attempt to auto set height if DEM data is available
   vik_waypoint_apply_dem_data ( wp, TRUE );
 
@@ -5020,7 +5019,7 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   GtkMenu *delete_submenu = GTK_MENU(gtk_menu_new());
   GtkWidget *itemd = vu_menu_add_item ( menu, _("De_lete"), GTK_STOCK_REMOVE, NULL, data );
   gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemd), GTK_WIDGET(delete_submenu) );
-  
+
   GtkWidget *itemdat = vu_menu_add_item ( delete_submenu, _("Delete All _Tracks"), GTK_STOCK_REMOVE, G_CALLBACK(trw_layer_delete_all_tracks), data );
   gtk_widget_set_sensitive ( itemdat, (gboolean)(g_hash_table_size (vtl->tracks)) );
   GtkWidget *itemdts = vu_menu_add_item ( delete_submenu, _("Delete Tracks _From Selection..."), GTK_STOCK_INDEX,
@@ -5041,7 +5040,7 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   GtkWidget *itemddw = vu_menu_add_item ( delete_submenu, _("Delete Duplicate Waypoints"), GTK_STOCK_DELETE,
                                           G_CALLBACK(trw_layer_delete_duplicate_waypoints), data );
   gtk_widget_set_sensitive ( itemddw, (gboolean)(g_hash_table_size (vtl->waypoints)) );
-  
+
   GtkWidget *item = a_acquire_trwlayer_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vlp,
                                               vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vlp)), vtl );
   if ( item ) {
@@ -5108,7 +5107,6 @@ void vik_trw_layer_add_waypoint ( VikTrwLayer *vtl, gchar *name, VikWaypoint *wp
 
   highest_wp_number_add_wp(vtl, wp->name);
   g_hash_table_insert ( vtl->waypoints, GUINT_TO_POINTER(wp_uuid), wp );
- 
 }
 
 // Fake Track UUIDs vi simple increasing integer
@@ -5542,7 +5540,7 @@ static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp )
   if ( wp && wp->name ) {
 
     was_visible = wp->visible;
-    
+
     wpu_udata udata;
     udata.wp   = wp;
     udata.uuid = NULL;
@@ -5552,7 +5550,7 @@ static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp )
 
     if ( wpf && udata.uuid ) {
       GtkTreeIter *it = g_hash_table_lookup ( vtl->waypoints_iters, udata.uuid );
-    
+
       if ( it ) {
         delete_waypoint_low_level ( vtl, wp, udata.uuid, it );
 
@@ -6389,7 +6387,7 @@ static void trw_layer_rotate ( menu_array_sublayer values )
         return;
       }
     }
-    
+
     gint shifts = a_dialog_get_non_zero_number ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
                                                  _("Rotate"),
                                                  _("Shift by N points:"),
@@ -6404,7 +6402,7 @@ static void trw_layer_rotate ( menu_array_sublayer values )
     // Maintain the first segment
     // remove marker
     tp->newsegment = FALSE;
-    
+
     if ( shifts > 0 ) {
       for ( gint shift = 0; shift < shifts; shift++ ) {
         // Repeatly move first point to last position
@@ -6427,7 +6425,7 @@ static void trw_layer_rotate ( menu_array_sublayer values )
     seg = g_list_first ( track->trackpoints );
     tp = VIK_TRACKPOINT(seg->data);
     tp->newsegment = TRUE;
-    
+
     vik_layer_emit_update ( VIK_LAYER(vtl), trw_layer_modified(vtl) );
   }
 }
@@ -7141,7 +7139,7 @@ static gint track_compare(gconstpointer a, gconstpointer b, gpointer user_data)
 
   t1 = VIK_TRACKPOINT(VIK_TRACK(g_hash_table_lookup(tracks, a))->trackpoints->data)->timestamp;
   t2 = VIK_TRACKPOINT(VIK_TRACK(g_hash_table_lookup(tracks, b))->trackpoints->data)->timestamp;
-  
+
   if (t1 < t2) return -1;
   if (t1 > t2) return 1;
   return 0;
@@ -7152,7 +7150,7 @@ static gint track_compare(gconstpointer a, gconstpointer b, gpointer user_data)
 static gint trackpoint_compare(gconstpointer a, gconstpointer b)
 {
   gdouble t1 = VIK_TRACKPOINT(a)->timestamp, t2 = VIK_TRACKPOINT(b)->timestamp;
-  
+
   if (t1 < t2) return -1;
   if (t1 > t2) return 1;
   return 0;
@@ -8028,7 +8026,7 @@ static void trw_layer_reverse ( menu_array_sublayer values )
     return;
 
   vik_track_reverse ( track );
- 
+
   vik_layer_emit_update ( VIK_LAYER(vtl), trw_layer_modified(vtl) );
 }
 
@@ -10192,7 +10190,7 @@ static void track_search_closest_tp ( gpointer id, VikTrack *t, TPSearchParams *
     tp = VIK_TRACKPOINT(tpl->data);
 
     vik_viewport_coord_to_screen ( params->vvp, &(tp->coord), &x, &y );
- 
+
     if ( abs (x - params->x) <= params->size && abs (y - params->y) <= params->size &&
         ((!params->closest_tp) ||        /* was the old trackpoint we already found closer than this one? */
           abs(x - params->x)+abs(y - params->y) < abs(x - params->closest_x)+abs(y - params->closest_y)))
@@ -10270,7 +10268,7 @@ static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventMotion *event,
       if ( wp )
         new_coord = wp->coord;
     }
-    
+
     gint x, y;
     vik_viewport_coord_to_screen ( vvp, &new_coord, &x, &y );
 
@@ -10390,7 +10388,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
 	// NB vvp & vw already set in tet
 	tet->vtl = (gpointer)vtl;
 	tet->is_waypoint = TRUE;
-      
+
 	marker_begin_move (tet, event->x, event->y);
       }
 
@@ -10531,7 +10529,7 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
         g_object_ref_sink ( G_OBJECT(vtl->track_right_click_menu) );
 
       vtl->track_right_click_menu = GTK_MENU ( gtk_menu_new () );
-      
+
       trku_udata udataU;
       udataU.trk  = track;
       udataU.uuid = NULL;
@@ -10779,7 +10777,7 @@ static VikLayerToolFuncStatus tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEve
       if ( wp && wp != vtl->current_wp )
         new_coord = wp->coord;
     }
-    
+
     { 
       gint x, y;
       vik_viewport_coord_to_screen ( vvp, &new_coord, &x, &y );
@@ -10798,7 +10796,7 @@ static VikLayerToolFuncStatus tool_edit_waypoint_release ( VikTrwLayer *vtl, Gdk
 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
     return VIK_LAYER_TOOL_IGNORED;
-  
+
   if ( t->holding && event->button == 1 )
   {
     VikCoord new_coord;
@@ -11041,20 +11039,20 @@ static void statusbar_write (gdouble distance, gdouble elev_gain, gdouble elev_l
   gchar str_last_step[64];
   str_last_step[0] = '\0';
   gchar *str_total = distance_string (distance);
-  
+
   if ( (elev_gain > 0.1) || (elev_loss > 0.1) ) {
     if ( a_vik_get_units_height () == VIK_UNITS_HEIGHT_METRES )
       g_sprintf(str_gain_loss, _(" - Gain %dm:Loss %dm"), (int)elev_gain, (int)elev_loss);
     else
       g_sprintf(str_gain_loss, _(" - Gain %dft:Loss %dft"), (int)VIK_METERS_TO_FEET(elev_gain), (int)VIK_METERS_TO_FEET(elev_loss));
   }
-  
+
   if ( last_step > 0 ) {
       gchar *tmp = distance_string (last_step);
       g_sprintf(str_last_step, _(" - Bearing %3.1f° - Step %s"), RAD2DEG(angle), tmp);
       g_free ( tmp );
   }
-  
+
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
 
   // Write with full gain/loss information
@@ -11146,7 +11144,7 @@ static gboolean tool_plot_route ( VikTrwLayer *vtl, VikCoord *target )
   // make sure we have a route with at least one point to extend
   if ( ! vtl->current_track  || ! vtl->current_track->is_route || ! vik_track_get_tp_first ( vtl->current_track ) )
     return FALSE;
-  
+
   struct LatLon start, end;
 
   VikTrackpoint *tp_start = vik_track_get_tp_last ( vtl->current_track );

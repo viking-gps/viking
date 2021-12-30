@@ -205,7 +205,7 @@ static void draw_page_cairo(GtkPrintContext *context, PrintData *data)
 #endif
   surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24,
                                        data->width, data->height);
-  
+
   cr_dpi_x  = gtk_print_context_get_dpi_x  (context);
   cr_dpi_y  = gtk_print_context_get_dpi_y  (context);
 
@@ -648,6 +648,6 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
                                             offset_x_max, offset_y_max);
 
   set_scale_value(info);
-  
+
   return layout;
 }

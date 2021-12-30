@@ -4620,14 +4620,14 @@ void calendar_update ( VikWindow *vw )
   // Maybe skip if not shown...
   // But then on visibility shown, would need to generate it
   // Above method seems better.
-  
+
   GtkCalendar *calendar = (GtkCalendar*)vik_layers_panel_get_calendar ( vw->viking_vlp );
   gtk_calendar_clear_marks ( calendar );
 
   GList *layers = vik_layers_panel_get_all_layers_of_type ( vw->viking_vlp, VIK_LAYER_TRW, TRUE );
   if ( !layers )
     return;
-  
+
   for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
     VikTrwLayer *vtl = VIK_TRW_LAYER(layer->data);
     calendar_consider_layer ( calendar, vtl );
@@ -4997,7 +4997,7 @@ static gboolean export_to ( VikWindow *vw, GList *gl, VikFileType_t vft, const g
           gtk_main_iteration ();
         g_free ( message );
       }
-      
+
       success = success && this_success;
     }
 
@@ -6280,7 +6280,7 @@ static void window_create_ui( VikWindow *window )
   GtkIconFactory *icon_factory;
   GtkRadioActionEntry *tools = NULL, *radio;
   guint ntools;
-  
+
   uim = gtk_ui_manager_new ();
   window->uim = uim;
 
@@ -6484,7 +6484,7 @@ static void window_create_ui( VikWindow *window )
   accel_group = gtk_ui_manager_get_accel_group (uim);
   gtk_window_add_accel_group (GTK_WINDOW (window), accel_group);
   gtk_ui_manager_ensure_update (uim);
-  
+
   setup_recent_files(window);
 
   if ( vik_routing_number_of_engines(VIK_ROUTING_METHOD_DIRECTIONS) == 0 ) {

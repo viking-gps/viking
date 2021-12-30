@@ -89,7 +89,7 @@ static void datasource_osm_add_setup_widgets ( GtkWidget *dialog, VikViewport *v
   page_number_label = gtk_label_new (_("Page number:"));
   widgets->page_number = gtk_spin_button_new_with_range(0, 100, 1);
   gtk_spin_button_set_value(GTK_SPIN_BUTTON(widgets->page_number), last_page_number);
-  
+
   /* Packing all widgets */
   GtkBox *box = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
   gtk_box_pack_start ( box, page_number_label, FALSE, FALSE, 5 );

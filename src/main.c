@@ -146,7 +146,7 @@ int main( int argc, char *argv[] )
     }
     return EXIT_FAILURE;
   }
-   
+
   if (vik_version)
   {
     (void)g_printf (_("%s %s\nCopyright (c) 2003-2008 Evan Battaglia\nCopyright (c) 2008-%s Viking's contributors\n"), PACKAGE_NAME, PACKAGE_VERSION, THEYEAR);
@@ -300,7 +300,7 @@ int main( int argc, char *argv[] )
   vu_finalize_lat_lon_tz_lookup ();
 
   vik_icons_unregister_resource ();
-  
+
   // Clean up any temporary files
   util_remove_all_in_deletion_list ();
 

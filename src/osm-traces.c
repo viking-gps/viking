@@ -108,7 +108,6 @@ static void oti_free(OsmTracesInfo *oti)
     g_free(oti->name); oti->name = NULL;
     g_free(oti->description); oti->description = NULL;
     g_free(oti->tags); oti->tags = NULL;
-    
     g_object_unref(oti->vtl); oti->vtl = NULL;
   }
   /* Main struct has been g_malloc'ed */
@@ -543,7 +542,7 @@ static void osm_traces_upload_thread ( OsmTracesInfo *oti, gpointer threaddata )
     /* Upload the whole VikTrwLayer */
     filename = a_gpx_write_tmp_file (oti->vtl, &options);
   }
-  
+
   if ( !filename )
     return;
 
@@ -608,7 +607,7 @@ void osm_login_widgets (GtkWidget *user_entry, GtkWidget *password_entry)
   const gchar *default_user = get_default_user();
   VikLayerParamData *pref_user = a_preferences_get ( OSM_USERNAME );
   VikLayerParamData *pref_password = a_preferences_get ( OSM_PASSWORD );
- 
+
   if (osm_user != NULL && osm_user[0] != '\0')
     gtk_entry_set_text(GTK_ENTRY(user_entry), osm_user);
   else if (pref_user && pref_user->s && pref_user->s[0] != '\0')

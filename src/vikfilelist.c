@@ -46,7 +46,7 @@ static void file_list_add ( VikFileList *vfl )
 {
   GSList *files = NULL;
   GSList *fiter = NULL;
-  
+
   if ( ! vfl->file_selector )
   {
     GtkWidget *win = gtk_widget_get_toplevel(GTK_WIDGET(vfl));
@@ -77,12 +77,10 @@ static void file_list_add ( VikFileList *vfl )
     GtkTreeIter iter;
     while ( fiter ) {
       gchar *file_name = fiter->data;
-      
       gtk_list_store_append ( GTK_LIST_STORE(vfl->model), &iter );
       gtk_list_store_set ( GTK_LIST_STORE(vfl->model), &iter, 0, file_name, -1 );
-      
       g_free (file_name);
-      
+
       fiter = g_slist_next (fiter);
     }
     g_slist_free (files);
@@ -96,9 +94,9 @@ static GtkTreeRowReference** file_list_get_selected_refs (GtkTreeModel *model,
 {
   GtkTreeRowReference **arr;
   GList *iter;
-    
+
   arr = g_new (GtkTreeRowReference *, g_list_length (list) + 1);
-    
+
   gint pos = 0;
   for (iter = g_list_first (list); iter != NULL; iter = g_list_next (iter)) {
     GtkTreePath *path = (GtkTreePath *)(iter->data);
@@ -106,7 +104,7 @@ static GtkTreeRowReference** file_list_get_selected_refs (GtkTreeModel *model,
     pos++;
   }
   arr[pos] = NULL;
-    
+
   return arr;
 }
 

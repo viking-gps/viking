@@ -475,7 +475,7 @@ gulong vik_track_remove_same_time_points ( VikTrack *tr )
            VIK_TRACKPOINT(iter->next->data)->timestamp) ) {
 
       num++;
-      
+
       // Maintain track segments
       if ( VIK_TRACKPOINT(iter->next->data)->newsegment && (iter->next)->next )
         VIK_TRACKPOINT(((iter->next)->next)->data)->newsegment = TRUE;
@@ -1875,7 +1875,7 @@ VikTrackpoint* vik_track_get_tp_by_max_speed ( const VikTrack *tr, gboolean by_g
       iter = iter->next;
     }
   }
-  
+
   return max_speed_tp;
 }
 
@@ -2102,9 +2102,9 @@ void vik_track_calculate_bounds ( VikTrack *trk )
 {
   GList *tp_iter;
   tp_iter = trk->trackpoints;
-  
+
   struct LatLon topleft, bottomright, ll;
-  
+
   // Set bounds to first point
   if ( tp_iter ) {
     vik_coord_to_latlon ( &(VIK_TRACKPOINT(tp_iter->data)->coord), &topleft );
@@ -2113,17 +2113,16 @@ void vik_track_calculate_bounds ( VikTrack *trk )
   while ( tp_iter ) {
 
     // See if this trackpoint increases the track bounds.
-   
     vik_coord_to_latlon ( &(VIK_TRACKPOINT(tp_iter->data)->coord), &ll );
-  
+
     if ( ll.lat > topleft.lat) topleft.lat = ll.lat;
     if ( ll.lon < topleft.lon) topleft.lon = ll.lon;
     if ( ll.lat < bottomright.lat) bottomright.lat = ll.lat;
     if ( ll.lon > bottomright.lon) bottomright.lon = ll.lon;
-    
+
     tp_iter = tp_iter->next;
   }
- 
+
   g_debug ( "Bounds of track: '%s' is: %f,%f to: %f,%f", trk->name, topleft.lat, topleft.lon, bottomright.lat, bottomright.lon );
 
   trk->bbox.north = topleft.lat;
@@ -2375,7 +2374,7 @@ gulong vik_track_smooth_missing_elevation_data ( VikTrack *tr, gboolean flat )
 
 /**
  * vik_track_steal_and_append_trackpoints:
- * 
+ *
  * appends t2 to t1, leaving t2 with no trackpoints
  */
 void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 )
@@ -2392,10 +2391,10 @@ void vik_track_steal_and_append_trackpoints ( VikTrack *t1, VikTrack *t2 )
 
 /**
  * vik_track_cut_back_to_double_point:
- * 
+ *
  * starting at the end, looks backwards for the last "double point", a duplicate trackpoint.
  * If there is no double point, deletes all the trackpoints.
- * 
+ *
  * Returns: the new end of the track (or the start if there are no double points)
  */
 VikCoord *vik_track_cut_back_to_double_point ( VikTrack *tr )

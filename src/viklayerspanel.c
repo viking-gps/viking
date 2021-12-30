@@ -487,7 +487,7 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
       // Fully exit
       if ( need_to_break )
         break;
-    
+
       vtl = NULL;
     }
     g_date_free ( gd );
@@ -636,7 +636,7 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
 
   gtk_calendar_set_detail_func ( GTK_CALENDAR(vlp->calendar), calendar_detail, vlp, NULL );
   vik_layers_panel_set_preferences ( vlp );
-  
+
   vlp->vpaned = gtk_vpaned_new ();
   vlp->tabs = gtk_notebook_new();
 
@@ -905,7 +905,7 @@ static void layers_popup_cb ( VikLayersPanel *vlp )
 /**
  * vik_layers_panel_new_layer:
  * @type: type of the new layer
- * 
+ *
  * Create a new layer and add to panel.
  */
 gboolean vik_layers_panel_new_layer ( VikLayersPanel *vlp, VikLayerTypeEnum type )
@@ -928,7 +928,7 @@ gboolean vik_layers_panel_new_layer ( VikLayersPanel *vlp, VikLayerTypeEnum type
 /**
  * vik_layers_panel_add_layer:
  * @l: existing layer
- * 
+ *
  * Add an existing layer to panel.
  */
 void vik_layers_panel_add_layer ( VikLayersPanel *vlp, VikLayer *l )
@@ -1039,7 +1039,7 @@ void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
 {
   gint type;
   GtkTreeIter iter;
-  
+
   if ( ! vik_treeview_get_selected_iter ( vlp->vt, &iter ) )
     /* Nothing to do */
     return;
@@ -1104,7 +1104,7 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
 {
   gint type;
   GtkTreeIter iter;
-  
+
   if ( ! vik_treeview_get_selected_iter ( vlp->vt, &iter ) )
     /* Nothing to do */
     return;

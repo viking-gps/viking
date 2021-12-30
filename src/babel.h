@@ -69,7 +69,7 @@ typedef struct {
 
 /**
  * BabelMode:
- * 
+ *
  * Store the Read/Write support offered by gpsbabel for a given format.
  */
 typedef struct {
@@ -85,7 +85,7 @@ typedef struct {
  * BabelDevice:
  * @name: gpsbabel's identifier of the device
  * @label: human readable label
- * 
+ *
  * Representation of a supported device.
  */
 typedef struct {
@@ -99,7 +99,7 @@ typedef struct {
  * @name: gpsbabel's identifier of the format
  * @ext: file's extension for this format
  * @label: human readable label
- * 
+ *
  * Representation of a supported file format.
  */
 typedef struct {

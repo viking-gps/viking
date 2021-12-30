@@ -503,7 +503,7 @@ static GtkWidget *acquire_build_menu ( VikWindow *vw, VikLayersPanel *vlp, VikVi
  * a_acquire_trwlayer_menu:
  *
  * Create a sub menu intended for rightclicking on a TRWLayer's menu called "Filter".
- * 
+ *
  * Returns: %NULL if no filters.
  */
 GtkWidget *a_acquire_trwlayer_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl)
@@ -515,7 +515,7 @@ GtkWidget *a_acquire_trwlayer_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewp
  * a_acquire_trwlayer_track_menu:
  *
  * Create a sub menu intended for rightclicking on a TRWLayer's menu called "Filter with Track "TRACKNAME"...".
- * 
+ *
  * Returns: %NULL if no filters or no filter track has been set.
  */
 GtkWidget *a_acquire_trwlayer_track_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrwLayer *vtl)
@@ -535,7 +535,7 @@ GtkWidget *a_acquire_trwlayer_track_menu (VikWindow *vw, VikLayersPanel *vlp, Vi
  * a_acquire_track_menu:
  *
  * Create a sub menu intended for rightclicking on a track's menu called "Filter".
- * 
+ *
  * Returns: %NULL if no applicable filters
  */
 GtkWidget *a_acquire_track_menu (VikWindow *vw, VikLayersPanel *vlp, VikViewport *vvp, VikTrack *tr)

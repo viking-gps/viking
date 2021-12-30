@@ -220,7 +220,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncDraw)                    vik_aggregate_layer_draw,
   (VikLayerFuncConfigure)               vik_aggregate_layer_configure,
   (VikLayerFuncChangeCoordMode)         aggregate_layer_change_coord_mode,
-  
+
   (VikLayerFuncGetTimestamp)            NULL,
 
   (VikLayerFuncSetMenuItemsSelection)	NULL,
@@ -676,7 +676,7 @@ static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, guint len, V
 #define alm_next \
   len -= sizeof(gint) + alm_size; \
   data += sizeof(gint) + alm_size;
-  
+
   VikAggregateLayer *rv = vik_aggregate_layer_new(vvp);
   VikLayer *child_layer;
 
@@ -861,7 +861,7 @@ static gboolean is_cluster ( GHashTable *val, gint x, gint y )
   if ( !is_tile_occupied(val, x-1, y-1) ) return FALSE;
   if ( !is_tile_occupied(val, x+1, y-1) ) return FALSE;
   if ( !is_tile_occupied(val, x, y-1) ) return FALSE;
-  
+
   if ( !is_tile_occupied(val, x-1, y+1) ) return FALSE;
   if ( !is_tile_occupied(val, x+1, y+1) ) return FALSE;
   if ( !is_tile_occupied(val, x, y+1) ) return FALSE;
@@ -1791,7 +1791,7 @@ static guint uf_find ( guint x ) {
   guint y = x;
   while (labels[y] != y)
     y = labels[y];
-  
+
   while (labels[x] != x) {
     guint z = labels[x];
     labels[x] = y;
@@ -1857,7 +1857,7 @@ static void tac_contiguous_calc ( VikAggregateLayer *val )
     if ( y < tly ) tly = y;
     if ( y > bry ) bry = y;
   }
-  
+
   // Process the grid according to 'labelling clusters on a grid'
   // https://en.wikipedia.org/wiki/Hoshen%E2%80%93Kopelman_algorithm
   guint size = (abs(tlx-brx) * abs(tly-bry)) / 2;
@@ -1892,7 +1892,7 @@ static void tac_contiguous_calc ( VikAggregateLayer *val )
   // Reprocess the grid to compare the size of the labels
   int *new_labels = g_malloc0_n ( sizeof(int), n_labels ); // allocate array, initialized to zero
   int *sizes = g_malloc0_n ( sizeof(int), n_labels ); // allocate array, initialized to zero
-  
+
   for ( gint xx = tlx; xx <= brx; xx++ ) {
     for ( gint yy = tly; yy <= bry; yy++ ) {
       if ( is_tile_occupied(val->tiles, xx, yy) ) {
@@ -1919,7 +1919,7 @@ static void tac_contiguous_calc ( VikAggregateLayer *val )
   g_free ( new_labels );
   g_free ( sizes );
   uf_finish();
-  
+
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   g_debug ( "%s: %f %d %d %d", __FUNCTION__, time_spent, total_clusters, largist, val->cont_label );
@@ -1956,7 +1956,7 @@ static void tac_cluster_calc ( VikAggregateLayer *val )
     if ( y < tly ) tly = y;
     if ( y > bry ) bry = y;
   }
-  
+
   guint size = (abs(tlx-brx) * abs(tly-bry)) / 2;
   if ( size == 0 )
     return;
@@ -1989,7 +1989,7 @@ static void tac_cluster_calc ( VikAggregateLayer *val )
   // Reprocess the grid to compare the size of the labels
   int *new_labels = g_malloc0_n ( sizeof(int), n_labels ); // allocate array, initialized to zero
   int *sizes = g_malloc0_n ( sizeof(int), n_labels ); // allocate array, initialized to zero
-  
+
   for ( gint xx = tlx; xx <= brx; xx++ ) {
     for ( gint yy = tly; yy <= bry; yy++ ) {
       if ( is_tile_occupied(val->tiles_clust, xx, yy) ) {
@@ -2054,7 +2054,7 @@ static void tac_square_calc ( VikAggregateLayer *val )
     }
   }
   val->max_square--;
-  
+
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   g_debug ( "%s: %f", __FUNCTION__, time_spent );
@@ -2134,7 +2134,7 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
   guint extras = (ct->val->on[MAX_SQR] * ct->num_of_tracks) +
     (ct->val->on[CONTIG] * ct->num_of_tracks) +
     (ct->val->on[CLUSTER] * ct->num_of_tracks);
-  
+
   for ( GList *tl = ct->tracks_and_layers; tl != NULL; tl = tl->next ) {
     gdouble percent = (gdouble)tracks_processed/(gdouble)(ct->num_of_tracks+extras);
     gint res = a_background_thread_progress ( threaddata, percent );

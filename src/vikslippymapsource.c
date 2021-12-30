@@ -2,32 +2,32 @@
 /*
  * viking
  * Copyright (C) 2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
- * 
+ *
  * viking is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ *
  * viking is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
  /**
   * SECTION:vikslippymapsource
   * @short_description: the class for SlippyMap oriented map sources
-  * 
+  *
   * The #VikSlippyMapSource class handles slippy map oriented map sources.
   * The related service is tile oriented, à la Google.
-  * 
+  *
   * The tiles are in 'google spherical mercator', which is
   * basically a mercator projection that assumes a spherical earth.
   * http://docs.openlayers.org/library/spherical_mercator.html
-  * 
+  *
   * Such service is also a type of TMS (Tile Map Service) as defined in
   * OSGeo's wiki.
   * http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification
@@ -35,12 +35,12 @@
   * corner.
   * Following this specification, the protocol handled by this class
   * follows the global-mercator profile.
-  * 
+  *
   * You can also find many interesting information on the OSM's wiki.
   * http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
   * http://wiki.openstreetmap.org/wiki/Setting_up_TMS
   */
-  
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -320,7 +320,7 @@ vik_slippy_map_source_get_property (GObject    *object,
     case PROP_CHECK_FILE_SERVER_TIME:
       g_value_set_boolean (value, priv->options.check_file_server_time);
       break;
-	  
+
     case PROP_USE_ETAG:
       g_value_set_boolean (value, priv->options.use_etag);
       break;
@@ -648,7 +648,7 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
 		uri = g_strdup_printf (priv->url, 17 - src->scale, src->x, src->y);
 
 	return uri;
-} 
+}
 
 static gchar *
 _get_hostname( VikMapSourceDefault *self )

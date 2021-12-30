@@ -74,21 +74,21 @@ typedef enum {
 
 /**
  * VikDataSourceInitFunc:
- * 
+ *
  * Returns: pointer to state if OK, otherwise %NULL
  */
 typedef gpointer (*VikDataSourceInitFunc) ( acq_vik_t *avt );
 
 /**
  * VikDataSourceCheckExistenceFunc:
- * 
+ *
  * Returns: %NULL if OK, otherwise returns an error message.
  */
 typedef gchar *(*VikDataSourceCheckExistenceFunc) ();
 
 /**
  * VikDataSourceAddSetupWidgetsFunc:
- * 
+ *
  * Create widgets to show in a setup dialog, set up state via user_data.
  */
 typedef void (*VikDataSourceAddSetupWidgetsFunc) ( GtkWidget *dialog, VikViewport *vvp, gpointer user_data );
@@ -100,7 +100,7 @@ typedef void (*VikDataSourceAddSetupWidgetsFunc) ( GtkWidget *dialog, VikViewpor
  * @download_options: optional options for downloads from URLs for #VikDataSourceInterface.process_func
  * @input_file_name:
  * @input_track_file_name:
- * 
+ *
  * set both to %NULL to signal refusal (ie already downloading).
  */
 typedef void (*VikDataSourceGetProcessOptionsFunc) ( gpointer user_data, ProcessOptions *process_options, gpointer download_options, const gchar *input_file_name, const gchar *input_track_file_name );
@@ -112,7 +112,7 @@ typedef void (*VikDataSourceGetProcessOptionsFunc) ( gpointer user_data, Process
  * @status_cb: the #VikDataSourceInterface.progress_func
  * @adw: the widgets and data used by #VikDataSourceInterface.progress_func
  * @download_options: Optional options used if downloads from URLs is used.
- * 
+ *
  * The actual function to do stuff - must report success/failure.
  */
 typedef gboolean (*VikDataSourceProcessFunc) ( gpointer vtl, ProcessOptions *process_options, BabelStatusFunc, acq_dialog_widgets_t *adw, gpointer download_options );
@@ -122,14 +122,14 @@ typedef void  (*VikDataSourceProgressFunc)  ( BabelProgressCode c, gpointer data
 
 /**
  * VikDataSourceAddProgressWidgetsFunc:
- * 
+ *
  * Creates widgets to show in a progress dialog, may set up state via user_data.
  */
 typedef void  (*VikDataSourceAddProgressWidgetsFunc) ( GtkWidget *dialog, gpointer user_data );
 
 /**
  * VikDataSourceCleanupFunc:
- * 
+ *
  * Frees any widgets created for the setup or progress dialogs, any allocated state, etc.
  */
 typedef void (*VikDataSourceCleanupFunc) ( gpointer user_data );
@@ -138,7 +138,7 @@ typedef void (*VikDataSourceOffFunc) ( gpointer user_data, gchar **babelargs, gc
 
 /**
  * VikDataSourceInterface:
- * 
+ *
  * Main interface.
  */
 struct _VikDataSourceInterface {

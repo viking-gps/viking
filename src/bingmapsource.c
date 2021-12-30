@@ -2,34 +2,34 @@
 /*
  * viking
  * Copyright (C) 2011, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
- * 
+ *
  * viking is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * viking is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
  /**
   * SECTION:bingmapsource
   * @short_description: the class for Bing Maps
-  * 
+  *
   * The #BingMapSource class handles Bing map source.
-  * 
+  *
   * License and term of use are available here:
   * http://wiki.openstreetmap.org/wiki/File:Bing_license.pdf
-  * 
+  *
   * Technical details are available here:
   * http://msdn.microsoft.com/en-us/library/dd877180.aspx
   */
-  
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -264,7 +264,7 @@ bget_uri( VikMapSourceDefault *self, MapCoord *src )
 	gchar *uri = g_strdup_printf ( priv->url, quadtree );
 	g_free (quadtree);
 	return uri;
-} 
+}
 
 static gchar *
 bget_hostname( VikMapSourceDefault *self )
@@ -511,7 +511,6 @@ _async_load_attributions ( BingMapSource *self )
 	                      NULL,
 	                      NULL,
 	                      1 );
-     
 }
 
 /**

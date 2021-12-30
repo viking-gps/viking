@@ -21,16 +21,16 @@
  */
 #ifndef __MAP_IDS_H
 #define __MAP_IDS_H
- 
+
 // OLD Terraserver ids - listed for compatibility
 #define MAP_ID_TERRASERVER_AERIAL 1
 #define MAP_ID_TERRASERVER_TOPO 2
 #define MAP_ID_TERRASERVER_URBAN 4
- 
+
 #define MAP_ID_EXPEDIA 5
 
 #define MAP_ID_MAPNIK_RENDER 7
- 
+
 // Mostly OSM related - except the Blue Marble value
 #define MAP_ID_OSM_MAPNIK 13
 #define MAP_ID_BLUE_MARBLE 15
@@ -42,7 +42,7 @@
 #define MAP_ID_MBTILES 23
 #define MAP_ID_OSM_METATILES 24
 //#define MAP_ID_MAPBOX_OUTDOORS 25 // Access deactivated
- 
+
 #define MAP_ID_BING_AERIAL 212
 
 #define MAP_ID_OPEN_TOPO_MAP 901

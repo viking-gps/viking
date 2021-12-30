@@ -172,7 +172,7 @@ void a_logging_init ()
 /**
  * a_logging_update:
  *
- * An external manual update 
+ * An external manual update
  * Primarily intended for when the main window is created,
  *  thus showing the count of messages that were created during startup.
  */
@@ -293,12 +293,11 @@ static gboolean button_pressed_cb ( GtkWidget *tree_view,
 }
 
 /**
- *
  * a_logging_show_window:
  *
  * Get the latest log information and display it in a new dialog
  * ATM this dialog does not update if new entries are made in the background
- * 
+ *
  */
 void a_logging_show_window ()
 {

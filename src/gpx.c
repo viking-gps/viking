@@ -630,7 +630,7 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
        }
        g_string_erase ( c_cdata, 0, -1 ); /* clear the cdata buffer for description */
        break;
-        
+
      case tt_gpx_extensions:
      case tt_wpt_extensions:
      case tt_trk_extensions:
@@ -1620,20 +1620,18 @@ static void gpx_write_trackpoint ( VikTrackpoint *tp, GpxWritingContext *context
   {
     fprintf ( f, "    <ele>0</ele>\n" );
   }
-  
+
   time_iso8601 = NULL;
   if ( !isnan(tp->timestamp) ) {
     GTimeVal timestamp;
     timestamp.tv_sec = tp->timestamp;
     timestamp.tv_usec = abs((tp->timestamp-(gint64)tp->timestamp)*G_USEC_PER_SEC);
-  
     time_iso8601 = g_time_val_to_iso8601 ( &timestamp );
   }
   else if ( context->options != NULL && context->options->force_time )
   {
     GTimeVal current;
     g_get_current_time ( &current );
-  
     time_iso8601 = g_time_val_to_iso8601 ( &current );
   }
   if ( time_iso8601 != NULL )

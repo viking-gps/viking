@@ -22,7 +22,7 @@
 /**
  * SECTION:vikroutingwebengine
  * @short_description: A generic class for WEB based routing engine
- * 
+ *
  * The #VikRoutingWebEngine class handles WEB based
  * routing engine.
  */
@@ -75,7 +75,7 @@ enum
   PROP_0,
 
   PROP_URL_BASE,
-  
+
   /* LatLon */
   PROP_URL_START_LL,
   PROP_URL_STOP_LL,
@@ -234,7 +234,7 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
                                "<no-set>" /* default value */,
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_URL_BASE, pspec);
-  
+
 
   /**
    * VikRoutingWebEngine:url-start-ll:
@@ -260,7 +260,7 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
                                 TRUE/* default value */,
                                 G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_URL_LL_LAT_FIRST, pspec);
-   
+
 
   /**
    * VikRoutingWebEngine:url-stop-ll:
@@ -299,7 +299,7 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
                                NULL /* default value */,
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_URL_START_DIR, pspec);
-    
+
 
   /**
    * VikRoutingWebEngine:url-stop-dir:
@@ -347,7 +347,7 @@ static void vik_routing_web_engine_init ( VikRoutingWebEngine *self )
   VikRoutingWebEnginePrivate *priv = VIK_ROUTING_WEB_ENGINE_PRIVATE ( self );
 
   priv->url_base = NULL;
-  
+
   /* LatLon */
   priv->url_start_ll_fmt = NULL;
   priv->url_stop_ll_fmt = NULL;
@@ -372,7 +372,7 @@ static void vik_routing_web_engine_finalize ( GObject *gob )
 
   g_free (priv->url_base);
   priv->url_base = NULL;
-  
+
   /* LatLon */
   g_free (priv->url_start_ll_fmt);
   priv->url_start_ll_fmt = NULL;
@@ -460,7 +460,7 @@ vik_routing_web_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct L
   gchar *uri = vik_routing_web_engine_get_url_for_coords(self, start, end);
 
   DownloadFileOptions *options = vik_routing_web_engine_get_download_options(self);
-  
+
   gchar *format = vik_routing_engine_get_format ( self );
   ProcessOptions po = { NULL, NULL, format, uri, NULL, NULL };
   gboolean ret = a_babel_convert_from ( vtl, &po, NULL, NULL, options );
@@ -526,14 +526,14 @@ _append_stringified_coords ( gpointer data, gpointer user_data )
 {
   VikTrackpoint *vtp = (VikTrackpoint*)data;
   struct _append_ctx *ctx = (struct _append_ctx*)user_data;
-  
+
   /* Stringify coordinate */
   struct LatLon position;
   vik_coord_to_latlon ( &(vtp->coord), &position );
   gchar *string = (ctx->priv->url_ll_lat_first_fmt) ?
 	  	substitute_latlon ( ctx->priv->url_via_ll_fmt, position ):
 	  	substitute_lonlat ( ctx->priv->url_via_ll_fmt, position );
-  
+
   /* Append */
   ctx->urlParts[ctx->nb] = string;
   ctx->nb++;

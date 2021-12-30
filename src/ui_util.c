@@ -53,11 +53,11 @@ static gboolean spawn_command_line_async(const gchar * cmd,
 
   cmdline = g_strdup_printf("%s '%s'", cmd, arg);
   g_debug("Running: %s", cmdline);
-    
+
   status = g_spawn_command_line_async(cmdline, NULL);
 
   g_free(cmdline);
- 
+
   return status;
 }
 #endif
