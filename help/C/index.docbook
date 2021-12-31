@@ -2983,7 +2983,17 @@ Several fields are read only for reference purposes, values are shown if the tra
 <itemizedlist>
 <listitem><para>Speed and course.</para></listitem>
 <listitem><para>'Between' values: Speed, Time Difference and Distance Difference. When moving between trackpoints (via the Back and Forward buttons) these values are calculated.</para></listitem>
-<listitem><para>GPS precision factors.</para></listitem>
+<listitem>
+  <para>GPS precision factors.</para>
+  <para>
+    For further detail see <ulink url="https://en.wikipedia.org/wiki/Dilution_of_precision_(navigation)">DOP on Wikipedia</ulink>.
+    <itemizedlist>
+      <listitem><para>VDOP: Vertical Dilution Of Precision</para></listitem>
+      <listitem><para>HDOP: Horizontal Dilution Of Precision</para></listitem>
+      <listitem><para>PDOP: Position Dilution Of Precision</para></listitem>
+    </itemizedlist>
+  </para>
+</listitem>
 </itemizedlist>
 </para>
 <para>
