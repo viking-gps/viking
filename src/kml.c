@@ -25,11 +25,38 @@
 #include <expat.h>
 #include "ctype.h"
 
+typedef enum {
+	KML_COLOR_MODE_NORMAL=0,
+	KML_COLOR_MODE_RANDOM
+} colorModeEnum;
+
+// ATM Not supporting various other style characteristics such as
+// <BalloonStyle> / <gx:balloonVisibility>, <LabelStyle>,<PolyStyle> or <ListStyle>
+// ATM only a subset of <LineStyle> & <IconStyle> i.e. just the colour
+//  that translates easily into properties that Viking supports already
+typedef struct {
+	// ColorStyle
+	gchar *color; // Should be aabbggrr in hex
+	//colorModeEnum colorMode;
+	// LineStyle
+	//gdouble width; // Width in pixels - probably should be greater 0...!
+	// <gx:outerColor>, <gx:outerWidth>, <gx:physicalWidth>, <gx:labelVisibility>
+	// IconStyle
+	//gdouble scale;
+	// <heading>, <icon>, <hotspot>
+} AnyStyle;
+
 typedef struct {
 	GString *c_cdata;
 	gboolean use_cdata;
 	gchar *name;
 	gchar *desc;
+	gchar *styleUrl;
+	GHashTable *styles; // of AnyStyle
+	gchar *styleName; // Temp holding area before storing in HashTable
+	gchar *color;     // Temp holding area before storing in a style
+	//gdouble width;    // Temp holding area before storing in a style
+	//gdouble scale;    // Temp holding area before storing in a style
 	gboolean vis;
 	gdouble timestamp; // Waypoints only
 	VikTrwLayer *vtl;
@@ -51,6 +78,25 @@ static guint unnamed_tracks = 0;
 static guint unnamed_routes = 0;
 
 // Various helper functions
+
+static void track_set_color ( VikTrack *trk, gchar *color )
+{
+	// ATM must be kml:color - i.e. 'aabbggrr'
+	// so any other values are ignored
+	if ( strlen(color) == 8 ) {
+		//Create GdkColor string of form: #rrggbb
+		gchar gcol[8];
+		gcol[0] = '#';
+		gcol[1] = color[6];
+		gcol[2] = color[7];
+		gcol[3] = color[4];
+		gcol[4] = color[5];
+		gcol[5] = color[2];
+		gcol[6] = color[3];
+		gcol[7] = '\0';
+		trk->has_color = gdk_color_parse ( gcol, &trk->color);
+	}
+}
 
 static void parse_tag_reset ( xml_data *xd )
 {
@@ -94,6 +140,21 @@ static void name_end ( xml_data *xd, const char *el )
 static void description_end ( xml_data *xd, const char *el )
 {
 	xd->desc = g_strdup ( xd->c_cdata->str );
+	end_leaf_tag ( xd );
+}
+
+static void styleUrl_end ( xml_data *xd, const char *el )
+{
+	g_free ( xd->styleUrl );
+	if ( strlen(xd->c_cdata->str) > 2 ) {
+		// Only really support 'anchor link' styles
+		// i.e. those in the same kml file
+		if ( xd->c_cdata->str[0] == '#' )
+			xd->styleUrl = g_strdup ( &xd->c_cdata->str[1] );
+		else
+			xd->styleUrl = g_strdup ( xd->c_cdata->str );
+	} else
+		xd->styleUrl = NULL;
 	end_leaf_tag ( xd );
 }
 
@@ -202,6 +263,10 @@ static void point_end ( xml_data *xd, const char *el )
 			if ( xd->desc ) {
 				vik_waypoint_set_description ( xd->waypoint, xd->desc );
 			}
+			// TODO: consider styleUrl...
+			// ATM as we don't support individual waypoint sizes nor colour
+			//  (these are both done at the layer level)
+			//  so we won't try to apply the scale to the default waypoint size
 			xd->waypoint->visible = xd->vis;
 			xd->waypoint->timestamp = xd->timestamp;
 			vik_trw_layer_filein_add_waypoint ( xd->vtl, NULL, xd->waypoint );
@@ -297,6 +362,17 @@ static void add_track ( xml_data *xd )
 		if ( xd->desc ) {
 			vik_track_set_description ( xd->track, xd->desc );
 		}
+		if ( xd->styleUrl ) {
+			AnyStyle *as = g_hash_table_lookup ( xd->styles, xd->styleUrl );
+			if ( as ) {
+				// Set colour for track
+				track_set_color ( xd->track, as->color );
+				// ATM not going to use the width - since we don't support a per track width
+				//  we only do line width applying to the whole layer
+			}
+			if ( vik_debug )
+				vik_track_set_comment ( xd->track, xd->styleUrl );
+		}
 		xd->track->trackpoints = g_list_reverse ( xd->track->trackpoints );
 		xd->track->visible = xd->vis;
 		vik_trw_layer_filein_add_track ( xd->vtl, NULL, xd->track );
@@ -347,6 +423,14 @@ static void reset_xd ( xml_data *xd )
 	xd->name = NULL;
 	g_free ( xd->desc );
 	xd->desc = NULL;
+	g_free ( xd->styleUrl );
+	xd->styleUrl = NULL;
+	g_free ( xd->color );
+	xd->color = NULL;
+	g_free ( xd->styleName );
+	xd->styleName = NULL;
+	//xd->width = 1.0;
+	//xd->scale = 1.0;
 }
 
 static void placemark_end ( xml_data *xd, const char *el )
@@ -650,6 +734,8 @@ static void placemark_start ( xml_data *xd, const char *el, const char **attr )
 		setup_to_read_leaf_tag ( xd, placemark_end, visibility_end );
 	} else if ( g_strcmp0 ( el, "description" ) == 0 ) {
 		setup_to_read_leaf_tag ( xd, placemark_end, description_end );
+	} else if ( g_strcmp0 ( el, "styleUrl" ) == 0 ) {
+		setup_to_read_leaf_tag ( xd, placemark_end, styleUrl_end );
 	} else if ( g_strcmp0 ( el, "TimeStamp" ) == 0 ) {
 		setup_to_read_next_level_tag ( xd, placemark_start, placemark_end, timestamp_start, timestamp_end );
 	} else if ( g_strcmp0 ( el, "Point" ) == 0 ) {
@@ -676,11 +762,85 @@ static void top_end ( xml_data *xd, const char *el )
 		XML_SetEndElementHandler ( xd->parser, (XML_EndElementHandler)g_queue_pop_head(xd->gq_end) );
 }
 
+// Fwd declarations
+static void document_start ( xml_data *xd, const char *el, const char **attr );
+static void document_end ( xml_data *xd, const char *el );
+
 static void top_start ( xml_data *xd, const char *el, const char **attr )
 {
 	// NB also finds Placemarks whereever they may be in Document or Folder levels as well
 	if ( g_strcmp0 ( el, "Placemark" ) == 0 )
 		setup_to_read_next_level_tag ( xd, top_start, top_end, placemark_start, placemark_end );
+
+	if ( g_strcmp0 ( el, "Document" ) == 0 )
+		setup_to_read_next_level_tag ( xd, top_start, top_end, document_start, document_end );
+}
+
+static void color_end ( xml_data *xd, const char *el )
+{
+	g_free ( xd->color );
+	xd->color = g_strdup ( xd->c_cdata->str );
+	end_leaf_tag ( xd );
+}
+
+static void linestyle_end ( xml_data *xd, const char *el )
+{
+	if ( g_strcmp0 ( el, "LineStyle" ) == 0 )
+		parse_tag_reset ( xd );
+}
+
+static void linestyle_start ( xml_data *xd, const char *el, const char **attr )
+{
+	if ( g_strcmp0 ( el, "color" ) == 0 )
+		setup_to_read_leaf_tag ( xd, linestyle_end, color_end );
+	// else read "width"...
+}
+
+static void style_end ( xml_data *xd, const char *el )
+{
+	// set style color
+	if ( g_strcmp0 ( el, "Style" ) == 0 ) {
+		// If color hasn't been defined then don't create a style
+		if ( xd->color ) {
+			AnyStyle *as = g_malloc ( sizeof(AnyStyle) );
+			as->color = g_strdup ( xd->color );
+			//as->width = xd->width;
+			//as->scale = xd->scale;
+			(void)g_hash_table_insert ( xd->styles, g_strdup(xd->styleName), as );
+			g_debug ( "%s: inserting style %s", __FUNCTION__, xd->styleName );
+		}
+		parse_tag_reset ( xd );
+	}
+}
+
+static void style_start ( xml_data *xd, const char *el, const char **attr )
+{
+	if ( g_strcmp0 ( el, "LineStyle" ) == 0 )
+		setup_to_read_next_level_tag ( xd, style_start, style_end, linestyle_start, linestyle_end );
+	// else "IconStyle"...
+}
+
+static void document_start ( xml_data *xd, const char *el, const char **attr )
+{
+	if ( g_strcmp0 ( el, "Placemark" ) == 0 )
+		setup_to_read_next_level_tag ( xd, top_start, top_end, placemark_start, placemark_end );
+
+	if ( g_strcmp0 ( el, "Style" ) == 0 ) {
+		const gchar *name = get_attr ( attr, "id" );
+		if ( name ) {
+			g_free ( xd->styleName );
+			xd->styleName = g_strdup ( name );
+		}
+		// Styles are within <Document>
+		// ATM even if there are mulitple documents - styles are combined across all of them
+		setup_to_read_next_level_tag ( xd, document_start, document_end, style_start, style_end );
+	}
+}
+
+static void document_end ( xml_data *xd, const char *el )
+{
+	if ( g_strcmp0 ( el, "Document" ) == 0 )
+		parse_tag_reset ( xd );
 }
 
 static void kml_start ( xml_data *xd, const char *el, const char **attr )
@@ -728,6 +888,7 @@ gboolean a_kml_read_file ( VikTrwLayer *vtl, FILE *ff )
 	xd->gq_start = g_queue_new();
 	xd->gq_end = g_queue_new();
 	xd->parser = parser;
+	xd->styles = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, g_free );
 	// Other default values
 	reset_xd ( xd );
 
@@ -758,6 +919,7 @@ gboolean a_kml_read_file ( VikTrwLayer *vtl, FILE *ff )
 
 	XML_ParserFree ( parser );
 
+	g_hash_table_destroy ( xd->styles );
 	g_queue_free ( xd->gq_start );
 	g_queue_free ( xd->gq_end );
 	g_string_free ( xd->c_cdata, TRUE );
