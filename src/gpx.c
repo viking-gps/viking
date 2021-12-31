@@ -166,7 +166,7 @@ static tag_mapping tag_path_map[] = {
         { tt_wpt_sym, "/gpx/wpt/sym" },
         { tt_wpt_sym, "/loc/waypoint/type" },
         { tt_wpt_url, "/gpx/wpt/url" },
-        { tt_wpt_url_name, "/gpx/wpt/url_name" },            // GPX 1.0 only
+        { tt_wpt_url_name, "/gpx/wpt/urlname" },             // GPX 1.0 only
         { tt_wpt_link, "/gpx/wpt/link" },                    /* GPX 1.1 */
         { tt_wpt_url_name, "/gpx/wpt/link/text" },           /* GPX 1.1 */
         { tt_wpt_fix,  "/gpx/wpt/fix" },
