@@ -1111,12 +1111,6 @@ The layer (all tracks, routes and waypoints) can be exported to following file f
 		<para>GPX</para>
 	</listitem>
 	<listitem>
-		<para>GPSPoint</para>
-	</listitem>
-	<listitem>
-		<para>GPSMapper</para>
-	</listitem>
-	<listitem>
 		<para>Google's KML</para>
 	</listitem>
 	<listitem>
@@ -1127,6 +1121,12 @@ The layer (all tracks, routes and waypoints) can be exported to following file f
 		<para>GeoJSON. Via the program <ulink url="https://github.com/mapbox/togeojson">togeojson</ulink></para>
 		<para>This option will not be available if the program is not detected on your system.
 		See <ulink url="https://www.npmjs.org/package/togeojson">here</ulink> for the installation method.</para>
+	</listitem>
+	<listitem>
+		<para>GPSPoint - <emphasis>depreciated</emphasis> - only available if appropriate property enabled in <xref linkend="misc_settings"/></para>
+	</listitem>
+	<listitem>
+		<para>GPSMapper - <emphasis>depreciated</emphasis> - only available if appropriate property enabled in <xref linkend="misc_settings"/></para>
 	</listitem>
 </orderedlist>
 <para>
@@ -4610,6 +4610,14 @@ Accept: */*
             <para>Override the default HTTP User-Agent (which is otherwise generated automatically from a combination of &appname;'s name, the version and curl information) set in all download requests with the value specified.</para>
 	    <para>Also see <ulink url="https://curl.se/libcurl/c/CURLOPT_USERAGENT.html">CURLOPT_USERAGENT</ulink></para>
             <para>NB The User Agent for individual map downloads can be set via the map property <emphasis>custom-http-headers</emphasis></para>
+	  </listitem>
+	  <listitem>
+	    <para>export_gpsmapper_option=false</para>
+	    <para>To enable the export to the little used GPS Mapper format option, set this to true.</para>
+	  </listitem>
+	  <listitem>
+	    <para>export_gpspoint_option=false</para>
+	    <para>To enable the export to the little used GPS Point format option, set this to true.</para>
 	  </listitem>
 	  <listitem>
 	    <para>geoclue_accuracy_level=4</para>

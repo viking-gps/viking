@@ -4888,6 +4888,9 @@ static GtkMenu* create_external_submenu ( GtkMenu *menu )
   return external_submenu;
 }
 
+#define VIK_SETTINGS_EXPORT_GPSMAPPER "export_gpsmapper_option"
+#define VIK_SETTINGS_EXPORT_GPSPOINT "export_gpspoint_option"
+
 static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp )
 {
   static menu_array_layer data;
@@ -4927,8 +4930,20 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   GtkWidget *iteme = vu_menu_add_item ( menu, _("_Export Layer"), GTK_STOCK_HARDDISK, NULL, NULL );
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (iteme), GTK_WIDGET(export_submenu) );
 
-  (void)vu_menu_add_item ( export_submenu, _("Export as GPS_Point..."), NULL, G_CALLBACK(trw_layer_export_gpspoint), data );
-  (void)vu_menu_add_item ( export_submenu, _("Export as GPS_Mapper..."), NULL, G_CALLBACK(trw_layer_export_gpsmapper), data );
+  // Don't show GPS Point or GPS Mapper capabilities by default.
+  // Since these are presumed to be extremely rarely used features
+  //  such that only those users who need it can enable it,
+  //  rather than cluttering the menu / confusing normal users.
+  gboolean allow_gpspoint = FALSE;
+  (void)a_settings_get_boolean ( VIK_SETTINGS_EXPORT_GPSPOINT, &allow_gpspoint );
+  if ( allow_gpspoint )
+    (void)vu_menu_add_item ( export_submenu, _("Export as GPS_Point..."), NULL, G_CALLBACK(trw_layer_export_gpspoint), data );
+
+  gboolean allow_gpsmapper = FALSE;
+  (void)a_settings_get_boolean ( VIK_SETTINGS_EXPORT_GPSMAPPER, &allow_gpsmapper );
+  if ( allow_gpsmapper )
+    (void)vu_menu_add_item ( export_submenu, _("Export as GPS_Mapper..."), NULL, G_CALLBACK(trw_layer_export_gpsmapper), data );
+
   (void)vu_menu_add_item ( export_submenu, _("Export as _GPX..."), NULL, G_CALLBACK(trw_layer_export_gpx), data );
 
   if ( a_babel_available () )
