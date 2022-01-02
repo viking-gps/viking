@@ -321,6 +321,12 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       if ( line_source )
         vik_track_set_source ( pl, line_source );
 
+      if ( line_url )
+        vik_track_set_url ( pl, line_url );
+
+      if ( line_url_name )
+        vik_track_set_url_name ( pl, line_url_name );
+
       if ( line_number )
         pl->number = line_number;
 
@@ -851,6 +857,8 @@ static void a_gpspoint_write_track ( const VikTrack *trk, FILE *f )
   write_string ( f, "comment", trk->comment );
   write_string ( f, "description", trk->description );
   write_string ( f, "source", trk->source );
+  write_string ( f, "url", trk->url );
+  write_string ( f, "url_name", trk->url_name );
   write_positive_uint ( f, "number", trk->number );
   write_string ( f, "xtype", trk->type );
 

@@ -79,6 +79,9 @@ typedef enum {
         tt_trk_src,
         tt_trk_number,
         tt_trk_type,
+        tt_trk_url,
+        tt_trk_url_name,
+        tt_trk_link,
 
         tt_trk_extensions,      // GPX 1.1
         tt_trk_an_extension,    // Generic GPX 1.1 extensions
@@ -184,6 +187,10 @@ static tag_mapping tag_path_map[] = {
         { tt_trk_src, "/gpx/trk/src" },
         { tt_trk_number, "/gpx/trk/number" },
         { tt_trk_type, "/gpx/trk/type" },
+        { tt_trk_url, "/gpx/trk/url" },             // GPX 1.0 only
+        { tt_trk_url_name, "/gpx/trk/urlname" },    // GPX 1.0 only
+        { tt_trk_link, "/gpx/trk/link" },           // GPX 1.1
+        { tt_trk_url_name, "/gpx/trk/link/text" },  // GPX 1.1
 
         { tt_trk_trkseg, "/gpx/trk/trkseg" },
         { tt_trk_trkseg_trkpt, "/gpx/trk/trkseg/trkpt" },
@@ -573,6 +580,7 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
 
      case tt_gpx_url:
      case tt_wpt_link:
+     case tt_trk_link:
        c_link = get_attr ( attr, "href" );
        break;
      case tt_gpx_url_name:
@@ -609,6 +617,8 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
      case tt_trk_src:
      case tt_trk_number:
      case tt_trk_type:
+     case tt_trk_url:
+     case tt_trk_url_name:
      case tt_trk_name:
        g_string_erase ( c_cdata, 0, -1 ); /* clear the cdata buffer */
        break;
@@ -942,6 +952,24 @@ static void gpx_end(UserDataT *ud, const char *el)
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
+     case tt_trk_url:
+       vik_track_set_url ( c_tr, c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_trk_url_name:
+       vik_track_set_url_name ( c_tr, c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_trk_link:
+       if ( c_link )
+         if ( util_is_url(c_link) )
+           vik_track_set_url ( c_tr, c_link );
+       c_link = NULL;
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
      case tt_trk_cmt:
        vik_track_set_comment ( c_tr, c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
@@ -1092,6 +1120,9 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_trk_src:
     case tt_trk_number:
     case tt_trk_type:
+    case tt_trk_url:
+    case tt_trk_url_name:
+    case tt_trk_link:
     case tt_trk_trkseg_trkpt_time:
     case tt_wpt_time:
     case tt_trk_trkseg_trkpt_name:
@@ -1720,6 +1751,12 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
   write_string ( f, TRK_SPACES, "desc", t->description );
   write_string ( f, TRK_SPACES, "src", t->source );
   write_positive_uint ( f, TRK_SPACES, "number", t->number );
+  if ( t->url && context->options && context->options->version == GPX_V1_1 ) {
+    write_link ( f, TRK_SPACES, t->url, t->url_name );
+  } else {
+    write_string ( f, TRK_SPACES, "url", t->url );
+    write_string ( f, TRK_SPACES, "urlname", t->url_name );
+  }
   write_string ( f, TRK_SPACES, "type", t->type );
 
   // ATM Track Colour is the only extension Viking supports editing

@@ -118,6 +118,8 @@ typedef struct _propwidgets {
   GtkWidget *w_description;
   GtkWidget *w_source;
   GtkWidget *w_number;
+  GtkWidget *w_url;
+  GtkWidget *w_url_name;
   GtkWidget *w_type;
   GtkWidget *w_color;
   GtkWidget *w_namelabel;
@@ -2756,6 +2758,20 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
           changed = TRUE;
         }
       }
+      str = gtk_entry_get_text(GTK_ENTRY(widgets->w_url));
+      if ( g_strcmp0(tr->url, str) ) {
+        if ( tr->url || (str && strlen(str)) ) {
+          vik_track_set_url ( tr, str );
+          changed = TRUE;
+        }
+      }
+      str = gtk_entry_get_text(GTK_ENTRY(widgets->w_url_name));
+      if ( g_strcmp0(tr->url_name, str) ) {
+        if ( tr->url_name || (str && strlen(str)) ) {
+          vik_track_set_url_name ( tr, str );
+          changed = TRUE;
+        }
+      }
       GdkColor color;
       gtk_color_button_get_color ( GTK_COLOR_BUTTON(widgets->w_color), &color );
       if ( !gdk_color_equal(&color, &(tr->color)) ) {
@@ -3622,7 +3638,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   gtk_notebook_set_scrollable ( GTK_NOTEBOOK(graphs), TRUE );
 
-  GtkWidget *content_prop[5];
+  GtkWidget *content_prop[7];
   int cnt_prop = 0;
 
   static gchar *label_texts[] = {
@@ -3631,6 +3647,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     N_("Source:"),
     N_("Type:"),
     N_("Number:"),
+    N_("URL:"),
+    N_("URL Name:"),
   };
 
   // Allow any textual entry to be considered as a URL
@@ -3639,6 +3657,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     tr->description,
     tr->source,
     tr->type,
+    NULL,
+    tr->url,
     NULL,
   };
 
@@ -3665,6 +3685,16 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   widgets->w_number = ui_spin_button_new ( (GtkAdjustment*)gtk_adjustment_new(tr->number,0,9999,1,10,0), 10.0, 0 );
   content_prop[cnt_prop++] = widgets->w_number;
+
+  widgets->w_url = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+  if ( tr->url )
+    gtk_entry_set_text ( GTK_ENTRY(widgets->w_url), tr->url );
+  content_prop[cnt_prop++] = widgets->w_url;
+
+  widgets->w_url_name = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+  if ( tr->url_name )
+    gtk_entry_set_text ( GTK_ENTRY(widgets->w_url_name), tr->url_name );
+  content_prop[cnt_prop++] = widgets->w_url_name;
 
   GtkWidget *content_draw[3];
   guint cnt_draw = 0;

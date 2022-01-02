@@ -113,6 +113,28 @@ void vik_track_set_source(VikTrack *tr, const gchar *source)
     tr->source = NULL;
 }
 
+void vik_track_set_url(VikTrack *tr, const gchar *url)
+{
+  if ( tr->url )
+    g_free ( tr->url );
+
+  if ( url && url[0] != '\0' )
+    tr->url = g_strdup(url);
+  else
+    tr->url = NULL;
+}
+
+void vik_track_set_url_name(VikTrack *tr, const gchar *url_name)
+{
+  if ( tr->url_name )
+    g_free ( tr->url_name );
+
+  if ( url_name && url_name[0] != '\0' )
+    tr->url_name = g_strdup(url_name);
+  else
+    tr->url_name = NULL;
+}
+
 void vik_track_set_type(VikTrack *tr, const gchar *type)
 {
   if ( tr->type )
@@ -164,6 +186,10 @@ void vik_track_free(VikTrack *tr)
     g_free ( tr->description );
   if ( tr->source )
     g_free ( tr->source );
+  if ( tr->url )
+    g_free ( tr->url );
+  if ( tr->url_name )
+    g_free ( tr->url_name );
   if ( tr->type )
     g_free ( tr->type );
   if ( tr->extensions )
@@ -214,6 +240,8 @@ VikTrack *vik_track_copy ( const VikTrack *tr, gboolean copy_points )
   vik_track_set_comment(new_tr,tr->comment);
   vik_track_set_description(new_tr,tr->description);
   vik_track_set_source(new_tr,tr->source);
+  vik_track_set_url(new_tr,tr->url);
+  vik_track_set_url_name(new_tr,tr->url_name);
   vik_track_set_type(new_tr,tr->type);
   vik_track_set_extensions(new_tr,tr->extensions);
   return new_tr;
@@ -2027,6 +2055,8 @@ void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *datalen)
   vtm_append(tr->comment);
   vtm_append(tr->description);
   vtm_append(tr->source);
+  vtm_append(tr->url);
+  vtm_append(tr->url_name);
   vtm_append(tr->type);
   vtm_append(tr->extensions);
 
@@ -2087,6 +2117,8 @@ VikTrack *vik_track_unmarshall (const guint8 *data_in, guint datalen)
   vtu_get(new_tr->comment);
   vtu_get(new_tr->description);
   vtu_get(new_tr->source);
+  vtu_get(new_tr->url);
+  vtu_get(new_tr->url_name);
   vtu_get(new_tr->type);
   vtu_get(new_tr->extensions);
 

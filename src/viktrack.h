@@ -86,6 +86,8 @@ struct _VikTrack {
   gchar *comment;
   gchar *description;
   gchar *source;
+  gchar *url;
+  gchar *url_name;
   guint number;
   gchar *type;
   guint8 ref_count;
@@ -111,6 +113,8 @@ void vik_track_set_name(VikTrack *tr, const gchar *name);
 void vik_track_set_comment(VikTrack *tr, const gchar *comment);
 void vik_track_set_description(VikTrack *tr, const gchar *description);
 void vik_track_set_source(VikTrack *tr, const gchar *source);
+void vik_track_set_url(VikTrack *tr, const gchar *url);
+void vik_track_set_url_name(VikTrack *tr, const gchar *url_name);
 void vik_track_set_type(VikTrack *tr, const gchar *type);
 void vik_track_set_extensions(VikTrack *tr, const gchar *value);
 void vik_track_ref(VikTrack *tr);
