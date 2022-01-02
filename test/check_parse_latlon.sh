@@ -24,6 +24,8 @@ check_failure ()
 }
 
 # Various checks to work out what the current code actually does
+# Note that the success tests check output to 5 digits of precision
+# (since the output format used in test_parse_latlon.c is '%0.5f')
 
 check_failure "0.34"
 # ATM no i18n support for using ',' as decimal separator in input string
@@ -46,7 +48,12 @@ check_success "S34.56 E008.56" "-34.56000 8.56000"
 # DMM
 check_success "N 34° 12.3456 W 123° 45.6789" "34.20576 -123.76131"
 check_success "S 34° 12.3456 E 123° 45.6789" "-34.20576 123.76131"
-check_success "S034° 12.3456 W003° 45.6789" "-34.20576 -3.76131"
+# Due to precision of text/floating point representation
+#  the value initially selected for testing of W003° 45.6789
+#  is -3.76131499999999974193 on a 64bit machine but -3.76131500000000018602 on a 32 bit machine
+#  so with an output of 5 digits of precision - the values differ on the different architectures
+# Hence adjust input value slightly to achieve repeatable cross architecture results
+check_success "S034° 12.3456 W003° 45.6788" "-34.20576 -3.76131"
 # DMS
 check_success "S034° 12 34 W003° 45 54" "-34.20944 -3.76500"
 # Not sure if 'invalid' minute/second values should be accepted

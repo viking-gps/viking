@@ -1883,7 +1883,7 @@ When the waypoint has a time, right clicking on the button opens a menu from whi
       <listitem><para>"S12 W34": With cardinal indicators at begining</para></listitem>
       <listitem><para>"12 S 34 W": With cardinal indicators after (must have space between the number and letter)</para></listitem>
       <listitem><para>"12.34 56.67": DDD format</para></listitem>
-      <listitem><para>"S034° 12.3456 W003° 45.6789": DMM format. Equals DDD "-34.20576 -3.76131"</para></listitem>
+      <listitem><para>"S034° 12.3456 W003° 45.6788": DMM format. Equals DDD "-34.20576 -3.76131"</para></listitem>
       <listitem><para>"S034° 12 34 W003° 45 54": DMS format. Equals DDD "-34.20944 -3.76500"</para></listitem>
     </itemizedlist>
   </para>
