@@ -28,6 +28,7 @@
  */
 #include "gpx.h"
 #include "viking.h"
+#include "file_magic.h"
 #include <expat.h>
 #include "misc/gtkhtml-private.h"
 
@@ -845,6 +846,8 @@ static void gpx_end(UserDataT *ud, const char *el)
      case tt_wpt_link:
        if ( c_link ) {
          // Correct <link href="uri"></link> format
+         // NB although Viking itself may write <type> information,
+         //  ATM we don't use it and rely on the value of the URI to determine if URL vs Image
          if ( util_is_url(c_link) ) {
            vik_waypoint_set_url ( c_wp, c_link );
          }
@@ -1488,12 +1491,18 @@ static void write_string_as_is ( FILE *ff, guint spaces, const gchar *tag, const
   }
 }
 
-static void write_link ( FILE *ff, guint spaces, const gchar *link, const gchar *text )
+static void write_link ( FILE *ff, guint spaces, const gchar *link, const gchar *text, const gchar *type )
 {
-  if ( link && strlen(link) && text && strlen(text) ) {
+  if ( link && strlen(link) && text && strlen(text) && type && strlen(type) ) {
+    gchar *tmp = entitize ( text );
+    fprintf ( ff, "%*s<link href=\"%s\"><text>%s</text><type>%s</type></link>\n", spaces, "", link, text, type );
+    g_free ( tmp );
+  } else if ( link && strlen(link) && text && strlen(text) ) {
     gchar *tmp = entitize ( text );
     fprintf ( ff, "%*s<link href=\"%s\"><text>%s</text></link>\n", spaces, "", link, text );
     g_free ( tmp );
+  } else if ( link && strlen(link) && type && strlen(type) ) {
+    fprintf ( ff, "%*s<link href=\"%s\"><type>%s</type></link>\n", spaces, "", link, type );
   } else if ( link && strlen(link) ) {
     fprintf ( ff, "%*s<link href=\"%s\"></link>\n", spaces, "", link );
   }
@@ -1557,7 +1566,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   write_string ( f, WPT_SPACES, "src", wp->source );
 
   if ( wp->url && context->options && context->options->version == GPX_V1_1 ) {
-    write_link ( f, WPT_SPACES, wp->url, wp->url_name );
+    write_link ( f, WPT_SPACES, wp->url, wp->url_name, NULL );
   } else {
     write_string ( f, WPT_SPACES, "url", wp->url );
     write_string ( f, WPT_SPACES, "urlname", wp->url_name );
@@ -1576,7 +1585,9 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
     }
     if ( !tmp )
       tmp = gtk_html_filename_to_uri ( wp->image );
-    write_link ( f, WPT_SPACES, tmp, NULL );
+    const gchar *mtype = file_magic_type ( wp->image );
+    write_link ( f, WPT_SPACES, tmp, NULL, mtype );
+    g_free ( (gchar*)mtype );
     g_free ( tmp );
   }
 
@@ -1752,7 +1763,7 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
   write_string ( f, TRK_SPACES, "src", t->source );
   write_positive_uint ( f, TRK_SPACES, "number", t->number );
   if ( t->url && context->options && context->options->version == GPX_V1_1 ) {
-    write_link ( f, TRK_SPACES, t->url, t->url_name );
+    write_link ( f, TRK_SPACES, t->url, t->url_name, NULL );
   } else {
     write_string ( f, TRK_SPACES, "url", t->url );
     write_string ( f, TRK_SPACES, "urlname", t->url_name );
@@ -1900,7 +1911,7 @@ void a_gpx_write_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options, c
       if ( md->author && strlen(md->author) > 0 )
         fprintf ( f, "    <author><name>%s</name></author>\n", md->author );
       write_string ( f, 4, "desc", md->description );
-      write_link ( f, 4, md->url, md->url_name );
+      write_link ( f, 4, md->url, md->url_name, NULL );
       write_string ( f, 4, "time", md->timestamp );
       write_string ( f, 4, "keywords", md->keywords );
       fprintf ( f, "  </metadata>\n" );

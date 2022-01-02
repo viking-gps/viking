@@ -99,3 +99,51 @@ gboolean file_magic_check ( const gchar *filename, const gchar *magic_string, co
 
 	return is_requested_file_type;
 }
+
+
+/**
+ * file_magic_type:
+ * @filename:     The file
+ *
+ * Returns: The MIME file type as a string - which may be NULL
+ *          This string must be freed once used
+ */
+const gchar * file_magic_type ( const gchar *filename )
+{
+	const char* magic = NULL;
+#ifdef HAVE_MAGIC_H
+	magic_t myt = magic_open ( MAGIC_ERROR|MAGIC_MIME_TYPE );
+	if ( myt ) {
+#ifdef WINDOWS
+		// We have to 'package' the magic database ourselves :(
+		gchar *dir = g_win32_get_package_installation_directory_of_module ( NULL );
+		gchar *mgc = g_build_filename ( dir, "magic.mgc", NULL);
+		int ml = magic_load ( myt, mgc );
+		g_free ( mgc );
+		g_free ( dir );
+#else
+		// Use system default
+		int ml = magic_load ( myt, NULL );
+#endif
+		if ( ml == 0 ) {
+#ifdef WINDOWS
+			GError *err = NULL;
+			char *magic_filename = g_locale_from_utf8 ( filename, -1, NULL, NULL, &err );
+			if ( err ) {
+				g_warning ( "%s: UTF8 issues for '%s' %s", __FUNCTION__, filename, err->message );
+				g_error_free ( err );
+			}
+#else
+			char *magic_filename = g_strdup ( filename );
+#endif
+			magic = g_strdup ( magic_file(myt, magic_filename) );
+			g_free ( magic_filename );
+		}
+		else {
+			g_critical ("%s: magic load database failure", __FUNCTION__ );
+		}
+		magic_close ( myt );
+	}
+#endif
+	return magic;
+}

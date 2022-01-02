@@ -29,6 +29,8 @@ G_BEGIN_DECLS
 
 gboolean file_magic_check ( const gchar *filename, const gchar *magic_string, const gchar *extension );
 
+const gchar* file_magic_type ( const gchar *filename );
+
 G_END_DECLS
 
 #endif
