@@ -45,6 +45,7 @@ typedef enum {
         tt_gpx_keywords,
         tt_gpx_extensions,      // GPX 1.1
         tt_gpx_an_extension,    // Generic GPX 1.1 extensions
+        tt_gpx_color,           // OSMAnd Extension
 
         tt_wpt,
         tt_wpt_cmt,
@@ -140,6 +141,10 @@ static tag_mapping tag_path_map[] = {
         { tt_gpx_url_name, "/gpx/urlname" },
         { tt_gpx_time, "/gpx/time" },
         { tt_gpx_keywords, "/gpx/keywords" },
+        // https://docs.osmand.net/en/main@latest/development/osmand-file-formats/osmand-gpx
+        // Applies to all tracks in the file
+        //  so have specific tag to store in a global colour (rather than per track colour)
+        { tt_gpx_color, "/gpx/extensions/color" },
 
         // GPX 1.1 variant - basic properties moved into metadata namespace
         { tt_gpx_name, "/gpx/metadata/name" },
@@ -274,6 +279,10 @@ static GString *c_trkpt_ext = NULL;
 static gchar *c_wp_name = NULL;
 static gchar *c_tr_name = NULL;
 
+// Global colour for all tracks (ATM not for waypoints)
+static GdkColor c_color;
+static gboolean c_have_color = FALSE;
+
 /* temporary things so we don't have to create them lots of times */
 static const gchar *c_slat, *c_slon;
 static struct LatLon c_ll;
@@ -299,6 +308,30 @@ static const char *get_attr ( const char **attr, const char *key )
     attr += 2;
   }
   return NULL;
+}
+
+/**
+ * Attempt to set the colour given a string value
+ */
+static gboolean global_set_color ( gchar *color )
+{
+	// If "#AARRGGBB" style
+	if ( strlen(color) == 9 && color[0] == '#' ) {
+		// Skip the alpha component
+		gchar gcol[8];
+		gcol[0] = '#';
+		gcol[1] = color[3];
+		gcol[2] = color[4];
+		gcol[3] = color[5];
+		gcol[4] = color[6];
+		gcol[5] = color[7];
+		gcol[6] = color[8];
+		gcol[7] = '\0';
+		return gdk_color_parse ( gcol, &c_color );
+	}
+	// Otherwise try whole string
+	//  hopefully "#RRGGBB" or named colour
+	return gdk_color_parse ( color, &c_color );
 }
 
 /**
@@ -561,6 +594,12 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
        c_tr->is_route = (current_tag == tt_rte) ? TRUE : FALSE;
        if ( get_attr ( attr, "hidden" ) )
          c_tr->visible = FALSE;
+       // Apply default colouring if applicable,
+       //  which will then get overridden by any specific colour later
+       if ( c_have_color ) {
+           c_tr->has_color = TRUE;
+           c_tr->color = c_color;
+       }
        break;
 
      case tt_trk_trkseg:
@@ -590,6 +629,7 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
      case tt_gpx_desc:
      case tt_gpx_keywords:
      case tt_gpx_time:
+     case tt_gpx_color:
      case tt_trk_trkseg_trkpt_name:
      case tt_trk_trkseg_trkpt_ele:
      case tt_trk_trkseg_trkpt_time:
@@ -761,6 +801,11 @@ static void gpx_end(UserDataT *ud, const char *el)
        if ( c_md->url_name )
          g_free ( c_md->url_name );
        c_md->url_name = g_strdup ( c_cdata->str );
+       g_string_erase ( c_cdata, 0, -1 );
+       break;
+
+     case tt_gpx_color:
+       c_have_color = global_set_color ( c_cdata->str );
        g_string_erase ( c_cdata, 0, -1 );
        break;
 
@@ -1095,6 +1140,7 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_gpx_time:
     case tt_gpx_url:
     case tt_gpx_url_name:
+    case tt_gpx_color:
     case tt_wpt_name:
     case tt_trk_name:
     case tt_wpt_ele:
