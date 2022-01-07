@@ -1678,6 +1678,14 @@ static void mark_request_complete ( MapDownloadInfo *mdi, gint x, gint y )
   g_free ( request );
 }
 
+static void unref_weak_ref_cb ( MapDownloadInfo *mdi )
+{
+  g_mutex_lock ( mdi->mutex );
+  if ( mdi->map_layer_alive )
+    g_object_weak_unref ( G_OBJECT(mdi->vml), weak_ref_cb, mdi );
+  g_mutex_unlock ( mdi->mutex );
+}
+
 static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 {
   void *handle = vik_map_source_download_handle_init(MAPS_LAYER_NTH_TYPE(mdi->maptype));
@@ -1838,10 +1846,9 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
     }
   }
   vik_map_source_download_handle_cleanup(MAPS_LAYER_NTH_TYPE(mdi->maptype), handle);
-  g_mutex_lock(mdi->mutex);
-  if (mdi->map_layer_alive)
-    g_object_weak_unref(G_OBJECT(mdi->vml), weak_ref_cb, mdi);
-  g_mutex_unlock(mdi->mutex); 
+
+  unref_weak_ref_cb ( mdi );
+
   return 0;
 }
 
@@ -1862,6 +1869,8 @@ static void mdi_cancel_cleanup ( MapDownloadInfo *mdi )
   }
 
   requests_clear ( mdi->maptype );
+
+  unref_weak_ref_cb ( mdi );
 }
 
 static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const VikCoord *ul, const VikCoord *br, gint redownload )
