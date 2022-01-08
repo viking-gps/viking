@@ -9382,6 +9382,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
         gtk_widget_set_sensitive(GTK_WIDGET(itemprop), FALSE );
     }
 
+    (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
     (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_CUT, G_CALLBACK(trw_layer_cut_item_cb), data );
     (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_COPY, G_CALLBACK(trw_layer_copy_item_cb), data );
     (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_DELETE, G_CALLBACK(trw_layer_delete_item), data );

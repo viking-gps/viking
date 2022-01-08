@@ -155,9 +155,11 @@ static GtkWidget* layers_panel_create_popup ( VikLayersPanel *vlp, gboolean full
 
   if ( full ) {
     (void)vu_menu_add_item ( GTK_MENU(menu), NULL, GTK_STOCK_PROPERTIES, G_CALLBACK(vik_layers_panel_properties), vlp );
+    (void)vu_menu_add_item ( GTK_MENU(menu), NULL, NULL, NULL, NULL ); // Just a separator
     for ( ii = 0; ii < G_N_ELEMENTS(entries); ii++ ) {
       (void)vu_menu_add_item ( GTK_MENU(menu), entries[ii].label, entries[ii].stock_id, G_CALLBACK(entries[ii].callback), vlp );
     }
+    (void)vu_menu_add_item ( GTK_MENU(menu), NULL, NULL, NULL, NULL ); // Just a separator
   }
 
   GtkWidget *submenu = gtk_menu_new();
@@ -851,6 +853,7 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
 
 	if (menu_selection & VIK_MENU_ITEM_PROPERTY) {
           (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_PROPERTIES, G_CALLBACK(vik_layers_panel_properties), vlp );
+          (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
 	}
 
 	if (menu_selection & VIK_MENU_ITEM_CUT) {
