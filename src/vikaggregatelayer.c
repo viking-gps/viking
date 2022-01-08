@@ -109,6 +109,9 @@ static VikLayerParamData color_default_cluster ( void ) {
 static VikLayerParamData color_default_new ( void ) {
   VikLayerParamData data; gdk_color_parse ( "#4365B8", &data.c ); return data; // A kind of blue
 }
+static VikLayerParamData color_default_lines ( void ) {
+  VikLayerParamData data; gdk_color_parse ( "#241f31", &data.c ); return data; // A dark greyish
+}
 
 static VikLayerParamData hm_alpha_default ( void ) { return VIK_LPD_UINT ( 127 ); }
 
@@ -153,6 +156,11 @@ VikLayerParam aggregate_layer_params[] = {
   { VIK_LAYER_AGGREGATE, "new_alpha", VIK_LAYER_PARAM_UINT, GROUP_TAC_ADV, N_("New Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
     N_("Control the Alpha value for transparency effects"), alpha_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "new_color", VIK_LAYER_PARAM_COLOR, GROUP_TAC_ADV, N_("New Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_default_new, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "lines_on", VIK_LAYER_PARAM_BOOLEAN, GROUP_TAC_ADV, N_("Consecutive Lines On:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    "Consecutive line of tiles in North/South and East/West directions", vik_lpd_false_default, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "lines_alpha", VIK_LAYER_PARAM_UINT, GROUP_TAC_ADV, N_("Consecutive Lines Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
+    N_("Control the Alpha value for transparency effects"), alpha_default, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "lines_color", VIK_LAYER_PARAM_COLOR, GROUP_TAC_ADV, N_("Consecutive Lines Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, color_default_lines, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "drawgrid", VIK_LAYER_PARAM_BOOLEAN, GROUP_TAC, N_("Draw Grid:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "tilearealevel", VIK_LAYER_PARAM_UINT, GROUP_TAC, N_("Tile Area Level:"), VIK_LAYER_WIDGET_COMBOBOX, params_tile_area_levels, NULL,
     N_("Area size. A higher level means a smaller grid."), tile_area_level_default, NULL, NULL },
@@ -167,7 +175,7 @@ VikLayerParam aggregate_layer_params[] = {
     VIK_LAYER_WIDGET_BUTTON, N_("Reset All to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
 
-typedef enum { BASIC, CONTIG, CLUSTER, MAX_SQR, TNEW, CP_NUM } common_property_types;
+typedef enum { BASIC, CONTIG, CLUSTER, MAX_SQR, TNEW, LINES, CP_NUM } common_property_types;
 
 enum {
       PARAM_DO_TAC=0,
@@ -185,6 +193,9 @@ enum {
       PARAM_NEW_ON,
       PARAM_NEW_ALPHA,
       PARAM_NEW_COLOR,
+      PARAM_LINES_ON,
+      PARAM_LINES_ALPHA,
+      PARAM_LINES_COLOR,
       PARAM_DRAW_GRID,
       PARAM_TILE_AREA_LEVEL,
       PARAM_TAC_TIME_RANGE,
@@ -279,7 +290,7 @@ struct _VikAggregateLayer {
   GdkPixbuf *pixbuf[CP_NUM];      // Individual tile
   GdkPixbuf *full_pixbuf[CP_NUM]; // Whole screen
   GdkPixbuf *unreachable_pixbuf; // Whole screen
-  guint num_tiles[CP_NUM];
+  guint num_tiles[CP_NUM]; // NB ATM Not used for lines coverage type
   guint num_prev[CP_NUM]; // Counts to determine change after a new calculation
   guint num_calcs;
 
@@ -288,6 +299,17 @@ struct _VikAggregateLayer {
   guint max_square;
   guint max_square_prev;
   gint xx,yy; // Location of top left max square tile
+
+  // For consecutive lines of coverage North/South (ns) and East/West (ew)
+  // Store where the lines are (tile at the end of the line) and the size
+  gint ns_x;
+  gint ns_y;
+  guint ns_size;
+  guint ns_size_prev;
+  gint ew_x;
+  gint ew_y;
+  guint ew_size;
+  guint ew_size_prev;
 
   guint8 tac_time_range; // Years
   // Maybe a sparse table would be more efficient
@@ -524,6 +546,16 @@ static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetP
     case PARAM_NEW_COLOR:
       changed = vik_layer_param_change_color ( vlsp->data, &val->color[TNEW] );
       break;
+    case PARAM_LINES_ON:
+      changed = vik_layer_param_change_boolean ( vlsp->data, &val->on[LINES] );
+      break;
+    case PARAM_LINES_ALPHA:
+      if ( vlsp->data.u <= 255 )
+        changed = vik_layer_param_change_uint8 ( vlsp->data, &val->alpha[LINES] );
+      break;
+    case PARAM_LINES_COLOR:
+      changed = vik_layer_param_change_color ( vlsp->data, &val->color[LINES] );
+      break;
     case PARAM_TILE_AREA_LEVEL:
       if ( vlsp->data.u <= G_N_ELEMENTS(params_tile_area_levels) ) {
         guint old = val->zoom_level;
@@ -590,6 +622,9 @@ static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, gui
     case PARAM_NEW_ON: rv.b = val->on[TNEW]; break;
     case PARAM_NEW_ALPHA: rv.u = val->alpha[TNEW]; break;
     case PARAM_NEW_COLOR: rv.c = val->color[TNEW]; break;
+    case PARAM_LINES_ON: rv.b = val->on[LINES]; break;
+    case PARAM_LINES_ALPHA: rv.u = val->alpha[LINES]; break;
+    case PARAM_LINES_COLOR: rv.c = val->color[LINES]; break;
     case PARAM_TILE_AREA_LEVEL: rv.u = map_utils_mpp_to_scale ( val->zoom_level ) - 1; break;
     case PARAM_TAC_TIME_RANGE: rv.u = val->tac_time_range; break;
     case PARAM_HM_ALPHA: rv.u = val->hm_alpha; break;
@@ -1002,6 +1037,18 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
                      && ( y >= val->yy && y < (val->yy + val->max_square) ) ) {
                 gdk_pixbuf_copy_area ( val->pixbuf[MAX_SQR], 0, 0, sizex, sizey, val->full_pixbuf[MAX_SQR], destx, desty );
               }
+
+            // Line of tiles drawing
+            if ( val->on[LINES] && val->ns_size && val->ew_size ) {
+              if ( x == val->ns_x ) {
+                if ( y <= val->ns_y && y >= val->ns_y-val->ns_size )
+                  gdk_pixbuf_copy_area ( val->pixbuf[LINES], 0, 0, sizex, sizey, val->full_pixbuf[LINES], destx, desty );
+              }
+              if ( y == val->ew_y ) {
+                if ( x <= val->ew_x && x >= val->ew_x-val->ew_size )
+                  gdk_pixbuf_copy_area ( val->pixbuf[LINES], 0, 0, sizex, sizey, val->full_pixbuf[LINES], destx, desty );
+              }
+            }
 
             if ( val->on[TNEW] )
               if ( is_tile_occupied(val->tiles_new, x, y) ) {
@@ -2058,6 +2105,74 @@ static void tac_square_calc ( VikAggregateLayer *val )
 }
 
 /**
+ * Finds biggest line of tiles, both vertically and horizontally
+ */
+static void tac_lines_calc ( VikAggregateLayer *val )
+{
+  clock_t begin = clock();
+
+  GHashTableIter iter;
+  gpointer key, value;
+  gint x,y;
+  gint tlx=G_MAXINT,tly=G_MAXINT,brx=-G_MAXINT,bry=-G_MAXINT;
+
+  // Get extents of tile coverage
+  g_hash_table_iter_init ( &iter, val->tiles );
+  while ( g_hash_table_iter_next(&iter, &key, &value) ) {
+    (void)sscanf ( key, "%d:%d", &x, &y );
+    if ( x < tlx ) tlx = x;
+    if ( x > brx ) brx = x;
+    if ( y < tly ) tly = y;
+    if ( y > bry ) bry = y;
+  }
+
+  // Simple brute force method
+  // Detects the first instance of the biggest consective run of tiles
+  //  in both vertical and horizontal directions
+  guint crt_sz = 0;
+
+  // North/South passage...
+  for ( gint xx = tlx; xx <= brx; xx++ ) {
+    for ( gint yy = tly; yy <= bry; yy++ ) {
+      if ( is_tile_occupied(val->tiles, xx, yy) )
+        crt_sz++;
+      else {
+        if ( crt_sz > val->ns_size ) {
+          val->ns_size = crt_sz;
+          val->ns_x = xx;
+          val->ns_y = yy-1;
+        }
+        crt_sz = 0;
+      }
+    }
+  }
+
+  crt_sz = 0;
+  // East/West passage...
+  for ( gint yy = tly; yy <= bry; yy++ ) {
+    for ( gint xx = tlx; xx <= brx; xx++ ) {
+      if ( is_tile_occupied(val->tiles, xx, yy) )
+        crt_sz++;
+      else {
+        if ( crt_sz > val->ew_size ) {
+          val->ew_size = crt_sz;
+          val->ew_x = xx-1;
+          val->ew_y = yy;
+        }
+        crt_sz = 0;
+      }
+    }
+  }
+
+  g_debug ( "%s: ns_x %d, ns_y %d, ns_size %d | ew_x %d, ew_y %d, ew_size %d:",
+            __FUNCTION__, val->ns_x, val->ns_y, val->ns_size, val->ew_x, val->ew_y, val->ew_size );
+
+  clock_t end = clock();
+  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  g_debug ( "%s: %f", __FUNCTION__, time_spent );
+}
+
+/**
  * Insert unreachable tiles to pretend they have been visited
  *  thus contributing to max squares, clusters and contiguous calculations
  * NB: ATM this doesn't effect the numbers reported too much as it uses the
@@ -2118,6 +2233,8 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
       ct->val->num_prev[x] = ct->val->num_tiles[x];
   }
   ct->val->max_square_prev = ct->val->max_square;
+  ct->val->ns_size_prev = ct->val->ns_size;
+  ct->val->ew_size_prev = ct->val->ew_size;
 
   tac_clear ( ct->val );
 
@@ -2130,7 +2247,8 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
   // So for simplicity they are considered the same as processing extra set of tracks
   guint extras = (ct->val->on[MAX_SQR] * ct->num_of_tracks) +
     (ct->val->on[CONTIG] * ct->num_of_tracks) +
-    (ct->val->on[CLUSTER] * ct->num_of_tracks);
+    (ct->val->on[CLUSTER] * ct->num_of_tracks) +
+    (ct->val->on[LINES] * ct->num_of_tracks);
 
   for ( GList *tl = ct->tracks_and_layers; tl != NULL; tl = tl->next ) {
     gdouble percent = (gdouble)tracks_processed/(gdouble)(ct->num_of_tracks+extras);
@@ -2165,6 +2283,15 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
     if ( res != 0 ) return -1;
 
     tac_cluster_calc ( ct->val );
+    tracks_processed = tracks_processed + ct->num_of_tracks;
+  }
+
+  if ( ct->val->on[LINES] ) {
+    gdouble percent = (gdouble)tracks_processed/(gdouble)(ct->num_of_tracks+extras);
+    gint res = a_background_thread_progress ( threaddata, percent );
+    if ( res != 0 ) return -1;
+
+    tac_lines_calc ( ct->val );
     tracks_processed = tracks_processed + ct->num_of_tracks;
   }
 
@@ -2213,6 +2340,8 @@ static void tac_clear ( VikAggregateLayer *val )
   g_hash_table_remove_all ( val->tiles_clust ); // No memory to remove ATM
   g_hash_table_remove_all ( val->tiles_new ); // No memory to remove ATM
   // NB val->prev is not cleared at this point as needed for the later comparison
+  val->ns_size = 0;
+  val->ew_size = 0;
 }
 
 /**
@@ -3274,6 +3403,14 @@ static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val )
       g_string_append_printf ( gs, _("\nCluster size %d"), val->num_tiles[CLUSTER] );
       if ( (val->num_calcs > 1) && (val->num_tiles[CLUSTER] != val->num_prev[CLUSTER]) )
         g_string_append_printf ( gs, " (%+d)", (val->num_tiles[CLUSTER]-val->num_prev[CLUSTER]) );
+
+      g_string_append_printf ( gs, _("\nConsecutive north/south %d"), val->ns_size );
+      if ( (val->num_calcs > 1) && (val->ns_size != val->ns_size_prev) )
+        g_string_append_printf ( gs, " (%+d)", (val->ns_size-val->ns_size_prev) );
+
+      g_string_append_printf ( gs, _("\nConsecutive east/west %d"), val->ew_size );
+      if ( (val->num_calcs > 1) && (val->ew_size != val->ew_size_prev) )
+        g_string_append_printf ( gs, " (%+d)", (val->ew_size-val->ew_size_prev) );
     }
   }
   g_snprintf ( tmp_buf, sizeof(tmp_buf), "%s", gs->str );

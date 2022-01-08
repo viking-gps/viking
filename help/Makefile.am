@@ -58,6 +58,7 @@ HELP_MEDIA = \
     figures/zoom_status_popup.png \
     figures/Viking-OSM-CycleMap-ManyTracks.jpg \
     figures/Viking-TAC.png \
+    figures/Viking-TAC-Lines.png \
     figures/DEM_file_info_dialog.png \
     figures/customize_toolbar_dialog.png
 HELP_LINGUAS =

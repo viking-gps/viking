@@ -2312,6 +2312,15 @@ Thus ATM is it recommended to turn off the visibility of the tracks themselves f
 </para>
 
 <para>
+<figure>
+<title>Tracks Area Coverage: Example - New &amp; Consecutive Lines</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Viking-TAC-Lines.png"/>
+</screenshot>
+</figure>
+</para>
+
+<para>
 A concept of ignoring <emphasis>unreachable</emphasis> tiles is supported. This allows marking individual tiles as inaccessible (e.g typically military use only, so no public access) so that the tile is still included for maximum square and clustering count purposes. These tiles are drawn in red on the viewport.
 </para>
 <para>
@@ -2383,9 +2392,16 @@ Zooming in and out scales the heatmap image appropriately, but the image may get
       <para>Those that are newly (at least from the previous TAC calculation) found to contribute to the coverage.</para>
     </listitem>
   </varlistentry>
+  <varlistentry>
+    <term>Consecutive Lines</term>
+    <listitem>
+      <para>Squares that consecutive in north/south and east/west directions.</para>
+    </listitem>
+  </varlistentry>
 </variablelist>
 <para>Note for Max square coverage, ATM it will only draw the first square encountered, although there may be more than one such area.</para>
 <para>Note for Cluster coverage, ATM it will only draw the first cluster encountered, although there may be more than one such area.</para>
+<para>Note for Consecutive Lines of Squares coverage, ATM it will only draw the first instance encountered, although there may be more than one such line.</para>
 </section>
 
 <section><title>Layer Properties: Heatmap</title>
