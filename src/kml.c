@@ -50,6 +50,7 @@ typedef struct {
 	GString *c_cdata;
 	gboolean use_cdata;
 	gchar *name;
+	gchar *snippet;
 	gchar *desc;
 	gchar *styleUrl;
 	GHashTable *styles; // of AnyStyle
@@ -134,6 +135,12 @@ static const char *get_attr ( const char **attr, const char *key )
 static void name_end ( xml_data *xd, const char *el )
 {
 	xd->name = g_strdup ( xd->c_cdata->str );
+	end_leaf_tag ( xd );
+}
+
+static void snippet_end ( xml_data *xd, const char *el )
+{
+	xd->snippet = g_strdup ( xd->c_cdata->str );
 	end_leaf_tag ( xd );
 }
 
@@ -260,6 +267,9 @@ static void point_end ( xml_data *xd, const char *el )
 				vik_waypoint_set_name ( xd->waypoint, name );
 				g_free ( name );
 			}
+			if ( xd->snippet ) {
+				vik_waypoint_set_comment ( xd->waypoint, xd->snippet );
+			}
 			if ( xd->desc ) {
 				vik_waypoint_set_description ( xd->waypoint, xd->desc );
 			}
@@ -359,6 +369,9 @@ static void add_track ( xml_data *xd )
 			vik_track_set_name ( xd->track, name );
 			g_free ( name );
 		}
+		if ( xd->snippet ) {
+			vik_track_set_comment ( xd->track, xd->snippet );
+		}
 		if ( xd->desc ) {
 			vik_track_set_description ( xd->track, xd->desc );
 		}
@@ -370,7 +383,7 @@ static void add_track ( xml_data *xd )
 				// ATM not going to use the width - since we don't support a per track width
 				//  we only do line width applying to the whole layer
 			}
-			if ( vik_debug )
+			if ( vik_debug && !xd->track->comment )
 				vik_track_set_comment ( xd->track, xd->styleUrl );
 		}
 		xd->track->trackpoints = g_list_reverse ( xd->track->trackpoints );
@@ -421,6 +434,8 @@ static void reset_xd ( xml_data *xd )
 	xd->timestamp = NAN;
 	g_free ( xd->name );
 	xd->name = NULL;
+	g_free ( xd->snippet );
+	xd->snippet = NULL;
 	g_free ( xd->desc );
 	xd->desc = NULL;
 	g_free ( xd->styleUrl );
@@ -732,6 +747,8 @@ static void placemark_start ( xml_data *xd, const char *el, const char **attr )
 		setup_to_read_leaf_tag ( xd, placemark_end, name_end );
 	} else if ( g_strcmp0 ( el, "visibility" ) == 0 ) {
 		setup_to_read_leaf_tag ( xd, placemark_end, visibility_end );
+	} else if ( g_strcmp0 ( el, "snippet" ) == 0 ) {
+		setup_to_read_leaf_tag ( xd, placemark_end, snippet_end );
 	} else if ( g_strcmp0 ( el, "description" ) == 0 ) {
 		setup_to_read_leaf_tag ( xd, placemark_end, description_end );
 	} else if ( g_strcmp0 ( el, "styleUrl" ) == 0 ) {
