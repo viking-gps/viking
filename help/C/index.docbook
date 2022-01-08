@@ -2304,7 +2304,7 @@ Thus ATM is it recommended to turn off the visibility of the tracks themselves f
 
 <para>
 <figure>
-<title>Tracks Area Coverage: Example</title>
+<title>Tracks Area Coverage: Example - Contiguous, Cluster, &amp; Max Square</title>
 <screenshot>
   <graphic format="PNG" fileref="figures/Viking-TAC.png"/>
 </screenshot>
@@ -2358,6 +2358,32 @@ Zooming in and out scales the heatmap image appropriately, but the image may get
 
 <section><title>Layer Properties: TAC Advanced</title>
 <para>Controls subsets of TAC drawing are calculated and shown with their colour and opacity.</para>
+<variablelist>
+  <varlistentry>
+    <term>Contiguous</term>
+    <listitem>
+      <para>Is formed from continuous chain of squares, with each contributing one having at least one common border with the group.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>Cluster</term>
+    <listitem>
+      <para>Is formed from squares which are completely surrounded by other sqaures.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>Max Square</term>
+    <listitem>
+      <para>Is formed from squares that contribute to a larger square area.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>New</term>
+    <listitem>
+      <para>Those that are newly (at least from the previous TAC calculation) found to contribute to the coverage.</para>
+    </listitem>
+  </varlistentry>
+</variablelist>
 <para>Note for Max square coverage, ATM it will only draw the first square encountered, although there may be more than one such area.</para>
 <para>Note for Cluster coverage, ATM it will only draw the first cluster encountered, although there may be more than one such area.</para>
 </section>
