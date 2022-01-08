@@ -954,11 +954,8 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
     }
     else {
       // Scale up pixbuf size if needed
-      val->pixbuf[BASIC] = layer_pixbuf_update ( val->pixbuf[BASIC], val->color[BASIC], tilesize <= 256 ? 256 : tilesize, tilesize <= 256 ? 256 : tilesize, val->alpha[BASIC] );
-      val->pixbuf[MAX_SQR] = layer_pixbuf_update ( val->pixbuf[MAX_SQR], val->color[MAX_SQR], tilesize <= 256 ? 256 : tilesize, tilesize <= 256 ? 256 : tilesize, val->alpha[MAX_SQR] );
-      val->pixbuf[CONTIG] = layer_pixbuf_update ( val->pixbuf[CONTIG], val->color[CONTIG], tilesize <= 256 ? 256 : tilesize, tilesize <= 256 ? 256 : tilesize, val->alpha[CONTIG] );
-      val->pixbuf[CLUSTER] = layer_pixbuf_update ( val->pixbuf[CLUSTER], val->color[CLUSTER], tilesize <= 256 ? 256 : tilesize, tilesize <= 256 ? 256 : tilesize, val->alpha[CLUSTER] );
-      val->pixbuf[TNEW] = layer_pixbuf_update ( val->pixbuf[TNEW], val->color[TNEW], tilesize <= 256 ? 256 : tilesize, tilesize <= 256 ? 256 : tilesize, val->alpha[TNEW] );
+      for ( guint ii=0; ii<CP_NUM; ii++ )
+        val->pixbuf[ii] = layer_pixbuf_update ( val->pixbuf[ii], val->color[ii], tilesize <= 256 ? 256 : tilesize, tilesize <= 256 ? 256 : tilesize, val->alpha[ii] );
     }
 
     // Create pixbufs the size of the screen
