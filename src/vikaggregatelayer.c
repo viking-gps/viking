@@ -2710,7 +2710,7 @@ static gint tac_mbtiles_thread ( MBT_T *mbt, gpointer threaddata  )
   (void)sqlite3_close ( mbtiles );
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-  g_message ( "%s: %f %d\n", __FUNCTION__, time_spent, num_tiles );
+  g_message ( "%s: %f %d", __FUNCTION__, time_spent, num_tiles );
 
   if ( msg ) {
     gchar *fullmsg = g_strdup_printf ( _("MBTiles file write problem: %s"), msg );
