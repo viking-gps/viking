@@ -30,6 +30,7 @@
 #include "globals.h"
 #include "preferences.h"
 #include "dir.h"
+#include "settings.h"
 
 gboolean vik_debug = FALSE;
 gboolean vik_verbose = FALSE;
@@ -233,6 +234,8 @@ gboolean a_vik_very_first_run ()
   return vik_very_first_run;
 }
 
+static void settings_init ( );
+
 void a_vik_preferences_init ()
 {
   g_debug ( "VIKING VERSION as number: %d", viking_version_to_number (VIKING_VERSION) );
@@ -252,6 +255,8 @@ void a_vik_preferences_init ()
   a_preferences_register_group ( VIKING_PREFERENCES_ADVANCED_GROUP_KEY, _("Advanced") );
   for ( guint ii = 0; ii < G_N_ELEMENTS(prefs_advanced); ii++ )
     a_preferences_register ( &prefs_advanced[ii], (VikLayerParamData){0}, VIKING_PREFERENCES_ADVANCED_GROUP_KEY );
+
+  settings_init();
 }
 
 vik_degree_format_t a_vik_get_degree_format ( )
@@ -496,4 +501,131 @@ const gchar *a_vik_get_startup_file ( )
 gboolean a_vik_get_check_version ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_STARTUP_NAMESPACE "check_version")->b;
+}
+
+static gboolean have_diary_program = FALSE;
+static gchar *diary_program = NULL;
+#define VIK_SETTINGS_EXTERNAL_DIARY_PROGRAM "external_diary_program"
+
+static gboolean have_astro_program = FALSE;
+static gchar *astro_program = NULL;
+#define VIK_SETTINGS_EXTERNAL_ASTRO_PROGRAM "external_astro_program"
+
+static gboolean have_text_program = FALSE;
+static gchar *text_program = NULL;
+#define VIK_SETTINGS_EXTERNAL_TEXT_PROGRAM "external_text_program"
+
+// This should always return a value,
+//  use the have_X_program() function below
+//  to actually see if the program is available on the system
+const gchar * a_vik_get_diary_program ()
+{
+  return diary_program;
+}
+
+gboolean a_vik_have_diary_program ( )
+{
+  return have_diary_program;
+}
+
+// This should always return a value,
+//  use the have_X_program() function below
+//  to actually see if the program is available on the system
+const gchar * a_vik_get_astro_program ()
+{
+  return astro_program;
+}
+
+gboolean a_vik_have_astro_program ( )
+{
+  return have_astro_program;
+}
+
+// This should always return a value,
+//  use the have_X_program() function below
+//  to actually see if the program is available on the system
+const gchar * a_vik_get_text_program ()
+{
+  return text_program;
+}
+
+gboolean a_vik_have_text_program ( )
+{
+  return have_text_program;
+}
+
+static void settings_init ( )
+{
+  if ( ! a_settings_get_string ( VIK_SETTINGS_EXTERNAL_DIARY_PROGRAM, &diary_program ) ) {
+#ifdef WINDOWS
+    //diary_program = g_strdup ( "C:\\Program Files\\Rednotebook\\rednotebook.exe" );
+    diary_program = g_strdup ( "C:/Progra~1/Rednotebook/rednotebook.exe" );
+#else
+    diary_program = g_strdup ( "rednotebook" );
+#endif
+  }
+  else {
+    // User specified so assume it works
+    have_diary_program = TRUE;
+  }
+
+  gchar *dp = g_find_program_in_path ( diary_program );
+  if ( dp ) {
+    // NB Needs RedNotebook 1.7.3+ for support of opening on a specified date,
+    //  as that is from 2013 onwards - we'll assume it just works now.
+    // So to keep the code here simpler (and program startup quicker)
+    //  don't bother testing RedNotebook version anymore.
+    have_diary_program = TRUE;
+    g_free ( dp );
+  }
+
+  // Astronomy Domain
+  if ( ! a_settings_get_string ( VIK_SETTINGS_EXTERNAL_ASTRO_PROGRAM, &astro_program ) ) {
+#ifdef WINDOWS
+    //astro_program = g_strdup ( "C:\\Program Files\\Stellarium\\stellarium.exe" );
+    astro_program = g_strdup ( "C:/Progra~1/Stellarium/stellarium.exe" );
+#else
+    astro_program = g_strdup ( "stellarium" );
+#endif
+  }
+  else {
+    // User specified so assume it works
+    have_astro_program = TRUE;
+  }
+  gchar *ap = g_find_program_in_path ( astro_program );
+  if ( ap ) {
+    g_free ( ap );
+    have_astro_program = TRUE;
+  }
+
+  // NB don't use xdg-open by default,
+  //  otherwise can end up opening back in a new instance of Viking!
+  if ( ! a_settings_get_string ( VIK_SETTINGS_EXTERNAL_TEXT_PROGRAM, &text_program ) ) {
+#ifdef WINDOWS
+    text_program = g_strdup ( "notepad" );
+#else
+    text_program = g_strdup ( "gedit" );
+#endif
+    gchar *tp = g_find_program_in_path ( text_program );
+    if ( tp ) {
+      g_free ( tp );
+      have_text_program = TRUE;
+    }
+  }
+  else {
+    // User specified so assume it works
+    have_text_program = TRUE;
+  }
+}
+
+/**
+ * a_vik_preferences_uninit:
+ *
+ *  Call at program end to release resources claimed by this code
+ */
+void a_vik_preferences_uninit ()
+{
+  g_free ( diary_program );
+  g_free ( astro_program );
+  g_free ( text_program );
 }

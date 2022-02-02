@@ -932,88 +932,15 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncRefresh)                 vik_trw_layer_propwin_main_refresh,
 };
 
-static gboolean have_diary_program = FALSE;
-static gchar *diary_program = NULL;
-#define VIK_SETTINGS_EXTERNAL_DIARY_PROGRAM "external_diary_program"
-
 static gboolean have_geojson_export = FALSE;
-
-static gboolean have_astro_program = FALSE;
-static gchar *astro_program = NULL;
-#define VIK_SETTINGS_EXTERNAL_ASTRO_PROGRAM "external_astro_program"
-
-static gboolean have_text_program = FALSE;
-static gchar *text_program = NULL;
-#define VIK_SETTINGS_EXTERNAL_TEXT_PROGRAM "external_text_program"
 
 // NB Only performed once per program run
 static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
 {
-  if ( ! a_settings_get_string ( VIK_SETTINGS_EXTERNAL_DIARY_PROGRAM, &diary_program ) ) {
-#ifdef WINDOWS
-    //diary_program = g_strdup ( "C:\\Program Files\\Rednotebook\\rednotebook.exe" );
-    diary_program = g_strdup ( "C:/Progra~1/Rednotebook/rednotebook.exe" );
-#else
-    diary_program = g_strdup ( "rednotebook" );
-#endif
-  }
-  else {
-    // User specified so assume it works
-    have_diary_program = TRUE;
-  }
-
-  gchar *dp = g_find_program_in_path ( diary_program );
-  if ( dp ) {
-    // NB Needs RedNotebook 1.7.3+ for support of opening on a specified date,
-    //  as that is from 2013 onwards - we'll assume it just works now.
-    // So to keep the code here simpler (and program startup quicker)
-    //  don't bother testing RedNotebook version anymore.
-    have_diary_program = TRUE;
-    g_free ( dp );
-  }
-
   gchar* geojson_prog = g_find_program_in_path ( a_geojson_program_export() );
   if ( geojson_prog ) {
     have_geojson_export = TRUE;
     g_free ( geojson_prog );
-  }
-
-  // Astronomy Domain
-  if ( ! a_settings_get_string ( VIK_SETTINGS_EXTERNAL_ASTRO_PROGRAM, &astro_program ) ) {
-#ifdef WINDOWS
-    //astro_program = g_strdup ( "C:\\Program Files\\Stellarium\\stellarium.exe" );
-    astro_program = g_strdup ( "C:/Progra~1/Stellarium/stellarium.exe" );
-#else
-    astro_program = g_strdup ( "stellarium" );
-#endif
-  }
-  else {
-    // User specified so assume it works
-    have_astro_program = TRUE;
-  }
-  gchar *ap = g_find_program_in_path ( astro_program );
-  if ( ap ) {
-    g_free ( ap );
-    have_astro_program = TRUE;
-  }
-
-  // NB don't use xdg-open by default,
-  //  otherwise can end up opening back in a new instance of Viking!
-  if ( ! a_settings_get_string ( VIK_SETTINGS_EXTERNAL_TEXT_PROGRAM, &text_program ) ) {
-#ifdef WINDOWS
-    text_program = g_strdup ( "notepad" );
-#else
-    text_program = g_strdup ( "gedit" );
-#endif
-    gchar *tp = g_find_program_in_path ( text_program );
-    if ( tp ) {
-      g_free ( tp );
-      have_text_program = TRUE;
-    }
-  }
-  else {
-    // User specified so assume it works
-    have_text_program = TRUE;
   }
 }
 
@@ -1023,9 +950,6 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
  */
 void vik_trwlayer_uninit ()
 {
-  g_free ( diary_program );
-  g_free ( astro_program );
-  g_free ( text_program );
   // Might as well do this, as only used by this layer
   a_garmin_icons_uninit();
 }
@@ -4285,12 +4209,12 @@ static void trw_layer_export_external_text ( menu_array_layer values )
   gchar *extfile = extfile_full ? extfile_full : vtl->external_file;
   GError *err = NULL;
   gchar *quoted_file = g_shell_quote ( extfile );
-  gchar *cmd = g_strdup_printf ( "%s %s", text_program, quoted_file );
+  gchar *cmd = g_strdup_printf ( "%s %s", a_vik_get_text_program(), quoted_file );
   g_free ( quoted_file );
   g_free ( extfile_full );
 
   if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
-    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER( vtl), _("Could not launch %s."), text_program );
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER( vtl), _("Could not launch %s."), a_vik_get_text_program() );
     g_error_free ( err );
   }
   g_free ( cmd );
@@ -4934,7 +4858,7 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   (void)vu_menu_add_item ( export_submenu, external2, NULL, G_CALLBACK(trw_layer_export_external_gpx_2), data );
   g_free ( external2 );
 
-  if ( vtl->external_layer != VIK_TRW_LAYER_INTERNAL && have_text_program ) {
+  if ( vtl->external_layer != VIK_TRW_LAYER_INTERNAL && a_vik_have_text_program() ) {
     (void)vu_menu_add_item ( export_submenu, _("Open with Text Editor"), GTK_STOCK_FILE, G_CALLBACK(trw_layer_export_external_text), data );
   }
 
@@ -8025,9 +7949,9 @@ static void trw_layer_reverse ( menu_array_sublayer values )
 static void trw_layer_diary_open ( VikTrwLayer *vtl, const gchar *date_str )
 {
   GError *err = NULL;
-  gchar *cmd = g_strdup_printf ( "%s %s%s", diary_program, "--date=", date_str );
+  gchar *cmd = g_strdup_printf ( "%s %s%s", a_vik_get_diary_program(), "--date=", date_str );
   if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
-    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s to open file."), diary_program );
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s to open file."), a_vik_get_diary_program() );
     g_warning ( "%s", err->message );
     g_error_free ( err );
   }
@@ -8090,10 +8014,10 @@ static void trw_layer_astro_open ( VikTrwLayer *vtl, const gchar *date_str, cons
     return;
   }
   gchar *cmd = g_strdup_printf ( "%s %s %s %s %s %s %s %s %s %s %s %s %s %s",
-                                  astro_program, "-c", tmp, "--full-screen no", "--sky-date", date_str, "--sky-time", time_str, "--latitude", lat_str, "--longitude", lon_str, "--altitude", alt_str );
+                                 a_vik_get_astro_program(), "-c", tmp, "--full-screen no", "--sky-date", date_str, "--sky-time", time_str, "--latitude", lat_str, "--longitude", lon_str, "--altitude", alt_str );
   g_warning ( "%s", cmd );
   if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
-    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s"), astro_program );
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s"), a_vik_get_astro_program() );
     g_warning ( "%s", err->message );
     g_error_free ( err );
   }
@@ -9692,15 +9616,15 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
   GtkMenu *external_submenu = create_external_submenu ( menu );
 
   // These are only made available if a suitable program is installed
-  if ( (have_astro_program || have_diary_program) &&
+  if ( (a_vik_have_astro_program() || a_vik_have_diary_program()) &&
        (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK || subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT) ) {
 
-    if ( have_diary_program ) {
+    if ( a_vik_have_diary_program() ) {
       GtkWidget *item = vu_menu_add_item ( external_submenu, _("_Diary"), GTK_STOCK_SPELL_CHECK, G_CALLBACK(trw_layer_diary), data );
       gtk_widget_set_tooltip_text ( item, _("Open diary program at this date") );
     }
 
-    if ( have_astro_program ) {
+    if ( a_vik_have_astro_program() ) {
       GtkWidget *item = vu_menu_add_item ( external_submenu, _("_Astronomy"), NULL, G_CALLBACK(trw_layer_astro), data );
       gtk_widget_set_tooltip_text (item, _("Open astronomy program at this date and location") );
     }

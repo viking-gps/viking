@@ -304,6 +304,8 @@ int main( int argc, char *argv[] )
   // Clean up any temporary files
   util_remove_all_in_deletion_list ();
 
+  a_vik_preferences_uninit ();
+
 #ifdef G_OS_WIN32
   g_strfreev ( argv );
 #endif

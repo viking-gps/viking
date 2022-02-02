@@ -122,6 +122,8 @@ gboolean a_vik_very_first_run ();
 /* Global preferences */
 void a_vik_preferences_init ();
 
+void a_vik_preferences_uninit ();
+
 /* Reset global preferences */
 void a_vik_preferences_reset_defaults ();
 
@@ -299,6 +301,15 @@ const gchar *a_vik_get_startup_file ( );
 gboolean a_vik_get_check_version ( );
 
 gint a_vik_get_recent_number_files ( );
+
+const gchar * a_vik_get_diary_program ();
+gboolean a_vik_have_diary_program ( );
+
+const gchar * a_vik_get_astro_program ();
+gboolean a_vik_have_astro_program ( );
+
+const gchar * a_vik_get_text_program ();
+gboolean a_vik_have_text_program ( );
 
 /* Group for global preferences */
 #define VIKING_PREFERENCES_GROUP_KEY "viking.globals"
