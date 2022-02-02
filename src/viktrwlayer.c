@@ -964,41 +964,12 @@ static void vik_trwlayer_class_init ( VikTrwLayerClass *klass )
 
   gchar *dp = g_find_program_in_path ( diary_program );
   if ( dp ) {
+    // NB Needs RedNotebook 1.7.3+ for support of opening on a specified date,
+    //  as that is from 2013 onwards - we'll assume it just works now.
+    // So to keep the code here simpler (and program startup quicker)
+    //  don't bother testing RedNotebook version anymore.
+    have_diary_program = TRUE;
     g_free ( dp );
-    gchar *mystdout = NULL;
-    gchar *mystderr = NULL;
-    // Needs RedNotebook 1.7.3+ for support of opening on a specified date
-    gchar *cmd = g_strconcat ( diary_program, " --version", NULL ); // "rednotebook --version"
-    if ( g_spawn_command_line_sync ( cmd, &mystdout, &mystderr, NULL, NULL ) ) {
-      // Annoyingly 1.7.1|2|3 versions of RedNotebook prints the version to stderr!!
-      if ( mystdout )
-        g_debug ("Diary: %s", mystdout ); // Should be something like 'RedNotebook 1.4'
-      if ( mystderr )
-        g_warning ("Diary: stderr: %s", mystderr );
-
-      gchar **tokens = NULL;
-      if ( mystdout && g_strcmp0(mystdout, "") )
-        tokens = g_strsplit(mystdout, " ", 0);
-      else if ( mystderr )
-        tokens = g_strsplit(mystderr, " ", 0);
-
-      if ( tokens ) {
-        gint num = 0;
-        gchar *token = tokens[num];
-        while ( token && num < 2 ) {
-          if (num == 1) {
-            if ( viking_version_to_number(token) >= viking_version_to_number("1.7.3") )
-              have_diary_program = TRUE;
-          }
-          num++;
-          token = tokens[num];
-        }
-      }
-      g_strfreev ( tokens );
-    }
-    g_free ( mystdout );
-    g_free ( mystderr );
-    g_free ( cmd );
   }
 
   gchar* geojson_prog = g_find_program_in_path ( a_geojson_program_export() );
