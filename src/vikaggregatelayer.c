@@ -1061,11 +1061,15 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
             gint h2 = height;
             if ( x2 < 0 ) {
               w2 = xx + tilesize_ceil;
+              if ( w2 > width )
+                w2 = width;
               x2 = 0;
             }
             if ( y2 < 0 ) {
               y2 = 0;
               h2 = yy + tilesize_ceil;
+              if ( h2 > height )
+                h2 = height;
             }
             //g_printf ( "%s: %d, %d, %d, %d\n", __FUNCTION__, x2, y2, w2, h2);
             val->pixbuf[BASIC] = layer_pixbuf_update ( val->pixbuf[BASIC], val->color[BASIC], w2, h2, val->alpha[BASIC] );
