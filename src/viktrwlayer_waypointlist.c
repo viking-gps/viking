@@ -198,6 +198,7 @@ static void trw_layer_show_picture ( menu_array_values values )
 	gchar *quoted_file = g_shell_quote ( wpt->image );
 	gchar *cmd = g_strdup_printf ( "%s %s", a_vik_get_image_viewer(), quoted_file );
 	g_free ( quoted_file );
+	g_debug ( "%s: %s", __FUNCTION__, cmd );
 	if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
 		a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s to open file."), a_vik_get_image_viewer() );
 		g_error_free ( err );

@@ -4212,7 +4212,7 @@ static void trw_layer_export_external_text ( menu_array_layer values )
   gchar *cmd = g_strdup_printf ( "%s %s", a_vik_get_text_program(), quoted_file );
   g_free ( quoted_file );
   g_free ( extfile_full );
-
+  g_message ( "%s: %s", __FUNCTION__, cmd );
   if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
     a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER( vtl), _("Could not launch %s."), a_vik_get_text_program() );
     g_error_free ( err );
@@ -7950,6 +7950,7 @@ static void trw_layer_diary_open ( VikTrwLayer *vtl, const gchar *date_str )
 {
   GError *err = NULL;
   gchar *cmd = g_strdup_printf ( "%s %s%s", a_vik_get_diary_program(), "--date=", date_str );
+  g_message ( "%s: %s", __FUNCTION__, cmd );
   if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
     a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s to open file."), a_vik_get_diary_program() );
     g_warning ( "%s", err->message );
@@ -8015,7 +8016,7 @@ static void trw_layer_astro_open ( VikTrwLayer *vtl, const gchar *date_str, cons
   }
   gchar *cmd = g_strdup_printf ( "%s %s %s %s %s %s %s %s %s %s %s %s %s %s",
                                  a_vik_get_astro_program(), "-c", tmp, "--full-screen no", "--sky-date", date_str, "--sky-time", time_str, "--latitude", lat_str, "--longitude", lon_str, "--altitude", alt_str );
-  g_warning ( "%s", cmd );
+  g_message ( "%s: %s", __FUNCTION__, cmd );
   if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
     a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s"), a_vik_get_astro_program() );
     g_warning ( "%s", err->message );
@@ -11966,6 +11967,7 @@ static void trw_layer_show_picture ( menu_array_sublayer values )
   gchar *quoted_file = g_shell_quote ( (gchar *) values[MA_MISC] );
   gchar *cmd = g_strdup_printf ( "%s %s", a_vik_get_image_viewer(), quoted_file );
   g_free ( quoted_file );
+  g_debug ( "%s: %s", __FUNCTION__, cmd );
   if ( ! g_spawn_command_line_async ( cmd, &err ) )
     {
       a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(values[MA_VTL]), _("Could not launch %s to open file."), a_vik_get_image_viewer() );

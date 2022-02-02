@@ -254,6 +254,7 @@ void vik_trw_layer_export_external_gpx ( VikTrwLayer *vtl, const gchar* external
     gchar *quoted_file = g_shell_quote ( name_used );
     gchar *cmd = g_strdup_printf ( "%s %s", external_program, quoted_file );
     g_free ( quoted_file );
+    g_message ( "%s: %s", __FUNCTION__, cmd );
     if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
       a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER( vtl), _("Could not launch %s."), external_program );
       g_error_free ( err );
