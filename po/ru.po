@@ -3111,10 +3111,6 @@ msgstr "Экспортировать маршрут в GPX"
 msgid "Export Track as GPX"
 msgstr "Экспортировать треки в GPX"
 
-#, c-format
-msgid "Could not launch %s."
-msgstr "Не удалось запустить %s."
-
 msgid "Find"
 msgstr "Найти"
 

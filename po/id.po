@@ -3000,10 +3000,6 @@ msgstr ""
 msgid "Export Track as GPX"
 msgstr ""
 
-#, c-format
-msgid "Could not launch %s."
-msgstr ""
-
 msgid "Find"
 msgstr ""
 

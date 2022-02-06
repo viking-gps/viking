@@ -3045,10 +3045,6 @@ msgstr ""
 msgid "Export Track as GPX"
 msgstr "Esporta il Tracciato come GPX"
 
-#, c-format
-msgid "Could not launch %s."
-msgstr "Impossibile lanciare %s."
-
 msgid "Find"
 msgstr "Trova"
 
@@ -3391,7 +3387,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not launch %s"
-msgstr ""
+msgstr "Impossibile lanciare %s"
 
 msgid "Internal Error in vik_trw_layer_uniquify_tracks"
 msgstr ""

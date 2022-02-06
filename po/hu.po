@@ -3033,10 +3033,6 @@ msgstr ""
 msgid "Export Track as GPX"
 msgstr "Nyomvonal exportálása GPX-be"
 
-#, c-format
-msgid "Could not launch %s."
-msgstr ""
-
 msgid "Find"
 msgstr "Keresés"
 

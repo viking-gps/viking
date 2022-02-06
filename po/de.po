@@ -3114,10 +3114,6 @@ msgstr "Route als GPX exportieren"
 msgid "Export Track as GPX"
 msgstr "Exportiere Spur als GPX"
 
-#, c-format
-msgid "Could not launch %s."
-msgstr "Konnte %s nicht starten."
-
 msgid "Find"
 msgstr "Suche"
 

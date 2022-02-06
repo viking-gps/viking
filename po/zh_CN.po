@@ -3029,10 +3029,6 @@ msgstr "导出路线为GPX文件"
 msgid "Export Track as GPX"
 msgstr "导出轨迹为GPX文件"
 
-#, c-format
-msgid "Could not launch %s."
-msgstr "打不开%s程序。"
-
 msgid "Find"
 msgstr "查找"
 

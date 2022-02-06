@@ -4214,7 +4214,7 @@ static void trw_layer_export_external_text ( menu_array_layer values )
   g_free ( extfile_full );
   g_message ( "%s: %s", __FUNCTION__, cmd );
   if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
-    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER( vtl), _("Could not launch %s."), a_vik_get_text_program() );
+    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER( vtl), _("Could not launch %s"), a_vik_get_text_program() );
     g_error_free ( err );
   }
   g_free ( cmd );

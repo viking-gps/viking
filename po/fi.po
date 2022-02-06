@@ -3043,10 +3043,6 @@ msgstr ""
 msgid "Export Track as GPX"
 msgstr "Vie reitti GPX:nä"
 
-#, c-format
-msgid "Could not launch %s."
-msgstr "Kohteen %s käynnistäminen epäonnistui."
-
 msgid "Find"
 msgstr "Etsi"
 
@@ -3387,7 +3383,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not launch %s"
-msgstr ""
+msgstr "Kohteen %s käynnistäminen epäonnistui"
 
 msgid "Internal Error in vik_trw_layer_uniquify_tracks"
 msgstr ""

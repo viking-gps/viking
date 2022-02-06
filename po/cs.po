@@ -3088,10 +3088,6 @@ msgstr ""
 msgid "Export Track as GPX"
 msgstr "Exportovat  jako GPX"
 
-#, c-format
-msgid "Could not launch %s."
-msgstr "Nelze spustit %s."
-
 msgid "Find"
 msgstr "Hledat"
 
@@ -3441,7 +3437,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not launch %s"
-msgstr ""
+msgstr "Nelze spustit %s"
 
 msgid "Internal Error in vik_trw_layer_uniquify_tracks"
 msgstr "Interní chyba v vik_trw_layer_uniquify_tracks"

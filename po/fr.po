@@ -3062,10 +3062,6 @@ msgstr ""
 msgid "Export Track as GPX"
 msgstr "Exporter la trace vers un fichier GPX"
 
-#, c-format
-msgid "Could not launch %s."
-msgstr "Impossible de charger %s."
-
 msgid "Find"
 msgstr "Rechercher"
 
@@ -3412,7 +3408,7 @@ msgstr ""
 
 #, c-format
 msgid "Could not launch %s"
-msgstr ""
+msgstr "Impossible de charger %s"
 
 msgid "Internal Error in vik_trw_layer_uniquify_tracks"
 msgstr "Erreur interne dans \"vik_trw_layer_uniquify_tracks\""

@@ -3222,10 +3222,6 @@ msgstr "Esportatu ibilbidea GPX formatura"
 msgid "Export Track as GPX"
 msgstr "Esportatu arrastoa GPX formatuan."
 
-#, c-format
-msgid "Could not launch %s."
-msgstr "Ezin izan da %s abiatu."
-
 msgid "Find"
 msgstr "Aurkitu"
 
@@ -3578,7 +3574,7 @@ msgstr "Bide-puntu honek ez dauka dataren gaineko infomaziorik"
 
 #, c-format
 msgid "Could not launch %s"
-msgstr "Ezin da %s abiarazi"
+msgstr "Ezin izan da %s abiatu"
 
 msgid "Internal Error in vik_trw_layer_uniquify_tracks"
 msgstr "Barne errorea bertan: vik_trw_layer_uniquify_tracks"
