@@ -3638,7 +3638,6 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
 
   gtk_notebook_set_scrollable ( GTK_NOTEBOOK(graphs), TRUE );
 
-  GtkWidget *content_prop[7];
   int cnt_prop = 0;
 
   static gchar *label_texts[] = {
@@ -3650,6 +3649,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     N_("URL:"),
     N_("URL Name:"),
   };
+  GtkWidget *content_prop[G_N_ELEMENTS(label_texts)];
 
   // Allow any textual entry to be considered as a URL
   gchar *label_text_value_maybe_URLs[] = {
@@ -3696,7 +3696,6 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     gtk_entry_set_text ( GTK_ENTRY(widgets->w_url_name), tr->url_name );
   content_prop[cnt_prop++] = widgets->w_url_name;
 
-  GtkWidget *content_draw[3];
   guint cnt_draw = 0;
 
   static gchar *draw_texts[] = {
@@ -3705,6 +3704,7 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
     N_("Distance Labels:"),
   };
   gchar *draw_text_value_is_URLs[] = { NULL, NULL, NULL };
+  GtkWidget *content_draw[G_N_ELEMENTS(draw_texts)];
 
   widgets->w_color = content_draw[cnt_draw++] = gtk_color_button_new_with_color ( &(tr->color) );
 
