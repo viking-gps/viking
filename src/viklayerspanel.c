@@ -401,6 +401,19 @@ static gboolean layers_calendar_today ( VikLayersPanel *vlp )
 }
 
 /**
+ *
+ */
+static gboolean layers_calendar_diary ( VikLayersPanel *vlp )
+{
+  guint year, month, day;
+  gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &year, &month, &day );
+  gchar *date_str = g_strdup_printf ( "%d-%02d-%02d", year, month+1, day );
+  vu_diary_open ( VIK_GTK_WINDOW_FROM_WIDGET(vlp), date_str );
+  g_free ( date_str );
+  return TRUE;
+}
+
+/**
  * Enable a right click menu on the calendar
  */
 static gboolean layers_calendar_button_press_cb ( VikLayersPanel *vlp, GdkEventButton *event )
@@ -410,6 +423,8 @@ static gboolean layers_calendar_button_press_cb ( VikLayersPanel *vlp, GdkEventB
     (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_GO_BACK, G_CALLBACK(layers_calendar_back), vlp );
     (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_GO_FORWARD, G_CALLBACK(layers_calendar_forward), vlp );
     (void)vu_menu_add_item ( menu, _("_Today"), GTK_STOCK_HOME, G_CALLBACK(layers_calendar_today), vlp );
+    if ( a_vik_have_diary_program() )
+      (void)vu_menu_add_item ( menu, _("_Diary"), GTK_STOCK_SPELL_CHECK, G_CALLBACK(layers_calendar_diary), vlp );
     gtk_widget_show_all ( GTK_WIDGET(menu) );
     gtk_menu_popup ( menu, NULL, NULL, NULL, NULL, event->button, gtk_get_current_event_time() );
     return TRUE;
