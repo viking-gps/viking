@@ -255,7 +255,7 @@ static void calendar_mark_layer_in_month ( VikLayersPanel *vlp, VikTrwLayer *vtl
 /**
  *
  */
-void layers_panel_calendar_update ( VikLayersPanel *vlp )
+static void layers_panel_calendar_update ( VikLayersPanel *vlp )
 {
   // Skip if not shown...
   if ( !gtk_widget_get_visible(GTK_WIDGET(vlp)) )
