@@ -384,6 +384,62 @@ GtkWidget *ui_spin_button_new ( GtkAdjustment *adjustment,
 }
 
 /**
+ * ui_attach_to_table:
+ *
+ * Create clickable link buttons if the associated entry value is a URL,
+ *  otherwise use standard labels as before.
+ * Since link buttons don't support pango markup in the label,
+ *  the boldness settings (for labels that may be associated with a URLs) is now configured by a specific parameter
+ *  otherwise markup values are shown in the link button label.
+ *
+ * Returns: The created widget
+ */
+GtkWidget *ui_attach_to_table ( GtkTable *table, int i, char *mylabel, GtkWidget *content, gchar *value_potentialURL, gboolean embolden )
+{
+  // Settings so the text positioning only moves around vertically when the dialog is resized
+  // This also gives more room to see the text e.g. for track comment fields
+  GtkWidget *ww = NULL;
+  gboolean isURL = FALSE;
+
+  if ( value_potentialURL ) {
+    gchar *scheme = g_uri_parse_scheme ( value_potentialURL );
+    if ( scheme )
+      isURL = TRUE;
+    g_free ( scheme );
+  }
+
+  if ( isURL ) {
+    // NB apparently no control over label positioning & markup
+    //  when in a link button :(
+    ww = gtk_link_button_new_with_label ( value_potentialURL, _(mylabel) );
+  } else {
+    gchar *text = NULL;
+    ww = gtk_label_new ( NULL );
+    if ( embolden )
+      text = g_strdup_printf ( "<b>%s</b>", _(mylabel) );
+    else
+      text = g_strdup ( _(mylabel) );
+    gtk_label_set_markup ( GTK_LABEL(ww), text );
+    gtk_misc_set_alignment ( GTK_MISC(ww), 1, 0.5 ); // Position text centrally in vertical plane
+    g_free ( text );
+  }
+  gtk_table_attach ( table, ww, 0, 1, i, i+1, GTK_FILL, GTK_SHRINK, 0, 0 );
+  if ( GTK_IS_MISC(content) ) {
+    gtk_misc_set_alignment ( GTK_MISC(content), 0, 0.5 );
+  }
+  if ( GTK_IS_COLOR_BUTTON(content) || GTK_IS_COMBO_BOX(content) )
+    // Buttons compressed - otherwise look weird (to me) if vertically massive
+    gtk_table_attach ( table, content, 1, 2, i, i+1, GTK_FILL, GTK_SHRINK, 0, 5 );
+  else {
+     // Expand for comments + descriptions / labels
+     gtk_table_attach_defaults ( table, content, 1, 2, i, i+1 );
+     if ( GTK_IS_LABEL(content) )
+       gtk_widget_set_can_focus ( content, FALSE ); // Prevent notebook auto selecting it
+  }
+  return ww;
+}
+
+/**
  * ui_format_1f_cell_data_func:
  *
  * General purpose column double formatting

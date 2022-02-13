@@ -2928,63 +2928,12 @@ static GtkWidget *create_graph_page ( PropWidgets *widgets,
   return vbox;
 }
 
-/**
- * Create clickable link buttons if the associated entry value is a URL,
- *  otherwise use standard labels as before.
- * Since link buttons don't support pango markup in the label,
- *  the boldness settings (for labels that may be associated with a URLs) is now configured by a specific parameter
- *  otherwise markup values are shown in the link button label.
- */
-static void attach_to_table ( GtkTable *table, int i, char *mylabel, GtkWidget *content, gchar *value_potentialURL, gboolean embolden )
-{
-  // Settings so the text positioning only moves around vertically when the dialog is resized
-  // This also gives more room to see the track comment
-  GtkWidget *ww = NULL;
-  gboolean isURL = FALSE;
-
-  if ( value_potentialURL ) {
-    gchar *scheme = g_uri_parse_scheme ( value_potentialURL );
-    if ( scheme )
-      isURL = TRUE;
-    g_free ( scheme );
-  }
-
-  if ( isURL ) {
-    // NB apparently no control over label positioning & markup
-    //  when in a link button :(
-    ww = gtk_link_button_new_with_label ( value_potentialURL, _(mylabel) );
-  } else {
-    gchar *text = NULL;
-    ww = gtk_label_new ( NULL );
-    if ( embolden )
-      text = g_strdup_printf ( "<b>%s</b>", _(mylabel) );
-    else
-      text = g_strdup ( _(mylabel) );
-    gtk_label_set_markup ( GTK_LABEL(ww), text );
-    gtk_misc_set_alignment ( GTK_MISC(ww), 1, 0.5 ); // Position text centrally in vertical plane
-    g_free ( text );
-  }
-  gtk_table_attach ( table, ww, 0, 1, i, i+1, GTK_FILL, GTK_SHRINK, 0, 0 );
-  if ( GTK_IS_MISC(content) ) {
-    gtk_misc_set_alignment ( GTK_MISC(content), 0, 0.5 );
-  }
-  if ( GTK_IS_COLOR_BUTTON(content) || GTK_IS_COMBO_BOX(content) )
-    // Buttons compressed - otherwise look weird (to me) if vertically massive
-    gtk_table_attach ( table, content, 1, 2, i, i+1, GTK_FILL, GTK_SHRINK, 0, 5 );
-  else {
-     // Expand for comments + descriptions / labels
-     gtk_table_attach_defaults ( table, content, 1, 2, i, i+1 );
-     if ( GTK_IS_LABEL(content) )
-       gtk_widget_set_can_focus ( content, FALSE ); // Prevent notebook auto selecting it
-  }
-}
-
 static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[], gchar *value_potentialURL[] )
 {
   GtkTable *table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);
   for (guint i=0; i<cnt; i++)
-    attach_to_table ( table, i, labels[i], contents[i], value_potentialURL[i], TRUE );
+    (void)ui_attach_to_table ( table, i, labels[i], contents[i], value_potentialURL[i], TRUE );
 
   return GTK_WIDGET (table);
 }
@@ -2996,7 +2945,7 @@ static GtkWidget *create_table_from_arrays ( GPtrArray *paw, GPtrArray *pat )
   GtkTable *table = GTK_TABLE(gtk_table_new(paw->len, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);
   for ( guint ii=0; ii < paw->len; ii++ )
-    attach_to_table ( table, ii, g_ptr_array_index(pat, ii), g_ptr_array_index(paw, ii), NULL, FALSE );
+    (void)ui_attach_to_table ( table, ii, g_ptr_array_index(pat, ii), g_ptr_array_index(paw, ii), NULL, FALSE );
 
   return GTK_WIDGET (table);
 }
@@ -3004,7 +2953,7 @@ static GtkWidget *create_table_from_arrays ( GPtrArray *paw, GPtrArray *pat )
 static void attach_to_table_extra ( GtkWidget *table, gchar *text, int ii, char *mylabel )
 {
   GtkWidget *wgt = ui_label_new_selectable ( text );
-  attach_to_table ( GTK_TABLE(table), ii, mylabel, wgt, NULL, FALSE );
+  (void)ui_attach_to_table ( GTK_TABLE(table), ii, mylabel, wgt, NULL, FALSE );
 }
 
 #define SPLIT_COLS 5
