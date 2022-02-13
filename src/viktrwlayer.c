@@ -7941,25 +7941,6 @@ static void trw_layer_reverse ( menu_array_sublayer values )
 }
 
 /**
- * Open a program at the specified date
- * Mainly for RedNotebook - http://rednotebook.sourceforge.net/
- * But could work with any program that accepts a command line of --date=<date>
- * FUTURE: Allow configuring of command line options + date format
- */
-static void trw_layer_diary_open ( VikTrwLayer *vtl, const gchar *date_str )
-{
-  GError *err = NULL;
-  gchar *cmd = g_strdup_printf ( "%s %s%s", a_vik_get_diary_program(), "--date=", date_str );
-  g_message ( "%s: %s", __FUNCTION__, cmd );
-  if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
-    a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Could not launch %s to open file."), a_vik_get_diary_program() );
-    g_warning ( "%s", err->message );
-    g_error_free ( err );
-  }
-  g_free ( cmd );
-}
-
-/**
  * Open a diary at the date of the track or waypoint
  */
 static void trw_layer_diary ( menu_array_sublayer values )
@@ -7976,7 +7957,7 @@ static void trw_layer_diary ( menu_array_sublayer values )
     if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
       time_t time = round ( VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
       strftime (date_buf, sizeof(date_buf), "%Y-%m-%d", gmtime(&time));
-      trw_layer_diary_open ( vtl, date_buf );
+      vu_diary_open ( VIK_GTK_WINDOW_FROM_LAYER(vtl), date_buf );
     }
     else
       a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("This track has no date information.") );
@@ -7991,7 +7972,7 @@ static void trw_layer_diary ( menu_array_sublayer values )
     if ( !isnan(wpt->timestamp) ) {
       time_t time = round ( wpt->timestamp );
       strftime (date_buf, sizeof(date_buf), "%Y-%m-%d", gmtime(&time));
-      trw_layer_diary_open ( vtl, date_buf );
+      vu_diary_open ( VIK_GTK_WINDOW_FROM_LAYER(vtl), date_buf );
     }
     else
       a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("This waypoint has no date information.") );

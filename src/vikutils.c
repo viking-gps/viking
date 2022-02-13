@@ -1446,3 +1446,23 @@ gdouble vu_track_get_max_speed ( VikTrack *trk, gboolean prefer_gps_speed )
 		mspeed = vik_track_get_max_speed ( trk );
 	return mspeed;
 }
+
+/**
+ * Open a program at the specified date
+ * Mainly for RedNotebook - http://rednotebook.sourceforge.net/
+ * But could work with any program that accepts a command line of --date=<date>
+ *  format of <date> is YYYY-MM-DD
+ * FUTURE: Allow configuring of command line options + date format
+ */
+void vu_diary_open ( GtkWindow *gw, const gchar *date_str )
+{
+  GError *err = NULL;
+  gchar *cmd = g_strdup_printf ( "%s %s%s", a_vik_get_diary_program(), "--date=", date_str );
+  g_message ( "%s: %s", __FUNCTION__, cmd );
+  if ( ! g_spawn_command_line_async ( cmd, &err ) ) {
+    a_dialog_error_msg_extra ( gw, _("Could not launch %s"), a_vik_get_diary_program() );
+    g_warning ( "%s", err->message );
+    g_error_free ( err );
+  }
+  g_free ( cmd );
+}
