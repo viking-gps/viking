@@ -19,7 +19,14 @@ authors.h: $(top_srcdir)/AUTHORS
 documenters.h: $(top_srcdir)/help/C/index.docbook
 	$(XSLTPROC) $(srcdir)/docbook2documenters.xsl $(top_srcdir)/help/C/index.docbook > $@
 
-BUILT_SOURCES = authors.h documenters.h
+# Use xxd tool as more robust than the sed commands used in the AUTHORS methods above.
+# The additional sed usage here is to remove xxd's replacement of relative filename characters
+#  as it does '../' --> '___' since they obviously can't be part of a C variable name.
+# NB for usage in C code, one needs to manually append the NULL terminator
+NEWS.h: $(top_srcdir)/NEWS
+	xxd -i $< | sed -e "s/___//" > $@
+
+BUILT_SOURCES = authors.h documenters.h NEWS.h
 
 vikenumtypes.h: vikenumtypes.h.template $(ENUM_H_FILES) $(GLIB_MKENUMS)
 	(cd $(srcdir) && $(GLIB_MKENUMS) --template vikenumtypes.h.template $(ENUM_H_FILES)) > $@

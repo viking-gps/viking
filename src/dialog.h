@@ -73,6 +73,8 @@ void a_dialog_license ( GtkWindow *parent, const gchar *map, const gchar *licens
 
 void a_dialog_build_info ( GtkWindow *parent );
 
+void a_dialog_news ( GtkWindow *parent );
+
 G_END_DECLS
 
 #endif

@@ -3973,6 +3973,11 @@ static void tb_set_draw_highlight ( GtkAction *a, VikWindow *vw )
   }
 }
 
+static void help_news_cb ( GtkAction *a, VikWindow *vw )
+{
+  a_dialog_news(GTK_WINDOW(vw));
+}
+
 static void help_about_cb ( GtkAction *a, VikWindow *vw )
 {
   a_dialog_about(GTK_WINDOW(vw));
@@ -6197,6 +6202,7 @@ static GtkActionEntry entries[] = {
   { "Properties",GTK_STOCK_PROPERTIES,   N_("_Properties"),                   NULL,         N_("Layer Properties"),                         (GCallback)menu_properties_cb },
 
   { "HelpEntry", GTK_STOCK_HELP,         N_("_Help"),                         "F1",         N_("Help"),                                     (GCallback)help_help_cb },
+  { "News",      GTK_STOCK_FILE,         N_("_News"),                         NULL,         N_("News"),                                     (GCallback)help_news_cb },
   { "About",     GTK_STOCK_ABOUT,        N_("_About"),                        NULL,         N_("About"),                                    (GCallback)help_about_cb },
 };
 

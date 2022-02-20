@@ -26,6 +26,8 @@ BuildRequires:	intltool
 BuildRequires:	libxslt-tools
 BuildRequires:  glib2-devel
 #^ For glib-compile-resources
+BuildRequires:  vim
+#^ Contains xxd command
 
 # Code
 # Not worried about versions ATM

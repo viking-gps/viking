@@ -24,6 +24,12 @@ AC_PROG_MAKE_SET
 AC_PROG_RANLIB
 AC_PATH_PROG(GLIB_MKENUMS, glib-mkenums)
 
+AC_CHECK_PROG([XXD_COMMAND],xxd,[yes])
+if test "x$XXD_COMMAND" != "xyes"
+then
+  AC_MSG_ERROR([xxd is needed but not found - you will need to install package 'xxd' or 'vim' or similar for your system.])
+fi
+
 ac_mingw32=no
 case $target_os in
   *mingw32*)

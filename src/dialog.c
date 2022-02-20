@@ -1051,3 +1051,43 @@ void a_dialog_build_info ( GtkWindow *parent )
   a_dialog_info_msg ( parent, msg->str );
   g_string_free ( msg, TRUE );
 }
+
+#include "NEWS.h"
+/**
+ * News will only be available in English
+ * (although the dialog title may be translated)
+ *
+ * ATM just a plain text dump of the current NEWS file.
+ * Potential in the future to create/use an HTML version (or MarkDown),
+ *  perhaps via webkit2gtk.
+ *
+ */
+void a_dialog_news ( GtkWindow *parent )
+{
+  // Ensure NULL terminator added
+  gchar *msg = { (gchar*)NEWS };
+  msg[NEWS_len] = '\0';
+
+  // Tailor a specific dialog, rather than simply using a_dialog_msg()
+  //  as the text is rather long, thus want a scrollable window.
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("News"),
+                                                    parent,
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+                                                    NULL );
+  GtkWidget *ln = ui_label_new_selectable ( msg );
+  GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  // Ensure it doesn't start off too small
+  // Could pass in width+height - but we'll just use the default scale factor here
+  gdouble scale = vik_viewport_get_scale ( NULL );
+  gtk_widget_set_size_request ( sw, 480*scale, 640*scale );
+  gtk_container_add ( GTK_CONTAINER(sw), ln );
+
+  GtkBox *vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+  gtk_box_pack_start ( vbox, sw, TRUE, TRUE, 0 );
+  gtk_widget_show_all ( dialog );
+
+  gtk_dialog_run ( GTK_DIALOG(dialog) );
+  gtk_widget_destroy ( dialog );
+}
