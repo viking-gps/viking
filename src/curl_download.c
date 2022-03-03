@@ -219,7 +219,6 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
       }
     }
   }
-  curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
 
   curl_easy_setopt ( curl, CURLOPT_SSL_VERIFYPEER, curl_ssl_verifypeer );
   if ( curl_cainfo )
