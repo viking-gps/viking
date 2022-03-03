@@ -50,7 +50,7 @@
 #include "settings.h"
 #include "util.h"
 
-gchar *curl_download_user_agent = NULL;
+static gchar *curl_download_user_agent = NULL;
 
 /*
  * Even if writing to FILE* is supported by libcurl by default,
