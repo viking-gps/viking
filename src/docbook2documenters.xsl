@@ -31,6 +31,11 @@ const gchar *DOCUMENTERS[] = {\
       <xsl:value-of select="firstname"/>
       <xsl:text> </xsl:text>
       <xsl:value-of select="surname"/>
+      <xsl:if test="email">
+        <xsl:text> &lt;</xsl:text>
+        <xsl:value-of select="email"/>
+        <xsl:text>&gt;</xsl:text>
+      </xsl:if>
       <xsl:text>",\
 </xsl:text>
     </xsl:for-each>

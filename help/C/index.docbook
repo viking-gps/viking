@@ -36,10 +36,12 @@
       <author>
         <firstname>Guilhem</firstname>
         <surname>Bonnefille</surname>
+        <email>guilhem.bonnefille@gmail.com</email>
       </author>
       <author>
         <firstname>Rob</firstname>
         <surname>Norris</surname>
+        <email>rw_norris@hotmail.com</email>
       </author>
       <!-- Contributors from the Wiki history -->
       <author>
@@ -70,10 +72,7 @@
         <revnumber>&appname; Manual V&manrevision;</revnumber>
         <date>&date;</date>
         <revdescription>
-          <para role="author">Guilhem Bonnefille <email>guilhem.bonnefille@gmail.com</email></para>
-          <para role="author">Rob Norris <email>rw_norris@hotmail.com</email></para>
-          <para role="publisher">GNOME Documentation Project</para>
-          <para>This document was generated on <?dbtimestamp format="Y-m-d"?>.</para>    
+          <para>This document describes the latest version of &appname;.</para>
         </revdescription>
       </revision>
     </revhistory>
