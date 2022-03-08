@@ -54,6 +54,8 @@ struct _VikLayersPanel {
   GtkWidget *tabs;
   GtkWidget *calendar;
   calendar_mu_t cal_markup;
+  // NB cal_tips[0] is unused
+  gchar *cal_tips[32];
 
   GtkWidget *goto_pane;
   GtkWidget *stats_pane; GtkWidget *stats_label;
@@ -191,18 +193,15 @@ static GtkWidget* layers_panel_create_popup ( VikLayersPanel *vlp, gboolean full
   return menu;
 }
 
-static void calendar_mark_layer_in_month ( VikLayersPanel *vlp, VikTrwLayer *vtl )
+static void calendar_mark_layer_in_month ( VikLayersPanel *vlp,
+                                           VikTrwLayer *vtl,
+                                           GDate *gd,
+                                           gchar *ds1,
+                                           gchar *ds2,
+                                           guint year,
+                                           guint month,
+                                           guint day)
 {
-  guint year, month, day;
-  gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &year, &month, &day );
-  GDate *gd = g_date_new();
-  // Beginning and end of month values as date strings in ISO8601 format
-  gchar *ds1 = g_strdup_printf ( "%d-%02d-%02dT00:00:00", year, month+1, 1 );
-  gchar *ds2 = NULL;
-  if ( month < 11 )
-    ds2 = g_strdup_printf ( "%d-%02d-%02dT00:00:00", year, month+2, 1 );
-  else
-    ds2 = g_strdup_printf ( "%d-%02d-%02dT00:00:00", year+1, 1, 1 );
   GHashTable *trks = vik_trw_layer_get_tracks ( vtl ); 
   GHashTableIter iter;
   gpointer key, value;
@@ -242,14 +241,11 @@ static void calendar_mark_layer_in_month ( VikLayersPanel *vlp, VikTrwLayer *vtl
                   gtk_calendar_mark_day ( GTK_CALENDAR(vlp->calendar), g_date_get_day(gd) );
             }
           }
-            tp_iter = tp_iter->next;
-        }  
+          tp_iter = tp_iter->next;
+        }
       }
     }
   }
-  g_free ( ds1 );
-  g_free ( ds2 );
-  g_date_free ( gd );
 }
 
 /**
@@ -267,10 +263,101 @@ static void layers_panel_calendar_update ( VikLayersPanel *vlp )
   if ( !layers )
     return;
 
+  guint year, month, day;
+  gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &year, &month, &day );
+  GDate *gd = g_date_new();
+  // Beginning and end of month values as date strings in ISO8601 format
+  gchar *ds1 = g_strdup_printf ( "%d-%02d-%02dT00:00:00", year, month+1, 1 );
+  gchar *ds2 = NULL;
+  if ( month < 11 )
+    ds2 = g_strdup_printf ( "%d-%02d-%02dT00:00:00", year, month+2, 1 );
+  else
+    ds2 = g_strdup_printf ( "%d-%02d-%02dT00:00:00", year+1, 1, 1 );
+
   for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
     VikTrwLayer *vtl = VIK_TRW_LAYER(layer->data);
-    calendar_mark_layer_in_month ( vlp, vtl );
+    calendar_mark_layer_in_month ( vlp, vtl, gd, ds1, ds2, year, month, day );
   }
+  g_free ( ds1 );
+  g_free ( ds2 );
+  g_date_free ( gd );
+
+  for ( guint dd = 1; dd <= 31; dd++ ) {
+    g_free ( vlp->cal_tips[dd] );
+    vlp->cal_tips[dd] = NULL;
+  }
+
+  // Check that detail is wanted
+  if ( vlp->cal_markup < VLP_CAL_MU_DETAIL )
+    goto end;
+
+  guint days = 31;
+  switch ( month+1 ) {
+  case 4: // Apr
+  case 6: // Jun
+  case 9: // Sep
+  case 11: // Nov
+    days = 30;
+    break;
+  case 2: // Feb
+    // Obvs incomplete and very simpilistic check for a leap year
+    //  but should be sufficient for tooltip purposes
+    if ( (year % 4) == 0  )
+      days = 29;
+    else
+      days = 28;
+    break;
+  default: break;
+  }
+
+  for ( guint dd = 1; dd <= days; dd++ ) {
+    // Pre cache tips...
+#if GTK_CHECK_VERSION(3,0,0)
+    if ( gtk_calendar_get_day_is_marked(GTK_CALENDAR(vlp->calendar), dd) )
+#endif
+    {
+      VikTrwLayer *vtl = NULL;
+      gboolean make_a_track_tip = FALSE;
+      GDate *gd2 = g_date_new();
+      for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
+        vtl = VIK_TRW_LAYER(layer->data);
+
+        GHashTable *trks = vik_trw_layer_get_tracks ( vtl );
+        GHashTableIter iter;
+        gpointer key, value;
+        // Foreach Track
+        g_hash_table_iter_init ( &iter, trks );
+        while ( g_hash_table_iter_next ( &iter, &key, &value ) ) {
+          VikTrack *trk = VIK_TRACK(value);
+          // First trackpoint
+          if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
+            // Not worried about subsecond resolution here!
+            g_date_set_time_t ( gd2, (time_t)VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
+            // Is of this day?
+            if ( g_date_get_year(gd2) == year &&
+                 g_date_get_month(gd2) == (month+1) &&
+                 g_date_get_day(gd2) == dd ) {
+              make_a_track_tip = TRUE;
+              break;
+            }
+          }
+          // Note that this does not attempt to analyse the tracks for multi day support
+          //  in order to keep this function reasonably fast as possible
+        }
+
+        // Skip further checking if found a relevant vtl for this day
+        if ( make_a_track_tip )
+          break;
+
+        vtl = NULL;
+      }
+      g_date_free ( gd2 );
+
+      if ( vtl )
+        vlp->cal_tips[dd] = g_markup_escape_text ( vik_layer_get_name(VIK_LAYER(vtl)), -1 );
+    }
+  }
+ end:
   g_list_free ( layers );
 }
 
@@ -461,60 +548,7 @@ static gchar *calendar_detail ( GtkCalendar *calendar,
   if ( amonth != month )
     return NULL;
 
-  VikTrwLayer *vtl = NULL;
-
-  // By performing a check against only those days already marked we
-  //  can skip needless full searches - as it would not find any matches
-#if GTK_CHECK_VERSION(3,0,0)
-  if ( gtk_calendar_get_day_is_marked(calendar, day) )
-#endif
-  {
-
-    GList *layers = vik_layers_panel_get_all_layers_of_type ( vlp, VIK_LAYER_TRW, TRUE );
-    if ( !layers )
-      return NULL;
-
-    gboolean need_to_break = FALSE;
-    GDate *gd = g_date_new();
-    for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
-      vtl = VIK_TRW_LAYER(layer->data);
-
-      GHashTable *trks = vik_trw_layer_get_tracks ( vtl );
-      GHashTableIter iter;
-      gpointer key, value;
-      // Foreach Track
-      g_hash_table_iter_init ( &iter, trks );
-      while ( g_hash_table_iter_next ( &iter, &key, &value ) ) {
-        VikTrack *trk = VIK_TRACK(value);
-        // First trackpoint
-        if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
-          // Not worried about subsecond resolution here!
-          g_date_set_time_t ( gd, (time_t)VIK_TRACKPOINT(trk->trackpoints->data)->timestamp );
-          // Is of this day?
-          if ( g_date_get_year(gd) == year &&
-               g_date_get_month(gd) == (month+1) &&
-               g_date_get_day(gd) == day ) {
-            need_to_break = TRUE;
-            break;
-          }
-        }
-        // Note that this does not attempt to analyse the tracks for multi day support
-        //  in order to keep this tooltip function as fast as possible
-      }
-      // Fully exit
-      if ( need_to_break )
-        break;
-
-      vtl = NULL;
-    }
-    g_date_free ( gd );
-    g_list_free ( layers );
-  }
-
-  if ( vtl)
-    return g_markup_escape_text ( vik_layer_get_name(VIK_LAYER(vtl)), -1 );
-
-  return NULL;
+  return g_strdup ( vlp->cal_tips[day] );
 }
 
 static gboolean track_tabs_refresh_cb ( VikLayersPanel *vlp )
