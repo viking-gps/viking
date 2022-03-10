@@ -28,6 +28,7 @@ static gchar *vik_goto_xml_tool_get_url_format ( VikGotoTool *self );
 static gboolean vik_goto_xml_tool_parse_file(VikGotoTool *self, gchar *filename);
 static gboolean vik_goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, struct LatLon *ll);
 static gboolean vik_goto_xml_tool_parse_file_for_candidates(VikGotoTool *self, gchar *filename, GList **candidates);
+static DownloadFileOptions *vik_goto_xml_tool_get_download_options(VikGotoTool *self);
 
 typedef struct _VikGotoXmlToolPrivate VikGotoXmlToolPrivate;
 
@@ -46,6 +47,8 @@ struct _VikGotoXmlToolPrivate
 
   // if not null, load in all candidates
   GList **candidates;
+
+  DownloadFileOptions options;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (VikGotoXmlTool, vik_goto_xml_tool, VIK_GOTO_TOOL_TYPE)
@@ -62,6 +65,9 @@ enum
   PROP_LON_ATTR,
   PROP_DESC_PATH,
   PROP_DESC_ATTR,
+  PROP_REFERER,
+  PROP_FOLLOW_LOCATION,
+  PROP_CUSTOM_HTTP_HEADERS,
 };
 
 static void
@@ -149,6 +155,27 @@ vik_goto_xml_tool_set_property (GObject      *object,
       }
       break;
 
+    case PROP_REFERER:
+      g_free (priv->options.referer);
+      priv->options.referer = g_value_dup_string (value);
+      break;
+
+    case PROP_FOLLOW_LOCATION:
+      priv->options.follow_location = g_value_get_long (value);
+      break;
+
+    case PROP_CUSTOM_HTTP_HEADERS:
+      {
+      g_free (priv->options.custom_http_headers);
+      const gchar *str = g_value_get_string ( value );
+      // Convert the literal characters '\'+'n' into actual newlines '\n'
+      if ( str )
+        priv->options.custom_http_headers = g_strcompress ( str );
+      else
+        priv->options.custom_http_headers = NULL;
+      }
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -192,6 +219,18 @@ vik_goto_xml_tool_get_property (GObject    *object,
 
     case PROP_DESC_ATTR:
       g_value_set_string (value, priv->desc_attr);
+      break;
+
+    case PROP_REFERER:
+      g_value_set_string (value, priv->options.referer);
+      break;
+
+    case PROP_FOLLOW_LOCATION:
+      g_value_set_long (value, priv->options.follow_location);
+      break;
+
+    case PROP_CUSTOM_HTTP_HEADERS:
+      g_value_set_string (value, priv->options.custom_http_headers);
       break;
 
     default:
@@ -280,11 +319,35 @@ vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
                                    PROP_DESC_ATTR,
                                    pspec);
 
+  pspec = g_param_spec_string ("referer",
+                               "Referer",
+                               "The REFERER string to use in HTTP request",
+                               NULL /* default value */,
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+  g_object_class_install_property (object_class, PROP_REFERER, pspec);
+
+  pspec = g_param_spec_long ("follow-location",
+                             "Follow location",
+                             "Specifies the number of retries to follow a redirect while downloading a page",
+                             -1, // minimum value (unlimited)
+                             G_MAXLONG, // maximum value
+                             2, // default value
+                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+  g_object_class_install_property (object_class, PROP_FOLLOW_LOCATION, pspec);
+
+  pspec = g_param_spec_string ("custom-http-headers",
+                               "Custom HTTP Headers",
+                               "Custom HTTP Headers, use '\n' to separate multiple headers",
+                               NULL, // default value
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+  g_object_class_install_property (object_class, PROP_CUSTOM_HTTP_HEADERS, pspec);
+
   parent_class = VIK_GOTO_TOOL_CLASS (klass);
 
   parent_class->get_url_format = vik_goto_xml_tool_get_url_format;
   parent_class->parse_file_for_latlon = vik_goto_xml_tool_parse_file_for_latlon;
   parent_class->parse_file_for_candidates = vik_goto_xml_tool_parse_file_for_candidates;
+  parent_class->get_download_options = vik_goto_xml_tool_get_download_options;
 }
 
 static void
@@ -303,6 +366,13 @@ vik_goto_xml_tool_init ( VikGotoXmlTool *self )
   priv->ll.lon = NAN;
   priv->description = NULL;
   priv->candidates = NULL;
+  // Options
+  priv->options.referer = NULL;
+  priv->options.follow_location = 0;
+  priv->options.check_file = NULL;
+  priv->options.check_file_server_time = FALSE;
+  priv->options.use_etag = FALSE;
+  priv->options.custom_http_headers = NULL;
 }
 
 static void
@@ -320,6 +390,9 @@ vik_goto_xml_tool_finalize ( GObject *gob )
   // IIUC description and candidates are merely here for convenience, with candidates being freed after use.
   // Thus *priv->candidates will generally no longer be a valid pointer
   //  so don't attempt to free it here.
+
+  g_free (priv->options.referer);
+  g_free (priv->options.custom_http_headers);
 
   G_OBJECT_CLASS (vik_goto_xml_tool_parent_class)->finalize(gob);
 }
@@ -571,4 +644,12 @@ vik_goto_xml_tool_get_url_format ( VikGotoTool *self )
   VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
   g_return_val_if_fail(priv != NULL, NULL);
   return priv->url_format;
+}
+
+static DownloadFileOptions *
+vik_goto_xml_tool_get_download_options ( VikGotoTool *self )
+{
+  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (self);
+  g_return_val_if_fail(priv != NULL, NULL);
+  return &(priv->options);
 }

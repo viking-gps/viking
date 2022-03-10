@@ -88,6 +88,7 @@ enum
 
   PROP_REFERER,
   PROP_FOLLOW_LOCATION,
+  PROP_CUSTOM_HTTP_HEADERS,
 };
 
 static void
@@ -143,6 +144,18 @@ vik_routing_web_engine_set_property (GObject      *object,
       priv->options.follow_location = g_value_get_long (value);
       break;
 
+    case PROP_CUSTOM_HTTP_HEADERS:
+      {
+      g_free (priv->options.custom_http_headers);
+      const gchar *str = g_value_get_string ( value );
+      // Convert the literal characters '\'+'n' into actual newlines '\n'
+      if ( str )
+        priv->options.custom_http_headers = g_strcompress ( str );
+      else
+        priv->options.custom_http_headers = NULL;
+      }
+      break;
+
     default:
       /* We don't have any other property... */
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -194,6 +207,10 @@ vik_routing_web_engine_get_property (GObject    *object,
 
     case PROP_FOLLOW_LOCATION:
       g_value_set_long (value, priv->options.follow_location);
+      break;
+
+    case PROP_CUSTOM_HTTP_HEADERS:
+      g_value_set_string (value, priv->options.custom_http_headers);
       break;
 
     default:
@@ -340,6 +357,19 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
                              2  /* default value */,
                              G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_FOLLOW_LOCATION, pspec);
+
+
+  /**
+   * VikRoutingWebEngine:custom-http-headers:
+   *
+   * Define custom HTTP headers to use in requests.
+   */
+  pspec = g_param_spec_string ("custom-http-headers",
+                               "Custom HTTP Headers",
+                               "Custom HTTP Headers, use '\n' to separate multiple headers",
+                               NULL, // default value
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+  g_object_class_install_property (object_class, PROP_CUSTOM_HTTP_HEADERS, pspec);
 }
 
 static void vik_routing_web_engine_init ( VikRoutingWebEngine *self )
@@ -358,6 +388,7 @@ static void vik_routing_web_engine_init ( VikRoutingWebEngine *self )
   priv->url_start_dir_fmt = NULL;
   priv->url_stop_dir_fmt = NULL;
 
+  /* Options */
   priv->options.referer = NULL;
   priv->options.follow_location = 0;
   priv->options.check_file = NULL;
@@ -388,8 +419,11 @@ static void vik_routing_web_engine_finalize ( GObject *gob )
   g_free (priv->url_stop_dir_fmt);
   priv->url_stop_dir_fmt = NULL;
 
+  /* Options */
   g_free (priv->options.referer);
   priv->options.referer = NULL;
+  g_free (priv->options.custom_http_headers);
+  priv->options.custom_http_headers = NULL;
 
   G_OBJECT_CLASS (vik_routing_web_engine_parent_class)->finalize(gob);
 }

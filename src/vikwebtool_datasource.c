@@ -56,6 +56,7 @@ struct _VikWebtoolDatasourcePrivate
 	gchar *babel_filter_args;
     gchar *input_label;
 	gchar *user_string;
+	DownloadFileOptions options;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (VikWebtoolDatasource, vik_webtool_datasource, VIK_WEBTOOL_TYPE)
@@ -68,7 +69,10 @@ enum
 	PROP_URL_FORMAT_CODE,
 	PROP_FILE_TYPE,
 	PROP_BABEL_FILTER_ARGS,
-    PROP_INPUT_LABEL
+	PROP_INPUT_LABEL,
+	PROP_REFERER,
+	PROP_FOLLOW_LOCATION,
+	PROP_CUSTOM_HTTP_HEADERS,
 };
 
 static void webtool_datasource_set_property (GObject      *object,
@@ -110,6 +114,27 @@ static void webtool_datasource_set_property (GObject      *object,
 		g_debug ( "VikWebtoolDatasource.input_label: %s", priv->input_label );
 		break;
 
+	case PROP_REFERER:
+		g_free (priv->options.referer);
+		priv->options.referer = g_value_dup_string (value);
+		break;
+
+    case PROP_FOLLOW_LOCATION:
+		priv->options.follow_location = g_value_get_long (value);
+		break;
+
+    case PROP_CUSTOM_HTTP_HEADERS:
+		{
+			g_free (priv->options.custom_http_headers);
+			const gchar *str = g_value_get_string ( value );
+			// Convert the literal characters '\'+'n' into actual newlines '\n'
+			if ( str )
+				priv->options.custom_http_headers = g_strcompress ( str );
+			else
+				priv->options.custom_http_headers = NULL;
+		}
+		break;
+
 	default:
 		/* We don't have any other property... */
 		G_OBJECT_WARN_INVALID_PROPERTY_ID ( object, property_id, pspec );
@@ -126,11 +151,14 @@ static void webtool_datasource_get_property (GObject    *object,
 
 	switch ( property_id ) {
 
-	case PROP_URL:               g_value_set_string ( value, priv->url ); break;
-	case PROP_URL_FORMAT_CODE:	 g_value_set_string ( value, priv->url_format_code ); break;
-	case PROP_FILE_TYPE:         g_value_set_string ( value, priv->url ); break;
-	case PROP_BABEL_FILTER_ARGS: g_value_set_string ( value, priv->babel_filter_args ); break;
-	case PROP_INPUT_LABEL:       g_value_set_string ( value, priv->input_label ); break;
+	case PROP_URL:                 g_value_set_string ( value, priv->url ); break;
+	case PROP_URL_FORMAT_CODE:     g_value_set_string ( value, priv->url_format_code ); break;
+	case PROP_FILE_TYPE:           g_value_set_string ( value, priv->url ); break;
+	case PROP_BABEL_FILTER_ARGS:   g_value_set_string ( value, priv->babel_filter_args ); break;
+	case PROP_INPUT_LABEL:         g_value_set_string ( value, priv->input_label ); break;
+	case PROP_REFERER:             g_value_set_string ( value, priv->options.referer ); break;
+	case PROP_FOLLOW_LOCATION:     g_value_set_long   ( value, priv->options.follow_location); break;
+	case PROP_CUSTOM_HTTP_HEADERS: g_value_set_string ( value, priv->options.custom_http_headers); break;
 
 	default:
 		/* We don't have any other property... */
@@ -246,8 +274,11 @@ static void datasource_get_process_options ( gpointer user_data, ProcessOptions 
 		po->input_file_type = NULL;
 	g_strfreev ( parts );
 
-	options = NULL;
 	po->babel_filters = priv->babel_filter_args;
+
+	options->referer             = priv->options.referer;
+	options->follow_location     = priv->options.follow_location;
+	options->custom_http_headers = priv->options.custom_http_headers;
 }
 
 static void cleanup ( gpointer data )
@@ -350,6 +381,29 @@ static void vik_webtool_datasource_class_init ( VikWebtoolDatasourceClass *klass
 	                                 PROP_INPUT_LABEL,
 	                                 pspec);
 
+	pspec = g_param_spec_string ("referer",
+	                             "Referer",
+	                             "The REFERER string to use in HTTP request",
+	                             NULL, // default value
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (gobject_class, PROP_REFERER, pspec);
+
+	pspec = g_param_spec_long ("follow-location",
+	                           "Follow location",
+	                           "Specifies the number of retries to follow a redirect while downloading a page",
+	                           -1, // minimum value (unlimited)
+	                           G_MAXLONG, // maximum value
+	                           2, // default value
+	                           G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (gobject_class, PROP_FOLLOW_LOCATION, pspec);
+
+	pspec = g_param_spec_string ("custom-http-headers",
+	                             "Custom HTTP Headers",
+	                             "Custom HTTP Headers, use '\n' to separate multiple headers",
+	                             NULL, // default value
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (gobject_class, PROP_CUSTOM_HTTP_HEADERS, pspec);
+
 	parent_class = g_type_class_peek_parent (klass);
 
 	base_class = VIK_WEBTOOL_CLASS ( klass );
@@ -393,6 +447,12 @@ static void vik_webtool_datasource_init ( VikWebtoolDatasource *self )
 	priv->babel_filter_args = NULL;
     priv->input_label = NULL;
 	priv->user_string = NULL;
+	priv->options.referer = NULL;
+	priv->options.follow_location = 0;
+	priv->options.check_file = NULL;
+	priv->options.check_file_server_time = FALSE;
+	priv->options.use_etag = FALSE;
+	priv->options.custom_http_headers = NULL;
 }
 
 static void webtool_datasource_finalize ( GObject *gob )
@@ -404,6 +464,8 @@ static void webtool_datasource_finalize ( GObject *gob )
 	g_free ( priv->babel_filter_args ); priv->babel_filter_args = NULL;
 	g_free ( priv->input_label ); priv->input_label = NULL;
 	g_free ( priv->user_string); priv->user_string = NULL;
+	g_free ( priv->options.referer ); priv->options.referer = NULL;
+	g_free ( priv->options.custom_http_headers ); priv->options.custom_http_headers = NULL;
 	G_OBJECT_CLASS(parent_class)->finalize(gob);
 }
 

@@ -4413,6 +4413,21 @@ Accept: */*
               <term>lon-attr (optional)</term>
               <listitem><para>name of the attribute (of previous element) containing the longiude</para></listitem>
             </varlistentry>
+            <varlistentry>
+              <term>referer (optional)</term>
+              <listitem><para>A URL to serve as referer for the HTTP request (eg. "http://hostname/")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term>
+              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>custom-http-headers (optional)</term>
+              <listitem>
+                <para>Custom HTTP headers to be added to the HTTP request. The default is none.</para>
+                <para>Note that unlike custom-http-headers for Tile download requests, it does not perform any value substitions in this string.</para>
+              </listitem>
+            </varlistentry>
           </variablelist>
         </para>
         <para>As a facility (or readability) it is possible to set both path and attribute name in a single property, like an XPath expression. To do so, simply set both info in lat-path (or lon-path) in the following format: <literal>/root/parent/elem@attribute</literal>.</para>
@@ -4511,6 +4526,13 @@ Accept: */*
               <term>follow-location (optional)</term>
               <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
             </varlistentry>
+            <varlistentry>
+              <term>custom-http-headers (optional)</term>
+              <listitem>
+                <para>Custom HTTP headers to be added to the HTTP request. The default is none.</para>
+                <para>Note that unlike custom-http-headers for Tile download requests, it does not perform any value substitions in this string.</para>
+              </listitem>
+            </varlistentry>
           </variablelist>
         </para>
       </section>
@@ -4571,6 +4593,20 @@ Accept: */*
               <listitem>
                 <para>This value is used when requesting input from the user.</para>
                 <para>It is the label of the text input box.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>referer (optional)</term>
+              <listitem><para>A URL to serve as referer for the HTTP request (eg. "http://hostname/")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term>
+              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>custom-http-headers (optional)</term>
+              <listitem>
+                <para>Custom HTTP headers to be added to the HTTP request. The default is none.</para>
               </listitem>
             </varlistentry>
           </variablelist>
