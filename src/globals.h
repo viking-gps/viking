@@ -335,6 +335,7 @@ gboolean a_vik_have_text_program ( );
 #define VIK_ICON_FILTER       "filter_32"
 #define VIK_ICON_GLOBE        "globe_32"
 #define VIK_ICON_SHOW_PICTURE "showpic_18"
+#define VIK_ICON_SUN_MOON     "sun_moon_64"
 
 // Particularly if one often views large .vik files,
 //  then changing the visibility of items may be considered just part of the viewing process

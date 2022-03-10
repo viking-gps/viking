@@ -484,6 +484,31 @@ case $ac_cv_enable_nettle in
 esac
 AM_CONDITIONAL([MD5_HASH], [test x$ac_cv_enable_nettle = xyes])
 
+# libnova for Astronomical data
+AC_ARG_ENABLE(nova, AS_HELP_STRING([--enable-nova],
+              [enable Astronomical data support via libnova (default is enable).]),
+              [ac_cv_enable_nova=$enableval],
+              [ac_cv_enable_nova=yes])
+AC_CACHE_CHECK([whether to enable libnova Support],
+               [ac_cv_enable_nova], [ac_cv_enable_nova=yes])
+case $ac_cv_enable_nova in
+  yes)
+    AC_CHECK_HEADERS([libnova/libnova.h],[],[AC_MSG_ERROR([libnova/libnova.h is needed but not found - you will need to install package 'libnova-dev' or similar. The feature can be disabled with --disable-nova])])
+    AC_CHECK_LIB(nova, ln_get_version, [], [AC_MSG_ERROR([libnova is needed but not found.])])
+
+# Check for extended functionality
+    AC_MSG_CHECKING([libnova: ln_lunar_next_phase()])
+    AC_LINK_IFELSE(
+       [AC_LANG_PROGRAM(
+            [#include <libnova/libnova.h>],
+            [ln_lunar_next_phase(0.0, 0.0)],)],
+        [AC_MSG_RESULT([yes]);AC_DEFINE([HAVE_LIBNOVA_NEXT_PHASE_FUNC], [1], [Define to 1 if you have ln_lunar_next_phase().])],
+        [AC_MSG_RESULT([no])]
+    )
+    ;;
+esac
+AM_CONDITIONAL([NOVA], [test x$ac_cv_enable_nova = xyes])
+
 # Mapnik rendering layer
 AC_ARG_ENABLE(mapnik, AS_HELP_STRING([--enable-mapnik],
               [enable Mapnik (default is enable)]),
@@ -626,6 +651,7 @@ MBTiles Support (SQLite3)        : $ac_cv_enable_mbtiles
 Zip File Support (with libzip)   : $ac_cv_enable_zip
 MD5 Hash Support (with libnettle): $ac_cv_enable_nettle
 Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik
+Nova (Astronomical Data)         : $ac_cv_enable_nova
 OAuth                            : $ac_cv_enable_oauth
 Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}
 Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}

@@ -47,6 +47,7 @@ HELP_MEDIA = \
     figures/Panel_Stats_Tab.png \
     figures/Trackpoint_edit_dialog.png \
     figures/Track_elevation_graph.png \
+    figures/Track_speed_time_graph_WinterSolstice2021.png \
     figures/Track_properties.png \
     figures/Track_statistics.png \
     figures/Track_time_splits.png \

@@ -914,6 +914,21 @@ See the section <xref linkend="search_provider"/> to configure additional search
 <para>
   When moving the mouse pointer over these graphs, it features a popup to give more information about that point and updates the main viewport track display with an equivalent highlighted trackpoint. Left clicking on the graph recenters the viewport to that point, whereas right clicking opens a contextual menu offering features such as accessing the tracks properties or statistics, editting of the specific trackpoint and further controls of the elevation axis scale.
 </para>
+<para>
+  The speed-time graph (as shown below) features a backdrop of daylight, twilight and night time colour indicators.
+  This can be turned off via the <xref linkend="prefs_advanced"/>.
+</para>
+<figure>
+<title>Speed-time graph</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Track_speed_time_graph_WinterSolstice2021.png"/>
+</screenshot>
+<informalexample>
+<para>
+This is long track example for an overnight and on into the day cycle adventure.
+</para>
+</informalexample>
+</figure>
 </section>
 
 </section> <!-- End File Types -->
@@ -3383,6 +3398,9 @@ When no TrackWaypoint Layer is selected (or the layer is invisibile) then the fi
 </section>
 <section><title>Select Newly Created Layer</title>
   <para>A setting to control when a new layer is created that it is selected; otherwise the current selection is unchanged.</para>
+</section>
+<section><title>Graphs Draw Sunlight</title>
+  <para>A setting to control whether the backdrop indicator for daylight, twilight and night time is shown on all Time related graphs.</para>
 </section>
 </section>
 </section>

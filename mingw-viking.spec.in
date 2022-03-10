@@ -49,6 +49,7 @@ BuildRequires:	mingw32-libzip-devel
 BuildRequires:	mingw32-libnettle-devel
 BuildRequires:	mingw32-libgps-devel
 BuildRequires:	mingw32-liboauth-devel
+BuildRequires:	mingw32-libnova-devel
 
 # Libs for runtime (and thus also available for the NSIS installer to include the dependencies)
 Requires:	mingw32-gtk2
@@ -63,6 +64,7 @@ Requires:	mingw32-libnettle
 Requires:	mingw32-libgps
 Requires:	mingw32-liboauth
 Requires:	mingw32-libgps
+Requires:	mingw32-libnova
 # Currently running makensis in seperate script - so you will need it then
 #Requires:	mingw32-cross-nsis
 

@@ -1,4 +1,5 @@
 src/acquire.c
+src/astronomy.c
 src/babel.c
 src/babel_ui.c
 src/background.c

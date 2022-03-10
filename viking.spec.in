@@ -38,6 +38,7 @@ BuildRequires:  libmapnik-devel
 BuildRequires:  libzip-devel
 BuildRequires:  liboauth-devel
 BuildRequires:	json-glib-devel
+BuildRequires:  libnova-devel
 BuildRequires:  yelp-tools
 
 %description

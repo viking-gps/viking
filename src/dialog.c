@@ -838,6 +838,9 @@ void a_dialog_about ( GtkWindow *parent )
 #ifdef HAVE_LIBOAUTH
     "liboauth",
 #endif
+#ifdef HAVE_LIBNOVA
+    "libnova",
+#endif
     NULL
   };
   // Newer versions of GTK 'just work', calling gtk_show_uri() on the URL or email and opens up the appropriate program
@@ -972,6 +975,10 @@ void a_dialog_license ( GtkWindow *parent, const gchar *map, const gchar *licens
 #ifdef HAVE_OAUTH_H
 #include <oauth.h>
 #endif
+#ifdef HAVE_LIBNOVA_LIBNOVA_H
+#include <libnova/libnova.h>
+#endif
+
 #include <json-glib/json-glib.h>
 
 void a_dialog_build_info ( GtkWindow *parent )
@@ -1028,6 +1035,9 @@ void a_dialog_build_info ( GtkWindow *parent )
 #endif
 #ifdef JSON_VERSION_S
   g_string_append_printf ( msg, "json-glib version: %s\n", JSON_VERSION_S );
+#endif
+#ifdef HAVE_LIBNOVA_LIBNOVA_H
+  g_string_append_printf ( msg, "libnova version: %s\n", ln_get_version() );
 #endif
 
   // https://docs.flatpak.org/en/latest/flatpak-command-reference.html#flatpak-metadata

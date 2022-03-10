@@ -23,6 +23,11 @@
 #include <gdk/gdkkeysyms.h>
 #include "vikgoto.h"
 #include "viktrwlayer_propwin.h"
+#include "astronomy.h"
+
+#ifdef HAVE_LIBNOVA_LIBNOVA_H
+#include <libnova/libnova.h>
+#endif
 
 enum {
   VLP_UPDATE_SIGNAL,
@@ -500,6 +505,63 @@ static gboolean layers_calendar_diary ( VikLayersPanel *vlp )
   return TRUE;
 }
 
+#ifdef HAVE_LIBNOVA_LIBNOVA_H
+/**
+ *
+ */
+static gboolean layers_calendar_astro ( VikLayersPanel *vlp )
+{
+  guint year, month, day;
+  gtk_calendar_get_date ( GTK_CALENDAR(vlp->calendar), &year, &month, &day );
+  GDate *gd = g_date_new_dmy ( day, month+1, year );
+  gchar *title = g_malloc0_n ( sizeof(gchar*), 64 );
+  (void)g_date_strftime ( title, 64, _("Astronomy: %x"), gd );
+
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( title,
+                                                    VIK_GTK_WINDOW_FROM_WIDGET(vlp),
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_CLOSE, GTK_RESPONSE_CANCEL,
+                                                    NULL );
+  g_free ( title );
+
+  VikCoord *center = (VikCoord*)vik_viewport_get_center ( vlp->vvp );
+  struct tm tM;
+  g_date_to_struct_tm ( gd, &tM );
+  time_t att = util_timegm ( &tM );
+  GtkWidget *astro = astro_info ( att, center, FALSE );
+
+  g_free ( gd );
+
+  GtkBox *vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+  gtk_box_pack_start ( vbox, astro, TRUE, TRUE, 5 );
+
+#ifdef HAVE_LIBNOVA_NEXT_PHASE_FUNC
+  struct ln_date lnd = { year, month+1, day, 0, 0, 0.0 };
+  const double JD = ln_get_julian_day ( &lnd );
+
+  gchar *msg = NULL;
+  double jdn = ln_lunar_next_phase ( JD, 0.5 );
+  if ( !isnan(jdn) ) {
+    time_t tt;
+    ln_get_timet_from_julian ( jdn, &tt );
+    gchar *ts = vu_get_time_string ( &tt, "%x %H:%M %Z", NULL, NULL );
+    msg = g_strdup_printf ( _("Moon next full on %s"), ts );
+    g_free ( ts );
+  }
+  if ( msg ) {
+    GtkWidget *wgt = ui_label_new_selectable ( msg );
+    gtk_box_pack_end ( vbox, wgt, TRUE, TRUE, 5 );
+    gtk_widget_show ( wgt );
+  }
+#endif
+  // NB no show_all() for the dialog due to internal show/hide logic
+  gtk_dialog_run ( GTK_DIALOG(dialog) );
+  gtk_widget_destroy ( dialog );
+
+  return TRUE;
+}
+#endif
+
 /**
  * Enable a right click menu on the calendar
  */
@@ -510,6 +572,9 @@ static gboolean layers_calendar_button_press_cb ( VikLayersPanel *vlp, GdkEventB
     (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_GO_BACK, G_CALLBACK(layers_calendar_back), vlp );
     (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_GO_FORWARD, G_CALLBACK(layers_calendar_forward), vlp );
     (void)vu_menu_add_item ( menu, _("_Today"), GTK_STOCK_HOME, G_CALLBACK(layers_calendar_today), vlp );
+#ifdef HAVE_LIBNOVA_LIBNOVA_H
+    (void)vu_menu_add_item ( menu, _("_Astronomy"), VIK_ICON_SUN_MOON, G_CALLBACK(layers_calendar_astro), vlp );
+#endif
     if ( a_vik_have_diary_program() )
       (void)vu_menu_add_item ( menu, _("_Diary"), GTK_STOCK_SPELL_CHECK, G_CALLBACK(layers_calendar_diary), vlp );
     gtk_widget_show_all ( GTK_WIDGET(menu) );

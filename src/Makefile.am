@@ -48,6 +48,7 @@ ENUM_H_FILES = \
 	vikviewport.h
 
 libviking_a_SOURCES = \
+	astronomy.h astronomy.c \
 	bbox.h \
 	map_ids.h \
 	modules.h modules.c \

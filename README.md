@@ -37,7 +37,7 @@ The following packages are needed (they are included by default in Debian Sid, b
 
 The following packages are also used, but they can each be disabled with configure options, if desired:
 
-	$ sudo apt-get install libsqlite3-dev nettle-dev libmapnik-dev libgeoclue-2-dev libgexiv2-dev libgps-dev libmagic-dev libbz2-dev libzip-dev liboauth-dev
+	$ sudo apt-get install libsqlite3-dev nettle-dev libmapnik-dev libgeoclue-2-dev libgexiv2-dev libgps-dev libmagic-dev libbz2-dev libzip-dev liboauth-dev libnova-dev
 
 ### Actual Build
 

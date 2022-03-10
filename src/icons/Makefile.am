@@ -242,6 +242,7 @@ ICONS = \
 	clip_32.png \
 	filter_32.png \
 	globe_32.png \
+	sun_moon_64.png \
 	vikaggregatelayer.png \
 	vikcoordlayer.png \
 	vikdemlayer.png \

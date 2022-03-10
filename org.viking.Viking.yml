@@ -151,6 +151,24 @@ modules:
 # Otherwise gpsbabel & libgps.so can get removed
 
 #
+# libnova
+# Note the v0.16 release does not contain the next moon phase functionality**
+#  **which has issues anyway - see Bug XYZ...
+#
+  - name: libnova
+    buildsystem: simple
+    sources:
+      - type: git
+        url: https://git.code.sf.net/p/libnova/libnova
+        tag: "v0.16"
+        commit: edbf65abe27ef1a2520eb9e839daaf58f15a6941
+    build-commands:
+      - ./autogen.sh && ./configure --prefix="${FLATPAK_DEST}" && make && make install
+    cleanup:
+      - /include
+      - '/lib/*.a'
+
+#
 # xxd tool required as part of Viking build
 # Found best candidate for standalone component (rather than within Vim)
 #

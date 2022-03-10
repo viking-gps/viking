@@ -25,6 +25,11 @@
 #include "viktrwlayer_propwin.h"
 #include "dems.h"
 #include "degrees_converters.h"
+#include "astronomy.h"
+
+#ifdef HAVE_LIBNOVA_LIBNOVA_H
+#include <libnova/libnova.h>
+#endif
 
 #define BLOB_SIZE 6
 
@@ -221,11 +226,21 @@ static VikLayerParam prefs[] = {
   { VIK_LAYER_NUM_TYPES, TPW_PREFS_NS"show_power", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Show Power graph:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
 };
 
+
+static VikLayerParam prefs_adv[] = {
+#ifdef HAVE_LIBNOVA_LIBNOVA_H
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE"graphs_draw_sunlight", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Graphs Draw Sunlight:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+#endif
+};
+
 void vik_trw_layer_propwin_init ()
 {
   a_preferences_register_group ( TPW_PREFS_GROUP_KEY, _("Track Properties Dialog") );
   for ( guint ii = 0; ii < G_N_ELEMENTS(prefs); ii++ )
     a_preferences_register ( &prefs[ii], (VikLayerParamData){0}, TPW_PREFS_GROUP_KEY );
+
+  for ( guint ii = 0; ii < G_N_ELEMENTS(prefs_adv); ii++ )
+    a_preferences_register ( &prefs_adv[ii], (VikLayerParamData){0}, VIKING_PREFERENCES_ADVANCED_GROUP_KEY );
 }
 
 static void minmax_array(const gdouble *array, gdouble *min, gdouble *max, gboolean NO_ALT_TEST, gint PROFILE_WIDTH)
@@ -699,6 +714,51 @@ static gboolean menu_axis_cb ( PropWidgets *widgets )
   return FALSE;
 }
 
+#ifdef HAVE_LIBNOVA_LIBNOVA_H
+/**
+ * menu_astro_cb:
+ *
+ *  Show the Astronomy dialog for the current time and position
+ *   of the blob marker along the track
+ *
+ */
+static gboolean menu_astro_cb ( PropWidgets *widgets )
+{
+  if ( !widgets->blob_tp )
+    return FALSE;
+
+  if ( isnan(widgets->blob_tp->timestamp) )
+    return FALSE;
+
+  time_t ts = round ( widgets->blob_tp->timestamp );
+  GDate *gd = g_date_new();
+  g_date_set_time_t ( gd, ts );
+  gchar *title = g_malloc0_n ( sizeof(gchar*), 64 );
+  (void)g_date_strftime ( title, 64, _("Astronomy: %x"), gd );
+
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( title,
+                                                    VIK_GTK_WINDOW_FROM_LAYER(widgets->vtl),
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_CLOSE, GTK_RESPONSE_CANCEL,
+                                                    NULL );
+  g_free ( title );
+  g_free ( gd );
+
+  VikCoord *center = &widgets->blob_tp->coord;
+  GtkWidget *astro = astro_info ( ts, center, TRUE );
+
+  GtkBox *vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+  gtk_box_pack_start ( vbox, astro, TRUE, TRUE, 5 );
+  // NB no show_all() for the dialog due to internal show/hide logic
+
+  gtk_dialog_run ( GTK_DIALOG(dialog) );
+
+  gtk_widget_destroy ( dialog );
+
+  return FALSE;
+}
+#endif
+
 /**
  *
  */
@@ -735,6 +795,10 @@ static void graph_click_menu_popup ( PropWidgets *widgets, VikPropWinGraphType_t
   }
 
   if ( graph_type == PGT_SPEED_TIME ) {
+#ifdef HAVE_LIBNOVA_LIBNOVA_H
+    (void)vu_menu_add_item ( GTK_MENU(show_submenu), _("_Astronomy"), VIK_ICON_SUN_MOON, G_CALLBACK(menu_astro_cb), widgets );
+#endif
+
     GtkWidget *ig = gtk_check_menu_item_new_with_mnemonic ( _("_GPS Speed") );
     gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(ig), widgets->show_speed[PGT_SPEED_TIME] );
     g_signal_connect_swapped ( G_OBJECT(ig), "toggled", G_CALLBACK(menu_show_gps_speed_cb), widgets );
@@ -1315,6 +1379,174 @@ static void draw_dem_alt_speed_dist ( VikTrack *tr,
   cairo_stroke ( cr );
 #endif
 }
+
+#ifdef HAVE_LIBNOVA_LIBNOVA_H
+typedef struct _risesets {
+  struct ln_rst_time rstATw; // Astronomical Twilight
+  int resA;
+  struct ln_rst_time rstNTw; // Nautical Twilight
+  int resN;
+  struct ln_rst_time rstCTw; // Civil Twilight
+  int resC;
+  struct ln_rst_time rstS; // 'Standard' rise/set hours
+  int resS;
+} RiseSetsT;
+
+#if GTK_CHECK_VERSION (3,0,0)
+#define DAYLIGHT_COLOR "#B1DAE7"
+/**
+ * draw_sunlight_times:
+ *
+ * Draw indication of daylight/nighttime across a time based graph
+ * Tried using colours with alpha values but it didn't seem to make any difference to the drawing.
+ *  (maybe dependent on something missing or other ordering of drawing operations)
+ * So ATM this must be performed before the grid layout and the main graph are drawn.
+ * ATM this for only GTK3+
+ *  i.e not bothering with a GTK2 version
+ */
+static void draw_sunlight_times ( GtkWidget *window, PangoLayout *pl, PropWidgets *widgets, cairo_t *cr, VikTrack *trk )
+{
+  VikTrackpoint *tp = vik_track_get_tp_first ( trk );
+  if ( !tp || isnan(tp->timestamp) )
+    return;
+
+  // Protect from very long tracks - as otherwise probably going to be quite slow to process
+  if ( widgets->duration > chunkst[G_N_ELEMENTS(chunkst)-1] )
+    return;
+
+  time_t jts = tp->timestamp; // no need to round
+
+  const double JD_trk = ln_get_julian_from_timet ( &jts );
+  const double JD_daystart = astro_get_daystart ( JD_trk, &tp->coord );
+  const double JD_dayend = JD_daystart + 1;
+
+  time_t jte;
+  ln_get_timet_from_julian ( JD_dayend, &jte );
+
+  const time_t tt_diff = jte - jts;
+
+  // Multi day track processing
+  // Track can be up to N 'days' in length but may span across N+1 actual days
+  const guint days = (guint)ceil ( widgets->duration/(24.0 * 60.0 * 60.0) ) + 1;
+
+  // For very long tracks, reset the position used each day this can be effect
+  //  the times much more than the change of Earth position around the Sun.
+  // Indeed even on single day tracks the change in position will effect the apparent sunrise/set
+  //  consider in particular 'Chase the Sun' cycle events which maximise this effect.
+  // Since it is computationally intensive to (re)calculate timings for all positions,
+  //  for simplicity get new timings for each day at the new starting position of that day.
+  // Obviously not many people create tracks of such length in both time and space.
+  struct LatLon ll;
+  gboolean multi_days_span = FALSE;
+  if ( days > 2 ) {
+    // Multi days - so for 1st day use start of the track
+    multi_days_span = TRUE;
+    vik_coord_to_latlon ( &tp->coord, &ll );
+  }
+  else {
+    // Single day - just use center
+    widgets->vc = vik_track_get_center ( trk, vik_trw_layer_get_coord_mode(widgets->vtl) );
+    vik_coord_to_latlon ( &widgets->vc, &ll ); // Center of track
+  }
+
+  RiseSetsT rss[days];
+
+  // NB libnova uses the mathematical long,lat ordering
+  struct ln_lnlat_posn observer = { ll.lon, ll.lat };
+
+  for ( guint dd = 0; dd < days; dd++ ) {
+
+    // Get times for each (starting) day in the track
+    if ( multi_days_span ) {
+      gdouble seconds_from_start = NAN;
+      VikTrackpoint *tpt = vik_track_get_closest_tp_by_percentage_time ( trk, (gdouble)dd/(gdouble)days, &seconds_from_start );
+      if ( tpt && !isnan(seconds_from_start) ) {
+        // Next valid position
+        vik_coord_to_latlon ( &tpt->coord, &ll );
+        observer.lng = ll.lon;
+        observer.lat = ll.lat;
+      }
+    }
+    rss[dd].resA = ln_get_solar_rst_horizon ( JD_daystart+dd, &observer, LN_SOLAR_ASTRONOMICAL_HORIZON, &rss[dd].rstATw );
+    rss[dd].resN = ln_get_solar_rst_horizon ( JD_daystart+dd, &observer, LN_SOLAR_NAUTIC_HORIZON, &rss[dd].rstNTw );
+    rss[dd].resC = ln_get_solar_rst_horizon ( JD_daystart+dd, &observer, LN_SOLAR_CIVIL_HORIZON, &rss[dd].rstCTw );
+    rss[dd].resS = ln_get_solar_rst ( JD_daystart+dd, &observer, &rss[dd].rstS );
+  }
+
+  GdkRGBA rgba;
+
+  // Colouring somewhat more complicated for multiple days...
+  gboolean one_color = TRUE;
+  // Check all resS for either permanent nighttime or daylight
+  for ( guint dd = 0; dd < days; dd++ ) {
+    if ( rss[dd].resS == -1 )
+      one_color = one_color && TRUE;
+    else
+      one_color = FALSE;
+  }
+  if ( one_color ) {
+    // Permanent night (resC, resA and resA should axiomatically be -1 as well)
+    (void)gdk_rgba_parse ( &rgba, "black" ); // Night time
+    gdk_cairo_set_source_rgba ( cr, &rgba );
+  }
+  else {
+    one_color = TRUE;
+    for ( guint dd = 0; dd < days; dd++ ) {
+      if ( rss[dd].resS == 1 )
+        one_color = one_color && TRUE;
+      else
+        one_color = FALSE;
+    }
+    if ( one_color ) {
+      // Permanent daylight (resC, resA and resA should axiomatically be 1 as well)
+      (void)gdk_rgba_parse ( &rgba, DAYLIGHT_COLOR );
+      gdk_cairo_set_source_rgba ( cr, &rgba );
+    }
+  }
+
+  const guint height = MARGIN_Y + widgets->profile_height - 1;
+  const gdouble secs_per_day = 24.0 * 60.0 * 60.0;
+  const gdouble time_per_pixel_secs = (gdouble)(widgets->duration) / widgets->profile_width;
+  const gdouble time_per_pixel_days = time_per_pixel_secs / secs_per_day;
+
+  if ( one_color ) {
+    for (int ii = 0; ii < widgets->profile_width; ii++ )
+      ui_cr_draw_line ( cr, MARGIN_X+ii, MARGIN_Y, MARGIN_X+ii, height );
+    cairo_stroke ( cr );
+  } else {
+    double JD_px;
+    guint dd = 0;
+    for (int ii = 0; ii < widgets->profile_width; ii++ ) {
+
+      // Convert time to colour:
+      JD_px = JD_trk + ( ii * time_per_pixel_days );
+
+      // Convert to the day
+      // Check to see if the current point in time is on the subsequent day
+      dd = (guint)floor ( ii * time_per_pixel_days );
+      if ( (ii * time_per_pixel_secs) - (dd * secs_per_day) > tt_diff )
+        dd += 1;
+
+      if ( (JD_px > rss[dd].rstS.rise) && (JD_px < rss[dd].rstS.set) )
+        ui_cr_set_color ( cr, DAYLIGHT_COLOR );
+      else if ( (JD_px > rss[dd].rstCTw.rise) && (JD_px < rss[dd].rstCTw.set) )
+        ui_cr_set_color ( cr, "#63B4CF" ); // Civil (normal twilight)
+      else if ( (JD_px > rss[dd].rstNTw.rise) && (JD_px < rss[dd].rstNTw.set) )
+        ui_cr_set_color ( cr, "#316577" ); // Nautical twilight
+      else if ( (JD_px > rss[dd].rstATw.rise) && (JD_px < rss[dd].rstATw.set) )
+        ui_cr_set_color ( cr, "#18404E" );  // Astronomical twilight
+      else
+        ui_cr_set_color ( cr, "black" ); // Proper night
+      ui_cr_draw_line ( cr, MARGIN_X+ii, MARGIN_Y, MARGIN_X+ii, height );
+      // Possibly could only perform when colour has actually changed
+      //  but doesn't seem too slow, so ATM not worth checking.
+      cairo_stroke ( cr );
+    }
+  }
+}
+#endif // GTK3
+
+#endif // HAVE_LIBNOVA_LIBNOVA_H
 
 /**
  * draw_grid_y:
@@ -1904,6 +2136,12 @@ static gboolean is_light ( GdkRGBA *rgba )
 }
 #endif
 
+static gboolean bool_pref_get ( const gchar *pref )
+{
+  VikLayerParamData *vlpd = a_preferences_get ( pref );
+  return vlpd->b;
+}
+
 /**
  * Draw an image
  */
@@ -1984,6 +2222,17 @@ static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets 
   gtk_style_context_get ( gsc, gtk_style_context_get_state(gsc), GTK_STYLE_PROPERTY_BORDER_COLOR, &rgbaBC, NULL );
 
   pango_layout_set_alignment ( pl, PANGO_ALIGN_RIGHT );
+
+  // Put on elevation graph???
+#if GTK_CHECK_VERSION (3,0,0)
+#ifdef HAVE_LIBNOVA_LIBNOVA_H
+  if ( is_time_graph(pwgt) )
+    if ( bool_pref_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE"graphs_draw_sunlight") )
+      draw_sunlight_times ( window, pl, widgets, cr, trk );
+#endif
+#endif
+  // Currently believe with the sunlight backdrop (fixed) color schemes
+  //  doesn't interfere/confuse the subsequent colours for grid+speed drawing
 
   // draw grid
   for ( i=0; i<=LINES; i++ ) {
@@ -3491,12 +3740,6 @@ static GtkWidget *create_statistics_page ( PropWidgets *widgets, VikTrack *tr )
   if ( tr->trackpoints )
     widgets->vc = vik_track_get_center ( tr, vik_trw_layer_get_coord_mode(widgets->vtl) );
   return sw;
-}
-
-gboolean bool_pref_get ( const gchar *pref )
-{
-  VikLayerParamData *vlpd = a_preferences_get ( pref );
-  return vlpd->b;
 }
 
 static void add_reorderable_page ( GtkNotebook *notebook, GtkWidget *page, GtkWidget *label )

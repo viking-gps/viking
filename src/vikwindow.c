@@ -6510,6 +6510,7 @@ register_vik_icons ( GtkIconFactory *icon_factory )
   a_register_icon ( icon_factory, VIK_ICON_FILTER );
   a_register_icon ( icon_factory, VIK_ICON_GLOBE );
   a_register_icon ( icon_factory, VIK_ICON_SHOW_PICTURE );
+  a_register_icon ( icon_factory, VIK_ICON_SUN_MOON );
 }
 
 gpointer vik_window_get_selected_trw_layer ( VikWindow *vw )
