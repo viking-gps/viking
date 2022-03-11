@@ -308,6 +308,19 @@ vik_goto_xml_tool_init ( VikGotoXmlTool *self )
 static void
 vik_goto_xml_tool_finalize ( GObject *gob )
 {
+  VikGotoXmlToolPrivate *priv = GOTO_XML_TOOL_GET_PRIVATE (gob);
+  g_free (priv->url_format);
+  g_free (priv->lat_path);
+  g_free (priv->lat_attr);
+  g_free (priv->lon_path);
+  g_free (priv->lon_attr);
+  g_free (priv->desc_path);
+  g_free (priv->desc_attr);
+  g_free (priv->description);
+  // IIUC description and candidates are merely here for convenience, with candidates being freed after use.
+  // Thus *priv->candidates will generally no longer be a valid pointer
+  //  so don't attempt to free it here.
+
   G_OBJECT_CLASS (vik_goto_xml_tool_parent_class)->finalize(gob);
 }
 
