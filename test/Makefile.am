@@ -18,6 +18,7 @@ TESTS = check_degrees_conversions.sh \
 	check_parse_latlon.sh \
 	check_babel.sh \
 	check_vik2vik.sh \
+	check_vikgoto.sh \
 	check_gpx.sh \
 	check_geojson_osrm.sh \
 	check_help_xml.sh \
@@ -50,6 +51,7 @@ check_SCRIPTS = check_degrees_conversions.sh \
 	check_decimal_output.sh \
 	check_parse_latlon.sh \
 	check_vik2vik.sh \
+	check_vikgoto.sh \
 	check_gpx.sh \
 	check_geojson_osrm.sh \
 	check_help_xml.sh \
@@ -74,6 +76,10 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	check_gpx.sh \
 	SF\#022.gpx \
 	GPXv1.1-sample.gpx \
+	check_vikgoto.sh \
+	search-result-geonames-viking.xml \
+	search-result-geonames-attr-viking.xml \
+	search-result-nominatim-viking.xml \
 	check_md5_hash.sh \
 	check_metatile.sh \
 	metatile_example/13/0/0/250/220/0.meta \

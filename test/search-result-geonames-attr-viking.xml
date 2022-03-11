@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  Faked example using 'lat' and 'lng' as attributes of 'geoname'
+  This is not a real response from the geoname service,
+   just a test case for using attributes in an XML response
+-->
+<geonames style="SHORT">
+    <totalResultsCount>1</totalResultsCount>
+    <geoname lat="53.41667" lng="2.41667">
+        <toponymName>Viking Gas Field</toponymName>
+        <name>Viking Gas Field</name>
+        <geonameId>3211005</geonameId>
+        <countryCode>GB</countryCode>
+        <fcl>L</fcl>
+        <fcode>GASF</fcode>
+    </geoname>
+</geonames>

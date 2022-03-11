@@ -199,7 +199,7 @@ gboolean vik_goto_tool_parse_file_for_latlon (VikGotoTool *self, gchar *filename
   return VIK_GOTO_TOOL_GET_CLASS( self )->parse_file_for_latlon( self, filename, ll );
 }
 
-static gboolean vik_goto_tool_parse_file_for_candidates (VikGotoTool *self, gchar *filename, GList **candidates)
+gboolean vik_goto_tool_parse_file_for_candidates (VikGotoTool *self, gchar *filename, GList **candidates)
 {
   return VIK_GOTO_TOOL_GET_CLASS( self )->parse_file_for_candidates( self, filename, candidates );
 }

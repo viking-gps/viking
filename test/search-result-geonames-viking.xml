@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<geonames style="SHORT">
+  <!-- NB real result when run in March 2022 was a count of 176,
+       so for test example reduced this down somewhat. -->
+    <totalResultsCount>17</totalResultsCount>
+    <geoname>
+        <toponymName>Viking Gas Field</toponymName>
+        <name>Viking Gas Field</name>
+        <lat>53.41667</lat>
+        <lng>2.41667</lng>
+        <geonameId>3211005</geonameId>
+        <countryCode>GB</countryCode>
+        <fcl>L</fcl>
+        <fcode>GASF</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Viking Valley</toponymName>
+        <name>Viking Valley</name>
+        <lat>-71.8323</lat>
+        <lng>-68.33861</lng>
+        <geonameId>6627566</geonameId>
+        <countryCode>AQ</countryCode>
+        <fcl>T</fcl>
+        <fcode>VAL</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Viking Hills</toponymName>
+        <name>Viking Hills</name>
+        <lat>-76.7</lat>
+        <lng>161.8</lng>
+        <geonameId>6627565</geonameId>
+        <countryCode>AQ</countryCode>
+        <fcl>T</fcl>
+        <fcode>HLL</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Viking</toponymName>
+        <name>Viking</name>
+        <lat>53.09737</lat>
+        <lng>-111.76449</lng>
+        <geonameId>11807206</geonameId>
+        <countryCode>CA</countryCode>
+        <fcl>A</fcl>
+        <fcode>ADM2</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Viking Trough</toponymName>
+        <name>Viking Trough</name>
+        <lat>65.08333</lat>
+        <lng>-5.41667</lng>
+        <geonameId>3163621</geonameId>
+        <countryCode/>
+        <fcl>U</fcl>
+        <fcode>TRGU</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Viking Bank</toponymName>
+        <name>Viking Bank</name>
+        <lat>60.58333</lat>
+        <lng>2.58333</lng>
+        <geonameId>3163622</geonameId>
+        <countryCode/>
+        <fcl>U</fcl>
+        <fcode>BNKU</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Viking</toponymName>
+        <name>Viking</name>
+        <lat>53.09606</lat>
+        <lng>-111.77527</lng>
+        <geonameId>6174254</geonameId>
+        <countryCode>CA</countryCode>
+        <fcl>P</fcl>
+        <fcode>PPL</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>South Viking</toponymName>
+        <name>South Viking</name>
+        <lat>-37.12514</lat>
+        <lng>146.7218</lng>
+        <geonameId>8168886</geonameId>
+        <countryCode>AU</countryCode>
+        <fcl>T</fcl>
+        <fcode>MT</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Viking</toponymName>
+        <name>Viking</name>
+        <lat>48.21858</lat>
+        <lng>-96.40588</lng>
+        <geonameId>5051413</geonameId>
+        <countryCode>US</countryCode>
+        <fcl>P</fcl>
+        <fcode>PPL</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Lac Viking</toponymName>
+        <name>Lac Viking</name>
+        <lat>47.2075</lat>
+        <lng>-72.44472</lng>
+        <geonameId>6046575</geonameId>
+        <countryCode>CA</countryCode>
+        <fcl>H</fcl>
+        <fcode>LK</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Lac Viking</toponymName>
+        <name>Lac Viking</name>
+        <lat>47.81806</lat>
+        <lng>-75.90361</lng>
+        <geonameId>6046576</geonameId>
+        <countryCode>CA</countryCode>
+        <fcl>H</fcl>
+        <fcode>LK</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Musée viking de Lofotr</toponymName>
+        <name>Musée viking de Lofotr</name>
+        <lat>68.24624</lat>
+        <lng>13.76587</lng>
+        <geonameId>11809806</geonameId>
+        <countryCode>NO</countryCode>
+        <fcl>S</fcl>
+        <fcode>MUS</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Viking ship museum</toponymName>
+        <name>Viking ship museum</name>
+        <lat>59.90503</lat>
+        <lng>10.68454</lng>
+        <geonameId>11810629</geonameId>
+        <countryCode>NO</countryCode>
+        <fcl>S</fcl>
+        <fcode>MUS</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Township of Viking</toponymName>
+        <name>Viking Township</name>
+        <lat>48.22873</lat>
+        <lng>-96.43538</lng>
+        <geonameId>5051421</geonameId>
+        <countryCode>US</countryCode>
+        <fcl>A</fcl>
+        <fcode>ADM3</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Viking</toponymName>
+        <name>Viking</name>
+        <lat>27.5417</lat>
+        <lng>-80.362</lng>
+        <geonameId>4176461</geonameId>
+        <countryCode>US</countryCode>
+        <fcl>P</fcl>
+        <fcode>PPL</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Isla Cáscara</toponymName>
+        <name>Viking Rock</name>
+        <lat>5.54995</lat>
+        <lng>-87.06409</lng>
+        <geonameId>3624356</geonameId>
+        <countryCode>CR</countryCode>
+        <fcl>T</fcl>
+        <fcode>ISL</fcode>
+    </geoname>
+    <geoname>
+        <toponymName>Viking Lake</toponymName>
+        <name>Viking Lake</name>
+        <lat>49.06825</lat>
+        <lng>-91.25576</lng>
+        <geonameId>6174258</geonameId>
+        <countryCode>CA</countryCode>
+        <fcl>H</fcl>
+        <fcode>LK</fcode>
+    </geoname>
+</geonames>
