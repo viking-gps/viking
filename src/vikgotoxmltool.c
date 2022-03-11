@@ -95,9 +95,6 @@ vik_goto_xml_tool_set_property (GObject      *object,
       break;
 
     case PROP_LAT_ATTR:
-      /* Avoid to overwrite XPATH value */
-      /* NB: This disable future overwriting,
-         but as property is CONSTRUCT_ONLY there is no matter */
       if (!priv->lat_attr || g_value_get_string (value))
       {
         g_free (priv->lat_attr);
@@ -120,9 +117,6 @@ vik_goto_xml_tool_set_property (GObject      *object,
       break;
 
     case PROP_LON_ATTR:
-      /* Avoid to overwrite XPATH value */
-      /* NB: This disable future overwriting,
-         but as property is CONSTRUCT_ONLY there is no matter */
       if (!priv->lon_attr || g_value_get_string (value))
       {
         g_free (priv->lon_attr);
@@ -239,11 +233,12 @@ vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
                                    PROP_LAT_PATH,
                                    pspec);
 
+  // NB *not* CONSTRUCT_ONLY - to allow changing via XPath definition in lat-path
   pspec = g_param_spec_string ("lat-attr",
                                "Latitude attribute",
                                "XML attribute of the latitude",
                                NULL /* default value */,
-                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+                               G_PARAM_READWRITE);
   g_object_class_install_property (object_class,
                                    PROP_LAT_ATTR,
                                    pspec);
@@ -257,11 +252,12 @@ vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
                                    PROP_LON_PATH,
                                    pspec);
 
+  // NB *not* CONSTRUCT_ONLY - to allow changing via XPath definition in lon-path
   pspec = g_param_spec_string ("lon-attr",
                                "Longitude attribute",
                                "XML attribute of the longitude",
                                NULL /* default value */,
-                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+                               G_PARAM_READWRITE);
   g_object_class_install_property (object_class,
                                    PROP_LON_ATTR,
                                    pspec);
