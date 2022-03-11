@@ -211,7 +211,7 @@ gboolean
 vik_routing_engine_find ( VikRoutingEngine *self, VikTrwLayer *vtl, struct LatLon start, struct LatLon end )
 {
 	VikRoutingEngineClass *klass;
-	
+
 	g_return_val_if_fail ( VIK_IS_ROUTING_ENGINE (self), FALSE );
 	klass = VIK_ROUTING_ENGINE_GET_CLASS( self );
 	g_return_val_if_fail ( klass->find != NULL, FALSE );

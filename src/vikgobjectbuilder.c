@@ -228,16 +228,16 @@ vik_gobject_builder_parse (VikGobjectBuilder *self, const gchar *filename)
 	if (file == NULL)
 		/* TODO emit warning */
 		return;
-	
+
 	/* setup context parse (ie callbacks) */
 	xml_parser.start_element = &_start_element;
 	xml_parser.end_element = &_end_element;
 	xml_parser.text = &_text;
 	xml_parser.passthrough = NULL;
 	xml_parser.error = NULL;
-	
+
 	xml_context = g_markup_parse_context_new(&xml_parser, 0, self, NULL);
-	
+
 	gchar buff[BUFSIZ];
 	size_t nb;
 	while ((nb = fread (buff, sizeof(gchar), BUFSIZ, file)) > 0)
@@ -250,7 +250,7 @@ vik_gobject_builder_parse (VikGobjectBuilder *self, const gchar *filename)
 	if (!g_markup_parse_context_end_parse(xml_context, &error))
 		g_warning("%s: errors occurred reading file '%s': %s", __FUNCTION__, filename,
 		          error != NULL ? error->message : "???");
-	
+
 	g_markup_parse_context_free(xml_context);
 	fclose (file);
 }

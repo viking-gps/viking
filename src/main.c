@@ -122,7 +122,7 @@ int main( int argc, char *argv[] )
   int i = 0;
   GError *error = NULL;
   gboolean gui_initialized;
-	
+
   bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);  
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
   textdomain (GETTEXT_PACKAGE);

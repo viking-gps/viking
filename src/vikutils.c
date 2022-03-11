@@ -297,7 +297,7 @@ gchar* vu_trackpoint_formatted_message ( gchar *format_code, VikTrackpoint *trkp
 	for ( i = 0; i < FMT_MAX_NUMBER_CODES; i++ ) {
 		g_free ( values[i] );
 	}
-	
+
 	return msg;
 }
 

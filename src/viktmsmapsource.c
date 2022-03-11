@@ -341,7 +341,7 @@ vik_tms_map_source_class_init (VikTmsMapSourceClass *klass)
 	                             NULL /* default value */,
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_REFERER, pspec);
-	
+
 	pspec = g_param_spec_long ("follow-location",
 	                           "Follow location",
                                "Specifies the number of retries to follow a redirect while downloading a page",
@@ -350,7 +350,7 @@ vik_tms_map_source_class_init (VikTmsMapSourceClass *klass)
                                0  /* default value */,
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FOLLOW_LOCATION, pspec);
-	
+
 	pspec = g_param_spec_boolean ("check-file-server-time",
 	                              "Check file server time",
                                   "Age of current cache before redownloading tile",
@@ -437,9 +437,7 @@ static gboolean
 _supports_download_only_new ( VikMapSource *self )
 {
 	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), FALSE);
-	
     VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
-	
 	return priv->options.check_file_server_time;
 }
 
@@ -491,7 +489,6 @@ static gchar *
 _get_uri( VikMapSourceDefault *self, MapCoord *src )
 {
 	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), NULL);
-	
     VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
 	/* We should restore logic of viking:
      * tile index on Y axis follow a screen logic (top -> down)
@@ -501,7 +498,7 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
 	gint nb_tiles = VIK_GZ(17 - src->scale - 1);
 
 	gchar *uri = g_strdup_printf (priv->url, 17 - src->scale - 1, src->x, nb_tiles - src->y - 1);
-	
+
 	return uri;
 }
 
@@ -509,7 +506,6 @@ static gchar *
 _get_hostname( VikMapSourceDefault *self )
 {
 	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), NULL);
-	
     VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
 	return g_strdup( priv->hostname );
 }

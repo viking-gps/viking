@@ -2812,7 +2812,6 @@ static void propwin_response_cb( GtkDialog *dialog, gint resp, PropWidgets *widg
       {
         /* get new tracks, add them and then the delete old one. old can still exist on clipboard. */
         guint ntracks;
-	
         VikTrack **tracks = vik_track_split_into_segments(tr, &ntracks);
         gchar *new_tr_name;
         guint i;

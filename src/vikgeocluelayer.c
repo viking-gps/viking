@@ -620,7 +620,7 @@ notify_location ( GClueSimple *simple,
 
 	vgl->trkpt = vgl->record ? create_trackpoint ( vgl, vgl->coord, location ) : NULL;
 	vgl->first_trackpoint = FALSE;
-	
+
 	if ( vgl->trkpt ) {
 		if ( vgl->update_statusbar )
 			update_statusbar ( vgl, vw );

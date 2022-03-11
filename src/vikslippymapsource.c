@@ -458,7 +458,7 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	                             NULL /* default value */,
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_REFERER, pspec);
-	
+
 	pspec = g_param_spec_long ("follow-location",
 	                           "Follow location",
                                "Specifies the number of retries to follow a redirect while downloading a page",
@@ -467,7 +467,7 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
                                0  /* default value */,
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FOLLOW_LOCATION, pspec);
-	
+
 	pspec = g_param_spec_boolean ("check-file-server-time",
 	                              "Check file server time",
                                   "Age of current cache before redownloading tile",
@@ -548,9 +548,7 @@ static gboolean
 _supports_download_only_new (VikMapSource *self)
 {
   g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), FALSE);
-	
   VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
-	
   return priv->options.check_file_server_time || priv->options.use_etag;
 }
 
@@ -636,7 +634,6 @@ static gchar *
 _get_uri( VikMapSourceDefault *self, MapCoord *src )
 {
 	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), NULL);
-	
 	VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
 
 	gchar *uri = NULL;
@@ -654,7 +651,6 @@ static gchar *
 _get_hostname( VikMapSourceDefault *self )
 {
 	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), NULL);
-	
     VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
 	return g_strdup( priv->hostname );
 }
@@ -667,7 +663,6 @@ static DownloadFileOptions *
 _get_download_options( VikMapSourceDefault *self, MapCoord *src )
 {
 	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), NULL);
-	
 	VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
 
 	DownloadFileOptions *dfo = g_malloc0 ( sizeof(DownloadFileOptions) );

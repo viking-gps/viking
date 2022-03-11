@@ -108,7 +108,7 @@ static void log_it ( const gchar *log_domain,
 	}
 	if ( level > G_N_ELEMENTS(levels) )
 		level = 0;
-	
+
 	// Could consider adding timestamp e.g. HH:MM:SS
 	// Always output to the console
 	//  especially as at startup/shutdown there are not any display windows available
@@ -157,7 +157,7 @@ void a_logging_init ()
 	// Simply get all levels (including debug ones)
 	//  we will filter the logging ourselves
 	(void)g_log_set_handler ( NULL, G_LOG_LEVEL_MASK, log_it, NULL );
-	
+
 	if ( vik_debug ) {
 		// Also capture various other messages
 		(void)g_log_set_handler ( "Gtk", G_LOG_LEVEL_MASK, log_it, NULL );
@@ -359,7 +359,7 @@ void a_logging_show_window ()
 	                                                  NULL );
 
 	g_signal_connect ( G_OBJECT(dialog), "response", G_CALLBACK(response_cb), NULL );
-	
+
 	GtkBox *vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
 	gtk_box_pack_start ( vbox, scrolledwindow, TRUE, TRUE, 0 );
 	gtk_box_pack_end ( vbox, filter_box, FALSE, TRUE, 10 );

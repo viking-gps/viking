@@ -815,7 +815,7 @@ gdouble vik_track_get_average_speed_moving (const VikTrack *tr, int stop_length_
 	if ( ( VIK_TRACKPOINT(iter->data)->timestamp - VIK_TRACKPOINT(iter->prev->data)->timestamp ) < stop_length_seconds ) {
 	  len += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
 				  &(VIK_TRACKPOINT(iter->prev->data)->coord) );
-	
+
 	  time += ABS(VIK_TRACKPOINT(iter->data)->timestamp - VIK_TRACKPOINT(iter->prev->data)->timestamp);
 	}
       }

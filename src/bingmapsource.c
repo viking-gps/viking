@@ -392,14 +392,14 @@ _parse_file_for_attributions(BingMapSource *self, gchar *filename)
 	if (file == NULL)
 		/* TODO emit warning */
 		return FALSE;
-	
+
 	/* setup context parse (ie callbacks) */
 	xml_parser.start_element = &bstart_element;
 	xml_parser.end_element = NULL;
 	xml_parser.text = &btext;
 	xml_parser.passthrough = NULL;
 	xml_parser.error = NULL;
-	
+
 	xml_context = g_markup_parse_context_new(&xml_parser, 0, self, NULL);
 
 	gchar buff[BUFSIZ];
@@ -430,7 +430,7 @@ _parse_file_for_attributions(BingMapSource *self, gchar *filename)
 		fprintf(stderr, "%s: errors occurred while reading file: %s.\n",
 			__FUNCTION__, error->message);
 	g_clear_error (&error);
-	
+
 	if (xml_context)
 		g_markup_parse_context_free(xml_context);
 	xml_context = NULL;

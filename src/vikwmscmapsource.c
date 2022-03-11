@@ -334,7 +334,7 @@ vik_wmsc_map_source_class_init (VikWmscMapSourceClass *klass)
 	                             NULL /* default value */,
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_REFERER, pspec);
-	
+
 	pspec = g_param_spec_long ("follow-location",
 	                           "Follow location",
                                "Specifies the number of retries to follow a redirect while downloading a page",
@@ -343,7 +343,7 @@ vik_wmsc_map_source_class_init (VikWmscMapSourceClass *klass)
                                0  /* default value */,
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FOLLOW_LOCATION, pspec);
-	
+
 	pspec = g_param_spec_boolean ("check-file-server-time",
 	                              "Check file server time",
                                   "Age of current cache before redownloading tile",
@@ -412,9 +412,7 @@ static gboolean
 _supports_download_only_new ( VikMapSource *self )
 {
 	g_return_val_if_fail (VIK_IS_WMSC_MAP_SOURCE(self), FALSE);
-	
     VikWmscMapSourcePrivate *priv = VIK_WMSC_MAP_SOURCE_PRIVATE(self);
-	
 	return priv->options.check_file_server_time;
 }
 
@@ -484,7 +482,6 @@ static gchar *
 _get_uri( VikMapSourceDefault *self, MapCoord *src )
 {
 	g_return_val_if_fail (VIK_IS_WMSC_MAP_SOURCE(self), NULL);
-	
     VikWmscMapSourcePrivate *priv = VIK_WMSC_MAP_SOURCE_PRIVATE(self);
 	gdouble socalled_mpp;
 	if (src->scale >= 0)
@@ -498,7 +495,7 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
      */
 	gdouble miny = -((gdouble)(src->y + 1) * 180 / VIK_GZ(17) * socalled_mpp * 2 - 90);
 	gdouble maxy = -((gdouble)(src->y) * 180 / VIK_GZ(17) * socalled_mpp * 2 - 90);
-	
+
 	gchar sminx[G_ASCII_DTOSTR_BUF_SIZE];
 	gchar smaxx[G_ASCII_DTOSTR_BUF_SIZE];
 	gchar sminy[G_ASCII_DTOSTR_BUF_SIZE];
@@ -510,7 +507,7 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
 	g_ascii_dtostr (smaxy, G_ASCII_DTOSTR_BUF_SIZE, maxy);
 
 	gchar *uri = g_strdup_printf (priv->url, sminx, sminy, smaxx, smaxy);
-	
+
 	return uri;
 }
 
@@ -518,7 +515,6 @@ static gchar *
 _get_hostname( VikMapSourceDefault *self )
 {
 	g_return_val_if_fail (VIK_IS_WMSC_MAP_SOURCE(self), NULL);
-	
     VikWmscMapSourcePrivate *priv = VIK_WMSC_MAP_SOURCE_PRIVATE(self);
 	return g_strdup( priv->hostname );
 }

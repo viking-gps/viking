@@ -79,7 +79,7 @@ static void webtool_datasource_set_property (GObject      *object,
 	VikWebtoolDatasourcePrivate *priv = WEBTOOL_DATASOURCE_GET_PRIVATE ( object );
 
 	switch ( property_id ) {
-	
+
     case PROP_URL:
 		g_free ( priv->url );
 		priv->url = g_value_dup_string ( value );
@@ -482,7 +482,7 @@ static gchar *webtool_datasource_get_url ( VikWebtool *self, VikWindow *vw )
 	for ( i = 0; i < MAX_NUMBER_CODES; i++ ) {
 		g_free ( values[i] );
 	}
-	
+
 	return url;
 }
 

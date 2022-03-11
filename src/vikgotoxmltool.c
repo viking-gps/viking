@@ -40,7 +40,7 @@ struct _VikGotoXmlToolPrivate
   gchar *lon_attr;
   gchar *desc_path;
   gchar *desc_attr;
-  
+
   struct LatLon ll;
   gchar *description;
 
@@ -471,7 +471,7 @@ vik_goto_xml_tool_parse_file(VikGotoTool *self, gchar *filename)
 	if (file == NULL)
 		/* TODO emit warning */
 		return FALSE;
-	
+
 	/* setup context parse (ie callbacks) */
 	if (priv->lat_attr != NULL || priv->lon_attr != NULL)
     // At least one coordinate uses an attribute
@@ -486,13 +486,13 @@ vik_goto_xml_tool_parse_file(VikGotoTool *self, gchar *filename)
     xml_parser.text = NULL;
 	xml_parser.passthrough = NULL;
 	xml_parser.error = NULL;
-	
+
 	xml_context = g_markup_parse_context_new(&xml_parser, 0, self, NULL);
 
 	/* setup result */
 	priv->ll.lat = NAN;
 	priv->ll.lon = NAN;
-	
+
 	gchar buff[BUFSIZ];
 	size_t nb;
 	while (xml_context &&
@@ -513,7 +513,7 @@ vik_goto_xml_tool_parse_file(VikGotoTool *self, gchar *filename)
 		fprintf(stderr, "%s: errors occurred while reading file: %s.\n",
 			__FUNCTION__, error->message);
 	g_clear_error (&error);
-	
+
 	if (xml_context)
 		g_markup_parse_context_free(xml_context);
 	xml_context = NULL;

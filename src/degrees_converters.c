@@ -156,7 +156,7 @@ gdouble convert_dms_to_dec(const gchar *dms)
 	gdouble s = 0.0; /* Seconds */
 	gint neg = FALSE;
 	gdouble result;
-	
+
 	if (dms != NULL) {
 		int nbFloat = 0;
 		const gchar *ptr, *endptr;
@@ -196,11 +196,11 @@ gdouble convert_dms_to_dec(const gchar *dms)
 			}
 		} while (ptr != NULL && endptr != NULL);
 	}
-	
+
 	// Compute the result
 	result = d + m/60 + s/3600;
-	
+
 	if (neg) result = - result;
-	
+
 	return result;
 }

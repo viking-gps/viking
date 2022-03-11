@@ -272,6 +272,6 @@ gboolean a_geojson_read_file_OSRM ( VikTrwLayer *vtl, const gchar *filename )
 		g_strfreev ( coords );
 	}
 	g_object_unref ( jp );
-	
+
 	return ans;
 }

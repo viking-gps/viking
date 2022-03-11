@@ -10145,7 +10145,7 @@ static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventMotion *event,
     // Here always allow snapping back to the original location
     //  this is useful when one decides not to move the thing afterall
     // If one wants to move the item only a little bit then don't hold down the 'snap' key!
- 
+
     // snap to TP
     if ( event->state & GDK_CONTROL_MASK )
     {

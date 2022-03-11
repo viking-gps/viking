@@ -122,16 +122,16 @@ terraserver_map_source_class_init (TerraserverMapSourceClass *klass)
 	VikMapSourceClass* grandparent_class = VIK_MAP_SOURCE_CLASS (klass);
 	VikMapSourceDefaultClass* parent_class = VIK_MAP_SOURCE_DEFAULT_CLASS (klass);
     GParamSpec *pspec = NULL;
-	
+
 	object_class->set_property = terraserver_map_source_set_property;
     object_class->get_property = terraserver_map_source_get_property;
-	
+
 	/* Overiding methods */
 	grandparent_class->coord_to_mapcoord =        _coord_to_mapcoord;
 	grandparent_class->mapcoord_to_center_coord = _mapcoord_to_center_coord;
 	grandparent_class->is_direct_file_access = _is_direct_file_access;
 	grandparent_class->is_mbtiles = _is_mbtiles;
-	
+
 	parent_class->get_uri = _get_uri;
 	parent_class->get_hostname = _get_hostname;
 	parent_class->get_download_options = _get_download_options;
@@ -184,7 +184,7 @@ static gboolean
 _coord_to_mapcoord ( VikMapSource *self, const VikCoord *src, gdouble xmpp, gdouble ympp, MapCoord *dest )
 {
 	g_return_val_if_fail(TERRASERVER_IS_MAP_SOURCE(self), FALSE);
-	
+
 	TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE(self);
 	int type = priv->type;
 	if ( src->mode != VIK_COORD_UTM )
@@ -230,7 +230,7 @@ static gchar *
 _get_uri( VikMapSourceDefault *self, MapCoord *src )
 {
 	g_return_val_if_fail (TERRASERVER_IS_MAP_SOURCE(self), NULL);
-	
+
 	TerraserverMapSourcePrivate *priv = TERRASERVER_MAP_SOURCE_PRIVATE(self);
 	int type = priv->type;
 	gchar *uri = g_strdup_printf ( "/tile.ashx?T=%d&S=%d&X=%d&Y=%d&Z=%d", type,
@@ -242,7 +242,7 @@ static gchar *
 _get_hostname( VikMapSourceDefault *self )
 {
 	g_return_val_if_fail (TERRASERVER_IS_MAP_SOURCE(self), NULL);
-	
+
 	return g_strdup( TERRASERVER_SITE );
 }
 
@@ -261,7 +261,7 @@ _get_download_options( VikMapSourceDefault *self )
 	dfo->check_file = terraserver_options.check_file;
 	dfo->user_pass = g_strdup ( terraserver_options.user_pass );
 	dfo->convert_file = terraserver_options.convert_file;
-	
+
 	return dfo;
 }
 

@@ -88,7 +88,7 @@ vik_map_source_class_init (VikMapSourceClass *klass)
 	klass->download = NULL;
 	klass->download_handle_init = NULL;
 	klass->download_handle_cleanup = NULL;
-	
+
 	object_class->finalize = vik_map_source_finalize;
 }
 

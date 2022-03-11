@@ -286,10 +286,10 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	GObjectClass* object_class = G_OBJECT_CLASS (klass);
 	VikMapSourceClass* parent_class = VIK_MAP_SOURCE_CLASS (klass);
     GParamSpec *pspec = NULL;
-	
+
 	object_class->set_property = vik_map_source_default_set_property;
     object_class->get_property = vik_map_source_default_get_property;
-	
+
 	/* Overiding methods */
 	parent_class->get_copyright =   map_source_get_copyright;
 	parent_class->get_license =     map_source_get_license;
@@ -436,7 +436,7 @@ static const gchar *
 map_source_get_license (VikMapSource *self)
 {
 	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
-	
+
 	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
 
 	return priv->license;
@@ -446,7 +446,7 @@ static const gchar *
 map_source_get_license_url (VikMapSource *self)
 {
 	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
-	
+
 	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
 
 	return priv->license_url;
@@ -481,7 +481,7 @@ static guint16
 map_source_get_uniq_id (VikMapSource *self)
 {
 	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), (guint16)0);
-	
+
 	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
 
 	return priv->uniq_id;
@@ -491,7 +491,7 @@ static const gchar *
 map_source_get_label (VikMapSource *self)
 {
 	g_return_val_if_fail (VIK_IS_MAP_SOURCE_DEFAULT(self), NULL);
-	
+
 	VikMapSourceDefaultPrivate *priv = VIK_MAP_SOURCE_DEFAULT_PRIVATE(self);
 
 	return priv->label;

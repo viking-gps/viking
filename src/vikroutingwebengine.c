@@ -52,7 +52,7 @@ typedef struct _VikRoutingWebEnginePrivate VikRoutingWebEnginePrivate;
 struct _VikRoutingWebEnginePrivate
 {
 	gchar *url_base;
-	
+
 	/* LatLon */
 	gchar *url_start_ll_fmt;
 	gchar *url_stop_ll_fmt;
@@ -398,9 +398,9 @@ static DownloadFileOptions *
 vik_routing_web_engine_get_download_options ( VikRoutingEngine *self )
 {
 	g_return_val_if_fail (VIK_IS_ROUTING_WEB_ENGINE(self), NULL);
-	
+
 	VikRoutingWebEnginePrivate *priv = VIK_ROUTING_WEB_ENGINE_PRIVATE(self);
-	
+
 	return &(priv->options);
 }
 
@@ -430,7 +430,7 @@ vik_routing_web_engine_get_url_for_coords ( VikRoutingEngine *self, struct LatLo
 	gchar *startURL;
 	gchar *endURL;
 	gchar *url;
-	
+
 	g_return_val_if_fail ( VIK_IS_ROUTING_WEB_ENGINE (self), NULL);
 
 	VikRoutingWebEnginePrivate *priv = VIK_ROUTING_WEB_ENGINE_PRIVATE ( self );

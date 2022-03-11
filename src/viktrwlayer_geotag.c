@@ -394,7 +394,7 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 	gchar* datetime = a_geotag_get_exif_date_from_file ( options->image, &has_gps_exif );
 
 	if ( datetime ) {
-	
+
 		// If image already has gps info - don't attempt to change it.
 		if ( !options->ov.overwrite_gps_exif && has_gps_exif ) {
 			if ( options->ov.create_waypoints ) {
