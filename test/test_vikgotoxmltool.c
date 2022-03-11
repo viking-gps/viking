@@ -76,6 +76,11 @@ int main(int argc, char *argv[])
     "desc-attr", "display_name",
     NULL ) );
 
+  vik_goto_register ( VIK_GOTO_TOOL(with_element) );
+  vik_goto_register ( VIK_GOTO_TOOL(with_attr) );
+  vik_goto_register ( VIK_GOTO_TOOL(with_xpath) );
+  vik_goto_register ( VIK_GOTO_TOOL(nominatim) );
+
   // At least one parsing effort should produce a positive result
   gboolean result = FALSE;
   for (int i = 1; i<argc ; i++) {
@@ -84,6 +89,13 @@ int main(int argc, char *argv[])
     result = result | parse(VIK_GOTO_TOOL(with_xpath), argv[i]);
     result = result | parse(VIK_GOTO_TOOL(nominatim), argv[i]);
   }
+
+  vik_goto_unregister_all ();
+
+  g_object_unref ( with_element );
+  g_object_unref ( with_attr );
+  g_object_unref ( with_xpath );
+  g_object_unref ( nominatim );
 
   // Convert to exit status
   return result ? 0 : 1;

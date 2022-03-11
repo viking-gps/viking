@@ -294,6 +294,10 @@ void modules_post_init ()
  */
 void modules_uninit()
 {
+  vik_ext_tools_unregister_all();
+  vik_ext_tool_datasources_unregister_all();
+  vik_goto_unregister_all();
+  vik_routing_unregister_all();
 #ifdef VIK_CONFIG_OPENSTREETMAP
   osm_traces_uninit();
 #endif
