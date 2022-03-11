@@ -325,7 +325,7 @@ static gboolean new_version_available_message ( new_version_thread_data *nvtd )
 static void latest_version_thread ( GtkWindow *window )
 {
 	// Need to allow a few redirects, as SF file is often served from different server
-	DownloadFileOptions options = { FALSE, FALSE, NULL, 5, NULL, NULL, NULL, FALSE, FALSE, NULL };
+	DownloadFileOptions options = { FALSE, FALSE, NULL, 5, NULL, NULL, NULL, NULL, FALSE, FALSE, NULL };
 	gchar *filename = a_download_uri_to_tmp_file ( "http://sourceforge.net/projects/viking/files/VERSION", &options );
 	//gchar *filename = g_strdup ( "VERSION" );
 	if ( !filename ) {

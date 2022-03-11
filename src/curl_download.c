@@ -163,7 +163,10 @@ static void common_opts ( CURL *curl, const char *uri, DownloadFileOptions *opti
     }
   }
   curl_easy_setopt ( curl, CURLOPT_URL, uri );
-  curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
+  if ( options != NULL && options->user_agent )
+    curl_easy_setopt ( curl, CURLOPT_USERAGENT, options->user_agent );
+  else
+    curl_easy_setopt ( curl, CURLOPT_USERAGENT, curl_download_user_agent );
   // Allow download to be aborted (if called in a thread)
   curl_easy_setopt ( curl, CURLOPT_NOPROGRESS, 0 );
   curl_easy_setopt ( curl, CURLOPT_PROGRESSDATA, NULL );

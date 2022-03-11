@@ -87,6 +87,7 @@ enum
   PROP_URL_STOP_DIR,
 
   PROP_REFERER,
+  PROP_USER_AGENT,
   PROP_FOLLOW_LOCATION,
   PROP_CUSTOM_HTTP_HEADERS,
 };
@@ -138,6 +139,11 @@ vik_routing_web_engine_set_property (GObject      *object,
     case PROP_REFERER:
       g_free (priv->options.referer);
       priv->options.referer = g_value_dup_string (value);
+      break;
+
+    case PROP_USER_AGENT:
+      g_free (priv->options.user_agent);
+      priv->options.user_agent = g_value_dup_string (value);
       break;
 
     case PROP_FOLLOW_LOCATION:
@@ -203,6 +209,10 @@ vik_routing_web_engine_get_property (GObject    *object,
 
     case PROP_REFERER:
       g_value_set_string (value, priv->options.referer);
+      break;
+
+    case PROP_USER_AGENT:
+      g_value_set_string (value, priv->options.user_agent);
       break;
 
     case PROP_FOLLOW_LOCATION:
@@ -345,6 +355,19 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
 
 
   /**
+   * VikRoutingWebEngine:user-agent:
+   *
+   * The User Agent string to use in HTTP request.
+   */
+  pspec = g_param_spec_string ("user-agent",
+                               "User Agent",
+                               "The User Agent string to send in the request",
+                               NULL, // default value
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+  g_object_class_install_property (object_class, PROP_USER_AGENT, pspec);
+
+
+  /**
    * VikRoutingWebEngine:follow-location:
    *
    * Specifies the number of retries to follow a redirect while downloading a page.
@@ -394,6 +417,7 @@ static void vik_routing_web_engine_init ( VikRoutingWebEngine *self )
   priv->options.check_file = NULL;
   priv->options.check_file_server_time = FALSE;
   priv->options.use_etag = FALSE;
+  priv->options.user_agent = NULL;
   priv->options.custom_http_headers = NULL;
 }
 
@@ -422,9 +446,10 @@ static void vik_routing_web_engine_finalize ( GObject *gob )
   /* Options */
   g_free (priv->options.referer);
   priv->options.referer = NULL;
+  g_free (priv->options.user_agent);
+  priv->options.user_agent = NULL;
   g_free (priv->options.custom_http_headers);
   priv->options.custom_http_headers = NULL;
-
   G_OBJECT_CLASS (vik_routing_web_engine_parent_class)->finalize(gob);
 }
 

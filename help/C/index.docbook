@@ -4193,12 +4193,18 @@ Accept: */*
 	      </listitem>
             </varlistentry>
             <varlistentry>
+              <term>user-agent (optional)</term>
+              <listitem>
+                <para>Override the default user-agent used in the HTTP request.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
               <term>custom-http-headers (optional)</term>
               <listitem>
                 <para>Custom HTTP headers to be added to the download request. The default is none.</para>
                 <para>Multiple headers can be specified by separating each part with an '\n'.</para>
                 <para>The header allows of substition of values of the positional Z, X and Y (in that order) values, as per the <emphasis>url</emphasis> option above. Using multiple and/or different ordered values can be acheived via printf() positional argument specifiers. For example:</para>
-                <para><literal>DNT: 1\nLine2: %d %d %d\nReordered: %3$d %1$d %2$d\nUser-Agent: Mozilla/5.0</literal></para>
+                <para><literal>DNT: 1\nLine2: %d %d %d\nReordered: %3$d %1$d %2$d</literal></para>
               </listitem>
             </varlistentry>
             <varlistentry>
@@ -4337,6 +4343,7 @@ Accept: */*
               <member>check-file-server-time (optional)</member>
               <member>follow-location (optional)</member>
               <member>referer (optional)</member>
+              <member>user-agent (optional)</member>
               <member>zoom-min (optional)</member>
               <member>zoom-max (optional)</member>
               <member>lat-min (optional)</member>
@@ -4366,6 +4373,7 @@ Accept: */*
               <member>check-file-server-time (optional)</member>
               <member>follow-location (optional)</member>
               <member>referer (optional)</member>
+              <member>user-agent (optional)</member>
               <member>zoom-min (optional)</member>
               <member>zoom-max (optional)</member>
               <member>lat-min (optional)</member>
@@ -4420,6 +4428,12 @@ Accept: */*
             <varlistentry>
               <term>follow-location (optional)</term>
               <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>user-agent (optional)</term>
+              <listitem>
+                <para>Override the default user-agent used in the HTTP request.</para>
+              </listitem>
             </varlistentry>
             <varlistentry>
               <term>custom-http-headers (optional)</term>
@@ -4527,6 +4541,12 @@ Accept: */*
               <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
             </varlistentry>
             <varlistentry>
+              <term>user-agent (optional)</term>
+              <listitem>
+                <para>Override the default user-agent used in the HTTP request.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
               <term>custom-http-headers (optional)</term>
               <listitem>
                 <para>Custom HTTP headers to be added to the HTTP request. The default is none.</para>
@@ -4602,6 +4622,12 @@ Accept: */*
             <varlistentry>
               <term>follow-location (optional)</term>
               <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>user-agent (optional)</term>
+              <listitem>
+                <para>Override the default user-agent used in the HTTP request.</para>
+              </listitem>
             </varlistentry>
             <varlistentry>
               <term>custom-http-headers (optional)</term>
@@ -4686,7 +4712,7 @@ Accept: */*
 	    <para>curl_user_agent=NULL</para>
             <para>Override the default HTTP User-Agent (which is otherwise generated automatically from a combination of &appname;'s name, the version and curl information) set in all download requests with the value specified.</para>
 	    <para>Also see <ulink url="https://curl.se/libcurl/c/CURLOPT_USERAGENT.html">CURLOPT_USERAGENT</ulink></para>
-            <para>NB The User Agent for individual map downloads can be set via the map property <emphasis>custom-http-headers</emphasis></para>
+            <para>NB The User Agent for individual downloads/requests can be set via the relevant <emphasis>user-agent</emphasis> property when defining use of additional resources.</para>
 	  </listitem>
 	  <listitem>
 	    <para>export_gpsmapper_option=false</para>

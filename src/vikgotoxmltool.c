@@ -66,6 +66,7 @@ enum
   PROP_DESC_PATH,
   PROP_DESC_ATTR,
   PROP_REFERER,
+  PROP_USER_AGENT,
   PROP_FOLLOW_LOCATION,
   PROP_CUSTOM_HTTP_HEADERS,
 };
@@ -160,6 +161,11 @@ vik_goto_xml_tool_set_property (GObject      *object,
       priv->options.referer = g_value_dup_string (value);
       break;
 
+    case PROP_USER_AGENT:
+      g_free (priv->options.user_agent);
+      priv->options.user_agent = g_value_dup_string (value);
+      break;
+
     case PROP_FOLLOW_LOCATION:
       priv->options.follow_location = g_value_get_long (value);
       break;
@@ -223,6 +229,10 @@ vik_goto_xml_tool_get_property (GObject    *object,
 
     case PROP_REFERER:
       g_value_set_string (value, priv->options.referer);
+      break;
+
+    case PROP_USER_AGENT:
+      g_value_set_string (value, priv->options.user_agent);
       break;
 
     case PROP_FOLLOW_LOCATION:
@@ -326,6 +336,13 @@ vik_goto_xml_tool_class_init ( VikGotoXmlToolClass *klass )
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_REFERER, pspec);
 
+  pspec = g_param_spec_string ("user-agent",
+                               "User Agent",
+                               "The User Agent string to send in the request",
+                               NULL, // default value
+                               G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+  g_object_class_install_property (object_class, PROP_USER_AGENT, pspec);
+
   pspec = g_param_spec_long ("follow-location",
                              "Follow location",
                              "Specifies the number of retries to follow a redirect while downloading a page",
@@ -372,6 +389,7 @@ vik_goto_xml_tool_init ( VikGotoXmlTool *self )
   priv->options.check_file = NULL;
   priv->options.check_file_server_time = FALSE;
   priv->options.use_etag = FALSE;
+  priv->options.user_agent = NULL;
   priv->options.custom_http_headers = NULL;
 }
 
@@ -392,6 +410,7 @@ vik_goto_xml_tool_finalize ( GObject *gob )
   //  so don't attempt to free it here.
 
   g_free (priv->options.referer);
+  g_free (priv->options.user_agent);
   g_free (priv->options.custom_http_headers);
 
   G_OBJECT_CLASS (vik_goto_xml_tool_parent_class)->finalize(gob);

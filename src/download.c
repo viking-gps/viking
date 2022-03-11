@@ -59,6 +59,7 @@ void a_download_file_options_free ( DownloadFileOptions *dfo )
 	g_return_if_fail ( dfo != NULL );
 
 	g_free ( dfo->referer );
+	g_free ( dfo->user_agent );
 	g_free ( dfo->custom_http_headers );
 	g_free ( dfo->user_pass );
 	g_free ( dfo );

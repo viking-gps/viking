@@ -80,6 +80,7 @@ enum
   PROP_URL,
   PROP_CUSTOM_HTTP_HEADERS,
   PROP_REFERER,
+  PROP_USER_AGENT,
   PROP_FOLLOW_LOCATION,
   PROP_CHECK_FILE_SERVER_TIME,
   PROP_ZOOM_MIN,
@@ -100,6 +101,7 @@ vik_wmsc_map_source_init (VikWmscMapSource *self)
   priv->url = NULL;
   priv->custom_http_headers = NULL;
   priv->options.referer = NULL;
+  priv->options.user_agent = NULL;
   priv->options.follow_location = 0;
   priv->options.check_file = a_check_map_file;
   priv->options.check_file_server_time = FALSE;
@@ -131,6 +133,8 @@ vik_wmsc_map_source_finalize (GObject *object)
   priv->custom_http_headers = NULL;
   g_free (priv->options.referer);
   priv->options.referer = NULL;
+  g_free (priv->options.user_agent);
+  priv->options.user_agent = NULL;
   g_free (priv->options.custom_http_headers);
   priv->options.custom_http_headers = NULL;
 
@@ -172,6 +176,11 @@ vik_wmsc_map_source_set_property (GObject      *object,
     case PROP_REFERER:
       g_free (priv->options.referer);
       priv->options.referer = g_value_dup_string (value);
+      break;
+
+    case PROP_USER_AGENT:
+      g_free (priv->options.user_agent);
+      priv->options.user_agent = g_value_dup_string (value);
       break;
 
     case PROP_FOLLOW_LOCATION:
@@ -237,6 +246,10 @@ vik_wmsc_map_source_get_property (GObject    *object,
 
     case PROP_REFERER:
       g_value_set_string (value, priv->options.referer);
+      break;
+
+    case PROP_USER_AGENT:
+      g_value_set_string (value, priv->options.user_agent);
       break;
 
     case PROP_FOLLOW_LOCATION:
@@ -334,6 +347,13 @@ vik_wmsc_map_source_class_init (VikWmscMapSourceClass *klass)
 	                             NULL /* default value */,
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_REFERER, pspec);
+
+	pspec = g_param_spec_string ("user-agent",
+	                             "User Agent",
+	                             "The User Agent string to send in the request",
+	                             NULL, // default value
+	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_USER_AGENT, pspec);
 
 	pspec = g_param_spec_long ("follow-location",
 	                           "Follow location",
@@ -529,6 +549,7 @@ _get_download_options( VikMapSourceDefault *self, MapCoord *src )
 	dfo->check_file_server_time = priv->options.check_file_server_time;
 	dfo->use_etag = priv->options.use_etag;
 	dfo->referer = g_strdup ( priv->options.referer );
+	dfo->user_agent = g_strdup ( priv->options.user_agent );
 	dfo->follow_location = priv->options.follow_location;
 	if ( src )
 		if ( priv->custom_http_headers )

@@ -61,6 +61,13 @@ typedef struct {
   glong follow_location;
 
   /**
+   * Use the specified user_agent in the request
+   * Could be NULL.
+   * When defined this is used in preference to the curl_user_agent
+   */
+  gchar *user_agent;
+
+  /**
    * Custom http headers in the send request.
    * Separate multiple requests with '\n'
    */

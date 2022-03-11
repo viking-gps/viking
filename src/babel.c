@@ -396,7 +396,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
 gboolean a_babel_convert_from_url_filter ( VikTrwLayer *vt, const char *url, const char *input_type, const char *babelfilters, BabelStatusFunc cb, gpointer user_data, DownloadFileOptions *options )
 {
   // If no download options specified, use defaults:
-  DownloadFileOptions myoptions = { FALSE, FALSE, NULL, 2, NULL, NULL, NULL, FALSE, FALSE, NULL };
+  DownloadFileOptions myoptions = { FALSE, FALSE, NULL, 2, NULL, NULL, NULL, NULL, FALSE, FALSE, NULL };
   if ( options )
     myoptions = *options;
   gint fd_src;
