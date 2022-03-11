@@ -308,7 +308,7 @@ vik_goto_xml_tool_init ( VikGotoXmlTool *self )
 static void
 vik_goto_xml_tool_finalize ( GObject *gob )
 {
-  G_OBJECT_GET_CLASS(gob)->finalize(gob);
+  G_OBJECT_CLASS (vik_goto_xml_tool_parent_class)->finalize(gob);
 }
 
 static gboolean
