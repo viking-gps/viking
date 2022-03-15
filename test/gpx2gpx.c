@@ -5,6 +5,7 @@
 #include "settings.h"
 #include "preferences.h"
 #include "globals.h"
+#include "download.h"
 
 int main(int argc, char *argv[])
 {
@@ -13,6 +14,7 @@ int main(int argc, char *argv[])
   a_preferences_init ();
   a_vik_preferences_init ();
   a_layer_defaults_init ();
+  a_download_init();
 
   VikLayer *vl = vik_layer_create (VIK_LAYER_TRW, NULL, FALSE);
   VikTrwLayer *trw = VIK_TRW_LAYER (vl);

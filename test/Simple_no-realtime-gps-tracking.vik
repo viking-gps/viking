@@ -44,6 +44,7 @@ name=Map
 mode=13
 directory=
 cache_type=1
+cache_expiry_age=604800
 mapfile=
 alpha=255
 autodownload=f

@@ -10,9 +10,10 @@
 #include "globals.h"
 #include "geojson.h"
 #include "gpx.h"
+#include "download.h"
 
 // Run as:
-// ./json_osrm_to_gpx OSRMresult.txt outfile.gpx
+// ./geojson_osrm_to_gpx OSRMresult.txt outfile.gpx
 //
 
 int main( int argc, char *argv[] )
@@ -27,6 +28,7 @@ int main( int argc, char *argv[] )
   a_preferences_init ();
   a_vik_preferences_init ();
   a_layer_defaults_init ();
+  a_download_init();
 
   VikLayer *vl = vik_layer_create (VIK_LAYER_TRW, NULL, FALSE);
   VikTrwLayer *trw = VIK_TRW_LAYER (vl);

@@ -338,7 +338,7 @@ The &appname; automatic caching strategy is two fold:
 <itemizedlist>
 <listitem>
 <para>
-  If the age of the tile on disk is less than the specified tile age (see <xref linkend="prefs"/>),
+  If the age of the tile on disk is less than the specified cache expiry age (for the relevant <xref linkend="Map"/> layer),
   it will <emphasis>not</emphasis> attempt to contact the server to get a new version of the tile.
 </para>
 </listitem>
@@ -2187,6 +2187,13 @@ Configurable properties:
 <listitem><para>Viking or OSM. See <xref linkend="mapcache"/>. Only applies to maps from online tile providers.</para></listitem>
 </varlistentry>
 <varlistentry>
+<term><guilabel>Cache Expiry Age</guilabel></term>
+<listitem>
+  <para>For an existing tile on disk, the amount of time in days before the an attempt is made to contact the server to get a new version of the tile.</para>
+  <para>Changing this value, you will increase or decrease the network load.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
 <term><guilabel>Map File</guilabel></term>
 <listitem><para>Ony applicable for MBTiles Map type since it is a single file.</para></listitem>
 </varlistentry>
@@ -3233,9 +3240,7 @@ This feature is called <guilabel>Webtools</guilabel>. It is also known as Extern
 <para><emphasis>UTC</emphasis> enforces this standard timezone.</para>
 </section>
 <section><title>Tile's age</title>
-<para>This age is used to decided whether or not a new request to tile server must be done.
-</para>
-<para>Changing this value, you will increase or decrease the network load.</para>
+<para>This age is used as the default for the <xref linkend="Map"/> layers cache expiry age check.</para>
 </section>
 <section><title>Default map layer directory</title>
 <para>This property sets the default directory of the tiles cache.

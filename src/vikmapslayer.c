@@ -110,6 +110,7 @@ static guint map_uniq_id_to_index ( guint uniq_id );
 static VikLayerParamScale params_scales[] = {
   /* min, max, step, digits (decimal places) */
  { 0, 255, 3, 0 }, /* alpha */
+ { 1, 365, 1, 0 }, /* expiry_age */
 };
 
 static VikLayerParamData id_default ( void ) { return VIK_LPD_UINT ( MAP_ID_OPEN_TOPO_MAP ); }
@@ -140,12 +141,29 @@ static void reset_cb ( GtkWidget *widget, gpointer ptr )
 
 static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(reset_cb); }
 
+static VikLayerParamData ea_convert_to_display ( VikLayerParamData value )
+{
+  // From seconds into days
+  return VIK_LPD_UINT ( value.u / 86400 );
+}
+
+static VikLayerParamData ea_convert_to_internal ( VikLayerParamData value )
+{
+  // From days into seconds
+  return VIK_LPD_UINT ( 86400 * value.u );
+}
+
+static VikLayerParamData ea_default ( void ) {
+  return VIK_LPD_UINT(a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u);
+}
+
 VikLayerParam maps_layer_params[] = {
   // NB mode => id - But can't break file format just to rename something better
   { VIK_LAYER_MAPS, "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL, NULL, id_default, NULL, NULL },
   { VIK_LAYER_MAPS, "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Maps Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, NULL, directory_default, NULL, NULL },
   { VIK_LAYER_MAPS, "cache_type", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Cache Layout:"), VIK_LAYER_WIDGET_COMBOBOX, cache_types, NULL, 
     N_("This determines the tile storage layout on disk"), cache_layout_default, NULL, NULL },
+  { VIK_LAYER_MAPS, "cache_expiry_age", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Cache Expiry Age:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[1], NULL, NULL, ea_default, ea_convert_to_display, ea_convert_to_internal },
   { VIK_LAYER_MAPS, "mapfile", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Map File:"), VIK_LAYER_WIDGET_FILEENTRY, GINT_TO_POINTER(VF_FILTER_MBTILES), NULL,
     N_("An MBTiles file. Only applies when the map type method is 'MBTiles'"), file_default, NULL, NULL },
   { VIK_LAYER_MAPS, "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Alpha:"), VIK_LAYER_WIDGET_HSCALE, params_scales, NULL,
@@ -164,6 +182,7 @@ enum {
   PARAM_MAPTYPE=0,
   PARAM_CACHE_DIR,
   PARAM_CACHE_LAYOUT,
+  PARAM_CACHE_EXPIRY_AGE,
   PARAM_FILE,
   PARAM_ALPHA,
   PARAM_AUTODOWNLOAD,
@@ -275,6 +294,7 @@ struct _VikMapsLayer {
   guint maptype;
   gchar *cache_dir;
   VikMapsCacheLayout cache_layout;
+  guint cache_expiry_age;
   guint8 alpha;
   guint mapzoom_id;
   gdouble xmapzoom, ymapzoom;
@@ -678,6 +698,13 @@ static gboolean maps_layer_set_param ( VikMapsLayer *vml, VikLayerSetParam *vlsp
       if ( vlsp->data.u < VIK_MAPS_CACHE_LAYOUT_NUM )
         changed = vik_layer_param_change_uint ( vlsp->data, &vml->cache_layout );
       break;
+    case PARAM_CACHE_EXPIRY_AGE:
+      changed = vik_layer_param_change_uint ( vlsp->data, &vml->cache_expiry_age );
+      if ( changed ) {
+        VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+        vik_map_source_default_set_expiry_age ( VIK_MAP_SOURCE_DEFAULT(map), vml->cache_expiry_age );
+      }
+      break;
     case PARAM_FILE:
       changed = vik_layer_param_change_string ( vlsp->data, &vml->filename );
       break;
@@ -765,6 +792,7 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, g
       break;
     }
     case PARAM_CACHE_LAYOUT: rv.u = vml->cache_layout; break;
+    case PARAM_CACHE_EXPIRY_AGE: rv.u = vml->cache_expiry_age; break;
     case PARAM_FILE: rv.s = vml->filename; break;
     case PARAM_MAPTYPE: rv.u = map_index_to_uniq_id ( vml->maptype ); break;
     case PARAM_ALPHA: rv.u = vml->alpha; break;
@@ -806,6 +834,11 @@ static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values
       GtkWidget *w10 = ww2[PARAM_CACHE_LAYOUT];
       if ( w9 ) gtk_widget_set_sensitive ( w9, sensitive );
       if ( w10 ) gtk_widget_set_sensitive ( w10, sensitive );
+      // Cache expiry not applicable either
+      GtkWidget *w11 = ww1[PARAM_CACHE_EXPIRY_AGE];
+      GtkWidget *w12 = ww2[PARAM_CACHE_EXPIRY_AGE];
+      if ( w11 ) gtk_widget_set_sensitive ( w11, sensitive );
+      if ( w12 ) gtk_widget_set_sensitive ( w12, sensitive );
 
       // File only applicable for MBTiles type
       // Directory for all other types

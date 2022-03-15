@@ -386,6 +386,7 @@ vik_goto_xml_tool_init ( VikGotoXmlTool *self )
   // Options
   priv->options.referer = NULL;
   priv->options.follow_location = 0;
+  priv->options.expiry_age = 0;
   priv->options.check_file = NULL;
   priv->options.check_file_server_time = FALSE;
   priv->options.use_etag = FALSE;

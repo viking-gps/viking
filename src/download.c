@@ -349,12 +349,14 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
       return DOWNLOAD_NOT_REQUIRED;
     }
 
-    time_t tile_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
+    time_t file_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
+    if ( options )
+        file_age = options->expiry_age;
     /* Get the modified time of this file */
     GStatBuf buf;
     (void)g_stat ( fn, &buf );
     time_t file_time = buf.st_mtime;
-    if ( (time(NULL) - file_time) < tile_age ) {
+    if ( (time(NULL) - file_time) < file_age ) {
       /* File cache is too recent, so return */
       return DOWNLOAD_NOT_REQUIRED;
     }

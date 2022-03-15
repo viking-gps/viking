@@ -48,6 +48,7 @@ struct _VikMapSourceDefaultClass
 	//  as it is location dependent
 	//  (and then of course freed after use)
 	DownloadFileOptions * (*get_download_options) ( VikMapSourceDefault *self, MapCoord *src );
+	void (* set_expiry_age) (VikMapSourceDefault * self, guint age);
 };
 
 struct _VikMapSourceDefault
@@ -60,6 +61,8 @@ gchar * vik_map_source_default_get_uri( VikMapSourceDefault *self, MapCoord *src
 gchar * vik_map_source_default_get_hostname( VikMapSourceDefault *self );
 DownloadFileOptions * vik_map_source_default_get_download_options( VikMapSourceDefault *self, MapCoord *src );
 gchar * vik_map_source_default_get_url_display( VikMapSourceDefault *self, MapCoord *src );
+
+void vik_map_source_default_set_expiry_age( VikMapSourceDefault * self, guint age );
 
 G_END_DECLS
 

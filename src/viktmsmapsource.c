@@ -59,6 +59,7 @@ static gdouble _get_lon_max(VikMapSource *self );
 static gchar *_get_uri( VikMapSourceDefault *self, MapCoord *src );
 static gchar *_get_hostname( VikMapSourceDefault *self );
 static DownloadFileOptions *_get_download_options( VikMapSourceDefault *self, MapCoord *src );
+static void _set_expiry_age( VikMapSourceDefault *self, guint age );
 
 typedef struct _VikTmsMapSourcePrivate VikTmsMapSourcePrivate;
 struct _VikTmsMapSourcePrivate
@@ -110,6 +111,7 @@ vik_tms_map_source_init (VikTmsMapSource *self)
   priv->options.referer = NULL;
   priv->options.user_agent = NULL;
   priv->options.follow_location = 0;
+  priv->options.expiry_age = ONE_WEEK_SECS;
   priv->options.check_file = a_check_map_file;
   priv->options.check_file_server_time = FALSE;
   priv->options.custom_http_headers = NULL;
@@ -326,6 +328,7 @@ vik_tms_map_source_class_init (VikTmsMapSourceClass *klass)
 	parent_class->get_uri = _get_uri;
 	parent_class->get_hostname = _get_hostname;
 	parent_class->get_download_options = _get_download_options;
+	parent_class->set_expiry_age = _set_expiry_age;
 
 	pspec = g_param_spec_string ("hostname",
 	                             "Hostname",
@@ -552,6 +555,7 @@ _get_download_options( VikMapSourceDefault *self, MapCoord *src )
 	dfo->check_file = priv->options.check_file;
 	dfo->user_pass = g_strdup ( priv->options.user_pass );
 	dfo->convert_file = priv->options.convert_file;
+	dfo->expiry_age = priv->options.expiry_age;
 
 	return dfo;
 }
@@ -620,6 +624,14 @@ _get_lon_max (VikMapSource *self)
 	g_return_val_if_fail (VIK_IS_TMS_MAP_SOURCE(self), FALSE);
 	VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
 	return priv->lon_max;
+}
+
+static void
+_set_expiry_age (VikMapSourceDefault *self, guint age)
+{
+	g_return_if_fail (VIK_IS_TMS_MAP_SOURCE(self));
+	VikTmsMapSourcePrivate *priv = VIK_TMS_MAP_SOURCE_PRIVATE(self);
+	priv->options.expiry_age = age;
 }
 
 VikTmsMapSource *

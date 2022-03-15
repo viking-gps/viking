@@ -36,6 +36,8 @@ gboolean a_check_kml_file(FILE*);
 void a_try_decompress_file (gchar *name);
 typedef void (*VikFileContentConvertFunc) (gchar*); // filename (temporary)
 
+#define ONE_WEEK_SECS 604800
+
 typedef struct {
   /**
    * Check if the server has a more recent file than the one we have before downloading it
@@ -72,6 +74,16 @@ typedef struct {
    * Separate multiple requests with '\n'
    */
   gchar *custom_http_headers;
+
+  /**
+   * File expiry age in seconds, for (re)downloading an existing file - typically tiles.
+   * This previously was global preference "download_tile_age" but now can be specified
+   *  as necessary thus differing map layers can have different check periods.
+   * Although this type allows setting to 0 (which is fine when downloading to a temporary file),
+   *  the practical default should be 7 days (ONE_WEEK_SECS)
+   *  and otherwise limited via the user interface to prevent use of 0 (e.g. ensure minimum 1 day).
+   */
+  guint expiry_age;
 
   /**
    * File content checker.

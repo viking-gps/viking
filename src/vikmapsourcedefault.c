@@ -313,6 +313,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
 	klass->get_uri = NULL;
 	klass->get_hostname = NULL;
 	klass->get_download_options = NULL;
+	klass->set_expiry_age = NULL;
 
 	pspec = g_param_spec_string ("name",
 	                             "Name",
@@ -664,4 +665,18 @@ vik_map_source_default_get_url_display( VikMapSourceDefault *self, MapCoord *src
 	}
 
 	return newstr;
+}
+
+/**
+ * Set the cache expiry age
+ */
+void
+vik_map_source_default_set_expiry_age ( VikMapSourceDefault * self, guint age )
+{
+	VikMapSourceDefaultClass *klass;
+	g_return_if_fail (self != NULL);
+	g_return_if_fail (VIK_IS_MAP_SOURCE_DEFAULT (self));
+	klass = VIK_MAP_SOURCE_DEFAULT_GET_CLASS(self);
+	g_return_if_fail (klass->set_expiry_age != NULL);
+	(*klass->set_expiry_age)(self, age);
 }
