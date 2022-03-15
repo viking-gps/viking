@@ -40,8 +40,8 @@ void a_mapcache_flush ();
 void a_mapcache_flush_type ( guint16 type );
 void a_mapcache_uninit ();
 
-gint a_mapcache_get_size ();
-gint a_mapcache_get_count ();
+guint a_mapcache_get_size ();
+guint a_mapcache_get_count ();
 
 G_END_DECLS
 

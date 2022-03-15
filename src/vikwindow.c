@@ -3986,7 +3986,7 @@ static void help_about_cb ( GtkAction *a, VikWindow *vw )
 static void help_cache_info_cb ( GtkAction *a, VikWindow *vw )
 {
   // NB: No i18n as this is just for debug
-  gint byte_size = a_mapcache_get_size();
+  guint byte_size = a_mapcache_get_size();
   gchar *msg_sz = g_format_size_full ( byte_size, G_FORMAT_SIZE_LONG_FORMAT );
   gchar *msg = g_strdup_printf ( "Map Cache size is %s with %d items", msg_sz, a_mapcache_get_count());
   a_dialog_info_msg_extra ( GTK_WINDOW(vw), "%s", msg );

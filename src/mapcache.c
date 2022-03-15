@@ -319,13 +319,13 @@ void a_mapcache_uninit ()
 }
 
 // Size of mapcache in memory
-gint a_mapcache_get_size ()
+guint a_mapcache_get_size ()
 {
   return cache_size;
 }
 
 // Count of items in the mapcache
-gint a_mapcache_get_count ()
+guint a_mapcache_get_count ()
 {
   return g_hash_table_size ( cache );
 }
