@@ -31,7 +31,6 @@
 #include "vikviewport.h"
 #include "vikcoord.h"
 #include "mapcoord.h"
-#include "download.h"
 #include "vikmapsource.h"
 
 static void vik_map_source_init (VikMapSource *object);
