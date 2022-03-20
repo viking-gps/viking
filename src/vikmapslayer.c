@@ -1510,18 +1510,17 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
         }
       }
     } else { /* tilesize is known, don't have to keep converting coords */
-      gdouble tilesize_x = vik_map_source_get_tilesize_x(map) * xshrinkfactor * vp_scale;
-      gdouble tilesize_y = vik_map_source_get_tilesize_y(map) * yshrinkfactor * vp_scale;
+      const gdouble tilesize_x = vik_map_source_get_tilesize_x(map) * xshrinkfactor * vp_scale;
+      const gdouble tilesize_y = vik_map_source_get_tilesize_y(map) * yshrinkfactor * vp_scale;
       /* ceiled so tiles will be maximum size in the case of funky shrinkfactor */
-      gint tilesize_x_ceil = ceil ( tilesize_x );
-      gint tilesize_y_ceil = ceil ( tilesize_y );
-      gint8 xinc = (ulm.x == xmin) ? 1 : -1;
-      gint8 yinc = (ulm.y == ymin) ? 1 : -1;
+      const gint tilesize_x_ceil = ceil ( tilesize_x );
+      const gint tilesize_y_ceil = ceil ( tilesize_y );
+      const gint8 xinc = (ulm.x == xmin) ? 1 : -1;
+      const gint8 yinc = (ulm.y == ymin) ? 1 : -1;
       gint xx_tmp, yy_tmp;
-      gint base_yy, xend, yend;
 
-      xend = (xinc == 1) ? (xmax+1) : (xmin-1);
-      yend = (yinc == 1) ? (ymax+1) : (ymin-1);
+      const gint xend = (xinc == 1) ? (xmax+1) : (xmin-1);
+      const gint yend = (yinc == 1) ? (ymax+1) : (ymin-1);
 
       vik_map_source_mapcoord_to_center_coord ( map, &ulm, &coord );
       vik_viewport_coord_to_screen ( vvp, &coord, &xx_tmp, &yy_tmp );
@@ -1529,7 +1528,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
       /* above trick so xx,yy doubles. this is so shrinkfactors aren't rounded off
        * eg if tile size 128, shrinkfactor 0.333 */
       xx -= (tilesize_x/2);
-      base_yy = yy - (tilesize_y/2);
+      const gint base_yy = yy - (tilesize_y/2);
 
       for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
         yy = base_yy;
@@ -1588,8 +1587,7 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
         /* Draw single grid lines across the whole screen */
         const gint width = vik_viewport_get_width(vvp);
         const gint height = vik_viewport_get_height(vvp);
-        gint base_xx = xx_tmp - (tilesize_x/2);
-        base_yy = yy_tmp - (tilesize_y/2);
+        const gint base_xx = xx_tmp - (tilesize_x/2);
 
         xx = base_xx;
         for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
