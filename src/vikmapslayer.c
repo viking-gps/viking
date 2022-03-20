@@ -991,6 +991,16 @@ static VikMapsLayer *maps_layer_unmarshall( guint8 *data, guint len, VikViewport
   return rv;
 }
 
+/**
+ * Maps types acquired via downloading
+ */
+static gboolean maps_layer_is_cached_storage ( VikMapSource *map )
+{
+  return ! ( vik_map_source_is_mbtiles(map) ||
+             vik_map_source_is_direct_file_access(map) ||
+             vik_map_source_is_osm_meta_tiles(map) );
+}
+
 /*********************/
 /****** DRAWING ******/
 /*********************/
@@ -2277,9 +2287,7 @@ static VikLayerToolFuncStatus maps_layer_download_release ( VikMapsLayer *vml, G
         GtkMenu *menu = vml->dl_right_click_menu; // local rename
 
         // Download options aren't for on disk only maps
-        if ( ! (vik_map_source_is_mbtiles(map) ||
-                vik_map_source_is_direct_file_access(map) ||
-                vik_map_source_is_osm_meta_tiles(map)) ) {
+        if ( maps_layer_is_cached_storage(map) ) {
           (void)vu_menu_add_item ( menu, _("Redownload _Bad Map(s)"), GTK_STOCK_ADD, G_CALLBACK(maps_layer_redownload_bad), vml );
           (void)vu_menu_add_item ( menu, _("Redownload _New Map(s)"), GTK_STOCK_REDO, G_CALLBACK(maps_layer_redownload_new), vml );
           (void)vu_menu_add_item ( menu, _("Redownload _All Map(s)"), GTK_STOCK_REFRESH, G_CALLBACK(maps_layer_redownload_all), vml );
@@ -2684,9 +2692,7 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
   (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
 
   // Download options aren't for on disk only maps
-  if ( ! (vik_map_source_is_mbtiles(map) ||
-          vik_map_source_is_direct_file_access(map) ||
-          vik_map_source_is_osm_meta_tiles(map)) ) {
+  if ( maps_layer_is_cached_storage(map) ) {
     /* Now with icons */
     (void)vu_menu_add_item ( menu, _("Download _Missing Onscreen Maps"), GTK_STOCK_ADD, G_CALLBACK(maps_layer_download_missing_onscreen_maps), values );
     (void)vu_menu_add_item ( menu, _("Download _New Onscreen Maps"), GTK_STOCK_REDO, G_CALLBACK(maps_layer_download_new_onscreen_maps), values );
