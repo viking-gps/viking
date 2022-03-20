@@ -1538,10 +1538,10 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
 
           if ( existence_only ) {
             if ( vik_map_source_is_direct_file_access (MAPS_LAYER_NTH_TYPE(vml->maptype)) )
-              get_filename ( vml->cache_dir, VIK_MAPS_CACHE_LAYOUT_OSM, id, vik_map_source_get_name(map),
+              get_filename ( vml->cache_dir, VIK_MAPS_CACHE_LAYOUT_OSM, id, mapname,
                              ulm.scale, ulm.z, ulm.x, ulm.y, path_buf, max_path_len, vik_map_source_get_file_extension(map) );
             else
-              get_filename ( vml->cache_dir, vml->cache_layout, id, vik_map_source_get_name(map),
+              get_filename ( vml->cache_dir, vml->cache_layout, id, mapname,
                              ulm.scale, ulm.z, ulm.x, ulm.y, path_buf, max_path_len, vik_map_source_get_file_extension(map) );
 
             if ( g_file_test ( path_buf, G_FILE_TEST_EXISTS ) == TRUE ) {
@@ -1702,15 +1702,14 @@ static gboolean is_in_area (VikMapSource *map, MapCoord mc)
 }
 
 // Free after use
-static gchar *create_request_string ( MapDownloadInfo *mdi, gint x, gint y )
+static gchar *create_request_string ( MapDownloadInfo *mdi, guint16 id, gint x, gint y )
 {
-  return g_strdup_printf ( "%d-%d-%d-%d-%d", vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(mdi->maptype)),
-                           x, y, mdi->mapcoord.scale, mdi->mapcoord.z );
+  return g_strdup_printf ( "%d-%d-%d-%d-%d", id, x, y, mdi->mapcoord.scale, mdi->mapcoord.z );
 }
 
-static void mark_request_complete ( MapDownloadInfo *mdi, gint x, gint y )
+static void mark_request_complete ( MapDownloadInfo *mdi, guint16 id, gint x, gint y )
 {
-  gchar *request = create_request_string ( mdi, x, y );
+  gchar *request = create_request_string ( mdi, id, x, y );
   g_mutex_lock ( rq_mutex );
   (void)g_hash_table_remove ( requests, request );
   g_mutex_unlock ( rq_mutex );
@@ -1729,19 +1728,21 @@ static void unref_weak_ref_cb ( MapDownloadInfo *mdi )
 
 static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 {
-  void *handle = vik_map_source_download_handle_init(MAPS_LAYER_NTH_TYPE(mdi->maptype));
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(mdi->maptype);
+  void *handle = vik_map_source_download_handle_init ( map );
   guint donemaps = 0;
   MapCoord mcoord = mdi->mapcoord;
   gint x, y;
   gboolean needed[mdi->xf-mdi->x0+1][mdi->yf-mdi->y0+1];
+  const guint16 id = vik_map_source_get_uniq_id ( map );
 
   for ( x = mdi->x0; x <= mdi->xf; x++ ) {
     mcoord.x = x;
     for ( y = mdi->y0; y <= mdi->yf; y++ ) {
       mcoord.y = y;
       // Only attempt to download a tile from supported areas
-      if ( is_in_area ( MAPS_LAYER_NTH_TYPE(mdi->maptype), mcoord ) ) {
-        gchar *request = create_request_string ( mdi, x, y );
+      if ( is_in_area(map, mcoord) ) {
+        gchar *request = create_request_string ( mdi, id, x, y );
 
         // Avoid requesting the same tile when already waiting for this request to complete from another thread
         //  such as scrolling the map around and/or zoomed in/out and come back to a view covering the same tiles
@@ -1769,7 +1770,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
       mcoord.y = y;
 
       // Only attempt to download a tile from supported areas
-      if ( is_in_area ( MAPS_LAYER_NTH_TYPE(mdi->maptype), mcoord ) ) {
+      if ( is_in_area(map, mcoord) ) {
 
         gboolean remove_mem_cache = FALSE;
         gboolean need_download = FALSE;
@@ -1777,7 +1778,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
         int res = a_background_thread_progress ( threaddata, ((gdouble)donemaps) / mdi->mapstoget ); /* this also calls testcancel */
         if (res != 0) {
           requests_clear ( mdi->maptype );
-          vik_map_source_download_handle_cleanup(MAPS_LAYER_NTH_TYPE(mdi->maptype), handle);
+          vik_map_source_download_handle_cleanup ( map, handle );
           return -1;
         }
         // Skip as already being requested
@@ -1785,11 +1786,10 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
           continue;
         }
 
-        get_filename ( mdi->cache_dir, mdi->cache_layout,
-                       vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(mdi->maptype)),
-                       vik_map_source_get_name(MAPS_LAYER_NTH_TYPE(mdi->maptype)),
+        get_filename ( mdi->cache_dir, mdi->cache_layout, id,
+                       vik_map_source_get_name(map),
                        mdi->mapcoord.scale, mdi->mapcoord.z, x, y, mdi->filename_buf, mdi->maxlen,
-                       vik_map_source_get_file_extension(MAPS_LAYER_NTH_TYPE(mdi->maptype)) );
+                       vik_map_source_get_file_extension(map) );
 
         if ( g_file_test ( mdi->filename_buf, G_FILE_TEST_EXISTS ) == FALSE ) {
           need_download = TRUE;
@@ -1798,7 +1798,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
         } else {  /* in case map file already exists */
           switch (mdi->redownload) {
             case REDOWNLOAD_NONE:
-              mark_request_complete ( mdi, x, y );
+              mark_request_complete ( mdi, id, x, y );
               continue;
 
             case REDOWNLOAD_BAD:
@@ -1844,7 +1844,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
         mdi->mapcoord.x = x; mdi->mapcoord.y = y;
 
         if (need_download) {
-          DownloadResult_t dr = vik_map_source_download( MAPS_LAYER_NTH_TYPE(mdi->maptype), &(mdi->mapcoord), mdi->filename_buf, handle);
+          DownloadResult_t dr = vik_map_source_download ( map, &(mdi->mapcoord), mdi->filename_buf, handle );
           switch ( dr ) {
             case DOWNLOAD_PARAMETERS_ERROR:
             case DOWNLOAD_HTTP_ERROR:
@@ -1870,11 +1870,11 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
           }
         }
 
-        mark_request_complete ( mdi, x, y );
+        mark_request_complete ( mdi, id, x, y );
 
         g_mutex_lock(mdi->mutex);
         if (remove_mem_cache)
-            a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(mdi->maptype)), mdi->mapcoord.scale, mdi->vml->filename );
+            a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, id, mdi->mapcoord.scale, mdi->vml->filename );
         if (mdi->refresh_display && mdi->map_layer_alive) {
           /* TODO: check if it's on visible area */
           if ( need_download ) {
@@ -1886,7 +1886,7 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
       }
     }
   }
-  vik_map_source_download_handle_cleanup(MAPS_LAYER_NTH_TYPE(mdi->maptype), handle);
+  vik_map_source_download_handle_cleanup ( map, handle );
 
   unref_weak_ref_cb ( mdi );
 
@@ -1955,6 +1955,7 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
     mdi->mapstoget = 0;
 
     MapCoord mcoord = mdi->mapcoord;
+    const guint16 id = vik_map_source_get_uniq_id ( map );
 
     // Always calculate how many we need
     for ( a = mdi->x0; a <= mdi->xf; a++ ) {
@@ -1963,7 +1964,7 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
         mcoord.y = b;
         // Only count tiles from supported areas
         if ( is_in_area (map, mcoord) ) {
-          gchar *request = create_request_string ( mdi, a, b );
+          gchar *request = create_request_string ( mdi, id, a, b );
           // Only count it if not an outstanding request
           if ( !g_hash_table_lookup_extended(requests, request, NULL, NULL ) ) {
             if ( mdi->redownload )
@@ -1974,8 +1975,7 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
               mdi->mapstoget++;
             else {
               // Otherwise only if file is missing
-              get_filename ( mdi->cache_dir, mdi->cache_layout,
-                             vik_map_source_get_uniq_id(map),
+              get_filename ( mdi->cache_dir, mdi->cache_layout, id,
                              vik_map_source_get_name(map),
                              ulm.scale, ulm.z, a, b, mdi->filename_buf, mdi->maxlen,
                              vik_map_source_get_file_extension(map) );
