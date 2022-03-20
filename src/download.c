@@ -341,7 +341,8 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
   CurlDownloadOptions cdo = {0, NULL, NULL};
 
   /* Check file */
-  if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == TRUE )
+  gboolean file_exists = g_file_test ( fn, G_FILE_TEST_EXISTS );
+  if ( file_exists )
   {
     if (options == NULL || (!options->check_file_server_time &&
                             !options->use_etag)) {
@@ -450,6 +451,12 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
         set_etag(fn, tmpfilename, &cdo);
       }
     }
+
+    // Remove existing file if it exists and then replace with the newly downloaded file
+    // Potential TOCTOU, but we shouldn't be requesting downloads of the same file multiple times anyway.
+    if ( file_exists )
+      if ( g_remove ( fn ) )
+        g_warning ( "%s: failed to remove: %s", __FUNCTION__, fn );
 
      /* move completely-downloaded file to permanent location */
      if ( g_rename ( tmpfilename, fn ) )

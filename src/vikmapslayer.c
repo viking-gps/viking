@@ -1825,9 +1825,6 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
               break;
 
             case REDOWNLOAD_ALL:
-              /* FIXME: need a better way than to erase file in case of server/network problem */
-              if ( g_remove ( mdi->filename_buf ) )
-                g_warning ( "REDOWNLOAD failed to remove: %s", mdi->filename_buf );
               need_download = TRUE;
               remove_mem_cache = TRUE;
               break;
