@@ -372,7 +372,7 @@ void maps_layer_init ()
   // Just storing keys only
   requests = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
 
-  gdk_color_parse ( "#000000", &black_color );
+  (void)gdk_color_parse ( "#000000", &black_color );
 }
 
 void maps_layer_uninit ()
