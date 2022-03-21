@@ -4868,6 +4868,13 @@ Accept: */*
 	    <para>Sensitivity factor for pinch zooming. Best to use keep this value somewhere between 0.5 and 3.0 - a higher value is more sensitive.</para>
 	  </listitem>
 	  <listitem>
+	    <para>window_mount_device_id=NULL</para>
+	    <para>If your desktop environment doesn't automatically mount USB storage devices or you wish to also manage it in &appname; -
+            then set this to a device's drive label e.g <emphasis>GARMIN</emphasis> or <emphasis>UUID</emphasis> value.</para>
+	    <para>&appname; will then put menu entries under <guimenu>Help</guimenu> so you can be manually perform operations as required.</para>
+	    <para>This is provided as a very basic opt in feature, only allowing specification and management of just one device via some additional menu entries. Presently <emphasis>no</emphasis> intention to make this a more fully fledged feature; USB device management is left to other programs.</para>
+	  </listitem>
+	  <listitem>
 	    <para>version_check_period_days=14</para>
 	  </listitem>
 	  <listitem>

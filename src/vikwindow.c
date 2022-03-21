@@ -1052,9 +1052,207 @@ static void default_tool_enable ( VikWindow *vw )
 #define VIK_SETTINGS_WIN_ZOOM_SCROLL_TIMEOUT "window_zoom_scroll_timeout"
 #define VIK_SETTINGS_WIN_MOVE_SCROLL_TIMEOUT "window_move_scroll_timeout"
 #define VIK_SETTINGS_WIN_PINCH_GESTURE_FACTOR "window_pinch_gesture_factor"
+#define VIK_SETTINGS_WIN_FILE_MOUNT "window_mount_device_id"
 
 #define VIKING_ACCELERATOR_KEY_FILE "keys.rc"
 
+//
+// Provisional mounting support code;
+//  only for those that specifically enable it via the advanced setting option
+// Currently unlikely to progress this further/fully,
+//   as a full implementation should offer a selection of devices to mount,
+//   and their status (with monitoring thereof).
+// But then is just recreating code that is better handled in programs
+//  designed for device management and/or should mostly automatically happen by the desktop
+//
+// Most of the feedback is simply via g_messages - so viewable in the general log,
+//  rather than (or additionally) putting progress feedback in the statusbar.
+/**
+ * Allow attempting mounting/unmounting a device with the specified label - typically 'GARMIN'
+ * Normally desktop environments should be setup such they automatically mount
+ *  USB file storage devices when plugged in.
+ * However I got fed up with my system not reliably doing it;
+ *  so instead of perhaps fixing the udev rules -
+ *  put some code to do it here instead...
+ */
+static void unmount_finish_cb ( GObject *object,
+                                GAsyncResult *res,
+                                gpointer user_data )
+{
+  GError *error = NULL;
+  gchar *text = (gchar *)user_data;
+  GVolume *volume = G_VOLUME(object);
+  gboolean succeeded = g_volume_eject_with_operation_finish ( volume, res, &error );
+
+  if ( !succeeded ) {
+    g_message ( "%s: %s - %s", __FUNCTION__, text, error->message );
+    g_error_free ( error );
+  } else
+    g_message ( ("%s: Unmounted %s"), __FUNCTION__, text );
+  g_free ( text );
+}
+
+static void mount_finish_cb ( GObject *object,
+                              GAsyncResult *res,
+                              gpointer user_data )
+{
+  GError *error = NULL;
+  gchar *text = (gchar *)user_data;
+  GVolume *volume = G_VOLUME(object);
+  gboolean succeeded = g_volume_mount_finish ( volume, res, &error );
+
+  if ( !succeeded ) {
+    g_message ( "%s: %s - %s", __FUNCTION__, text, error->message );
+    g_error_free ( error );
+  }
+  else {
+    GMount *mount = g_volume_get_mount ( volume );
+    if ( mount ) {
+      GFile *root = g_mount_get_root ( mount );
+      gchar *path = g_file_get_path ( root );
+      g_message ( ("%s: Mounted %s at %s"), __FUNCTION__, text, path );
+      g_object_unref ( mount );
+      g_object_unref ( root );
+      g_free ( path );
+    }
+  }
+  g_free ( text );
+}
+
+static void mount_by_text ( const gchar *text )
+{
+  GVolumeMonitor *volume_monitor = g_volume_monitor_get();
+  GList *volumes = g_volume_monitor_get_volumes ( volume_monitor );
+
+  for ( GList *gl = volumes; gl != NULL; gl = gl->next ) {
+    GVolume *volume = G_VOLUME(gl->data);
+    gchar *id = g_volume_get_identifier ( volume, G_VOLUME_IDENTIFIER_KIND_LABEL );
+    gchar *uuid = g_volume_get_uuid ( volume );
+
+    if ( (g_strcmp0(id, text) == 0) ||
+         (g_strcmp0(uuid, text) == 0) ) {
+      // Could test if mounted - but simply try
+      //  as it will warn if it already is
+      g_message ( "%s: trying to mount %s", __FUNCTION__, id );
+      g_volume_mount ( volume,
+                       G_MOUNT_MOUNT_NONE,
+                       NULL,
+                       NULL,
+                       mount_finish_cb,
+                       id ? g_strdup(id) : g_strdup(uuid) );
+    }
+    g_free ( id );
+    g_free ( uuid );
+  }
+  g_list_free_full ( volumes, g_object_unref );
+  g_object_unref ( volume_monitor );
+}
+
+static void unmount_by_text ( const gchar *text )
+{
+  GVolumeMonitor *volume_monitor = g_volume_monitor_get();
+  GList *volumes = g_volume_monitor_get_volumes ( volume_monitor );
+
+  for ( GList *gl = volumes; gl != NULL; gl = gl->next ) {
+    GVolume *volume = G_VOLUME(gl->data);
+    gchar *id = g_volume_get_identifier ( volume, G_VOLUME_IDENTIFIER_KIND_LABEL );
+    gchar *uuid = g_volume_get_uuid ( volume );
+
+    if ( (g_strcmp0(id, text) == 0) ||
+         (g_strcmp0(uuid, text) == 0) ) {
+      GMount *mount = g_volume_get_mount ( volume );
+      if ( mount ) {
+        g_object_unref ( mount );
+        g_message ( "%s: %s trying to unmount", __FUNCTION__, id );
+        g_volume_eject_with_operation ( volume,
+                                        G_MOUNT_UNMOUNT_NONE,
+                                        NULL,
+                                        NULL,
+                                        unmount_finish_cb,
+                                        id ? g_strdup(id) : g_strdup(uuid) );
+      }
+    }
+    g_free ( id );
+    g_free ( uuid );
+  }
+  g_list_free_full ( volumes, g_object_unref );
+  g_object_unref ( volume_monitor );
+}
+
+static void mount_info_by_text ( const gchar *text, VikWindow *vw )
+{
+  GVolumeMonitor *volume_monitor = g_volume_monitor_get();
+  GList *volumes = g_volume_monitor_get_volumes ( volume_monitor );
+
+  gboolean mounted = FALSE;
+
+  for ( GList *gl = volumes; gl != NULL; gl = gl->next ) {
+    GVolume *volume = G_VOLUME(gl->data);
+    gchar *id = g_volume_get_identifier ( volume, G_VOLUME_IDENTIFIER_KIND_LABEL );
+    gchar *uuid = g_volume_get_uuid ( volume );
+
+    if ( (g_strcmp0(id, text) == 0) ||
+         (g_strcmp0(uuid, text) == 0) ) {
+      GMount *mount = g_volume_get_mount ( volume );
+      if ( mount ) {
+        // icon not too useful
+        //  probably need to lookup icon in icon theme and convert to pixbuf
+        //  so seemingly nothing really straightforward to display an nice icon
+        //GIcon *icon = g_volume_get_icon ( volume ); // Need to unref()
+        //gchar *icon_str = g_icon_to_string ( icon ); // Need to free()
+        gchar *name = g_volume_get_name ( volume );
+        GFile *root = g_mount_get_root ( mount );
+        gchar *path = g_file_get_path ( root );
+        gchar *msg = g_strdup_printf ( "Label: %s\nName: %s\nUUID: %s\nMounted: %s\n", id, name, uuid, path );
+        a_dialog_info_msg ( GTK_WINDOW(vw), msg );
+        g_free ( msg );
+        g_free ( name );
+        g_object_unref ( root );
+        g_free ( path );
+        g_object_unref ( mount );
+        mounted = TRUE;
+      }
+    }
+    g_free ( id );
+    g_free ( uuid );
+  }
+  g_list_free_full ( volumes, g_object_unref );
+  g_object_unref ( volume_monitor );
+
+  if ( !mounted ) {
+    gchar *msg = g_strdup_printf ( "%s: %s is not mounted", __FUNCTION__, text );
+    a_dialog_info_msg ( GTK_WINDOW(vw), msg );
+    g_free ( msg );
+  }
+}
+
+static void try_mount_cb ( GtkAction *a, VikWindow *vw )
+{
+  gchar *str = NULL;
+  if ( a_settings_get_string(VIK_SETTINGS_WIN_FILE_MOUNT, &str) )
+    mount_by_text ( str );
+  g_free ( str );
+}
+
+static void try_unmount_cb ( GtkAction *a, VikWindow *vw )
+{
+  gchar *str = NULL;
+  if ( a_settings_get_string(VIK_SETTINGS_WIN_FILE_MOUNT, &str) )
+    unmount_by_text ( str );
+  g_free ( str );
+}
+
+static void try_mount_info_cb ( GtkAction *a, VikWindow *vw )
+{
+  gchar *str = NULL;
+  if ( a_settings_get_string(VIK_SETTINGS_WIN_FILE_MOUNT, &str) )
+    mount_info_by_text ( str, vw );
+  g_free ( str );
+}
+
+/**
+ *
+ */
 static void vik_window_init ( VikWindow *vw )
 {
   vw->action_group = NULL;
@@ -1302,6 +1500,9 @@ static void vik_window_init ( VikWindow *vw )
   // Set initial focus to the viewport,
   //  so if you have map you can start to move around with the arrow keys immediately
   gtk_widget_grab_focus ( GTK_WIDGET(vw->viking_vvp) );
+
+  // Attempt basic automount (if it's in the settings)
+  try_mount_cb ( NULL, vw );
 }
 
 static VikWindow *window_new ()
@@ -6335,6 +6536,35 @@ static void window_create_ui( VikWindow *window )
     toggle_debug[0].is_active = vik_debug;
     gtk_action_group_add_toggle_actions ( action_group, toggle_debug, G_N_ELEMENTS(toggle_debug), window );
   }
+
+  gchar *devicelabel = NULL;
+  if ( a_settings_get_string(VIK_SETTINGS_WIN_FILE_MOUNT, &devicelabel) ) {
+    // It would be more logical to put in the File menu;
+    //  but ATM this gets appended to the existing menu,
+    //  so for now seems perhaps better to put in the Help
+    if ( gtk_ui_manager_add_ui_from_string ( uim,
+                                             "<ui><menubar name='MainMenu'><menu action='Help'>"
+                                             "<menuitem action='Mount'/>"
+                                             "<menuitem action='Unmount'/>"
+                                             "<menuitem action='MountInfo'/>"
+                                             "</menu></menubar></ui>",
+         -1, NULL ) ) {
+      // Provided for very basic use, so ATM strings delibrately not marked for i18n
+      gchar *mlabel = g_strdup_printf ( "_Mount Device: %s", devicelabel );
+      gchar *ulabel = g_strdup_printf ( "_Unmount Device: %s", devicelabel );
+      gchar *ilabel = g_strdup_printf ( "Mount Device _Info: %s", devicelabel );
+      GtkActionEntry AMentries[] = {
+        { "Mount",     GTK_STOCK_HARDDISK,   mlabel, NULL, "Mount this device",   (GCallback)try_mount_cb },
+        { "Unmount",   GTK_STOCK_DISCONNECT, ulabel, NULL, "Umount this device",  (GCallback)try_unmount_cb },
+        { "MountInfo", GTK_STOCK_INFO,       ilabel, NULL, "Mounted device info", (GCallback)try_mount_info_cb },
+      };
+      gtk_action_group_add_actions ( action_group, AMentries, G_N_ELEMENTS(AMentries), window );
+      g_free ( mlabel );
+      g_free ( ulabel );
+      g_free ( ilabel );
+    }
+  }
+  g_free ( devicelabel );
 
   for ( i=0; i < G_N_ELEMENTS (entries); i++ ) {
     if ( entries[i].callback )
