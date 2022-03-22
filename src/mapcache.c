@@ -70,7 +70,8 @@ static VikLayerParam prefs[] = {
 
 static void cache_item_free (cache_item_t *ci)
 {
-  g_object_unref ( ci->pixbuf );
+  if ( ci->pixbuf )
+    g_object_unref ( ci->pixbuf );
   g_free ( ci );
 }
 
@@ -89,10 +90,12 @@ static void cache_add(gchar *key, GdkPixbuf *pixbuf, mapcache_extra_t extra)
   ci->extra = extra;
   if ( g_hash_table_insert ( cache, key, ci ) )
   {
-    cache_size += gdk_pixbuf_get_rowstride(pixbuf) * gdk_pixbuf_get_height(pixbuf);
     // ATM size of 'extra' data hardly worth trying to count (compared to pixbuf sizes)
-    // Not sure what this 100 represents anyway - probably a guess at an average pixbuf metadata size
-    cache_size += 100;
+    if ( pixbuf ) {
+      cache_size += gdk_pixbuf_get_rowstride(pixbuf) * gdk_pixbuf_get_height(pixbuf);
+      // Not sure what this 100 represents anyway - probably a guess at an average pixbuf metadata size
+      cache_size += 100;
+    }
   }
 }
 
@@ -144,19 +147,26 @@ static void list_add_entry ( gchar *key )
 /**
  * Function increments reference counter of pixbuf.
  * Caller may (and should) decrease it's reference.
+ * @pixbuf: The image to add.
+ *    This maybe NULL (especially when adding just #mapcache_extra_t information -
+ *     such as the download request result - before the tile is read from disk)
  */
 void a_mapcache_add ( GdkPixbuf *pixbuf, mapcache_extra_t extra, gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
 {
-  if ( ! GDK_IS_PIXBUF(pixbuf) ) {
-    g_debug ( "Not caching corrupt pixbuf for maptype %d at %d %d %d %d", type, x, y, z, zoom );
-    return;
+  if ( pixbuf ) {
+    if ( ! GDK_IS_PIXBUF(pixbuf) ) {
+      g_debug ( "Not caching corrupt pixbuf for maptype %d at %d %d %d %d", type, x, y, z, zoom );
+      return;
+    }
   }
 
   guint nn = name ? g_str_hash ( name ) : 0;
   gchar *key = g_strdup_printf ( HASHKEY_FORMAT_STRING, type, x, y, z, zoom, nn, alpha, xshrinkfactor, yshrinkfactor );
 
   g_mutex_lock(mc_mutex);
-  g_object_ref(pixbuf);
+
+  if ( pixbuf )
+    g_object_ref(pixbuf);
   cache_add(key, pixbuf, extra);
 
   // TODO: that should be done on preference change only...
@@ -187,6 +197,7 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, mapcache_extra_t extra, gint x, gint y,
 /**
  * Function increases reference counter of pixels buffer in behalf of caller.
  * Caller have to decrease references counter, when buffer is no longer needed.
+ * Returns a #GdkPixbuf which may be NULL.
  */
 GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, gint zoom, guint8 alpha, gdouble xshrinkfactor, gdouble yshrinkfactor, const gchar* name )
 {
@@ -196,7 +207,8 @@ GdkPixbuf *a_mapcache_get ( gint x, gint y, gint z, guint16 type, gint zoom, gui
   g_mutex_lock(mc_mutex); /* prevent returning pixbuf when cache is being cleared */
   cache_item_t *ci = g_hash_table_lookup ( cache, key );
   if ( ci ) {
-    g_object_ref(ci->pixbuf);
+    if ( ci->pixbuf )
+      g_object_ref(ci->pixbuf);
     g_mutex_unlock(mc_mutex);
     return ci->pixbuf;
   } else {
@@ -214,7 +226,7 @@ mapcache_extra_t a_mapcache_get_extra ( gint x, gint y, gint z, guint16 type, gi
   if ( ci )
     return ci->extra;
   else
-    return (mapcache_extra_t) { 0.0 };
+    return (mapcache_extra_t) { 0.0, MAPCACHE_STATUS_NOT_IN_CACHE };
 }
 
 /**

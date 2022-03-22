@@ -33,6 +33,7 @@ HELP_MEDIA = \
     figures/LayersTracksList.png \
     figures/LayersTracksStatistics.png \
     figures/Maps_download_region_dialog.png \
+    figures/Maps_Cache_Status_Overlay.png \
     figures/map_tile_info_dialog.png \
     figures/mapdl_18.png \
     figures/mover_22.png \

@@ -65,6 +65,11 @@ static guint SCALE_INC_DOWN = 4;
 #define VIK_SETTINGS_MAP_SCALE_SMALLER_ZOOM_FIRST "maps_scale_smaller_zoom_first"
 static gboolean SCALE_SMALLER_ZOOM_FIRST = TRUE;
 
+#define VIK_SETTINGS_MAP_CACHE_NO_FILE_COLOR "maps_cache_status_no_file_color"
+#define VIK_SETTINGS_MAP_CACHE_EXPIRED_COLOR "maps_cache_status_expired_color"
+#define VIK_SETTINGS_MAP_CACHE_DOWNLOAD_ERROR_COLOR "maps_cache_status_download_error_color"
+#define VIK_SETTINGS_MAP_CACHE_OKAY_COLOR "maps_cache_status_okay_color"
+
 /****** MAP TYPES ******/
 
 static GList *__map_types = NULL;
@@ -305,6 +310,10 @@ struct _VikMapsLayer {
   gdouble last_xmpp;
   gdouble last_ympp;
 
+  // Specifically not a layer property, e.g no need to save/restore etc...
+  //  just a temporary session flag to control drawing of cache status
+  gboolean show_cache_status_overlay;
+
   gint dl_tool_x, dl_tool_y;
 
   GtkMenu *dl_right_click_menu;
@@ -337,6 +346,20 @@ static GMutex *rq_mutex;
 static GHashTable *requests = NULL;
 
 static GdkColor black_color;
+
+static GdkColor cache_no_file_color;
+static GdkColor cache_expired_color;
+static GdkColor cache_download_error_color;
+static GdkColor cache_okay_color;
+
+static void set_color_from_setting ( const gchar* setting, GdkColor *color )
+{
+  gchar *str = NULL;
+  if ( a_settings_get_string(setting, &str) )
+    if ( !gdk_color_parse(str, color) )
+      g_warning ( "%s: could not use '%s' for %s", __FUNCTION__, str, setting );
+  g_free ( str );
+}
 
 void maps_layer_init ()
 {
@@ -373,6 +396,18 @@ void maps_layer_init ()
   requests = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
 
   (void)gdk_color_parse ( "#000000", &black_color );
+
+  // Defaults - sort of traffic light scheme style
+  (void)gdk_color_parse ( "red", &cache_no_file_color );
+  (void)gdk_color_parse ( "yellow", &cache_expired_color );
+  (void)gdk_color_parse ( "darkred", &cache_download_error_color );
+  (void)gdk_color_parse ( "teal", &cache_okay_color );
+  // Allow (advanced) configuration of cache status colours
+  set_color_from_setting ( VIK_SETTINGS_MAP_CACHE_NO_FILE_COLOR, &cache_no_file_color );
+  set_color_from_setting ( VIK_SETTINGS_MAP_CACHE_EXPIRED_COLOR, &cache_expired_color );
+  set_color_from_setting ( VIK_SETTINGS_MAP_CACHE_DOWNLOAD_ERROR_COLOR, &cache_download_error_color );
+  set_color_from_setting ( VIK_SETTINGS_MAP_CACHE_OKAY_COLOR, &cache_okay_color );
+  // NB this doesn't warn/check that all cache colours are still unique
 }
 
 void maps_layer_uninit ()
@@ -1174,7 +1209,7 @@ static GdkPixbuf *get_pixbuf_from_metatile ( VikMapsLayer *vml, gint xx, gint yy
  * GdkPixbuf, when buffer is no longer needed.
  */
 static GdkPixbuf *pixbuf_apply_settings ( GdkPixbuf *pixbuf, VikMapsLayer *vml, guint vp_scale,
-                                          MapCoord *mapcoord, gdouble xshrinkfactor, gdouble yshrinkfactor )
+                                          MapCoord *mapcoord, gdouble xshrinkfactor, gdouble yshrinkfactor, guint status )
 {
   VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
   // Apply alpha setting
@@ -1196,7 +1231,7 @@ static GdkPixbuf *pixbuf_apply_settings ( GdkPixbuf *pixbuf, VikMapsLayer *vml, 
   }
 
   if ( pixbuf )
-    a_mapcache_add ( pixbuf, (mapcache_extra_t) {0.0}, mapcoord->x, mapcoord->y,
+    a_mapcache_add ( pixbuf, (mapcache_extra_t){0.0, status}, mapcoord->x, mapcoord->y,
                      mapcoord->z, vik_map_source_get_uniq_id(map),
                      mapcoord->scale, vml->alpha, xshrinkfactor, yshrinkfactor, vml->filename );
 
@@ -1253,13 +1288,13 @@ static GdkPixbuf *get_pixbuf ( VikMapsLayer *vml, guint16 id, guint vp_scale, co
       // ATM MBTiles must be 'a direct access type'
       if ( vik_map_source_is_mbtiles(map) ) {
         pixbuf = get_mbtiles_pixbuf ( vml, mapcoord->x, mapcoord->y, (17 - mapcoord->scale) );
-        pixbuf = pixbuf_apply_settings ( pixbuf, vml, vp_scale, mapcoord, xshrinkfactor, yshrinkfactor );
+        pixbuf = pixbuf_apply_settings ( pixbuf, vml, vp_scale, mapcoord, xshrinkfactor, yshrinkfactor, DOWNLOAD_SUCCESS );
         // return now to avoid file tests that aren't appropriate for this map type
         return pixbuf;
       }
       else if ( vik_map_source_is_osm_meta_tiles(map) ) {
         pixbuf = get_pixbuf_from_metatile ( vml, mapcoord->x, mapcoord->y, (17 - mapcoord->scale) );
-        pixbuf = pixbuf_apply_settings ( pixbuf, vml, vp_scale, mapcoord, xshrinkfactor, yshrinkfactor );
+        pixbuf = pixbuf_apply_settings ( pixbuf, vml, vp_scale, mapcoord, xshrinkfactor, yshrinkfactor, DOWNLOAD_SUCCESS );
         return pixbuf;
       }
       else
@@ -1294,7 +1329,21 @@ static GdkPixbuf *get_pixbuf ( VikMapsLayer *vml, guint16 id, guint vp_scale, co
           g_object_unref ( G_OBJECT(pixbuf) );
         pixbuf = NULL;
       } else {
-        pixbuf = pixbuf_apply_settings ( pixbuf, vml, vp_scale, mapcoord, xshrinkfactor, yshrinkfactor );
+        // Maintain any download result status value that is already in the mapcache
+        mapcache_extra_t extra = a_mapcache_get_extra ( mapcoord->x, mapcoord->y, mapcoord->z, id, mapcoord->scale,
+                                                        vml->alpha, xshrinkfactor, yshrinkfactor, vml->filename );
+        guint status = extra.status;
+        if ( extra.status >= DOWNLOAD_SUCCESS ) {
+          // On read in from file, check expiry value
+          GStatBuf buf;
+          if ( g_stat(filename_buf, &buf) == 0 ) {
+            status = DOWNLOAD_SUCCESS;
+            time_t file_time = buf.st_mtime;
+            if ( (time(NULL) - file_time) > vml->cache_expiry_age )
+              status = MAPCACHE_STATUS_FILE_EXPIRED;
+          }
+        }
+        pixbuf = pixbuf_apply_settings ( pixbuf, vml, vp_scale, mapcoord, xshrinkfactor, yshrinkfactor, status );
       }
     }
   }
@@ -1578,8 +1627,47 @@ static void maps_layer_draw_section ( VikMapsLayer *vml, VikViewport *vvp, VikCo
         xx += tilesize_x;
       }
 
-      // ATM Only show tile grid lines in extreme debug mode
-      if ( vik_debug && vik_verbose ) {
+      //
+      // Optionally draw status of each map tile from value held in cache
+      //
+      if ( vml->show_cache_status_overlay && maps_layer_is_cached_storage(map) ) {
+
+        const guint rect_sz = tilesize_x / 12;
+        const gint base_xx = xx_tmp - (tilesize_x/2);
+        GdkGC *black_gc = vik_viewport_get_black_gc(vvp);
+        xx = base_xx;
+
+        for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
+          yy = base_yy;
+          for ( y = ((yinc == 1) ? ymin : ymax); y != yend; y+=yinc ) {
+
+            GdkColor *status_color;
+            mapcache_extra_t extra = a_mapcache_get_extra ( x, y, ulm.z, id, ulm.scale, vml->alpha, 1.0, 1.0, vml->filename );
+            switch ( extra.status ) {
+            case MAPCACHE_STATUS_NOT_IN_CACHE: status_color = &cache_no_file_color; break;
+            case MAPCACHE_STATUS_FILE_EXPIRED: status_color = &cache_expired_color; break;
+            default:
+              // ATM not going to try to distinguish being the various download error codes
+              //  or indeed the other 'success' codes too.
+              if ( extra.status < DOWNLOAD_SUCCESS )
+                status_color = &cache_download_error_color;
+              else
+                status_color = &cache_okay_color;
+              break;
+            }
+
+            // NB Drawing of this status indicator does not take into account the alpha setting of the map layer
+            vik_viewport_draw_rectangle ( vvp, black_gc, TRUE, xx, yy, rect_sz, rect_sz, status_color );
+
+            yy += tilesize_y;
+          }
+          xx += tilesize_x;
+        }
+      }
+
+      // Only show tile grid lines in extreme debug mode or when cache overlay shown
+      if ( (vik_debug && vik_verbose) ||
+           (vml->show_cache_status_overlay && maps_layer_is_cached_storage(map)) ) {
         /* Grid drawing here so it gets drawn on top of the map */
         /* Thus loop around x & y again, but this time separately */
         /* Only showing grid for the current scale */
@@ -1840,8 +1928,9 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 
         mdi->mapcoord.x = x; mdi->mapcoord.y = y;
 
+        DownloadResult_t dr = DOWNLOAD_NOT_REQUIRED;
         if (need_download) {
-          DownloadResult_t dr = vik_map_source_download ( map, &(mdi->mapcoord), mdi->filename_buf, handle );
+          dr = vik_map_source_download ( map, &(mdi->mapcoord), mdi->filename_buf, handle );
           switch ( dr ) {
             case DOWNLOAD_PARAMETERS_ERROR:
             case DOWNLOAD_HTTP_ERROR:
@@ -1872,12 +1961,18 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
         g_mutex_lock(mdi->mutex);
         if (remove_mem_cache)
             a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, id, mdi->mapcoord.scale, mdi->vml->filename );
+
+        // Save download result - must be after remove_all_shrinkfactors() otherwise that would remove this result!
+        a_mapcache_add ( NULL, (mapcache_extra_t){0.0, dr}, mdi->mapcoord.x, mdi->mapcoord.y, mdi->mapcoord.z, id,
+                         mdi->mapcoord.scale, mdi->vml->alpha, 1.0, 1.0, mdi->vml->filename );
+
         if (mdi->refresh_display && mdi->map_layer_alive) {
           /* TODO: check if it's on visible area */
           if ( need_download ) {
             vik_layer_emit_update ( VIK_LAYER(mdi->vml), FALSE ); // NB update display from background
           }
         }
+
         g_mutex_unlock(mdi->mutex);
         mdi->mapcoord.x = mdi->mapcoord.y = 0; /* we're temporarily between downloads */
       }
@@ -2668,6 +2763,16 @@ static void maps_layer_download_all ( menu_array_values values )
 }
 
 /**
+ * Toggle display of cache status
+ */
+static void maps_layer_cache_status_cb ( menu_array_values values )
+{
+  VikMapsLayer *vml = VIK_MAPS_LAYER(values[MA_VML]);
+  vml->show_cache_status_overlay = !vml->show_cache_status_overlay;
+  vik_layer_emit_update ( VIK_LAYER(vml), FALSE );
+}
+
+/**
  *
  */
 static void maps_layer_flush ( menu_array_values values )
@@ -2693,6 +2798,7 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
     (void)vu_menu_add_item ( menu, _("Download _New Onscreen Maps"), GTK_STOCK_REDO, G_CALLBACK(maps_layer_download_new_onscreen_maps), values );
     (void)vu_menu_add_item ( menu, _("Reload _All Onscreen Maps"), GTK_STOCK_REFRESH, G_CALLBACK(maps_layer_redownload_all_onscreen_maps), values );
     (void)vu_menu_add_item ( menu, _("Download Maps in _Zoom Levels..."), GTK_STOCK_DND_MULTIPLE, G_CALLBACK(maps_layer_download_all), values );
+    (void)vu_menu_add_item ( menu, _("_Toggle Display of Cache Status"), GTK_STOCK_INFO, G_CALLBACK(maps_layer_cache_status_cb), values );
   }
 
 #ifdef HAVE_SQLITE3_H

@@ -27,8 +27,13 @@
 
 G_BEGIN_DECLS
 
+// Extended 'DownloadResult_t' values (see download.h)
+#define MAPCACHE_STATUS_NOT_IN_CACHE 16
+#define MAPCACHE_STATUS_FILE_EXPIRED 8
+
 typedef struct {
   gdouble duration; // Mostly for Mapnik Rendering duration - negative values indicate not rendered (i.e. read from disk)
+  gint status;      // Tile download status - either a DownloadResult_t value or MAPCACHE_STATUS_*
 } mapcache_extra_t;
 
 void a_mapcache_init ();

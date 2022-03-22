@@ -680,7 +680,7 @@ static void render ( VikMapnikLayer *vml, VikCoord *ul, VikCoord *br, MapCoord *
 	// NB Mapnik can apply alpha, but use our own function for now
 	if ( vml->alpha < 255 )
 		pixbuf = ui_pixbuf_scale_alpha ( pixbuf, vml->alpha );
-	a_mapcache_add ( pixbuf, (mapcache_extra_t){ tt }, ulm->x, ulm->y, ulm->z, MAP_ID_MAPNIK_RENDER, ulm->scale, vml->alpha, 0.0, 0.0, vml->filename_xml );
+	a_mapcache_add ( pixbuf, (mapcache_extra_t){ tt, 0 }, ulm->x, ulm->y, ulm->z, MAP_ID_MAPNIK_RENDER, ulm->scale, vml->alpha, 0.0, 0.0, vml->filename_xml );
 	g_object_unref(pixbuf);
 }
 

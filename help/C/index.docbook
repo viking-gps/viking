@@ -2290,6 +2290,52 @@ Such as <ulink url="https://operations.osmfoundation.org/policies/tiles/"><citet
 </figure>
 </para>
 </section>
+
+<section><title>Toggle Display of Cache Status</title>
+<para>
+  When enabled, a visual indication of the cache status of each tile will be shown.
+  This will display a small coloured square at the top left of each map tile,
+  with the colour representing the cache status.
+</para>
+<variablelist>
+  <varlistentry>
+    <term>No File: Red</term>
+    <listitem>
+        <para>No tile on disk exists for this zoom level.</para>
+      <para>Note that &appname; will attempt to rescale higher and lower tiles for this zoom level (as in the example below), so there may be image shown.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>Okay: Teal</term>
+    <listitem>
+      <para>Tile exists on disk and is within the cache expiry age.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>Expired: Yellow</term>
+    <listitem>
+      <para>Tile exists on disk but is older than the cache expiry age.</para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term>Download Error: Dark Red</term>
+    <listitem>
+      <para>Issues were encountered in trying to retrieve latest version of the tile.</para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+<para>
+<figure>
+<title>Cache Status Overlay: Example</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/Maps_Cache_Status_Overlay.png"/>
+</screenshot>
+</figure>
+</para>
+<para>
+  If necessary, the colours used for the map cache overlay indicators can be altered via the advanced configuration in <xref linkend="misc_settings"/>.
+</para>
+</section>
 </section>
 
 
@@ -4797,6 +4843,25 @@ Accept: */*
             <para>
               If the following message is shown in the message log:<blockquote><para><emphasis>vik_layers_panel_calendar_update: detail level reduced as taking too long</emphasis></para></blockquote>then consider setting this value to 2 - although with the caveat that calendar refreshes may introduce noticable delays.
             </para>
+	  </listitem>
+	  <listitem>
+	    <para>maps_cache_status_no_file_color=red</para>
+	  </listitem>
+	  <listitem>
+	    <para>maps_cache_status_expired_color=yellow</para>
+	  </listitem>
+	  <listitem>
+	    <para>maps_cache_status_download_error_color=darkred</para>
+	  </listitem>
+	  <listitem>
+	    <para>maps_cache_status_okay_color=teal</para>
+            <note>
+              <para>maps_cache_status_*_color value strings are passed directly into the low level function <ulink url="https://docs.gtk.org/gdk3/type_func.Color.parse.html">gdk_color_parse()</ulink>.
+              </para>
+              <para>
+                The string can either one of a large set of standard names (taken from the X11 rgb.txt file), or it can be a hexadecimal value in the form "#rgb" "#rrggbb", "#rrrgggbbb" or "#rrrrggggbbbb" where 'r', 'g' and 'b' are hex digits of the red, green, and blue components of the color, respectively.
+              </para>
+            </note>
 	  </listitem>
 	  <listitem>
 	    <para>maps_max_tiles=1000</para>
