@@ -149,6 +149,20 @@ modules:
 #      - /lib
 # Otherwise gpsbabel & libgps.so can get removed
 
+#
+# xxd tool required as part of Viking build
+# Found best candidate for standalone component (rather than within Vim)
+#
+  - name: xxd
+    buildsystem: simple
+    sources:
+      - type: git
+        url: https://github.com/fancer/xxd
+        tag: "v1.7"
+        commit: 0a49a7308f365b3b82f26b5d9df2ec00c41eadf0
+    build-commands:
+      - ./bootstrap.sh && ./configure --prefix="${FLATPAK_DEST}" && make && make install
+
 # Actual own Viking build here
 #
   - name: viking
