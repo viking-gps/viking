@@ -340,8 +340,10 @@ static void trw_layer_delete_tracks_from_selection ( menu_array_layer values );
 static void trw_layer_delete_all_waypoints ( menu_array_layer values );
 static void trw_layer_delete_waypoints_from_selection ( menu_array_layer values );
 static void trw_layer_delete_duplicate_waypoints ( menu_array_layer values );
+#ifdef VIK_CONFIG_GEONAMES
 static void trw_layer_new_wikipedia_wp_viewport ( menu_array_layer values );
 static void trw_layer_new_wikipedia_wp_layer ( menu_array_layer values );
+#endif
 #ifdef VIK_CONFIG_GEOTAG
 static void trw_layer_geotagging_waypoint_mtime_keep ( menu_array_sublayer values );
 static void trw_layer_geotagging_waypoint_mtime_update ( menu_array_sublayer values );
@@ -4321,6 +4323,7 @@ gboolean trw_layer_modified ( VikTrwLayer *vtl )
   return FALSE;
 }
 
+#ifdef VIK_CONFIG_GEONAMES
 static void trw_layer_new_wikipedia_wp_viewport ( menu_array_layer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
@@ -4341,6 +4344,7 @@ static void trw_layer_new_wikipedia_wp_layer ( menu_array_layer values )
   trw_layer_calculate_bounds_waypoints ( vtl );
   vik_layers_panel_emit_update ( vlp, trw_layer_modified(vtl) );
 }
+#endif
 
 #ifdef VIK_CONFIG_GEOTAG
 static void trw_layer_geotagging_waypoint_mtime_keep ( menu_array_sublayer values )
