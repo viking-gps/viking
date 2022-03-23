@@ -866,7 +866,7 @@ Note that Garmin GPSr devices have limits in using images if they are too large 
 The calendar marks days when any activity in Tracks occurred. Hovering the mouse pointer over a marked day shows the name of the corresponding <xref linkend="TrackWaypoint"/> Layer. Double clicking on a marked day moves the <xref linkend="viewport"/> to view the first track of that day.
 </para>
 <para>
-Right clicking on the calendar offers further options to navigate in time, including moving the calendar to the next or previous track by date or to move to todays date.
+Right clicking on the calendar offers further options to navigate in time, including moving the calendar to the next or previous track by date or to move to todays date. It also allows opening a dialog to view related basic astronomical values (sun rise/set, twilight times and moon rise/set) for the selected day, being derived for the location of the centre of the viewport.
 </para>
 </section>
 
@@ -902,7 +902,18 @@ See the section <xref linkend="search_provider"/> to configure additional search
   Also available is a tab to shows <xref linkend="track_time_splits"/>.
   Since this is a more detailed display that is of interest only to a subset of users and takes up more space, the tab is hidden by default.
   Use <menuchoice><guimenu>View</guimenu><guimenuitem>Show</guimenuitem><guimenuitem>Show Side Panel Splits</guimenuitem></menuchoice> to enable it.
+</para>
+</section>
+
+<section id="MainGraph"><title>Graphs</title>
+  <para>
+    When a specific track/route or TrackWaypoint Layer (that contains a single track or route) is selected in the layers panel, then the main graph section is displayed below the viewport.
+    If appropriate, this contains a <xref linkend="track_elev_graphs"/> and a Speed-time graph from the <xref linkend="track_properties"/>.
+    If there is no timing data the Speed-time graph is not shown, and if no elevation data then the Elevation-distance graph is not shown.
   </para>
+<para>
+  When moving the mouse pointer over these graphs, it features a popup to give more information about that point and updates the main viewport track display with an equivalent highlighted trackpoint. Left clicking on the graph recenters the viewport to that point, whereas right clicking opens a contextual menu offering features such as accessing the tracks properties or statistics, editting of the specific trackpoint and further controls of the elevation axis scale.
+</para>
 </section>
 
 </section> <!-- End File Types -->
