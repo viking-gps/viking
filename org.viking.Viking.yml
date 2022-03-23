@@ -33,7 +33,8 @@ modules:
     sources:
       - type: git
         url: https://github.com/x42/liboauth.git
-        branch: "v1.0.3"
+        tag: "v1.0.3"
+        commit: 07fc30bf6d44f5b431a943452f6083fbaf22bc8f
     build-commands:
       - aclocal && autoheader && libtoolize --copy && autoconf && automake --gnu --add-missing --copy && ./configure --enable-nss --prefix="${FLATPAK_DEST}" && make && make install
     cleanup:
