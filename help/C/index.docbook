@@ -4650,6 +4650,10 @@ Accept: */*
         <para>The <envar>$XDG_DATA_DIRS</envar> environment variable can be used to change these directories.</para>
         <para>The <envar>$XDG_DATA_HOME</envar> environment variable is also used (if set) to look for these extension files.</para>
       </section>
+</section>
+
+<section id="configuring" xreflabel="Configuring Viking">
+    <title>Configuring Viking</title>
 
       <section id="config_file_loc" xreflabel="User Configuration File Location">
         <title>User Configuration File Location</title>
@@ -4694,6 +4698,12 @@ Accept: */*
             If you've upgraded &app; to v1.9 and want it to use the new location, you will have to manually move the existing directory (when &app; is not running). e.g. in the command line: <command>mv ~/.viking ~/.config/viking</command>
           </para>
         </note>
+      </section>
+
+      <section>
+        <title>Primary Settings</title>
+        <para>&app;'s primary configuration options are controllable via the GUI as previously covered in <xref linkend="prefs"/>.</para>
+        <para>These values are stored in the plain text file <filename>viking.prefs</filename></para>
       </section>
 
       <section id="misc_settings" xreflabel="Miscellaneous Settings">
