@@ -20,6 +20,7 @@
  *
  */
 #include "viking.h"
+#include <gdk/gdkkeysyms.h>
 
 #define TREEVIEW_GET(model,iter,what,dest) gtk_tree_model_get(GTK_TREE_MODEL(model),(iter),(what),(dest),-1)
 
