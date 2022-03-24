@@ -32,7 +32,7 @@ static gboolean _is_mbtiles ( VikMapSource *self );
 
 static gchar *_get_uri( VikMapSourceDefault *self, MapCoord *src );
 static gchar *_get_hostname( VikMapSourceDefault *self );
-static DownloadFileOptions *_get_download_options( VikMapSourceDefault *self );
+static DownloadFileOptions *_get_download_options( VikMapSourceDefault *self, MapCoord *src );
 
 /* FIXME Huge gruik */
 static DownloadFileOptions terraserver_options = { FALSE, FALSE, NULL, 0, NULL, NULL, 0, a_check_map_file, NULL, FALSE, FALSE, NULL };
@@ -247,7 +247,7 @@ _get_hostname( VikMapSourceDefault *self )
 }
 
 static DownloadFileOptions *
-_get_download_options( VikMapSourceDefault *self )
+_get_download_options( VikMapSourceDefault *self, MapCoord *src )
 {
 	g_return_val_if_fail (TERRASERVER_IS_MAP_SOURCE(self), NULL);
 
