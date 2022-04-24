@@ -1200,6 +1200,22 @@ void vu_distance_text_precision ( gchar* buf, guint size, vik_units_distance_t d
 	g_free ( units_str );
 }
 
+
+/**
+ * vu_height_units_text:
+ *
+ * Free the returned string after use
+ */
+gchar* vu_height_units_text ( vik_units_height_t height_units )
+{
+	gchar *units_str = NULL;
+	if ( height_units == VIK_UNITS_HEIGHT_METRES )
+		units_str = g_strdup ( _("m") );
+	else
+		units_str = g_strdup ( _("ft") );
+	return units_str;
+}
+
 // This is in vikutils due to speed units dependency
 // Unfortunatelty can't simply use the .1f format
 //  as want text for minutes per distance speed values

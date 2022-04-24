@@ -73,6 +73,8 @@ gdouble vu_distance_convert ( vik_units_distance_t distance_units, gdouble dista
 void vu_distance_text ( gchar* buf, guint size, vik_units_distance_t distance_units, gdouble distance, gboolean convert, gchar *format, gboolean compact );
 void vu_distance_text_precision ( gchar* buf, guint size, vik_units_distance_t distance_units, gdouble distance, gchar *format );
 
+gchar* vu_height_units_text ( vik_units_height_t height_units );
+
 GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external );
 
 void vu_format_speed_cell_data_func ( GtkTreeViewColumn *col,
