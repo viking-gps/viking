@@ -1103,7 +1103,7 @@ gchar* vu_distance_units_text ( vik_units_distance_t distance_units )
 }
 
 /**
- * vu_speed_deconvert:
+ * vu_distance_deconvert:
  *
  * Convert the distance from the specified units into metres
  */
