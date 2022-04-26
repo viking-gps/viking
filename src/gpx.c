@@ -436,7 +436,7 @@ static tag_type_ext get_tag_ext_specific (const char *tt)
  return ext_unknown;
 }
 
-GString *gs_ext;
+static GString *gs_ext;
 
 // Reprocess the extension text to extract tags we handle
 static void ext_start_element ( GMarkupParseContext *context,
@@ -503,8 +503,8 @@ static void ext_end_element ( GMarkupParseContext *context,
   g_string_erase ( gs_ext, 0, -1 );
 }
 
-GMarkupParser gparser;
-GMarkupParseContext *gcontext;
+static GMarkupParser gparser;
+static GMarkupParseContext *gcontext;
 
 static void track_or_trackpoint_extension_process ( gchar *str )
 {
