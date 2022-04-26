@@ -1190,13 +1190,23 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
     case tt_trk_trkseg_trkpt_extensions:
       g_string_append_len ( c_trkpt_ext, s, len );
       break;
-    case tt_trk_an_extension:
     case tt_trk_extensions:
-    case tt_wpt_an_extension:
     case tt_wpt_extensions:
-    case tt_gpx_an_extension:
     case tt_gpx_extensions:
       g_string_append_len ( c_ext, s, len );
+      break;
+    case tt_trk_an_extension:
+    case tt_wpt_an_extension:
+    case tt_gpx_an_extension: {
+      // Ensure extension tag value contents are saved 'as is'
+      //  thus need to restore any XML escape quoting
+      gchar *txt = g_memdup ( s, len+1 );
+      txt[len] = '\0';
+      gchar *tmp = a_gpx_entitize ( txt );
+      g_string_append ( c_ext, tmp );
+      g_free ( txt );
+      g_free ( tmp );
+    }
       break;
 
     default: break;  /* ignore cdata from other things */
