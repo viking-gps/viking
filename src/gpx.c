@@ -1348,9 +1348,8 @@ dodefault:
         }
 }
 
-static
 char *
-entitize(const char * str)
+a_gpx_entitize(const char * str)
 {
         int elen, ecount, nsecount;
         entity_types *ep;
@@ -1524,7 +1523,7 @@ static void write_positive_uint ( FILE *ff, guint spaces, const gchar *tag, guin
 static void write_string ( FILE *ff, guint spaces, const gchar *tag, const gchar *value )
 {
   if ( value && strlen(value) ) {
-    gchar *tmp = entitize ( value );
+    gchar *tmp = a_gpx_entitize ( value );
     fprintf ( ff, "%*s<%s>%s</%s>\n", spaces, "", tag, tmp, tag );
     g_free ( tmp );
   }
@@ -1540,11 +1539,11 @@ static void write_string_as_is ( FILE *ff, guint spaces, const gchar *tag, const
 static void write_link ( FILE *ff, guint spaces, const gchar *link, const gchar *text, const gchar *type )
 {
   if ( link && strlen(link) && text && strlen(text) && type && strlen(type) ) {
-    gchar *tmp = entitize ( text );
+    gchar *tmp = a_gpx_entitize ( text );
     fprintf ( ff, "%*s<link href=\"%s\"><text>%s</text><type>%s</type></link>\n", spaces, "", link, text, type );
     g_free ( tmp );
   } else if ( link && strlen(link) && text && strlen(text) ) {
-    gchar *tmp = entitize ( text );
+    gchar *tmp = a_gpx_entitize ( text );
     fprintf ( ff, "%*s<link href=\"%s\"><text>%s</text></link>\n", spaces, "", link, text );
     g_free ( tmp );
   } else if ( link && strlen(link) && type && strlen(type) ) {
@@ -1600,7 +1599,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
 
   // Sanity clause
   if ( wp->name )
-    tmp = entitize ( wp->name );
+    tmp = a_gpx_entitize ( wp->name );
   else
     tmp = g_strdup ("waypoint");
 
@@ -1639,7 +1638,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
 
   if ( wp->symbol ) 
   {
-    tmp = entitize(wp->symbol);
+    tmp = a_gpx_entitize(wp->symbol);
     if ( a_vik_gpx_export_wpt_sym_name ( ) ) {
        // Lowercase the symbol name
        gchar *tmp2 = g_utf8_strdown ( tmp, -1 );
@@ -1792,7 +1791,7 @@ static void gpx_write_track ( VikTrack *t, GpxWritingContext *context )
 
   // Sanity clause
   if ( t->name )
-    tmp = entitize ( t->name );
+    tmp = a_gpx_entitize ( t->name );
   else
     tmp = g_strdup ("track");
 
