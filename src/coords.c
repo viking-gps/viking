@@ -111,6 +111,12 @@ double a_coords_utm_diff( const struct UTM *utm1, const struct UTM *utm2 )
   }
 }
 
+/**
+ * a_coords_latlon_diff:
+ *
+ * Difference via Spherical Law of Cosines method
+ * https://en.wikipedia.org/wiki/Spherical_law_of_cosines
+ */
 double a_coords_latlon_diff ( const struct LatLon *ll1, const struct LatLon *ll2 )
 {
   static struct LatLon tmp1, tmp2;
