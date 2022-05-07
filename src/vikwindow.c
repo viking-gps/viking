@@ -5421,11 +5421,21 @@ static void menu_copy_centre_cb ( GtkAction *a, VikWindow *vw )
     // Bells & Whistles - may include degrees, minutes and second symbols
     get_location_strings ( vw, utm, &lat, &lon );
   else {
-    // Simple x.xx y.yy format
-    struct LatLon ll;
-    a_coords_utm_to_latlon ( &utm, &ll );
-    lat = g_strdup_printf ( "%.6f", ll.lat );
-    lon = g_strdup_printf ( "%.6f", ll.lon );
+    if ( vik_viewport_get_drawmode ( vw->viking_vvp ) == VIK_VIEWPORT_DRAWMODE_UTM ) {
+      // Reuse lat for the first part (Zone + N or S, and lon for the second part (easting and northing) of a UTM format:
+      //  ZONE[N|S] EASTING NORTHING
+      lat = g_malloc ( 4*sizeof(gchar) );
+      // NB zone is stored in a char but is an actual number
+      g_snprintf ( lat, 4, "%d%c", utm.zone, utm.letter );
+      lon = g_malloc ( 16*sizeof(gchar) );
+      g_snprintf ( lon, 16, "%d %d", (gint)utm.easting, (gint)utm.northing );
+    } else {
+      // Simple x.xx y.yy format
+      struct LatLon ll;
+      a_coords_utm_to_latlon ( &utm, &ll );
+      lat = g_strdup_printf ( "%.6f", ll.lat );
+      lon = g_strdup_printf ( "%.6f", ll.lon );
+    }
   }
 
   gchar *msg = g_strdup_printf ( "%s %s", lat, lon );
