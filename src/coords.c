@@ -302,3 +302,30 @@ void a_coords_latlon_to_string ( const struct LatLon *latlon,
   *lon = convert_lon_dec_to_ddd ( latlon->lon );
 #endif
 }
+
+/**
+ * See https://www.movable-type.co.uk/scripts/latlong.html /
+ * http://mathforum.org/library/drmath/view/52049.html (NB need to use Web Archive for this one)
+ */
+void a_coords_latlon_destination ( const struct LatLon *start, double distance, double brg, struct LatLon *destination )
+{
+  const double sigma = distance / EquatorialRadius;
+  const double theta = DEG2RAD(brg);
+  const double phi1 = DEG2RAD(start->lat);
+  const double lambda1 = DEG2RAD(start->lon);
+
+  const double sinPhi1 = sin(phi1);
+  const double sinSigma = sin(sigma);
+  const double cosPhi1 = cos(phi1);
+  const double cosSigma = cos(sigma);
+
+  const double sinphi2 = sinPhi1 * cosSigma + cosPhi1 * sinSigma * cos(theta);
+  const double phi2 = asin(sinphi2);
+  const double y = sin(theta) * sinSigma * cosPhi1;
+  const double x = cosSigma - sinPhi1 * sinphi2;
+
+  const double lambda2 = lambda1 + atan2(y, x);
+
+  destination->lat = RAD2DEG(phi2);
+  destination->lon = RAD2DEG(lambda2);
+}

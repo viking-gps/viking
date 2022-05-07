@@ -85,6 +85,17 @@ void a_coords_dtostr_buffer ( double d, char buffer[COORDS_STR_BUFFER_SIZE] );
  */
 void a_coords_latlon_to_string ( const struct LatLon *latlon, gchar **lat, gchar **lon );
 
+/**
+ * a_coords_latlon_destination:
+ *
+ * @distance: In metres
+ * @brg: Bearing in degrees
+ *
+ * Given a start point, initial bearing, and distance, this will calculate the destination point
+ *  travelling along a (shortest distance) great circle arc.
+ */
+void a_coords_latlon_destination ( const struct LatLon *start, double distance, double brg, struct LatLon *destination );
+
 G_END_DECLS
 
 #endif
