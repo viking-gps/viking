@@ -226,6 +226,14 @@ vik_gpx_export_wpt_sym_name_t a_vik_gpx_export_wpt_sym_name ( );
 
 const gchar* a_vik_gpx_export_creator ( );
 
+typedef enum {
+  VIK_GPX_EXPORT_WPT_EXT_ALL=0,
+  VIK_GPX_EXPORT_WPT_EXT_WPTX1,
+  VIK_GPX_EXPORT_WPT_EXT_GPXX,
+} vik_gpx_export_wpt_extension_t;
+
+vik_gpx_export_wpt_extension_t a_vik_gpx_export_wpt_extension_type ( );
+
 #ifndef WINDOWS
 /* Windows automatically uses the system defined viewer
    ATM for other systems need to specify the program to use */

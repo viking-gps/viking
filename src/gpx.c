@@ -1191,8 +1191,9 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
       g_string_append_len ( c_trkpt_ext, s, len );
       break;
     case tt_trk_extensions:
-    case tt_wpt_extensions:
     case tt_gpx_extensions:
+    // No longer store the <extensions> tag itself for waypoints
+    //case tt_wpt_extensions:
       g_string_append_len ( c_ext, s, len );
       break;
     case tt_trk_an_extension:
@@ -1677,10 +1678,15 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
   write_double ( f, WPT_SPACES, "ageofdgpsdata", wp->ageofdgpsdata );
   write_positive_uint ( f, WPT_SPACES, "dgpsid", wp->dgpsid );
 
-  // NB if 'extensions' have been read in yet the GPX version is V1.0
+  // NB if 'extensions' have been read in/or set, yet the GPX version is specifically V1.0
   //  then ensure extension fields are not written
-  if ( context->options && context->options->version == GPX_V1_1 )
-    write_string_as_is ( f, WPT_SPACES, "extensions", wp->extensions );
+  if ( context->options && context->options->version == GPX_V1_1 ) {
+    if ( vik_waypoint_have_extensions(wp) ) {
+      GString *gs = vik_waypoint_get_extensions ( wp );
+      write_string_as_is ( f, WPT_SPACES, "extensions", gs->str );
+      g_string_free ( gs, TRUE );
+    }
+  }
 
   fprintf ( f, "</wpt>\n" );
 }

@@ -117,6 +117,7 @@ static VikLayerParam general_prefs[] = {
 static gchar * params_kml_export_units[] = {"Metric", "Statute", "Nautical", NULL};
 static gchar * params_gpx_export_trk_sort[] = {N_("Alphabetical"), N_("Time"), N_("Creation"), NULL };
 static gchar * params_gpx_export_wpt_symbols[] = {N_("Title Case"), N_("Lowercase"), NULL};
+static gchar * params_gpx_export_wpt_extension[] = {N_("All"), N_("Waypoint Extension v1"), N_("GPX Extension v3"), NULL};
 
 static VikLayerParamData trk_sort_default ( void ) { return VIK_LPD_UINT(VIK_GPX_EXPORT_TRK_SORT_TIME); }
 static VikLayerParamData ext_gpx_1_default ( void ) {
@@ -139,6 +140,8 @@ static VikLayerParam io_prefs[] = {
       N_("Save GPX Waypoint Symbol names in the specified case. May be useful for compatibility with various devices"), NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_creator", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("GPX Creator:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL,
       N_("The creator value when writing a GPX file. Otherwise when blank a default is used."), NULL, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_wpt_extension_type", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("GPX Waypoint Extension:"), VIK_LAYER_WIDGET_COMBOBOX, params_gpx_export_wpt_extension, NULL,
+      N_("Modified GPX Waypoint extension values will be saved in the specified schema"), NULL, NULL, NULL },
 #ifndef WINDOWS
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_IO_NAMESPACE "image_viewer", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Image Viewer:"), VIK_LAYER_WIDGET_FILEENTRY, NULL, NULL, NULL, img_viewer_default, NULL, NULL },
 #endif
@@ -359,6 +362,11 @@ vik_gpx_export_wpt_sym_name_t a_vik_gpx_export_wpt_sym_name ( )
 const gchar* a_vik_gpx_export_creator ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_creator")->s;
+}
+
+vik_gpx_export_wpt_extension_t a_vik_gpx_export_wpt_extension_type ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_IO_NAMESPACE "gpx_export_wpt_extension_type")->u;
 }
 
 #ifndef WINDOWS

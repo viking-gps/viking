@@ -155,6 +155,7 @@ struct _VikTrwLayer {
   guint8 wp_symbol;
   guint8 wp_size;
   gboolean wp_draw_symbols;
+  gboolean wp_draw_proximity;
   font_size_t wp_font_size;
   gchar *wp_fsize_str;
   vik_layer_sort_order_t wp_sort_order;
@@ -738,6 +739,7 @@ VikLayerParam trw_layer_params[] = {
   { VIK_LAYER_TRW, "wpsymbol", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint marker:"), VIK_LAYER_WIDGET_COMBOBOX, params_wpsymbols, NULL, NULL, wpsymbol_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint size:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[7], NULL, NULL, wpsize_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpsyms", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Waypoint Symbols:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_TRW, "wpprox", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Waypoint Proximity:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("Draw a circle covering the proximity area"), vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpsortorder", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Sort Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_sort_order_wp, NULL, NULL, sort_order_default, NULL, NULL },
 
   { VIK_LAYER_TRW, "drawimages", VIK_LAYER_PARAM_BOOLEAN, GROUP_IMAGES, N_("Draw Waypoint Images"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
@@ -797,6 +799,7 @@ enum {
   PARAM_WPSYM,
   PARAM_WPSIZE,
   PARAM_WPSYMS,
+  PARAM_WPPROX,
   PARAM_WPSO,
   // WP images
   PARAM_DI,
@@ -1514,6 +1517,9 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
     case PARAM_WPSYMS:
       changed = vik_layer_param_change_boolean ( vlsp->data, &vtl->wp_draw_symbols );
       break;
+    case PARAM_WPPROX:
+      changed = vik_layer_param_change_boolean ( vlsp->data, &vtl->wp_draw_proximity );
+      break;
     case PARAM_WPFONTSIZE:
       if ( vlsp->data.u < FS_NUM_SIZES ) {
         changed = vik_layer_param_change_uint ( vlsp->data, &vtl->wp_font_size );
@@ -1635,6 +1641,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_WPSYM: rv.u = vtl->wp_symbol; break;
     case PARAM_WPSIZE: rv.u = vtl->wp_size; break;
     case PARAM_WPSYMS: rv.b = vtl->wp_draw_symbols; break;
+    case PARAM_WPPROX: rv.b = vtl->wp_draw_proximity; break;
     case PARAM_WPFONTSIZE: rv.u = vtl->wp_font_size; break;
     case PARAM_WPSO: rv.u = vtl->wp_sort_order; break;
     // Metadata
@@ -2800,6 +2807,28 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
         }
         return; /* if failed to draw picture, default to drawing regular waypoint (below) */
       }
+    }
+
+    // Proximity drawing - only in LATLON mode ATM
+    if ( dp->vtl->wp_draw_proximity && !isnan(wp->proximity) && dp->vtl->coord_mode == VIK_COORD_LATLON ) {
+      struct LatLon ll, ll2;
+      VikCoord coord;
+      gint x2, y2;
+      vik_viewport_screen_to_coord ( dp->vp, x, y, &coord );
+      vik_coord_to_latlon ( &coord, &ll );
+
+      GdkColor pcolor = dp->vtl->waypoint_color;
+      if ( dp->highlight )
+        pcolor = vik_viewport_get_highlight_gdkcolor(dp->vp);
+
+      a_coords_latlon_destination ( &ll, wp->proximity, 90.0, &ll2 );
+
+      vik_coord_load_from_latlon ( &coord, VIK_COORD_LATLON, &ll2 );
+      vik_viewport_coord_to_screen ( dp->vp, &coord, &x2, &y2 );
+      gint cr = abs(x-x2);
+      // Only try to draw if not too small or too big
+      if ( (cr > dp->vtl->wp_size*2) && (cr < dp->width/2) )
+        vik_viewport_draw_arc ( dp->vp, dp->vtl->waypoint_gc, FALSE, x - cr, y - cr, 2*cr, 2*cr, 0, 360*64, &pcolor );
     }
 
     // Draw appropriate symbol - either symbol image or simple types

@@ -24,6 +24,7 @@
 
 #include "vikcoord.h"
 
+#include <glib.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
 
 G_BEGIN_DECLS
@@ -61,6 +62,7 @@ struct _VikWaypoint {
   gdouble pdop;              /* NAN if data unavailable */
   gdouble ageofdgpsdata;     /* NAN if data unavailable */
   guint dgpsid;              /* 0 .. 1023 */
+  gdouble proximity;         /* NAN if data unavailable */
   gchar *image;
   // NB Only really applicable if geotagging(exif info) is being used
   gdouble image_direction;   /* NAN if data unavailable */
@@ -71,7 +73,9 @@ struct _VikWaypoint {
   guint8 image_width;
   guint8 image_height;
   gchar *symbol;
-  gchar *extensions;         // GPX 1.1
+  gchar *extensions;         // GPX 1.1 (unsupported schema parts in here)
+  GHashTable *gpxx;          // GPX 1.1 Garmin Schema: GPX Extensions v3 - 'gpxx:'
+  GHashTable *wptx1;         // GPX 1.1 Garmin Schema: Waypoint Extension v1 'wptx1:'
   // Only for GUI display
   GdkPixbuf *symbol_pixbuf;
 };
@@ -88,6 +92,10 @@ void vik_waypoint_set_image(VikWaypoint *wp, const gchar *image);
 void vik_waypoint_set_image_direction_info(VikWaypoint *wp, gdouble direction, VikWaypointImageDirectionRef direction_ref);
 void vik_waypoint_set_symbol(VikWaypoint *wp, const gchar *symname);
 void vik_waypoint_set_extensions(VikWaypoint *wp, const gchar *value);
+void vik_waypoint_set_proximity(VikWaypoint *wp, gdouble value);
+gboolean vik_waypoint_have_extensions(VikWaypoint *wp);
+GString *vik_waypoint_get_extensions(VikWaypoint *wp);
+
 void vik_waypoint_free(VikWaypoint * wp);
 VikWaypoint *vik_waypoint_copy(const VikWaypoint *wp);
 void vik_waypoint_set_comment_no_copy(VikWaypoint *wp, gchar *comment);

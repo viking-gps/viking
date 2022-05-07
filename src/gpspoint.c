@@ -93,6 +93,7 @@ static gdouble line_vdop = NAN;
 static gdouble line_pdop = NAN;
 static gdouble line_ageofdgpsdata = NAN;
 static guint line_dgpsid = 0;
+static gdouble line_proximity = NAN;
 static guint line_hr = 0;
 static gint line_cad = VIK_TRKPT_CADENCE_NONE;
 static gdouble line_temp = NAN;
@@ -260,6 +261,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       wp->pdop = line_pdop;
       wp->ageofdgpsdata = line_ageofdgpsdata;
       wp->dgpsid = line_dgpsid;
+      wp->proximity = line_proximity;
 
       vik_coord_load_from_latlon ( &(wp->coord), coord_mode, &line_latlon );
 
@@ -427,6 +429,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
     line_pdop = NAN;
     line_ageofdgpsdata = NAN;
     line_dgpsid = 0;
+    line_proximity = NAN;
     line_name_label = 0;
     line_dist_label = 0;
     line_number = 0;
@@ -680,6 +683,10 @@ static void gpspoint_process_key_and_value ( const gchar *key, guint key_len, co
   {
     line_dgpsid = (guint)atoi(value);
   }
+  else if (key_len == 9 && strncasecmp( key, "proximity", key_len ) == 0 && value != NULL)
+  {
+    line_proximity = g_ascii_strtod(value, NULL);
+  }
   else if (key_len == 9 && strncasecmp( key, "hide_name", key_len ) == 0 && value != NULL && (value[0] == 'y' || value[0] == 'Y' || value[0] == 't' || value[0] == 'T'))
   {
     line_hide_name = TRUE;
@@ -757,6 +764,8 @@ static void a_gpspoint_write_waypoint ( const VikWaypoint *wp, WritingContext *w
   write_double ( f, "pdop", wp->pdop );
   write_double ( f, "ageofdgpsdata", wp->ageofdgpsdata );
   write_positive_uint ( f, "dgpsid", wp->dgpsid );
+
+  write_double ( f, "proximity", wp->proximity );
 
   if ( wp->image )
   {

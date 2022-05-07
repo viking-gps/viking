@@ -1919,6 +1919,15 @@ When the waypoint has a time, right clicking on the button opens a menu from whi
   <graphic format="PNG" fileref="figures/WaypointProperties.png"/>
 </screenshot>
 </figure>
+<figure>
+<title>Waypoint Properties: Extra Tab</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/WaypointProperties-Extra.png"/>
+</screenshot>
+</figure>
+<para>
+  Waypoint proximity (alarm) values are supported. These will be exported in saving GPX files (provided the GPX Export is v1.1) according to the GPX Waypoint Extension schema (see <xref linkend="prefs_external"/>). The proximity area will be drawn on the display provided the <emphasis>Draw Waypoint Proximity</emphasis> in the layer properties is enabled.
+</para>
 
 </section><!-- WP Prop END -->
 
@@ -3350,6 +3359,11 @@ Generally if you have a system with lots of memory it's recommended to increase 
 </section>
 <section><title>GPX Creator</title>
 <para>If not blank, then this setting overrides the default internal value that is used when writing to a GPX file.</para>
+</section>
+<section><title>GPX Waypoint Extension</title>
+  <para>When waypoints are edited, particularly for the Proximity Alarm option, then the GPX1.1 properties will be updated using the specified schema. This may be important for compatibility with other programs/devices.</para>
+  <para>For example, old Garmin MapSource software created files in the GPX Extension v3 style, whereas the Garmin Etrex20x devices work with the information in Waypoint Extension v1 style. Latest versions of Garmin Basecamp create files with both styles.</para>
+  <para>Thus the <emphasis>All</emphasis> option is the default for maximum likelihood of capability as it also writes information in both styles.</para>
 </section>
 <section><title>Image Viewer (Not Windows)</title>
 <para>Allows setting the program used to view images associated with Waypoints.</para>

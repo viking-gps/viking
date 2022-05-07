@@ -191,6 +191,7 @@ struct _VikTrwLayerWpwin {
   GtkWidget *pdopvalue;
   GtkWidget *agedvalue;
   GtkWidget *dgpsidvalue;
+  GtkWidget *prxentry;
   GtkWidget *extlab;
   GtkWidget *extsw;
   gboolean is_new;
@@ -496,6 +497,14 @@ VikTrwLayerWpwin *vik_trw_layer_wpwin_show ( GtkWindow *parent, VikTrwLayerWpwin
     gtk_box_pack_start ( GTK_BOX(extra), dgpsidlabel, FALSE, FALSE, 0 );
     gtk_box_pack_start ( GTK_BOX(extra), ww->dgpsidvalue, FALSE, FALSE, 0 );
 
+    // Enable edit of some Extension values
+    g_snprintf ( tmp_lab, sizeof(tmp_lab), _("Proximity Alarm: (%s)"), vu_height_units_text(height_units) );
+    GtkWidget *prxlabel = gtk_label_new ( tmp_lab );
+    ww->prxentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+
+    gtk_box_pack_start ( GTK_BOX(extra), prxlabel, FALSE, FALSE, 0 );
+    gtk_box_pack_start ( GTK_BOX(extra), ww->prxentry, FALSE, FALSE, 0 );
+
     gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
     gtk_notebook_append_page ( GTK_NOTEBOOK(ww->tabs), GTK_WIDGET(basic), gtk_label_new(_("Basic")) );
@@ -504,6 +513,9 @@ VikTrwLayerWpwin *vik_trw_layer_wpwin_show ( GtkWindow *parent, VikTrwLayerWpwin
     ww->extsw = gtk_scrolled_window_new ( NULL, NULL );
     gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(ww->extsw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
     ww->extlab = ui_label_new_selectable ( NULL );
+    // Left alignment
+    gtk_misc_set_alignment ( GTK_MISC(ww->extlab), 0.0, 0.5 );
+
     gtk_widget_set_can_focus ( ww->extlab, FALSE );  // Don't let notebook autofocus on it
     gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(ww->extsw), ww->extlab );
     gtk_notebook_append_page ( GTK_NOTEBOOK(ww->tabs), ww->extsw, gtk_label_new(_("GPX Extensions")) );
@@ -678,9 +690,15 @@ VikTrwLayerWpwin *vik_trw_layer_wpwin_show ( GtkWindow *parent, VikTrwLayerWpwin
   set_text_uint ( ww->satvalue, wp->nsats );
   set_text_uint ( ww->dgpsidvalue, wp->dgpsid );
 
-  gtk_label_set_text ( GTK_LABEL(ww->extlab), wp->extensions );
+  // Although proximity is a distance - we'll treat it more akin to metres/feet like the height preference
+  set_widget_double ( ww->prxentry, wp->proximity, "%0.1f", height_units );
+
+  GString *gs = vik_waypoint_get_extensions ( wp );
+  gtk_label_set_text ( GTK_LABEL(ww->extlab), gs->str );
+  g_string_free ( gs, TRUE );
+
   GtkWidget *ext_tab = gtk_notebook_get_tab_label ( GTK_NOTEBOOK(ww->tabs), ww->extsw );
-  gtk_widget_set_sensitive ( ext_tab, wp->extensions ? TRUE : FALSE );
+  gtk_widget_set_sensitive ( ext_tab, vik_waypoint_have_extensions(wp) ? TRUE : FALSE );
 
   gtk_widget_show_all ( dialog );
 
@@ -897,6 +915,31 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
           vik_waypoint_set_url_name ( wp, str );
           changed = TRUE;
         }
+      }
+
+      old = wp->proximity;
+      gchar const *prxtext = gtk_entry_get_text ( GTK_ENTRY(ww->prxentry) );
+      if ( prxtext && strlen(prxtext) ) {
+        // Always store in metres; value should be +ve
+        switch (height_units) {
+        case VIK_UNITS_HEIGHT_FEET:
+          wp->proximity = fabs ( VIK_FEET_TO_METERS ( atof(prxtext) ) );
+          break;
+        default: // VIK_UNITS_HEIGHT_METRES
+          wp->proximity = fabs ( atof ( prxtext ) );
+          break;
+        }
+      } else {
+        wp->proximity = NAN;
+      }
+      if ( util_gdouble_different(old, wp->proximity) ) {
+        changed = TRUE;
+        vik_waypoint_set_proximity ( wp, wp->proximity );
+
+        // Refresh extension display
+        GString *gs = vik_waypoint_get_extensions ( wp );
+        gtk_label_set_text ( GTK_LABEL(ww->extlab), gs->str );
+        g_string_free ( gs, TRUE );
       }
 
       // Now that the wpt itself has been updated, need to update the display
