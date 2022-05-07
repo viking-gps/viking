@@ -43,6 +43,13 @@ Configurable properties:
 	<para>Alpha. Control the Alpha value for transparency effects using a value between 0 and 255 with the default being 255 for a fully solid image, whereas 0 is transparent.</para>
 </listitem>
 </itemizedlist>
+<section><title>World File Notes</title>
+<para>
+  &appname; does not support "upside down" images, nor does it support the +ve/-ve definitions of the Y-Scale.
+  Instead the Y-Scale is treated as in the direction of the image, thus reading in from a World File the +ve/-ve of the Y-Scale is ignored
+  and -ve values can not input directly into the GUI (simply use the absolute value instead).
+</para>
+</section>
 </section><!-- Prop END -->
 
 <section><title>Layer Operations</title>

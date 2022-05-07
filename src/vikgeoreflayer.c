@@ -680,7 +680,7 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
     }
     else
     {
-      fprintf ( f, "%f\n%f\n%f\n%f\n%f\n%f\n", vgl->mpp_easting, 0.0, 0.0, vgl->mpp_northing, vgl->corner.easting, vgl->corner.northing );
+      fprintf ( f, "%f\n%f\n%f\n%f\n%f\n%f\n", vgl->mpp_easting, 0.0, 0.0, -vgl->mpp_northing, vgl->corner.easting, vgl->corner.northing );
       fclose ( f );
     }
   }
