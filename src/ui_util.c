@@ -29,6 +29,7 @@
 #include "config.h"
 #endif
 
+#include <math.h>
 #include <glib/gstdio.h>
 #include <glib/gi18n.h>
 #include <glib/gprintf.h>
@@ -38,6 +39,7 @@
 #include "dialog.h"
 #include "settings.h"
 #include "icons/icons.h"
+#include "globals.h"
 
 #ifdef WINDOWS
 #include <windows.h>
@@ -293,6 +295,103 @@ GdkPixbuf *ui_pixbuf_scale_alpha ( GdkPixbuf *pixbuf, guint8 alpha )
   return pixbuf;
 }
 
+/**
+ * Rotate a pixbuf a number of arbtitary degrees (-359.9 to 359.9)
+ *
+ * Returns a newly allocated pixbuf
+ *
+ * For convenience the passed in original pixbuf is freed
+ *
+ * NB1 gdk_pixbuf_rotate_simple() only does fixed rotations of 90, 180;
+ *  hence the need for this function.
+ * NB2 There is cairo_rotate() but this would be only GTK3,
+ *  and would need to ensure not continually rotating the image on each
+ *  draw update, but also have a separate layer so the rotation would
+ *  only apply to the pixbuf and not the rest of the surface
+ *  (i.e. currently everything else drawn like waypoints, scale indicator and so on)
+ *  Thus ATM it seems simpler to rotate the pixbuf here.
+ */
+GdkPixbuf *ui_pixbuf_rotate_full ( GdkPixbuf *pixbuf, gdouble degrees )
+{
+	if ( !pixbuf  )
+		return NULL;
+
+	const gint width  = gdk_pixbuf_get_width ( pixbuf );
+	const gint height = gdk_pixbuf_get_height ( pixbuf );
+
+	const double radians = DEG2RAD(degrees);
+	const double ss = sin ( radians );
+	const double cc = cos ( radians );
+
+	// Basic trigonmetry for new size - always bigger than the original
+	const int new_width  = round ( fabs(cc)*width + fabs(ss)*height );
+	const int new_height = round ( fabs(ss)*width + fabs(cc)*height );
+
+	GdkPixbuf *pxb = gdk_pixbuf_new ( GDK_COLORSPACE_RGB, TRUE, 8, new_width, new_height );
+	if ( !pxb )
+		return NULL;
+
+	// Setup these (constant) values just once - as needed multiple time in the loops
+	const int rowstride = gdk_pixbuf_get_rowstride ( pixbuf );
+	const gboolean has_alpha = gdk_pixbuf_get_has_alpha ( pixbuf );
+	const guint len = has_alpha ? 4 : 3;
+	const double h_2 = height / 2;
+	const double w_2 = width / 2;
+
+	const int new_rowstride = gdk_pixbuf_get_rowstride ( pxb );
+	const double nh_2 = new_height / 2.0;
+	const double nw_2 = new_width / 2.0;
+
+	// Working values
+	guchar *pixels = gdk_pixbuf_get_pixels ( pixbuf );
+	guchar *new_pixels = gdk_pixbuf_get_pixels ( pxb );
+	int alpha = 0;
+	guchar *px, *new_px;
+	int row, col;
+	double diff_r, diff_c;
+
+	// Process every destination pixel, via each row and column
+	//  and work out the corresponding source pixel to copy from
+	// (as opposed to stepping through the source pixbuf and
+	//  translating to the destination pixel).
+	// This way ensures there are no 'holes' in the destination pixbuf
+	//  (some destination pixels may be repeats of a source pixel)
+
+	// Again straight-forward trignometry to map destination<-source pixel
+	for ( guint nr = 0; nr < new_height; nr++ ) {
+		diff_r = nr - nh_2;
+		new_px = new_pixels + nr*new_rowstride;
+		for ( guint nc = 0; nc < new_width; nc++ ) {
+			diff_c = nc - nw_2;
+			row = round ( h_2 - diff_c*ss + diff_r*cc );
+			col = round ( w_2  + diff_c*cc + diff_r*ss );
+			// Ensure new row and column values are in range
+			if ( row < 0 || col < 0 || row >= height || col >= width ) {
+				alpha = 0;
+				if ( row < 0 )
+					row = 0;
+				else if ( row >= height )
+					row = height - 1;
+				if ( col < 0 )
+					col = 0;
+				else if ( col >= width )
+					col = width - 1;
+			} else
+				alpha = 0xff;
+			// Move to the source pixel
+			px = pixels + row*rowstride + col*len;
+			// Copy RGB and optional alpha (in the original image) components
+			*new_px++ = *px++;
+			*new_px++ = *px++;
+			*new_px++ = *px++;
+			if ( has_alpha && alpha!=0 )
+				alpha = *px;
+			*new_px++ = alpha;
+		}
+	}
+	g_object_unref ( pixbuf );
+	return pxb;
+}
 
 
 /**

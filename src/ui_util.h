@@ -47,6 +47,8 @@ GtkWidget *ui_attach_to_table ( GtkTable *table, int i, char *mylabel, GtkWidget
 GdkPixbuf *ui_pixbuf_new ( GdkColor *color, guint width, guint height );
 GdkPixbuf *ui_pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha );
 GdkPixbuf *ui_pixbuf_scale_alpha ( GdkPixbuf *pixbuf, guint8 alpha );
+GdkPixbuf *ui_pixbuf_rotate_full ( GdkPixbuf *pixbuf, gdouble degrees );
+
 void ui_add_recent_file ( const gchar *filename );
 
 void ui_format_1f_cell_data_func ( GtkTreeViewColumn *col,
