@@ -44,6 +44,7 @@ HELP_MEDIA = \
     figures/select_18.png \
     figures/showpic_18.png \
     figures/DEM_Example.png \
+    figures/GeoRefLayer_Properties.png \
     figures/Goto_Main_Window.png \
     figures/Panel_Stats_Tab.png \
     figures/Trackpoint_edit_dialog.png \

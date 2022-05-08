@@ -12,11 +12,6 @@ This layer allows one to use any image as a map. You will need to tell it how to
 When a new image is selected the values from a <ulink url="https://en.wikipedia.org/wiki/World_file">World File</ulink> will automatically be tried to be found. 
 (subject to the setting in <xref linkend="prefs_external"/>)
 </para>
-<note>
-<para>
-&appname; does not currently support skew values and since World Files do not contain what coordinate system the coordinate values are in - &appname; assumes they are in UTM.
-</para>
-</note>
 <para>
 If you do not know the scale of the map but know the coordinates of both upper left and lower right coordinates,
  you can enter these coordinates (Lat/Lon only) and then use the <guibutton>Calculate MPP values from coordinates</guibutton> button.
@@ -37,17 +32,30 @@ Configurable properties:
 	<para>X + Y Scales in metres per pixel.</para>
 </listitem>
 <listitem>
+	<para>Rotation (in degrees), clockwise about the upper left corner position.</para>
+</listitem>
+<listitem>
 	<para>Coordinates of the upper left corner of the map (either UTM or Lat/Lon value).</para>
 </listitem>
 <listitem>
 	<para>Alpha. Control the Alpha value for transparency effects using a value between 0 and 255 with the default being 255 for a fully solid image, whereas 0 is transparent.</para>
 </listitem>
 </itemizedlist>
+<figure>
+<title>Properties</title>
+<screenshot>
+  <graphic format="PNG" fileref="figures/GeoRefLayer_Properties.png"/>
+</screenshot>
+</figure>
 <section><title>World File Notes</title>
 <para>
   &appname; does not support "upside down" images, nor does it support the +ve/-ve definitions of the Y-Scale.
   Instead the Y-Scale is treated as in the direction of the image, thus reading in from a World File the +ve/-ve of the Y-Scale is ignored
   and -ve values can not input directly into the GUI (simply use the absolute value instead).
+</para>
+<para>
+  There is limited support for reading in skew values.
+  As &appname; uses a single rotation value, this will be derived from the y-skew value and the x-skew is ignored.
 </para>
 </section>
 </section><!-- Prop END -->

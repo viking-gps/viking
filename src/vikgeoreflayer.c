@@ -42,6 +42,7 @@ VikLayerParam georef_layer_params[] = {
   { VIK_LAYER_GEOREF, "mpp_northing", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_GEOREF, "corner_zone", VIK_LAYER_PARAM_UINT, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_GEOREF, "corner_letter_as_int", VIK_LAYER_PARAM_UINT, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
+  { VIK_LAYER_GEOREF, "rotation", VIK_LAYER_PARAM_DOUBLE, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_GEOREF, "alpha", VIK_LAYER_PARAM_UINT, VIK_LAYER_NOT_IN_PROPERTIES, NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL },
 };
 
@@ -53,6 +54,7 @@ enum {
   PARAM_MN,
   PARAM_CZ,
   PARAM_CL,
+  PARAM_RT,
   PARAM_AA,
   NUM_PARAMS };
 
@@ -168,6 +170,8 @@ VikLayerInterface vik_georef_layer_interface = {
 typedef struct {
   GtkWidget *x_spin;
   GtkWidget *y_spin;
+  GtkWidget *r_spin; // Rotation
+
   // UTM widgets
   GtkWidget *ce_spin; // top left
   GtkWidget *cn_spin; //    "
@@ -193,6 +197,7 @@ struct _VikGeorefLayer {
   gdouble mpp_easting, mpp_northing;
   struct LatLon ll_br; // Bottom Right
   guint width, height;
+  gdouble rotation; // Degrees
 
   GdkPixbuf *scaled;
   guint32 scaled_width, scaled_height;
@@ -267,6 +272,7 @@ static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, VikLayerSetParam *
     case PARAM_ME: vgl->mpp_easting = vlsp->data.d; break;
     case PARAM_CZ: if ( vlsp->data.u <= 60 ) vgl->corner.zone = vlsp->data.u; break;
     case PARAM_CL: if ( vlsp->data.u >= 65 && vlsp->data.u <= 90 ) vgl->corner.letter = vlsp->data.u; break;
+    case PARAM_RT: vgl->rotation = vlsp->data.d; break;
     case PARAM_AA: if ( vlsp->data.u <= 255 ) vgl->alpha = vlsp->data.u; break;
 /*
   case PARAM_IMAGE: {
@@ -295,6 +301,9 @@ static gboolean georef_layer_set_param ( VikGeorefLayer *vgl, VikLayerSetParam *
     case PARAM_CL:
       if ( vlsp->data.u >= 65 && vlsp->data.u <= 90 )
         changed = vik_layer_param_change_gchar ( vlsp->data, &vgl->corner.letter );
+      break;
+    case PARAM_RT:
+      changed = vik_layer_param_change_double ( vlsp->data, &vgl->rotation );
       break;
     case PARAM_AA:
       if ( vlsp->data.u <= 255 )
@@ -354,6 +363,7 @@ static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 i
     case PARAM_ME: rv.d = vgl->mpp_easting; break;
     case PARAM_CZ: rv.u = vgl->corner.zone; break;
     case PARAM_CL: rv.u = vgl->corner.letter; break;
+    case PARAM_RT: rv.u = vgl->rotation; break;
     case PARAM_AA: rv.u = vgl->alpha; break;
     default: break;
   }
@@ -373,7 +383,7 @@ static VikGeorefLayer *georef_layer_new ( VikViewport *vvp )
   vgl->mpp_northing = vik_viewport_get_ympp ( vvp );
   vgl->mpp_easting = vik_viewport_get_xmpp ( vvp );
   vik_coord_to_utm ( vik_viewport_get_center ( vvp ), &(vgl->corner) );
-
+  vgl->rotation = 0.0;
   vgl->image = NULL;
   vgl->pixbuf = NULL;
   vgl->click_x = -1;
@@ -437,6 +447,8 @@ static void georef_layer_mpp_from_coords ( VikCoordMode mode, struct LatLon ll_t
 
 static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
 {
+  static gdouble draw_rtn = 0.0;
+
   if ( vgl->pixbuf )
   {
     gdouble xmpp = vik_viewport_get_xmpp(vp), ympp = vik_viewport_get_ympp(vp);
@@ -466,11 +478,38 @@ static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
     // If image not in viewport bounds - no need to draw it (or bother with any scaling)
     if ( (x < 0 || x < width) && (y < 0 || y < height) && x+layer_width > 0 && y+layer_height > 0 ) {
 
-      if ( scale )
-      {
+      gboolean rotation_change = util_gdouble_different ( vgl->rotation, draw_rtn );
+      draw_rtn = vgl->rotation;
+      static gint rtn_x_offset = 0;
+      static gint rtn_y_offset = 0;
+
+      if ( scale || rotation_change ) {
         /* rescale if necessary */
-        if (layer_width == vgl->scaled_width && layer_height == vgl->scaled_height && vgl->scaled != NULL)
+        if (layer_width == vgl->scaled_width && layer_height == vgl->scaled_height && vgl->scaled != NULL) {
           pixbuf = vgl->scaled;
+          if ( rotation_change ) {
+            // Rotation change needs to be applied on the original image
+            //  (not the current scaled image - as that may already have an existing rotation applied);
+            //  thus must (re)scale first to then apply new rotation
+            if ( vgl->scaled )
+              g_object_unref ( vgl->scaled );
+            vgl->scaled = NULL;
+            pixbuf = gdk_pixbuf_scale_simple ( vgl->pixbuf,
+                                               vgl->scaled_width,
+                                               vgl->scaled_height,
+                                               GDK_INTERP_BILINEAR );
+            pixbuf = ui_pixbuf_rotate_full ( pixbuf, vgl->rotation );
+            if ( vgl->rotation < 0 ) {
+              rtn_y_offset = sin ( fabs(DEG2RAD(vgl->rotation)) ) * vgl->scaled_width;
+              rtn_x_offset = 0;
+            }
+            else {
+              rtn_x_offset = gdk_pixbuf_get_width ( pixbuf ) - cos ( DEG2RAD(vgl->rotation) ) * vgl->scaled_width;
+              rtn_y_offset = 0;
+            }
+            vgl->scaled = pixbuf;
+          }
+        }
         else
         {
           pixbuf = gdk_pixbuf_scale_simple(
@@ -480,6 +519,21 @@ static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
             GDK_INTERP_BILINEAR
           );
 
+          if ( util_gdouble_different(vgl->rotation, 0.0) ) {
+            pixbuf = ui_pixbuf_rotate_full ( pixbuf, vgl->rotation );
+            if ( vgl->rotation < 0 ) {
+              rtn_y_offset = sin ( fabs(DEG2RAD(vgl->rotation)) ) * layer_width;
+              rtn_x_offset = 0;
+            }
+            else {
+              rtn_x_offset = gdk_pixbuf_get_width ( pixbuf ) - cos ( DEG2RAD(vgl->rotation) ) * layer_width;
+              rtn_y_offset = 0;
+            }
+          } else {
+            rtn_x_offset = 0;
+            rtn_y_offset = 0;
+          }
+
           if (vgl->scaled != NULL)
             g_object_unref(vgl->scaled);
 
@@ -488,7 +542,11 @@ static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
           vgl->scaled_height = layer_height;
         }
       }
-      vik_viewport_draw_pixbuf ( vp, pixbuf, 0, 0, x, y, layer_width, layer_height ); /* todo: draw only what we need to. */
+      // Use of offsets retains the image upper left corner at the map corner position
+      vik_viewport_draw_pixbuf ( vp, pixbuf, 0, 0,
+                                 x - rtn_x_offset,
+                                 y - rtn_y_offset,
+                                 layer_width, layer_height ); /* todo: draw only what we need to. */
     }
   }
 }
@@ -575,12 +633,17 @@ static void gdouble2spinwidget ( GtkWidget *widget, gdouble val )
   gtk_spin_button_set_value ( GTK_SPIN_BUTTON(widget), val > 0 ? val : -val );
 }
 
-static void set_widget_values ( changeable_widgets *cw, gdouble values[4] )
+// Supported World File Values
+//  only 5, since don't support both skew values
+#define SWFV 5
+
+static void set_widget_values ( changeable_widgets *cw, gdouble values[SWFV] )
 {
   gdouble2spinwidget ( cw->x_spin, values[0] );
-  gdouble2spinwidget ( cw->y_spin, values[1] );
-  gdouble2spinwidget ( cw->ce_spin, values[2] );
-  gdouble2spinwidget ( cw->cn_spin, values[3] );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw->r_spin), values[1] ); // -ve value allowed
+  gdouble2spinwidget ( cw->y_spin, values[2] );
+  gdouble2spinwidget ( cw->ce_spin, values[3] );
+  gdouble2spinwidget ( cw->cn_spin, values[4] );
 }
 
 static gboolean world_file_read_line ( FILE *ff, gdouble *value, gboolean use_value )
@@ -604,7 +667,7 @@ static gboolean world_file_read_line ( FILE *ff, gdouble *value, gboolean use_va
  *  x&y scale as meters per pixel
  *  x&y coords as UTM eastings and northings respectively
  */
-static gint world_file_read_file ( const gchar* filename, gdouble values[4] )
+static gint world_file_read_file ( const gchar* filename, gdouble values[SWFV] )
 {
   g_debug ("%s - trying world file %s", __FUNCTION__, filename);
 
@@ -613,18 +676,21 @@ static gint world_file_read_file ( const gchar* filename, gdouble values[4] )
     return 1;
   else {
     gint answer = 2; // Not enough info read yet
-    // **We do not handle 'skew' values ATM - normally they are a value of 0 anyway to align with the UTM grid
+    // **Only support one 'skew' value
     if ( world_file_read_line ( f, &values[0], TRUE ) // x scale
-      && world_file_read_line ( f, NULL, FALSE ) // Ignore value in y-skew line**
+      && world_file_read_line ( f, &values[1], TRUE ) // y-skew
       && world_file_read_line ( f, NULL, FALSE ) // Ignore value in x-skew line**
-      && world_file_read_line ( f, &values[1], TRUE ) // y scale
-      && world_file_read_line ( f, &values[2], TRUE ) // x-coordinate of the upper left pixel
-      && world_file_read_line ( f, &values[3], TRUE ) // y-coordinate of the upper left pixel
+      && world_file_read_line ( f, &values[2], TRUE ) // y scale
+      && world_file_read_line ( f, &values[3], TRUE ) // x-coordinate of the upper left pixel
+      && world_file_read_line ( f, &values[4], TRUE ) // y-coordinate of the upper left pixel
        )
     {
-       // Success
-       g_debug ("%s - %s - world file read success", __FUNCTION__, filename);
-       answer = 0;
+      if ( util_gdouble_different(values[1], 0.0) )
+        // Convert skew value (from pixels) into degrees
+        values[1] = RAD2DEG ( atan (values[1]/values[0]) );
+      // Success
+      g_debug ("%s - %s - world file read success", __FUNCTION__, filename);
+      answer = 0;
     }
     fclose ( f );
     return answer;
@@ -642,7 +708,7 @@ static void georef_layer_dialog_load ( changeable_widgets *cw )
 
   if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_ACCEPT )
   {
-     gdouble values[4];
+     gdouble values[SWFV];
      gchar *fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) );
      gint answer = world_file_read_file ( fn, values );
      if ( answer == 1 )
@@ -680,7 +746,19 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
     }
     else
     {
-      fprintf ( f, "%f\n%f\n%f\n%f\n%f\n%f\n", vgl->mpp_easting, 0.0, 0.0, -vgl->mpp_northing, vgl->corner.easting, vgl->corner.northing );
+      gdouble skewx = 0.0;
+      gdouble skewy = 0.0;
+      // Convert rotation to a skew value
+      // ATM we don't support separate x & y skew values.
+      if ( util_gdouble_different(vgl->rotation, 0.0) ) {
+        if ( util_gdouble_different(vgl->rotation, 90.0) ) {
+          skewx = -(vgl->mpp_easting)*tan(DEG2RAD(vgl->rotation));
+          skewy = -(vgl->mpp_northing)*tan(DEG2RAD(vgl->rotation));
+        }
+        else
+          g_message ( "%s: Warning can not export skews of 90 degrees rotation.", __FUNCTION__ );
+      }
+      fprintf ( f, "%f\n%f\n%f\n%f\n%f\n%f\n", vgl->mpp_easting, skewx, skewy, -vgl->mpp_northing, vgl->corner.easting, vgl->corner.northing );
       fclose ( f );
     }
   }
@@ -697,7 +775,7 @@ static gboolean maybe_read_world_file ( VikFileEntry *vfe, gpointer user_data )
 {
   if ( a_preferences_get (VIKING_PREFERENCES_IO_NAMESPACE "georef_auto_read_world_file")->b ) {
     const gchar* filename = vik_file_entry_get_filename(VIK_FILE_ENTRY(vfe));
-    gdouble values[4];
+    gdouble values[SWFV];
     if ( filename && user_data ) {
 
       changeable_widgets *cw = user_data;
@@ -869,7 +947,8 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
   /* Default to reject as user really needs to specify map file first */
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
   GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
-  GtkWidget *table, *wfp_hbox, *wfp_label, *wfp_button, *ce_label, *cn_label, *xlabel, *ylabel, *imagelabel;
+  GtkWidget *table, *wfp_hbox, *wfp_label, *wfp_button, *ce_label, *cn_label,
+    *xlabel, *ylabel, *rlabel, *imagelabel;
   changeable_widgets cw;
 
   GtkBox *dgbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
@@ -893,11 +972,15 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
 
   xlabel = gtk_label_new ( _("X (easting) scale (mpp): "));
   ylabel = gtk_label_new ( _("Y (northing) scale (mpp): "));
+  rlabel = gtk_label_new ( _("Rotation (degrees):"));
 
   cw.x_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 0 ), 1, 8 );
   gtk_widget_set_tooltip_text ( GTK_WIDGET(cw.x_spin), _("the scale of the map in the X direction (meters per pixel)") );
   cw.y_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 4, VIK_VIEWPORT_MIN_ZOOM, VIK_VIEWPORT_MAX_ZOOM, 1, 5, 0 ), 1, 8 );
   gtk_widget_set_tooltip_text ( GTK_WIDGET(cw.y_spin), _("the scale of the map in the Y direction (meters per pixel)") );
+
+  cw.r_spin = gtk_spin_button_new ( (GtkAdjustment *) gtk_adjustment_new ( 0.0, -90.0, 90.0, 1, 5, 0 ), 1, 3 );
+  gtk_widget_set_tooltip_text ( GTK_WIDGET(cw.r_spin), _("Clockwise about the upper-left corner") );
 
   imagelabel = gtk_label_new ( _("Map Image:") );
   cw.imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE, maybe_read_world_file, &cw);
@@ -906,6 +989,7 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
   gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.cn_spin), vgl->corner.northing );
   gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.x_spin), vgl->mpp_easting );
   gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.y_spin), vgl->mpp_northing );
+  gtk_spin_button_set_value ( GTK_SPIN_BUTTON(cw.r_spin), vgl->rotation );
   if ( vgl->image )
     vik_file_entry_set_filename ( VIK_FILE_ENTRY(cw.imageentry), vgl->image );
 
@@ -916,6 +1000,8 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
   gtk_table_attach_defaults ( GTK_TABLE(table), cw.x_spin, 1, 2, 2, 3 );
   gtk_table_attach_defaults ( GTK_TABLE(table), ylabel, 0, 1, 3, 4 );
   gtk_table_attach_defaults ( GTK_TABLE(table), cw.y_spin, 1, 2, 3, 4 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), rlabel, 0, 1, 4, 5 );
+  gtk_table_attach_defaults ( GTK_TABLE(table), cw.r_spin, 1, 2, 4, 5 );
 
   cw.tabs = gtk_notebook_new();
   GtkWidget *table_utm = gtk_table_new ( 3, 2, FALSE );
@@ -1020,6 +1106,7 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
          vgl->corner.letter = toupper(*letter);
       vgl->mpp_easting = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.x_spin) );
       vgl->mpp_northing = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.y_spin) );
+      vgl->rotation = gtk_spin_button_get_value ( GTK_SPIN_BUTTON(cw.r_spin) );
       vgl->ll_br = get_ll_br (vgl);
       check_br_is_good_or_msg_user ( vgl );
       // TODO check if image has changed otherwise no need to regenerate pixbuf
