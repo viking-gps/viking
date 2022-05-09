@@ -531,10 +531,18 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
           //  also makes it easier to add more options without making the dialog massive
           tables[current_group] = gtk_table_new ( tab_widget_count, 1, FALSE );
           GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
-          gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
+          gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
           gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(sw), tables[current_group] );
           // Ensure it doesn't start off too small
-          gtk_widget_set_size_request ( sw, -1, 325 * vik_viewport_get_scale(NULL) );
+          //  as this is a communal code for different dialogs,
+          //  can't try to save/restore previous size as it may not be appropriate.
+          gint width, height;
+          gtk_window_get_size ( parent, &width, &height );
+          height /= 2;
+          // Limit the height from being excessively long
+          if ( height > 325*vik_viewport_get_scale(NULL) )
+            height = 325*vik_viewport_get_scale(NULL);
+          gtk_widget_set_size_request ( sw, width/2.5, height );
           gtk_notebook_append_page ( GTK_NOTEBOOK(notebook), sw, gtk_label_new(groups[current_group]) );
         }
       }
