@@ -650,6 +650,16 @@ void update_from_geoclue ( VikWindow *vw, struct LatLon ll, gdouble accuracy )
 }
 #endif
 
+static void auto_location ( VikWindow *vw )
+{
+  vik_window_statusbar_update ( vw, _("Trying to determine location..."), VIK_STATUSBAR_INFO );
+#ifdef HAVE_LIBGEOCLUE_2
+  libgeoclue_where_am_i ( vw, update_from_geoclue );
+#else
+  determine_location_fallback ( vw );
+#endif
+}
+
 /**
  * Steps to be taken once initial loading has completed
  */
@@ -671,13 +681,7 @@ void vik_window_new_window_finish ( VikWindow *vw )
   // If not loaded any file, maybe try the location lookup
   if ( vw->loaded_type == LOAD_TYPE_READ_FAILURE ) {
     if ( a_vik_get_startup_method ( ) == VIK_STARTUP_METHOD_AUTO_LOCATION ) {
-
-      vik_window_statusbar_update ( vw, _("Trying to determine location..."), VIK_STATUSBAR_INFO );
-#ifdef HAVE_LIBGEOCLUE_2
-      libgeoclue_where_am_i ( vw, update_from_geoclue );
-#else
-      determine_location_fallback ( vw );
-#endif
+      auto_location ( vw );
     }
   }
 }
@@ -5385,14 +5389,8 @@ static void goto_default_location( GtkAction *a, VikWindow *vw)
 
 static void goto_auto_location( GtkAction *a, VikWindow *vw)
 {
-  vik_window_statusbar_update ( vw, _("Trying to determine location..."), VIK_STATUSBAR_INFO );
-#ifdef HAVE_LIBGEOCLUE_2
-  libgeoclue_where_am_i ( vw, update_from_geoclue );
-#else
-  determine_location_fallback ( vw );
-#endif
+  auto_location ( vw );
 }
-
 
 static void goto_address( GtkAction *a, VikWindow *vw)
 {
