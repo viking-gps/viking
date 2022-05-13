@@ -724,6 +724,7 @@ static void georef_layer_dialog_load ( changeable_widgets *cw )
   gtk_widget_destroy ( file_selector );
 }
 
+// Write World File
 static void georef_layer_export_params ( gpointer *pass_along[2] )
 {
   VikGeorefLayer *vgl = VIK_GEOREF_LAYER(pass_along[0]);
@@ -736,6 +737,12 @@ static void georef_layer_export_params ( gpointer *pass_along[2] )
   if ( gtk_dialog_run ( GTK_DIALOG ( file_selector ) ) == GTK_RESPONSE_ACCEPT )
   {
     gchar *fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_selector) );
+    if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) )
+      if ( ! a_dialog_yes_or_no ( GTK_WINDOW(file_selector), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) ) {
+        g_free ( fn );
+        gtk_widget_destroy ( file_selector );
+        return;
+      }
     FILE *f = g_fopen ( fn, "w" );
     g_free ( fn );
     gtk_widget_destroy ( file_selector );
