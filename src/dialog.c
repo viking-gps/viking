@@ -27,9 +27,20 @@
 
 #include <ctype.h>
 
+static void set_label_selectable ( gpointer data, gpointer user_data )
+{
+  GtkWidget *widget = GTK_WIDGET(data);
+  if ( GTK_IS_LABEL(widget) )
+    gtk_label_set_selectable ( GTK_LABEL(widget), TRUE );
+}
+
 void a_dialog_msg ( GtkWindow *parent, gint type, const gchar *info, const gchar *extra )
 {
   GtkWidget *msgbox = gtk_message_dialog_new ( parent, GTK_DIALOG_DESTROY_WITH_PARENT, type, GTK_BUTTONS_OK, info, extra );
+  GtkWidget *area = gtk_message_dialog_get_message_area ( GTK_MESSAGE_DIALOG(msgbox) );
+  GList *children = gtk_container_get_children ( GTK_CONTAINER(area) );
+  g_list_foreach ( children, set_label_selectable, NULL );
+  g_list_free ( children );
   gtk_dialog_run ( GTK_DIALOG(msgbox) );
   gtk_widget_destroy ( msgbox );
 }
