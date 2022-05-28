@@ -684,6 +684,7 @@ void ui_cr_draw_line ( cairo_t *cr, gdouble x1, gdouble y1, gdouble x2, gdouble 
  */
 void ui_cr_draw_rectangle ( cairo_t *cr, gboolean fill, gdouble xx, gdouble yy, gdouble ww, gdouble hh )
 {
+	g_return_if_fail ( cr != NULL );
 	cairo_rectangle ( cr, xx, yy, ww, hh );
 	if ( fill )
 		cairo_fill ( cr );
