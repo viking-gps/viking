@@ -20,6 +20,16 @@
     <property name="url-ll-lat-first">FALSE</property>
   </object>
   <object class="VikRoutingWebEngine">
+    <property name="id">brouterRiver</property>
+    <property name="label">brouter River</property>
+    <property name="format">gpx</property>
+    <property name="url-base">https://brouter.de/brouter?nogos=&amp;profile=river&amp;alternativeidx=0&amp;format=gpx</property>
+    <property name="url-start-ll">&amp;lonlats=%s,%s</property>
+    <property name="url-stop-ll">|%s,%s</property>
+    <property name="url-via-ll"></property>
+    <property name="url-ll-lat-first">FALSE</property>
+  </object>
+  <object class="VikRoutingWebEngine">
     <property name="id">osrmBicycle</property>
     <property name="label">OSRM Bicycle</property>
     <property name="format">viking-geojson-osrm</property>
