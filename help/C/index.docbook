@@ -2358,6 +2358,12 @@ Such as <ulink url="https://operations.osmfoundation.org/policies/tiles/"><citet
   </para>
 </section>
 
+<section><title>Debug Mode: Flush Map Cache</title>
+  <para>
+    Flushes the map cache for this particular map only.
+  </para>
+</section>
+
 </section>
 
 
