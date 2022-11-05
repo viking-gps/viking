@@ -2482,6 +2482,22 @@ static void maps_layer_about ( menu_array_values values )
                         vik_map_source_get_label (map) );
 }
 
+static void maps_layer_about_debug ( menu_array_values values )
+{
+  VikMapsLayer *vml = VIK_MAPS_LAYER(values[MA_VML]);
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
+  guint16 id = vik_map_source_get_uniq_id(map);
+  const char *label = vik_map_source_get_label(map);
+
+  VikViewport *vvp = VIK_VIEWPORT(values[MA_VVP]);
+  gdouble xzoom = vml->xmapzoom ? vml->xmapzoom : vik_viewport_get_xmpp ( vvp );
+
+  gchar *msg = g_strdup_printf ( "%s id=%d OSMzoom=%d", label, id, map_utils_mpp_to_zoom_level(xzoom) );
+  a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), msg );
+  g_free ( msg );
+}
+
 #ifdef HAVE_SQLITE3_H
 static void maps_layer_mbtiles_open_cb ( menu_array_values values )
 {
@@ -2811,6 +2827,8 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
 #endif
 
   (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_ABOUT, G_CALLBACK(maps_layer_about), values );
+  if ( vik_debug )
+    (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_INFO, G_CALLBACK(maps_layer_about_debug), values );
 
   // Typical users shouldn't need to use this functionality - so debug only ATM
   if ( vik_debug ) {

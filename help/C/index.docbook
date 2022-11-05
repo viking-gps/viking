@@ -2352,6 +2352,12 @@ Such as <ulink url="https://operations.osmfoundation.org/policies/tiles/"><citet
   </para>
 </section>
 
+<section><title>Debug Mode: Information</title>
+  <para>
+    This displays a dialog with extra informationa about the particular map - including the internal Id number used for this instance.
+  </para>
+</section>
+
 </section>
 
 
