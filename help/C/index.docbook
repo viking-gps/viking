@@ -2345,6 +2345,13 @@ Such as <ulink url="https://operations.osmfoundation.org/policies/tiles/"><citet
   If necessary, the colours used for the map cache overlay indicators can be altered via the advanced configuration in <xref linkend="misc_settings"/>.
 </para>
 </section>
+
+<section><title>About</title>
+  <para>
+    This displays a dialog with extra detail about the particular map - typically license information.
+  </para>
+</section>
+
 </section>
 
 
