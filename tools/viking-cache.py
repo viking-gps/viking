@@ -46,11 +46,12 @@ def optimize_connection(cur):
     cur.execute("""PRAGMA locking_mode=EXCLUSIVE""")
     cur.execute("""PRAGMA journal_mode=DELETE""")
 
-def write_database(cur):
-    logger.debug('analyzing db')
-    cur.execute("""ANALYZE;""")
+def write_database(con):
+    con.commit()
 
 def optimize_database(cur):
+    logger.debug('analyzing db')
+    cur.execute("""ANALYZE;""")
     logger.debug('cleaning db')
     cur.execute("""VACUUM;""")
 
@@ -109,10 +110,11 @@ def osm_to_mbtiles(directory_path, mbtiles_file, **kwargs):
     if count == 0:
         print ("No tiles inserted")
     else:
-        write_database(cur)
+        write_database(con)
         if not kwargs.get('nooptimize'):
             sys.stdout.write("Optimizing...\n")
             optimize_database(con)
+    con.close()
     return
 
 # Based on disk_to_mbtiles in mbutil
@@ -174,10 +176,11 @@ def vikcache_to_mbtiles(directory_path, mbtiles_file, **kwargs):
     if count == 0:
         print ("No tiles inserted. NB This method only works with the Legacy Viking cache layout")
     else:
-        write_database(cur)
+        write_database(con)
         if not kwargs.get('nooptimize'):
             sys.stdout.write("Optimizing...\n")
             optimize_database(con)
+    con.close()
     return
 
 def mbtiles_to_vikcache(mbtiles_file, directory_path, **kwargs):
