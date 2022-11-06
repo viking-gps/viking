@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Inspired by MBUtils:
 #  http://github.com/mapbox/mbutil
