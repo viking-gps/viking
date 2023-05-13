@@ -85,6 +85,10 @@ static tag_mapping tag_path_map[] = {
 	{ tt_trk_trkseg_trkpt_time,    "/TrainingCenterDatabase/Courses/Course/Track/Trackpoint/Time" },
 	{ tt_trk_trkseg_trkpt_pos_lat, "/TrainingCenterDatabase/Courses/Course/Track/Trackpoint/Position/LatitudeDegrees" },
 	{ tt_trk_trkseg_trkpt_pos_lon, "/TrainingCenterDatabase/Courses/Course/Track/Trackpoint/Position/LongitudeDegrees" },
+	{ tt_trk_trkseg_trkpt_cadence, "/TrainingCenterDatabase/Courses/Course/Track/Trackpoint/Cadence" },
+	{ tt_trk_trkseg_trkpt_hr,      "/TrainingCenterDatabase/Courses/Course/Track/Trackpoint/HeartRateBpm/Value" },
+	{ tt_trk_trkseg_trkpt_speed,   "/TrainingCenterDatabase/Courses/Course/Track/Trackpoint/Extensions/TPX/Speed" },
+	{ tt_trk_trkseg_trkpt_power,   "/TrainingCenterDatabase/Courses/Course/Track/Trackpoint/Extensions/Watts" },
 
 // There are repeats of Track elements but at a different XML layout tree position
 //  currently don't care about various sport types
@@ -98,6 +102,7 @@ static tag_mapping tag_path_map[] = {
 	{ tt_trk_trkseg_trkpt_pos_lon, "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Position/LongitudeDegrees" },
 	{ tt_trk_trkseg_trkpt_cadence, "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Cadence" },
 	{ tt_trk_trkseg_trkpt_cadence, "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Extensions/RunCadence" },
+	{ tt_trk_trkseg_trkpt_cadence, "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Extensions/ns3:TPX/ns3:RunCadence" },
 	{ tt_trk_trkseg_trkpt_hr,      "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/HeartRateBpm/Value" },
 	{ tt_trk_trkseg_trkpt_power,   "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Extensions/ns3:TPX/ns3:Watts" },
 	{ tt_trk_trkseg_trkpt_power,   "/TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Extensions/Watts" },
