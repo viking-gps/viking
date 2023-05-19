@@ -2133,12 +2133,10 @@ static void vik_window_pan_release ( VikWindow *vw, GdkEventButton *event )
       vw->delayed_pan_y = vw->pan_y;
       // Get double click time
       GtkSettings *gs = gtk_widget_get_settings ( GTK_WIDGET(vw) );
-      GValue dct = G_VALUE_INIT;
-      g_value_init ( &dct, G_TYPE_INT );
-      g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &dct );
+      gint dct;
+      g_object_get ( G_OBJECT(gs), "gtk-double-click-time", &dct, NULL );
       // Give chance for a double click to occur
-      gint timer = g_value_get_int ( &dct ) + 50;
-      (void)g_timeout_add ( timer, (GSourceFunc)vik_window_pan_timeout, vw );
+      (void)g_timeout_add ( dct+50, (GSourceFunc)vik_window_pan_timeout, vw );
       do_draw = FALSE;
     }
     else {
@@ -3486,11 +3484,10 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
       // Best if slightly longer than the double click time,
       //  otherwise timeout would get removed, only to be recreated again by the second GTK_BUTTON_PRESS
       GtkSettings *gs = gtk_widget_get_settings ( GTK_WIDGET(t->vw) );
-      GValue gto = G_VALUE_INIT;
-      g_value_init ( &gto, G_TYPE_INT );
-      g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &gto );
-      gint timer = g_value_get_int ( &gto ) + 50;
-      t->vw->show_menu_id = g_timeout_add ( timer, (GSourceFunc)window_show_menu, t->vw );
+      gint dct;
+      g_object_get ( G_OBJECT(gs), "gtk-double-click-time", &dct, NULL );
+      // Give chance for a double click to occur
+      t->vw->show_menu_id = g_timeout_add ( dct+50, (GSourceFunc)window_show_menu, t->vw );
     } else
       // Not using double clicks - so no need to wait and thus apply now
       (void)window_show_menu ( t->vw );
@@ -3537,11 +3534,9 @@ static VikLayerToolFuncStatus selecttool_release (VikLayer *vl, GdkEventButton *
         // Best if slightly longer than the double click time,
         //  otherwise timeout would get removed, only to be recreated again by the second GTK_BUTTON_PRESS
         GtkSettings *gs = gtk_widget_get_settings ( GTK_WIDGET(t->vw) );
-        GValue gto = G_VALUE_INIT;
-        g_value_init ( &gto, G_TYPE_INT );
-        g_object_get_property ( G_OBJECT(gs), "gtk-double-click-time", &gto );
-        gint timer = g_value_get_int ( &gto ) + 50;
-        t->vw->deselect_id = g_timeout_add ( timer, (GSourceFunc)window_deselect, t->vw );
+        gint dct;
+        g_object_get ( G_OBJECT(gs), "gtk-double-click-time", &dct, NULL );
+        t->vw->deselect_id = g_timeout_add ( dct+50, (GSourceFunc)window_deselect, t->vw );
       } else
         // Not using double clicks - so no need to wait and thus apply now
         (void)window_deselect ( t->vw );
