@@ -2137,7 +2137,8 @@ static void tac_lines_calc ( VikAggregateLayer *val )
 
   // North/South passage...
   for ( gint xx = tlx; xx <= brx; xx++ ) {
-    for ( gint yy = tly; yy <= bry; yy++ ) {
+    gint yy;
+    for ( yy = tly ; yy <= bry; yy++ ) {
       if ( is_tile_occupied(val->tiles, xx, yy) )
         crt_sz++;
       else {
@@ -2149,12 +2150,21 @@ static void tac_lines_calc ( VikAggregateLayer *val )
         crt_sz = 0;
       }
     }
+    // Detect finish at edge of extents
+    if ( crt_sz > val->ns_size ) {
+      val->ns_size = crt_sz;
+      val->ns_x = xx;
+      val->ns_y = yy;
+    }
+    // Reset for next line
+    crt_sz = 0;
   }
 
   crt_sz = 0;
   // East/West passage...
   for ( gint yy = tly; yy <= bry; yy++ ) {
-    for ( gint xx = tlx; xx <= brx; xx++ ) {
+    gint xx;
+    for ( xx = tlx; xx <= brx; xx++ ) {
       if ( is_tile_occupied(val->tiles, xx, yy) )
         crt_sz++;
       else {
@@ -2166,6 +2176,14 @@ static void tac_lines_calc ( VikAggregateLayer *val )
         crt_sz = 0;
       }
     }
+    // Detect finish at edge of extents
+    if ( crt_sz > val->ew_size ) {
+      val->ew_size = crt_sz;
+      val->ew_x = xx;
+      val->ew_y = yy;
+    }
+    // Reset for next line
+    crt_sz = 0;
   }
 
   g_debug ( "%s: ns_x %d, ns_y %d, ns_size %d | ew_x %d, ew_y %d, ew_size %d:",
