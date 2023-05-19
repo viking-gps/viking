@@ -1153,6 +1153,19 @@ Version1.1+: This will automatically move the viewport and select the best zoom 
         </para>
       </listitem>
     </varlistentry>
+    <varlistentry>
+      <term><guilabel>Lap Data</guilabel></term>
+      <listitem>
+        <para>
+          Version1.11+: View lap data for this layer. The menu item is only shown if lap data is available.
+        </para>
+        <note>
+          <para>
+            At present, lap data is only generated from GPX files.
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
   </variablelist>
 </section>
 

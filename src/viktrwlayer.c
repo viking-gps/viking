@@ -147,6 +147,7 @@ struct _VikTrwLayer {
   gpx_version_t gpx_version;
   gchar *gpx_header;
   gchar *gpx_extensions;
+  GQueue *laps;
 
   PangoLayout *tracklabellayout;
   font_size_t track_font_size;
@@ -1044,6 +1045,17 @@ void vik_trw_layer_set_gpx_extensions ( VikTrwLayer *vtl, gchar *value)
   vtl->gpx_extensions = g_strdup ( value );
 }
 
+GQueue *vik_trw_layer_get_laps ( VikTrwLayer *vtl )
+{
+  return vtl->laps;
+}
+
+void vik_trw_layer_set_laps ( VikTrwLayer *vtl, GQueue *value )
+{
+  if ( vtl->laps )
+    g_queue_free ( vtl->laps );
+  vtl->laps = value;
+}
 
 typedef struct {
   gboolean found;
@@ -2023,6 +2035,8 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
   vik_trw_metadata_free ( trwlayer->metadata );
   g_free ( trwlayer->gpx_header );
   g_free ( trwlayer->gpx_extensions );
+  if ( trwlayer->laps )
+    g_queue_free ( trwlayer->laps );
 }
 
 static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp, gboolean highlight )
@@ -3431,6 +3445,39 @@ static void trw_layer_tracks_tooltip ( const gpointer id, VikTrack *tr, tooltip_
   }
 }
 
+/**
+ * Returns a nicely formatted Lap output
+ * May return NULL, free after use
+ */
+static gchar* trw_layer_lap_string ( VikTrwLayer *vtl )
+{
+  gchar *extstr = NULL;
+  if ( vtl->gpx_extensions ) {
+    GQueue* gq = vik_trw_layer_get_laps ( vtl );
+    if ( gq ) {
+      GString *gs = g_string_new ( NULL );
+      vik_units_distance_t dist_units = a_vik_get_units_distance ();
+      for ( guint ii = 0; ii < g_queue_get_length(gq); ii++ ) {
+        GList *gl = g_queue_peek_nth_link ( gq, ii );
+        GpxLapType* lap = (GpxLapType*)gl->data;
+        gchar dbuf[64];
+        g_string_append_printf ( gs, _("\nLap %d: "), ii+1 );
+        vu_distance_text ( dbuf, sizeof(dbuf), dist_units, lap->distance, TRUE, "%.1f", FALSE );
+        g_string_append ( gs, dbuf );
+
+        gchar tbuf[32];
+        guint h_tot, m_tot, s_tot;
+        util_time_decompose ( lap->duration, &h_tot, &m_tot, &s_tot );
+        g_snprintf ( tbuf, sizeof(tbuf), "%d:%02d:%02d", h_tot, m_tot, s_tot );
+        g_string_append_printf ( gs, _(" in %s"), tbuf );
+      }
+      if ( gs->len )
+        extstr = g_strdup ( gs->str );
+      (void)g_string_free ( gs, TRUE );
+    }
+  }
+  return extstr;
+}
 /*
  * Generate tooltip text for the layer.
  * This is relatively complicated as it considers information for
@@ -3448,7 +3495,7 @@ static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl )
   tbuf3[0] = '\0';
   tbuf4[0] = '\0';
 
-  static gchar tmp_buf[128];
+  static gchar tmp_buf[256];
   tmp_buf[0] = '\0';
 
   // For compact date format I'm using '%x'     [The preferred date representation for the current locale without the time.]
@@ -3576,15 +3623,19 @@ static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl )
       g_snprintf (tbuf1, sizeof(tbuf1), _("\nTotal route length %.1f %s"), len_in_units, tbuf4);
     }
 
+    gchar *extstr = trw_layer_lap_string ( vtl );
+
     // Put together all the elements to form compact tooltip text
     g_snprintf (tmp_buf, sizeof(tmp_buf),
-                _("Tracks: %d - Waypoints: %d - Routes: %d%s%s"),
-                g_hash_table_size (vtl->tracks), g_hash_table_size (vtl->waypoints), g_hash_table_size (vtl->routes), tbuf2, tbuf1);
+                _("Tracks: %d - Waypoints: %d - Routes: %d%s%s%s"),
+                g_hash_table_size (vtl->tracks), g_hash_table_size (vtl->waypoints), g_hash_table_size (vtl->routes), tbuf2, tbuf1, extstr ? extstr : "");
 
     if ( gdate_start )
       g_date_free ( gdate_start );
     if ( gdate_end )
       g_date_free ( gdate_end );
+
+    g_free ( extstr );
   }
 
   return tmp_buf;
@@ -3619,6 +3670,7 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
       // Same tooltip for a route
     case VIK_TRW_LAYER_SUBLAYER_TRACK:
     {
+      gchar *extstr = NULL;
       VikTrack *tr;
       if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK )
         tr = g_hash_table_lookup ( l->tracks, sublayer );
@@ -3626,12 +3678,18 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
         tr = g_hash_table_lookup ( l->routes, sublayer );
 
       if ( tr ) {
+
+        // When only 1 track - show (layer) lap information
+        //  since it must apply to this track
+        if ( g_hash_table_size(l->tracks) == 1 )
+           extstr = trw_layer_lap_string ( l );
+
 	// Could be a better way of handling strings - but this works...
 	gchar time_buf1[20];
 	gchar time_buf2[20];
 	time_buf1[0] = '\0';
 	time_buf2[0] = '\0';
-	static gchar tmp_buf[100];
+	static gchar tmp_buf[256];
 	// Compact info: Short date eg (11/20/99), duration and length
 	// Hopefully these are the things that are most useful and so promoted into the tooltip
 	if ( tr->trackpoints && !isnan(vik_track_get_tp_first(tr)->timestamp) ) {
@@ -3659,22 +3717,25 @@ static const gchar* trw_layer_sublayer_tooltip ( VikTrwLayer *l, gint subtype, g
             }
           }
 	}
+
 	// Get length and consider the appropriate distance units
 	gdouble tr_len = vik_track_get_length(tr);
 	vik_units_distance_t dist_units = a_vik_get_units_distance ();
 	switch (dist_units) {
 	case VIK_UNITS_DISTANCE_KILOMETRES:
-	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f km %s"), time_buf1, tr_len/1000.0, time_buf2);
+	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f km %s%s"), time_buf1, tr_len/1000.0, time_buf2, extstr ? extstr : "");
 	  break;
 	case VIK_UNITS_DISTANCE_MILES:
-	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f miles %s"), time_buf1, VIK_METERS_TO_MILES(tr_len), time_buf2);
+	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f miles %s%s"), time_buf1, VIK_METERS_TO_MILES(tr_len), time_buf2, extstr ? extstr : "");
 	  break;
 	case VIK_UNITS_DISTANCE_NAUTICAL_MILES:
-	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f NM %s"), time_buf1, VIK_METERS_TO_NAUTICAL_MILES(tr_len), time_buf2);
+	  g_snprintf (tmp_buf, sizeof(tmp_buf), _("%s%.1f NM %s%s"), time_buf1, VIK_METERS_TO_NAUTICAL_MILES(tr_len), time_buf2, extstr ? extstr : "");
 	  break;
 	default:
 	  break;
 	}
+        g_free ( extstr );
+
 	return tmp_buf;
       }
     }
@@ -4782,7 +4843,87 @@ static void trw_layer_auto_waypoints_view ( menu_array_layer values )
 static void trw_layer_view_extensions ( menu_array_layer values )
 {
   VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
-  a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->gpx_extensions );
+  a_dialog_scrollable ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("Extensions"), vtl->gpx_extensions, TRUE );
+}
+
+static void trw_layer_view_laps ( menu_array_layer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Lap Data"),
+                                                    VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+                                                    NULL );
+
+  GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  GtkBox *vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+
+  guint size = g_queue_get_length ( vtl->laps );
+  if ( size )
+  {
+    GtkTable *table = GTK_TABLE(gtk_table_new(size, 4, FALSE));
+    gtk_box_pack_start ( vbox, GTK_WIDGET(table), TRUE, TRUE, 0 );
+
+    GQueue* gq = vik_trw_layer_get_laps ( vtl );
+    if (gq) {
+      vik_units_distance_t dist_units = a_vik_get_units_distance ();
+
+      // Header
+      GtkWidget *wh0 = gtk_label_new ( _("Lap") );
+      gtk_table_attach ( table, wh0, 0, 1, 0, 1, GTK_FILL, GTK_SHRINK, 10, 5 );
+
+      GtkWidget *wh1 = gtk_label_new ( _("Date") );
+      gtk_table_attach ( table, wh1, 1, 2, 0, 1, GTK_FILL, GTK_SHRINK, 10, 5 );
+
+      GtkWidget *wh2 = gtk_label_new ( _("Length") );
+      gtk_table_attach ( table, wh2, 2, 3, 0, 1, GTK_FILL, GTK_SHRINK, 10, 5 );
+
+      GtkWidget *wh3 = gtk_label_new ( _("Duration") );
+      gtk_table_attach ( table, wh3, 3, 4, 0, 1, GTK_FILL, GTK_SHRINK, 10, 5 );
+
+      for ( guint ii = 1; ii < g_queue_get_length(gq)+1; ii++ ) {
+        GList *gl = g_queue_peek_nth_link ( gq, ii-1 );
+        GpxLapType* lap = (GpxLapType*)gl->data;
+
+        gchar indxbuf[32];
+        g_snprintf ( indxbuf, sizeof(indxbuf), "%d", ii );
+        GtkWidget *ww0 = ui_label_new_selectable ( indxbuf );
+        gtk_table_attach ( table, ww0, 0, 1, ii, ii+1, GTK_FILL, GTK_SHRINK, 10, 5 );
+
+        GtkWidget *ww1 = ui_label_new_selectable ( NULL );
+        if ( !isnan(lap->startTime) ) {
+          time_t ts = round ( lap->startTime );
+          gchar *msg = vu_get_time_string ( &ts, "%X %x %Z", NULL, NULL ); //&widgets->vc, widgets->tz );
+          gtk_label_set_text ( GTK_LABEL(ww1), msg );
+          g_free ( msg );
+        }
+        gtk_table_attach ( table, ww1, 1, 2, ii, ii+1, GTK_FILL, GTK_SHRINK, 10, 5 );
+
+        GtkWidget *ww2 = ui_label_new_selectable ( NULL );
+        if ( !isnan(lap->distance) ) {
+          gchar dbuf[64];
+          vu_distance_text ( dbuf, sizeof(dbuf), dist_units, lap->distance, TRUE, "%.1f", FALSE );
+          gtk_label_set_text ( GTK_LABEL(ww2), dbuf );
+        }
+        gtk_table_attach ( table, ww2, 2, 3, ii, ii+1, GTK_FILL, GTK_SHRINK, 10, 5 );
+
+        gchar tbuf[32];
+        guint h_tot, m_tot, s_tot;
+        util_time_decompose ( lap->duration, &h_tot, &m_tot, &s_tot );
+        g_snprintf ( tbuf, sizeof(tbuf), "%d:%02d:%02d", h_tot, m_tot, s_tot );
+        GtkWidget *ww3 = ui_label_new_selectable ( tbuf );
+        gtk_table_attach ( table, ww3, 3, 4, ii, ii+1, GTK_FILL, GTK_SHRINK, 10, 5 );
+      }
+    }
+  } else {
+    g_warning ( "%s: No laps to show!", __FUNCTION__ );
+  }
+
+  gtk_widget_show_all ( dialog );
+
+  gtk_dialog_run ( GTK_DIALOG(dialog) );
+  gtk_widget_destroy ( dialog );
 }
 
 static void trw_layer_visibility_tree ( menu_array_layer values )
@@ -4848,6 +4989,8 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   (void)vu_menu_add_item ( view_submenu, _("_Ensure Visibility On"), NULL, G_CALLBACK(trw_layer_visibility_tree), data );
   if ( vtl->gpx_extensions )
     (void)vu_menu_add_item ( view_submenu, _("View _GPX Extensions"), NULL, G_CALLBACK(trw_layer_view_extensions), data );
+  if ( vik_trw_layer_get_laps(vtl) )
+    (void)vu_menu_add_item ( view_submenu, _("View _Lap Data"), NULL, G_CALLBACK(trw_layer_view_laps), data );
 
   GtkMenu *goto_submenu = GTK_MENU(gtk_menu_new());
   GtkWidget *itemgoto = vu_menu_add_item ( menu, _("_Goto"), GTK_STOCK_JUMP_TO, NULL, NULL );

@@ -38,6 +38,15 @@ typedef struct {
 	gpx_version_t version;  /// For internal convenience
 } GpxWritingOptions;
 
+typedef struct {
+  // guint index; // Not used ATM - Use position within the Laps structure instead
+  gdouble duration;   // NaN means invalid
+  gdouble distance;   // NaN means invalid
+  gdouble startTime;  // NaN means invalid
+  //VikCoord startCoord;
+  //VikCoord endCoord;
+} GpxLapType;
+
 char *a_gpx_entitize(const char * str);
 
 gboolean a_gpx_read_file ( VikTrwLayer *trw, FILE *f, const gchar* dirpath, gboolean append );

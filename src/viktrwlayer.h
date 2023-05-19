@@ -86,6 +86,9 @@ void vik_trw_layer_set_gpx_header ( VikTrwLayer *vtl, gchar* value );
 gchar *vik_trw_layer_get_gpx_extensions ( VikTrwLayer *vtl );
 void vik_trw_layer_set_gpx_extensions ( VikTrwLayer *vtl, gchar *value);
 
+GQueue* vik_trw_layer_get_laps ( VikTrwLayer *vtl );
+void vik_trw_layer_set_laps ( VikTrwLayer *vtl, GQueue *value );
+
 void vik_trwlayer_uninit ();
 
 gboolean vik_trw_layer_find_date ( VikTrwLayer *vtl, const gchar *date_str, VikCoord *position, VikViewport *vvp, gboolean do_tracks, gboolean select );

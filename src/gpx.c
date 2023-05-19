@@ -389,6 +389,14 @@ typedef enum {
   ext_tp_temp,
   ext_tp_power,
   ext_trk_color,
+  // Lap stats
+  ext_gpx_lap,
+  ext_gpx_lap_index,
+  ext_gpx_lap_start_time,
+  ext_gpx_lap_duration,
+  ext_gpx_lap_length,
+  //ext_gpx_lap_start_point,
+  //ext_gpx_lap_end_point,
 } tag_type_ext;
 
 typedef struct tag_mapping_ext {
@@ -404,6 +412,7 @@ typedef struct tag_mapping_ext {
 // pwr:PowerInWatts / gpxpx:PowerInWatts Garmin PowerExtensionv1.xsd
 // gpxd:color JOSM gpx-drawing-extensions-1.0.xsd
 // 'ns3:*'; is typically from Garmin Connect
+// gpxdata:lap - Cluetrust_gpxdata10.xsd
 static tag_mapping_ext extension_trackpoints_map[] = {
   { ext_tp_heart_rate, "gpxtpx:hr" },
   { ext_tp_heart_rate, "gpxdata:hr" },
@@ -424,6 +433,19 @@ static tag_mapping_ext extension_trackpoints_map[] = {
   { ext_trk_color, "gpxx:DisplayColor" },
   { ext_trk_color, "gpxd:color" },
   { ext_trk_color, "color" }, // e.g. OsmAnd?
+  { ext_gpx_lap, "gpxdata:lap" },
+  { ext_gpx_lap_index, "index" },
+  { ext_gpx_lap_index, "gpxdata:index" },
+  { ext_gpx_lap_start_time, "startTime" },
+  { ext_gpx_lap_start_time, "gpxdata:startTime" },
+  { ext_gpx_lap_duration, "elapsedTime" },
+  { ext_gpx_lap_duration, "gpxdata:elapsedTime" },
+  { ext_gpx_lap_length, "distance" },
+  { ext_gpx_lap_length, "gpxdata:distance" },
+  //{ ext_gpx_lap_start_point, "startPoint" },
+  //{ ext_gpx_lap_start_point, "gpxdata:startPoint" },
+  //{ ext_gpx_lap_end_point, "endPoint" },
+  //{ ext_gpx_lap_end_point, "gpxdata:endPoint" },
   {0}
 };
 
@@ -494,6 +516,102 @@ static void ext_end_element ( GMarkupParseContext *context,
       if ( gdk_color_parse ( gs_ext->str, &gclr ) ) {
         c_tr->has_color = TRUE;
         c_tr->color = gclr;
+      }
+    }
+    break;
+  default:
+    break;
+  }
+  g_string_erase ( gs_ext, 0, -1 );
+}
+
+// Laps
+static void lap_start_element ( GMarkupParseContext *context,
+                                const gchar         *element_name,
+                                const gchar        **attribute_names,
+                                const gchar        **attribute_values,
+                                gpointer             user_data,
+                                GError             **error )
+{
+  g_string_erase ( gs_ext, 0, -1 ); // Reset the tmp string buffer
+  tag_type_ext tag = get_tag_ext_specific ( element_name );
+  switch ( tag ) {
+  case ext_gpx_lap:
+    {
+      // Not expected that many laps - so no need to prepend and then reverse at the end...
+      // So simply append to the end (tail)
+      GQueue* laps = (GQueue*)user_data;
+      GpxLapType* lap = g_malloc(sizeof(GpxLapType));
+      lap->duration = NAN;
+      lap->distance = NAN;
+      lap->startTime = NAN;
+      if ( lap )
+        g_queue_push_tail ( laps, lap );
+    }
+    break;
+  default:
+    break;
+  }
+}
+
+static void lap_end_element ( GMarkupParseContext *context,
+                              const gchar         *element_name,
+                              gpointer             user_data,
+                              GError             **error )
+{
+  // If it is any of the (lap) extended tags we are interested in
+  tag_type_ext tag = get_tag_ext_specific ( element_name );
+  switch ( tag ) {
+  case ext_gpx_lap_index:
+    {
+      // What if negative?
+      //index = atoi ( gs_ext->str, NULL );
+      // Ignore index from file (have seen files with 0 - which just complicates matters)
+      // - So use the structure index instead
+    }
+    break;
+  case ext_gpx_lap_length:
+    // Add to current list
+    if (user_data) {
+      gdouble distance = g_ascii_strtod ( gs_ext->str, NULL ); // metres
+      if ( !isnan(distance) ) {
+        GQueue* gq = (GQueue*)user_data;
+        GList* laps = g_queue_peek_tail_link(gq);
+        if (laps) {
+          GpxLapType* lap = (GpxLapType*)laps->data;
+          lap->distance = distance;
+        }
+      }
+    }
+    break;
+  case ext_gpx_lap_start_time:
+    // Add to current list
+    if (user_data) {
+      GTimeVal gtv;
+      if ( g_time_val_from_iso8601(gs_ext->str, &gtv) ) {
+        GQueue* gq = (GQueue*)user_data;
+        GList* laps = g_queue_peek_tail_link(gq);
+        if (laps) {
+          GpxLapType* lap = (GpxLapType*)laps->data;
+          gdouble d1 = gtv.tv_sec;
+          gdouble d2 = (gdouble)gtv.tv_usec/G_USEC_PER_SEC;
+          lap->startTime = (d1 < 0) ? d1 - d2 : d1 + d2;
+        }
+      }
+    }
+    break;
+  case ext_gpx_lap_duration:
+    // Add to current list
+    if (user_data)
+    {
+      gdouble duration = g_ascii_strtod ( gs_ext->str, NULL ); // seconds
+      if ( !isnan(duration) ) {
+        GQueue* gq = (GQueue*)user_data;
+        GList* laps = g_queue_peek_tail_link(gq);
+        if (laps) {
+          GpxLapType* lap = (GpxLapType*)laps->data;
+          lap->duration = duration;
+        }
       }
     }
     break;
@@ -1269,6 +1387,30 @@ gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath, gbool
   gboolean ans = (status != XML_STATUS_ERROR);
   if ( !ans ) {
     g_warning ( "%s: XML error %s at line %ld", __FUNCTION__, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
+  }
+
+  // Re-parse raw extension text into a more understandable structure for gpxdata laps
+  GQueue *laps = g_queue_new();
+  GMarkupParser gparserLap;
+  GMarkupParseContext *gcontextLap;
+  gparserLap.start_element = &lap_start_element;
+  gparserLap.end_element = &lap_end_element;
+  gparserLap.text = &ext_text;
+  gparserLap.passthrough = NULL;
+  gparserLap.error = NULL;
+  gcontextLap = g_markup_parse_context_new ( &gparserLap, 0, laps, NULL );
+  gchar* vtlExtensions = vik_trw_layer_get_gpx_extensions ( vtl );
+  if ( vtlExtensions )
+  {
+    GError *error = NULL;
+    if ( !g_markup_parse_context_parse ( gcontextLap, vtlExtensions, strlen(vtlExtensions), &error ) )
+      g_warning ( "%s: parse error %s on:%s", __FUNCTION__, error ? error->message : "???", vtlExtensions );
+
+    if ( !g_markup_parse_context_end_parse ( gcontextLap, &error) )
+      g_warning ( "%s: error %s occurred on end of:%s", __FUNCTION__, error ? error->message : "???", vtlExtensions );
+
+    if ( !g_queue_is_empty(laps) )
+      vik_trw_layer_set_laps ( vtl, laps );
   }
 
   XML_ParserFree (parser);
