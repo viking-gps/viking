@@ -2872,6 +2872,57 @@ static void tac_decrease_cb ( menu_array_values values )
   vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
 }
 
+static void tac_goto_square_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
+  VikViewport *vvp = vik_window_viewport ( vw );
+  // NB Simply moving to position, keeping current zoom level
+  // (i.e. not trying to determine best zoom level to view extents)
+  MapCoord mc;
+  mc.x = val->xx + val->max_square/2;
+  mc.y = val->yy + val->max_square/2;
+  mc.scale = map_utils_mpp_to_scale ( val->zoom_level );
+  VikCoord vc;
+  map_utils_iTMS_to_center_vikcoord ( &mc, &vc );
+  vik_viewport_set_center_coord ( vvp, &vc, TRUE );
+  vik_layer_emit_update ( VIK_LAYER(val), FALSE );
+}
+
+static void tac_goto_east_west_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
+  VikViewport *vvp = vik_window_viewport ( vw );
+  // NB Simply moving to position, keeping current zoom level
+  // (i.e. not trying to determine best zoom level to view extents)
+  MapCoord mc;
+  mc.x = val->ew_x - val->ew_size/2;
+  mc.y = val->ew_y;
+  mc.scale = map_utils_mpp_to_scale ( val->zoom_level );
+  VikCoord vc;
+  map_utils_iTMS_to_center_vikcoord ( &mc, &vc );
+  vik_viewport_set_center_coord ( vvp, &vc, TRUE );
+  vik_layer_emit_update ( VIK_LAYER(val), FALSE );
+}
+
+static void tac_goto_north_south_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
+  VikViewport *vvp = vik_window_viewport ( vw );
+  // NB Simply moving to position, keeping current zoom level
+  // (i.e. not trying to determine best zoom level to view extents)
+  MapCoord mc;
+  mc.x = val->ns_x;
+  mc.y = val->ns_y - val->ns_size/2;;
+  mc.scale = map_utils_mpp_to_scale ( val->zoom_level );
+  VikCoord vc;
+  map_utils_iTMS_to_center_vikcoord ( &mc, &vc );
+  vik_viewport_set_center_coord ( vvp, &vc, TRUE );
+  vik_layer_emit_update ( VIK_LAYER(val), FALSE );
+}
+
 // This shouldn't be called when already running
 static void tac_calculate_cb ( menu_array_values values )
 {
@@ -2920,14 +2971,29 @@ static GtkMenu* aggregate_build_submenu_tac ( VikAggregateLayer *val, GtkMenu *m
   GtkWidget *itemtd = vu_menu_add_item ( tac_submenu, _("_Decrease Tile Area"), GTK_STOCK_GO_DOWN, G_CALLBACK(tac_decrease_cb), values );
   gtk_widget_set_sensitive ( itemtd, available );
 
-  GtkWidget *itemtclr = vu_menu_add_item ( tac_submenu, _("_Remove"), GTK_STOCK_DELETE, G_CALLBACK(tac_clear_cb), values );
-  gtk_widget_set_sensitive ( itemtclr, available );
+  GtkMenu *goto_submenu = GTK_MENU(gtk_menu_new());
+  GtkWidget *itemg = vu_menu_add_item ( tac_submenu, _("_Goto"), GTK_STOCK_JUMP_TO, NULL, NULL );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemg), GTK_WIDGET(goto_submenu) );
+
+  GtkWidget *itemgs = vu_menu_add_item ( goto_submenu, _("_Max Square"), GTK_STOCK_JUMP_TO, G_CALLBACK(tac_goto_square_cb), values );
+  gtk_widget_set_sensitive ( itemgs, available && val->on[MAX_SQR] );
+
+  GtkWidget *itemgwe = vu_menu_add_item ( goto_submenu, _("_East/West"), GTK_STOCK_JUMP_TO, G_CALLBACK(tac_goto_east_west_cb), values );
+  gtk_widget_set_sensitive ( itemgwe, available && val->on[LINES] );
+
+  GtkWidget *itemgns = vu_menu_add_item ( goto_submenu, _("_North/South"), GTK_STOCK_JUMP_TO, G_CALLBACK(tac_goto_north_south_cb), values );
+  gtk_widget_set_sensitive ( itemgns, available && val->on[LINES] );
 
 #ifdef HAVE_SQLITE3_H
   if ( val->on[BASIC] )
     if ( !val->calculating )
       (void)vu_menu_add_item ( tac_submenu, _("_Export as MBTiles"), GTK_STOCK_CONVERT, G_CALLBACK(tac_generate_mbtiles_cb), values );
 #endif
+
+  (void)vu_menu_add_item ( tac_submenu, NULL, NULL, NULL, NULL );
+
+  GtkWidget *itemtclr = vu_menu_add_item ( tac_submenu, _("_Remove"), GTK_STOCK_DELETE, G_CALLBACK(tac_clear_cb), values );
+  gtk_widget_set_sensitive ( itemtclr, available );
 
   return tac_submenu;
 }
