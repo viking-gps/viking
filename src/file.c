@@ -44,8 +44,6 @@
 #define TEST_BOOLEAN(str) (! ((str)[0] == '\0' || (str)[0] == '0' || (str)[0] == 'n' || (str)[0] == 'N' || (str)[0] == 'f' || (str)[0] == 'F') )
 #define VIK_MAGIC "#VIK"
 #define GPX_MAGIC "<?xm"
-#define VIK_MAGIC_LEN 4
-#define GPX_MAGIC_LEN 4
 
 #define VIKING_FILE_VERSION 1
 
@@ -69,13 +67,13 @@ static void push(Stack **stack)
   *stack = tmp;
 }
 
-static gboolean check_magic ( FILE *f, const gchar *magic_number, guint magic_length )
+static gboolean check_magic ( FILE *f, const gchar *magic_string )
 {
-  gchar magic[magic_length];
+  gchar magic[strlen(magic_string)];
   gboolean rv = FALSE;
   gint8 i;
   if ( fread(magic, 1, sizeof(magic), f) == sizeof(magic) &&
-      strncmp(magic, magic_number, sizeof(magic)) == 0 )
+      strncmp(magic, magic_string, sizeof(magic)) == 0 )
     rv = TRUE;
   for ( i = sizeof(magic)-1; i >= 0; i-- ) /* the ol' pushback */
     ungetc(magic[i],f);
@@ -652,7 +650,7 @@ gboolean check_file_magic_vik ( const gchar *filename )
   gboolean result = FALSE;
   FILE *ff = xfopen ( filename );
   if ( ff ) {
-    result = check_magic ( ff, VIK_MAGIC, VIK_MAGIC_LEN );
+    result = check_magic ( ff, VIK_MAGIC );
     xfclose ( ff );
   }
   return result;
@@ -716,7 +714,7 @@ VikLoadType_t a_file_load_stream ( FILE *f,
   VikLoadType_t load_answer = LOAD_TYPE_OTHER_SUCCESS;
 
   // Attempt loading the primary file type first - our internal .vik file:
-  if ( check_magic ( f, VIK_MAGIC, VIK_MAGIC_LEN ) )
+  if ( check_magic ( f, VIK_MAGIC ) )
   {
     if ( file_read ( top, f, dirpath, vp ) )
       load_answer = LOAD_TYPE_VIK_SUCCESS;
@@ -735,7 +733,7 @@ VikLoadType_t a_file_load_stream ( FILE *f,
       load_answer = LOAD_TYPE_UNSUPPORTED_FAILURE;
   }
   // NB TCX files are XML
-  else if ( a_file_check_ext ( filename, ".tcx" ) && check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
+  else if ( a_file_check_ext ( filename, ".tcx" ) && check_magic ( f, GPX_MAGIC ) ) {
     if ( !a_tcx_read_file ( top, vp, f, filename ) ) {
       load_answer = LOAD_TYPE_TCX_FAILURE;
     }
@@ -769,14 +767,14 @@ VikLoadType_t a_file_load_stream ( FILE *f,
     }
 
     // In fact both kml & gpx files start the same as they are in xml
-    if ( a_file_check_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
+    if ( a_file_check_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC ) ) {
       if ( ! ( success = a_kml_read_file ( vtl, f ) ) ) {
         load_answer = LOAD_TYPE_KML_FAILURE;
       }
     }
     // NB use a extension check first, as a GPX file header may have a Byte Order Mark (BOM) in it
     //    - which currently confuses our check_magic function
-    else if ( a_file_check_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC, GPX_MAGIC_LEN ) ) {
+    else if ( a_file_check_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC ) ) {
       if ( ! ( success = a_gpx_read_file ( vtl, f, dirpath, !add_new ) ) ) {
         load_answer = LOAD_TYPE_GPX_FAILURE;
       }
