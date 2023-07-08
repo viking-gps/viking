@@ -2501,7 +2501,7 @@ Zooming in and out scales the heatmap image appropriately, but the image may get
   <varlistentry>
     <term>Consecutive Lines</term>
     <listitem>
-      <para>Squares that consecutive in north/south and east/west directions.</para>
+      <para>Squares that are consecutive in north/south and east/west directions.</para>
     </listitem>
   </varlistentry>
 </variablelist>
@@ -2819,28 +2819,69 @@ Using this forces External Layers in this Aggregate Layer to be loaded and so co
 </variablelist>
 </section>
 
-<section><title>Tracks Area Coverage->Calculate</title>
+<section><title>Tracks Area Coverage</title>
 <para>
-Start a new Tracks Area Coverage calculation.
+  Offers methods related to Tracks Area Coverage.
 </para>
+<variablelist>
+  <varlistentry>
+    <term><guilabel>Calculate</guilabel></term>
+    <listitem>
+      <para>
+        Start a new TAC calculation.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term><guilabel>Increase/Decrease</guilabel></term>
+    <listitem>
+      <para>
+        Changes the TAC square size appropriately and performs a recalculation with the new value.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term><guilabel>Goto</guilabel></term>
+    <listitem>
+      <para>
+        Even though the analysis of squares have a variance of colours, it may not be obvious where they are - especially if outside the current viewport.
+        Thus these options recenter the viewport on the center of the selected analysis type.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term><guilabel>Remove</guilabel></term>
+    <listitem>
+      <para>
+        This clears the Tracks Area Coverage information, thus no grid colouring will be displayed.
+      </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
 </section>
 
-<section><title>Tracks Area Coverage->Remove</title>
+<section><title>Tracks Heatmap</title>
 <para>
-This clears the Tracks Area Coverage information, thus no grid colouring will be displayed.
+  Offers methods related to the Heatmap.
 </para>
-</section>
-
-<section><title>Tracks Heatmap->Calculate</title>
-<para>
-Start a new heatmap calculation for current area displayed on the viewport.
-</para>
-</section>
-
-<section><title>Tracks Heatmap->Remove</title>
-<para>
-Clear the heatmap from the display.
-</para>
+<variablelist>
+  <varlistentry>
+    <term><guilabel>Calculate</guilabel></term>
+    <listitem>
+      <para>
+        Start a new heatmap calculation for current area displayed on the viewport.
+      </para>
+    </listitem>
+  </varlistentry>
+  <varlistentry>
+    <term><guilabel>Remove</guilabel></term>
+    <listitem>
+      <para>
+        Clear the heatmap from the display.
+      </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
 </section>
 
 </section><!-- End Layer Operations -->
