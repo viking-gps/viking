@@ -211,7 +211,6 @@ static void tcx_end ( UserDataT *ud, const char *el )
 {
 	static GTimeVal tp_time;
 	static GTimeVal wp_time;
-	VikTrwLayer *vtl = c_vtl; 
 
 	g_string_truncate ( xpath, xpath->len - strlen(el) - 1 );
 
@@ -274,8 +273,8 @@ static void tcx_end ( UserDataT *ud, const char *el )
 				c_wp_name = g_strdup_printf ( _("Waypoint%04d"), unnamed_waypoints++ );
 
 			if ( !isnan(c_ll.lat) && !isnan(c_ll.lon) ) {
-				vik_coord_load_from_latlon ( &(c_wp->coord), vik_trw_layer_get_coord_mode(vtl), &c_ll );
-				vik_trw_layer_filein_add_waypoint ( vtl, c_wp_name, c_wp );
+				vik_coord_load_from_latlon ( &(c_wp->coord), vik_trw_layer_get_coord_mode(c_vtl), &c_ll );
+				vik_trw_layer_filein_add_waypoint ( c_vtl, c_wp_name, c_wp );
 			} else {
 				g_warning ( "%s: Missing a coordinate value for %s", __FUNCTION__, c_wp_name );
 				vik_waypoint_free ( c_wp ); 
@@ -290,7 +289,7 @@ static void tcx_end ( UserDataT *ud, const char *el )
 			if ( c_vtl ) {
 				c_tr_name = g_strdup_printf ( _("Track%03d"), unnamed_tracks++ );
 				c_tr->trackpoints = g_list_reverse ( c_tr->trackpoints );
-				vik_trw_layer_filein_add_track ( vtl, c_tr_name, c_tr );
+				vik_trw_layer_filein_add_track ( c_vtl, c_tr_name, c_tr );
 			}
 			g_free ( c_tr_name );
 			c_tr = NULL;
@@ -357,7 +356,7 @@ static void tcx_end ( UserDataT *ud, const char *el )
 
 		case tt_trk_trkseg_trkpt:
 			if ( !isnan(c_ll.lat) && !isnan(c_ll.lon) ) {
-				vik_coord_load_from_latlon ( &(c_tp->coord), vik_trw_layer_get_coord_mode(vtl), &c_ll );
+				vik_coord_load_from_latlon ( &(c_tp->coord), vik_trw_layer_get_coord_mode(c_vtl), &c_ll );
 				if ( f_tr_newseg ) {
 					c_tp->newsegment = TRUE;
 					f_tr_newseg = FALSE;
