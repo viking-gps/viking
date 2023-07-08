@@ -20,6 +20,7 @@ TESTS = check_degrees_conversions.sh \
 	check_vik2vik.sh \
 	check_vikgoto.sh \
 	check_gpx.sh \
+	check_tcx.sh \
 	check_geojson_osrm.sh \
 	check_help_xml.sh \
 	check_metatile.sh
@@ -40,6 +41,7 @@ check_PROGRAMS = degrees_converter \
 	test_coord_conversion \
 	test_parse_latlon \
 	test_babel \
+	test_file_load \
 	test_md5_hash \
 	test_metatile
 
@@ -53,6 +55,7 @@ check_SCRIPTS = check_degrees_conversions.sh \
 	check_vik2vik.sh \
 	check_vikgoto.sh \
 	check_gpx.sh \
+	check_tcx.sh \
 	check_geojson_osrm.sh \
 	check_help_xml.sh \
 	check_metatile.sh
@@ -74,8 +77,10 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	Simple_no-geoclue.vik \
 	Simple_no-realtime-gps-tracking.vik \
 	check_gpx.sh \
+	check_tcx.sh \
 	SF\#022.gpx \
 	GPXv1.1-sample.gpx \
+	Stonehenge.tcx \
 	check_vikgoto.sh \
 	search-result-geonames-viking.xml \
 	search-result-geonames-attr-viking.xml \
@@ -158,5 +163,10 @@ test_md5_hash_LDADD = \
 
 test_metatile_SOURCES = test_metatile.c
 test_metatile_LDADD = \
+  $(top_builddir)/src/libviking.a \
+  $(LDADD)
+
+test_file_load_SOURCES = test_file_load.c
+test_file_load_LDADD = \
   $(top_builddir)/src/libviking.a \
   $(LDADD)

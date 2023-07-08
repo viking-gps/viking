@@ -126,6 +126,7 @@ src/misc/*.o
 /test/test_metatile
 /test/test_coord_conversion
 /test/test_babel
+/test/test_file_load
 /test/test_time
 /test/test_decimal_output
 /test/test_parse_latlon
