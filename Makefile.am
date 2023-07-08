@@ -15,6 +15,7 @@ full:
 EXTRA_DIST = \
 	README.md \
 	HACKING \
+	NEWS \
 	ChangeLog.0 \
 	viking.spec \
 	mingw-viking.spec \
