@@ -93,6 +93,7 @@
   </indexterm>
 <!-- ============= Document Body ============================= -->
 <section id="Introduction"><title>Introduction</title>
+<section><title>Overview</title>
 <para>
 &appname; aims to be easy to use, yet powerful in accomplishing a wide
 variety of tasks. Some of the things you can use &appname; for are:
@@ -191,6 +192,12 @@ This is set via the <xref linkend="prefs"/> <menuchoice><guimenu>Toolbar</guimen
 </para>
 </informalexample>
 </figure>
+</section>
+<section><title>GTK</title>
+<para>
+  &appname; is built using the <ulink url="https://en.wikipedia.org/wiki/GTK">GTK</ulink> GUI framework, supporting version 3. Thus a number of features are governed by GTKs default behaviour or by the Desktop System and Theme (of course affected by those relevant systems settings). Hence details for configuring these is out of scope for this documentation.
+</para>
+</section>
 <section id="Flatpak"><title>Flatpak Version</title>
 <para>
   &appname; is now available for use in Linux as a Flatpak, however since &appname; is running in a sandbox some system integration features no longer work properly in the Flatpak runtime.
