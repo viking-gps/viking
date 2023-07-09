@@ -97,8 +97,10 @@ Also see https://docs.flatpak.org/en/latest/index.html
 
 ### Install matching runtime & SDK as used in the .yml file e.g.
 
-    #flatpak install flathub org.freedesktop.Platform//20.08 org.freedesktop.Sdk//20.08
-    flatpak install flathub org.kde.Platform//5.15 org.kde.Sdk//5.15
+    flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+
+    #flatpak install flathub org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08
+    flatpak install flathub org.kde.Platform//5.15-22.08 org.kde.Sdk//5.15-22.08
 
 ## Build
 

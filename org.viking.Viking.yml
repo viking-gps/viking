@@ -3,10 +3,10 @@ app-id: org.viking.Viking
 # NB Viking doesn't use any Gnome specifics so freedesktop should suffice for the build
 # However for GPSBabel needs Qt, and so use KDE runtime
 #runtime: org.freedesktop.Platform
-#runtime-version: '20.08'
+#runtime-version: '22.08'
 #sdk: org.freedesktop.Sdk
 runtime: org.kde.Platform
-runtime-version: '5.15'
+runtime-version: '5.15-22.08'
 sdk: org.kde.Sdk
 command: viking
 rename-icon: viking
