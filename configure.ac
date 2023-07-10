@@ -1,7 +1,7 @@
 #                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.64)
+AC_PREREQ(2.70)
 AC_INIT([viking],[1.10],[],[viking],[http://viking.sf.net/])
 
 AC_CANONICAL_HOST
@@ -44,7 +44,7 @@ GETTEXT_PACKAGE=viking
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[Gettext package name])
 
-AM_GNU_GETTEXT_VERSION([0.17])
+AM_GNU_GETTEXT_VERSION([0.19])
 AM_GNU_GETTEXT([external])
 
 IT_PROG_INTLTOOL([0.35.0])
