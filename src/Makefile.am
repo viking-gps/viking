@@ -252,6 +252,7 @@ AM_CFLAGS		= -Wall -g -D_GNU_SOURCE \
 	@EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@ @LIBGEOCLUE_CFLAGS@
 AM_CPPFLAGS		= \
 	$(PACKAGE_CFLAGS) $(GTK_CFLAGS) \
+	-DLOCALEDIR=\""$(datadir)/locale"\" \
 	-DVIKING_DATADIR=\""$(pkgdatadir)"\" \
 	-DVIKING_SYSCONFDIR=\""$(sysconfdir)/$(PACKAGE)"\"
 
