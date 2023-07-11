@@ -21,6 +21,7 @@ TESTS = check_degrees_conversions.sh \
 	check_vikgoto.sh \
 	check_gpx.sh \
 	check_tcx.sh \
+	check_zip.sh \
 	check_geojson_osrm.sh \
 	check_help_xml.sh \
 	check_metatile.sh
@@ -56,6 +57,7 @@ check_SCRIPTS = check_degrees_conversions.sh \
 	check_vikgoto.sh \
 	check_gpx.sh \
 	check_tcx.sh \
+	check_zip.sh \
 	check_geojson_osrm.sh \
 	check_help_xml.sh \
 	check_metatile.sh
@@ -78,6 +80,7 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	Simple_no-realtime-gps-tracking.vik \
 	check_gpx.sh \
 	check_tcx.sh \
+	check_zip.sh \
 	SF\#022.gpx \
 	GPXv1.1-sample.gpx \
 	Stonehenge.tcx \
@@ -91,6 +94,7 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	check_geojson_osrm.sh \
 	OSRM_sample_response.txt \
 	check_geotag.sh \
+	Stonehenge.gpx \
 	Stonehenge.jpg \
 	ViewFromCribyn-Wales-GPS.jpg
 
