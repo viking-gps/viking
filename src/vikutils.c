@@ -1289,6 +1289,7 @@ GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external )
 		filter = gtk_file_filter_new ();
 		gtk_file_filter_set_name( filter, _("Supported Files") );
 		gtk_file_filter_add_mime_type ( filter, "application/x-bzip2");
+		gtk_file_filter_add_mime_type ( filter, "application/x-xz");
 #ifdef VIK_CONFIG_GEOCACHES
 		gtk_file_filter_add_pattern ( filter, "*.loc" ); // No MIME type available
 #endif
@@ -1339,6 +1340,12 @@ GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external )
 		filter = gtk_file_filter_new ();
 		gtk_file_filter_set_name ( filter, _("JPG") );
 		gtk_file_filter_add_mime_type ( filter, "image/jpeg");
+		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+
+		filter = gtk_file_filter_new ();
+		gtk_file_filter_set_name( filter, _("LZMA File") );
+		gtk_file_filter_add_mime_type ( filter, "application/x-xz");
+		gtk_file_filter_add_mime_type ( filter, "application/x-lzma");
 		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
 
 		filter = gtk_file_filter_new ();

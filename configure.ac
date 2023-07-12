@@ -463,6 +463,27 @@ case $ac_cv_enable_zip in
 esac
 AM_CONDITIONAL([ZIP], [test x$ac_cv_enable_zip = xyes])
 
+# .xz files via liblzma
+AC_ARG_ENABLE(xz, AS_HELP_STRING([--enable-xz],
+	      [enable xz Support (default is enable).]),
+              [ac_cv_enable_xz=$enableval],
+              [ac_cv_enable_xz=yes])
+AC_CACHE_CHECK([whether to enable xz Support],
+               [ac_cv_enable_xz], [ac_cv_enable_xz=yes])
+case $ac_cv_enable_xz in
+  yes)
+    AC_CHECK_HEADERS([lzma.h],[],[AC_MSG_ERROR([lzma.h is needed but not found - you will need to install package 'liblzma-dev' or similar. The feature can be disabled with --disable-xz])])
+    AC_CHECK_LIB([lzma], [main], [],
+      if test "$ac_mingw32" = "yes"; then
+        [LIBS="-llzma $LIBS"
+         AC_MSG_WARN([liblzma not found! Forcing it anyway!])]
+      else
+         AC_MSG_ERROR([liblzma is needed but not found.])
+      fi)
+    ;;
+esac
+AM_CONDITIONAL([LIBLZMA], [test x$ac_cv_enable_xz = xyes])
+
 # ATM only for MD5 Hashing which is currently only used for filename of image thumbnails
 AC_ARG_ENABLE(nettle, AS_HELP_STRING([--enable-nettle],
               [enable MD5 Hash support (default is enable)]),
@@ -649,6 +670,7 @@ bzip2 Support                    : $ac_cv_enable_bzip2
 File Magic Support               : $ac_cv_enable_magic
 MBTiles Support (SQLite3)        : $ac_cv_enable_mbtiles
 Zip File Support (with libzip)   : $ac_cv_enable_zip
+XZ File Support (with liblzma)   : $ac_cv_enable_xz
 MD5 Hash Support (with libnettle): $ac_cv_enable_nettle
 Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik
 Nova (Astronomical Data)         : $ac_cv_enable_nova

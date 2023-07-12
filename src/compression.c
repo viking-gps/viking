@@ -38,6 +38,10 @@
 #include <zip.h>
 #endif
 
+#ifdef HAVE_LZMA_H
+#include <lzma.h>
+#endif
+
 #include "compression.h"
 #include "util.h"
 #include <string.h>
@@ -351,6 +355,115 @@ VikLoadType_t uncompress_load_bzip_file ( const gchar *filename,
                                           gboolean external )
 {
 	gchar *tmp_name = uncompress_bzip2 ( filename );
+	VikLoadType_t ans = a_file_load ( top, vp, vtl, tmp_name, new_layer, external, filename );
+	(void)util_remove ( tmp_name );
+	return ans;
+}
+
+/**
+ * uncompress_xz:
+ * @name: The name of the file to attempt to decompress
+ *
+ * Returns: The name of the uncompressed file (in a temporary location) or NULL
+ *   free the returned name after use.
+ *
+ */
+gchar* uncompress_xz ( const gchar *name )
+{
+#ifdef HAVE_LZMA_H
+
+	FILE *ff = g_fopen ( name, "rb" );
+	if ( !ff )
+		return NULL;
+
+	unsigned char bufi[4096];
+	// Seems to me to be sensible to have a bigger buffer for decompressed data!
+	unsigned char bufo[4096*16];
+
+	GFileIOStream *gios;
+	GError *error = NULL;
+	GFile *gf = g_file_new_tmp ( "vik-xz-tmp.XXXXXX", &gios, &error );
+	gchar *tmpname = g_file_get_path ( gf );
+
+	GOutputStream *gos = g_io_stream_get_output_stream ( G_IO_STREAM(gios) );
+
+	lzma_stream lstrm = LZMA_STREAM_INIT;
+	
+	lzma_ret rv = lzma_auto_decoder ( &lstrm, UINT64_MAX, 0 );
+
+	if ( rv != LZMA_OK )
+		goto err;
+
+	gboolean eof = FALSE;
+	size_t total = 0;
+
+	lstrm.next_out = bufo;
+	lstrm.avail_out = sizeof(bufo);
+	while ( rv == LZMA_OK ) {
+
+		// Get next block of data from file
+		if ( lstrm.avail_in == 0 ) {
+			lstrm.next_in = bufi;
+			lstrm.avail_in = fread ( bufi, 1, sizeof(bufi), ff );
+			if ( lstrm.avail_in == 0 ) {
+				eof = TRUE;
+				goto end;
+			}
+		}
+
+		// Keep processing with lzma (in decompressor mode)
+		rv = lzma_code ( &lstrm, LZMA_RUN );
+	
+		// If successful - write decompressed stream out to the file
+		if ( rv == LZMA_OK || rv == LZMA_STREAM_END ) {
+
+			if ( g_output_stream_write ( gos, bufo, lstrm.total_out - total, NULL, &error ) < 0 ) {
+				g_critical ( "Couldn't write xz tmp %s file due to %s", tmpname, error->message );
+				g_error_free ( error );
+				goto end;
+			}
+			// Reset bufo and point the stream back to it
+			lstrm.next_out = bufo;
+			lstrm.avail_out = sizeof(bufo);
+			total = lstrm.total_out;
+		}
+		if ( rv == LZMA_STREAM_END ) {
+			lzma_end ( &lstrm );
+			goto end;
+		} else {
+			if ( rv != LZMA_OK ) {
+				lzma_end ( &lstrm );
+				goto err;
+			}
+		}
+		if ( eof ) {
+			g_warning ( "%s: End of file found instead of stream end!", __FUNCTION__ );
+			goto end;
+		}
+	}
+
+ err:
+	g_warning ("%s: %u", __FUNCTION__, rv);
+
+ end:
+	g_output_stream_close ( gos, NULL, &error );
+	g_object_unref ( gios );
+	fclose ( ff );
+
+	return tmpname;
+#else
+	return NULL;
+#endif
+}
+
+VikLoadType_t uncompress_load_xz_file ( const gchar *filename,
+                                        VikAggregateLayer *top,
+                                        VikViewport *vp,
+                                        VikTrwLayer *vtl,
+                                        gboolean new_layer,
+                                        gboolean external )
+{
+	gchar *tmp_name = uncompress_xz ( filename );
 	VikLoadType_t ans = a_file_load ( top, vp, vtl, tmp_name, new_layer, external, filename );
 	(void)util_remove ( tmp_name );
 	return ans;

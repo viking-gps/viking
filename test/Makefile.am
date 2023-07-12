@@ -36,6 +36,7 @@ TESTS += check_fit.sh
 TESTS += check_kml.sh
 TESTS += check_tcx.sh
 TESTS += check_vik2vik.sh
+TESTS += check_xz.sh
 TESTS += check_zip.sh
 endif
 
@@ -66,6 +67,7 @@ check_SCRIPTS = check_degrees_conversions.sh \
 	check_gpx.sh \
 	check_kml.sh \
 	check_tcx.sh \
+	check_xz.sh \
 	check_zip.sh \
 	check_geojson_osrm.sh \
 	check_help_xml.sh \
@@ -91,6 +93,7 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	check_gpx.sh \
 	check_kml.sh \
 	check_tcx.sh \
+	check_xz.sh \
 	check_zip.sh \
 	SF\#022.gpx \
 	GH\#137.gpx \

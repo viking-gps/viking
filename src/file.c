@@ -728,6 +728,12 @@ VikLoadType_t a_file_load_stream ( FILE *f,
   else if ( file_magic_check ( filename, "application/x-bzip2", ".bz2" ) ) {
     load_answer = uncompress_load_bzip_file ( filename, top, vp, vtl, new_layer, external );
   }
+  else if ( file_magic_check ( filename, "application/x-xz", ".xz" ) ) {
+    load_answer = uncompress_load_xz_file ( filename, top, vp, vtl, new_layer, external );
+  }
+  else if ( file_magic_check ( filename, "application/x-lzma", ".lzma" ) ) {
+    load_answer = uncompress_load_xz_file ( filename, top, vp, vtl, new_layer, external );
+  }
   else if ( a_jpg_magic_check ( filename ) ) {
     if ( ! a_jpg_load_file ( top, filename, vp ) )
       load_answer = LOAD_TYPE_UNSUPPORTED_FAILURE;
@@ -830,6 +836,7 @@ VikLoadType_t a_file_load ( VikAggregateLayer *top,
                             const gchar *name )
 {
   g_return_val_if_fail ( vp != NULL, LOAD_TYPE_READ_FAILURE );
+  g_return_val_if_fail ( filename_or_uri != NULL, LOAD_TYPE_READ_FAILURE );
 
   char *filename = (char *)filename_or_uri;
   if (strncmp(filename, "file://", 7) == 0) {

@@ -146,6 +146,7 @@ cp $MINGW_BIN/libgps*.dll $DESTINATION
 cp $MINGW_BIN/libwinpthread*.dll $DESTINATION
 cp $MINGW_BIN/liboauth*.dll $DESTINATION
 cp $MINGW_BIN/libnova*.dll $DESTINATION
+cp $MINGW_BIN/liblzma*.dll $DESTINATION
 
 # Extra GTK stuff required for (default) theme to work in Windows
 if [ -n "$GTK2" ]; then

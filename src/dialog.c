@@ -977,6 +977,9 @@ void a_dialog_license ( GtkWindow *parent, const gchar *map, const gchar *licens
 #ifdef HAVE_ZIP_H
 #include <zip.h>
 #endif
+#ifdef HAVE_LZMA_H
+#include <lzma.h>
+#endif
 #ifdef HAVE_SQLITE3_H
 #include "sqlite3.h"
 #endif
@@ -1027,6 +1030,11 @@ void a_dialog_build_info ( GtkWindow *parent )
 #ifdef HAVE_ZIP_H
 #ifdef LIBZIP_VERSION
   g_string_append_printf ( msg, "libzip version: %s\n", LIBZIP_VERSION );
+#endif
+#endif
+#ifdef HAVE_LZMA_H
+#ifdef LZMA_VERSION_STRING
+  g_string_append_printf ( msg, "liblzma version: %s\n", LZMA_VERSION_STRING );
 #endif
 #endif
 #ifdef HAVE_SQLITE3_H
