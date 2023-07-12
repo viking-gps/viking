@@ -1,0 +1,30 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: apt update -y && apt install -y gtk-doc-tools yelp-tools libgeoclue-2-dev nettle-dev liboauth-dev libzip-dev libjson-glib-dev libgtk-3-dev xxd
+      
+    - name: configure
+      run: ./configure
+
+    - name: Build
+      run: make
+
+    - name: Run check
+      run: make check
+
+    - name: Run distcheck
+      run: make distcheck
