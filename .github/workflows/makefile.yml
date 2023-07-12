@@ -14,9 +14,12 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Install dependencies
-      run: apt update -y && apt install -y gtk-doc-tools yelp-tools libgeoclue-2-dev nettle-dev liboauth-dev libzip-dev libjson-glib-dev libgtk-3-dev xxd
+      run: apt update -y && apt install -y gtk-doc-tools docbook-xsl yelp-tools libpng-dev libgtk-3-dev libicu-dev libjson-glib-dev intltool xxd
       
-    - name: configure
+    - name: Prepare
+      run: ./autogen.sh
+      
+    - name: Configure
       run: ./configure
 
     - name: Build
