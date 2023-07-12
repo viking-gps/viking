@@ -30,5 +30,12 @@ jobs:
     - name: Run check
       run: make check
 
+    - uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: test-suite-log
+        path: test/test-suite.log
+        retention-days: 5
+
     - name: Run distcheck
       run: make distcheck
