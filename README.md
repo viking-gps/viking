@@ -1,7 +1,5 @@
-# Viking [![Build Status](https://travis-ci.com/viking-gps/viking.svg?branch=master)](https://travis-ci.com/viking-gps/viking)
+# Viking ![Build Status](https://github.com/viking-gps/viking/actions/workflows/makefile.yml/badge.svg)
 [![GitHub license](https://img.shields.io/github/license/viking-gps/viking)](https://github.com/viking-gps/viking/master/COPYING)
-
-[![Build history](https://buildstats.info/travisci/chart/viking-gps/viking?branch=master&showStats=true)](https://travis-ci.com/viking-gps/viking/builds)
 
 Viking is a free/open source program to manage GPS data. You can
 import, plot and create tracks, routes and waypoints, show OSM
