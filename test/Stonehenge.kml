@@ -1,0 +1,2219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+  <Document>
+    <name>GPS device</name>
+    <snippet>Created Wed May 13 13:56:44 2020</snippet>
+    <LookAt>
+      <gx:TimeSpan>
+        <begin>2011-09-23T15:47:33Z</begin>
+        <end>2011-09-23T16:04:02Z</end>
+      </gx:TimeSpan>
+      <longitude>-1.826703</longitude>
+      <latitude>51.178157</latitude>
+      <range>1300.000000</range>
+    </LookAt>
+    <!-- Normal track style -->
+    <Style id="track_n">
+      <IconStyle>
+        <scale>.5</scale>
+        <Icon>
+          <href>https://earth.google.com/images/kml-icons/track-directional/track-none.png</href>
+        </Icon>
+      </IconStyle>
+      <LabelStyle>
+        <scale>0</scale>
+      </LabelStyle>
+    </Style>
+    <!-- Highlighted track style -->
+    <Style id="track_h">
+      <IconStyle>
+        <scale>1.2</scale>
+        <Icon>
+          <href>https://earth.google.com/images/kml-icons/track-directional/track-none.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <StyleMap id="track">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#track_n</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#track_h</styleUrl>
+      </Pair>
+    </StyleMap>
+    <!-- Normal waypoint style -->
+    <Style id="waypoint_n">
+      <IconStyle>
+        <Icon>
+          <href>https://maps.google.com/mapfiles/kml/pal4/icon61.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <!-- Highlighted waypoint style -->
+    <Style id="waypoint_h">
+      <IconStyle>
+        <scale>1.2</scale>
+        <Icon>
+          <href>https://maps.google.com/mapfiles/kml/pal4/icon61.png</href>
+        </Icon>
+      </IconStyle>
+    </Style>
+    <StyleMap id="waypoint">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#waypoint_n</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#waypoint_h</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Style id="lineStyle">
+      <LineStyle>
+        <color>99ffac59</color>
+        <width>6</width>
+      </LineStyle>
+    </Style>
+    <Folder>
+      <name>Tracks</name>
+      <Folder>
+        <name>Stonehenge</name>
+        <snippet/>
+        <description>
+<![CDATA[<table>
+<tr><td><b>Distance</b> 4027.2 ft </td></tr>
+<tr><td><b>Min Alt</b> 221.226 ft </td></tr>
+<tr><td><b>Max Alt</b> 372.615 ft </td></tr>
+<tr><td><b>Min Speed</b> 0.1 mph </td></tr>
+<tr><td><b>Max Speed</b> 5.6 mph </td></tr>
+<tr><td><b>Avg Speed</b> 2.8 mph </td></tr>
+<tr><td><b>Start Time</b>2011-09-23T15:47:33Z</td></tr>
+<tr><td><b>End Time</b>2011-09-23T16:04:02Z</td></tr>
+</table>]]>
+</description>
+        <TimeSpan>
+          <begin>2011-09-23T15:47:33Z</begin>
+          <end>2011-09-23T16:04:02Z</end>
+        </TimeSpan>
+        <Folder>
+          <name>Points</name>
+          <Placemark>
+            <name>Stonehenge-0</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832654 </td></tr>
+<tr><td>Latitude: 51.176018 </td></tr>
+<tr><td>Altitude: 339.498 ft </td></tr>
+<tr><td>Heading: 358.5 </td></tr>
+<tr><td>Time: 2011-09-23T15:47:33Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832654</longitude>
+              <latitude>51.176018</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:47:33Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832654,51.176018,103.48</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-1</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832530 </td></tr>
+<tr><td>Latitude: 51.176265 </td></tr>
+<tr><td>Altitude: 336.344 ft </td></tr>
+<tr><td>Speed: 3.4 mph </td></tr>
+<tr><td>Heading: 17.4 </td></tr>
+<tr><td>Time: 2011-09-23T15:47:52Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832530</longitude>
+              <latitude>51.176265</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:47:52Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832530,51.176265,102.52</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-2</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832498 </td></tr>
+<tr><td>Latitude: 51.176369 </td></tr>
+<tr><td>Altitude: 334.767 ft </td></tr>
+<tr><td>Speed: 3.3 mph </td></tr>
+<tr><td>Heading: 10.8 </td></tr>
+<tr><td>Time: 2011-09-23T15:48:00Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832498</longitude>
+              <latitude>51.176369</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:48:00Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832498,51.176369,102.04</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-3</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832461 </td></tr>
+<tr><td>Latitude: 51.176404 </td></tr>
+<tr><td>Altitude: 336.344 ft </td></tr>
+<tr><td>Speed: 2.1 mph </td></tr>
+<tr><td>Heading: 33.1 </td></tr>
+<tr><td>Time: 2011-09-23T15:48:05Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832461</longitude>
+              <latitude>51.176404</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:48:05Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832461,51.176404,102.52</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-4</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832331 </td></tr>
+<tr><td>Latitude: 51.176647 </td></tr>
+<tr><td>Altitude: 320.575 ft </td></tr>
+<tr><td>Speed: 3.2 mph </td></tr>
+<tr><td>Heading: 18.6 </td></tr>
+<tr><td>Time: 2011-09-23T15:48:25Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832331</longitude>
+              <latitude>51.176647</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:48:25Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832331,51.176647,97.71</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-5</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832285 </td></tr>
+<tr><td>Latitude: 51.176666 </td></tr>
+<tr><td>Altitude: 314.267 ft </td></tr>
+<tr><td>Speed: 0.4 mph </td></tr>
+<tr><td>Heading: 55.9 </td></tr>
+<tr><td>Time: 2011-09-23T15:48:47Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832285</longitude>
+              <latitude>51.176666</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:48:47Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832285,51.176666,95.79</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-6</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832281 </td></tr>
+<tr><td>Latitude: 51.176728 </td></tr>
+<tr><td>Altitude: 317.421 ft </td></tr>
+<tr><td>Speed: 1.4 mph </td></tr>
+<tr><td>Heading: 2.3 </td></tr>
+<tr><td>Time: 2011-09-23T15:48:58Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832281</longitude>
+              <latitude>51.176728</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:48:58Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832281,51.176728,96.75</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-7</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832288 </td></tr>
+<tr><td>Latitude: 51.176827 </td></tr>
+<tr><td>Altitude: 325.305 ft </td></tr>
+<tr><td>Speed: 4.1 mph </td></tr>
+<tr><td>Heading: 357.5 </td></tr>
+<tr><td>Time: 2011-09-23T15:49:04Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832288</longitude>
+              <latitude>51.176827</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:49:04Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832288,51.176827,99.15</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-8</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832193 </td></tr>
+<tr><td>Latitude: 51.177043 </td></tr>
+<tr><td>Altitude: 336.344 ft </td></tr>
+<tr><td>Speed: 3.7 mph </td></tr>
+<tr><td>Heading: 15.4 </td></tr>
+<tr><td>Time: 2011-09-23T15:49:19Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832193</longitude>
+              <latitude>51.177043</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:49:19Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832193,51.177043,102.52</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-9</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832186 </td></tr>
+<tr><td>Latitude: 51.177082 </td></tr>
+<tr><td>Altitude: 337.921 ft </td></tr>
+<tr><td>Speed: 2.4 mph </td></tr>
+<tr><td>Heading: 6.7 </td></tr>
+<tr><td>Time: 2011-09-23T15:49:23Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832186</longitude>
+              <latitude>51.177082</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:49:23Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832186,51.177082,103.00</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-10</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832120 </td></tr>
+<tr><td>Latitude: 51.177281 </td></tr>
+<tr><td>Altitude: 345.806 ft </td></tr>
+<tr><td>Speed: 3.2 mph </td></tr>
+<tr><td>Heading: 11.6 </td></tr>
+<tr><td>Time: 2011-09-23T15:49:39Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832120</longitude>
+              <latitude>51.177281</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:49:39Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832120,51.177281,105.40</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-11</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832116 </td></tr>
+<tr><td>Latitude: 51.177372 </td></tr>
+<tr><td>Altitude: 342.652 ft </td></tr>
+<tr><td>Speed: 5.6 mph </td></tr>
+<tr><td>Heading: 1.6 </td></tr>
+<tr><td>Time: 2011-09-23T15:49:43Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832116</longitude>
+              <latitude>51.177372</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:49:43Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832116,51.177372,104.44</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-12</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832095 </td></tr>
+<tr><td>Latitude: 51.177402 </td></tr>
+<tr><td>Altitude: 344.229 ft </td></tr>
+<tr><td>Speed: 2.7 mph </td></tr>
+<tr><td>Heading: 24.6 </td></tr>
+<tr><td>Time: 2011-09-23T15:49:46Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832095</longitude>
+              <latitude>51.177402</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:49:46Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832095,51.177402,104.92</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-13</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.832071 </td></tr>
+<tr><td>Latitude: 51.177471 </td></tr>
+<tr><td>Altitude: 339.498 ft </td></tr>
+<tr><td>Speed: 3.5 mph </td></tr>
+<tr><td>Heading: 12.2 </td></tr>
+<tr><td>Time: 2011-09-23T15:49:51Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.832071</longitude>
+              <latitude>51.177471</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:49:51Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.832071,51.177471,103.48</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-14</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831991 </td></tr>
+<tr><td>Latitude: 51.177627 </td></tr>
+<tr><td>Altitude: 337.921 ft </td></tr>
+<tr><td>Speed: 3.1 mph </td></tr>
+<tr><td>Heading: 17.7 </td></tr>
+<tr><td>Time: 2011-09-23T15:50:04Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831991</longitude>
+              <latitude>51.177627</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:50:04Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831991,51.177627,103.00</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-15</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831949 </td></tr>
+<tr><td>Latitude: 51.177820 </td></tr>
+<tr><td>Altitude: 342.652 ft </td></tr>
+<tr><td>Speed: 3.2 mph </td></tr>
+<tr><td>Heading: 7.8 </td></tr>
+<tr><td>Time: 2011-09-23T15:50:19Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831949</longitude>
+              <latitude>51.177820</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:50:19Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831949,51.177820,104.44</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-16</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831890 </td></tr>
+<tr><td>Latitude: 51.177906 </td></tr>
+<tr><td>Altitude: 342.652 ft </td></tr>
+<tr><td>Speed: 3.3 mph </td></tr>
+<tr><td>Heading: 23.4 </td></tr>
+<tr><td>Time: 2011-09-23T15:50:26Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831890</longitude>
+              <latitude>51.177906</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:50:26Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831890,51.177906,104.44</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-17</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831838 </td></tr>
+<tr><td>Latitude: 51.177950 </td></tr>
+<tr><td>Altitude: 348.960 ft </td></tr>
+<tr><td>Speed: 2.7 mph </td></tr>
+<tr><td>Heading: 36.7 </td></tr>
+<tr><td>Time: 2011-09-23T15:50:31Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831838</longitude>
+              <latitude>51.177950</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:50:31Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831838,51.177950,106.36</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-18</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831723 </td></tr>
+<tr><td>Latitude: 51.177934 </td></tr>
+<tr><td>Altitude: 356.845 ft </td></tr>
+<tr><td>Speed: 1.3 mph </td></tr>
+<tr><td>Heading: 102.2 </td></tr>
+<tr><td>Time: 2011-09-23T15:50:45Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831723</longitude>
+              <latitude>51.177934</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:50:45Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831723,51.177934,108.77</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-19</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831711 </td></tr>
+<tr><td>Latitude: 51.177918 </td></tr>
+<tr><td>Altitude: 358.422 ft </td></tr>
+<tr><td>Speed: 0.1 mph </td></tr>
+<tr><td>Heading: 154.9 </td></tr>
+<tr><td>Time: 2011-09-23T15:51:18Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831711</longitude>
+              <latitude>51.177918</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:51:18Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831711,51.177918,109.25</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-20</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831710 </td></tr>
+<tr><td>Latitude: 51.177921 </td></tr>
+<tr><td>Altitude: 358.422 ft </td></tr>
+<tr><td>Heading: 13.9 </td></tr>
+<tr><td>Time: 2011-09-23T15:51:29Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831710</longitude>
+              <latitude>51.177921</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:51:29Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831710,51.177921,109.25</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-21</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831564 </td></tr>
+<tr><td>Latitude: 51.178157 </td></tr>
+<tr><td>Altitude: 363.152 ft </td></tr>
+<tr><td>Speed: 3.9 mph </td></tr>
+<tr><td>Heading: 21.2 </td></tr>
+<tr><td>Time: 2011-09-23T15:51:45Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831564</longitude>
+              <latitude>51.178157</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:51:45Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831564,51.178157,110.69</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-22</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831491 </td></tr>
+<tr><td>Latitude: 51.178301 </td></tr>
+<tr><td>Altitude: 364.730 ft </td></tr>
+<tr><td>Speed: 3.8 mph </td></tr>
+<tr><td>Heading: 17.6 </td></tr>
+<tr><td>Time: 2011-09-23T15:51:55Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831491</longitude>
+              <latitude>51.178301</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:51:55Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831491,51.178301,111.17</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-23</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831311 </td></tr>
+<tr><td>Latitude: 51.178467 </td></tr>
+<tr><td>Altitude: 371.038 ft </td></tr>
+<tr><td>Speed: 3.3 mph </td></tr>
+<tr><td>Heading: 34.3 </td></tr>
+<tr><td>Time: 2011-09-23T15:52:10Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831311</longitude>
+              <latitude>51.178467</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:52:10Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831311,51.178467,113.09</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-24</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831163 </td></tr>
+<tr><td>Latitude: 51.178646 </td></tr>
+<tr><td>Altitude: 367.884 ft </td></tr>
+<tr><td>Speed: 3.4 mph </td></tr>
+<tr><td>Heading: 27.4 </td></tr>
+<tr><td>Time: 2011-09-23T15:52:25Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831163</longitude>
+              <latitude>51.178646</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:52:25Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831163,51.178646,112.13</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-25</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831054 </td></tr>
+<tr><td>Latitude: 51.178765 </td></tr>
+<tr><td>Altitude: 372.615 ft </td></tr>
+<tr><td>Speed: 3.8 mph </td></tr>
+<tr><td>Heading: 29.7 </td></tr>
+<tr><td>Time: 2011-09-23T15:52:34Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831054</longitude>
+              <latitude>51.178765</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:52:34Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831054,51.178765,113.57</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-26</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.831027 </td></tr>
+<tr><td>Latitude: 51.178821 </td></tr>
+<tr><td>Altitude: 369.461 ft </td></tr>
+<tr><td>Speed: 3.6 mph </td></tr>
+<tr><td>Heading: 17.0 </td></tr>
+<tr><td>Time: 2011-09-23T15:52:38Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.831027</longitude>
+              <latitude>51.178821</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:52:38Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.831027,51.178821,112.61</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-27</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.830932 </td></tr>
+<tr><td>Latitude: 51.178957 </td></tr>
+<tr><td>Altitude: 356.845 ft </td></tr>
+<tr><td>Speed: 3.7 mph </td></tr>
+<tr><td>Heading: 23.7 </td></tr>
+<tr><td>Time: 2011-09-23T15:52:48Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.830932</longitude>
+              <latitude>51.178957</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:52:48Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.830932,51.178957,108.77</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-28</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.830875 </td></tr>
+<tr><td>Latitude: 51.179059 </td></tr>
+<tr><td>Altitude: 352.114 ft </td></tr>
+<tr><td>Speed: 4.5 mph </td></tr>
+<tr><td>Heading: 19.4 </td></tr>
+<tr><td>Time: 2011-09-23T15:52:54Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.830875</longitude>
+              <latitude>51.179059</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:52:54Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.830875,51.179059,107.32</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-29</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.830725 </td></tr>
+<tr><td>Latitude: 51.179187 </td></tr>
+<tr><td>Altitude: 344.229 ft </td></tr>
+<tr><td>Speed: 3.6 mph </td></tr>
+<tr><td>Heading: 36.2 </td></tr>
+<tr><td>Time: 2011-09-23T15:53:05Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.830725</longitude>
+              <latitude>51.179187</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:53:05Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.830725,51.179187,104.92</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-30</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.830693 </td></tr>
+<tr><td>Latitude: 51.179265 </td></tr>
+<tr><td>Altitude: 337.921 ft </td></tr>
+<tr><td>Speed: 5.0 mph </td></tr>
+<tr><td>Heading: 14.5 </td></tr>
+<tr><td>Time: 2011-09-23T15:53:09Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.830693</longitude>
+              <latitude>51.179265</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:53:09Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.830693,51.179265,103.00</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-31</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.830663 </td></tr>
+<tr><td>Latitude: 51.179285 </td></tr>
+<tr><td>Altitude: 333.190 ft </td></tr>
+<tr><td>Speed: 3.4 mph </td></tr>
+<tr><td>Heading: 43.4 </td></tr>
+<tr><td>Time: 2011-09-23T15:53:11Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.830663</longitude>
+              <latitude>51.179285</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:53:11Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.830663,51.179285,101.56</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-32</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.830586 </td></tr>
+<tr><td>Latitude: 51.179348 </td></tr>
+<tr><td>Altitude: 333.190 ft </td></tr>
+<tr><td>Speed: 3.3 mph </td></tr>
+<tr><td>Heading: 37.6 </td></tr>
+<tr><td>Time: 2011-09-23T15:53:17Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.830586</longitude>
+              <latitude>51.179348</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:53:17Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.830586,51.179348,101.56</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-33</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.830469 </td></tr>
+<tr><td>Latitude: 51.179464 </td></tr>
+<tr><td>Altitude: 330.036 ft </td></tr>
+<tr><td>Speed: 3.1 mph </td></tr>
+<tr><td>Heading: 32.1 </td></tr>
+<tr><td>Time: 2011-09-23T15:53:28Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.830469</longitude>
+              <latitude>51.179464</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:53:28Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.830469,51.179464,100.60</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-34</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.830227 </td></tr>
+<tr><td>Latitude: 51.179682 </td></tr>
+<tr><td>Altitude: 328.460 ft </td></tr>
+<tr><td>Speed: 3.5 mph </td></tr>
+<tr><td>Heading: 34.8 </td></tr>
+<tr><td>Time: 2011-09-23T15:53:47Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.830227</longitude>
+              <latitude>51.179682</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:53:47Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.830227,51.179682,100.11</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-35</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.830196 </td></tr>
+<tr><td>Latitude: 51.179734 </td></tr>
+<tr><td>Altitude: 330.036 ft </td></tr>
+<tr><td>Speed: 3.5 mph </td></tr>
+<tr><td>Heading: 20.7 </td></tr>
+<tr><td>Time: 2011-09-23T15:53:51Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.830196</longitude>
+              <latitude>51.179734</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:53:51Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.830196,51.179734,100.60</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-36</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.830060 </td></tr>
+<tr><td>Latitude: 51.179911 </td></tr>
+<tr><td>Altitude: 331.613 ft </td></tr>
+<tr><td>Speed: 3.5 mph </td></tr>
+<tr><td>Heading: 25.6 </td></tr>
+<tr><td>Time: 2011-09-23T15:54:05Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.830060</longitude>
+              <latitude>51.179911</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:54:05Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.830060,51.179911,101.08</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-37</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.830044 </td></tr>
+<tr><td>Latitude: 51.179930 </td></tr>
+<tr><td>Altitude: 331.613 ft </td></tr>
+<tr><td>Speed: 2.8 mph </td></tr>
+<tr><td>Heading: 27.0 </td></tr>
+<tr><td>Time: 2011-09-23T15:54:07Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.830044</longitude>
+              <latitude>51.179930</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:54:07Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.830044,51.179930,101.08</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-38</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.829762 </td></tr>
+<tr><td>Latitude: 51.180162 </td></tr>
+<tr><td>Altitude: 318.998 ft </td></tr>
+<tr><td>Speed: 3.5 mph </td></tr>
+<tr><td>Heading: 37.4 </td></tr>
+<tr><td>Time: 2011-09-23T15:54:28Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.829762</longitude>
+              <latitude>51.180162</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:54:28Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.829762,51.180162,97.23</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-39</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.829738 </td></tr>
+<tr><td>Latitude: 51.180165 </td></tr>
+<tr><td>Altitude: 320.575 ft </td></tr>
+<tr><td>Speed: 3.9 mph </td></tr>
+<tr><td>Heading: 78.5 </td></tr>
+<tr><td>Time: 2011-09-23T15:54:29Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.829738</longitude>
+              <latitude>51.180165</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:54:29Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.829738,51.180165,97.71</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-40</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.829552 </td></tr>
+<tr><td>Latitude: 51.180292 </td></tr>
+<tr><td>Altitude: 325.305 ft </td></tr>
+<tr><td>Speed: 2.4 mph </td></tr>
+<tr><td>Heading: 42.5 </td></tr>
+<tr><td>Time: 2011-09-23T15:54:47Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.829552</longitude>
+              <latitude>51.180292</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:54:47Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.829552,51.180292,99.15</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-41</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.829268 </td></tr>
+<tr><td>Latitude: 51.180297 </td></tr>
+<tr><td>Altitude: 312.689 ft </td></tr>
+<tr><td>Speed: 0.7 mph </td></tr>
+<tr><td>Heading: 88.7 </td></tr>
+<tr><td>Time: 2011-09-23T15:55:47Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.829268</longitude>
+              <latitude>51.180297</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:55:47Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.829268,51.180297,95.31</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-42</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.828872 </td></tr>
+<tr><td>Latitude: 51.180151 </td></tr>
+<tr><td>Altitude: 303.228 ft </td></tr>
+<tr><td>Speed: 4.5 mph </td></tr>
+<tr><td>Heading: 120.3 </td></tr>
+<tr><td>Time: 2011-09-23T15:56:03Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.828872</longitude>
+              <latitude>51.180151</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:56:03Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.828872,51.180151,92.42</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-43</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.828593 </td></tr>
+<tr><td>Latitude: 51.180100 </td></tr>
+<tr><td>Altitude: 289.036 ft </td></tr>
+<tr><td>Speed: 3.5 mph </td></tr>
+<tr><td>Heading: 106.4 </td></tr>
+<tr><td>Time: 2011-09-23T15:56:16Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.828593</longitude>
+              <latitude>51.180100</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:56:16Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.828593,51.180100,88.10</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-44</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.828194 </td></tr>
+<tr><td>Latitude: 51.179948 </td></tr>
+<tr><td>Altitude: 274.842 ft </td></tr>
+<tr><td>Speed: 4.6 mph </td></tr>
+<tr><td>Heading: 121.3 </td></tr>
+<tr><td>Time: 2011-09-23T15:56:32Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.828194</longitude>
+              <latitude>51.179948</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:56:32Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.828194,51.179948,83.77</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-45</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.828065 </td></tr>
+<tr><td>Latitude: 51.179932 </td></tr>
+<tr><td>Altitude: 271.689 ft </td></tr>
+<tr><td>Speed: 2.6 mph </td></tr>
+<tr><td>Heading: 101.5 </td></tr>
+<tr><td>Time: 2011-09-23T15:56:40Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.828065</longitude>
+              <latitude>51.179932</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:56:40Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.828065,51.179932,82.81</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-46</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.828037 </td></tr>
+<tr><td>Latitude: 51.179938 </td></tr>
+<tr><td>Altitude: 271.689 ft </td></tr>
+<tr><td>Speed: 2.4 mph </td></tr>
+<tr><td>Heading: 69.2 </td></tr>
+<tr><td>Time: 2011-09-23T15:56:42Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.828037</longitude>
+              <latitude>51.179938</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:56:42Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.828037,51.179938,82.81</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-47</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.827922 </td></tr>
+<tr><td>Latitude: 51.179897 </td></tr>
+<tr><td>Altitude: 270.112 ft </td></tr>
+<tr><td>Speed: 5.2 mph </td></tr>
+<tr><td>Heading: 120.0 </td></tr>
+<tr><td>Time: 2011-09-23T15:56:46Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.827922</longitude>
+              <latitude>51.179897</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:56:46Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.827922,51.179897,82.33</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-48</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.827612 </td></tr>
+<tr><td>Latitude: 51.179830 </td></tr>
+<tr><td>Altitude: 273.266 ft </td></tr>
+<tr><td>Speed: 3.2 mph </td></tr>
+<tr><td>Heading: 109.0 </td></tr>
+<tr><td>Time: 2011-09-23T15:57:02Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.827612</longitude>
+              <latitude>51.179830</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:57:02Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.827612,51.179830,83.29</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-49</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.827459 </td></tr>
+<tr><td>Latitude: 51.179836 </td></tr>
+<tr><td>Altitude: 277.997 ft </td></tr>
+<tr><td>Speed: 3.0 mph </td></tr>
+<tr><td>Heading: 86.5 </td></tr>
+<tr><td>Time: 2011-09-23T15:57:10Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.827459</longitude>
+              <latitude>51.179836</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:57:10Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.827459,51.179836,84.73</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-50</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.827405 </td></tr>
+<tr><td>Latitude: 51.179831 </td></tr>
+<tr><td>Altitude: 277.997 ft </td></tr>
+<tr><td>Speed: 2.8 mph </td></tr>
+<tr><td>Heading: 97.7 </td></tr>
+<tr><td>Time: 2011-09-23T15:57:13Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.827405</longitude>
+              <latitude>51.179831</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:57:13Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.827405,51.179831,84.73</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-51</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.827339 </td></tr>
+<tr><td>Latitude: 51.179824 </td></tr>
+<tr><td>Altitude: 277.997 ft </td></tr>
+<tr><td>Speed: 2.6 mph </td></tr>
+<tr><td>Heading: 100.7 </td></tr>
+<tr><td>Time: 2011-09-23T15:57:17Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.827339</longitude>
+              <latitude>51.179824</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:57:17Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.827339,51.179824,84.73</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-52</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.826996 </td></tr>
+<tr><td>Latitude: 51.179710 </td></tr>
+<tr><td>Altitude: 292.189 ft </td></tr>
+<tr><td>Speed: 3.6 mph </td></tr>
+<tr><td>Heading: 117.8 </td></tr>
+<tr><td>Time: 2011-09-23T15:57:34Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.826996</longitude>
+              <latitude>51.179710</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:57:34Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.826996,51.179710,89.06</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-53</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.826896 </td></tr>
+<tr><td>Latitude: 51.179669 </td></tr>
+<tr><td>Altitude: 289.036 ft </td></tr>
+<tr><td>Speed: 4.6 mph </td></tr>
+<tr><td>Heading: 123.5 </td></tr>
+<tr><td>Time: 2011-09-23T15:57:38Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.826896</longitude>
+              <latitude>51.179669</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:57:38Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.826896,51.179669,88.10</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-54</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.826688 </td></tr>
+<tr><td>Latitude: 51.179626 </td></tr>
+<tr><td>Altitude: 281.150 ft </td></tr>
+<tr><td>Speed: 3.1 mph </td></tr>
+<tr><td>Heading: 108.2 </td></tr>
+<tr><td>Time: 2011-09-23T15:57:49Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.826688</longitude>
+              <latitude>51.179626</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:57:49Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.826688,51.179626,85.69</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-55</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.826372 </td></tr>
+<tr><td>Latitude: 51.179531 </td></tr>
+<tr><td>Altitude: 277.997 ft </td></tr>
+<tr><td>Speed: 3.2 mph </td></tr>
+<tr><td>Heading: 115.5 </td></tr>
+<tr><td>Time: 2011-09-23T15:58:06Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.826372</longitude>
+              <latitude>51.179531</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:58:06Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.826372,51.179531,84.73</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-56</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.826278 </td></tr>
+<tr><td>Latitude: 51.179500 </td></tr>
+<tr><td>Altitude: 277.997 ft </td></tr>
+<tr><td>Speed: 3.3 mph </td></tr>
+<tr><td>Heading: 118.1 </td></tr>
+<tr><td>Time: 2011-09-23T15:58:11Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.826278</longitude>
+              <latitude>51.179500</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:58:11Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.826278,51.179500,84.73</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-57</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.826169 </td></tr>
+<tr><td>Latitude: 51.179483 </td></tr>
+<tr><td>Altitude: 282.727 ft </td></tr>
+<tr><td>Speed: 0.8 mph </td></tr>
+<tr><td>Heading: 103.5 </td></tr>
+<tr><td>Time: 2011-09-23T15:58:33Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.826169</longitude>
+              <latitude>51.179483</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:58:33Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.826169,51.179483,86.18</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-58</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.825682 </td></tr>
+<tr><td>Latitude: 51.179452 </td></tr>
+<tr><td>Altitude: 285.881 ft </td></tr>
+<tr><td>Speed: 3.1 mph </td></tr>
+<tr><td>Heading: 96.0 </td></tr>
+<tr><td>Time: 2011-09-23T15:58:58Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.825682</longitude>
+              <latitude>51.179452</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:58:58Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.825682,51.179452,87.14</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-59</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.825293 </td></tr>
+<tr><td>Latitude: 51.179374 </td></tr>
+<tr><td>Altitude: 292.189 ft </td></tr>
+<tr><td>Speed: 2.5 mph </td></tr>
+<tr><td>Heading: 107.7 </td></tr>
+<tr><td>Time: 2011-09-23T15:59:23Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.825293</longitude>
+              <latitude>51.179374</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:59:23Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.825293,51.179374,89.06</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-60</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.824949 </td></tr>
+<tr><td>Latitude: 51.179255 </td></tr>
+<tr><td>Altitude: 306.382 ft </td></tr>
+<tr><td>Speed: 3.1 mph </td></tr>
+<tr><td>Heading: 118.9 </td></tr>
+<tr><td>Time: 2011-09-23T15:59:43Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.824949</longitude>
+              <latitude>51.179255</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:59:43Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.824949,51.179255,93.39</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-61</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.824672 </td></tr>
+<tr><td>Latitude: 51.179131 </td></tr>
+<tr><td>Altitude: 306.382 ft </td></tr>
+<tr><td>Speed: 3.5 mph </td></tr>
+<tr><td>Heading: 125.6 </td></tr>
+<tr><td>Time: 2011-09-23T15:59:58Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.824672</longitude>
+              <latitude>51.179131</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T15:59:58Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.824672,51.179131,93.39</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-62</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.824699 </td></tr>
+<tr><td>Latitude: 51.179199 </td></tr>
+<tr><td>Altitude: 306.382 ft </td></tr>
+<tr><td>Speed: 0.7 mph </td></tr>
+<tr><td>Heading: 346.1 </td></tr>
+<tr><td>Time: 2011-09-23T16:00:22Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.824699</longitude>
+              <latitude>51.179199</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:00:22Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.824699,51.179199,93.39</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-63</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.824664 </td></tr>
+<tr><td>Latitude: 51.179209 </td></tr>
+<tr><td>Altitude: 306.382 ft </td></tr>
+<tr><td>Speed: 0.3 mph </td></tr>
+<tr><td>Heading: 64.6 </td></tr>
+<tr><td>Time: 2011-09-23T16:00:46Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.824664</longitude>
+              <latitude>51.179209</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:00:46Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.824664,51.179209,93.39</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-64</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.824308 </td></tr>
+<tr><td>Latitude: 51.179126 </td></tr>
+<tr><td>Altitude: 303.228 ft </td></tr>
+<tr><td>Speed: 3.1 mph </td></tr>
+<tr><td>Heading: 110.5 </td></tr>
+<tr><td>Time: 2011-09-23T16:01:05Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.824308</longitude>
+              <latitude>51.179126</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:01:05Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.824308,51.179126,92.42</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-65</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.824072 </td></tr>
+<tr><td>Latitude: 51.179088 </td></tr>
+<tr><td>Altitude: 309.536 ft </td></tr>
+<tr><td>Speed: 2.4 mph </td></tr>
+<tr><td>Heading: 104.2 </td></tr>
+<tr><td>Time: 2011-09-23T16:01:21Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.824072</longitude>
+              <latitude>51.179088</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:01:21Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.824072,51.179088,94.35</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-66</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.823822 </td></tr>
+<tr><td>Latitude: 51.179011 </td></tr>
+<tr><td>Altitude: 306.382 ft </td></tr>
+<tr><td>Speed: 2.9 mph </td></tr>
+<tr><td>Heading: 116.3 </td></tr>
+<tr><td>Time: 2011-09-23T16:01:36Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.823822</longitude>
+              <latitude>51.179011</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:01:36Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.823822,51.179011,93.39</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-67</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.823711 </td></tr>
+<tr><td>Latitude: 51.179055 </td></tr>
+<tr><td>Altitude: 304.805 ft </td></tr>
+<tr><td>Speed: 4.1 mph </td></tr>
+<tr><td>Heading: 57.9 </td></tr>
+<tr><td>Time: 2011-09-23T16:01:41Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.823711</longitude>
+              <latitude>51.179055</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:01:41Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.823711,51.179055,92.90</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-68</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.823410 </td></tr>
+<tr><td>Latitude: 51.178991 </td></tr>
+<tr><td>Altitude: 301.651 ft </td></tr>
+<tr><td>Speed: 3.8 mph </td></tr>
+<tr><td>Heading: 108.5 </td></tr>
+<tr><td>Time: 2011-09-23T16:01:54Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.823410</longitude>
+              <latitude>51.178991</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:01:54Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.823410,51.178991,91.94</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-69</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.823124 </td></tr>
+<tr><td>Latitude: 51.178913 </td></tr>
+<tr><td>Altitude: 303.228 ft </td></tr>
+<tr><td>Speed: 3.0 mph </td></tr>
+<tr><td>Heading: 113.5 </td></tr>
+<tr><td>Time: 2011-09-23T16:02:10Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.823124</longitude>
+              <latitude>51.178913</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:02:10Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.823124,51.178913,92.42</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-70</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.822770 </td></tr>
+<tr><td>Latitude: 51.178798 </td></tr>
+<tr><td>Altitude: 295.343 ft </td></tr>
+<tr><td>Speed: 3.5 mph </td></tr>
+<tr><td>Heading: 117.5 </td></tr>
+<tr><td>Time: 2011-09-23T16:02:28Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.822770</longitude>
+              <latitude>51.178798</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:02:28Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.822770,51.178798,90.02</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-71</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.822690 </td></tr>
+<tr><td>Latitude: 51.178783 </td></tr>
+<tr><td>Altitude: 293.766 ft </td></tr>
+<tr><td>Speed: 4.3 mph </td></tr>
+<tr><td>Heading: 106.5 </td></tr>
+<tr><td>Time: 2011-09-23T16:02:31Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.822690</longitude>
+              <latitude>51.178783</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:02:31Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.822690,51.178783,89.54</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-72</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.822526 </td></tr>
+<tr><td>Latitude: 51.178726 </td></tr>
+<tr><td>Altitude: 290.613 ft </td></tr>
+<tr><td>Speed: 3.3 mph </td></tr>
+<tr><td>Heading: 118.9 </td></tr>
+<tr><td>Time: 2011-09-23T16:02:40Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.822526</longitude>
+              <latitude>51.178726</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:02:40Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.822526,51.178726,88.58</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-73</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.822167 </td></tr>
+<tr><td>Latitude: 51.178607 </td></tr>
+<tr><td>Altitude: 277.997 ft </td></tr>
+<tr><td>Speed: 4.0 mph </td></tr>
+<tr><td>Heading: 117.9 </td></tr>
+<tr><td>Time: 2011-09-23T16:02:56Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.822167</longitude>
+              <latitude>51.178607</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:02:56Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.822167,51.178607,84.73</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-74</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.821849 </td></tr>
+<tr><td>Latitude: 51.178502 </td></tr>
+<tr><td>Altitude: 268.535 ft </td></tr>
+<tr><td>Speed: 3.5 mph </td></tr>
+<tr><td>Heading: 117.9 </td></tr>
+<tr><td>Time: 2011-09-23T16:03:12Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.821849</longitude>
+              <latitude>51.178502</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:03:12Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.821849,51.178502,81.85</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-75</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.821517 </td></tr>
+<tr><td>Latitude: 51.178407 </td></tr>
+<tr><td>Altitude: 259.073 ft </td></tr>
+<tr><td>Speed: 3.2 mph </td></tr>
+<tr><td>Heading: 114.5 </td></tr>
+<tr><td>Time: 2011-09-23T16:03:30Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.821517</longitude>
+              <latitude>51.178407</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:03:30Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.821517,51.178407,78.97</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-76</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.821119 </td></tr>
+<tr><td>Latitude: 51.178295 </td></tr>
+<tr><td>Altitude: 240.150 ft </td></tr>
+<tr><td>Speed: 4.0 mph </td></tr>
+<tr><td>Heading: 114.1 </td></tr>
+<tr><td>Time: 2011-09-23T16:03:47Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.821119</longitude>
+              <latitude>51.178295</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:03:47Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.821119,51.178295,73.20</coordinates>
+            </Point>
+          </Placemark>
+          <Placemark>
+            <name>Stonehenge-77</name>
+            <snippet/>
+            <description><![CDATA[
+<table>
+<tr><td>Longitude: -1.820753 </td></tr>
+<tr><td>Latitude: 51.178156 </td></tr>
+<tr><td>Altitude: 221.226 ft </td></tr>
+<tr><td>Speed: 4.5 mph </td></tr>
+<tr><td>Heading: 121.2 </td></tr>
+<tr><td>Time: 2011-09-23T16:04:02Z </td></tr>
+</table>
+]]></description>
+            <LookAt>
+              <longitude>-1.820753</longitude>
+              <latitude>51.178156</latitude>
+              <tilt>66</tilt>
+            </LookAt>
+            <TimeStamp>
+              <when>2011-09-23T16:04:02Z</when>
+            </TimeStamp>
+            <styleUrl>#track</styleUrl>
+            <Point>
+              <coordinates>-1.820753,51.178156,67.43</coordinates>
+            </Point>
+          </Placemark>
+        </Folder>
+        <Placemark>
+          <name>Path</name>
+          <styleUrl>#lineStyle</styleUrl>
+          <LineString>
+            <tessellate>1</tessellate>
+            <coordinates>
+-1.832654,51.176018,103.48
+-1.832530,51.176265,102.52
+-1.832498,51.176369,102.04
+-1.832461,51.176404,102.52
+-1.832331,51.176647,97.71
+-1.832285,51.176666,95.79
+-1.832281,51.176728,96.75
+-1.832288,51.176827,99.15
+-1.832193,51.177043,102.52
+-1.832186,51.177082,103.00
+-1.832120,51.177281,105.40
+-1.832116,51.177372,104.44
+-1.832095,51.177402,104.92
+-1.832071,51.177471,103.48
+-1.831991,51.177627,103.00
+-1.831949,51.177820,104.44
+-1.831890,51.177906,104.44
+-1.831838,51.177950,106.36
+-1.831723,51.177934,108.77
+-1.831711,51.177918,109.25
+-1.831710,51.177921,109.25
+-1.831564,51.178157,110.69
+-1.831491,51.178301,111.17
+-1.831311,51.178467,113.09
+-1.831163,51.178646,112.13
+-1.831054,51.178765,113.57
+-1.831027,51.178821,112.61
+-1.830932,51.178957,108.77
+-1.830875,51.179059,107.32
+-1.830725,51.179187,104.92
+-1.830693,51.179265,103.00
+-1.830663,51.179285,101.56
+-1.830586,51.179348,101.56
+-1.830469,51.179464,100.60
+-1.830227,51.179682,100.11
+-1.830196,51.179734,100.60
+-1.830060,51.179911,101.08
+-1.830044,51.179930,101.08
+-1.829762,51.180162,97.23
+-1.829738,51.180165,97.71
+-1.829552,51.180292,99.15
+-1.829268,51.180297,95.31
+-1.828872,51.180151,92.42
+-1.828593,51.180100,88.10
+-1.828194,51.179948,83.77
+-1.828065,51.179932,82.81
+-1.828037,51.179938,82.81
+-1.827922,51.179897,82.33
+-1.827612,51.179830,83.29
+-1.827459,51.179836,84.73
+-1.827405,51.179831,84.73
+-1.827339,51.179824,84.73
+-1.826996,51.179710,89.06
+-1.826896,51.179669,88.10
+-1.826688,51.179626,85.69
+-1.826372,51.179531,84.73
+-1.826278,51.179500,84.73
+-1.826169,51.179483,86.18
+-1.825682,51.179452,87.14
+-1.825293,51.179374,89.06
+-1.824949,51.179255,93.39
+-1.824672,51.179131,93.39
+-1.824699,51.179199,93.39
+-1.824664,51.179209,93.39
+-1.824308,51.179126,92.42
+-1.824072,51.179088,94.35
+-1.823822,51.179011,93.39
+-1.823711,51.179055,92.90
+-1.823410,51.178991,91.94
+-1.823124,51.178913,92.42
+-1.822770,51.178798,90.02
+-1.822690,51.178783,89.54
+-1.822526,51.178726,88.58
+-1.822167,51.178607,84.73
+-1.821849,51.178502,81.85
+-1.821517,51.178407,78.97
+-1.821119,51.178295,73.20
+-1.820753,51.178156,67.43
+</coordinates>
+          </LineString>
+        </Placemark>
+      </Folder>
+    </Folder>
+  </Document>
+</kml>

@@ -20,6 +20,7 @@ TESTS = check_degrees_conversions.sh \
 	check_vik2vik.sh \
 	check_vikgoto.sh \
 	check_gpx.sh \
+	check_kml.sh \
 	check_tcx.sh \
 	check_zip.sh \
 	check_geojson_osrm.sh \
@@ -56,6 +57,7 @@ check_SCRIPTS = check_degrees_conversions.sh \
 	check_vik2vik.sh \
 	check_vikgoto.sh \
 	check_gpx.sh \
+	check_kml.sh \
 	check_tcx.sh \
 	check_zip.sh \
 	check_geojson_osrm.sh \
@@ -79,12 +81,14 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	Simple_no-geoclue.vik \
 	Simple_no-realtime-gps-tracking.vik \
 	check_gpx.sh \
+	check_kml.sh \
 	check_tcx.sh \
 	check_zip.sh \
 	SF\#022.gpx \
 	GH\#137.gpx \
 	GPXv1.1-sample.gpx \
 	Stonehenge.tcx \
+	Stonehenge.kml \
 	check_vikgoto.sh \
 	search-result-geonames-viking.xml \
 	search-result-geonames-attr-viking.xml \
