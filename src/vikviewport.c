@@ -2026,6 +2026,7 @@ void vik_viewport_compute_bearing ( VikViewport *vp, gint x1, gint y1, gint x2, 
     *baseangle = M_PI - atan2(tx-x1, ty-y1);
     *angle -= *baseangle;
   } else{
+    *baseangle = 0;
     *angle = atan2((y2-y1), (x2-x1)) + M_PI_2;
   }
 
