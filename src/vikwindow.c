@@ -4752,6 +4752,12 @@ static void setup_recent_files (VikWindow *self)
  */
 static void update_recently_used_document (VikWindow *vw, const gchar *filename)
 {
+  g_debug ( "%s: %s", __FUNCTION__, filename );
+  // If opening a 'file' from stdin, don't add into recent files list
+  //  as you won't be able to reopen it, since it's not really a file!
+  if ( !g_strcmp0(filename, "-") )
+    return;
+
   /* Update Recently Used Document framework */
   GtkRecentManager *manager = gtk_recent_manager_get_default();
   GtkRecentData *recent_data = g_slice_new (GtkRecentData);
