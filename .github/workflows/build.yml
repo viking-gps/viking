@@ -21,6 +21,7 @@ jobs:
       with:
         packages: gtk-doc-tools docbook-xsl yelp-tools libpng-dev libgtk-3-dev libicu-dev libjson-glib-dev intltool autopoint xxd libcurl4-gnutls-dev libglib2.0-dev-bin libsqlite3-dev nettle-dev libmapnik-dev libgeoclue-2-dev libgexiv2-dev libgps-dev libmagic-dev libbz2-dev libzip-dev liboauth-dev libnova-dev
         version: 1.0
+        execute_install_scripts: true
       
     - name: Prepare
       run: ./autogen.sh
