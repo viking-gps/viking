@@ -24,7 +24,7 @@ jobs:
       shell: bash
 
     - name: Prepare
-      run: ./autogen.sh
+      run: ./autogen.sh ${{ matrix.libgtk == 'libgtk2.0-dev' && '--enable-gtk2' }}
       
     - name: Configure
       run: ./configure ${{ matrix.libgtk == 'libgtk2.0-dev' && '--enable-gtk2' }}
