@@ -32,7 +32,7 @@ jobs:
       run: ./autogen.sh
       
     - name: Configure
-      run: ./configure
+      run: ./configure ${{ matrix.libgtk == 'libgtk2.0-dev' && '--enable-gtk2' }}
 
     - name: Build
       run: make
