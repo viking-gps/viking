@@ -74,5 +74,5 @@ You can also access user manual via Help menu entry.
 
 First, read [hacking notes](HACKING).
 
-In order to ease the creation of a development environement, there is a [development container]() description in `.devcontainer/devcontainer.json`.
-This file can be use in different tools, like [Visual Studio Code](https://code.visualstudio.com/docs/devcontainers/tutorial) or to create online environements [Github Codespaces](https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers).
+In order to ease the creation of a development environment, there is a [development container]() description in `.devcontainer/devcontainer.json`.
+This file can be used in different tools, like [Visual Studio Code](https://code.visualstudio.com/docs/devcontainers/tutorial) or to create online environments [Github Codespaces](https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers).
