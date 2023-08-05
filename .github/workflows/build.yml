@@ -33,7 +33,9 @@ jobs:
       run: make
 
     - name: Run check
-      run: make check
+      uses: coactions/setup-xvfb@v1
+      with:
+        run: make check
 
     - uses: actions/upload-artifact@v3
       if: failure()
