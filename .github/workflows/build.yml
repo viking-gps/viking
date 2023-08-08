@@ -39,7 +39,7 @@ jobs:
           UBUNTU_VERSION=${{ matrix.ubuntu }}
           LIBGTK=${{ matrix.libgtk }}
         push: true
-        tags: ghcr.io/viking-gps/viking-build-env:${{ matrix.ubuntu }}-${{ matrix.libgtk }}
+        tags: ghcr.io/guyou/viking-build-env:${{ matrix.ubuntu }}-${{ matrix.libgtk }}
       if: steps.changes.outputs.docker == 'true'
 
   build:
@@ -54,7 +54,7 @@ jobs:
 
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/viking-gps/viking-build-env:${{ matrix.ubuntu }}-${{ matrix.libgtk }}
+      image: ghcr.io/guyou/viking-build-env:${{ matrix.ubuntu }}-${{ matrix.libgtk }}
 
     steps:
     - uses: actions/checkout@v3
