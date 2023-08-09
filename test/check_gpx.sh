@@ -32,16 +32,19 @@ fi
 rm ./GPXv1.1-sample-nocreator.gpx
 
 count=`expr $count + 1`
-# --- Broken 'GPXv1.1' test ...
+# --- Broken 'GPXv1.1' tests ...
 # e.g. from FitoTrack 12.1
 # if the file that is marked as v1.0 - then it gets exported as v1.0
-# (even if v1.1 extension fields are read in)
-grep -v "^creator=" $srcdir/GH#137-v1.0.gpx > ./GH#137-v1.0-nocreator.gpx
-result=$(./gpx2gpx < $srcdir/GH#137.gpx | \
-             grep -v "^creator=" | \
-             diff ./GH#137-v1.0-nocreator.gpx -)
-if [ $? != 0 ]; then
-  echo "gpx2gpx failure $count"
+# (even if v1.1 extension fields are read in - no 'extensions' tags are written)
+result=$(./gpx2gpx < $srcdir/GH#137.gpx | grep -c "extensions" )
+if [ $result != 0 ]; then
+  echo "gpx2gpx failure $count as result=$result"
   exit 1
 fi
-rm ./GH#137-v1.0-nocreator.gpx
+# Also confirm GPX version is indeed v1.0
+count=`expr $count + 1`
+result=$(./gpx2gpx < $srcdir/GH#137.gpx | grep -cF 'gpx version="1.0"' )
+if [ $result != 1 ]; then
+  echo "gpx2gpx failure $count as result=$result"
+  exit 1
+fi

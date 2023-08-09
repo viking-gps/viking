@@ -82,6 +82,7 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	check_tcx.sh \
 	check_zip.sh \
 	SF\#022.gpx \
+	GH\#137.gpx \
 	GPXv1.1-sample.gpx \
 	Stonehenge.tcx \
 	check_vikgoto.sh \
