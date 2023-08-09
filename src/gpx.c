@@ -575,7 +575,7 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
 
 	 GString *gs = get_header ( attr );
 	 vik_trw_layer_set_gpx_header ( vtl, gs->str );
-	 g_string_free ( gs, FALSE ); // NB string now owned by vtl
+	 g_string_free ( gs, TRUE );
        }
        break;
      case tt_wpt:

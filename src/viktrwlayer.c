@@ -1027,7 +1027,9 @@ gchar *vik_trw_layer_get_gpx_header ( VikTrwLayer *vtl )
 
 void vik_trw_layer_set_gpx_header ( VikTrwLayer *vtl, gchar* value )
 {
-  vtl->gpx_header = value;
+  if ( vtl->gpx_header )
+    g_free ( vtl->gpx_header );
+  vtl->gpx_header = g_strdup ( value );
 }
 
 gchar *vik_trw_layer_get_gpx_extensions ( VikTrwLayer *vtl )
