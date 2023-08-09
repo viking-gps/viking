@@ -75,7 +75,7 @@ CLEANFILES=
 MANPAGES=viking.1
 man_MANS = $(MANPAGES)
 CLEANFILES+=$(MANPAGES)
-XSLTPROC=@XSLTPROC@ -''-nonet
+XSLTPROC=@XSLTPROC@ --nonet
 
 %.1: %.xml
 	$(XSLTPROC) -o $@ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<
