@@ -42,4 +42,4 @@ jobs:
         retention-days: 5
 
     - name: Run distcheck
-      run: make distcheck
+      run: make distcheck DISTCHECK_CONFIGURE_FLAGS=${{ matrix.libgtk == 'libgtk2.0-dev' && '--enable-gtk2' || '' }}
