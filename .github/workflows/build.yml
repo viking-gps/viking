@@ -23,12 +23,9 @@ jobs:
       run: sudo apt-get install gtk-doc-tools docbook-xsl yelp-tools libpng-dev ${{ matrix.libgtk }} libicu-dev libjson-glib-dev intltool autopoint xxd libcurl4-gnutls-dev libglib2.0-dev-bin libsqlite3-dev nettle-dev libmapnik-dev libgeoclue-2-dev libgexiv2-dev libgps-dev libmagic-dev libbz2-dev libzip-dev liboauth-dev libnova-dev
       shell: bash
 
-    - name: Prepare
+    - name: Configure
       run: ./autogen.sh ${{ matrix.libgtk == 'libgtk2.0-dev' && '--enable-gtk2' }}
       
-    - name: Configure
-      run: ./configure ${{ matrix.libgtk == 'libgtk2.0-dev' && '--enable-gtk2' }}
-
     - name: Build
       run: make
 
