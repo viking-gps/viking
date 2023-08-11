@@ -37,7 +37,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       if: failure()
       with:
-        name: test-suite-log
+        name: test-suite-log-${{ matrix.os }}-${{ matrix.libgtk }}
         path: test/test-suite.log
         retention-days: 5
 
