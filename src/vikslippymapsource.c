@@ -135,7 +135,7 @@ vik_slippy_map_source_init (VikSlippyMapSource *self)
   priv->options.follow_location = 0;
   priv->options.expiry_age = ONE_WEEK_SECS;
   priv->options.check_file = a_check_map_file;
-  priv->options.check_file_server_time = FALSE;
+  priv->options.check_file_server_time = TRUE;
   priv->options.use_etag = FALSE;
   priv->options.user_agent = NULL;
   priv->options.custom_http_headers = NULL;
@@ -494,7 +494,7 @@ vik_slippy_map_source_class_init (VikSlippyMapSourceClass *klass)
 	pspec = g_param_spec_boolean ("check-file-server-time",
 	                              "Check file server time",
                                   "Age of current cache before redownloading tile",
-                                  FALSE  /* default value */,
+                                  TRUE  /* default value */,
                                   G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_CHECK_FILE_SERVER_TIME, pspec);
 

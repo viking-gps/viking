@@ -4452,7 +4452,7 @@ Accept: */*
               <term>check-file-server-time (optional)</term>
               <listitem>
                 <para>Sends the timestamp of the tile to the server, so the server can decide whether it should send a new tile or not.</para>
-                <para>The default is false.</para>
+                <para>The default is true.</para>
               </listitem>
             </varlistentry>
             <varlistentry>
