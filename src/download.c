@@ -344,15 +344,12 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
   gboolean file_exists = g_file_test ( fn, G_FILE_TEST_EXISTS );
   if ( file_exists )
   {
-    if (options == NULL || (!options->check_file_server_time &&
-                            !options->use_etag)) {
-      /* Nothing to do as file already exists and we don't want to check server */
+    // Options should always be specified when request downloading
+    //  a file that already exists (i.e. map tiles)
+    if ( options == NULL )
       return DOWNLOAD_NOT_REQUIRED;
-    }
 
-    time_t file_age = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "download_tile_age")->u;
-    if ( options )
-        file_age = options->expiry_age;
+    time_t file_age = options->expiry_age;
     /* Get the modified time of this file */
     GStatBuf buf;
     (void)g_stat ( fn, &buf );
@@ -362,10 +359,11 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
       return DOWNLOAD_NOT_REQUIRED;
     }
 
-    if (options != NULL && options->check_file_server_time) {
+    if ( options->check_file_server_time ) {
       cdo.time_condition = file_time;
     }
-    if (options != NULL && options->use_etag) {
+
+    if ( options->use_etag ) {
       get_etag(fn, &cdo);
     }
 
