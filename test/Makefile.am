@@ -17,12 +17,8 @@ TESTS = check_degrees_conversions.sh \
 	check_decimal_output.sh \
 	check_parse_latlon.sh \
 	check_babel.sh \
-	check_vik2vik.sh \
 	check_vikgoto.sh \
 	check_gpx.sh \
-	check_kml.sh \
-	check_tcx.sh \
-	check_zip.sh \
 	check_geojson_osrm.sh \
 	check_help_xml.sh \
 	check_metatile.sh
@@ -31,6 +27,15 @@ TESTS += check_geotag.sh
 endif
 if MD5_HASH
 TESTS += check_md5_hash.sh
+endif
+# Some tests use the test_file_load or vik2vik - which use VikViewport - which means need to use gtk_init()
+#  which essentially means needs a display to work. Thus under some CI circumstances there is no DISPLAY,
+#  so ATM simplest to avoid/skip the following tests
+if HAVEDISPLAY
+TESTS += check_kml.sh
+TESTS += check_tcx.sh
+TESTS += check_vik2vik.sh
+TESTS += check_zip.sh
 endif
 
 check_PROGRAMS = degrees_converter \

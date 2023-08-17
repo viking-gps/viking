@@ -313,6 +313,8 @@ AM_CONDITIONAL([GEXIV2], [test x$ac_cv_lib_gexiv2_gexiv2_metadata_new = xyes] )
 #AM_COND_IF([GEXIV2], [PKG_CHECK_MODULES([GEXIV2], [gexiv2 >= 0.6.1])])
 AM_CONDITIONAL([LIBEXIF], [test x$ac_cv_lib_exif_exif_loader_new = xyes] )
 
+AM_CONDITIONAL([HAVEDISPLAY], [test x$DISPLAY != x])
+
 AC_ARG_ENABLE(dem24k, AS_HELP_STRING([--enable-dem24k],
 	      [enable USGS 24k DEM (default is disable) download source. Requires dem24k.pl script in path.]),
               [ac_cv_enable_dem24k=$enableval],

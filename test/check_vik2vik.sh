@@ -5,14 +5,6 @@ if [ -z "$srcdir" ]; then
   srcdir=.
 fi
 
-# Test only works with a DISPLAY for GTK3+
-if [ -z "$DISPLAY" ]; then
-    if [ -z "$(ldd ./vik2vik | grep 'gtk-x11-2')" ]; then
-        echo "Not running vik2vik as no DISPLAY and GTK3+"
-        exit 0
-    fi
-fi
-
 outfile=./testout-$$.vik
 
 # ATM Tests either full, no libgps or no geoclue
