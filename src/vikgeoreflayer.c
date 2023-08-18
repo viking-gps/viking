@@ -363,7 +363,7 @@ static VikLayerParamData georef_layer_get_param ( VikGeorefLayer *vgl, guint16 i
     case PARAM_ME: rv.d = vgl->mpp_easting; break;
     case PARAM_CZ: rv.u = vgl->corner.zone; break;
     case PARAM_CL: rv.u = vgl->corner.letter; break;
-    case PARAM_RT: rv.u = vgl->rotation; break;
+    case PARAM_RT: rv.d = vgl->rotation; break;
     case PARAM_AA: rv.u = vgl->alpha; break;
     default: break;
   }
