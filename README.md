@@ -27,7 +27,7 @@ Git repository:
 
 On Debian Sid, following packages must be installed before building:
 
-	$ sudo apt install gtk-doc-tools docbook-xsl yelp-tools libpng-dev libgtk-3-dev libicu-dev libjson-glib-dev intltool xxd
+	$ sudo apt install gtk-doc-tools docbook-xsl yelp-tools libpng-dev libgtk-3-dev libicu-dev libjson-glib-dev intltool autopoint xxd
 
 The following packages are needed (they are included by default in Debian Sid, but not in other distributions). They must be installed too:
 
