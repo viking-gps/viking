@@ -734,6 +734,9 @@ VikLoadType_t a_file_load_stream ( FILE *f,
   else if ( file_magic_check ( filename, "application/x-lzma", ".lzma" ) ) {
     load_answer = uncompress_load_xz_file ( filename, top, vp, vtl, new_layer, external );
   }
+  else if ( file_magic_check ( filename, "application/gzip", ".gz" ) ) {
+    load_answer = uncompress_load_gz_file ( filename, top, vp, vtl, new_layer, external );
+  }
   else if ( a_jpg_magic_check ( filename ) ) {
     if ( ! a_jpg_load_file ( top, filename, vp ) )
       load_answer = LOAD_TYPE_UNSUPPORTED_FAILURE;

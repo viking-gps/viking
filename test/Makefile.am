@@ -38,6 +38,7 @@ TESTS += check_tcx.sh
 TESTS += check_vik2vik.sh
 TESTS += check_xz.sh
 TESTS += check_zip.sh
+TESTS += check_gzip.sh
 endif
 
 check_PROGRAMS = degrees_converter \
@@ -69,6 +70,7 @@ check_SCRIPTS = check_degrees_conversions.sh \
 	check_tcx.sh \
 	check_xz.sh \
 	check_zip.sh \
+	check_gzip.sh \
 	check_geojson_osrm.sh \
 	check_help_xml.sh \
 	check_metatile.sh
@@ -95,6 +97,7 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	check_tcx.sh \
 	check_xz.sh \
 	check_zip.sh \
+	check_gzip.sh \
 	SF\#022.gpx \
 	GH\#137.gpx \
 	GPXv1.1-sample.gpx \

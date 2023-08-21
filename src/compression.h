@@ -56,6 +56,13 @@ VikLoadType_t uncompress_load_xz_file ( const gchar *filename,
                                         VikTrwLayer *vtl,
                                         gboolean new_layer,
                                         gboolean external );
+
+VikLoadType_t uncompress_load_gz_file ( const gchar *filename,
+                                        VikAggregateLayer *top,
+                                        VikViewport *vp,
+                                        VikTrwLayer *vtl,
+                                        gboolean new_layer,
+                                        gboolean external );
 G_END_DECLS
 
 #endif

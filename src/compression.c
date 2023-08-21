@@ -282,6 +282,42 @@ end:
 }
 
 /**
+ * ungzip_file:
+ * @gzip_file:  pointer to start of compressed data
+ * @zipped_size: the size of the compressed data block
+ * @unzip_size:  the size of the uncompressed data block
+ *
+ * Returns a pointer to uncompressed data (maybe NULL)
+ *  data should be freed once used
+ *
+ */
+static void *ungzip_file ( gchar *gzip_file, gsize zipped_size, gulong *unzip_size )
+{
+	g_autoptr(GInputStream) inputGz = g_memory_input_stream_new_from_data ( gzip_file, zipped_size, NULL );
+	if ( !inputGz )
+		return NULL;
+
+	GError *error = NULL;
+	g_autoptr(GBytes) bytes;
+	g_autoptr(GZlibDecompressor) decompressor = g_zlib_decompressor_new ( G_ZLIB_COMPRESSOR_FORMAT_GZIP );
+	g_autoptr(GInputStream) streamData = g_converter_input_stream_new ( inputGz, G_CONVERTER(decompressor) );
+	// Need to read up to the unzipped size - which is unknown, so the following doesn't properly work:
+	//bytes = g_input_stream_read_bytes ( streamData, zipped_size, NULL, &error );
+
+	// Thus instead use this 'splice' technique - which completely reads from input to output
+	g_autoptr(GOutputStream) memory_output = g_memory_output_stream_new_resizable ();
+	g_output_stream_splice ( memory_output, streamData, 0, NULL, &error );
+	(void)g_output_stream_close ( memory_output, NULL, NULL );
+	bytes = g_memory_output_stream_steal_as_bytes ( G_MEMORY_OUTPUT_STREAM(memory_output) );
+      
+	*unzip_size = g_bytes_get_size ( bytes );
+	if ( *unzip_size > 0 )
+		return g_memdup ( g_bytes_get_data(bytes, NULL), *unzip_size );
+
+	return NULL;
+}
+
+/**
  * uncompress_bzip2:
  * @name: The name of the file to attempt to decompress
  *
@@ -466,5 +502,55 @@ VikLoadType_t uncompress_load_xz_file ( const gchar *filename,
 	gchar *tmp_name = uncompress_xz ( filename );
 	VikLoadType_t ans = a_file_load ( top, vp, vtl, tmp_name, new_layer, external, filename );
 	(void)util_remove ( tmp_name );
+	return ans;
+}
+
+VikLoadType_t uncompress_load_gz_file ( const gchar *filename,
+                                        VikAggregateLayer *top,
+                                        VikViewport *vp,
+                                        VikTrwLayer *vtl,
+                                        gboolean new_layer,
+                                        gboolean external )
+{
+	VikLoadType_t ans = LOAD_TYPE_READ_FAILURE;
+	GMappedFile *mf;
+	GError *error = NULL;
+	if ( (mf = g_mapped_file_new(filename, FALSE, &error)) == NULL ) {
+		g_critical ( "Couldn't map file %s: %s", filename, error->message );
+		g_error_free ( error );
+		return LOAD_TYPE_READ_FAILURE;
+	}
+
+	gsize file_size = g_mapped_file_get_length ( mf );
+	gchar *contents = g_mapped_file_get_contents ( mf );
+	void *unzip_mem = NULL;
+	gulong ucsize;
+
+	if ( (unzip_mem = ungzip_file(contents, file_size, &ucsize)) == NULL ) {
+		g_mapped_file_unref ( mf );
+		return LOAD_TYPE_READ_FAILURE;
+    }
+
+	GFileIOStream *gios;
+	GFile *gf = g_file_new_tmp ( "vik-gz-tmp.XXXXXX", &gios, &error );
+	gchar *tmp_name = g_file_get_path ( gf );
+
+	GOutputStream *gos = g_io_stream_get_output_stream ( G_IO_STREAM(gios) );
+
+	if ( g_output_stream_write ( gos, unzip_mem, ucsize, NULL, &error ) < 0 ) {
+		g_critical ( "Couldn't write gz tmp %s file due to %s", tmp_name, error->message );
+		g_error_free ( error );
+		goto end;
+	}
+	g_free ( unzip_mem );
+
+	ans = a_file_load ( top, vp, vtl, tmp_name, new_layer, external, filename );
+	(void)util_remove ( tmp_name );
+
+ end:
+	g_mapped_file_unref ( mf );
+	g_output_stream_close ( gos, NULL, &error );
+	g_object_unref ( gios );
+
 	return ans;
 }
