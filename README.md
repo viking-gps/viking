@@ -1,4 +1,4 @@
-# Viking ![Build Status](https://github.com/viking-gps/viking/actions/workflows/makefile.yml/badge.svg)
+# Viking ![Build Status](https://github.com/viking-gps/viking/actions/workflows/build.yml/badge.svg) ![Variants](https://github.com/viking-gps/viking/actions/workflows/build-variants.yml/badge.svg)
 [![GitHub license](https://img.shields.io/github/license/viking-gps/viking)](https://github.com/viking-gps/viking/master/COPYING)
 
 Viking is a free/open source program to manage GPS data. You can
