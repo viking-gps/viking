@@ -281,7 +281,7 @@ static void datasource_get_process_options ( gpointer user_data, ProcessOptions 
 		po->input_file_type = NULL;
 	g_strfreev ( parts );
 
-	po->babel_filters = priv->babel_filter_args;
+	po->babel_filters = g_strdup ( priv->babel_filter_args );
 
 	options->referer             = priv->options.referer;
 	options->user_agent          = priv->options.user_agent;
