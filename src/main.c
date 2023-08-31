@@ -274,7 +274,7 @@ int main( int argc, char *argv[] )
     }
   }
 
-  vik_window_new_window_finish ( first_window );
+  vik_window_new_window_finish ( first_window, (map_id == -1 ) );
 
   vu_command_line ( first_window, latitude, longitude, zoom_level_osm, map_id );
 

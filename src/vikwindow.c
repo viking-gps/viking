@@ -663,14 +663,14 @@ static void auto_location ( VikWindow *vw )
 /**
  * Steps to be taken once initial loading has completed
  */
-void vik_window_new_window_finish ( VikWindow *vw )
+void vik_window_new_window_finish ( VikWindow *vw, gboolean maybe_add_map )
 {
   // Don't add a map if we've loaded a Viking file already
   if ( vw->filename )
     return;
 
   // Maybe add a default map layer
-  if ( a_vik_get_add_default_map_layer () ) {
+  if ( maybe_add_map && a_vik_get_add_default_map_layer () ) {
     VikMapsLayer *vml = VIK_MAPS_LAYER ( vik_layer_create(VIK_LAYER_MAPS, vw->viking_vvp, FALSE) );
     vik_layer_rename ( VIK_LAYER(vml), _("Default Map") );
     vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer(vw->viking_vlp), VIK_LAYER(vml), TRUE );

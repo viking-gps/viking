@@ -54,7 +54,7 @@ GType vik_window_get_type ();
 // To call from main to start things off:
 VikWindow *vik_window_new_window ();
 
-void vik_window_new_window_finish ( VikWindow *vw );
+void vik_window_new_window_finish ( VikWindow *vw, gboolean maybe_add_map );
 
 GtkWidget *vik_window_get_graphs_widget ( VikWindow *vw );
 gpointer vik_window_get_graphs_widgets ( VikWindow *vw );
