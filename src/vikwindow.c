@@ -663,7 +663,7 @@ static void auto_location ( VikWindow *vw )
 /**
  * Steps to be taken once initial loading has completed
  */
-void vik_window_new_window_finish ( VikWindow *vw, gboolean maybe_add_map )
+void vik_window_new_window_finish ( VikWindow *vw, gboolean maybe_add_map, gboolean maybe_add_location )
 {
   // Don't add a map if we've loaded a Viking file already
   if ( vw->filename )
@@ -679,7 +679,7 @@ void vik_window_new_window_finish ( VikWindow *vw, gboolean maybe_add_map )
   }
 
   // If not loaded any file, maybe try the location lookup
-  if ( vw->loaded_type == LOAD_TYPE_READ_FAILURE ) {
+  if ( maybe_add_location && vw->loaded_type == LOAD_TYPE_READ_FAILURE ) {
     if ( a_vik_get_startup_method ( ) == VIK_STARTUP_METHOD_AUTO_LOCATION ) {
       auto_location ( vw );
     }
