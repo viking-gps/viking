@@ -18,7 +18,6 @@ TESTS = check_degrees_conversions.sh \
 	check_parse_latlon.sh \
 	check_babel.sh \
 	check_vikgoto.sh \
-	check_fit.sh \
 	check_gpx.sh \
 	check_geojson_osrm.sh \
 	check_help_xml.sh \
@@ -33,6 +32,7 @@ endif
 #  which essentially means needs a display to work. Thus under some CI circumstances there is no DISPLAY,
 #  so ATM simplest to avoid/skip the following tests
 if HAVEDISPLAY
+TESTS += check_fit.sh
 TESTS += check_kml.sh
 TESTS += check_tcx.sh
 TESTS += check_vik2vik.sh
