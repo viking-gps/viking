@@ -20,13 +20,13 @@
 !define VIKING_SHORTCUTS_SECTION_TITLE		"Accesos directos"
 !define VIKING_DESKTOP_SHORTCUT_SECTION_TITLE	"Escritorio"
 !define VIKING_STARTMENU_SHORTCUT_SECTION_TITLE	"Menú Inicio"
-!define VIKING_FILE_ASSOCIATION_SECTION_TITLE	"Extensión.gpx"
+!define VIKING_FILE_ASSOCIATION_SECTION_TITLE	"Asociación de archivos"
 !define VIKING_SECTION_DESCRIPTION		"Ficheros y DLLs de base de Viking"
 
 !define VIKING_SHORTCUTS_SECTION_DESCRIPTION	"Accesos directos para lanzar Viking"
 !define VIKING_DESKTOP_SHORTCUT_DESC		"Crear un acceso directo a Viking en el escritorio"
 !define VIKING_STARTMENU_SHORTCUT_DESC		"Crear un acceso directo a Viking en el menú de inicio"
-!define VIKING_FILE_ASSOCIATION_DESC    "Asociar Viking con la extensión .gpx"
+!define VIKING_FILE_ASSOCIATION_DESC    "Asociar Viking con la extensións .gpx, .kml y .tcx"
 !define VIKING_INSTALL_GPSBABEL_DESC	"Viking recomienda instalar el programa GPSBabel"
 
 ; Installer Finish Page
