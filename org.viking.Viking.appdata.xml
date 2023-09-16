@@ -17,7 +17,7 @@
     <p>Viking is a free/open source program to manage GPS data.</p>
     <p>Viking includes the following features:</p>
     <ul>
-      <li>Import GPX, TCX, KML and KMZ files</li>
+      <li>Import GPX, FIT, TCX, KML and KMZ files</li>
       <li>Export to GPX and KMZ files</li>
       <li>Import and Export numerous file types via GPSBabel</li>
       <li>Create and edit Tracks, Routes and Waypoints</li>

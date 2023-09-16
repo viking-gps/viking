@@ -31,6 +31,7 @@ src/dem.c
 src/dems.c
 src/download.c
 src/file.c
+src/fit.c
 src/geotag_exif.c
 src/osm-traces.c
 src/mapcache.c

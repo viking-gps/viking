@@ -326,6 +326,7 @@ Section $(VIKING_FILE_ASSOCIATION_SECTION_TITLE) SecFileAssociation
   ${registerExtension} "$INSTDIR\viking.exe" ".gpx" "GPX File"
   ${registerExtension} "$INSTDIR\viking.exe" ".tcx" "TCX File"
   ${registerExtension} "$INSTDIR\viking.exe" ".kml" "KML File"
+  ${registerExtension} "$INSTDIR\viking.exe" ".fit" "FIT File"
 SectionEnd
 
 ;--------------------------------
@@ -367,7 +368,7 @@ Section Uninstall
     ; http://nsis.sourceforge.net/Uninstall_only_installed_files
 
     ; Specific remove files
-    ; Thus alsos leaves any files the user has saved (particularly .vik or .gpx) into the Viking directory
+    ; Thus also leaves any files the user has saved (particularly .vik or .gpx) into the Viking directory
     Delete "$INSTDIR\viking-cache.py"
     Delete "$INSTDIR\viking.pdf"
     Delete "$INSTDIR\viking_icon.ico"
@@ -391,6 +392,7 @@ Section Uninstall
     ${unregisterExtension} ".gpx" "GPX File"
     ${unregisterExtension} ".tcx" "TCX File"
     ${unregisterExtension} ".kml" "KML File"
+    ${unregisterExtension} ".fit" "FIT File"
 
     Goto done
 

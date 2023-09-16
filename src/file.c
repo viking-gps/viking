@@ -3,7 +3,7 @@
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
  * Copyright (C) 2012, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
- * Copyright (C) 2012-2013, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (C) 2012-2023, Rob Norris <rw_norris@hotmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
  */
 #include "viking.h"
 
+#include "fit.h"
 #include "jpg.h"
 #include "gpx.h"
 #include "kml.h"
@@ -79,7 +80,6 @@ static gboolean check_magic ( FILE *f, const gchar *magic_string )
     ungetc(magic[i],f);
   return rv;
 }
-
 
 static gboolean str_starts_with ( const gchar *haystack, const gchar *needle, guint16 len_needle, gboolean must_be_longer )
 {
@@ -736,6 +736,11 @@ VikLoadType_t a_file_load_stream ( FILE *f,
   else if ( a_file_check_ext ( filename, ".tcx" ) && check_magic ( f, GPX_MAGIC ) ) {
     if ( !a_tcx_read_file ( top, vp, f, filename ) ) {
       load_answer = LOAD_TYPE_TCX_FAILURE;
+    }
+  }
+  else if ( a_fit_check_magic ( f ) ) {
+    if ( !a_fit_read_file ( top, vp, f, filename ) ) {
+      load_answer = LOAD_TYPE_FIT_FAILURE;
     }
   }
   else

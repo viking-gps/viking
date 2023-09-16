@@ -124,6 +124,7 @@ libviking_a_SOURCES = \
 	vikwmscmapsource.c vikwmscmapsource.h \
 	viktmsmapsource.c viktmsmapsource.h \
 	metatile.c metatile.h \
+	fit.c fit.h fit_sdk.h \
 	gpx.c gpx.h \
 	tcx.c tcx.h \
 	garminsymbols.c garminsymbols.h \

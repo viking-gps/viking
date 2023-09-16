@@ -491,7 +491,7 @@ The number of track points is normally alot higher (e.g. 500 or typically with l
 This is a plain text file saving all information of the current window including the view location, zoom level, projection type and then all the layer information (aggregates, maps, tracks, waypoints, etc...).
 </para>
 <para>
-Besides it's own file type, &appname; can open (and save to via export methods) GPX, TCX and KML file types.
+Besides it's own file type, &appname; can open (and save to via export methods) GPX, FIT, TCX and KML file types.
 </para>
 <note>
 <para>
@@ -538,13 +538,14 @@ This opens a file chooser dialog to select one (or more) files of the supported 
 <itemizedlist>
 <listitem><para>Viking</para></listitem>
 <listitem><para>GPX</para></listitem>
+<listitem><para>FIT</para></listitem>
 <listitem><para>TCX</para></listitem>
 <listitem><para>KML</para></listitem>
 <listitem><para>JPG</para></listitem>
 </itemizedlist>
 </para>
 <para>
-GPX, TCX, KML and JPG files will be loaded into the existing &appname; view. A <emphasis>Viking</emphasis> file will be given a new window if the current window is already assigned.
+GPX, FIT, TCX, KML and JPG files will be loaded into the existing &appname; view. A <emphasis>Viking</emphasis> file will be given a new window if the current window is already assigned.
 </para>
 <tip>
 <para>
@@ -3751,7 +3752,7 @@ Some other general use cases for using &appname;, are as follows:
 <title>Method C</title>
 <step>
 <para>
-Get data from files in GPX, TCX or KML format, which can be opened directly.
+Get data from files in GPX, FIT, TCX or KML format, which can be opened directly.
 Use <menuchoice><guimenu>File</guimenu><guimenuitem>Open</guimenuitem></menuchoice>
 This could be directly from a GPS device if supports a file system / mass storage mode.
 </para>

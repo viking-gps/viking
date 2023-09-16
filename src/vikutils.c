@@ -1293,6 +1293,7 @@ GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external )
 		gtk_file_filter_add_pattern ( filter, "*.loc" ); // No MIME type available
 #endif
 		gtk_file_filter_add_mime_type ( filter, "application/vnd.google-earth.kml+xml");
+		gtk_file_filter_add_pattern ( filter, "*.fit" );
 		gtk_file_filter_add_mime_type ( filter, "gpx+xml");
 		gtk_file_filter_add_pattern ( filter, "*.gpx" );
 		gtk_file_filter_add_mime_type ( filter, "image/jpeg");
@@ -1305,6 +1306,11 @@ GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external )
 		filter = gtk_file_filter_new ();
 		gtk_file_filter_set_name( filter, _("Bzip2 File") );
 		gtk_file_filter_add_mime_type ( filter, "application/x-bzip2");
+		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+
+		filter = gtk_file_filter_new ();
+		gtk_file_filter_set_name( filter, _("FIT") );
+		gtk_file_filter_add_pattern ( filter, "*.fit" );
 		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
 
 #ifdef VIK_CONFIG_GEOCACHES

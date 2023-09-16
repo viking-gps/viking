@@ -27,7 +27,7 @@
 !define VIKING_SHORTCUTS_SECTION_DESCRIPTION	"Raccourcis pour lancer Viking"
 !define VIKING_DESKTOP_SHORTCUT_DESC		"Créer un raccourci pour Viking sur le bureau"
 !define VIKING_STARTMENU_SHORTCUT_DESC		"Créer un raccourci pour Viking dans le menu Démarrer"
-!define VIKING_FILE_ASSOCIATION_DESC    "Associer Viking avec l'extensions .gpx, .kml, et .tcx"
+!define VIKING_FILE_ASSOCIATION_DESC    "Associer Viking avec l'extensions .gpx, .fit, .kml, et .tcx"
 !define VIKING_INSTALL_GPSBABEL_DESC	"Viking recommande d'installer le programme GPSBabel"
 
 ; Installer Finish Page
