@@ -2450,6 +2450,15 @@ The file should contain a list of tiles in the format of 3 numbers, with each li
 Any lines starting with a '#', '!' or ';' are ignored as intended for comments.
 A fuller example covering the UK is in <filename>/usr/share/viking/unreachable_tiles.txt</filename> or <filename>C:\Program Files\Viking\data\unreachable_tiles.txt</filename> according to the operating system and typical install locations. You may wish to copy this file into your &appname; home directory so that it is used.
 </para>
+<para>
+To find TILE_X_ID and TILE_Y_ID : select a map. On menu -> Tools -> Download Map.
+Right click on a tile and select "show tile information". 
+<screen>
+Source : http://tile.openstreetmap.org/14/8104/5465.png
+</screen>
+With zoom, X_ID and Y_ID
+</para>
+
 </section>
 
 <section><title>Heatmap</title>
