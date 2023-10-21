@@ -393,7 +393,7 @@ void osm_traces_uninit()
 #endif
 }
 
-#define OSM_GPX_UPLOAD_URL "https://www.openstreetmap.org/api/0.6/gpx/create"
+#define OSM_GPX_UPLOAD_URL "https://api.openstreetmap.org/api/0.6/gpx/create"
 
 /*
  * Upload a file
