@@ -61,9 +61,6 @@ make %{?_smp_mflags}
 %check
 make test
 
-%clean
-rm -rf %{buildroot}
-
 %files -f %{name}.lang
 %defattr(-,root,root,-)
 %license COPYING

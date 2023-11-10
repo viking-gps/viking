@@ -107,9 +107,6 @@ popd
 
 %find_lang %{_pkg_name}
 
-%clean
-rm -rf %{buildroot}
-
 %files -f %{_pkg_name}.lang
 %defattr(-,root,root)
 %doc AUTHORS ChangeLog COPYING NEWS README.md doc/
