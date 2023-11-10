@@ -39,6 +39,7 @@ BuildRequires:  libzip-devel
 BuildRequires:  liboauth-devel
 BuildRequires:	json-glib-devel
 BuildRequires:  libnova-devel
+BuildRequires:  xz-devel
 BuildRequires:  yelp-tools
 
 %description
