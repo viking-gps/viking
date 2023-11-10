@@ -27,9 +27,6 @@
 
 G_BEGIN_DECLS
 
-// GLIB compatibility
-typedef struct stat GStatBuf;
-
 // Hide ifdef complexities of function variants here
 
 GMutex * vik_mutex_new ();
