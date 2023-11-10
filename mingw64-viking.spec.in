@@ -54,7 +54,8 @@ BuildRequires:	mingw64-xz-devel
 
 # Libs for runtime (and thus also available for the NSIS installer to include the dependencies)
 Requires:	mingw64-gtk3
-Requires:	mingw64-json-glib
+# Should be auto detected
+#Requires:	mingw64-json-glib
 Requires:	mingw64-libexpat1
 Requires:	mingw64-libcurl4
 Requires:	mingw64-libgexiv2

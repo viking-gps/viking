@@ -56,7 +56,8 @@ BuildRequires:	mingw32-xz-devel
 Requires:	mingw32-gtk2
 Requires:	mingw32-libexpat1
 Requires:	mingw32-libcurl4
-Requires:	mingw32-json-glib
+# Should be auto detected
+#Requires:	mingw32-json-glib
 Requires:	mingw32-libgexiv2
 Requires:	mingw32-libstdc++6
 Requires:	mingw32-libsqlite3-0
