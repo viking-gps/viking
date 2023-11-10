@@ -6,7 +6,7 @@ Version:	@VERSION@
 Release:	1
 Summary:	GPS data editor and analyzer
 Group:		Applications/Productivity
-License:	GPLv2
+License:	GPL-2.0-or-later
 URL:		http://sourceforge.net/projects/viking/
 Source0:	%{_pkg_name}-%{version}.tar.gz
 BuildRoot:	%{_tmppath}/%{name}-%{version}-build
