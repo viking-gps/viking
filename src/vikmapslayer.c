@@ -414,6 +414,7 @@ void maps_layer_uninit ()
 {
   vik_mutex_free ( rq_mutex );
   g_hash_table_destroy ( requests );
+  rq_mutex = NULL;
 }
 
 /****************************************/
@@ -502,10 +503,15 @@ gboolean req_hash_remove_id  (gpointer key,
 
 static void requests_clear ( guint maptype )
 {
-  guint id = vik_map_source_get_uniq_id ( MAPS_LAYER_NTH_TYPE(maptype) );
-  g_mutex_lock ( rq_mutex );
-  g_hash_table_foreach_remove ( requests, req_hash_remove_id, GUINT_TO_POINTER(id) );
-  g_mutex_unlock ( rq_mutex );
+  // Ensure mutex (and therefore hash) is available
+  //  as can become unavailable on program exit
+  //  yet this function may still be called from existing threads
+  if ( rq_mutex ) {
+    guint id = vik_map_source_get_uniq_id ( MAPS_LAYER_NTH_TYPE(maptype) );
+    g_mutex_lock ( rq_mutex );
+    g_hash_table_foreach_remove ( requests, req_hash_remove_id, GUINT_TO_POINTER(id) );
+    g_mutex_unlock ( rq_mutex );
+  }
 }
 
 /**
@@ -1912,13 +1918,18 @@ static gchar *create_request_string ( MapDownloadInfo *mdi, guint16 id, gint x, 
 
 static void mark_request_complete ( MapDownloadInfo *mdi, guint16 id, gint x, gint y )
 {
-  gchar *request = create_request_string ( mdi, id, x, y );
-  g_mutex_lock ( rq_mutex );
-  (void)g_hash_table_remove ( requests, request );
-  g_mutex_unlock ( rq_mutex );
-  if ( vik_verbose )
-    g_debug ( "%s: %s", __FUNCTION__, request );
-  g_free ( request );
+  // Ensure mutex (and therefore hash) is available
+  //  as can become unavailable on program exit
+  //  yet this function may still be called from existing threads
+  if ( rq_mutex ) {
+    gchar *request = create_request_string ( mdi, id, x, y );
+    g_mutex_lock ( rq_mutex );
+    (void)g_hash_table_remove ( requests, request );
+    g_mutex_unlock ( rq_mutex );
+    if ( vik_verbose )
+      g_debug ( "%s: %s", __FUNCTION__, request );
+    g_free ( request );
+  }
 }
 
 static void unref_weak_ref_cb ( MapDownloadInfo *mdi )
@@ -2066,6 +2077,8 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
             case DOWNLOAD_NOT_REQUIRED:
 	      need_download = FALSE;
 	      break;
+            case DOWNLOAD_USER_ABORTED:
+              break;
             default:
               break;
           }
@@ -2073,23 +2086,29 @@ static int map_download_thread ( MapDownloadInfo *mdi, gpointer threaddata )
 
         mark_request_complete ( mdi, id, x, y );
 
-        g_mutex_lock(mdi->mutex);
-        if (remove_mem_cache)
+        // Avoid attempting to update mapcache when download aborted
+        //  1. Since no real change to track
+        //  2. more importantly, if the program is ending then the mapcache may have been removed
+        if ( dr != DOWNLOAD_USER_ABORTED ) {
+
+          g_mutex_lock(mdi->mutex);
+          if (remove_mem_cache)
             a_mapcache_remove_all_shrinkfactors ( x, y, mdi->mapcoord.z, id, mdi->mapcoord.scale, mdi->vml->filename );
 
-        // Save download result - must be after remove_all_shrinkfactors() otherwise that would remove this result!
-        a_mapcache_add ( NULL, (mapcache_extra_t){0.0, dr}, mdi->mapcoord.x, mdi->mapcoord.y, mdi->mapcoord.z, id,
-                         mdi->mapcoord.scale, mdi->vml->alpha, 1.0, 1.0, mdi->vml->filename );
+          // Save download result - must be after remove_all_shrinkfactors() otherwise that would remove this result!
+          a_mapcache_add ( NULL, (mapcache_extra_t){0.0, dr}, mdi->mapcoord.x, mdi->mapcoord.y, mdi->mapcoord.z, id,
+                           mdi->mapcoord.scale, mdi->vml->alpha, 1.0, 1.0, mdi->vml->filename );
 
-        if (mdi->refresh_display && mdi->map_layer_alive) {
-          /* TODO: check if it's on visible area */
-          if ( need_download ) {
-            vik_layer_emit_update ( VIK_LAYER(mdi->vml), FALSE ); // NB update display from background
+          if (mdi->refresh_display && mdi->map_layer_alive) {
+            /* TODO: check if it's on visible area */
+            if ( need_download ) {
+              vik_layer_emit_update ( VIK_LAYER(mdi->vml), FALSE ); // NB update display from background
+            }
           }
-        }
 
-        g_mutex_unlock(mdi->mutex);
-        mdi->mapcoord.x = mdi->mapcoord.y = 0; /* we're temporarily between downloads */
+          g_mutex_unlock(mdi->mutex);
+          mdi->mapcoord.x = mdi->mapcoord.y = 0; /* we're temporarily between downloads */
+        }
       }
     }
   }

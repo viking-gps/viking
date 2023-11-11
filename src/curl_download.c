@@ -251,6 +251,8 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
       g_warning("%s: http response: %ld for uri %s", __FUNCTION__, response, uri);
       res = CURL_DOWNLOAD_ERROR;
     }
+  } else if (res == CURLE_ABORTED_BY_CALLBACK) {
+    res = CURL_DOWNLOAD_ABORTED;
   } else {
     g_warning ( "%s: curl error: %d for uri %s", __FUNCTION__, res, uri );
     res = CURL_DOWNLOAD_ERROR;

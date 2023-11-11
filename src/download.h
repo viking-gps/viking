@@ -126,6 +126,7 @@ typedef enum {
   DOWNLOAD_CONTENT_ERROR = -1,
   DOWNLOAD_SUCCESS = 0,
   DOWNLOAD_NOT_REQUIRED = 1, // Also 'successful'. e.g. Because file already exists and no time checks used
+  DOWNLOAD_USER_ABORTED = 2, // Not an error, but not really successful either - no actual download completed
 } DownloadResult_t;
 
 /* TODO: convert to Glib */

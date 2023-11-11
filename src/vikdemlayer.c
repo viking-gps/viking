@@ -1348,6 +1348,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
     }
     case DOWNLOAD_SUCCESS:
     case DOWNLOAD_NOT_REQUIRED:
+    case DOWNLOAD_USER_ABORTED:
     default:
       break;
   }

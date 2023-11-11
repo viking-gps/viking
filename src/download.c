@@ -405,7 +405,11 @@ static DownloadResult_t download( const char *hostname, const char *uri, const c
 
   DownloadResult_t result = DOWNLOAD_SUCCESS;
 
-  if (ret != CURL_DOWNLOAD_NO_ERROR && ret != CURL_DOWNLOAD_NO_NEWER_FILE) {
+  if (ret == CURL_DOWNLOAD_ABORTED) {
+    g_debug("%s: download aborted: curl_download_get_url=%d", __FUNCTION__, ret);
+    failure = TRUE;
+    result = DOWNLOAD_USER_ABORTED;
+  } else if (ret == CURL_DOWNLOAD_ERROR) {
     g_debug("%s: download failed: curl_download_get_url=%d", __FUNCTION__, ret);
     failure = TRUE;
     result = DOWNLOAD_HTTP_ERROR;
