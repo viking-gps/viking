@@ -2627,6 +2627,24 @@ static void mbt_free ( MBT_T *mbt )
   g_free ( mbt );
 }
 
+static void tac_mbtiles_insert_metadata_pair ( sqlite3 *sql, const gchar *name, const gchar *value )
+{
+  gchar *ins = g_strdup_printf ( "INSERT INTO metadata (name, value) VALUES ('%s', \"%s\");", name, value );
+
+  sqlite3_stmt *sql_stmt;
+  int ans = sqlite3_prepare_v2 ( sql, ins, -1, &sql_stmt, NULL );
+  g_free ( ins );
+  if ( ans != SQLITE_OK ) {
+    g_warning ( "%s: %s", __FUNCTION__, sqlite3_errmsg(sql) );
+  } else {
+    int step = sqlite3_step ( sql_stmt );
+    if ( step != SQLITE_DONE ) {
+      g_warning ( "%s: sqlite3_step result was %d", __FUNCTION__, step );
+    }
+  }
+  (void)sqlite3_finalize ( sql_stmt );
+}
+
 static gint tac_mbtiles_thread ( MBT_T *mbt, gpointer threaddata  )
 {
   VikAggregateLayer *val = mbt->val;
@@ -2655,12 +2673,19 @@ static gint tac_mbtiles_thread ( MBT_T *mbt, gpointer threaddata  )
     "PRAGMA locking_mode=EXCLUSIVE;"
     "PRAGMA journal_mode=OFF;";
 
-  ans = sqlite3_exec ( mbtiles, cmd, 0, 0, &err_msg);
+  ans = sqlite3_exec ( mbtiles, cmd, 0, 0, &err_msg );
   if ( ans != SQLITE_OK ) {
     msg = g_strdup ( err_msg );
     sqlite3_free ( err_msg );
     goto cleanup;
   }
+
+  // v1.1 Metadata
+  tac_mbtiles_insert_metadata_pair ( mbtiles, "name", vik_layer_get_name(VIK_LAYER(val)) );
+  tac_mbtiles_insert_metadata_pair ( mbtiles, "type", "overlay" );
+  tac_mbtiles_insert_metadata_pair ( mbtiles, "version", "1" );
+  tac_mbtiles_insert_metadata_pair ( mbtiles, "description", "Created by Viking - " PACKAGE_URL );
+  tac_mbtiles_insert_metadata_pair ( mbtiles, "format", "png" );
 
   guint zoom = (guint)map_utils_mpp_to_zoom_level(val->zoom_level);
 

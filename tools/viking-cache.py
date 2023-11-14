@@ -41,6 +41,19 @@ def mbtiles_connect(mbtiles_file):
         logger.exception(e)
         sys.exit(1)
 
+# v1.1 style
+def mbtiles_metadata(cur, name):
+    cur.execute("""insert into metadata (name, value) values (?, ?);""",
+                ("name", name))
+    cur.execute("""insert into metadata (name, value) values (?, ?);""",
+                ("type", "baselayer"))
+    cur.execute("""insert into metadata (name, value) values (?, ?);""",
+                ("version", 1))
+    cur.execute("""insert into metadata (name, value) values (?, ?);""",
+                ("description", "Created by Viking - http://viking.sf.net/"))
+    cur.execute("""insert into metadata (name, value) values (?, ?);""",
+                ("format", "png"))
+
 def optimize_connection(cur):
     cur.execute("""PRAGMA synchronous=0""")
     cur.execute("""PRAGMA locking_mode=EXCLUSIVE""")
@@ -71,6 +84,7 @@ def osm_to_mbtiles(directory_path, mbtiles_file, **kwargs):
     cur = con.cursor()
     optimize_connection(cur)
     mbtiles_setup(cur)
+    mbtiles_metadata(cur, mbtiles_file)
     image_format = 'png'
     count = 0
     start_time = time.time()
