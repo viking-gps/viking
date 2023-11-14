@@ -520,6 +520,9 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
 	/* Note : nb tiles on Y axis */
 	gint nb_tiles = VIK_GZ(17 - src->scale - 1);
 
+	if ( !priv->url )
+		return NULL;
+
 	gchar *uri = g_strdup_printf (priv->url, 17 - src->scale - 1, src->x, nb_tiles - src->y - 1);
 
 	return uri;

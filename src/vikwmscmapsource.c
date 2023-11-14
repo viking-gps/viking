@@ -529,6 +529,9 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
 	g_ascii_dtostr (sminy, G_ASCII_DTOSTR_BUF_SIZE, miny);
 	g_ascii_dtostr (smaxy, G_ASCII_DTOSTR_BUF_SIZE, maxy);
 
+	if ( !priv->url )
+		return NULL;
+
 	gchar *uri = g_strdup_printf (priv->url, sminx, sminy, smaxx, smaxy);
 
 	return uri;

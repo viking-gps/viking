@@ -659,6 +659,9 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
 	g_return_val_if_fail (VIK_IS_SLIPPY_MAP_SOURCE(self), NULL);
 	VikSlippyMapSourcePrivate *priv = VIK_SLIPPY_MAP_SOURCE_PRIVATE(self);
 
+	if ( !priv->url )
+		return NULL;
+
 	gchar *uri = NULL;
 	if ( priv->switch_xy )
 		// 'ARC GIS' Tile Server layout ordering
