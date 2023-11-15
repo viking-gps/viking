@@ -655,14 +655,14 @@ GPX and KML files may also be appended, whereby the file contents are added to t
 </para>
 </section>
 
-<section id="open_gpx_external"><title>Open GPX as External Layer</title>
+<section id="open_external"><title>Open as External Layer</title>
 <para>
-Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Open GPX as External Layer...</guisubmenu></menuchoice> menu only.
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Open as External Layer...</guisubmenu></menuchoice> menu only.
 </para>
 <para>
-Selecting a GPX file from this method will create an external <xref linkend="TrackWaypoint"/> Layer that loads from the specified file.
-The layer is marked as a "no write" external layer, which means any changes made will not be written back to the GPX file.
-To enable changes to be written, you can change the layer to a standard external layer in the layer properties dialog.
+Selecting a geo-data file (such as GPX, KML, FIT or TCX filetypes) from this method will create an external <xref linkend="TrackWaypoint"/> Layer that loads from the specified file.
+The layer is marked as a <emphasis>No write</emphasis> external layer, which means any changes made will not be written back to the file.
+To enable changes to be written (only on file types with write support, thus ATM only GPX files), you can change the layer property <menuchoice><guimenu>Filesystem</guimenu><guisubmenu>External layer</guisubmenu></menuchoice> to <emphasis>Yes</emphasis> in the layer properties dialog.
 This is in contrast to importing the data and storing it in the Viking file.
 </para>
 </section>
@@ -1075,18 +1075,20 @@ To start creating them enter into a create mode via either the <guibutton>Create
 </para>
 
 <para>
-The new TrackWaypoint layer dialog allows the layer to be specified as external.
-In this case the layer is exported as GPX to the file specified instead of stored in the Viking file itself.
-It is also possible to specify the layer as "no write".
-This means that &appname; does not write the layer to the GPX file specified; instead, &appname; only reads the file.
-No-write layers are primarily intended to be used with the <xref linkend="open_gpx_external"/> option in the File menu.
+The new TrackWaypoint layer dialog allows the layer to be specified as <emphasis>External</emphasis> in the <guimenuitem>Filesystem</guimenuitem> section.
+In this case the layer is read from the file specified instead of stored in the Viking file itself.
+By default files loaded in the <emphasis>External</emphasis> mode are to <emphasis>No write</emphasis>.
+This means that &appname; does not write the layer to the file specified; instead, &appname; only reads the file.
+No-write layers are primarily intended to be used with the <xref linkend="open_external"/> option in the File menu.
+It possible to specify the External layer mode as <emphasis>Yes</emphasis>, as then changes made to this layer will be saved back into the specified file.
+This is only available for filetypes with write support - i.e. only GPX files at present.
+Note, &appname; specific options may not be saved if not supported by the GPX export.
 </para>
 
 <para>
 External layers are loaded only when they are displayed or selected.
 Hence, they will not appear in any summary statistics if they have not been loaded.
 It is possible to load all external layers contained in an <xref linkend="Aggregate"/> layer by selecting <menuchoice><guimenu>File</guimenu><guisubmenu>Load External Layers</guisubmenu></menuchoice> from the Aggregate Layer context menu.
-Note, &appname; specific options may not be saved if not supported by the GPX export.
 </para>
 
 <para>
@@ -3064,9 +3066,9 @@ Using this forces External Layers in this Aggregate Layer to be loaded and so co
 </listitem>
 </varlistentry>
 <varlistentry>
-<term><guilabel>Open GPX as External Layer...</guilabel></term>
+<term><guilabel>Open File as External Layer...</guilabel></term>
 <listitem>
-<para>This opens a dialog to select files to <xref linkend="open_gpx_external"/> within this Aggregate Layer.</para>
+<para>This opens a dialog to select files to <xref linkend="open_external"/> within this Aggregate Layer.</para>
 </listitem>
 </varlistentry>
 <varlistentry>

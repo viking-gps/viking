@@ -1321,7 +1321,7 @@ msgid "Add a map layer by id value. Use 0 for the default map."
 msgstr ""
 "Gehitu mapa geruza id balioaren bidez. Erabili 0 lehenetsitako maparentzat."
 
-msgid "Load all GPX files in external mode."
+msgid "Load files in external mode."
 msgstr "Kargatu GPX fitxategi guztiak kanpoko moduan."
 
 #, c-format
@@ -1706,7 +1706,7 @@ msgstr "_Fitxategia"
 msgid "Load E_xternal Layers"
 msgstr "Kargatu kanpoko geruzak"
 
-msgid "_Open GPX as External Layer..."
+msgid "_Open File as External Layer..."
 msgstr "_Ireki GPX kanpoko geruza gisa..."
 
 msgid "Save _Layer As..."
@@ -3101,8 +3101,8 @@ msgstr ""
 "kanpoko fitxategi batean baina fitxategian ez dira aldaketak (fitxategia "
 "abiaraztean kargatu da bakarrik)"
 
-msgid "Save layer as:"
-msgstr "Gorde geruza honela:"
+msgid "Layer file:"
+msgstr "Geruza fitxategia:"
 
 msgid "Specify where layer should be saved.  Overwrites file if it exists."
 msgstr ""
@@ -5385,10 +5385,10 @@ msgstr "Gehitu fitxategia..."
 msgid "Append data from a different file"
 msgstr "Gehitu datuak  beste fitxategi batetik"
 
-msgid "Open GPX as External _Layer..."
+msgid "Open File as External _Layer..."
 msgstr "Ireki GPX kanpoko geruza gisa"
 
-msgid "Open a GPX file as an external layer"
+msgid "Open a file as an external layer"
 msgstr "Ireki GPX kanpoko geruza gisa"
 
 msgid "_Export All"

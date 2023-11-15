@@ -4,6 +4,7 @@
 // NB loading of .vik files are tested more thoroughly via other test programs
 
 #include <gtk/gtk.h>
+#include <glib/gprintf.h>
 #include <stdio.h>
 #include "viklayer.h"
 #include "viklayer_defaults.h"
@@ -14,16 +15,28 @@
 #include "file.h"
 #include "modules.h"
 
+// Support 'external' mode in test load program
+static gboolean external = FALSE;
+
+// Options
+static GOptionEntry entries[] =
+{
+  { "external", 'e', 0, G_OPTION_ARG_NONE, &external, "Load file in external mode.", NULL },
+};
+
 int main(int argc, char *argv[])
 {
-  if ( argc != 2 )
+  if ( argc < 2 )
     return argc;
 
-  // Under GTK2, despite perhaps being undefined behaviour - it seemed to work without a $DISPLAY
-  // But for GTK3 it doesn't work
-#if GTK_CHECK_VERSION (3,0,0)
-  gtk_init ( NULL, NULL );
-#endif
+  GError *error = NULL;
+  (void)gtk_init_with_args ( &argc, &argv, "file", entries, NULL, &error );
+
+  if ( error ) {
+    (void)g_fprintf ( stderr, "Parsing command line options failed: %s\n", error->message );
+    g_error_free ( error );
+    return EXIT_FAILURE;
+  }
 
   // Some stuff must be initialized as it gets auto used
   a_settings_init ();
@@ -41,7 +54,7 @@ int main(int argc, char *argv[])
   VikAggregateLayer* agg = vik_aggregate_layer_new ();
   VikViewport* vp = vik_viewport_new ();
 
-  VikLoadType_t lt = a_file_load ( agg, vp, NULL, argv[1], TRUE, FALSE, NULL );
+  VikLoadType_t lt = a_file_load ( agg, vp, NULL, argv[1], TRUE, external, NULL );
 
   g_object_unref ( agg );
 

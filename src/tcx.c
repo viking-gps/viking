@@ -159,10 +159,12 @@ static void tcx_start ( UserDataT *ud, const char *el, const char **attr )
 	switch ( current_tag ) {
 
 		case tt_tcx: {
-			c_vtl = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, ud->vvp, FALSE ));
-			// Always force V1.1, since we may read in 'extended' data like cadence, etc...
-			vik_trw_layer_set_gpx_version ( c_vtl, GPX_V1_1 );
-			c_md = vik_trw_metadata_new();
+			if (ud->val) {
+				c_vtl = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, ud->vvp, FALSE ));
+				// Always force V1.1, since we may read in 'extended' data like cadence, etc...
+				vik_trw_layer_set_gpx_version ( c_vtl, GPX_V1_1 );
+				c_md = vik_trw_metadata_new();
+			}
 			break;
 		}
 
@@ -217,7 +219,7 @@ static void tcx_end ( UserDataT *ud, const char *el )
 	switch ( current_tag ) {
 
 		case tt_tcx:
-			if ( c_vtl ) {
+			if ( ud->val && c_vtl ) {
 				if ( vik_trw_layer_is_empty(c_vtl) ) {
 					// free up layer
 					g_warning ( "%s: No useable geo data found in %s", __FUNCTION__, vik_layer_get_name(VIK_LAYER(c_vtl)) );
@@ -439,6 +441,18 @@ static void tcx_cdata ( void *dta, const XML_Char *ss, int len )
 	}
 }
 
+static void reset_globals ( VikTrwLayer *vtl )
+{
+	f_tr_newseg = FALSE;
+	current_tag = tt_unknown;
+	xpath = g_string_new ( "" );
+	c_cdata = g_string_new ( "" );
+	c_vtl = vtl;
+
+	unnamed_waypoints = 1;
+	unnamed_tracks = 1;
+	unnamed_layers = 1;
+}
 
 /**
  * Returns TRUE on a successful file read
@@ -463,11 +477,54 @@ gboolean a_tcx_read_file ( VikAggregateLayer *val, VikViewport *vvp, FILE *ff, c
 
 	gchar buf[4096];
 
-	xpath = g_string_new ( "" );
-	c_cdata = g_string_new ( "" );
+	reset_globals ( NULL );
 
-	unnamed_waypoints = 1;
-	unnamed_tracks = 1;
+	while ( !done ) {
+		len = fread ( buf, 1, sizeof(buf)-7, ff );
+		done = feof ( ff ) || !len;
+		status = XML_Parse ( parser, buf, len, done );
+	}
+
+	gboolean ans = (status != XML_STATUS_ERROR);
+	if ( !ans ) {
+		g_warning ( "%s: XML error %s at line %ld", __FUNCTION__, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
+	}
+
+	XML_ParserFree (parser);
+	g_free ( ud );
+	g_string_free ( xpath, TRUE );
+	g_string_free ( c_cdata, TRUE );
+
+	return ans;
+}
+
+/**
+ * Returns TRUE on a successful file read
+ *   NB The file of course could contain no actual geo data that we can use!
+ * NB2 Filename is used in case a name from within the file itself can not be found
+ *   as file access is via the FILE* stream methods
+ * This function reads all tracks found in a TCX file into the specified existing TRW Layer;
+ *  assumed device recorded TCX files will just have one 'layer' with track(s) in it,
+ *  so this is particularly useful for reading in files in 'External' mode.
+ */
+gboolean a_tcx_read_file_into_layer ( VikTrwLayer *vtl, FILE *ff, const gchar* filename )
+{
+	XML_Parser parser = XML_ParserCreate ( NULL );
+	int done=0, len;
+	enum XML_Status status = XML_STATUS_ERROR;
+
+	UserDataT *ud = g_malloc (sizeof(UserDataT));
+	ud->val      = NULL;
+	ud->vvp      = NULL;
+	ud->filename = filename;
+
+	XML_SetElementHandler ( parser, (XML_StartElementHandler)tcx_start, (XML_EndElementHandler)tcx_end );
+	XML_SetUserData ( parser, ud );
+	XML_SetCharacterDataHandler ( parser, (XML_CharacterDataHandler)tcx_cdata );
+
+	gchar buf[4096];
+
+	reset_globals ( vtl );
 
 	while ( !done ) {
 		len = fread ( buf, 1, sizeof(buf)-7, ff );

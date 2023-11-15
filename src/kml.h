@@ -25,7 +25,7 @@
 
 G_BEGIN_DECLS
 
-gboolean a_kml_read_file ( VikTrwLayer *vtl, FILE *ff );
+gboolean a_kml_read_file ( VikTrwLayer *vtl, FILE *ff, gboolean external );
 
 G_END_DECLS
 

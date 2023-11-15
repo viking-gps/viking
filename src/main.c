@@ -72,7 +72,7 @@ static GOptionEntry entries[] =
   { "longitude", 0, 0, G_OPTION_ARG_DOUBLE, &longitude, N_("Longitude in decimal degrees"), NULL },
   { "zoom", 'z', 0, G_OPTION_ARG_INT, &zoom_level_osm, N_("Zoom Level (OSM). Value can be 0 - 22"), NULL },
   { "map", 'm', 0, G_OPTION_ARG_INT, &map_id, N_("Add a map layer by id value. Use 0 for the default map."), NULL },
-  { "external", 'e', 0, G_OPTION_ARG_NONE, &external, N_("Load all GPX files in external mode."), NULL },
+  { "external", 'e', 0, G_OPTION_ARG_NONE, &external, N_("Load files in external mode."), NULL },
 #ifdef G_OS_UNIX
   { "running-instance", 'r', 0, G_OPTION_ARG_NONE, &running_instance, N_("Open file(s) in an existing running instance"), NULL },
 #endif

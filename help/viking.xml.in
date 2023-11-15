@@ -275,7 +275,7 @@ can be viewed in the main program by going to <menuchoice><guimenu>Help</guimenu
         <term><option>-e</option></term>
         <term><option>--external</option></term>
         <listitem>
-          <para>Load all specified GPX files in 'external' mode.</para>
+          <para>Load specified files (GPX, FIT, KML or TCX) in 'external' mode. This has no effect on .vik files.</para>
           <para>This is in contrast to importing the data and storing it in the Viking file.</para>
         </listitem>
       </varlistentry>

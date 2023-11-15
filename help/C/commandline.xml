@@ -155,7 +155,8 @@ This also enables some extra information features in the GUI itself, primarily o
 <row>
   <entry>-e</entry>
   <entry>--external</entry>
-  <entry>The GPX files specified on the command line will be loaded in as <emphasis>external files</emphasis> as per the <xref linkend="open_gpx_external"/> method.</entry>
+  <entry>The files specified on the command line will be loaded in as <emphasis>external files</emphasis> as per the <xref linkend="open_external"/> method.
+  Applies to GPX, FIT, KML or TCX types, thus has no effect on .vik files.</entry>
 </row>
 <row>
   <entry>-c</entry>

@@ -888,7 +888,7 @@ static void kml_cdata ( xml_data *xd, const XML_Char *ss, int len )
  * Returns:
  *  TRUE on success
  */
-gboolean a_kml_read_file ( VikTrwLayer *vtl, FILE *ff )
+gboolean a_kml_read_file ( VikTrwLayer *vtl, FILE *ff, gboolean external )
 {
 	gchar buffer[4096];
 	XML_Parser parser = XML_ParserCreate(NULL);

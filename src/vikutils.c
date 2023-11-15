@@ -1266,7 +1266,7 @@ void vu_finish ( void )
 /**
  * vu_get_ui_selected_gps_files:
  * @external: Select filter allows only file types usuable for External Layers
- *            (i.e. basically just GPX files)
+ *            (i.e. supported geo-data files GPX, FIT, KML, TCX)
  *
  * Returned list must be freed after use
  *
@@ -1308,33 +1308,32 @@ GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external )
 		gtk_file_filter_set_name( filter, _("Bzip2 File") );
 		gtk_file_filter_add_mime_type ( filter, "application/x-bzip2");
 		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+	}
 
-		filter = gtk_file_filter_new ();
-		gtk_file_filter_set_name( filter, _("FIT") );
-		gtk_file_filter_add_pattern ( filter, "*.fit" );
-		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+	filter = gtk_file_filter_new ();
+	gtk_file_filter_set_name( filter, _("FIT") );
+	gtk_file_filter_add_pattern ( filter, "*.fit" );
+	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
 
+	if ( !external ) {
 #ifdef VIK_CONFIG_GEOCACHES
 		filter = gtk_file_filter_new ();
 		gtk_file_filter_set_name( filter, _("Geocaching") );
 		gtk_file_filter_add_pattern ( filter, "*.loc" ); // No MIME type available
 		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
 #endif
-
-		filter = gtk_file_filter_new ();
-		gtk_file_filter_set_name( filter, _("Google Earth") );
-		gtk_file_filter_add_mime_type ( filter, "application/vnd.google-earth.kml+xml");
-		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
 	}
 
-	// NB The only named filter for 'External' types ATM
+	filter = gtk_file_filter_new ();
+	gtk_file_filter_set_name( filter, _("Google Earth") );
+	gtk_file_filter_add_mime_type ( filter, "application/vnd.google-earth.kml+xml");
+	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+
 	filter = gtk_file_filter_new ();
 	gtk_file_filter_set_name( filter, _("GPX") );
 	gtk_file_filter_add_mime_type ( filter, "gpx+xml");
 	gtk_file_filter_add_pattern ( filter, "*.gpx" );
 	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
-	if ( external )
-		gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
 
 	if ( !external ) {
 		filter = gtk_file_filter_new ();
@@ -1347,12 +1346,14 @@ GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external )
 		gtk_file_filter_add_mime_type ( filter, "application/x-xz");
 		gtk_file_filter_add_mime_type ( filter, "application/x-lzma");
 		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+	}
 
-		filter = gtk_file_filter_new ();
-		gtk_file_filter_set_name( filter, _("TCX") );
-		gtk_file_filter_add_pattern ( filter, "*.tcx" );
-		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+	filter = gtk_file_filter_new ();
+	gtk_file_filter_set_name( filter, _("TCX") );
+	gtk_file_filter_add_pattern ( filter, "*.tcx" );
+	gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
 
+	if ( !external ) {
 		filter = gtk_file_filter_new ();
 		gtk_file_filter_set_name( filter, _("Zip File") );
 		gtk_file_filter_add_mime_type ( filter, "application/zip");
@@ -1364,6 +1365,18 @@ GSList* vu_get_ui_selected_gps_files ( VikWindow *vw, gboolean external )
 		gtk_file_filter_add_pattern ( filter, "*.vik" );
 		gtk_file_filter_add_pattern ( filter, "*.viking" );
 		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+	}
+
+	if ( external ) {
+		filter = gtk_file_filter_new ();
+		gtk_file_filter_set_name( filter, _("Supported Files") );
+		gtk_file_filter_add_mime_type ( filter, "application/vnd.google-earth.kml+xml");
+		gtk_file_filter_add_pattern ( filter, "*.fit" );
+		gtk_file_filter_add_mime_type ( filter, "gpx+xml");
+		gtk_file_filter_add_pattern ( filter, "*.gpx" );
+		gtk_file_filter_add_pattern ( filter, "*.tcx" );
+		gtk_file_chooser_add_filter (GTK_FILE_CHOOSER(dialog), filter);
+		gtk_file_chooser_set_filter ( GTK_FILE_CHOOSER(dialog), filter );
 	}
 
 	// NB could have filters for gpspoint (*.gps,*.gpsoint?) + gpsmapper (*.gsm,*.gpsmapper?)

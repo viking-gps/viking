@@ -23,10 +23,13 @@
 
 #include "vikaggregatelayer.h"
 #include "vikviewport.h"
+#include "viktrwlayer.h"
 
 G_BEGIN_DECLS
 
 gboolean a_tcx_read_file ( VikAggregateLayer *val, VikViewport *vvp, FILE *ff, const gchar* filename );
+
+gboolean a_tcx_read_file_into_layer ( VikTrwLayer *vtl, FILE *ff, const gchar* filename );
 
 G_END_DECLS
 

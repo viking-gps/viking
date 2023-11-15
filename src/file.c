@@ -44,7 +44,6 @@
 
 #define TEST_BOOLEAN(str) (! ((str)[0] == '\0' || (str)[0] == '0' || (str)[0] == 'n' || (str)[0] == 'N' || (str)[0] == 'f' || (str)[0] == 'F') )
 #define VIK_MAGIC "#VIK"
-#define GPX_MAGIC "<?xm"
 
 #define VIKING_FILE_VERSION 1
 
@@ -68,7 +67,7 @@ static void push(Stack **stack)
   *stack = tmp;
 }
 
-static gboolean check_magic ( FILE *f, const gchar *magic_string )
+gboolean file_check_magic ( FILE *f, const gchar *magic_string )
 {
   gchar magic[strlen(magic_string)];
   gboolean rv = FALSE;
@@ -650,7 +649,7 @@ gboolean check_file_magic_vik ( const gchar *filename )
   gboolean result = FALSE;
   FILE *ff = xfopen ( filename );
   if ( ff ) {
-    result = check_magic ( ff, VIK_MAGIC );
+    result = file_check_magic ( ff, VIK_MAGIC );
     xfclose ( ff );
   }
   return result;
@@ -714,7 +713,7 @@ VikLoadType_t a_file_load_stream ( FILE *f,
   VikLoadType_t load_answer = LOAD_TYPE_OTHER_SUCCESS;
 
   // Attempt loading the primary file type first - our internal .vik file:
-  if ( check_magic ( f, VIK_MAGIC ) )
+  if ( file_check_magic ( f, VIK_MAGIC ) )
   {
     if ( file_read ( top, f, dirpath, vp ) )
       load_answer = LOAD_TYPE_VIK_SUCCESS;
@@ -742,12 +741,12 @@ VikLoadType_t a_file_load_stream ( FILE *f,
       load_answer = LOAD_TYPE_UNSUPPORTED_FAILURE;
   }
   // NB TCX files are XML
-  else if ( a_file_check_ext ( filename, ".tcx" ) && check_magic ( f, GPX_MAGIC ) ) {
+  else if ( a_file_check_ext ( filename, ".tcx" ) && file_check_magic ( f, FILE_XML_MAGIC ) && !external ) {
     if ( !a_tcx_read_file ( top, vp, f, filename ) ) {
       load_answer = LOAD_TYPE_TCX_FAILURE;
     }
   }
-  else if ( a_fit_check_magic ( f ) ) {
+  else if ( a_fit_check_magic ( f ) && !external ) {
     if ( !a_fit_read_file ( top, vp, f, filename ) ) {
       load_answer = LOAD_TYPE_FIT_FAILURE;
     }
@@ -781,14 +780,26 @@ VikLoadType_t a_file_load_stream ( FILE *f,
     }
 
     // In fact both kml & gpx files start the same as they are in xml
-    if ( a_file_check_ext ( filename, ".kml" ) && check_magic ( f, GPX_MAGIC ) ) {
-      if ( ! ( success = a_kml_read_file ( vtl, f ) ) ) {
+    if ( a_file_check_ext ( filename, ".kml" ) && file_check_magic ( f, FILE_XML_MAGIC ) && !external ) {
+      if ( ! ( success = a_kml_read_file ( vtl, f, external ) ) ) {
         load_answer = LOAD_TYPE_KML_FAILURE;
       }
     }
+    else if ( external && a_file_check_ext(filename, ".tcx") && file_check_magic(f, FILE_XML_MAGIC) ) {
+      if ( (success = a_tcx_read_file_into_layer ( vtl, f, filename )) )
+        trw_layer_replace_external ( vtl, filename );
+      else
+        load_answer = LOAD_TYPE_TCX_FAILURE;
+    }
+    else if ( external && a_file_check_ext(filename, ".kml") && file_check_magic(f, FILE_XML_MAGIC) ) {
+      if ( (success = a_kml_read_file ( vtl, f, external )) )
+        trw_layer_replace_external ( vtl, filename );
+      else
+        load_answer = LOAD_TYPE_KML_FAILURE;
+    }
     // NB use a extension check first, as a GPX file header may have a Byte Order Mark (BOM) in it
     //    - which currently confuses our file_check_magic function
-    else if ( a_file_check_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC ) ) {
+    else if ( a_file_check_ext ( filename, ".gpx" ) || file_check_magic ( f, FILE_XML_MAGIC ) ) {
       GpxReadStatus_t read_status = a_gpx_read_file ( vtl, f, dirpath, !add_new );
       switch (read_status) {
       case GPX_READ_FAILURE: load_answer = LOAD_TYPE_GPX_FAILURE; break;
@@ -800,6 +811,12 @@ VikLoadType_t a_file_load_stream ( FILE *f,
 	  // TODO may have to make absolute??
 	  trw_layer_replace_external ( vtl, filename );
       }
+    }
+    else if ( external && a_fit_check_magic ( f ) ) {
+      if ( (success = a_fit_read_file_into_layer ( vtl, f, filename )) )
+        trw_layer_replace_external ( vtl, filename );
+      else
+        load_answer = LOAD_TYPE_FIT_FAILURE;
     }
     else {
       // Try final supported file type

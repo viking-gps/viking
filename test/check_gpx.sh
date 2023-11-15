@@ -74,3 +74,13 @@ if [ $result != 2 ]; then
   exit 1
 fi
 rm $shortfile2
+
+# 'External' load
+count=`expr $count + 1`
+./test_file_load -e $srcdir/Stonehenge.gpx
+result=$?
+if [ $? != 0 ]; then
+  echo "External read failure unexpected value=$result"
+  exit 1
+fi
+

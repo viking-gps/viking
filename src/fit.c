@@ -170,15 +170,17 @@ static guint unnamed_layers = 0;
 static VikTrwLayer *fit_vtl = NULL;
 static VikWaypoint *fit_wp = NULL;
 static VikTrackpoint *fit_tp = NULL;
-static VikTrack *fit_tr = NULL;
+static VikTrack *fit_tr = NULL; // TODO turn into a list to create anew and then load each the end?
 static VikTRWMetadata *fit_md = NULL;
 
-static void fit_add_track ()
+static gboolean create_layers = FALSE;
+
+static void fit_add_track ( VikTrwLayer *vtl )
 {
 	if ( fit_tr && fit_tr->trackpoints ) {
 		gchar *tr_name = g_strdup_printf ( _("Track%03d"), unnamed_tracks++ );
 		fit_tr->trackpoints = g_list_reverse ( fit_tr->trackpoints );
-		vik_trw_layer_filein_add_track ( fit_vtl, tr_name, fit_tr );
+		vik_trw_layer_filein_add_track ( vtl, tr_name, fit_tr );
 	}
 }
 
@@ -235,6 +237,7 @@ gdouble semi2degrees(gint32 value)
 
 static gboolean f_tr_newseg = FALSE;
 
+// vvp can be NULL
 static gboolean read_fields ( FILE *ff, int num_fields, int id, int time_offset, VikViewport *vvp )
 {
 	//g_debug ( "%s: fields=%d", __FUNCTION__, num_fields );
@@ -320,13 +323,15 @@ static gboolean read_fields ( FILE *ff, int num_fields, int id, int time_offset,
 					// Ignore
 					g_warning ( "%s: Fit File Id Type=%d not supported", __FUNCTION__, data8 );
 				} else {
-					// If existing track, add to layer and then create new track
-					if ( fit_tr )
-						fit_add_track();
-					fit_vtl = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vvp, FALSE ));
-					// Always force V1.1, since we may read in 'extended' data like cadence, etc...
-					vik_trw_layer_set_gpx_version ( fit_vtl, GPX_V1_1 );
-					fit_md = vik_trw_metadata_new();
+					if ( create_layers && vvp ) {
+						// If existing track, add to layer and then create new track
+						if ( fit_vtl && fit_tr )
+							fit_add_track ( fit_vtl );
+						fit_vtl = VIK_TRW_LAYER(vik_layer_create ( VIK_LAYER_TRW, vvp, FALSE ));
+						// Always force V1.1, since we may read in 'extended' data like cadence, etc...
+						vik_trw_layer_set_gpx_version ( fit_vtl, GPX_V1_1 );
+						fit_md = vik_trw_metadata_new();
+					}
 					fit_tr = vik_track_new ();
 					if ( data8 == FIT_FILE_COURSE )
 						fit_tr->is_route = TRUE;
@@ -481,7 +486,8 @@ static gboolean read_fields ( FILE *ff, int num_fields, int id, int time_offset,
 			if ( pow != FIT_UINT16_INVALID )
 				fit_tp->power = pow;
 
-			fit_tr->trackpoints = g_list_prepend ( fit_tr->trackpoints, fit_tp );
+			if ( fit_tr )
+				fit_tr->trackpoints = g_list_prepend ( fit_tr->trackpoints, fit_tp );
 		}
 	}
 
@@ -692,6 +698,23 @@ header_t get_header ( FILE *ff )
 	return header;
 }
 
+static void reset_globals ( VikTrwLayer *vtl, gboolean create_lyrs )
+{
+	for ( guint8 ii = 0; ii < FIT_HDR_TYPE_MASK+1; ii++ )
+		g_defs[ii].reserved = FALSE;
+
+	unnamed_waypoints = 1;
+	unnamed_tracks = 1;
+	unnamed_layers = 1;
+	f_tr_newseg = FALSE;
+
+	fit_vtl = vtl;
+	fit_tp = NULL;
+	fit_wp = NULL;
+	fit_tr = NULL;
+	fit_md = NULL;
+	create_layers = create_lyrs;
+}
 
 /**
  * Returns TRUE on a successful file read
@@ -703,24 +726,12 @@ gboolean a_fit_read_file ( VikAggregateLayer *val, VikViewport *vvp, FILE *ff, c
 {
 	gboolean ans = FALSE;
 
-	for ( guint8 ii = 0; ii < FIT_HDR_TYPE_MASK+1; ii++ )
-		g_defs[ii].reserved = FALSE;
+	reset_globals ( NULL, TRUE );
 
 	header_t header = get_header ( ff );
 	g_debug ( "%s: Protocol=%d", __FUNCTION__, header.protocol_version );
 	g_debug ( "%s: Profile=%d", __FUNCTION__, header.profile_version );
 	g_debug ( "%s: Data size=%d", __FUNCTION__, header.data_size );
-
-	unnamed_waypoints = 1;
-	unnamed_tracks = 1;
-	unnamed_layers = 1;
-	f_tr_newseg = FALSE;
-
-	fit_vtl = NULL;
-	fit_tp = NULL;
-	fit_wp = NULL;
-	fit_tr = NULL;
-	fit_md = NULL;
 
 	// Keep decoding until nothing left
 	g_data_size = header.data_size;
@@ -733,9 +744,9 @@ gboolean a_fit_read_file ( VikAggregateLayer *val, VikViewport *vvp, FILE *ff, c
 
 	// TODO - support 'chained' fit files.
 	// Not found any examples to test with, so probably would end up with multiple tracks,
-	//  rather than say mulitple TRW layers, however that should be good enough.
+	//  rather than say multiple TRW layers, however that should be good enough.
 	if ( fit_vtl ) {
-		fit_add_track ();
+		fit_add_track ( fit_vtl );
 		if ( vik_trw_layer_is_empty(fit_vtl) ) {
 			// free up layer
 			g_warning ( "%s: No useable geo data found in %s", __FUNCTION__, vik_layer_get_name(VIK_LAYER(fit_vtl)) );
@@ -754,4 +765,46 @@ gboolean a_fit_read_file ( VikAggregateLayer *val, VikViewport *vvp, FILE *ff, c
 	}
 
 	return ans;
+}
+
+/**
+ * Returns TRUE on a successful file read
+ *   NB The file of course could contain no actual geo data that we can use!
+ * NB2 Filename is used in case a name from within the file itself can not be found
+ *   as file access is via the FILE* stream methods
+ * This function reads all tracks found in a FIT file into the specified existing TRW Layer;
+ *  typically device recorded FIT files will just have one 'layer' with track(s) in it,
+ *  so this is particularly useful for reading in files in 'External' mode.
+ */
+gboolean a_fit_read_file_into_layer ( VikTrwLayer *vtl, FILE *ff, const gchar* filename )
+{
+	reset_globals ( vtl, FALSE );
+
+	header_t header = get_header ( ff );
+	g_debug ( "%s: Protocol=%d", __FUNCTION__, header.protocol_version );
+	g_debug ( "%s: Profile=%d", __FUNCTION__, header.profile_version );
+	g_debug ( "%s: Data size=%d", __FUNCTION__, header.data_size );
+
+	// Keep decoding until nothing left
+	g_data_size = header.data_size;
+	while ( g_data_size ) {
+		if ( !read_record(ff, NULL) ) {
+			g_warning ( "%s: data size not read =%d", __FUNCTION__, g_data_size );
+			return FALSE;
+		}
+	}
+
+	fit_add_track ( vtl );
+	return TRUE;
+}
+
+gboolean a_fit_check_magic_filename ( const gchar* filename )
+{
+	gboolean result = FALSE;
+	FILE *ff = g_fopen ( filename, "r" );
+	if ( ff ) {
+		result = a_fit_check_magic ( ff );
+		fclose ( ff );
+	}
+	return result;
 }

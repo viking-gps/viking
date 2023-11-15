@@ -1303,7 +1303,7 @@ msgstr "Vergrößerungsstufe (OSM). Wert von 0 bis 22"
 msgid "Add a map layer by id value. Use 0 for the default map."
 msgstr ""
 
-msgid "Load all GPX files in external mode."
+msgid "Load files in external mode."
 msgstr ""
 
 #, c-format
@@ -1686,7 +1686,7 @@ msgstr "_Datei"
 msgid "Load E_xternal Layers"
 msgstr "Externe Ebenen laden"
 
-msgid "_Open GPX as External Layer..."
+msgid "_Open File as External Layer..."
 msgstr ""
 
 msgid "Save _Layer As..."
@@ -2993,8 +2993,8 @@ msgid ""
 "file but changes are not written to the file (file only loaded at startup)"
 msgstr ""
 
-msgid "Save layer as:"
-msgstr "Ebene speichern unter:"
+msgid "Layer file:"
+msgstr "Ebene datei:"
 
 msgid "Specify where layer should be saved.  Overwrites file if it exists."
 msgstr ""
@@ -5223,11 +5223,11 @@ msgstr "Datei _anfügen..."
 msgid "Append data from a different file"
 msgstr "Daten aus einer anderen Datei anfügen"
 
-msgid "Open GPX as External _Layer..."
-msgstr "GPX-Datei als externe Ebene einbinden"
+msgid "Open File as External _Layer..."
+msgstr "Datei als externe Ebene einbinden"
 
-msgid "Open a GPX file as an external layer"
-msgstr "GPX-Datei als externe Ebene einbinden"
+msgid "Open a file as an external layer"
+msgstr "Datei als externe Ebene einbinden"
 
 msgid "_Export All"
 msgstr "Alles _exportieren"

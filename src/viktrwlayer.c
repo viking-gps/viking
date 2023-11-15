@@ -42,8 +42,11 @@
 #include "garminsymbols.h"
 #include "thumbnails.h"
 #include "background.h"
+#include "fit.h"
 #include "gpx.h"
 #include "geojson.h"
+#include "kml.h"
+#include "tcx.h"
 #include "babel.h"
 #include "dem.h"
 #include "dems.h"
@@ -757,7 +760,7 @@ VikLayerParam trw_layer_params[] = {
 
   { VIK_LAYER_TRW, "gpx_version_enum", VIK_LAYER_PARAM_UINT, GROUP_FILESYSTEM, N_("GPX Version"), VIK_LAYER_WIDGET_COMBOBOX, params_gpx_version, NULL, NULL, gpx_version_default, NULL, NULL },
   { VIK_LAYER_TRW, "external_layer", VIK_LAYER_PARAM_UINT, GROUP_FILESYSTEM, N_("External layer:"), VIK_LAYER_WIDGET_COMBOBOX, params_external_type, NULL, N_("Layer data stored in the Viking file, in an external file, or in an external file but changes are not written to the file (file only loaded at startup)"), external_layer_default, NULL, NULL },
-  { VIK_LAYER_TRW, "external_file", VIK_LAYER_PARAM_STRING, GROUP_FILESYSTEM, N_("Save layer as:"), VIK_LAYER_WIDGET_FILESAVE, GINT_TO_POINTER(VF_FILTER_GPX), NULL, N_("Specify where layer should be saved.  Overwrites file if it exists."), string_default, NULL, NULL },
+  { VIK_LAYER_TRW, "external_file", VIK_LAYER_PARAM_STRING, GROUP_FILESYSTEM, N_("Layer file:"), VIK_LAYER_WIDGET_FILESAVE, GINT_TO_POINTER(VF_FILTER_GPX), NULL, N_("Specify where layer should be saved.  Overwrites file if it exists."), string_default, NULL, NULL },
   { VIK_LAYER_TRW, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
     VIK_LAYER_WIDGET_BUTTON, N_("Reset to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
@@ -1605,6 +1608,10 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
         changed = vik_layer_param_change_string ( vlsp->data, &vtl->external_file );
         g_free (vtl->external_file);
         vtl->external_file = g_strdup (vlsp->data.s);
+
+        // TODO force here?
+        if ( vtl->external_layer != VIK_TRW_LAYER_INTERNAL && strlen(vtl->external_file) == 0 )
+          g_warning ( "%s: EMPTY FILE", __FUNCTION__ );
       }
       break;
     default: break;
@@ -1756,10 +1763,27 @@ static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values 
       GtkWidget *w2 = ww2[OFFSET + PARAM_EXTF];
       if ( w1 ) gtk_widget_set_sensitive ( w1, sensitive );
       if ( w2 ) gtk_widget_set_sensitive ( w2, sensitive );
+
+      // KML, TCX & GPX are all XML
+      // so ATM resort to simple file extension test
+      VikFileEntry *vfe = VIK_FILE_ENTRY(w1);
+      const gchar *file_name = vik_file_entry_get_filename ( vfe );
+      GtkWidget *w3 = ww1[OFFSET + PARAM_GPXV];
+      gboolean gsens = a_file_check_ext ( file_name, ".gpx" ) || strlen(file_name) == 0;
+      if ( w3 ) gtk_widget_set_sensitive ( w3, gsens );
     }
     default: break;
   }
 }
+
+typedef enum {
+  VIK_TRW_LAYER_EXT_AUTO = 0,
+  VIK_TRW_LAYER_EXT_GPX,
+  VIK_TRW_LAYER_EXT_FIT,
+  VIK_TRW_LAYER_EXT_KML,
+  VIK_TRW_LAYER_EXT_TCX,
+  VIK_TRW_LAYER_EXT_END,
+} trw_external_file_type_t;
 
 static void trw_layer_marshall( VikTrwLayer *vtl, guint8 **data, guint *len )
 {
@@ -12911,6 +12935,12 @@ static void trw_write_file_external ( VikTrwLayer *trw, FILE *f, const gchar *di
   if ( trw->external_layer != VIK_TRW_LAYER_EXTERNAL || ! trw->external_loaded )
     return;
 
+  // Alternatively set the file kind on opening...
+
+  // Only attempt write of those that have write support (i.e. GPX, so not KML, FIT or TCX)
+  if ( a_fit_check_magic_filename(trw->external_file) )
+    return;
+
   gboolean success = a_file_export ( trw, trw->external_file, FILE_TYPE_GPX, NULL, TRUE );
 
   if ( ! success ) {
@@ -12952,8 +12982,27 @@ static gboolean trw_load_external_layer ( VikTrwLayer *trw )
     vik_window_set_busy_cursor ( vw );
 
     gchar *dirpath = g_path_get_dirname ( extfile );
-    GpxReadStatus_t read_status = a_gpx_read_file ( trw, ext_f, dirpath, FALSE );
-    failed = ( read_status == GPX_READ_FAILURE );
+    // KML, TCX & GPX are all XML
+    // NB Check magic has issues with BOMs
+    if ( file_check_magic(ext_f, FILE_XML_MAGIC) ) {
+      if ( a_file_check_ext(extfile, ".tcx") )
+        failed = ! a_tcx_read_file_into_layer ( trw, ext_f, extfile );     
+      else if ( a_file_check_ext(extfile, ".kml") )
+        failed = ! a_kml_read_file ( trw, ext_f, TRUE );
+      else {
+        // Any other XML file try GPX
+        GpxReadStatus_t read_status = a_gpx_read_file ( trw, ext_f, dirpath, FALSE );
+        failed = ( read_status == GPX_READ_FAILURE );
+      }
+    }
+    else if ( a_fit_check_magic(ext_f) ) {
+      failed = ! a_fit_read_file_into_layer ( trw, ext_f, extfile );     
+    }
+    else {
+      // Still try GPX as fallback
+      GpxReadStatus_t read_status = a_gpx_read_file ( trw, ext_f, dirpath, FALSE );
+      failed = ( read_status == GPX_READ_FAILURE );
+    }
     g_free ( dirpath );
     fclose ( ext_f );
 

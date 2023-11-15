@@ -48,6 +48,10 @@ gboolean a_file_check_ext ( const gchar *filename, const gchar *fileext );
  */
 gboolean check_file_magic_vik ( const gchar *filename );
 
+#define FILE_XML_MAGIC "<?xm"
+
+gboolean file_check_magic ( FILE *f, const gchar *magic_string );
+
 typedef enum {
   LOAD_TYPE_READ_FAILURE,
   LOAD_TYPE_GPSBABEL_FAILURE,

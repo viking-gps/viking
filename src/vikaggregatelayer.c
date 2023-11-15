@@ -3210,7 +3210,7 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   GtkWidget *itemsf = vu_menu_add_item ( menu, _("_File"), GTK_STOCK_FILE, NULL, NULL );
   gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemsf), GTK_WIDGET(file_submenu) );
   (void)vu_menu_add_item ( file_submenu, _("Load E_xternal Layers"), GTK_STOCK_EXECUTE, G_CALLBACK(aggregate_layer_load_external_layers_click), values );
-  (void)vu_menu_add_item ( file_submenu, _("_Open GPX as External Layer..."), GTK_STOCK_OPEN, G_CALLBACK(aggregate_layer_load_external_file_cb), values );
+  (void)vu_menu_add_item ( file_submenu, _("_Open File as External Layer..."), GTK_STOCK_OPEN, G_CALLBACK(aggregate_layer_load_external_file_cb), values );
 
   (void)vu_menu_add_item ( file_submenu, _("Save _Layer As..."), GTK_STOCK_SAVE, G_CALLBACK(aggregate_layer_save_layer_as_cb), values );
   (void)vu_menu_add_item ( file_submenu, _("_Append File..."), GTK_STOCK_ADD, G_CALLBACK(aggregate_layer_file_load), values );

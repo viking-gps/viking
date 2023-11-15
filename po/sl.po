@@ -1237,7 +1237,7 @@ msgstr ""
 msgid "Add a map layer by id value. Use 0 for the default map."
 msgstr ""
 
-msgid "Load all GPX files in external mode."
+msgid "Load files in external mode."
 msgstr ""
 
 #, c-format
@@ -1617,7 +1617,7 @@ msgstr "_Datoteka"
 msgid "Load E_xternal Layers"
 msgstr ""
 
-msgid "_Open GPX as External Layer..."
+msgid "_Open File as External Layer..."
 msgstr ""
 
 msgid "Save _Layer As..."
@@ -2892,7 +2892,7 @@ msgid ""
 "file but changes are not written to the file (file only loaded at startup)"
 msgstr ""
 
-msgid "Save layer as:"
+msgid "Layer file:"
 msgstr ""
 
 msgid "Specify where layer should be saved.  Overwrites file if it exists."
@@ -5063,10 +5063,10 @@ msgstr "_Pripni datoteko..."
 msgid "Append data from a different file"
 msgstr "Pripni podatke iz druge datoteke"
 
-msgid "Open GPX as External _Layer..."
+msgid "Open File as External _Layer..."
 msgstr ""
 
-msgid "Open a GPX file as an external layer"
+msgid "Open a file as an external layer"
 msgstr ""
 
 msgid "_Export All"

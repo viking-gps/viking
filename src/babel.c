@@ -441,7 +441,7 @@ gboolean a_babel_convert_from_url_filter ( VikTrwLayer *vt, const char *url, con
         if (f) {
           gchar *dirpath = g_path_get_dirname ( name_src );
           if ( do_kml ) {
-            ret = a_kml_read_file ( vt, f );
+            ret = a_kml_read_file ( vt, f, FALSE );
             fclose(f);
           }
           else if ( do_gjo ) {
