@@ -952,9 +952,103 @@ static void maps_layer_free ( VikMapsLayer *vml )
 #endif
 }
 
+#ifdef HAVE_SQLITE3_H
+static gboolean check_is_mbtiles_file ( sqlite3 *sql )
+{
+  sqlite3_stmt *sql_stmt = NULL;
+  // Stackoverflow suggests something like this should work:
+  // int ans = sqlite3_prepare_v2 ( sql, "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='tiles' COLLATE NOCASE;", -1, &sql_stmt, NULL );
+  // But it doesn't
+
+  // This seems more reliable instead
+  int ans = sqlite3_prepare_v2 ( sql, "SELECT count(*) FROM tiles;", -1, &sql_stmt, NULL );
+  (void)sqlite3_finalize ( sql_stmt );
+  // NB we don't care if any 'metadata' table exists or not
+
+  if ( ans != SQLITE_OK ) {
+    g_warning ( "%s: %s[%d]: %s - %s", __FUNCTION__, "failure", ans, sqlite3_errstr(ans), "no 'tiles' table found" );
+    return FALSE;
+  }
+  return TRUE;
+}
+
+// returns: TRUE if metadata value is present
+// value: Allocated if call successful
+gboolean mbtiles_get_metadata_value ( sqlite3 *sql, gchar *name, gchar **value )
+{
+  gboolean result = FALSE;
+  sqlite3_stmt *sql_stmt = NULL;
+  gchar *cmd = g_strdup_printf ( "SELECT value FROM metadata WHERE name='%s';", name );
+  int ans = sqlite3_prepare_v2 ( sql, cmd, -1, &sql_stmt, NULL );
+  if ( ans == SQLITE_OK ) {
+    ans = sqlite3_step ( sql_stmt );
+    switch (ans) {
+    case SQLITE_ROW: // Only care about 1st row
+    case SQLITE_DONE: {
+      int count = sqlite3_column_count ( sql_stmt );
+      if ( count == 1 )  {
+        int ctype = sqlite3_column_type ( sql_stmt, 0 );
+        if ( ctype == SQLITE_TEXT ) {
+          result = TRUE;
+          *value = g_strdup ( (gchar*)sqlite3_column_text ( sql_stmt, 0 ) );
+        }
+      }
+      break;
+    }
+    default:
+      // e.g. SQLITE_ERROR | SQLITE_MISUSE | etc...
+      g_warning ( "%s: %s - %s", __FUNCTION__, "step issue", sqlite3_errstr(ans) );
+    }
+  }
+  (void)sqlite3_finalize ( sql_stmt );
+  return result;
+}
+
+static gboolean check_mbtiles_file_for_supported_format ( sqlite3 *sql )
+{
+  gchar *format = NULL;
+  gboolean result = mbtiles_get_metadata_value ( sql, "format", &format );
+  if ( result ) {
+    g_debug ( "%s: format found is: %s", __FUNCTION__, format );
+    if ( !g_strcmp0 ( format, "pbf" ) )
+      result = FALSE;
+    g_free ( format );
+  }
+  else
+    // No metadata format information found
+    // So assume contents are compatible
+    result = TRUE;
+
+  return result;
+}
+
+static void mbtiles_file_info ( VikMapsLayer *vml, sqlite3 *sql )
+{
+  gchar *name = NULL;
+  (void)mbtiles_get_metadata_value ( sql, "name", &name );
+  gchar *description = NULL;
+  (void)mbtiles_get_metadata_value ( sql, "description", &description );
+
+  // Maybe use better string builder (GString?), otherwise for two lines this is okish
+  gchar *msg = NULL;
+  if ( name && description )
+    msg = g_strdup_printf ( _("Name: %s\nDescription: %s"), name, description );
+  else if ( name )
+    msg = g_strdup_printf ( _("Name: %s"), name );
+  else if ( description )
+    msg = g_strdup_printf ( _("Description: %s"), description );
+
+  if ( msg )
+    a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), msg );
+  else
+    a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml), vml->filename );
+
+  g_free ( name );
+  g_free ( description );
+}
+
 static void maps_layer_mbtiles_open ( VikMapsLayer *vml, VikViewport *vp, VikMapSource *map )
 {
-#ifdef HAVE_SQLITE3_H
   // Do some SQL stuff
   if ( vik_map_source_is_mbtiles ( map ) ) {
     int ans = sqlite3_open_v2 ( vml->filename,
@@ -971,9 +1065,28 @@ static void maps_layer_mbtiles_open ( VikMapsLayer *vml, VikViewport *vp, VikMap
       (void)sqlite3_close ( vml->mbtiles );
       vml->mbtiles = NULL;
     }
+    else {
+
+      if ( !check_is_mbtiles_file ( vml->mbtiles ) ) {
+        a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
+                                   _("Not a valid MBTiles file: %s"),
+                                   vml->filename );
+        (void)sqlite3_close ( vml->mbtiles );
+        vml->mbtiles = NULL;
+      }
+      else {
+        if ( !check_mbtiles_file_for_supported_format ( vml->mbtiles ) ) {
+          a_dialog_error_msg_extra ( VIK_GTK_WINDOW_FROM_WIDGET(vp),
+                                     _("MBTiles not in a supported format: %s"),
+                                     vml->filename );
+          (void)sqlite3_close ( vml->mbtiles );
+          vml->mbtiles = NULL;
+        }
+      }
+    }
   }
-#endif
 }
+#endif
 
 static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_file)
 {
@@ -996,8 +1109,10 @@ static void maps_layer_post_read (VikLayer *vl, VikViewport *vp, gboolean from_f
     }
   }
 
+#ifdef HAVE_SQLITE3_H
   // Performed in post read as we now know the map type
   maps_layer_mbtiles_open ( vml, vp, map );
+#endif
 
   // If the on Disk OSM Tile Layout type
   if ( vik_map_source_get_uniq_id(map) == MAP_ID_OSM_ON_DISK ) {
@@ -2477,6 +2592,11 @@ static void maps_layer_about ( menu_array_values values )
 
   if ( vik_map_source_get_license (map) )
     maps_show_license ( VIK_GTK_WINDOW_FROM_LAYER(vml), map );
+#ifdef HAVE_SQLITE3_H
+  else if (vml->mbtiles) {
+    mbtiles_file_info ( vml, vml->mbtiles );
+  }
+#endif
   else
     a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vml),
                         vik_map_source_get_label (map) );

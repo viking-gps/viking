@@ -2196,7 +2196,12 @@ Some map types supported are for on disk tile formats:
 	<para>On Disk OSM Tile Format</para>
 	<para>This is equivalent to any map set with <emphasis>OSM</emphasis> Cache Layput.</para>
 </listitem>
-<listitem><para><ulink url="https://github.com/mapbox/mbtiles-spec">MBTiles File</ulink></para></listitem>
+<listitem>
+  <para><ulink url="https://github.com/mapbox/mbtiles-spec">MBTiles File</ulink></para>
+  <note>
+    <para>&appname; only supports the <emphasis>Raster</emphasis> type (i.e. those containing image tiles - such as formats jpg or png) but not the vector <emphasis>pbf</emphasis> type.</para>
+  </note>
+</listitem>
 <listitem>
   <para><ulink url="https://wiki.openstreetmap.org/wiki/Meta_tiles">OSM Metatiles</ulink></para>
   <note>
