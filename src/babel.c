@@ -243,7 +243,9 @@ static gboolean babel_general_convert_from( VikTrwLayer *vt, BabelStatusFunc cb,
     f = g_fopen(name_dst, "r");
     if (f) {
       gchar *dirpath = g_path_get_dirname ( name_dst );
-      ret = a_gpx_read_file ( vt, f, dirpath, FALSE );
+      GpxReadStatus_t read_status = a_gpx_read_file ( vt, f, dirpath, FALSE );
+      if ( read_status == GPX_READ_SUCCESS )
+        ret = TRUE;
       g_free ( dirpath );
       fclose(f);
     }
@@ -447,7 +449,9 @@ gboolean a_babel_convert_from_url_filter ( VikTrwLayer *vt, const char *url, con
             ret = a_geojson_read_file_OSRM ( vt, name_src );
           }
           else {
-            ret = a_gpx_read_file ( vt, f, dirpath, FALSE );
+            GpxReadStatus_t read_status = a_gpx_read_file ( vt, f, dirpath, FALSE );
+            if ( read_status == GPX_READ_SUCCESS )
+              ret = TRUE;
             fclose(f);
           }
           g_free ( dirpath );

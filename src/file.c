@@ -787,12 +787,15 @@ VikLoadType_t a_file_load_stream ( FILE *f,
       }
     }
     // NB use a extension check first, as a GPX file header may have a Byte Order Mark (BOM) in it
-    //    - which currently confuses our check_magic function
+    //    - which currently confuses our file_check_magic function
     else if ( a_file_check_ext ( filename, ".gpx" ) || check_magic ( f, GPX_MAGIC ) ) {
-      if ( ! ( success = a_gpx_read_file ( vtl, f, dirpath, !add_new ) ) ) {
-        load_answer = LOAD_TYPE_GPX_FAILURE;
+      GpxReadStatus_t read_status = a_gpx_read_file ( vtl, f, dirpath, !add_new );
+      switch (read_status) {
+      case GPX_READ_FAILURE: load_answer = LOAD_TYPE_GPX_FAILURE; break;
+      case GPX_READ_WARNING: load_answer = LOAD_TYPE_GPX_WARNING; break;
+      case GPX_READ_SUCCESS: load_answer = LOAD_TYPE_OTHER_SUCCESS; break;
       }
-      if ( load_answer == LOAD_TYPE_OTHER_SUCCESS ) {
+      if ( load_answer != LOAD_TYPE_GPX_FAILURE ) {
 	if ( external )
 	  // TODO may have to make absolute??
 	  trw_layer_replace_external ( vtl, filename );

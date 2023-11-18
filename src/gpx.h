@@ -49,7 +49,13 @@ typedef struct {
 
 char *a_gpx_entitize(const char * str);
 
-gboolean a_gpx_read_file ( VikTrwLayer *trw, FILE *f, const gchar* dirpath, gboolean append );
+typedef enum {
+  GPX_READ_SUCCESS,
+  GPX_READ_WARNING, // Partial read - may be some geodata is available
+  GPX_READ_FAILURE, // Total failure - no geodata available
+} GpxReadStatus_t;
+
+GpxReadStatus_t a_gpx_read_file ( VikTrwLayer *trw, FILE *f, const gchar* dirpath, gboolean append );
 void a_gpx_write_file ( VikTrwLayer *trw, FILE *f, GpxWritingOptions *options, const gchar *dirpath );
 void a_gpx_write_track_file ( VikTrwLayer *trw, VikTrack *trk, FILE *f, GpxWritingOptions *options );
 

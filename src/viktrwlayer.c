@@ -12933,7 +12933,8 @@ static gboolean trw_load_external_layer ( VikTrwLayer *trw )
     vik_window_set_busy_cursor ( vw );
 
     gchar *dirpath = g_path_get_dirname ( extfile );
-    failed = ! a_gpx_read_file ( trw, ext_f, dirpath, FALSE );
+    GpxReadStatus_t read_status = a_gpx_read_file ( trw, ext_f, dirpath, FALSE );
+    failed = ( read_status == GPX_READ_FAILURE );
     g_free ( dirpath );
     fclose ( ext_f );
 

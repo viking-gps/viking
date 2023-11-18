@@ -51,6 +51,7 @@ gboolean check_file_magic_vik ( const gchar *filename );
 typedef enum {
   LOAD_TYPE_READ_FAILURE,
   LOAD_TYPE_GPSBABEL_FAILURE,
+  LOAD_TYPE_GPX_WARNING,
   LOAD_TYPE_GPX_FAILURE,
   LOAD_TYPE_TCX_FAILURE,
   LOAD_TYPE_KML_FAILURE,

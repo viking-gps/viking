@@ -262,6 +262,15 @@ static tag_type get_tag(const char *t)
         return tt_unknown;
 }
 
+static const gchar* get_tag_name ( tag_type tt )
+{
+  for ( tag_mapping *tm = tag_path_map; tm->tag_type != 0; tm++ )
+    if ( tm->tag_type == tt )
+      return tm->tag_name;
+  return NULL;
+}
+
+
 /******************************************/
 
 static tag_type current_tag = tt_unknown;
@@ -1337,9 +1346,9 @@ static void gpx_cdata(void *dta, const XML_Char *s, int len)
 // @append: Whether the read is to append to the vtl (or otherwise a new layer)
 //  i.e. primarily to decide what to do regarding appending files with different GPX versions
 // Returns:
-//  TRUE on success
+//  The #GpxReadStatus_t of how successful the read attempt is
 //
-gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath, gboolean append ) {
+GpxReadStatus_t a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath, gboolean append ) {
   XML_Parser parser = XML_ParserCreate(NULL);
   int done=0, len;
   enum XML_Status status = XML_STATUS_ERROR;
@@ -1384,33 +1393,59 @@ gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath, gbool
     status = XML_Parse(parser, buf, len, done);
   }
 
+  GpxReadStatus_t result;
   gboolean ans = (status != XML_STATUS_ERROR);
   if ( !ans ) {
-    g_warning ( "%s: XML error %s at line %ld", __FUNCTION__, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser) );
+    g_warning ( "%s: XML error %s at line %ld with tag %s", __FUNCTION__, XML_ErrorString(XML_GetErrorCode(parser)), XML_GetCurrentLineNumber(parser), get_tag_name(current_tag)  );
+    gboolean have_closed_tag = FALSE;
+    // Possibly should try to close the latest tag - e.g. for various trackpoint elements
+    //  but generally missing out only the last partial trackpoint isn't too bad
+    //  vs at least having some kind of track at all
+    if ( current_tag >= tt_trk && current_tag <= tt_trk_trkseg_trkpt_an_extension ) {
+      g_debug ( "%s: Force closure of track", __FUNCTION__ );
+      current_tag = tt_trk;
+      gpx_end ( ud, "" );
+      have_closed_tag = TRUE;
+    } else if ( current_tag >= tt_wpt && current_tag <= tt_wpt_an_extension ) {
+      g_debug ( "%s: Force closure of waypoint", __FUNCTION__ );
+      current_tag = tt_wpt;
+      gpx_end ( ud, "" );
+      have_closed_tag = TRUE;
+    }
+    if ( have_closed_tag ) {
+      current_tag = tt_gpx;
+      gpx_end ( ud, "" );
+      result = GPX_READ_WARNING;
+    } else {
+      // Give up - maybe a corrupt header or other problem
+      result = GPX_READ_FAILURE;
+    }
   }
+  else {
+    result = GPX_READ_SUCCESS;
+    // First pass was OK, so attempt secondary parse
+    // Re-parse raw extension text into a more understandable structure for gpxdata laps
+    GQueue *laps = g_queue_new();
+    GMarkupParser gparserLap;
+    GMarkupParseContext *gcontextLap;
+    gparserLap.start_element = &lap_start_element;
+    gparserLap.end_element = &lap_end_element;
+    gparserLap.text = &ext_text;
+    gparserLap.passthrough = NULL;
+    gparserLap.error = NULL;
+    gcontextLap = g_markup_parse_context_new ( &gparserLap, 0, laps, NULL );
+    gchar* vtlExtensions = vik_trw_layer_get_gpx_extensions ( vtl );
+    if ( vtlExtensions ) {
+      GError *error = NULL;
+      if ( !g_markup_parse_context_parse ( gcontextLap, vtlExtensions, strlen(vtlExtensions), &error ) )
+        g_warning ( "%s: parse error %s on:%s", __FUNCTION__, error ? error->message : "???", vtlExtensions );
 
-  // Re-parse raw extension text into a more understandable structure for gpxdata laps
-  GQueue *laps = g_queue_new();
-  GMarkupParser gparserLap;
-  GMarkupParseContext *gcontextLap;
-  gparserLap.start_element = &lap_start_element;
-  gparserLap.end_element = &lap_end_element;
-  gparserLap.text = &ext_text;
-  gparserLap.passthrough = NULL;
-  gparserLap.error = NULL;
-  gcontextLap = g_markup_parse_context_new ( &gparserLap, 0, laps, NULL );
-  gchar* vtlExtensions = vik_trw_layer_get_gpx_extensions ( vtl );
-  if ( vtlExtensions )
-  {
-    GError *error = NULL;
-    if ( !g_markup_parse_context_parse ( gcontextLap, vtlExtensions, strlen(vtlExtensions), &error ) )
-      g_warning ( "%s: parse error %s on:%s", __FUNCTION__, error ? error->message : "???", vtlExtensions );
+      if ( !g_markup_parse_context_end_parse ( gcontextLap, &error) )
+        g_warning ( "%s: error %s occurred on end of:%s", __FUNCTION__, error ? error->message : "???", vtlExtensions );
 
-    if ( !g_markup_parse_context_end_parse ( gcontextLap, &error) )
-      g_warning ( "%s: error %s occurred on end of:%s", __FUNCTION__, error ? error->message : "???", vtlExtensions );
-
-    if ( !g_queue_is_empty(laps) )
-      vik_trw_layer_set_laps ( vtl, laps );
+      if ( !g_queue_is_empty(laps) )
+        vik_trw_layer_set_laps ( vtl, laps );
+    }
   }
 
   XML_ParserFree (parser);
@@ -1422,7 +1457,7 @@ gboolean a_gpx_read_file( VikTrwLayer *vtl, FILE *f, const gchar* dirpath, gbool
   g_string_free ( gs_ext, TRUE );
   g_markup_parse_context_free ( gcontext );
 
-  return ans;
+  return result;
 }
 
 /**** entitize from GPSBabel ****/

@@ -116,7 +116,8 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	check_geotag.sh \
 	Stonehenge.gpx \
 	Stonehenge.jpg \
-	ViewFromCribyn-Wales-GPS.jpg
+	ViewFromCribyn-Wales-GPS.jpg \
+	WaypointSymbols.gpx
 
 degrees_converter_SOURCES = degrees_converter.c
 degrees_converter_LDADD = \

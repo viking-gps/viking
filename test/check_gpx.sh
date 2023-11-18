@@ -48,3 +48,27 @@ if [ $result != 1 ]; then
   echo "gpx2gpx failure $count as result=$result"
   exit 1
 fi
+
+# GPX file error whilst processing a track element:
+count=`expr $count + 1`
+shortfile1=./shorty1.gpx
+head -n 50 $srcdir/Stonehenge.gpx > $shortfile1
+# Works but returns warning code
+./test_file_load $shortfile1
+if [ $? != 2 ]; then
+  echo "gpx track read failure unexpected value=$result"
+  exit 1
+fi
+rm $shortfile1
+
+# GPX file error whilst processing a waypoint element:
+count=`expr $count + 1`
+shortfile2=./shorty2.gpx
+head -n 50 $srcdir/WaypointSymbols.gpx > $shortfile2
+# Works but returns warning code
+./test_file_load $shortfile2
+if [ $? != 2 ]; then
+  echo "gpx waypoint read failure unexpected value=$result"
+  exit 1
+fi
+rm $shortfile2
