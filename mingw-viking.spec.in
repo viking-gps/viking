@@ -15,12 +15,7 @@ BuildArch:  noarch
 # 32bit version only in this file. See mingw64-viking.spec for the 64bit version
 
 # Programs to enable the cross build
-BuildRequires:  mingw32-filesystem
-BuildRequires:  mingw32-binutils
-BuildRequires:  mingw32-runtime
-BuildRequires:  mingw32-cross-binutils
 BuildRequires:  mingw32-cross-gcc
-BuildRequires:  mingw32-cross-pkg-config
 BuildRequires:  mingw32-gettext-tools
 BuildRequires:  intltool
 BuildRequires:  libxslt-tools
@@ -51,23 +46,10 @@ BuildRequires:  mingw32-libnova-devel
 BuildRequires:  mingw32-xz-devel
 
 # Libs for runtime (and thus also available for the NSIS installer to include the dependencies)
-Requires:   mingw32-gtk3
-Requires:   mingw32-libexpat1
-Requires:   mingw32-libcurl4
-# Should be auto detected
-#Requires:   mingw32-json-glib
-Requires:   mingw32-libgexiv2
-Requires:   mingw32-libstdc++6
-Requires:   mingw32-libmagic1
-Requires:   mingw32-libbz2-1
-Requires:   mingw32-libsqlite3-0
-Requires:   mingw32-libzip4
-Requires:   mingw32-libnettle
-Requires:   mingw32-libgps
-Requires:   mingw32-liboauth
-Requires:   mingw32-libgps
-Requires:   mingw32-libnova
-Requires:   mingw32-liblzma5
+# All should be auto detected
+#Requires:   mingw32-gtk3
+# mingw32-libcurl4, mingw32-libgexiv2, etc...
+
 # Currently running makensis in seperate script - so you will need it then
 #Requires:   mingw32-cross-nsis
 
