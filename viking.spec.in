@@ -8,28 +8,28 @@
 #%%
 #%%  c.f. with the equivalent mingw64-viking.spec file as this is used
 #%%  (currently to generate the Windows build)
-Name:		viking
-Version:	@VERSION@
-Release:	1
+Name:      viking
+Version:   @VERSION@
+Release:   1
 
-Summary:	GPS data editor and analyzer
+Summary:   GPS data editor and analyzer
 
-Group:		Applications/Productivity
-License:	GPL-2.0-or-later
-URL:		http://sourceforge.net/projects/viking/
-Source0:	%{name}-%{version}.tar.gz
-BuildRoot:	%{_tmppath}/%{name}-%{version}-%{release}-build
+Group:     Applications/Productivity
+License:   GPL-2.0-or-later
+URL:       http://sourceforge.net/projects/viking/
+Source0:   %{name}-%{version}.tar.gz
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-build
 
-BuildRequires:	curl-devel
-BuildRequires:	file-devel
-BuildRequires:	expat-devel
-BuildRequires:	glib2-devel
-BuildRequires:	gtk3-devel >= 3.22
-BuildRequires:	pkgconfig
-BuildRequires:	gpsd-devel
-BuildRequires:	gettext perl(XML::Parser)
-BuildRequires:	intltool
-BuildRequires:	libxslt
+BuildRequires:  curl-devel
+BuildRequires:  file-devel
+BuildRequires:  expat-devel
+BuildRequires:  glib2-devel
+BuildRequires:  gtk3-devel >= 3.22
+BuildRequires:  pkgconfig
+BuildRequires:  gpsd-devel
+BuildRequires:  gettext perl(XML::Parser)
+BuildRequires:  intltool
+BuildRequires:  libxslt
 BuildRequires:  libgexiv2-devel
 BuildRequires:  libbz2-devel
 BuildRequires:  libmagic-devel
@@ -37,7 +37,7 @@ BuildRequires:  libsqlite3-devel
 BuildRequires:  libmapnik-devel
 BuildRequires:  libzip-devel
 BuildRequires:  liboauth-devel
-BuildRequires:	json-glib-devel
+BuildRequires:  json-glib-devel
 BuildRequires:  libnova-devel
 BuildRequires:  xz-devel
 BuildRequires:  yelp-tools
