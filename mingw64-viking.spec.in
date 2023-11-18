@@ -42,8 +42,6 @@ BuildRequires:  mingw64-libcurl-devel
 BuildRequires:  mingw64-libgexiv2-devel
 BuildRequires:  mingw64-libbz2-devel
 BuildRequires:  mingw64-file-devel
-BuildRequires:  mingw64-libmagic1
-BuildRequires:  mingw64-libbz2-1
 BuildRequires:  mingw64-sqlite-devel
 BuildRequires:  mingw64-libzip-devel
 BuildRequires:  mingw64-libnettle-devel
@@ -60,6 +58,8 @@ Requires:  mingw64-libexpat1
 Requires:  mingw64-libcurl4
 Requires:  mingw64-libgexiv2
 Requires:  mingw64-libstdc++6
+Requires:  mingw64-libmagic1
+Requires:  mingw64-libbz2-1
 Requires:  mingw64-libsqlite3-0
 Requires:  mingw64-libzip4
 Requires:  mingw64-libnettle
