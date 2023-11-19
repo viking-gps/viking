@@ -491,7 +491,13 @@ The number of track points is normally alot higher (e.g. 500 or typically with l
 This is a plain text file saving all information of the current window including the view location, zoom level, projection type and then all the layer information (aggregates, maps, tracks, waypoints, etc...).
 </para>
 <para>
-Besides it's own file type, &appname; can open (and save to via export methods) GPX, FIT, TCX and KML file types.
+  Besides it's own file type, &appname; can open (and save to via export methods) various file types including:
+  <itemizedlist>
+    <listitem><para>GPX</para></listitem>
+    <listitem><para>FIT</para></listitem>
+    <listitem><para>KML</para></listitem>
+    <listitem><para>TCX</para></listitem>
+  </itemizedlist>
 </para>
 <note>
 <para>
@@ -502,6 +508,15 @@ The arbitrary extension information is not saved in .vik format files.
 Specific GPX 1.1 extensions such as heart rate, cadence, temperature and power are supported for viewing (including overview graphs) and these values will also be saved in .vik format files.
 </para>
 </note>
+<para>
+  Also available is reading compressed files and loading any supported geodata files contained within. The compressed file types supported include:
+  <itemizedlist>
+    <listitem><para><ulink url="https://en.wikipedia.org/wiki/Bzip2">Bzip2</ulink> files</para></listitem>
+    <listitem><para><ulink url="https://en.wikipedia.org/wiki/Gzip">Gzip</ulink> files</para></listitem>
+    <listitem><para><ulink url="https://en.wikipedia.org/wiki/XZ_Utils">XZ / LZMA</ulink> files</para></listitem>
+    <listitem><para><ulink url="https://en.wikipedia.org/wiki/ZIP_(file_format)">Zip</ulink> files</para></listitem>
+  </itemizedlist>
+</para>
 <para>
 By default &appname; opens a window centered on the home location with the default <xref linkend="Map"/>. This behaviour can be changed by the <xref linkend="prefs_startup"/>.
 Each window contains menus, a toolbar, a viewport, layers panel and a statusbar.
