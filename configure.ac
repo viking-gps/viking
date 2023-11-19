@@ -627,7 +627,7 @@ AC_DEFINE_UNQUOTED(THEYEAR, "$(date --utc --date=@${SOURCE_DATE_EPOCH:-$(date +%
 # Configuration
 AC_CONFIG_FILES([
 		viking.spec
-		mingw-viking.spec
+		mingw32-viking.spec
 		mingw64-viking.spec
 		Makefile
 		src/Makefile

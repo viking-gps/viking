@@ -12,7 +12,7 @@ Source0:    %{_pkg_name}-%{version}.tar.gz
 BuildRoot:  %{_tmppath}/%{name}-%{version}-build
 BuildArch:  noarch
 
-# 64bit version only in this file. See mingw-viking.spec for the 32bit version
+# 64bit version only in this file. See mingw32-viking.spec for the 32bit version
 
 # Programs to enable the cross build
 BuildRequires:  mingw64-filesystem

@@ -18,7 +18,7 @@ EXTRA_DIST = \
 	NEWS \
 	ChangeLog.0 \
 	viking.spec \
-	mingw-viking.spec \
+	mingw32-viking.spec \
 	mingw64-viking.spec \
 	$(INTLTOOL)
 
