@@ -33,6 +33,8 @@ int main(int argc, char *argv[])
   a_download_init();
   modules_init();
 
+  modules_post_init();
+
   // Seems to work without an $DISPLAY
   // Also get lots of warnings about no actual drawing GCs available
   // but for file processing this seems to be good enough
@@ -40,6 +42,15 @@ int main(int argc, char *argv[])
   VikViewport* vp = vik_viewport_new ();
 
   VikLoadType_t lt = a_file_load ( agg, vp, NULL, argv[1], TRUE, FALSE, NULL );
+
+  g_object_unref ( agg );
+
+  modules_uninit();
+  a_download_uninit();
+  a_layer_defaults_uninit ();
+  a_vik_preferences_uninit ();
+  a_preferences_uninit ();
+  a_settings_uninit ();
 
   // Was it some kind of 'success'?
   if ( lt == LOAD_TYPE_OTHER_SUCCESS ||
