@@ -213,6 +213,7 @@ static guint uncompress_data(void *uncompressed_buffer, guint uncompressed_size,
  * @unzip_size: the size of the compressed data block
  *
  * Returns a pointer to uncompressed data (maybe NULL)
+ *  data should be freed once used
  */
 void *unzip_file(gchar *zip_file, gulong *unzip_size)
 {

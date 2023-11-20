@@ -208,6 +208,8 @@ static void uncompress_zip ( gchar *name )
 		g_critical ( "Couldn't write file '%s', because of %s", name, error->message );
 		g_error_free ( error );
 	}
+	g_mapped_file_unref ( mf );
+	g_free ( unzip_mem );
 }
 
 /**
