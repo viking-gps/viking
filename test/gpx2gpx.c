@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
 
   vik_trwlayer_uninit ();
 
+  a_download_uninit ();
   a_layer_defaults_uninit ();
   a_preferences_uninit ();
   a_settings_uninit ();

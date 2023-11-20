@@ -296,6 +296,7 @@ int main( int argc, char *argv[] )
   modules_uninit();
 
   curl_download_uninit();
+  a_download_uninit();
 
   vu_finalize_lat_lon_tz_lookup ();
 

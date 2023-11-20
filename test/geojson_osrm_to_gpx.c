@@ -42,6 +42,7 @@ int main( int argc, char *argv[] )
 
   g_object_unref ( vl );
 
+  a_download_uninit();
   vik_trwlayer_uninit ();
   a_layer_defaults_uninit ();
   a_preferences_uninit ();
