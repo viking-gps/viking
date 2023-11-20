@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
   VikLayer *vl = vik_layer_create (VIK_LAYER_TRW, NULL, FALSE);
   VikTrwLayer *trw = VIK_TRW_LAYER (vl);
 
-  a_gpx_read_file(trw, stdin, NULL, FALSE);
+  (void)a_gpx_read_file(trw, stdin, NULL, FALSE);
   a_gpx_write_file(trw, stdout, NULL, NULL);
 
   g_object_unref ( vl );
