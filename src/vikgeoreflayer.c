@@ -1117,11 +1117,9 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
       vgl->ll_br = get_ll_br (vgl);
       check_br_is_good_or_msg_user ( vgl );
       // TODO check if image has changed otherwise no need to regenerate pixbuf
-      if ( !vgl->pixbuf ) {
-        if ( g_strcmp0 (vgl->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) ) != 0 ) {
-          georef_layer_set_image ( vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) );
-          georef_layer_load_image ( vgl, VIK_VIEWPORT(vp), FALSE );
-        }
+      if ( g_strcmp0 (vgl->image, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) ) != 0 ) {
+        georef_layer_set_image ( vgl, vik_file_entry_get_filename(VIK_FILE_ENTRY(cw.imageentry)) );
+        georef_layer_load_image ( vgl, VIK_VIEWPORT(vp), FALSE );
       }
 
       vgl->alpha = (guint8) gtk_range_get_value ( GTK_RANGE(alpha_scale) );
