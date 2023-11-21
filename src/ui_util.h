@@ -48,6 +48,11 @@ GdkPixbuf *ui_pixbuf_new ( GdkColor *color, guint width, guint height );
 GdkPixbuf *ui_pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha );
 GdkPixbuf *ui_pixbuf_scale_alpha ( GdkPixbuf *pixbuf, guint8 alpha );
 GdkPixbuf *ui_pixbuf_rotate_full ( GdkPixbuf *pixbuf, gdouble degrees );
+GdkPixbuf *ui_pixbuf_scale_simple_safe ( const GdkPixbuf *src,
+                                         guint            dest_width,
+                                         guint            dest_height,
+                                         guint            factor,
+                                         GdkInterpType    interp_type );
 
 void ui_add_recent_file ( const gchar *filename );
 

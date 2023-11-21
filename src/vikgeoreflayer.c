@@ -199,11 +199,25 @@ struct _VikGeorefLayer {
   guint width, height;
   gdouble rotation; // Degrees
 
+  GdkPixbuf *rotated;
   GdkPixbuf *scaled;
-  guint32 scaled_width, scaled_height;
 
   gint click_x, click_y;
   changeable_widgets cw;
+
+  // (re)drawing values maintained between updates
+  //   to determine and use for current pixbuf being reused
+  gdouble old_rtn;
+  gint rtn_x_offset_full;
+  gint rtn_y_offset_full;
+  gint rtn_x_offset_scaled;
+  gint rtn_y_offset_scaled;
+  gboolean can_draw_reuse;
+  // Possibly don't need to monitor scales as lws,lhs should all change in unison
+  gdouble old_x_scale;
+  gdouble old_y_scale;
+  guint old_lws;
+  guint old_lhs;
 };
 
 static VikLayerParam io_prefs[] = {
@@ -383,17 +397,12 @@ static VikGeorefLayer *georef_layer_new ( VikViewport *vvp )
   vgl->mpp_northing = vik_viewport_get_ympp ( vvp );
   vgl->mpp_easting = vik_viewport_get_xmpp ( vvp );
   vik_coord_to_utm ( vik_viewport_get_center ( vvp ), &(vgl->corner) );
-  vgl->rotation = 0.0;
-  vgl->image = NULL;
-  vgl->pixbuf = NULL;
   vgl->click_x = -1;
   vgl->click_y = -1;
-  vgl->scaled = NULL;
-  vgl->scaled_width = 0;
-  vgl->scaled_height = 0;
   vgl->ll_br.lat = 0.0;
   vgl->ll_br.lon = 0.0;
   vgl->alpha = 255;
+  // Everything else is 0, FALSE or NULL
   return vgl;
 }
 
@@ -447,106 +456,161 @@ static void georef_layer_mpp_from_coords ( VikCoordMode mode, struct LatLon ll_t
 
 static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp )
 {
-  static gdouble draw_rtn = 0.0;
-
   if ( vgl->pixbuf )
   {
-    gdouble xmpp = vik_viewport_get_xmpp(vp), ympp = vik_viewport_get_ympp(vp);
-    GdkPixbuf *pixbuf = vgl->pixbuf;
-    guint layer_width = vgl->width;
-    guint layer_height = vgl->height;
-
-    guint width = vik_viewport_get_width(vp), height = vik_viewport_get_height(vp);
-    gint32 x, y;
+    const gdouble xmpp = vik_viewport_get_xmpp(vp);
+    const gdouble ympp = vik_viewport_get_ympp(vp);
+    const guint vp_width = vik_viewport_get_width(vp);
+    const guint vp_height = vik_viewport_get_height(vp);
+    gint x, y;
     VikCoord corner_coord;
     vik_coord_load_from_utm ( &corner_coord, vik_viewport_get_coord_mode(vp), &(vgl->corner) );
     vik_viewport_coord_to_screen ( vp, &corner_coord, &x, &y );
 
-    /* mark to scale the pixbuf if it doesn't match our dimensions */
-    gboolean scale = FALSE;
-    if ( xmpp != vgl->mpp_easting || ympp != vgl->mpp_northing )
-    {
-      scale = TRUE;
-      layer_width = round(vgl->width * vgl->mpp_easting / xmpp);
-      layer_height = round(vgl->height * vgl->mpp_northing / ympp);
+    // The main point is to avoid the relatively compute expensive pixbuf operations: scaling and/or rotation
+    // otherwise for e.g. panning around or other redraw events we may be able use the existing pixbuf as is
+    //  but just with updated positioning within the viewport,
+    //  although this only really works when the entire image is in bounds.
 
-      // Has the scaling worked?
-      if ( layer_width == 0 || layer_height == 0 )
-	return;
-    }
+    const guint layer_width_scaled = round(gdk_pixbuf_get_width(vgl->pixbuf) * vgl->mpp_easting / xmpp);
+    const guint layer_height_scaled = round(gdk_pixbuf_get_height(vgl->pixbuf) * vgl->mpp_northing / ympp);
 
-    // If image not in viewport bounds - no need to draw it (or bother with any scaling)
-    if ( (x < 0 || x < width) && (y < 0 || y < height) && x+layer_width > 0 && y+layer_height > 0 ) {
+    // Has the scaling calculation worked?
+    // unclear if this can fail, but maintain defensive check
+    if ( layer_width_scaled == 0 || layer_height_scaled == 0 )
+      return;
 
-      gboolean rotation_change = util_gdouble_different ( vgl->rotation, draw_rtn );
-      draw_rtn = vgl->rotation;
-      static gint rtn_x_offset = 0;
-      static gint rtn_y_offset = 0;
+    const gdouble xscale = xmpp / vgl->mpp_easting; // source pixels per viewport pixel
+    const gdouble yscale = ympp / vgl->mpp_northing;
 
-      if ( scale || rotation_change ) {
-        /* rescale if necessary */
-        if (layer_width == vgl->scaled_width && layer_height == vgl->scaled_height && vgl->scaled != NULL) {
-          pixbuf = vgl->scaled;
-          if ( rotation_change ) {
-            // Rotation change needs to be applied on the original image
-            //  (not the current scaled image - as that may already have an existing rotation applied);
-            //  thus must (re)scale first to then apply new rotation
-            if ( vgl->scaled )
-              g_object_unref ( vgl->scaled );
-            vgl->scaled = NULL;
-            pixbuf = gdk_pixbuf_scale_simple ( vgl->pixbuf,
-                                               vgl->scaled_width,
-                                               vgl->scaled_height,
-                                               GDK_INTERP_BILINEAR );
-            pixbuf = ui_pixbuf_rotate_full ( pixbuf, vgl->rotation );
-            if ( vgl->rotation < 0 ) {
-              rtn_y_offset = sin ( fabs(DEG2RAD(vgl->rotation)) ) * vgl->scaled_width;
-              rtn_x_offset = 0;
-            }
-            else {
-              rtn_x_offset = gdk_pixbuf_get_width ( pixbuf ) - cos ( DEG2RAD(vgl->rotation) ) * vgl->scaled_width;
-              rtn_y_offset = 0;
-            }
-            vgl->scaled = pixbuf;
+    const gboolean rotation_change = util_gdouble_different ( vgl->rotation, vgl->old_rtn );
+    vgl->old_rtn = vgl->rotation;
+
+    // If there's rotation then the simple box [] needs expanding...
+
+    // NB rtn_x_offset and rtn_y_offset are in 'full' pixels
+    //  thus when applied to current viewport need to scaled too
+    if ( vgl->rotation != 0.0 ) {
+
+      if ( rotation_change ) {
+
+        if ( vgl->rotated )
+          g_object_unref ( vgl->rotated );
+        vgl->rotated = ui_pixbuf_rotate_full ( vgl->pixbuf, vgl->rotation );
+
+        if ( vgl->rotated ) {
+          if ( vgl->rotation < 0 ) {
+            vgl->rtn_y_offset_full = sin ( fabs(DEG2RAD(vgl->rotation)) ) * gdk_pixbuf_get_width(vgl->pixbuf);
+            vgl->rtn_x_offset_full = 0;
           }
-        }
-        else
-        {
-          pixbuf = gdk_pixbuf_scale_simple(
-            vgl->pixbuf,
-            layer_width,
-            layer_height,
-            GDK_INTERP_BILINEAR
-          );
-
-          if ( util_gdouble_different(vgl->rotation, 0.0) ) {
-            pixbuf = ui_pixbuf_rotate_full ( pixbuf, vgl->rotation );
-            if ( vgl->rotation < 0 ) {
-              rtn_y_offset = sin ( fabs(DEG2RAD(vgl->rotation)) ) * layer_width;
-              rtn_x_offset = 0;
-            }
-            else {
-              rtn_x_offset = gdk_pixbuf_get_width ( pixbuf ) - cos ( DEG2RAD(vgl->rotation) ) * layer_width;
-              rtn_y_offset = 0;
-            }
-          } else {
-            rtn_x_offset = 0;
-            rtn_y_offset = 0;
+          else {
+            vgl->rtn_x_offset_full = gdk_pixbuf_get_width(vgl->rotated) - (cos ( DEG2RAD(vgl->rotation) ) * gdk_pixbuf_get_width(vgl->pixbuf));
+            vgl->rtn_y_offset_full = 0;
           }
 
-          if (vgl->scaled != NULL)
-            g_object_unref(vgl->scaled);
-
-          vgl->scaled = pixbuf;
-          vgl->scaled_width = layer_width;
-          vgl->scaled_height = layer_height;
+          vgl->width  = gdk_pixbuf_get_width ( vgl->rotated );
+          vgl->height = gdk_pixbuf_get_height ( vgl->rotated );
         }
       }
-      // Use of offsets retains the image upper left corner at the map corner position
-      vik_viewport_draw_pixbuf ( vp, pixbuf, 0, 0,
-                                 x - rtn_x_offset,
-                                 y - rtn_y_offset,
-                                 layer_width, layer_height ); /* todo: draw only what we need to. */
+    } else {
+      // No rotation, ensure clean-up and basic defaults
+      if ( vgl->rotated )
+        g_object_unref ( vgl->rotated );
+      vgl->rotated = NULL;
+
+      vgl->rtn_x_offset_full = 0;
+      vgl->rtn_y_offset_full = 0;
+
+      vgl->width = gdk_pixbuf_get_width(vgl->pixbuf);
+      vgl->height = gdk_pixbuf_get_height(vgl->pixbuf);
+    }
+
+    // Adjust to current vp pixel scale
+    vgl->rtn_x_offset_scaled = round((gdouble)vgl->rtn_x_offset_full / xscale);
+    vgl->rtn_y_offset_scaled = round((gdouble)vgl->rtn_y_offset_full / yscale);
+
+    // Realign x,y if image has been rotated
+    x -= vgl->rtn_x_offset_scaled;
+    y -= vgl->rtn_y_offset_scaled;
+
+    // Since x,y is altered, the following includes handling a rotated image
+
+    // Rectangle inside raw image to copy from
+    const gint src_xoffset = round(MIN(MAX(0, -x * xscale), vgl->width));
+    const gint src_yoffset = round(MIN(MAX(0, -y * yscale), vgl->height));
+    const gint src_width = round(MIN(vgl->width - src_xoffset, vp_width*xscale));
+    const gint src_height = round(MIN(vgl->height - src_yoffset, vp_height*yscale));
+
+    // Rectangle inside viewport to copy to
+    const gint vp_width_copy = round(MIN((vgl->width - src_xoffset)/xscale, vp_width));
+    const gint vp_height_copy = round(MIN((vgl->height - src_yoffset)/yscale, vp_height));
+    const gint vp_xoffset = MIN(MAX(0, x), vp_width);
+    const gint vp_yoffset = MIN(MAX(0, y), vp_height);
+
+    // Ensure fully expand to avoid implicit conversions and/or operator/expression ordering
+    const gboolean is_in_extended_viewport_bounds =
+      (x < ((gint)vp_width+vgl->rtn_x_offset_scaled)) && (y < ((gint)vp_height+vgl->rtn_y_offset_scaled)) &&
+      ((x+(gint)layer_width_scaled+vgl->rtn_x_offset_scaled) > 0) && ((y+(gint)layer_height_scaled+vgl->rtn_y_offset_scaled) > 0);
+
+    if ( is_in_extended_viewport_bounds ) {
+
+      // Only actually need to confirm that the top left is in viewport bounds;
+      //  since vik_viewport_draw_pixbuf() will handle out of bounds drawing
+      //  we can still use the existing image even if it overflows the width or height 'limits'
+      const gboolean is_top_left_in_viewport_bounds =
+        ( x >= 0 && x < (gint)vp_width && y >= 0 && y < (gint)vp_height );
+
+      const gboolean scale_pxbuf_change = ( util_gdouble_different(vgl->old_x_scale, xscale) ||
+                                            util_gdouble_different(vgl->old_y_scale, yscale) ||
+                                            (vgl->old_lws != layer_width_scaled) ||
+                                            (vgl->old_lhs != layer_height_scaled) );
+      vgl->old_lws = layer_width_scaled;
+      vgl->old_lhs = layer_height_scaled;
+      vgl->old_x_scale = xscale;
+      vgl->old_y_scale = yscale;
+
+      if ( is_top_left_in_viewport_bounds && !rotation_change && !scale_pxbuf_change ) {
+        // Check for transistions into the area
+        //  - can't reuse an old image as it may have parts missing as wasn't in previous viewport area
+        if ( vgl->can_draw_reuse ) {
+          vik_viewport_draw_pixbuf ( vp, vgl->scaled,
+                                     0, 0, vp_xoffset, vp_yoffset, vp_width_copy, vp_height_copy );
+          return;
+        }
+        // Could be alright next time!
+        vgl->can_draw_reuse = TRUE;
+      } else
+        vgl->can_draw_reuse = FALSE;
+
+      // Scaling to smaller than 2x2 seems to be broken
+      if ( vp_width_copy < 2 || vp_height_copy < 2 )
+        return;
+
+      // Otherwise create sub-region of source image to apply scaling to
+      GdkPixbuf *subpixbuf = gdk_pixbuf_new_subpixbuf ( vgl->rotated ? vgl->rotated : vgl->pixbuf,
+                                                        src_xoffset,
+                                                        src_yoffset,
+                                                        src_width,
+                                                        src_height );
+
+      GdkPixbuf *scld_pixbuf = ui_pixbuf_scale_simple_safe ( subpixbuf,
+                                                             vp_width_copy,
+                                                             vp_height_copy,
+                                                             50,
+                                                             GDK_INTERP_BILINEAR );
+      if ( subpixbuf != NULL )
+        g_object_unref ( subpixbuf );
+
+      if ( scld_pixbuf == NULL )
+        return;
+
+      // Save for reuse
+      if ( vgl->scaled )
+        g_object_unref ( vgl->scaled );
+      vgl->scaled = scld_pixbuf;
+
+      vik_viewport_draw_pixbuf ( vp, vgl->scaled,
+                                 0, 0, vp_xoffset, vp_yoffset, vp_width_copy, vp_height_copy );
     }
   }
 }
@@ -557,6 +621,8 @@ static void georef_layer_free ( VikGeorefLayer *vgl )
     g_free ( vgl->image );
   if ( vgl->scaled )
     g_object_unref ( vgl->scaled );
+  if ( vgl->rotated )
+    g_object_unref ( vgl->rotated );
   if ( vgl->pixbuf )
     g_object_unref ( vgl->pixbuf );
 }
@@ -589,6 +655,11 @@ static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboo
     g_object_unref ( G_OBJECT(vgl->scaled) );
     vgl->scaled = NULL;
   }
+  if ( vgl->rotated )
+  {
+    g_object_unref ( G_OBJECT(vgl->rotated) );
+    vgl->rotated = NULL;
+  }
 
   vgl->pixbuf = gdk_pixbuf_new_from_file ( vgl->image, &gx );
 
@@ -617,6 +688,11 @@ static void georef_layer_set_image ( VikGeorefLayer *vgl, const gchar *image )
   {
     g_object_unref ( vgl->scaled );
     vgl->scaled = NULL;
+  }
+  if ( vgl->rotated )
+  {
+    g_object_unref ( vgl->rotated );
+    vgl->rotated = NULL;
   }
   if ( image == NULL )
     vgl->image = NULL;
@@ -1127,6 +1203,8 @@ static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindo
         vgl->pixbuf = ui_pixbuf_set_alpha ( vgl->pixbuf, vgl->alpha );
       if ( vgl->scaled && vgl->alpha <= 255 )
         vgl->scaled = ui_pixbuf_set_alpha ( vgl->scaled, vgl->alpha );
+      if ( vgl->rotated && vgl->alpha <= 255 )
+        vgl->rotated = ui_pixbuf_set_alpha ( vgl->rotated, vgl->alpha );
 
       a_settings_set_integer ( VIK_SETTINGS_GEOREF_TAB, gtk_notebook_get_current_page(GTK_NOTEBOOK(cw.tabs)) );
 

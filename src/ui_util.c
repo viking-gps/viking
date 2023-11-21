@@ -300,8 +300,6 @@ GdkPixbuf *ui_pixbuf_scale_alpha ( GdkPixbuf *pixbuf, guint8 alpha )
  *
  * Returns a newly allocated pixbuf
  *
- * For convenience the passed in original pixbuf is freed
- *
  * NB1 gdk_pixbuf_rotate_simple() only does fixed rotations of 90, 180;
  *  hence the need for this function.
  * NB2 There is cairo_rotate() but this would be only GTK3,
@@ -389,10 +387,67 @@ GdkPixbuf *ui_pixbuf_rotate_full ( GdkPixbuf *pixbuf, gdouble degrees )
 			*new_px++ = alpha;
 		}
 	}
-	g_object_unref ( pixbuf );
 	return pxb;
 }
 
+
+/**
+ * Alternate scale pixbuf function
+ *
+ * Inspired by '_gdk_pixbuf_scale_simple_safe()' from gthumb/pixbuf-utils.c in gthumb 3.12.4
+ *
+ * As default gdk_pixbuf scaling routines do not handle large-ratio downscaling,
+ * memory usage explodes and the application may freeze or crash.
+ *
+ * See GDK bug #80925 for a rather lengthy history - https://bugzilla.gnome.org/show_bug.cgi?id=80925
+ * However even with v2.42.10, it doesn't seem truly fixed;
+ *  especially if starting with 'large' images e.g. ~ 4000px x 6000px
+ *
+ * Specify the alternate factor for improved performance
+ * Typically 10x (as used in gthumb) or 50x (recommended for Viking usage)
+ *
+ * Returns a newly allocated pixbuf
+ *
+ */
+GdkPixbuf *ui_pixbuf_scale_simple_safe ( const GdkPixbuf *src,
+                                         guint            dest_width,
+                                         guint            dest_height,
+                                         guint            factor,
+                                         GdkInterpType    interp_type )
+{
+	g_debug ( "%s: ", __FUNCTION__ );
+	GdkPixbuf* temp_pixbuf1;
+	GdkPixbuf* temp_pixbuf2;
+	gint       x_ratio, y_ratio;
+	guint      temp_width = dest_width, temp_height = dest_height;
+
+	if ( !src ) return NULL;
+	if ( dest_width == 0 ) return NULL;
+	if ( dest_height == 0 ) return NULL;
+
+	x_ratio = gdk_pixbuf_get_width(src) / dest_width;
+	y_ratio = gdk_pixbuf_get_height(src) / dest_height;
+
+	// For scale-down ratios in excess of 100, do the scale in two steps.
+	// It is faster and safer that way.
+
+	if ( x_ratio > 100 )
+		// Scale down by factor amount the requested size first.
+		temp_width = factor * dest_width;
+
+	if ( y_ratio > 100 )
+		// Scale down by factor amount the requested size first.
+		temp_height = factor * dest_height;
+
+	if ( (temp_width != dest_width) || (temp_height != dest_height) ) {
+		temp_pixbuf1 = gdk_pixbuf_scale_simple ( src, temp_width, temp_height, interp_type );
+		temp_pixbuf2 = gdk_pixbuf_scale_simple ( temp_pixbuf1, dest_width, dest_height, interp_type );
+		g_object_unref ( temp_pixbuf1 );
+	} else
+		temp_pixbuf2 = gdk_pixbuf_scale_simple ( src, dest_width, dest_height, interp_type );
+
+	return temp_pixbuf2;
+}
 
 /**
  *
