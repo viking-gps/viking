@@ -54,7 +54,7 @@
 static gdouble latitude = NAN;
 static gdouble longitude = NAN;
 static gint zoom_level_osm = -1;
-static gint map_id = -1;
+static gint map_id = G_MININT;
 static gboolean external = FALSE;
 
 /* Options */
@@ -274,7 +274,7 @@ int main( int argc, char *argv[] )
     }
   }
 
-  vik_window_new_window_finish ( first_window, (map_id == -1), (isnan(latitude) && isnan(longitude)) );
+  vik_window_new_window_finish ( first_window, (map_id == G_MININT), (isnan(latitude) && isnan(longitude)) );
 
   vu_command_line ( first_window, latitude, longitude, zoom_level_osm, map_id );
 
