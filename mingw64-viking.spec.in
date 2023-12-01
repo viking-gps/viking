@@ -1,26 +1,19 @@
 # Public Domain CC0
-%{?mingw_package_header}
 %define _pkg_name viking
+
 Name:       mingw64-%{_pkg_name}
 Version:    @VERSION@
 Release:    1
 Summary:    GPS data editor and analyzer
 Group:      Applications/Productivity
 License:    GPL-2.0-or-later
-URL:        http://sourceforge.net/projects/viking/
+URL:        https://sourceforge.net/projects/viking/
 Source0:    %{_pkg_name}-%{version}.tar.gz
-BuildRoot:  %{_tmppath}/%{name}-%{version}-build
-BuildArch:  noarch
 
 # 64bit version only in this file. See mingw32-viking.spec for the 32bit version
 
 # Programs to enable the cross build
-BuildRequires:  mingw64-filesystem
-BuildRequires:  mingw64-binutils
-BuildRequires:  mingw64-runtime
-BuildRequires:  mingw64-cross-binutils
 BuildRequires:  mingw64-cross-gcc
-BuildRequires:  mingw64-cross-pkg-config
 BuildRequires:  mingw64-gettext-tools
 BuildRequires:  intltool
 BuildRequires:  libxslt-tools
@@ -58,13 +51,18 @@ BuildRequires:  mingw64-xz-devel
 # NB No 64bit version available
 #Requires:  mingw32-cross-nsis
 # GTK3 theming
-Requires:  adwaita-icon-theme
+Requires:       adwaita-icon-theme
+
+%_mingw64_package_header_debug
+BuildArch:      noarch
 
 %description
 Viking is a free/open source program to manage GPS data.
 You can import, plot and create tracks, routes and waypoints, show OSM and other maps, see real-time GPS position, control items, etc.
 Other advanced capabilities include Geotagging Images, generate Maps (using Mapnik), Upload and Download tracks from OSM, Routing from OSRM, Name Searches from OSM Nominatim or Geonames and more.
 It is written in mainly in C with some C++ and uses the GTK+3 toolkit.
+
+%_mingw64_debug_package
 
 %prep
 %setup -q -n %{_pkg_name}-%{version}

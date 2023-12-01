@@ -2,6 +2,22 @@
 
 # Cross Build #
 
+## Using openSUSE Build Service ##
+
+As of December 2023, use of https://openbuildservice.org/ is supported with versions of Viking mirrored there:
+
+https://build.opensuse.org/package/show/windows:mingw:win32/mingw32-viking
+
+https://build.opensuse.org/package/show/windows:mingw:win64/mingw64-viking
+
+Thus cross-building is supported using the 'osc' command in varieties of SUSE and other Linuxes
+ e.g. Debian (as preferred by this author).
+
+See https://openbuildservice.org/help/manuals/obs-user-guide/ for details on setup and usage of 'osc'.
+
+ATM, although the compiling build can be performed under 'osc', creating the Windows Installer is a little more bespoke;
+and so remains doing under the VM method detailed below.
+
 ## Using OpenSUSE Tumbleweed in a VM ##
 
 This is for 32 bit version, but very similar for 64 version.

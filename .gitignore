@@ -29,7 +29,7 @@
 /mkinstalldirs
 /omf.make
 /viking.spec
-/mingw-viking.spec
+/mingw32-viking.spec
 /mingw64-viking.spec
 /xmldocs.make
 /test-driver

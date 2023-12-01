@@ -1,5 +1,4 @@
 # Public Domain CC0
-%{?mingw_package_header}
 %define _pkg_name viking
 Name:       mingw32-%{_pkg_name}
 Version:    @VERSION@
@@ -7,10 +6,8 @@ Release:    1
 Summary:    GPS data editor and analyzer
 Group:      Applications/Productivity
 License:    GPL-2.0-or-later
-URL:        http://sourceforge.net/projects/viking/
+URL:        https://sourceforge.net/projects/viking/
 Source0:    %{_pkg_name}-%{version}.tar.gz
-BuildRoot:  %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildArch:  noarch
 
 # 32bit version only in this file. See mingw64-viking.spec for the 64bit version
 
@@ -30,9 +27,9 @@ BuildRequires:  mingw32-gtk3-devel
 # ATM gtk3-devel auto includes at least devel versions of glib2, gobject, zlib and more
 
 # Mandatory libraries
+BuildRequires:  mingw32-json-glib-devel
 BuildRequires:  mingw32-libexpat-devel
 BuildRequires:  mingw32-libcurl-devel
-BuildRequires:  mingw32-json-glib-devel
 # Optional libraries
 BuildRequires:  mingw32-libgexiv2-devel
 BuildRequires:  mingw32-libbz2-devel
@@ -44,6 +41,9 @@ BuildRequires:  mingw32-libgps-devel
 BuildRequires:  mingw32-liboauth-devel
 BuildRequires:  mingw32-libnova-devel
 BuildRequires:  mingw32-xz-devel
+
+%_mingw32_package_header_debug
+BuildArch:      noarch
 
 # Libs for runtime (and thus also available for the NSIS installer to include the dependencies)
 # All should be auto detected
@@ -58,6 +58,8 @@ Viking is a free/open source program to manage GPS data.
 You can import, plot and create tracks, routes and waypoints, show OSM and other maps, see real-time GPS position, control items, etc.
 Other advanced capabilities include Geotagging Images, generate Maps (using Mapnik), Upload and Download tracks from OSM, Routing from OSRM, Name Searches from OSM Nominatim or Geonames and more.
 It is written in mainly in C with some C++ and uses the GTK+3 toolkit.
+
+%_mingw32_debug_package
 
 %prep
 %setup -q -n %{_pkg_name}-%{version}
@@ -95,6 +97,5 @@ popd
 %{_mingw32_datadir}/%{_pkg_name}
 %{_mingw32_datadir}/icons/hicolor/*/apps/%{_pkg_name}.*
 %exclude %{_mingw32_datadir}/icons/hicolor/icon-theme.cache
-#%{_mingw32_mandir}/man1/*
 
 %changelog
