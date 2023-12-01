@@ -40,5 +40,6 @@ check_build "--disable-zip"
 check_build "--disable-nettle"
 check_build "--disable-nova"
 check_build "--disable-mapnik"
+check_build "--disable-xz"
 # Restore back to defaults
 check_build ""
