@@ -42,7 +42,9 @@ jobs:
       if: failure()
       with:
         name: test-suite-log-${{ matrix.os }}-${{ matrix.libgtk }}
-        path: test/test-suite.log
+        path: |
+          test/test-suite.log
+          viking-1.*/_build/sub/test/test-suite.log
         retention-days: 7
 
 # NB During this build/run inside the distcheck there is no DISPLAY
