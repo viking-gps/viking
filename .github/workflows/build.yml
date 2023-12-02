@@ -42,9 +42,7 @@ jobs:
       if: failure()
       with:
         name: test-suite-log-${{ matrix.os }}-${{ matrix.libgtk }}
-        path: |
-          test/test-suite.log
-          viking-1.*/_build/sub/test/test-suite.log
+        path: test/test-suite.log
         retention-days: 7
 
 # NB During this build/run inside the distcheck there is no DISPLAY
@@ -52,3 +50,10 @@ jobs:
 #  than the main check performed above
     - name: Run distcheck
       run: make distcheck DISTCHECK_CONFIGURE_FLAGS=${{ matrix.libgtk == 'libgtk2.0-dev' && '--enable-gtk2' || '' }}
+
+    - uses: actions/upload-artifact@v3
+      if: failure()
+      with:
+        name: test-suite-log-${{ matrix.os }}-${{ matrix.libgtk }}
+        path: viking-1.*/_build/sub/test/test-suite.log
+        retention-days: 7
