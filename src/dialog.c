@@ -1081,6 +1081,49 @@ void a_dialog_build_info ( GtkWindow *parent )
   g_string_free ( msg, TRUE );
 }
 
+/**
+ * a_dialog_scrollable:
+ *
+ * @parent:    Parent window
+ * @title:     The name for the dialog
+ * @msg:       The text to display
+ * @line_wrap: Whether to line wrap the text or not
+ *             NB wrapping can make the dialog slow if many lines,
+ *              so for NEWS usage it is best to set to FALSE
+ *              whereas perhaps for GPX extensions with long lines,
+ *              wrapping seems to work better/gives a better initial dialog size
+ *
+ * An alternative dialog to a_dialog_msg()
+ * Meant for the text which might be fairly large, thus want a scrollable window.
+ *
+ */
+void a_dialog_scrollable ( GtkWindow *parent, const gchar* title, const gchar* msg, gboolean line_wrap )
+{
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( title,
+                                                    parent,
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
+                                                    NULL );
+  GtkWidget *ln = ui_label_new_selectable ( msg );
+  if ( line_wrap )
+    gtk_label_set_line_wrap ( GTK_LABEL(ln), TRUE );
+
+  GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+  // Ensure it doesn't start off too small
+  // Could pass in width+height - but we'll just use the default scale factor here
+  gdouble scale = vik_viewport_get_scale ( NULL );
+  gtk_widget_set_size_request ( sw, 480*scale, 640*scale );
+  gtk_container_add ( GTK_CONTAINER(sw), ln );
+
+  GtkBox *vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
+  gtk_box_pack_start ( vbox, sw, TRUE, TRUE, 0 );
+  gtk_widget_show_all ( dialog );
+
+  gtk_dialog_run ( GTK_DIALOG(dialog) );
+  gtk_widget_destroy ( dialog );
+}
+
 #include "NEWS.h"
 /**
  * News will only be available in English
@@ -1097,26 +1140,5 @@ void a_dialog_news ( GtkWindow *parent )
   gchar *msg = { (gchar*)NEWS };
   msg[NEWS_len] = '\0';
 
-  // Tailor a specific dialog, rather than simply using a_dialog_msg()
-  //  as the text is rather long, thus want a scrollable window.
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("News"),
-                                                    parent,
-                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                    GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
-                                                    NULL );
-  GtkWidget *ln = ui_label_new_selectable ( msg );
-  GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
-  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
-  // Ensure it doesn't start off too small
-  // Could pass in width+height - but we'll just use the default scale factor here
-  gdouble scale = vik_viewport_get_scale ( NULL );
-  gtk_widget_set_size_request ( sw, 480*scale, 640*scale );
-  gtk_container_add ( GTK_CONTAINER(sw), ln );
-
-  GtkBox *vbox = GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog)));
-  gtk_box_pack_start ( vbox, sw, TRUE, TRUE, 0 );
-  gtk_widget_show_all ( dialog );
-
-  gtk_dialog_run ( GTK_DIALOG(dialog) );
-  gtk_widget_destroy ( dialog );
+  a_dialog_scrollable ( parent, _("News"), msg, FALSE );
 }

@@ -75,6 +75,8 @@ void a_dialog_build_info ( GtkWindow *parent );
 
 void a_dialog_news ( GtkWindow *parent );
 
+void a_dialog_scrollable ( GtkWindow *parent, const gchar* title, const gchar* msg, gboolean line_wrap );
+
 G_END_DECLS
 
 #endif
