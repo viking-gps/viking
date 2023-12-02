@@ -1112,42 +1112,71 @@ Version1.1+: This will automatically move the viewport and select the best zoom 
 
 <section><title>View</title>
 
-<section id="track_view_all"><title>View All Tracks</title>
-<para>
-Version1.1+: This will automatically move the viewport and select the best zoom level to see the all the tracks in the layer (ignoring positions of any routes or waypoints).
-</para>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>View All Tracks</guilabel></term>
+      <listitem id="track_view_all">
+        <para>
+          Version1.1+: This will automatically move the viewport and select the best zoom level to see the all the tracks in the layer (ignoring positions of any routes or waypoints).
+        </para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><guilabel>View All Routes</guilabel></term>
+      <listitem id="route_view_all">
+        <para>
+          Version1.4+: This will automatically move the viewport and select the best zoom level to see the all the routes in the layer (ignoring positions of any tracks or waypoints).
+        </para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><guilabel>View All Waypoints</guilabel></term>
+      <listitem id="wp_view_all">
+        <para>
+          Version1.1+: This will automatically move the viewport and select the best zoom level to see the all the waypoints in the layer (ignoring positions of any tracks or routes).
+        </para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><guilabel>Ensure Visibility On</guilabel></term>
+      <listitem>
+        <para>
+          Version1.8+: Ensure this layer will be displayed, i.e. not just the visibility of this layer is turned on, but all higher levels in the layer heirarchy as well.
+        </para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><guilabel>View GPX Extensions</guilabel></term>
+      <listitem>
+        <para>
+          Version1.9+: View the raw (XML) text of the GPX extensions for this layer. The menu item is only shown if there are extensions available.
+        </para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
 
-<section id="route_view_all"><title>View All Routes</title>
-<para>
-Version1.4+: This will automatically move the viewport and select the best zoom level to see the all the routes in the layer (ignoring positions of any tracks or waypoints).
-</para>
-</section>
-
-<section id="wp_view_all"><title>View All Waypoints</title>
-<para>
-Version1.1+: This will automatically move the viewport and select the best zoom level to see the all the waypoints in the layer (ignoring positions of any tracks or routes).
-</para>
-</section>
-
-</section>
-
-<section><title>Goto Center of Layer</title>
-<para>
-This will automatically move the viewport to see the whole layer (i.e. tracks, routes and waypoints). It does not adjust the zoom level.
-</para>
-</section>
-
-<section id="wp_goto"><title>Goto Waypoint</title>
-<para>
-This opens a dialog box to enter a name of waypoint to search for. If it is found the viewport is centred on it.
-</para>
-<note>
-<para>
-Note this search is not very clever and only finds exact matches.
-You are probably better off expanding the waypoint list and directly start typing, as mentioned above, which finds a match based on each letter typed.
-</para>
-</note>
+<section><title>Goto</title>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>Goto Center of Layer</guilabel></term>
+      <listitem>
+        <para>This will automatically move the viewport to see the whole layer (i.e. tracks, routes and waypoints). It does not adjust the zoom level.</para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><guilabel>Goto Waypoint</guilabel></term>
+      <listitem id="wp_goto">
+        <para>This opens a dialog box to enter a name of waypoint to search for. If it is found the viewport is centred on it.</para>
+        <note>
+          <para>
+            Note this search is not very clever and only finds exact matches.
+            You are probably better off expanding the waypoint list and directly start typing, as mentioned above, which finds a match based on each letter typed.
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
 
 <section><title>Export Layer</title>
