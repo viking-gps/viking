@@ -1236,21 +1236,34 @@ This is only available when a track or route is being created by the <xref linke
 </section>
 
 <section><title>New</title>
-<section id="new_wp"><title>New Waypoint</title>
-<para>
-This opens a dialog (see <xref linkend="WptProps"/>) to create a new waypoint. A default name will be suggested and the default position is the center of the viewport.
-</para>
-</section>
-<section id="new_track"><title>New Track</title>
-<para>
-This turns on the <xref linkend="track_edit"/> tool.
-</para>
-</section>
-<section id="new_route"><title>New Route</title>
-<para>
-This turns on the <xref linkend="route_edit"/> tool.
-</para>
-</section>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>New Waypoint</guilabel></term>
+      <listitem id="new_wp">
+        <para>
+          This opens a dialog (see <xref linkend="WptProps"/>) to create a new waypoint. A default name will be suggested and the default position is the center of the viewport.
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>New Track</guilabel></term>
+      <listitem id="new_track">
+        <para>
+          This turns on the <xref linkend="track_edit"/> tool.
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>New Route</guilabel></term>
+      <listitem id="new_route">
+        <para>
+          This turns on the <xref linkend="route_edit"/> tool.
+        </para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
 
 <section><title>Geotag Images</title>
@@ -1268,87 +1281,137 @@ However when invoked from here, the results will be stored in this layer (instea
 </section>
 
 <section><title>Upload</title>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>Upload to GPS</guilabel></term>
+      <listitem id="gps_upload">
+        <para>
+          This opens a dialog to select the GPS Device and port to which the layer information will be transferred.
+        </para>
+        <para>
+          The types of GPS information (tracks, routes or waypoints) to be transferred can be selected.
+        </para>
+        <para>
+          Tracks, Routes or Waypoints that are invisible will not be transferred.
+        </para>
+      </listitem>
+    </varlistentry>
 
-<section id="gps_upload"><title>Upload to GPS</title>
-<para>
-This opens a dialog to select the GPS Device and port to which the layer information will be transferred.
-</para>
-<para>
-The types of GPS information (tracks, routes or waypoints) to be transferred can be selected.
-</para>
-<para>
-Tracks, Routes or Waypoints that are invisible will not be transferred.
-</para>
-</section>
-
-<section id="osm_upload" xreflabel="Upload To OSM" ><title>Upload To OSM</title>
-<para>
-This opens a dialog to upload all tracks and waypoints to <ulink url="https://openstreetmap.org/">OpenStreetMap</ulink> traces.
-Useful if you are an OpenStreetMap contributor, access details are stored in &appname; <xref linkend="prefs_osm"/>
-</para>
-<para>
- &appname; allows you to edit a track, e.g. remove duplicate points, perhaps remove track points leading to your home and then upload it to OpenStreetMap.
-</para>
-</section>
+    <varlistentry>
+      <term><guilabel>Upload To OSM</guilabel></term>
+      <listitem id="osm_upload" xreflabel="Upload To OSM">
+        <para>
+          This opens a dialog to upload all tracks and waypoints to <ulink url="https://openstreetmap.org/">OpenStreetMap</ulink> traces.
+          Useful if you are an OpenStreetMap contributor, access details are stored in &appname; <xref linkend="prefs_osm"/>
+        </para>
+        <para>
+          &appname; allows you to edit a track, e.g. remove duplicate points, perhaps remove track points leading to your home and then upload it to OpenStreetMap.
+        </para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
 
 <section><title>Delete</title>
-<para>Offers deletion of various parts of a TrackWaypoint layer:</para>
-<section id="delete_all_tracks"><title>Delete All Tracks</title>
-<para>Deletes all the tracks in this layer.</para>
-</section>
-<section id="delete_selection_tracks"><title>Delete Tracks from Selection</title>
-<para>Opens a dialog with list of all the tracks from this layer to choose the ones to delete.</para>
-</section>
-<section id="delete_all_routes"><title>Delete All Routes</title>
-<para>Deletes all the routes in this layer.</para>
-</section>
-<section id="delete_selection_routes"><title>Delete Routes from Selection</title>
-<para>Opens a dialog with list of all the routes from this layer to choose the ones to delete.</para>
-</section>
-<section id="delete_all_waypoints"><title>Delete All Waypoints</title>
-<para>Deletes all the waypoints in this layer.</para>
-</section>
-<section id="delete_selection_waypoints"><title>Delete Waypoints from Selection</title>
-<para>Opens a dialog with list of all the waypoints from this layer to choose the ones to delete.</para>
-</section>
-<section id="delete_duplicate_waypoints"><title>Delete Duplicate Waypoints</title>
-<para>
-  Deletes duplicate waypoints in this layer.
-  Waypoints are considered duplicate if they have the same location and symbol.
-  <note>
-    <para>If other properties are different such as name, comment, altitude, etc... they will still be considered a duplicate.
-    </para>
-  </note>
-</para>
-</section>
+  <para>Offers deletion of various parts of a TrackWaypoint layer.</para>
+  <para>Menu items will be disabled if there are no relevant sublayers of that type.</para>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>Delete All Tracks</guilabel></term>
+      <listitem id="delete_all_tracks">
+        <para>Deletes all the tracks in this layer.</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Delete Tracks from Selection</guilabel></term>
+      <listitem id="delete_selection_tracks">
+        <para>Opens a dialog with list of all the tracks from this layer to choose the ones to delete.</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Delete All Routes</guilabel></term>
+      <listitem id="delete_all_routes">
+        <para>Deletes all the routes in this layer.</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Delete Routes from Selection</guilabel></term>
+      <listitem id="delete_selection_routes">
+        <para>Opens a dialog with list of all the routes from this layer to choose the ones to delete.</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Delete All Waypoints</guilabel></term>
+      <listitem id="delete_all_waypoints">
+        <para>Deletes all the waypoints in this layer.</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Delete Waypoints from Selection</guilabel></term>
+      <listitem id="delete_selection_waypoints">
+        <para>Opens a dialog with list of all the waypoints from this layer to choose the ones to delete.</para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Delete Duplicate Waypoints</guilabel></term>
+      <listitem id="delete_duplicate_waypoints">
+        <para>
+          Deletes duplicate waypoints in this layer.
+          Waypoints are considered duplicate if they have the same location and symbol.
+          <note>
+            <para>If other properties are different such as name, comment, altitude, etc... they will still be considered a duplicate.
+            </para>
+          </note>
+        </para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
 
 <section id="filter" xreflabel="Filter"><title>Filter</title>
-<section><title>Simplify All Tracks</title>
-<para>
-This opens dialog to request the number of points each track will be simplified using <application>GPSBabel</application>. The result is put into a new layer. The simplification method removes points considered to be in a 'near straight line', thus reducing the number of points and attempting to keep the most important turning points.
-</para>
-</section>
-<section><title>Compress Tracks</title>
-<para>
-Enables compression of tracks and routes via <application>GPSBabel</application>'s <emphasis>Crosstrack</emphasis> simplify method.
-It opens a dialog to request the Error factor value which is the maximum allowable error that may be introduced by removing a single point.
-It is expressed a distance in units as specified by the <xref linkend="prefs"/> distance option.
-Thus a higher value will remove more points.
-The result is put into a new layer.
-</para>
-</section>
-<section><title>Remove Duplicate Waypoints</title>
-<para>
-Remove Duplicate Waypoints - fairly self explanatory, with the results created in a new layer.
-</para>
-<note>
-<para>
-However it only considers a precise position (waypoints only 1 metre away from each other are considered different) and also doesn't consider if the waypoints have different comments, symbols or images.
-</para>
-</note>
-</section>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>Simplify All Tracks</guilabel></term>
+      <listitem>
+        <para>
+          This opens dialog to request the number of points each track will be simplified using <application>GPSBabel</application>. The result is put into a new layer. The simplification method removes points considered to be in a 'near straight line', thus reducing the number of points and attempting to keep the most important turning points.
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Compress Tracks</guilabel></term>
+      <listitem>
+        <para>
+          Enables compression of tracks and routes via <application>GPSBabel</application>'s <emphasis>Crosstrack</emphasis> simplify method.
+          It opens a dialog to request the Error factor value which is the maximum allowable error that may be introduced by removing a single point.
+          It is expressed a distance in units as specified by the <xref linkend="prefs"/> distance option.
+          Thus a higher value will remove more points.
+          The result is put into a new layer.
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Remove Duplicate Waypoints</guilabel></term>
+      <listitem>
+        <para>
+          Remove Duplicate Waypoints - fairly self explanatory, with the results created in a new layer.
+        </para>
+        <note>
+          <para>
+            However it only considers a precise position (waypoints only 1 metre away from each other are considered different) and also doesn't consider if the waypoints have different comments, symbols or images.
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
 
 <section id="filter_with_track"><title>Filter With <emphasis>Trackname</emphasis></title>
@@ -1563,102 +1626,133 @@ Version1.1+: This centers the viewport on the track and selects the best zoom le
 </section>
 
 <section><title>Combine</title>
-<section><title>Merge By Time</title>
-<para>
-This operation repeatedly tries to merge the right-clicked track
-with tracks in the same TrackWaypoint layer. The tracks which are
-merged are those which have at least one trackpoint less than some
-threshold time away. This way, if you somehow end up with lots of small
-segments (say, caused by turning the GPS on and off) you can merge them
-easily into one track.
-</para>
-<note>
-<para>
-This is not available on routes as they have no timestamps.
-</para>
-</note>
-</section>
+  <variablelist>
 
-<section><title>Merge With Other Tracks</title>
-<para>
-  This opens a dialog listing the other tracks in the same TrackWaypoint layer, from which one can select the other tracks to merge with.
-  Tracks are merged in order of time.
-</para>
-</section>
+    <varlistentry>
+      <term><guilabel>Merge By Time</guilabel></term>
+      <listitem>
+        <para>
+          This operation repeatedly tries to merge the right-clicked track
+          with tracks in the same TrackWaypoint layer. The tracks which are
+          merged are those which have at least one trackpoint less than some
+          threshold time away. This way, if you somehow end up with lots of small
+          segments (say, caused by turning the GPS on and off) you can merge them
+          easily into one track.
+        </para>
+        <note>
+          <para>
+            This is not available on routes as they have no timestamps.
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
 
-<section><title>Merge Segments</title>
-<para>
-Combines track segments. Effectively removing track segment markers to leave one segment for the whole track.
-</para>
-</section>
+    <varlistentry>
+      <term><guilabel>Merge With Other Tracks</guilabel></term>
+      <listitem>
+        <para>
+          This opens a dialog listing the other tracks in the same TrackWaypoint layer, from which one can select the other tracks to merge with.
+          Tracks are merged in order of time.
+        </para>
+      </listitem>
+    </varlistentry>
 
-<section><title>Append Track or Route</title>
-<para>
-Enable joining of a single track to the end of the current track.
-This opens a dialog listing the other tracks in the same TrackWaypoint layer from which one can make the selection.
-</para>
-</section>
+    <varlistentry>
+      <term><guilabel>Merge Segments</guilabel></term>
+      <listitem>
+        <para>
+          Combines track segments. Effectively removing track segment markers to leave one segment for the whole track.
+        </para>
+      </listitem>
+    </varlistentry>
+    <varlistentry>
+      <term><guilabel>Append Track or Route</guilabel></term>
+      <listitem>
+        <para>
+          Enable joining of a single track to the end of the current track.
+          This opens a dialog listing the other tracks in the same TrackWaypoint layer from which one can make the selection.
+        </para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
 
 <section><title>Split</title>
-<section><title>Split By Time</title>
-<para>
-This operation will split a single track into segments wherever the
-time interval between successive trackpoints is larger than some
-threshold. This is useful when processing raw NMEA GPS data, especially
-taken over a long time.
-</para>
-<note>
-<para>
-This is not available on routes as they have no timestamps.
-</para>
-</note>
-</section>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>Split By Time</guilabel></term>
+      <listitem>
+        <para>
+          This operation will split a single track into segments wherever the
+          time interval between successive trackpoints is larger than some
+          threshold. This is useful when processing raw NMEA GPS data, especially
+          taken over a long time.
+        </para>
+        <note>
+          <para>
+            This is not available on routes as they have no timestamps.
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
 
-<section><title>Split By Number of Points</title>
-<para>
-Version1.2+: This operation will split a single track into segments by the number of points specified.
-This can be useful with devices which may have limits on the number of points it supports.
-</para>
-</section>
+    <varlistentry>
+      <term><guilabel>Split By Number of Points</guilabel></term>
+      <listitem>
+        <para>
+          Version1.2+: This operation will split a single track into segments by the number of points specified.
+          This can be useful with devices which may have limits on the number of points it supports.
+        </para>
+      </listitem>
+    </varlistentry>
 
-<section><title>Split Segments</title>
-<para>
-Splits track segments into new tracks.
-</para>
-<note>
-<para>
-This is not available on routes as they do not have route segments.
-</para>
-</note>
-</section>
+    <varlistentry>
+      <term><guilabel>Split Segments</guilabel></term>
+      <listitem>
+        <para>
+          Splits track segments into new tracks.
+        </para>
+        <note>
+          <para>
+            This is not available on routes as they do not have route segments.
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
 
-<section id='trkpt_split' xreflabel="Split at Trackpoint"><title>Split at Trackpoint</title>
-<para>
-Splits the track at the currently selected trackpoint.
-</para>
-<para>
-The current track will finish at this trackpoint.
-A new track will start from a copy of this trackpoint.
-</para>
-<note>
-<para>
-This is only enabled when a trackpoint is selected.
-</para>
-</note>
-</section>
+    <varlistentry>
+      <term><guilabel>Split at Trackpoint</guilabel></term>
+      <listitem id='trkpt_split' xreflabel="Split at Trackpoint">
+        <para>
+          Splits the track at the currently selected trackpoint.
+        </para>
+        <para>
+          The current track will finish at this trackpoint.
+          A new track will start from a copy of this trackpoint.
+        </para>
+        <note>
+          <para>
+            This is only enabled when a trackpoint is selected.
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
 
-<section><title>Create Segments at Trackpoint</title>
-<para>
-Creates a new track segment starting at the selected trackpoint.
-</para>
-<para>
-This is not available on routes as route segments are not allowed.
-</para>
-<para>
-This is only enabled when a trackpoint is selected.
-</para>
-</section>
+    <varlistentry>
+      <term><guilabel>Create Segments at Trackpoint</guilabel></term>
+      <listitem>
+        <para>
+          Creates a new track segment starting at the selected trackpoint.
+        </para>
+        <para>
+          This is not available on routes as route segments are not allowed.
+        </para>
+        <para>
+          This is only enabled when a trackpoint is selected.
+        </para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
 
 <section><title>Insert Points</title>
@@ -1667,47 +1761,68 @@ This is only enabled when a trackpoint is selected.
 These options are only enabled when a trackpoint is selected.
 </para>
 </note>
-<section><title>Insert Point Before Selected Point</title>
-<para>
-Inserts a track point halfway between the previous track point and the current track point.
-All track point properties are interpolated between the two points.
-</para>
-</section>
-<section><title>Insert Point After Selected Point</title>
-<para>
-Inserts a track point halfway between the current track point and the next track point.
-All track point properties are interpolated between the two points.
-</para>
-</section>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>Insert Point Before Selected Point</guilabel></term>
+      <listitem>
+        <para>
+          Inserts a track point halfway between the previous track point and the current track point.
+          All track point properties are interpolated between the two points.
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Insert Point After Selected Point</guilabel></term>
+      <listitem>
+        <para>
+          Inserts a track point halfway between the current track point and the next track point.
+          All track point properties are interpolated between the two points.
+        </para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
 
 <section><title>Delete Points</title>
-<section><title>Delete Selected Point</title>
-<para>
-Deletes the currently selected track point.
-</para>
-<note>
-<para>
-This is only enabled when a trackpoint is selected.
-</para>
-</note>
-</section>
-<section><title>Delete Points With the Same Position</title>
-<para>
-Deletes subsequent points that have the same position (but have different timestamps).
-</para>
-</section>
-<section><title>Delete Points With the Same Time</title>
-<para>
-Deletes subsequent points that have the same time stamp (but may have different positions).
-</para>
-<note>
-<para>
-This is not available on routes as they have no timestamps.
-</para>
-</note>
-</section>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>Delete Selected Point</guilabel></term>
+      <listitem>
+        <para>
+          Deletes the currently selected track point.
+        </para>
+        <note>
+          <para>
+            This is only enabled when a trackpoint is selected.
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
 
+    <varlistentry>
+      <term><guilabel>Delete Points With the Same Position</guilabel></term>
+      <listitem>
+        <para>
+          Deletes subsequent points that have the same position (but have different timestamps).
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Delete Points With the Same Time</guilabel></term>
+      <listitem>
+        <para>
+          Deletes subsequent points that have the same time stamp (but may have different positions).
+        </para>
+        <note>
+          <para>
+            This is not available on routes as they have no timestamps.
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
 
 <section id="transform" xreflabel="Transform"><title>Transform</title>
@@ -1715,100 +1830,127 @@ This is not available on routes as they have no timestamps.
 These options alter the data of trackpoints of a track but not add or remove trackpoints.
 And don't seem to fit any other category :)
 </para>
-<section><title>Apply DEM data</title>
-<para>
-If any <xref linkend="DEM"/> data is loaded, this will apply the DEM data to give the track elevation data.
-Two ways of applying DEM data are offered:
-<orderedlist>
-<listitem><para>Keep. Retains the existing elevation data of trackpoints and only those missing an elevation value are set.</para></listitem>
-<listitem><para>Overwrite. Elevation data are set on all trackpoints even if they already elevation values.</para></listitem>
-</orderedlist>
-</para>
-</section>
-<section><title>Smooth Missing Elevation data</title>
-<para>
-In various locations across the world, there are missing DEM values (AKA DEM Holes) from the SRTM data.
-This is particularly noticeable in mountainous areas.
-Two ways of applying elevation data to trackpoints that do not have elevation values are offered:
-<orderedlist>
-<listitem><para>Interpolated. Missing elevation data is interpolated between the previous and next known values.</para></listitem>
-<listitem><para>Flat. Elevation data is filled in from the last previously known value.</para></listitem>
-</orderedlist>
-</para>
-</section>
-<section>
-<title>Convert to Track or Route</title>
-<para>
-If this is a Route then it will convert it to a Track.
-</para>
-<para>
-If this is Track then convert it to a Route.
-</para>
-<note>
-<para>
-Converting from a Track to a Route may involve a loss of information, in particular timestamp values (hence you are required to confirm this operation before it happens).
-</para>
-</note>
-</section>
-<section>
-<title>Convert to Waypoints</title>
-<para>
-Each track or route point will be converted into a waypoint.
-The original track or route will be removed unless some information in the track would be lost
-(e.g. If the track has a comment, this is not copied into every waypoint and the track is kept).
-</para>
-</section>
-<section>
-<title>Anonymize Times</title>
-<para>
-Timestamp information of a track can be shifted to be all offset from 1901-01-01.
-</para>
-<para>
-Thus the timestamps themselves will no longer reveal exactly when a track was taken.
-However the relative difference between the timestamps is kept thus one is still able to calculate some properties such as speeds along the track.
-</para>
-<note>
-<para>
-This is not available for routes, as they have no timestamps.
-</para>
-</note>
-</section>
-<section>
-<title>Interpolate Times</title>
-<para>
-Trackpoint timestamps between the first and last points are calculated such that track is travelled at equal speed.
-This is mostly useful when tracks don't have timestamps and you wish to recreate your trip (e.g. you've forgotten to turn on your GPS or the batteries have run out)
-Thus edit the first and last trackpoints to set the approximate times of your trip and then use this to give approximate times along the track.
-When used on tracks with timestamps this will overwrite the existing timestamps.
-</para>
-<note>
-<para>
-This is not available for routes, as they have no timestamps.
-</para>
-</note>
-</section>
-<section>
-<title>Rotate</title>
-<para>
-"Rotate" the track or route by shifting the specified number of points from the start to end
-(or if a negative number it moves end points to the start).
-This is particularly intended for circular routes were you want to adjust where the start/end point is.
-If the start and end points are considered to be far apart, you are required to confirm you want to apply this.
-If a track has timestamps then rotating the track is not allowed as it would otherwise break trackpoint time ordering.
-</para>
-</section>
-<section>
-<title>Rename</title>
-<para>
-  Rename a track according using the timestamp of the first point in a <ulink url="https://devhints.io/strftime">strftime format</ulink>.
-  Use the <guibutton>Preview</guibutton> button to see what the result of applying this format will be.
-  The default format is "%d %b %y %H:%M", however after a successful rename the format used is saved for subsequent reuse.
-  To restore the default apply a blank format.
-</para>
-<para>
-  This is not available for routes, as they have no timestamps.
-</para>
-</section>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>Apply DEM data</guilabel></term>
+      <listitem>
+        <para>
+          If any <xref linkend="DEM"/> data is loaded, this will apply the DEM data to give the track elevation data.
+          Two ways of applying DEM data are offered:
+          <orderedlist>
+            <listitem><para>Keep. Retains the existing elevation data of trackpoints and only those missing an elevation value are set.</para></listitem>
+            <listitem><para>Overwrite. Elevation data are set on all trackpoints even if they already elevation values.</para></listitem>
+          </orderedlist>
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Smooth Missing Elevation data</guilabel></term>
+      <listitem>
+        <para>
+          In various locations across the world, there are missing DEM values (AKA DEM Holes) from the SRTM data.
+          This is particularly noticeable in mountainous areas.
+          Two ways of applying elevation data to trackpoints that do not have elevation values are offered:
+          <orderedlist>
+            <listitem><para>Interpolated. Missing elevation data is interpolated between the previous and next known values.</para></listitem>
+            <listitem><para>Flat. Elevation data is filled in from the last previously known value.</para></listitem>
+          </orderedlist>
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Convert to Track or Route</guilabel></term>
+      <listitem>
+        <para>
+          If this is a Route then it will convert it to a Track.
+        </para>
+        <para>
+          If this is Track then convert it to a Route.
+        </para>
+        <note>
+          <para>
+            Converting from a Track to a Route may involve a loss of information, in particular timestamp values (hence you are required to confirm this operation before it happens).
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Convert to Waypoints</guilabel></term>
+      <listitem>
+        <para>
+          Each track or route point will be converted into a waypoint.
+          The original track or route will be removed unless some information in the track would be lost
+          (e.g. If the track has a comment, this is not copied into every waypoint and the track is kept).
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Anonymize Times</guilabel></term>
+      <listitem>
+        <para>
+          Timestamp information of a track can be shifted to be all offset from 1901-01-01.
+        </para>
+        <para>
+          Thus the timestamps themselves will no longer reveal exactly when a track was taken.
+          However the relative difference between the timestamps is kept thus one is still able to calculate some properties such as speeds along the track.
+        </para>
+        <note>
+          <para>
+            This is not available for routes, as they have no timestamps.
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Interpolate Times</guilabel></term>
+      <listitem>
+        <para>
+          Trackpoint timestamps between the first and last points are calculated such that track is travelled at equal speed.
+          This is mostly useful when tracks don't have timestamps and you wish to recreate your trip (e.g. you've forgotten to turn on your GPS or the batteries have run out)
+          Thus edit the first and last trackpoints to set the approximate times of your trip and then use this to give approximate times along the track.
+          When used on tracks with timestamps this will overwrite the existing timestamps.
+        </para>
+        <note>
+          <para>
+            This is not available for routes, as they have no timestamps.
+          </para>
+        </note>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Rotate</guilabel></term>
+      <listitem>
+        <para>
+          "Rotate" the track or route by shifting the specified number of points from the start to end
+          (or if a negative number it moves end points to the start).
+          This is particularly intended for circular routes were you want to adjust where the start/end point is.
+          If the start and end points are considered to be far apart, you are required to confirm you want to apply this.
+          If a track has timestamps then rotating the track is not allowed as it would otherwise break trackpoint time ordering.
+        </para>
+      </listitem>
+    </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Rename</guilabel></term>
+      <listitem>
+        <para>
+          Rename a track according using the timestamp of the first point in a <ulink url="https://devhints.io/strftime">strftime format</ulink>.
+          Use the <guibutton>Preview</guibutton> button to see what the result of applying this format will be.
+          The default format is "%d %b %y %H:%M", however after a successful rename the format used is saved for subsequent reuse.
+          To restore the default apply a blank format.
+        </para>
+        <para>
+          This is not available for routes, as they have no timestamps.
+        </para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
 
 <section><title>Export Track as GPX</title>
@@ -1830,19 +1972,25 @@ Enables the Route Finder tool. Thus on a subsequent left click in the viewport, 
 </section>
 
 <section><title>Upload</title>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>Upload to GPS</guilabel></term>
+      <listitem>
+        <para>
+          Same as the layer <link linkend="gps_upload">Upload to GPS</link> command, but only applies to the track.
+        </para>
+      </listitem>
+    </varlistentry>
 
-<section><title>Upload to GPS</title>
-<para>
-Same as the layer <link linkend="gps_upload">Upload to GPS</link> command, but only applies to the track.
-</para>
-</section>
-
-<section><title>Upload to OSM</title>
-<para>
-Same as the layer <link linkend="osm_upload">Upload to OSM</link> command, but only applies to the track.
-</para>
-</section>
-
+    <varlistentry>
+      <term><guilabel>Upload to OSM</guilabel></term>
+      <listitem>
+        <para>
+          Same as the layer <link linkend="osm_upload">Upload to OSM</link> command, but only applies to the track.
+        </para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
 </section>
 
 <section><title>Use With Filter</title>
