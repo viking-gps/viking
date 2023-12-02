@@ -77,6 +77,7 @@ help/C/*html
 /src/Makefile.in
 /src/Makefile
 /src/*.o
+/src/NEWS.h
 /src/authors.h
 /src/config.h
 /src/config.h.in
