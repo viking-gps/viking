@@ -7390,6 +7390,7 @@ static void trw_layer_append_track ( menu_array_sublayer values )
   twt_udata udata;
   udata.result = &other_tracks_names;
   udata.exclude = trk;
+  udata.with_timestamps = FALSE;
 
   g_hash_table_foreach(ght_tracks, (GHFunc) trw_layer_sorted_track_id_by_name_list_exclude_self, (gpointer)&udata);
 
@@ -7472,6 +7473,7 @@ static void trw_layer_append_other ( menu_array_sublayer values )
   twt_udata udata;
   udata.result = &other_tracks_names;
   udata.exclude = trk;
+  udata.with_timestamps = FALSE;
 
   g_hash_table_foreach(ght_others, (GHFunc) trw_layer_sorted_track_id_by_name_list_exclude_self, (gpointer)&udata);
 
