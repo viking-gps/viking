@@ -193,6 +193,26 @@ This is set via the <xref linkend="prefs"/> <menuchoice><guimenu>Toolbar</guimen
 </informalexample>
 </figure>
 </section>
+<section><title>Rationale</title>
+  <para>
+    One of the aims of &appname; is to allow the user to be in control, being able to work offline without key dependencies on remote services.
+    Thus when &appname; is started for the very first time you are asked whether to enable "automatic internet features".
+    For those concerned any tracking potential or other issues arising from using remote services, one can select <emphasis>No</emphasis> and then manually control these requests.
+  </para>
+  <para>
+    Subsequently the individual features can be managed separately.
+  </para>
+  <itemizedlist>
+    <listitem><para>Requests for Map Tiles for the current viewport for Map Layers - see <xref linkend="map_props"/></para></listitem>
+    <listitem><para>Requests for Digital Elevation Model (DEM) files when using <xref linkend="DEM"/> layers</para></listitem>
+    <listitem><para>Requests for Route Directions during <xref linkend="route_finder"/> operations</para></listitem>
+    <listitem><para>Search Location requests - see <xref linkend="Goto"/></para></listitem>
+    <listitem><para>GeoLocation dependent on the IP address - see <xref linkend="auto_location"/></para></listitem>
+  </itemizedlist>
+  <para>
+    Further these facilities use a default set of service providers which can be changed and extended.
+  </para>
+</section>
 <section><title>GTK</title>
 <para>
   &appname; is built using the <ulink url="https://en.wikipedia.org/wiki/GTK">GTK</ulink> GUI framework, supporting version 3. Thus a number of features are governed by GTKs default behaviour or by the Desktop System and Theme (of course affected by those relevant systems settings). Hence details for configuring these is out of scope for this documentation.
@@ -3860,7 +3880,7 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 </varlistentry>
 <varlistentry>
 <term>Auto Location</term>
-<listitem>
+<listitem id="auto_location" xreflabel="Auto Location">
 	<para>Uses the <ulink url="https://www.freedesktop.org/wiki/Software/GeoClue">GeoClue</ulink> service if available
 	or otherwise the web service <ulink url="https://www.hostip.info">hostip.info</ulink> to attempt to determine your location via IP lookup
 	</para>
