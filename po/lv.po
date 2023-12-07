@@ -1201,6 +1201,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Lietot alternatīvo konfigurācijas datņu katalogu DATŅU KAT."
+
+msgid "DIR"
+msgstr "DATŅU KAT."
+
 msgid "Enable debug output"
 msgstr ""
 

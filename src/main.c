@@ -41,6 +41,7 @@
 #include "thumbnails.h"
 #include "viktrwlayer_export.h"
 #include "modules.h"
+#include "dir.h"
 
 /* FIXME LOCALEDIR must be configured by ./configure --localedir */
 /* But something does not work actually. */
@@ -56,10 +57,12 @@ static gdouble longitude = NAN;
 static gint zoom_level_osm = -1;
 static gint map_id = G_MININT;
 static gboolean external = FALSE;
+static gchar *confdir = NULL;
 
 /* Options */
 static GOptionEntry entries[] = 
 {
+  { "config-dir", 'c', 0, G_OPTION_ARG_FILENAME, &confdir, N_("Use alternate configuration directory DIR"), N_("DIR") },
   { "debug", 'd', 0, G_OPTION_ARG_NONE, &vik_debug, N_("Enable debug output"), NULL },
   { "verbose", 'V', 0, G_OPTION_ARG_NONE, &vik_verbose, N_("Enable verbose output"), NULL },
   { "version", 'v', 0, G_OPTION_ARG_NONE, &vik_version, N_("Show version"), NULL },
@@ -151,6 +154,14 @@ int main( int argc, char *argv[] )
   {
     (void)g_printf (_("%s %s\nCopyright (c) 2003-2008 Evan Battaglia\nCopyright (c) 2008-%s Viking's contributors\n"), PACKAGE_NAME, PACKAGE_VERSION, THEYEAR);
     return EXIT_SUCCESS;
+  }
+
+  // Mainly for testing,
+  //  but also could be useful for running a particular session with a specific configuration
+  if ( confdir )
+  {
+    g_debug ( "Using alternate configuration directory=%s", confdir );
+    a_set_viking_dir ( confdir );
   }
 
   // Normally on Windows the command line arguments are passed in in the system codepage encoding.

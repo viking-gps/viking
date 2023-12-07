@@ -47,6 +47,11 @@
         <arg choice="plain"><option>-m</option></arg>
         <arg choice="plain"><option>--map</option> <replaceable>MapId</replaceable></arg>
       </group>
+      <sbr/>
+      <group choice="opt">
+        <arg choice="plain"><option>-c</option></arg>
+        <arg choice="plain"><option>--config-dir</option> <replaceable>directory</replaceable></arg>
+      </group>
       <group choice="opt">
         <arg choice="plain"><option>-e</option></arg>
         <arg choice="plain"><option>--external</option></arg>
@@ -147,6 +152,15 @@ This also enables some extra information features in the GUI itself, primarily o
   <entry>-e</entry>
   <entry>--external</entry>
   <entry>The GPX files specified on the command line will be loaded in as <emphasis>external files</emphasis> as per the <xref linkend="open_gpx_external"/> method.</entry>
+</row>
+<row>
+  <entry>-c</entry>
+  <entry>--config-dir</entry>
+  <entry>Use an alternate location (which will be created if it does not exist) for the configuration directory.
+  This is useful for using/trying specific configuration values for a particular session without changing ones normal settings.
+  </entry>
+</row>
+<row>
 </row>
 </tbody>
 </tgroup>

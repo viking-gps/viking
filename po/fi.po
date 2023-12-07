@@ -1242,6 +1242,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Käytä vaihtoehtoista asetuskansiota"
+
+msgid "DIR"
+msgstr ""
+
 msgid "Enable debug output"
 msgstr "Ota käyttöön vianjäljitystulostus"
 

@@ -1201,6 +1201,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "代替の設定ディレクトリ DIR を設定"
+
+msgid "DIR"
+msgstr "DIR"
+
 msgid "Enable debug output"
 msgstr ""
 

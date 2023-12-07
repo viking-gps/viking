@@ -1266,6 +1266,12 @@ msgstr "Сообщения"
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Использовать DIR как альтернативный каталог для файлов конфигурации"
+
+msgid "DIR"
+msgstr "DIR"
+
 msgid "Enable debug output"
 msgstr "Включить отладочную выдачу"
 

@@ -32,6 +32,19 @@
 #include <glib/gstdio.h>
 #include <gmodule.h>
 
+static gchar *viking_dir = NULL;
+
+/**
+ * Override default dir with alternate specified name
+ */
+void a_set_viking_dir(const gchar * name)
+{
+  if ( g_file_test(name, G_FILE_TEST_EXISTS) == FALSE )
+    if ( g_mkdir(name, 0700) != 0 )
+      g_warning ( "%s: Failed to create directory %s", __FUNCTION__, name );
+  viking_dir = g_strdup ( name );
+}
+
 /**
  * For external use, free the result
  * Made externally available primarily to detect when Viking is first run
@@ -74,8 +87,6 @@ gchar *a_get_viking_dir_no_create()
 
   return vikdir;
 }
-
-static gchar *viking_dir = NULL;
 
 const gchar *a_get_viking_dir()
 {

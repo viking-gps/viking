@@ -1257,6 +1257,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Použít alternativní konfigurační adresář"
+
+msgid "DIR"
+msgstr "SLOŽKA"
+
 msgid "Enable debug output"
 msgstr "Povolit ladící výstup"
 

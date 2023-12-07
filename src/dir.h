@@ -27,6 +27,7 @@
 
 G_BEGIN_DECLS
 
+void a_set_viking_dir(const gchar * name);
 const gchar *a_get_viking_dir();
 gchar *a_get_viking_dir_no_create();
 gchar ** a_get_viking_data_path();

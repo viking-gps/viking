@@ -1204,6 +1204,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Alternatif bir ayar dizini kullan"
+
+msgid "DIR"
+msgstr "DİZİN"
+
 msgid "Enable debug output"
 msgstr "Hata ayıklama çıktısını etkinleştir"
 

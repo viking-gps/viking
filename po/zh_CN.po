@@ -1232,6 +1232,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "使用自定义的配置文件目录 DIR"
+
+msgid "DIR"
+msgstr "DIR"
+
 msgid "Enable debug output"
 msgstr "启用调试输出"
 

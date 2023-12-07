@@ -109,6 +109,11 @@ and docbook-xsl in your Build-Depends control field.
         <arg choice="plain"><option>-m</option></arg>
         <arg choice="plain"><option>--map</option> <replaceable>MapId</replaceable></arg>
       </group>
+      <sbr/>
+      <group choice="opt">
+        <arg choice="plain"><option>-c</option></arg>
+        <arg choice="plain"><option>--config-dir</option> <replaceable>directory</replaceable></arg>
+      </group>
       <group choice="opt">
         <arg choice="plain"><option>-x</option></arg>
         <arg choice="plain"><option>--external</option></arg>
@@ -235,6 +240,14 @@ and docbook-xsl in your Build-Depends control field.
         </listitem>
       </varlistentry>
       <varlistentry>
+        <term><option>-c</option></term>
+        <term><option>--config-dir</option></term>
+        <listitem>
+          <para>Use an alternate location (which will be created if it does not exist) for the configuration directory.</para>
+          <para>This is useful for using/trying specific configuration values for a particular session without changing ones normal settings.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
         <term><option>-e</option></term>
         <term><option>--external</option></term>
         <listitem>
@@ -266,6 +279,7 @@ and docbook-xsl in your Build-Depends control field.
         The User Configuration File Location directory is <filename>~/.viking</filename> for versions up to v1.8.
         For new installs from v1.9 onwards it is <filename>~/.config/viking</filename>
         If the legacy location exists then Viking will use that in preference to the new location.
+        NB The User Configuration File Location can be overridden for the current session by explicitly setting the configuration directory via the <emphasis>--config-dir</emphasis> command line option.
       </para>
       <formalpara>
         <title>Map Source</title>
@@ -736,9 +750,12 @@ and docbook-xsl in your Build-Depends control field.
     <title>FILES</title>
     <para>
       The User Configuration File Location directory is <filename>~/.viking</filename> for versions up to v1.8.
-For new installs it is <filename>~/.config/viking</filename> from v1.9 onwards.
-If the legacy location exists then Viking will use that in preference to the new location.
-</para>
+      For new installs it is <filename>~/.config/viking</filename> from v1.9 onwards.
+      If the legacy location exists then Viking will use that in preference to the new location.
+    </para>
+    <para>
+      NB The User Configuration File Location can be overridden for the current session by explicitly setting the configuration directory via the <emphasis>--config-dir</emphasis> command line option.
+    </para>
     <variablelist>
       <varlistentry>
         <term>Configuration: <filename>maps.xml</filename></term>

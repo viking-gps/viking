@@ -1226,6 +1226,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Naudoti alternatyvų konfigūracijos APLANKĄ"
+
+msgid "DIR"
+msgstr "APLANKAS"
+
 msgid "Enable debug output"
 msgstr "Įjungti klaidų aptikimo išvedimus"
 

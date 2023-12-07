@@ -1293,6 +1293,12 @@ msgstr "Mezuak"
 msgid "Log"
 msgstr "Erregistroa"
 
+msgid "Use alternate configuration directory DIR"
+msgstr ""
+
+msgid "DIR"
+msgstr ""
+
 msgid "Enable debug output"
 msgstr "Gaitu arazketaren irteera"
 

@@ -1243,6 +1243,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Utilizza cartella di configurazione alternativa DIR"
+
+msgid "DIR"
+msgstr "DIR"
+
 msgid "Enable debug output"
 msgstr "Abilita output di debug"
 

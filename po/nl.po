@@ -1227,6 +1227,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Alternatieve configuratiemap DIR gebruiken"
+
+msgid "DIR"
+msgstr "MAP"
+
 msgid "Enable debug output"
 msgstr "Debug-uitvoer aanzetten"
 

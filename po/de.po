@@ -1276,6 +1276,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Benutzt DIR als alternatives Verzeichnis für die Konfigurationsdateien"
+
+msgid "DIR"
+msgstr "DIR"
+
 msgid "Enable debug output"
 msgstr "Fehlerausgabe aktivieren"
 

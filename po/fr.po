@@ -1248,6 +1248,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Utilise DOSSIER comme dossier de configuration alternatif"
+
+msgid "DIR"
+msgstr "DOSSIER"
+
 msgid "Enable debug output"
 msgstr "Activer la sortie de débogage"
 

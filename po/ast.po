@@ -1235,6 +1235,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Usar un direutoriu de configuración alternativu"
+
+msgid "DIR"
+msgstr ""
+
 msgid "Enable debug output"
 msgstr ""
 

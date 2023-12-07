@@ -1233,6 +1233,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Másik konfigurációs KÖNYVTÁR használata"
+
+msgid "DIR"
+msgstr "KÖNYVTÁR"
+
 msgid "Enable debug output"
 msgstr "Hibakeresési kimenet engedélyezése"
 

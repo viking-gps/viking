@@ -5094,6 +5094,11 @@ Accept: */*
             If you've upgraded &app; to v1.9 and want it to use the new location, you will have to manually move the existing directory (when &app; is not running). e.g. in the command line: <command>mv ~/.viking ~/.config/viking</command>
           </para>
         </note>
+        <note>
+          <para>
+            The User Configuration File Location directory can be overridden for the current session by explicitly setting the configuration directory via the <emphasis>--config-dir</emphasis> command line option. See <xref linkend="commandline"/> for more detail.
+          </para>
+        </note>
       </section>
 
       <section>

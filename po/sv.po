@@ -1211,6 +1211,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Använd en alternativ sökväg till mappen MAPP"
+
+msgid "DIR"
+msgstr "MAPP"
+
 msgid "Enable debug output"
 msgstr "Aktivera felsökningsutskrifter"
 

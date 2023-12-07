@@ -1201,6 +1201,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "대안 환경설정 폴더를 사용함"
+
+msgid "DIR"
+msgstr ""
+
 msgid "Enable debug output"
 msgstr ""
 

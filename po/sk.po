@@ -1205,6 +1205,12 @@ msgstr ""
 msgid "Log"
 msgstr ""
 
+msgid "Use alternate configuration directory DIR"
+msgstr "Použiť alternatívny adresár ADRESÁR pre konfiguráciu"
+
+msgid "DIR"
+msgstr "ADRESÁR"
+
 msgid "Enable debug output"
 msgstr ""
 
