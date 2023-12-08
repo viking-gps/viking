@@ -8,7 +8,7 @@ see real-time GPS position, Geotag Images,
 control items, upload/download OSM Traces and more.
 It is written mainly in C with some C++ and uses the GTK+3 toolkit.
 
-Website: http://viking.sf.net/
+Website: https://viking.sf.net/
 
 
 ## Obtaining Viking
