@@ -2287,7 +2287,7 @@ There are several options to quickly delete a subsection of data:
 This layer provides a single map resource, you may have multiple map layers but only top one (if enabled) will be visible (subject to the <xref linkend="Alpha"/> compositing property).
 </para>
 <para>
-Some maps are continually improving over time (e.g. OpenStreetMap) thus &appname; employs a caching mechanism to avoid redownloading data (see <xref linkend="mapcache"/>).
+Some maps are continually improving over time (e.g. OpenStreetMap), on the other hand &appname; employs a caching mechanism to avoid redownloading data (see <xref linkend="mapcache"/>).
 However a forced refresh for the current view can be made via the <guilabel>Reload All Onscreen Maps</guilabel> option or <keycap>Ctrl+F5</keycap>.
 </para>
 
