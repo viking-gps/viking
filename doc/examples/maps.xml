@@ -37,8 +37,7 @@
   </object>
   -->
   <!-- ArcGIS Server - Notice use of the "switch-xy" property -->
-  <object>
-    <object class="VikSlippyMapSource">
+  <object class="VikSlippyMapSource">
     <property name="id">60</property>
     <property name="name">ArcGIS</property>
     <property name="label">ArcGIS World Street Map</property>
@@ -51,8 +50,7 @@
   </object>
 
   <!-- An example with zoom and area limits - UK Only -->
-  <object>
-    <object class="VikSlippyMapSource">
+  <object class="VikSlippyMapSource">
     <property name="label">OS NPE</property>
     <property name="hostname">ooc.openstreetmap.org</property>
     <property name="url">/npe/%d/%d/%d.png</property>
