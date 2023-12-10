@@ -5478,7 +5478,7 @@ msgstr "Задать расположение по умолчанию"
 msgid "Set the Default Location to the current position"
 msgstr "Сохранить текущее расположение, как расположение по умолчанию"
 
-msgid "_Preferences"
+msgid "Prefere_nces"
 msgstr "Предпочтения"
 
 msgid "Program Preferences"
@@ -5490,13 +5490,13 @@ msgstr ""
 msgid "Reset All Program Preferences"
 msgstr ""
 
-msgid "_Suppression Messages..."
+msgid "Suppression _Messages..."
 msgstr ""
 
 msgid "Reset List of Messages being Suppressed"
 msgstr ""
 
-msgid "_Layer Defaults"
+msgid "La_yer Defaults"
 msgstr "П_араметры слоёв по умолчанию"
 
 msgid "_Properties"

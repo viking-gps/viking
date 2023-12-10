@@ -5334,7 +5334,7 @@ msgstr "_Alapértelmezett hely beállítása"
 msgid "Set the Default Location to the current position"
 msgstr "Alapértelmezett hely beállítása a jelenlegi pozícióra"
 
-msgid "_Preferences"
+msgid "Prefere_nces"
 msgstr "B_eállítások"
 
 msgid "Program Preferences"
@@ -5346,13 +5346,13 @@ msgstr ""
 msgid "Reset All Program Preferences"
 msgstr ""
 
-msgid "_Suppression Messages..."
+msgid "Suppression _Messages..."
 msgstr ""
 
 msgid "Reset List of Messages being Suppressed"
 msgstr ""
 
-msgid "_Layer Defaults"
+msgid "La_yer Defaults"
 msgstr ""
 
 msgid "_Properties"

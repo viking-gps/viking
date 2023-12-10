@@ -6412,10 +6412,10 @@ static GtkActionEntry entries[] = {
   { "CopyCentre", GTK_STOCK_COPY,        N_("Copy Centre _Location"),     "<control>h",     NULL,                                           (GCallback)menu_copy_centre_cb   },
   { "MapCacheFlush", GTK_STOCK_DISCARD,  N_("_Flush Map Cache"),              NULL,         NULL,                                           (GCallback)mapcache_flush_cb     },
   { "SetDefaultLocation", GTK_STOCK_GO_FORWARD, N_("_Set the Default Location"), NULL, N_("Set the Default Location to the current position"),(GCallback)default_location_cb },
-  { "Preferences",GTK_STOCK_PREFERENCES, N_("_Preferences"),                  NULL,         N_("Program Preferences"),                      (GCallback)preferences_cb },
+  { "Preferences",GTK_STOCK_PREFERENCES, N_("Prefere_nces"),                  NULL,         N_("Program Preferences"),                      (GCallback)preferences_cb },
   { "PreferencesReset",GTK_STOCK_REFRESH, N_("Preferences Reset All"),        NULL,         N_("Reset All Program Preferences"),            (GCallback)preferences_reset_cb },
-  { "SuppressionsReset",GTK_STOCK_REFRESH,N_("_Suppression Messages..."),     NULL,         N_("Reset List of Messages being Suppressed"),  (GCallback)suppressions_reset_cb },
-  { "LayerDefaults",GTK_STOCK_PROPERTIES, N_("_Layer Defaults"),             NULL,         NULL,                                           NULL },
+  { "SuppressionsReset",GTK_STOCK_REFRESH,N_("Suppression _Messages..."),     NULL,         N_("Reset List of Messages being Suppressed"),  (GCallback)suppressions_reset_cb },
+  { "LayerDefaults",GTK_STOCK_PROPERTIES, N_("La_yer Defaults"),              NULL,         NULL,                                           NULL },
   { "Properties",GTK_STOCK_PROPERTIES,   N_("_Properties"),                   NULL,         N_("Layer Properties"),                         (GCallback)menu_properties_cb },
 
   { "HelpEntry", GTK_STOCK_HELP,         N_("_Help"),                         "F1",         N_("Help"),                                     (GCallback)help_help_cb },

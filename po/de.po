@@ -5466,7 +5466,7 @@ msgstr "Ausgangsstandort _setzen"
 msgid "Set the Default Location to the current position"
 msgstr "Ausgangsstandort auf aktuelle Position setzen"
 
-msgid "_Preferences"
+msgid "Prefere_nces"
 msgstr "_Einstellungen"
 
 msgid "Program Preferences"
@@ -5478,13 +5478,13 @@ msgstr ""
 msgid "Reset All Program Preferences"
 msgstr ""
 
-msgid "_Suppression Messages..."
+msgid "Suppression _Messages..."
 msgstr ""
 
 msgid "Reset List of Messages being Suppressed"
 msgstr ""
 
-msgid "_Layer Defaults"
+msgid "La_yer Defaults"
 msgstr "_Ebenen-Standards"
 
 msgid "_Properties"

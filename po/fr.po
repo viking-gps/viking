@@ -5395,7 +5395,7 @@ msgstr "_Fixer la position par défaut"
 msgid "Set the Default Location to the current position"
 msgstr "Fixer la position par défaut à la position courante"
 
-msgid "_Preferences"
+msgid "Prefere_nces"
 msgstr "_Préférences"
 
 msgid "Program Preferences"
@@ -5407,13 +5407,13 @@ msgstr ""
 msgid "Reset All Program Preferences"
 msgstr ""
 
-msgid "_Suppression Messages..."
+msgid "Suppression _Messages..."
 msgstr ""
 
 msgid "Reset List of Messages being Suppressed"
 msgstr ""
 
-msgid "_Layer Defaults"
+msgid "La_yer Defaults"
 msgstr ""
 
 msgid "_Properties"

@@ -5321,7 +5321,7 @@ msgstr ""
 msgid "Set the Default Location to the current position"
 msgstr ""
 
-msgid "_Preferences"
+msgid "Prefere_nces"
 msgstr ""
 
 msgid "Program Preferences"
@@ -5333,13 +5333,13 @@ msgstr ""
 msgid "Reset All Program Preferences"
 msgstr ""
 
-msgid "_Suppression Messages..."
+msgid "Suppression _Messages..."
 msgstr ""
 
 msgid "Reset List of Messages being Suppressed"
 msgstr ""
 
-msgid "_Layer Defaults"
+msgid "La_yer Defaults"
 msgstr ""
 
 msgid "_Properties"

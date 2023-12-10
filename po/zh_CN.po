@@ -5345,7 +5345,7 @@ msgid "Delete All"
 msgstr "删除全部"
 
 msgid "Copy Centre _Location"
-msgstr "复制居中位置"
+msgstr "复制居中位置(_L)"
 
 msgid "_Flush Map Cache"
 msgstr "清理地图缓存(_F)"
@@ -5356,8 +5356,8 @@ msgstr "设为默认位置(_S)"
 msgid "Set the Default Location to the current position"
 msgstr "设默认位置为当前位置"
 
-msgid "_Preferences"
-msgstr "首选项(_P)"
+msgid "Prefere_nces"
+msgstr "首选项(_N)"
 
 msgid "Program Preferences"
 msgstr "程序首选项"
@@ -5368,14 +5368,14 @@ msgstr ""
 msgid "Reset All Program Preferences"
 msgstr ""
 
-msgid "_Suppression Messages..."
+msgid "Suppression _Messages..."
 msgstr ""
 
 msgid "Reset List of Messages being Suppressed"
 msgstr ""
 
-msgid "_Layer Defaults"
-msgstr "图层默认设置(_L)"
+msgid "La_yer Defaults"
+msgstr "图层默认设置(_Y)"
 
 msgid "_Properties"
 msgstr "属性(_P)"

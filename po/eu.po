@@ -5628,7 +5628,7 @@ msgstr "_Ezarri lehenetsitako kokalekua"
 msgid "Set the Default Location to the current position"
 msgstr "_Ezarri lehenetsitako kokalekua uneko posizioan"
 
-msgid "_Preferences"
+msgid "Prefere_nces"
 msgstr "_Hobespenak"
 
 msgid "Program Preferences"
@@ -5640,13 +5640,13 @@ msgstr "Leheneratu hobespen guztiak"
 msgid "Reset All Program Preferences"
 msgstr "Leheneratu programaren hobespen guztiak"
 
-msgid "_Suppression Messages..."
+msgid "Suppression _Messages..."
 msgstr "_Mezuen ezabaketa..."
 
 msgid "Reset List of Messages being Suppressed"
 msgstr "Leheneratu ezabatutako mezuen zerrenda"
 
-msgid "_Layer Defaults"
+msgid "La_yer Defaults"
 msgstr "_Lehenetsitako geruzak"
 
 msgid "_Properties"
