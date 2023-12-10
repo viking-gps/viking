@@ -712,8 +712,8 @@ void vik_viewport_clear ( VikViewport *vvp )
     cairo_set_source_rgba ( vvp->crt, rgba.red, rgba.green, rgba.blue, 1.0 );
     cairo_paint ( vvp->crt );
     */
+    ui_cr_clear ( vvp->crt );
   }
-  ui_cr_clear ( vvp->crt );
 #else
   if ( vvp->scr_buffer )
     gdk_draw_rectangle(GDK_DRAWABLE(vvp->scr_buffer), vvp->background_gc, TRUE, 0, 0, vvp->width, vvp->height);
