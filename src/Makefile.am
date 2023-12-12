@@ -162,6 +162,7 @@ libviking_a_SOURCES = \
 	kmz.c kmz.h \
 	viklayer_defaults.c viklayer_defaults.h \
 	settings.c settings.h \
+	socket.c socket.h \
 	preferences.c preferences.h \
 	misc/heatmap.c misc/heatmap.h \
 	misc/fpconv.c misc/fpconv.h misc/powers.h \

@@ -118,6 +118,10 @@ and docbook-xsl in your Build-Depends control field.
         <arg choice="plain"><option>-e</option></arg>
         <arg choice="plain"><option>--external</option></arg>
       </group>
+      <group choice="opt">
+        <arg choice="plain"><option>-r</option></arg>
+        <arg choice="plain"><option>--running-instance</option></arg>
+      </group>
       <sbr/>
       <group choice="plain">
         <arg rep="repeat"><replaceable>file</replaceable></arg>
@@ -253,6 +257,15 @@ and docbook-xsl in your Build-Depends control field.
         <listitem>
           <para>Load all specified GPX files in 'external' mode.</para>
           <para>This is in contrast to importing the data and storing it in the Viking file.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><option>-r</option></term>
+        <term><option>--running-instance</option></term>
+        <listitem>
+          <para>Opens the specified files in an already running instance of &appname;. If no instance is available than the files will not be opened.</para>
+          <para>Positional and map option parameters are not used or passed on to the running instance.</para>
+          <note><para>This option is not available on <trademark>Windows</trademark></para></note>
         </listitem>
       </varlistentry>
     </variablelist>

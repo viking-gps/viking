@@ -42,6 +42,7 @@
 #include "viktrwlayer_export.h"
 #include "modules.h"
 #include "dir.h"
+#include "socket.h"
 
 /* FIXME LOCALEDIR must be configured by ./configure --localedir */
 /* But something does not work actually. */
@@ -58,6 +59,7 @@ static gint zoom_level_osm = -1;
 static gint map_id = G_MININT;
 static gboolean external = FALSE;
 static gchar *confdir = NULL;
+static gboolean running_instance = FALSE;
 
 /* Options */
 static GOptionEntry entries[] = 
@@ -71,6 +73,9 @@ static GOptionEntry entries[] =
   { "zoom", 'z', 0, G_OPTION_ARG_INT, &zoom_level_osm, N_("Zoom Level (OSM). Value can be 0 - 22"), NULL },
   { "map", 'm', 0, G_OPTION_ARG_INT, &map_id, N_("Add a map layer by id value. Use 0 for the default map."), NULL },
   { "external", 'e', 0, G_OPTION_ARG_NONE, &external, N_("Load all GPX files in external mode."), NULL },
+#ifdef G_OS_UNIX
+  { "running-instance", 'r', 0, G_OPTION_ARG_NONE, &running_instance, N_("Open file(s) in an existing running instance"), NULL },
+#endif
   { NULL }
 };
 
@@ -154,6 +159,13 @@ int main( int argc, char *argv[] )
   {
     (void)g_printf (_("%s %s\nCopyright (c) 2003-2008 Evan Battaglia\nCopyright (c) 2008-%s Viking's contributors\n"), PACKAGE_NAME, PACKAGE_VERSION, THEYEAR);
     return EXIT_SUCCESS;
+  }
+
+  if ( running_instance ) {
+    // NB as gtk has processed (and removed any options present) argv,
+    //  it only contains the remaining list of files
+    gboolean sof = socket_open_files ( argc, argv, external );
+    return sof ? EXIT_SUCCESS : EXIT_FAILURE;
   }
 
   // Mainly for testing,
@@ -289,6 +301,8 @@ int main( int argc, char *argv[] )
 
   vu_command_line ( first_window, latitude, longitude, zoom_level_osm, map_id );
 
+  (void)socket_init ( first_window );
+
   gtk_main ();
 
   vik_trwlayer_uninit ();
@@ -318,6 +332,8 @@ int main( int argc, char *argv[] )
 
   a_vik_preferences_uninit ();
 
+  socket_uninit();
+  
 #ifdef G_OS_WIN32
   g_strfreev ( argv );
 #endif

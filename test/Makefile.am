@@ -39,6 +39,7 @@ TESTS += check_vik2vik.sh
 TESTS += check_xz.sh
 TESTS += check_zip.sh
 TESTS += check_gzip.sh
+TESTS += check_remote.sh
 endif
 
 check_PROGRAMS = degrees_converter \
@@ -73,7 +74,8 @@ check_SCRIPTS = check_degrees_conversions.sh \
 	check_gzip.sh \
 	check_geojson_osrm.sh \
 	check_help_xml.sh \
-	check_metatile.sh
+	check_metatile.sh \
+	check_remote.sh
 if GEOTAG
 check_SCRIPTS += check_geotag.sh
 endif
@@ -113,6 +115,7 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	metatile_example/13/0/0/250/220/0.meta \
 	check_geojson_osrm.sh \
 	OSRM_sample_response.txt \
+	check_remote.sh \
 	check_geotag.sh \
 	Stonehenge.gpx \
 	Stonehenge.jpg \
