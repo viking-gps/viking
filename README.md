@@ -74,3 +74,13 @@ First, read [hacking notes](HACKING).
 
 In order to ease the creation of a development environment, there is a [development container]() description in `.devcontainer/devcontainer.json`.
 This file can be used in different tools, like [Visual Studio Code](https://code.visualstudio.com/docs/devcontainers/tutorial) or to create online environments [Github Codespaces](https://docs.github.com/en/codespaces/setting-up-your-project-for-codespaces/adding-a-dev-container-configuration/introduction-to-dev-containers).
+
+### In-container development with Visual Studio Code on Windows
+
+On Windows, install an X server (such as [VcXsrv](http://vcxsrv.sourceforge.net)) and run it **disabling the access control**.
+
+Make sure Docker is running.
+
+Run Visual Studio Code and "open in container" the directory containing the Viking's source code.
+
+You should now be able to compile, install and run Viking from Visual Studio Code's terminal; the application is displaied as a normal window, through the X server.
