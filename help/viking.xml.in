@@ -115,7 +115,7 @@ and docbook-xsl in your Build-Depends control field.
         <arg choice="plain"><option>--config-dir</option> <replaceable>directory</replaceable></arg>
       </group>
       <group choice="opt">
-        <arg choice="plain"><option>-x</option></arg>
+        <arg choice="plain"><option>-e</option></arg>
         <arg choice="plain"><option>--external</option></arg>
       </group>
       <sbr/>
