@@ -77,10 +77,10 @@ This file can be used in different tools, like [Visual Studio Code](https://code
 
 ### In-container development with Visual Studio Code on Windows
 
-On Windows, install an X server (such as [VcXsrv](http://vcxsrv.sourceforge.net)) and run it **disabling the access control**.
+On Windows, install an X server (such as [VcXsrv](https://vcxsrv.sourceforge.net)) and run it **disabling the access control**.
 
 Make sure Docker is running.
 
 Run Visual Studio Code and "open in container" the directory containing the Viking's source code.
 
-You should now be able to compile, install and run Viking from Visual Studio Code's terminal; the application is displaied as a normal window, through the X server.
+You should now be able to compile, install and run Viking from Visual Studio Code's terminal; the application is displayed as a normal window, through the X server.
