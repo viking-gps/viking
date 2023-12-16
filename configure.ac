@@ -245,6 +245,20 @@ case $ac_cv_enable_bluemarble in
 esac
 AM_CONDITIONAL([BLUEMARBLE], [test x$ac_cv_enable_bluemarble = xyes])
 
+# OpenAIP
+AC_ARG_ENABLE(openaip, AS_HELP_STRING([--enable-openaip],
+              [enable openaip stuff (default is enable)]),
+              [ac_cv_enable_openaip=$enableval],
+              [ac_cv_enable_openaip=yes])
+AC_CACHE_CHECK([whether to enable OpenAIP stuff],
+               [ac_cv_enable_openaip], [ac_cv_enable_openaip=yes])
+case $ac_cv_enable_openaip in
+  yes)
+    AC_DEFINE(VIK_CONFIG_OPENAIP, [], [OPENAIP STUFF])
+    ;;
+esac
+AM_CONDITIONAL([OPENAIP], [test x$ac_cv_enable_openaip = xyes])
+
 # GeoNames http://www.geonames.org/
 AC_ARG_ENABLE(geonames, AS_HELP_STRING([--enable-geonames],
               [enable Geonames stuff (default is enable)]),
@@ -574,6 +588,17 @@ AC_ARG_WITH(thunderforest_apikey,
 	    [VIK_CONFIG_THUNDERFOREST_KEY="\"${withval}\""],
 	    [VIK_CONFIG_THUNDERFOREST_KEY="\"7387c111d85642b18f63608bd4cb8b4f\""])
 AC_DEFINE_UNQUOTED(VIK_CONFIG_THUNDERFOREST_KEY, ${VIK_CONFIG_THUNDERFOREST_KEY}, [Thunderforest key])
+
+OpenAIP Compile time defined key
+AC_ARG_WITH(openaip_apikey,
+            [AS_HELP_STRING([--with-openaip_apikey],
+	     [API Key for OpenAIP tiles.
+              Please register your own if you're going to distribute the
+              package, as requests are limited per key.])],
+	    [VIK_CONFIG_OPENAIP_KEY="\"${withval}\""],
+	    [VIK_CONFIG_OPENAIP_KEY="\"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\""]) // <- Replace XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX with your API key
+AC_DEFINE_UNQUOTED(VIK_CONFIG_OPENAIP_KEY, ${VIK_CONFIG_OPENAIP_KEY}, [OpenAIP key])
+
 
 AC_ARG_WITH(geonames_username,
             [AS_HELP_STRING([--with-geonames_username],

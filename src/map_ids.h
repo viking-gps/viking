@@ -42,7 +42,7 @@
 #define MAP_ID_MBTILES 23
 #define MAP_ID_OSM_METATILES 24
 //#define MAP_ID_MAPBOX_OUTDOORS 25 // Access deactivated
-
+#define MAP_ID_OPENAIP 26
 #define MAP_ID_BING_AERIAL 212
 
 #define MAP_ID_OPEN_TOPO_MAP 901

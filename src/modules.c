@@ -38,6 +38,7 @@
 #include "osm.h"
 #include "osm-traces.h"
 #include "bluemarble.h"
+#include "openaip.h"
 #include "geonames.h"
 #include "dir.h"
 #include "datasources.h"
@@ -255,6 +256,9 @@ void modules_init()
 #endif
 #ifdef VIK_CONFIG_BLUEMARBLE
   bluemarble_init();
+#endif
+#ifdef VIK_CONFIG_OPENAIP
+  openaip_init();
 #endif
 #ifdef VIK_CONFIG_GEONAMES
   geonames_init();

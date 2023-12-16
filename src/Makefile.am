@@ -208,6 +208,11 @@ libviking_a_SOURCES += \
 	bluemarble.c bluemarble.h
 endif
 
+if OPENAIP
+libviking_a_SOURCES += \
+	openaip.c openaip.h
+endif
+
 if GEONAMES
 libviking_a_SOURCES += \
 	geonames.c geonames.h \
