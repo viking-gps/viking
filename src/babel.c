@@ -708,7 +708,7 @@ void a_babel_post_init ()
   if ( g_strcmp0 ( gpsbabel, "gpsbabel" ) == 0 ) {
     gpsbabel_loc = g_find_program_in_path( "gpsbabel" );
     if ( !gpsbabel_loc )
-      g_warning( "gpsbabel not found in PATH" );
+      g_warning ( "gpsbabel not found in $PATH. It is highly recommended to install gpsbabel and/or ensure " PACKAGE " is able to find it." );
   }
   else
     gpsbabel_loc = g_strdup ( gpsbabel );
@@ -718,7 +718,7 @@ void a_babel_post_init ()
 #ifndef WINDOWS
   unbuffer_loc = g_find_program_in_path( "unbuffer" );
   if ( !unbuffer_loc )
-    g_warning( "unbuffer not found in PATH" );
+    g_message ( "unbuffer not found in $PATH. It is recommended to install the relevant package for your system, which for some is in the \"expect\" package." );
 #endif
 
   if ( gpsbabel_loc ) {

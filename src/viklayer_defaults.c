@@ -221,7 +221,8 @@ static gboolean defaults_load_from_file()
 	gchar *fn = g_build_filename ( a_get_viking_dir(), VIKING_LAYER_DEFAULTS_INI_FILE, NULL );
 
 	if ( !g_key_file_load_from_file ( keyfile, fn, flags, &error ) ) {
-		g_warning ( "%s: %s", error->message, fn );
+		// Probably first run or alternate config dir so file may not exist yet
+		g_debug ( "%s: %s", error->message, fn );
 		g_free ( fn );
 		g_error_free ( error );
 		return FALSE;
