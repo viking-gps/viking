@@ -6,7 +6,9 @@
     }
   },
   "mounts": [
-    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached"
+    "source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/.cache/viking,target=/home/codespace/.cache/viking,type=bind,consistency=cached",
+    "source=${localWorkspaceFolder}/.config/viking,target=/home/codespace/.config/viking,type=bind,consistency=cached"
   ],
   "containerEnv": {
     // Optionally, uncomment the next line
