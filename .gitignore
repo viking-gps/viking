@@ -176,3 +176,8 @@ windows/installer/viking*.exe
 flatpak/
 flatpakrepo/
 viking*.flatpak
+
+# Bind-mounted .cache/viking and .config/viking
+.cache/viking/**
+.config/viking/**
+!.keep
