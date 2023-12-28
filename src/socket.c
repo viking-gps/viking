@@ -22,6 +22,10 @@
 
 /*
  * ATM only for Unix-like systems.
+ * Although potentially should work on Windows 10 1803 with GLib 2.72 onwards:
+ *  https://gitlab.gnome.org/GNOME/glib/-/issues/2487
+ * However unclear ATM what the fallback behaviour of this GIO capability is when run on older versions of Windows
+ *  so for the moment leave as disabled on Windows build - especially since not a typical use case for Windows users.
  * The socket allows messages to be sent to the first running instance of Viking.
  *
  * Each command which is sent between two instances and should have the following scheme:
@@ -41,6 +45,12 @@
 static GSocketService *service = NULL;
 
 #ifdef G_OS_UNIX
+// Work around mistake in GLIB 2.72 (fixed in 2.73) see:
+// https://gitlab.gnome.org/GNOME/glib/-/commit/a638b2bbd11221c3ebb89769ae18a8c3131d47a3
+// However would still need a check for GLIB 2.72 (since our minimum is meant to be 2.44)
+#if !GLIB_CHECK_VERSION(2,73,0)
+#include <gio/gunixconnection.h>
+#endif
 static GSocketAddress* get_socket_address(void)
 {
 	// A per user socket name
