@@ -140,7 +140,6 @@ static gboolean create_socket ( VikWindow *vw )
 	GError *error = NULL;
 
 	GSocketAddress *gsa = get_socket_address ();
-	
 	service = g_socket_service_new ();
 
 	gboolean ans =
@@ -183,17 +182,20 @@ static gboolean connect_socket(void)
 	                                G_SOCKET_TYPE_STREAM,
 	                                G_SOCKET_PROTOCOL_DEFAULT,
 	                                &error );
+	gboolean ans = FALSE;
 	GSocketAddress* gsa = get_socket_address ();
-	GSocketConnection *gsc = g_socket_connection_factory_create_connection ( gsock );
-	
-	gboolean ans = g_socket_connection_connect ( gsc, gsa, NULL, &error );
-	if ( !ans ) {
-		g_debug ( "%s: %s", __FUNCTION__, error->message );
-		g_error_free ( error );
-	}
+	if ( gsa )
+	{
+		GSocketConnection *gsc = g_socket_connection_factory_create_connection ( gsock );
 
-	g_object_unref ( gsa );
-	g_object_unref ( gsc );
+		gboolean ans = g_socket_connection_connect ( gsc, gsa, NULL, &error );
+		if ( !ans ) {
+			g_debug ( "%s: %s", __FUNCTION__, error->message );
+			g_error_free ( error );
+		}
+		g_object_unref ( gsa );
+		g_object_unref ( gsc );
+	}
 	g_object_unref ( gsock );
 
 	return ans;
