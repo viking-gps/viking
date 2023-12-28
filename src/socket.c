@@ -48,9 +48,9 @@ static GSocketService *service = NULL;
 // Work around mistake in GLIB 2.72 (fixed in 2.73) see:
 // https://gitlab.gnome.org/GNOME/glib/-/commit/a638b2bbd11221c3ebb89769ae18a8c3131d47a3
 // However would still need a check for GLIB 2.72 (since our minimum is meant to be 2.44)
-//#if !GLIB_CHECK_VERSION(2,73,0)
-#include <gio/gunixconnection.h>
-//#endif
+#if !GLIB_CHECK_VERSION(2,73,0)
+#include <gio/gunixsocketaddress.h>
+#endif
 static GSocketAddress* get_socket_address(void)
 {
 	// A per user socket name
