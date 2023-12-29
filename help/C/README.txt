@@ -1,6 +1,8 @@
 # How to generate HTML from the xml:
-#xmlto xhtml -m config.xsl index.docbook
+xmlto html -m config.xsl index.docbook
 # ATM config is setup for a single page - index.html
+# then copy the generated *.html files and all files from figures/ into the version to upload
+# (e.g. into viking-gps.github.io)
 
 # To generate a block of text for the Wiki:
 #html2wiki --dialect=MediaWiki \
