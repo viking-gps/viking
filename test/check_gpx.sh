@@ -55,7 +55,8 @@ shortfile1=./shorty1.gpx
 head -n 50 $srcdir/Stonehenge.gpx > $shortfile1
 # Works but returns warning code
 ./test_file_load $shortfile1
-if [ $? != 2 ]; then
+result=$?
+if [ $result != 2 ]; then
   echo "gpx track read failure unexpected value=$result"
   exit 1
 fi
@@ -67,7 +68,8 @@ shortfile2=./shorty2.gpx
 head -n 50 $srcdir/WaypointSymbols.gpx > $shortfile2
 # Works but returns warning code
 ./test_file_load $shortfile2
-if [ $? != 2 ]; then
+result=$?
+if [ $result != 2 ]; then
   echo "gpx waypoint read failure unexpected value=$result"
   exit 1
 fi
