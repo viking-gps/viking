@@ -1757,14 +1757,8 @@ static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values 
       GtkWidget *w3 = ww1[OFFSET + PARAM_EXTL];
       VikFileEntry *vfe = VIK_FILE_ENTRY(w1);
       const gchar *file_name = vik_file_entry_get_filename ( vfe );
-      if ( w1 ) {
-        gtk_widget_set_sensitive ( w1, sensitive );
-        if ( sensitive && strlen( file_name ) == 0)
-            choose_file(VIK_FILE_ENTRY(w1));
-      }
+      if ( w1 ) gtk_widget_set_sensitive ( w1, sensitive );
       if ( w2 ) gtk_widget_set_sensitive ( w2, sensitive );
-      if ( w3 && strlen ( file_name ) == 0 && vlpd.u != VIK_TRW_LAYER_EXTERNAL_NO_WRITE )
-        gtk_combo_box_text_remove ( GTK_COMBO_BOX_TEXT(w3), VIK_TRW_LAYER_EXTERNAL_NO_WRITE );
     }
     default: break;
   }
