@@ -2080,8 +2080,7 @@ static void gpx_write_header( FILE *f, VikTrwLayer *vtl, GpxWritingContext *cont
     version = context->options->version;
 
   if ( version == GPX_V1_1 ) {
-    fprintf(f, "<gpx version=\"1.1\"\n");
-    fprintf(f, "creator=\"%s\"\n", creator);
+    fprintf(f, "<gpx version=\"1.1\" creator=\"%s\" ", creator);
     // If we already have a ready to use header then use that
     gchar *header = NULL;
     if ( vtl )
@@ -2098,11 +2097,9 @@ static void gpx_write_header( FILE *f, VikTrwLayer *vtl, GpxWritingContext *cont
                  "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
                  "xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v2 http://www.garmin.com/xmlschemas/TrackPointExtensionv2.xsd http://www.garmin.com/xmlschemas/PowerExtensionv1.xsd\">\n");
   } else {
-    fprintf(f, "<gpx version=\"1.0\"\n");
-    fprintf(f, "creator=\"%s\"\n", creator);
-    fprintf(f,"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-              "xmlns=\"http://www.topografix.com/GPX/1/0\"\n"
-              "xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">\n");
+    fprintf(f, "<gpx version=\"1.0\" creator=\"%s\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+              " xmlns=\"http://www.topografix.com/GPX/1/0\""
+              " xsi:schemaLocation=\"http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd\">\n", creator);
   }
   g_free(creator);
 }
