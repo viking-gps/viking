@@ -176,13 +176,29 @@ This also enables some extra information features in the GUI itself, primarily o
 </tgroup>
 </table>
 
-<variablelist>
-  <varlistentry><term></term><listitem><para>Internal Map Ids:</para></listitem></varlistentry>
-  <varlistentry><term></term><listitem><para>OSM Mapnik = 13</para></listitem></varlistentry>
-  <varlistentry><term></term><listitem><para>OSM Cycle = 17</para></listitem></varlistentry>
-  <varlistentry><term></term><listitem><para>OSM Transport = 20</para></listitem></varlistentry>
-  <varlistentry><term></term><listitem><para>OSM Humanitarian = 22</para></listitem></varlistentry>
-</variablelist>
+<para>Internal Map Ids:</para>
+<itemizedlist>
+  <!-- Alphabetically sorted -->
+  <listitem><para>4UMaps = 801</para></listitem><!--maps.xml-->
+  <listitem><para>Bing Aerial = 212</para></listitem><!--map_ids.h-->
+  <listitem><para>Blue Marble = 15</para></listitem><!--map_ids.h-->
+  <listitem><para>CalTopo = 29</para></listitem><!--maps.xml-->
+  <listitem><para>CyclOSM = 65</para></listitem><!--maps.xml-->
+  <listitem><para>pnvkarte Public Transport = 101</para></listitem><!--maps.xml-->
+  <listitem><para>OpenSeaMap = 600</para></listitem><!--maps.xml.h-->
+  <listitem><para>OpenTopo = 901 (current default)</para></listitem><!--map_ids.h-->
+  <listitem><para>OSM Cycle = 17</para></listitem><!--map_ids.h-->
+  <listitem><para>OSM Humanitarian = 22</para></listitem><!--map_ids.h-->
+  <listitem><para>OSM Mapnik = 13</para></listitem><!--map_ids.h-->
+  <listitem><para>OSM Transport = 20</para></listitem><!--map_ids.h-->
+  <listitem><para>OSM GPS Traces = 33</para></listitem><!--maps.xml-->
+  <listitem><para>Waymarked Trails Cycling = 702</para></listitem><!--maps.xml-->
+  <listitem><para>Waymarked Trails Hiking = 701</para></listitem><!--maps.xml-->
+  <listitem><para>Waymarked Trails MTB = 703</para></listitem><!--maps.xml-->
+  <listitem><para>Waymarked Trails Riding = 705</para></listitem><!--maps.xml-->
+  <listitem><para>Waymarked Trails Skating = 704</para></listitem><!--maps.xml-->
+  <listitem><para>Waymarked Trails Winter = 706</para></listitem><!--maps.xml-->
+</itemizedlist>
 
 <para>
 An example to open at a specified location with an OSM Mapnik map layer:
