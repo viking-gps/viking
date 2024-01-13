@@ -711,6 +711,7 @@ GdkPixbuf *ui_get_icon ( const gchar *name, guint size )
  */
 void ui_cr_draw_layout ( cairo_t *cr, gdouble xx, gdouble yy, PangoLayout *layout )
 {
+	g_return_if_fail ( cr != NULL );
 	cairo_move_to ( cr, xx, yy );
 	pango_cairo_show_layout ( cr, layout );
 }
@@ -723,9 +724,13 @@ void ui_cr_draw_layout ( cairo_t *cr, gdouble xx, gdouble yy, PangoLayout *layou
  *
  * cairo_stroke() should be called after using this
  *  (or after consecutive calls to this are done as a group)
+ *
+ * cr must not be NULL;
+ *  this test is not checked here, as the caller should be performing it anyway
  */
 void ui_cr_draw_line ( cairo_t *cr, gdouble x1, gdouble y1, gdouble x2, gdouble y2 )
 {
+	//g_return_if_fail ( cr != NULL ); // Specifically not done here
 	cairo_move_to ( cr, x1, y1 );
 	cairo_line_to ( cr, x2, y2 );
 }
@@ -747,15 +752,17 @@ void ui_cr_draw_rectangle ( cairo_t *cr, gboolean fill, gdouble xx, gdouble yy, 
 
 void ui_cr_set_color ( cairo_t *cr, const gchar *name )
 {
-  GdkColor color;
-  if ( gdk_color_parse(name, &color) ) {
-    gdk_cairo_set_source_color ( cr, &color );
-  }
+	g_return_if_fail ( cr != NULL );
+	GdkColor color;
+	if ( gdk_color_parse(name, &color) ) {
+		gdk_cairo_set_source_color ( cr, &color );
+	}
 }
 
 // Generic dashed line
 void ui_cr_set_dash ( cairo_t *cr )
 {
+	g_return_if_fail ( cr != NULL );
 	// ATM assume this doesn't need to be multiplied by the vvp->scale
 	static const double dashed[] = {4.0};
 	cairo_set_dash ( cr, dashed, 1, 0 );

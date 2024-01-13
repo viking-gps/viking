@@ -1599,6 +1599,7 @@ void vik_viewport_draw_line ( VikViewport *vvp, GdkGC *gc, gint x1, gint y1, gin
     /*** clipping, yeah! ***/
     a_viewport_clip_line ( &x1, &y1, &x2, &y2 );
 #if GTK_CHECK_VERSION (3,0,0)
+    g_return_if_fail ( gc != NULL );
     cairo_set_line_width ( gc, thickness );
     if ( gcolor )
       gdk_cairo_set_source_color ( gc, gcolor );
@@ -1618,6 +1619,7 @@ void vik_viewport_draw_rectangle ( VikViewport *vvp, GdkGC *gc, gboolean filled,
   // Using 32 as half the default waypoint image size, so this draws ensures the highlight gets done
   if ( x1 > -32 && x1 < vvp->width + 32 && y1 > -32 && y1 < vvp->height + 32 ) {
 #if GTK_CHECK_VERSION (3,0,0)
+    g_return_if_fail ( gc != NULL );
     if ( gcolor )
       gdk_cairo_set_source_color ( gc, gcolor );
     ui_cr_draw_rectangle ( gc, filled, x1, y1, x2, y2 );
@@ -1662,6 +1664,7 @@ void vik_viewport_draw_pixbuf ( VikViewport *vvp, GdkPixbuf *pixbuf, gint src_x,
 void vik_viewport_draw_arc ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint x, gint y, gint width, gint height, gint angle1, gint angle2, GdkColor *gcolor )
 {
 #if GTK_CHECK_VERSION (3,0,0)
+  g_return_if_fail ( gc != NULL );
   // ATM Only used for drawing circles - so height is ignored
   //  other arc drawing usage also currently uses width==height
   if ( gcolor )
@@ -1686,6 +1689,7 @@ void vik_viewport_draw_arc ( VikViewport *vvp, GdkGC *gc, gboolean filled, gint 
 void vik_viewport_draw_polygon ( VikViewport *vvp, GdkGC *gc, gboolean filled, GdkPoint *points, gint npoints, GdkColor *gcolor )
 {
 #if GTK_CHECK_VERSION (3,0,0)
+  g_return_if_fail ( gc != NULL );
   if ( gcolor )
     gdk_cairo_set_source_color ( gc, gcolor );
   // Using cairo no obvious draw polygon method,

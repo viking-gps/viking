@@ -11302,6 +11302,9 @@ static VikLayerToolFuncStatus tool_edit_track_move ( VikTrwLayer *vtl, GdkEventM
     w1 = vik_viewport_get_width(vvp);
     h1 = vik_viewport_get_height(vvp);
 
+    gint x1, y1;
+    vik_viewport_coord_to_screen ( vvp, &(last_tpt->coord), &x1, &y1 );
+
 #if GTK_CHECK_VERSION (3,0,0)
     if ( te->gc ) {
       cairo_surface_t *surface = vik_viewport_surface_tool_get ( te->vvp );
@@ -11317,39 +11320,38 @@ static VikLayerToolFuncStatus tool_edit_track_move ( VikTrwLayer *vtl, GdkEventM
     else
       ui_cr_clear ( te->gc );
 
-    ui_cr_set_color ( te->gc, "red" );
-    cairo_set_line_width ( te->gc, 2*vik_viewport_get_scale(te->vvp) );
-    ui_cr_set_dash ( te->gc );
+    if ( te->gc ) {
+      ui_cr_set_color ( te->gc, "red" );
+      cairo_set_line_width ( te->gc, 2*vik_viewport_get_scale(te->vvp) );
+      ui_cr_set_dash ( te->gc );
 
-    gint x1, y1;
-    vik_viewport_coord_to_screen ( vvp, &(last_tpt->coord), &x1, &y1 );
-    ui_cr_draw_line ( te->gc, x1, y1, event->x, event->y );
-    cairo_stroke ( te->gc );
+      ui_cr_draw_line ( te->gc, x1, y1, event->x, event->y );
+      cairo_stroke ( te->gc );
 
-    //
-    // Display of the distance 'tooltip' during track creation is controlled by a preference
-    //
-    if ( a_vik_get_create_track_tooltip() ) {
+      //
+      // Display of the distance 'tooltip' during track creation is controlled by a preference
+      //
+      if ( a_vik_get_create_track_tooltip() ) {
 
-      gchar *str = distance_string (distance);
+        gchar *str = distance_string (distance);
 
-      PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
-      pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(vvp))->font_desc);
-      pango_layout_set_text (pl, str, -1);
-      gint wd, hd;
-      pango_layout_get_pixel_size ( pl, &wd, &hd );
+        PangoLayout *pl = gtk_widget_create_pango_layout (GTK_WIDGET(vvp), NULL);
+        pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(vvp))->font_desc);
+        pango_layout_set_text (pl, str, -1);
+        gint wd, hd;
+        pango_layout_get_pixel_size ( pl, &wd, &hd );
 
-      gint xd,yd;
-      // offset from cursor a bit depending on font size
-      xd = event->x + 10*vik_viewport_get_scale(vvp);
-      yd = event->y - hd;
+        gint xd,yd;
+        // offset from cursor a bit depending on font size
+        xd = event->x + 10*vik_viewport_get_scale(vvp);
+        yd = event->y - hd;
 
-      ui_cr_label_with_bg ( te->gc, xd, yd, wd, hd, pl );
+        ui_cr_label_with_bg ( te->gc, xd, yd, wd, hd, pl );
 
-      g_object_unref ( G_OBJECT ( pl ) );
-      g_free (str);
+        g_object_unref ( G_OBJECT ( pl ) );
+        g_free (str);
+      }
     }
-
     gtk_widget_queue_draw ( GTK_WIDGET(vvp) );
 #else
     static GdkPixmap *pixmap = NULL;
@@ -11369,9 +11371,6 @@ static VikLayerToolFuncStatus tool_edit_track_move ( VikTrwLayer *vtl, GdkEventM
                        0, 0, 0, 0, -1, -1);
 
     draw_sync_t *passalong;
-    gint x1, y1;
-
-    vik_viewport_coord_to_screen ( vvp, &(last_tpt->coord), &x1, &y1 );
 
     // FOR SCREEN OVERLAYS WE MUST DRAW INTO THIS PIXMAP (when using the reset method)
     //  otherwise using vik_viewport_draw_* functions puts the data into the base pixmap,
