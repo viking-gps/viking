@@ -416,12 +416,13 @@ typedef struct tag_mapping_ext {
 // NB Could use a hashtable for this lookup but there's not many keys
 //  nor is this performed too often, so keep similarily to the rest of this file
 // 'gpxdata:*' is typically from Cluetrust extensions gpxdata10.xsd
-// 'gpxtpx:*; is typically from Garmin extensions TrackPointExtensionv1.xsd
+// 'gpxtpx:*; is typically from Garmin extensions TrackPointExtensionv2.xsd
 // gpxx:TrackExtension/gpxx:DisplayColor Garmin GpxExtensionsv3.xsd
 // pwr:PowerInWatts / gpxpx:PowerInWatts Garmin PowerExtensionv1.xsd
 // gpxd:color JOSM gpx-drawing-extensions-1.0.xsd
-// 'ns3:*'; is typically from Garmin Connect
-// gpxdata:lap - Cluetrust_gpxdata10.xsd
+// 'ns3:*'; is typically from Garmin Connect TrackPointExtensionv1.xsd
+// osmand: - Unknown .xsd. Also see https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx
+// x: Unknown .xsd. From https://www.gpsessentials.com/
 static tag_mapping_ext extension_trackpoints_map[] = {
   { ext_tp_heart_rate, "gpxtpx:hr" },
   { ext_tp_heart_rate, "gpxdata:hr" },
@@ -431,8 +432,11 @@ static tag_mapping_ext extension_trackpoints_map[] = {
   { ext_tp_cadence, "ns3:cad" },
   { ext_tp_speed, "gpxdata:speed" },
   { ext_tp_speed, "gpxtpx:speed" },
+  { ext_tp_speed, "osmand:speed" },
+  { ext_tp_speed, "x:speed" },
   { ext_tp_course, "gpxtpx:course" },
   { ext_tp_course, "gpxdata:course" },
+  { ext_tp_course, "osmand:heading" },
   { ext_tp_temp, "gpxdata:temp" },
   { ext_tp_temp, "gpxtpx:atemp" },
   { ext_tp_temp, "ns3:atemp" },
