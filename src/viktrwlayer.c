@@ -1754,9 +1754,6 @@ static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values 
       GtkWidget **ww2 = values[UI_CHG_LABELS];
       GtkWidget *w1 = ww1[OFFSET + PARAM_EXTF];
       GtkWidget *w2 = ww2[OFFSET + PARAM_EXTF];
-      GtkWidget *w3 = ww1[OFFSET + PARAM_EXTL];
-      VikFileEntry *vfe = VIK_FILE_ENTRY(w1);
-      const gchar *file_name = vik_file_entry_get_filename ( vfe );
       if ( w1 ) gtk_widget_set_sensitive ( w1, sensitive );
       if ( w2 ) gtk_widget_set_sensitive ( w2, sensitive );
     }
