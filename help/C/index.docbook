@@ -738,6 +738,8 @@ See the <link linkend="method_b">Getting Started</link> section for more info ab
   For modern (circa 2015 onwards) wearable devices such as Garmin Forerunner, Fitbit, Suuntu etc...,
   often have their own propriety binary (often wireless) protocols - not compatibile with GPSBabel and thus not &appname; directly either.
   You would need to use their programs / apps to export to an open standard (such as GPX) for use with &appname;.
+  Some devices, such as many Garmin Forerunner devices - when physically connected to a PC via a USB cable,
+  will offer a file system and then you can open any supported files on them, such as in this case FIT files in the <filename>GARMIN/Activity</filename> directory.
 </para>
 </note>
 </section>
