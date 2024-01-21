@@ -274,6 +274,8 @@ struct _VikWindow {
 
   gdouble pinch_zoom_begin;
   gdouble pinch_zoom_last;
+
+  guint number_loaded; // Very simple tracker
 };
 
 enum {
@@ -4970,6 +4972,7 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
       // NB No break, carry on to redraw
     //case LOAD_TYPE_OTHER_SUCCESS:
     default:
+      vw->number_loaded++;
       success = TRUE;
       // When LOAD_TYPE_OTHER_SUCCESS *only*, this will maintain the existing Viking project
       restore_original_filename = ! restore_original_filename;
@@ -4987,6 +4990,22 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
     // Draw even if the last load unsuccessful, as may have successful loads in a list of files
     draw_update ( vw );
     vik_layers_panel_calendar_update ( vw->viking_vlp );
+
+    // For other file types and only for the very first loaded file (e.g. the common/simple use case),
+    //  put in the filename in the title but inside '[]' to distinguish between project files
+    // Thus for example, useful when running multiple Viking instances to tell them apart
+    if ( !vw->filename ) {
+      if ( vw->number_loaded == 1 ) {
+        gchar *title = g_strdup_printf ( "[%s] - Viking", a_file_basename(filename) );
+        gtk_window_set_title ( GTK_WINDOW(vw), title );
+        g_free ( title );
+      } else {
+        if ( vw->modified )
+          set_modified_title ( vw );
+        else
+          window_set_filename ( vw, NULL );
+      }
+    }
   }
   // Always clear cursor (e.g. incase first & last loads are on different VikWindows)
   vik_window_clear_busy_cursor ( vw );
