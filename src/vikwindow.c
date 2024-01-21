@@ -4185,6 +4185,11 @@ static void help_about_cb ( GtkAction *a, VikWindow *vw )
   a_dialog_about(GTK_WINDOW(vw));
 }
 
+static void help_maps_info_cb ( GtkAction *a, VikWindow *vw )
+{
+  vik_maps_layer_info_dialog(GTK_WINDOW(vw));
+}
+
 static void help_cache_info_cb ( GtkAction *a, VikWindow *vw )
 {
   // NB: No i18n as this is just for debug
@@ -6440,6 +6445,7 @@ static GtkActionEntry entries[] = {
   { "HelpEntry", GTK_STOCK_HELP,         N_("_Help"),                         "F1",         N_("Help"),                                     (GCallback)help_help_cb },
   { "News",      GTK_STOCK_FILE,         N_("_News"),                         NULL,         N_("News"),                                     (GCallback)help_news_cb },
   { "About",     GTK_STOCK_ABOUT,        N_("_About"),                        NULL,         N_("About"),                                    (GCallback)help_about_cb },
+  { "MapsInfo",  GTK_STOCK_INFO,         N_("_Maps Information"),             NULL,         N_("Maps Information"),                         (GCallback)help_maps_info_cb },
 };
 
 static GtkActionEntry debug_entries[] = {

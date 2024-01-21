@@ -2994,3 +2994,60 @@ void vik_maps_layer_download ( VikMapsLayer *vml, VikViewport *vvp, gboolean onl
     // Redownload everything
     maps_layer_redownload_all_onscreen_maps ( values );
 }
+
+/**
+ * Show the Map Ids currently being used by the program
+ * Uses a sortable list view
+ */
+void vik_maps_layer_info_dialog ( GtkWindow *parent )
+{
+  //for ( guint nn = 0; nn < NUM_MAP_TYPES; nn++ )
+  //  g_printf ( "%s: %d\n", MAPS_LAYER_NTH_LABEL(nn), MAPS_LAYER_NTH_ID(nn) );
+
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Maps Information"),
+                                                    parent,
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_CLOSE,
+                                                    GTK_RESPONSE_CLOSE,
+                                                    NULL );
+
+  GtkListStore *store = gtk_list_store_new ( 2, G_TYPE_STRING, G_TYPE_INT );
+  GtkTreeIter iter;
+  for ( guint nn = 0; nn < NUM_MAP_TYPES; nn++ ) {
+    gtk_list_store_append ( store, &iter );
+    gtk_list_store_set ( store, &iter,
+                         0, MAPS_LAYER_NTH_LABEL(nn),
+                         1, MAPS_LAYER_NTH_ID(nn),
+                         -1 );
+  }
+
+  GtkWidget *view = gtk_tree_view_new();
+  GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+  GtkTreeViewColumn *column;
+  column = gtk_tree_view_column_new_with_attributes ( _("Name"), renderer, "text", 0, NULL );
+  gtk_tree_view_column_set_sort_column_id ( column, 0 );
+  gtk_tree_view_append_column ( GTK_TREE_VIEW(view), column );
+  column = gtk_tree_view_column_new_with_attributes ( _("Id"), renderer, "text", 1, NULL );
+  gtk_tree_view_column_set_sort_column_id ( column, 1 );
+  gtk_tree_view_append_column ( GTK_TREE_VIEW(view), column );
+
+  gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(store) );
+  gtk_tree_view_set_rules_hint ( GTK_TREE_VIEW(view), TRUE );
+
+  GtkWidget *scrolledwindow = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
+  gtk_container_add ( GTK_CONTAINER(scrolledwindow), view );
+
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), scrolledwindow, TRUE, TRUE, 0 );
+  // Ensure a reasonable number of items are shown, but let the width be automatically sized
+  gdouble scale = vik_viewport_get_scale ( NULL );
+  gtk_widget_set_size_request ( dialog, -1, 400*scale );
+
+  gtk_widget_show_all ( dialog );
+
+  (void)gtk_dialog_run ( GTK_DIALOG(dialog) );
+
+  gtk_widget_destroy ( dialog );
+
+  g_object_unref ( store );
+}
