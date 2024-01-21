@@ -212,8 +212,9 @@ static void vik_goto_search_response ( struct VikGotoSearchWinData *data, gint r
 
     if ( ans == 0 ) {
       // make results visible
-      gtk_widget_set_size_request( GTK_WIDGET(data->scroll_view), 320, 240 );
-      gtk_widget_set_size_request( GTK_WIDGET(data->results_view), 320, 240 );
+      gdouble scale = vik_viewport_get_scale ( NULL );
+      gtk_widget_set_size_request( GTK_WIDGET(data->scroll_view), 320*scale, 240*scale );
+      gtk_widget_set_size_request( GTK_WIDGET(data->results_view), 320*scale, 240*scale );
       gtk_widget_show ( data->scroll_view );
 
       GtkListStore *results_store = gtk_list_store_new ( VIK_GOTO_SEARCH_NUM_COLS,

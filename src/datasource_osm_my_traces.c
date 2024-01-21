@@ -451,7 +451,8 @@ static GList *select_from_list (GtkWindow *parent, GList *list, const gchar *tit
 	gtk_box_pack_start (GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), scrolledwindow, TRUE, TRUE, 0);
 
 	// Ensure a reasonable number of items are shown, but let the width be automatically sized
-	gtk_widget_set_size_request ( dialog, -1, 400) ;
+	gdouble scale = vik_viewport_get_scale ( NULL );
+	gtk_widget_set_size_request ( dialog, -1, 400*scale );
 	gtk_widget_show_all ( dialog );
 
 	if ( response_w )
