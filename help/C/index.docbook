@@ -229,6 +229,26 @@ This is set via the <xref linkend="prefs"/> <menuchoice><guimenu>Toolbar</guimen
 </section>
 
 <section id="GeneralConcepts"><title>General Concepts</title>
+<section id="prj_file" xreflabel="Viking Project File"><title>Project File</title>
+<para>
+  &appname; has it's own file type traditionally marked by the <emphasis>.vik</emphasis> file extension - known as the &appname; Project File.
+  This is a plain text file saving all information of the current window including the view location, zoom level, projection type and then all the layer information (aggregates, maps, tracks, waypoints, etc...).
+</para>
+<para>
+  When &appname; is opened (without specifying any Project Files), it will use a default Project File.
+</para>
+<para>
+  The Project File name is shown in the window title bar.
+</para>
+<para>
+  To indicate when changes have been made the Project File name is preceded by an '*'.
+</para>
+<para>
+  Any Non-&appname; file types are loaded into the current Project File.
+  If just one Non-&appname; file is opened into the default (empty) Project File, then this filename is shown in the window title bar but inside a pair of brackets '[Like This]',
+   to indicate that it is not a Project File name.
+</para>
+</section>
 <section id="gc_layers" xreflabel="Layers"><title>Layers</title>
 <para>
 <emphasis>Layers</emphasis> is concept one may know from powerful graphics editors such as <application>Photoshop</application> or <application>GIMP</application>.
@@ -504,15 +524,12 @@ The number of track points is normally alot higher (e.g. 500 or typically with l
 
 </section><!--General Concepts End-->
 
-<section id="FileTypes" ><title>File Types and the Main Window</title>
-
+<section><title>File Types and the Main Window</title>
+<section id="FileTypes" xreflabel="File Types" ><title>File Types</title>
 <para>
-&appname; has it's own file type traditionally marked by the <emphasis>.vik</emphasis> file extension.
-This is a plain text file saving all information of the current window including the view location, zoom level, projection type and then all the layer information (aggregates, maps, tracks, waypoints, etc...).
-</para>
-<para>
-  Besides it's own file type, &appname; can open (and save to via export methods) various file types including:
+  &appname; supports the following main geo-data file types:
   <itemizedlist>
+    <listitem><para><xref linkend="prj_file"/></para></listitem>
     <listitem><para>GPX</para></listitem>
     <listitem><para>FIT</para></listitem>
     <listitem><para>KML</para></listitem>
@@ -527,6 +544,9 @@ The arbitrary extension information is not saved in .vik format files.
 <para>
 Specific GPX 1.1 extensions such as heart rate, cadence, temperature and power are supported for viewing (including overview graphs) and these values will also be saved in .vik format files.
 </para>
+<para>
+For FIT, KML and TCX - writing is only available via Export methods, which use <application>GPSBabel</application>.
+</para>
 </note>
 <para>
   Also available is reading compressed files and loading any supported geodata files contained within. The compressed file types supported include:
@@ -538,23 +558,24 @@ Specific GPX 1.1 extensions such as heart rate, cadence, temperature and power a
   </itemizedlist>
 </para>
 <para>
-By default &appname; opens a window centered on the home location with the default <xref linkend="Map"/>. This behaviour can be changed by the <xref linkend="prefs_startup"/>.
-Each window contains menus, a toolbar, a viewport, layers panel and a statusbar.
-Each section (apart from the viewport) can be hidden using the <xref linkend="shortcut_keys"/> or from the
-<menuchoice><guimenu>View</guimenu><guisubmenu>Show</guisubmenu></menuchoice> choices.
-</para>
-<para>
-One may consider each &appname; window to be a separate project - each with it's project <emphasis>Viking</emphasis> file.
-However generally one window is enough for most purposes!
-</para>
-<para>
-  To indicate when changes have been made the name is preceded by an '*'.
-</para>
-<para>
 Several operations apply at the window level as follows next.
 Also see <xref linkend="tools"/> for the operational modes that generally work in conjunction with a selected layer.
 </para>
-
+</section>
+<section><title>Main Window</title>
+<para>
+  When &appname; is opened (without specifying any Project Files), it will open a window centered on the home location with the default <xref linkend="Map"/>. 
+  This behaviour can be changed by the <xref linkend="prefs_startup"/>.
+</para>
+<para>
+  Each window contains menus, a toolbar, a viewport, layers panel and a statusbar.
+  Each section (apart from the viewport) can be hidden using the <xref linkend="shortcut_keys"/> or from the
+  <menuchoice><guimenu>View</guimenu><guisubmenu>Show</guisubmenu></menuchoice> choices.
+</para>
+<para>
+  Each &appname; window is a separate project - each with it's own <xref linkend="prj_file"/>.
+</para>
+</section>
 <section><title>New</title>
 <para>
 Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>New</guisubmenu></menuchoice> menu and on the toolbar <guibutton>New</guibutton>.
