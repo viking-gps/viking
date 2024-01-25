@@ -569,6 +569,42 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babel
   return ret;
 }
 
+/**
+ * a_babel_gpx_export:
+ *
+ * Simple invocation using an existing source file in GPX format
+ *
+ * Returns: %TRUE on successful invocation of the GPSBabel command
+ */
+gboolean a_babel_gpx_export ( const char *babelargs, const char *infile, const char *outfile )
+{
+  gboolean ret = FALSE;
+  gchar *args[64];
+  if ( gpsbabel_loc ) {
+    gchar **sub_args = g_strsplit ( babelargs, " ", 0 );
+    int i = 0;
+    args[i++] = gpsbabel_loc;
+    args[i++] = "-i";
+    args[i++] = "gpx";
+    args[i++] = "-f";
+    args[i++] = (char*)infile;
+    for (int j = 0; sub_args[j]; j++)
+      // some version of gpsbabel can not take extra blank arg
+      if (sub_args[j][0] != '\0')
+        args[i++] = sub_args[j];
+    args[i++] = "-F";
+    args[i++] = (char*)outfile;
+    args[i] = NULL;
+
+    ret = babel_general_convert ( NULL, args, NULL );
+
+    g_strfreev ( sub_args );
+  } else
+    g_critical ( "gpsbabel not found" );
+
+  return ret;
+}
+
 static void set_mode(BabelMode *mode, gchar *smode)
 {
   mode->waypointsRead  = smode[0] == 'r';

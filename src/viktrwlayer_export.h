@@ -31,7 +31,7 @@ void vik_trw_layer_export ( VikLayer *vl, const gchar *title, const gchar* defau
 
 void vik_trw_layer_export_external_gpx ( VikTrwLayer *vtl, const gchar* external_program );
 
-void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name );
+void vik_trw_layer_export_gpsbabel ( VikLayer *vl, const gchar *title, const gchar* default_name, const gchar* gpx_file_name );
 
 void vik_trw_layer_export_init ();
 

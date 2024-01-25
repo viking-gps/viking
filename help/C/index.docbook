@@ -3086,6 +3086,14 @@ Using this forces External Layers in this Aggregate Layer to be loaded and so co
 <para>This opens a dialog choose a name and location for a new GPX file from all visible <xref linkend="TrackWaypoint"/> layers in this Aggregate Layer into a single GPX file.</para>
 </listitem>
 </varlistentry>
+<varlistentry>
+<term><guilabel>Export via GPSBabel...</guilabel></term>
+<listitem>
+  <para>This opens a dialog to choose options for the export using <application>GPSBabel</application>.
+    Internally it converts all the geo-data in the Aggregate layer into a single temporary GPX file for use in exporting to whatever format you choose.</para>
+  <para>It is only available if <application>GPSBabel</application> is detected.</para>
+</listitem>
+</varlistentry>
 </variablelist>
 </section>
 

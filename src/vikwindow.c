@@ -5303,7 +5303,7 @@ static void export_to_gpx ( GtkAction *a, VikWindow *vw )
 static void export_to_single_gpx ( GtkAction *a, VikWindow *vw )
 {
   VikAggregateLayer *top = vik_layers_panel_get_top_layer ( vw->viking_vlp );
-  vik_aggregate_layer_export_gpx_setup ( top );
+  vik_aggregate_layer_export_gpx_setup ( top, FALSE );
 }
 
 static void export_to_kml ( GtkAction *a, VikWindow *vw )

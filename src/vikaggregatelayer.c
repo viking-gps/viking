@@ -30,6 +30,7 @@
 #include "background.h"
 #include "gpx.h"
 #include "dir.h"
+#include "babel.h"
 #ifdef HAVE_SQLITE3_H
 #include "sqlite3.h"
 #endif
@@ -1703,7 +1704,16 @@ static void aggregate_layer_file_load ( menu_array_values values )
 static void aggregate_layer_export_gpx ( menu_array_values values )
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
-  vik_aggregate_layer_export_gpx_setup ( val );
+  vik_aggregate_layer_export_gpx_setup ( val, FALSE );
+}
+
+/**
+ *
+ */
+static void aggregate_layer_export_gpsbabel ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
+  vik_aggregate_layer_export_gpx_setup ( val, TRUE );
 }
 
 /**
@@ -3205,6 +3215,8 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   (void)vu_menu_add_item ( file_submenu, _("Save _Layer As..."), GTK_STOCK_SAVE, G_CALLBACK(aggregate_layer_save_layer_as_cb), values );
   (void)vu_menu_add_item ( file_submenu, _("_Append File..."), GTK_STOCK_ADD, G_CALLBACK(aggregate_layer_file_load), values );
   (void)vu_menu_add_item ( file_submenu, _("_Export as GPX..."), GTK_STOCK_CONVERT, G_CALLBACK(aggregate_layer_export_gpx), values );
+  if ( a_babel_available () )
+    (void)vu_menu_add_item ( file_submenu, _("Export via GPSBabel..."), GTK_STOCK_CONVERT, G_CALLBACK(aggregate_layer_export_gpsbabel), values );
 
   (void)aggregate_build_submenu_tac ( val, menu, values );
 
@@ -3546,11 +3558,14 @@ guint vik_aggregate_layer_count ( VikAggregateLayer *val )
 
 /**
  * vik_aggregate_layer_export_gpx_setup:
+ * @val:         The #VikAggregate layer to be exported
+ * @to_gpsbabel: Whether the export is via GPSBabel or otherwise to a GPX File
  *
- * Export all visible VikTrwLayers in this aggregate into a GPX file
+ * Export all visible VikTrwLayers in this aggregate vai GPSBabel or into a GPX file
  * This checks there is something to save before calling other functions to do the work
+ *
  */
-void vik_aggregate_layer_export_gpx_setup ( VikAggregateLayer *val )
+void vik_aggregate_layer_export_gpx_setup ( VikAggregateLayer *val, gboolean to_gpsbabel )
 {
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
 
@@ -3562,23 +3577,44 @@ void vik_aggregate_layer_export_gpx_setup ( VikAggregateLayer *val )
   }
   g_list_free ( layers );
 
-  // This export function mostly gets the file to save
-  //  and will call the vik_aggregate_layer_export_gpx_main() to do the actual conversion work
-  gchar *auto_save_name = append_file_ext ( VIK_LAYER(val)->name, FILE_TYPE_GPX );
-  vik_trw_layer_export ( VIK_LAYER(val), _("Export to GPX"), auto_save_name, NULL, FILE_TYPE_GPX );
-  g_free ( auto_save_name );
+  if ( to_gpsbabel ) {
+    gchar *tmpGPXname = NULL;
+    int fd = g_file_open_tmp ( "viking_XXXXXX.gpx", &tmpGPXname, NULL );
+    if ( fd >= 0 ) {
+      // Write to temporary GPX file
+      FILE *ff = fdopen ( fd, "w" );
+      (void)vik_aggregate_layer_export_gpx_main ( val, ff, NULL );
+      // Now start the export, using the source GPX just generated
+      const gchar *export_filename = vik_layer_get_name ( VIK_LAYER(val) );
+      vik_trw_layer_export_gpsbabel ( VIK_LAYER(val), _("Export Aggregate"), export_filename, tmpGPXname );
+      (void)g_remove ( tmpGPXname );
+    } else {
+      g_warning ( "%s: Failed to open temporary GPX file=%s", __FUNCTION__, tmpGPXname );
+    }
+  } else {
+    // This export function mostly gets the file to save
+    //  and will call the vik_aggregate_layer_export_gpx_main() to do the actual conversion work
+    gchar *auto_save_name = append_file_ext ( VIK_LAYER(val)->name, FILE_TYPE_GPX );
+    vik_trw_layer_export ( VIK_LAYER(val), _("Export to GPX"), auto_save_name, NULL, FILE_TYPE_GPX );
+    g_free ( auto_save_name );
+  }
 }
 
 /**
  * vik_aggregate_layer_export_gpx_main:
+ * @val:      The #VikAggregate layer being exported
+ * @ff:       The already opened #FILE to write to; used if defined, otherwise @filename is used
+ * @filename: The filename to save the export to if @ff is NULL.
  *
  * Exports all visible VikTrwLayers in this aggregate into a GPX file
  */
-gboolean vik_aggregate_layer_export_gpx_main ( VikAggregateLayer *val, const gchar *filename )
+gboolean vik_aggregate_layer_export_gpx_main ( VikAggregateLayer *val, FILE *ff, const gchar *filename )
 {
   gboolean ans = TRUE;
 
-  FILE *ff = g_fopen ( filename, "w" );
+  if ( !ff )
+    ff = g_fopen ( filename, "w" );
+
   if ( ff ) {
     GList *vtt = aggregate_layer_track_create_list ( VIK_LAYER(val), GINT_TO_POINTER(1) );
     GList *vtwl = aggregate_layer_waypoint_create_list ( VIK_LAYER(val), GINT_TO_POINTER(1) );

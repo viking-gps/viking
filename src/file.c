@@ -1005,10 +1005,20 @@ gboolean a_file_export ( VikTrwLayer *vtl, const gchar *filename, VikFileType_t 
 
 /**
  * a_file_export_babel:
+ * @vtl:         If specified, use this layer for the source of the export, otherwise use @gpxfilename for the source.
+ * @gpxfilename: If specified (and no @vtl), use this file as the source for the export.
+ * @filename:    The name of file that will be written to by the export. This must be specified.
+ * @format:      The GPSBabel format type of the export. This must be specified.
+ * @suboptions:  Further detailed command line options for the export. Optional.
+ *
+ * Returns if the export was successful or not
  */
-gboolean a_file_export_babel ( VikTrwLayer *vtl, const gchar *filename, const gchar *format,
+gboolean a_file_export_babel ( VikTrwLayer *vtl, const gchar *gpxfilename, const gchar *filename, const gchar *format,
                                gboolean tracks, gboolean routes, gboolean waypoints, const gchar *suboptions )
 {
+  g_return_val_if_fail ( filename != NULL, FALSE );
+  g_return_val_if_fail ( format != NULL, FALSE );
+
   gchar *sopts = NULL;
   if ( suboptions && strlen(suboptions) > 0 ) {
     // Ensure there is a starting comma
@@ -1024,7 +1034,12 @@ gboolean a_file_export_babel ( VikTrwLayer *vtl, const gchar *filename, const gc
                                 routes ? "-r" : "",
                                 waypoints ? "-w" : "",
                                 format, sopts);
-  gboolean result = a_babel_convert_to ( vtl, NULL, args, filename, NULL, NULL );
+  gboolean result = FALSE;
+  if ( vtl )
+    result = a_babel_convert_to ( vtl, NULL, args, filename, NULL, NULL );
+  else if ( gpxfilename )
+    result = a_babel_gpx_export ( args, gpxfilename, filename );
+
   g_free(sopts);
   g_free(args);
   return result;

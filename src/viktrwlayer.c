@@ -4250,7 +4250,7 @@ static void trw_layer_export_geojson ( menu_array_layer values )
 static void trw_layer_export_babel ( gpointer layer_and_vlp[2] )
 {
   const gchar *auto_save_name = vik_layer_get_name(VIK_LAYER(layer_and_vlp[0]));
-  vik_trw_layer_export_gpsbabel ( VIK_TRW_LAYER (layer_and_vlp[0]), _("Export Layer"), auto_save_name );
+  vik_trw_layer_export_gpsbabel ( VIK_LAYER (layer_and_vlp[0]), _("Export Layer"), auto_save_name, NULL );
 }
 
 static void trw_layer_export_external_gpx_1 ( menu_array_layer values )

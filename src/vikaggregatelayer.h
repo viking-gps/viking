@@ -73,8 +73,8 @@ gboolean vik_aggregate_layer_search_date ( VikAggregateLayer *val, gchar *date_s
 
 void vik_aggregate_layer_file_load_complete ( VikAggregateLayer *val );
 
-void vik_aggregate_layer_export_gpx_setup ( VikAggregateLayer *val );
-gboolean vik_aggregate_layer_export_gpx_main ( VikAggregateLayer *val, const gchar *filename );
+void vik_aggregate_layer_export_gpx_setup ( VikAggregateLayer *val, gboolean to_gpsbabel );
+gboolean vik_aggregate_layer_export_gpx_main ( VikAggregateLayer *val, FILE *ff, const gchar *filename );
 
 G_END_DECLS
 

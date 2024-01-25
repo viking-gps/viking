@@ -156,7 +156,7 @@ static gboolean gpx_export ( VikTrwLayer *vtl, const gchar *fn, VikTrack* trk )
 /**
  * vik_trw_layer_export:
  *
- * vl: The #VikLayer to operate on
+ * @vl: The #VikLayer to operate on
  *
  * Note since we now use the #VikLayer type rather than #VikTrwLayer,
  *  this function could be renamed and shifted into the appropriate file.
@@ -222,7 +222,7 @@ void vik_trw_layer_export ( VikLayer *vl, const gchar *title, const gchar* defau
           failed = ! a_file_export ( VIK_TRW_LAYER(vl), fn, file_type, trk, trk ? TRUE : FALSE );
         break;
       case VIK_LAYER_AGGREGATE:
-        failed = ! vik_aggregate_layer_export_gpx_main ( VIK_AGGREGATE_LAYER(vl), fn );
+        failed = ! vik_aggregate_layer_export_gpx_main ( VIK_AGGREGATE_LAYER(vl), NULL, fn );
         break;
       default:
         g_critical ( "%s:%s %d", __FUNCTION__, "Export not expected for layer type", vl->type ); break;
@@ -281,17 +281,37 @@ gboolean BabelMode_is_equal ( BabelMode left, BabelMode right )
            left.routesWrite == right.routesWrite );
 }
 
-void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const gchar* default_name )
+/**
+ * vik_trw_layer_export_gpsbabel:
+ * @vl: The #VikLayer to operate on
+ *
+ * Note we now use the #VikLayer type rather than #VikTrwLayer.
+ * As also supports #VikAggregateLayer type
+ * Similar to vik_trw_layer_export() above
+ */
+void vik_trw_layer_export_gpsbabel ( VikLayer *vl, const gchar *title, const gchar* default_name, const gchar* gpx_file_name )
 {
+  g_return_if_fail ( vl->type == VIK_LAYER_AGGREGATE || vl->type == VIK_LAYER_TRW );
+
   BabelMode mode = { 0, 0, 0, 0, 0, 0 };
-  if ( g_hash_table_size (vik_trw_layer_get_routes(vtl)) ) {
-      mode.routesWrite = 1;
-  }
-  if ( g_hash_table_size (vik_trw_layer_get_tracks(vtl)) ) {
-      mode.tracksWrite = 1;
-  }
-  if ( g_hash_table_size (vik_trw_layer_get_waypoints(vtl)) ) {
-      mode.waypointsWrite = 1;
+  if ( vl->type == VIK_LAYER_TRW ) {
+    mode.routesWrite    = g_hash_table_size(vik_trw_layer_get_routes(VIK_TRW_LAYER(vl))) ? 1 : 0;
+    mode.tracksWrite    = g_hash_table_size(vik_trw_layer_get_tracks(VIK_TRW_LAYER(vl))) ? 1 : 0;
+    mode.waypointsWrite = g_hash_table_size(vik_trw_layer_get_waypoints(VIK_TRW_LAYER(vl))) ? 1 : 0;
+  } else {
+    // Analyse all (visible) TRW layers to see what they contain and thus enable writing mode thereof
+    GList *layers = NULL;
+    layers = vik_aggregate_layer_get_all_layers_of_type ( VIK_AGGREGATE_LAYER(vl), layers, VIK_LAYER_TRW, FALSE );
+
+    for ( GList *layer = layers; layer != NULL; layer = layer->next ) {
+      if ( mode.routesWrite == 0 )
+        mode.routesWrite = g_hash_table_size(vik_trw_layer_get_routes(VIK_TRW_LAYER(layer->data))) ? 1 : 0;
+      if ( mode.tracksWrite == 0 )
+        mode.tracksWrite = g_hash_table_size(vik_trw_layer_get_tracks(VIK_TRW_LAYER(layer->data))) ? 1 : 0;
+      if ( mode.waypointsWrite == 0 )
+        mode.waypointsWrite = g_hash_table_size(vik_trw_layer_get_waypoints(VIK_TRW_LAYER(layer->data))) ? 1 : 0;
+    }
+    g_list_free ( layers );
   }
 
   GtkWidget *file_selector;
@@ -357,14 +377,18 @@ void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const
     {
       BabelFile *active = a_babel_ui_file_type_selector_get(babel_selector);
       if (active == NULL) {
-          a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("You did not select a valid file format.") );
+          a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vl), _("You did not select a valid file format.") );
       } else {
         gtk_widget_hide ( file_selector );
-        vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+        vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl)) );
         gboolean tracks, routes, waypoints;
         a_babel_ui_modes_get( babel_modes, &tracks, &routes, &waypoints );
-        failed = ! a_file_export_babel ( vtl, fn, active->name, tracks, routes, waypoints, gtk_entry_get_text(GTK_ENTRY(entry)) );
-        vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+        if ( vl->type == VIK_LAYER_TRW )
+          failed = ! a_file_export_babel ( VIK_TRW_LAYER(vl), NULL, fn, active->name, tracks, routes, waypoints, gtk_entry_get_text(GTK_ENTRY(entry)) );
+        else {
+          failed = ! a_file_export_babel ( NULL, gpx_file_name, fn, active->name, tracks, routes, waypoints, gtk_entry_get_text(GTK_ENTRY(entry)) );
+        }
+        vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl)) );
         g_free ( fn );
         // Save selections for usage next time
         last_mode_index = gtk_combo_box_get_active ( GTK_COMBO_BOX(babel_selector) );
@@ -380,5 +404,5 @@ void vik_trw_layer_export_gpsbabel ( VikTrwLayer *vtl, const gchar *title, const
   //babel_ui_selector_destroy(babel_selector);
   gtk_widget_destroy ( file_selector );
   if ( failed )
-    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("The filename you requested could not be opened for writing.") );
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vl), _("The filename you requested could not be opened for writing.") );
 }
