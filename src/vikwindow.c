@@ -6422,9 +6422,9 @@ static GtkActionEntry entries[] = {
   { "ZoomOut",   GTK_STOCK_ZOOM_OUT,     N_("Zoom _Out"),                 "<control>minus", N_("Zoom Out"),                                 (GCallback)draw_zoom_cb },
   { "ZoomTo",    GTK_STOCK_ZOOM_FIT,     N_("Zoom _To..."),               "<control>Z",     N_("Zoom To"),                                  (GCallback)zoom_to_cb },
   { "PanNorth",  GTK_STOCK_GO_UP,        N_("Pan _North"),                "<control>Up",    N_("Pan North"),                                (GCallback)draw_pan_cb },
-  { "PanEast",   GTK_STOCK_GO_BACK,      N_("Pan _East"),                 "<control>Right", N_("Pan East"),                                 (GCallback)draw_pan_cb },
+  { "PanEast",   GTK_STOCK_GO_FORWARD,   N_("Pan _East"),                 "<control>Right", N_("Pan East"),                                 (GCallback)draw_pan_cb },
   { "PanSouth",  GTK_STOCK_GO_DOWN,      N_("Pan _South"),                "<control>Down",  N_("Pan South"),                                (GCallback)draw_pan_cb },
-  { "PanWest",   GTK_STOCK_GO_FORWARD,   N_("Pan _West"),                 "<control>Left",  N_("Pan West"),                                 (GCallback)draw_pan_cb },
+  { "PanWest",   GTK_STOCK_GO_BACK,      N_("Pan _West"),                 "<control>Left",  N_("Pan West"),                                 (GCallback)draw_pan_cb },
   { "BGJobs",    GTK_STOCK_EXECUTE,      N_("Background _Jobs"),              NULL,         N_("Background Jobs"),                          (GCallback)a_background_show_window },
   { "Log",       GTK_STOCK_INFO,         N_("Log"),                           NULL,         N_("Logged messages"),                          (GCallback)a_logging_show_window },
 
