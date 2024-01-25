@@ -2093,11 +2093,21 @@ static void gpx_write_header( FILE *f, VikTrwLayer *vtl, GpxWritingContext *cont
       fprintf(f, "%s%s", header, ">\n");
     else
       // Otherwise write a load of xmlns stuff, even if we don't actually end up using any extensions
+      // This is for writing a single GPX file of multiple layers and thus can contain any kind of extension
+      // Write these known** xmlns types in an effort to create a formally valid XML file
+      //  (according to all these schema kinds)
+      // **as opposed to trying to parse each TRW layer to come up with computated relevant bespoke list
       fprintf(f, "xmlns=\"http://www.topografix.com/GPX/1/1\" "
                  "xmlns:gpxx=\"http://www.garmin.com/xmlschemas/GpxExtensions/v3\" "
                  "xmlns:wptx1=\"http://www.garmin.com/xmlschemas/WaypointExtension/v1\" "
+                 "xmlns:ns3=\"http://www.garmin.com/xmlschemas/TrackPointExtension/v1\" "
                  "xmlns:gpxtpx=\"http://www.garmin.com/xmlschemas/TrackPointExtension/v2\" "
                  "xmlns:gpxpx=\"http://www.garmin.com/xmlschemas/PowerExtension/v1\" "
+                 "xmlns:gpxdata=\"http://www.cluetrust.com/XML/GPXDATA/1/0\" "
+                 "xmlns:osmand=\"https://osmand.net\" "
+                 "xmlns:josm=\"http://josm.openstreetmap.de/gpx-extensions-1.1\" "
+                 "xmlns:gpxd=\"http://josm.openstreetmap.de/gpx-drawing-extensions-1.0\" "
+                 "xmlns:x=\"http://www.gpsessentials.com/ns/gpx-ext/1/0\" "
                  "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
                  "xsi:schemaLocation=\"http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd http://www.garmin.com/xmlschemas/GpxExtensions/v3 http://www8.garmin.com/xmlschemas/GpxExtensionsv3.xsd http://www.garmin.com/xmlschemas/WaypointExtension/v1 http://www8.garmin.com/xmlschemas/WaypointExtensionv1.xsd http://www.garmin.com/xmlschemas/TrackPointExtension/v2 http://www.garmin.com/xmlschemas/TrackPointExtensionv2.xsd http://www.garmin.com/xmlschemas/PowerExtensionv1.xsd\">\n");
   } else {
