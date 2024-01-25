@@ -6475,7 +6475,9 @@ static GtkToggleActionEntry toggle_debug[] = {
 /* Radio items */
 static GtkRadioActionEntry mode_entries[] = {
   { "ModeUTM",         NULL,         N_("_UTM Mode"),               "<control>u", NULL, VIK_VIEWPORT_DRAWMODE_UTM },
+#ifdef VIK_CONFIG_EXPEDIA
   { "ModeExpedia",     NULL,         N_("_Expedia Mode"),           "<control>e", NULL, VIK_VIEWPORT_DRAWMODE_EXPEDIA },
+#endif
   { "ModeMercator",    NULL,         N_("_Mercator Mode"),          "<control>m", NULL, VIK_VIEWPORT_DRAWMODE_MERCATOR },
   { "ModeLatLon",      NULL,         N_("Lat_/Lon Mode"),           "<control>l", NULL, VIK_VIEWPORT_DRAWMODE_LATLON },
 };
