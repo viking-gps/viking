@@ -2697,7 +2697,7 @@ msgid "_Open MBTiles Files"
 msgstr ""
 
 msgid "Flush Map Cache"
-msgstr ""
+msgstr "Vymazat mapovou cache"
 
 msgid "Default engine:"
 msgstr "Výběr způsobu:"
@@ -5402,6 +5402,18 @@ msgstr "na _jih"
 
 msgid "Pan _West"
 msgstr "na _západ"
+
+msgid "Pan North"
+msgstr "na sever"
+
+msgid "Pan East"
+msgstr "na západ"
+
+msgid "Pan South"
+msgstr "na jih"
+
+msgid "Pan West"
+msgstr "na západ"
 
 msgid "Background _Jobs"
 msgstr "Úlohy na _pozadí"

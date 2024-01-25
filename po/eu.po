@@ -5601,6 +5601,18 @@ msgstr "Desplazatu hegoaldera"
 msgid "Pan _West"
 msgstr "Desplazatu mendebaldera"
 
+msgid "Pan North"
+msgstr "Desplazatu iparrera"
+
+msgid "Pan East"
+msgstr "Desplazatu ekialdera"
+
+msgid "Pan South"
+msgstr "Desplazatu hegoaldera"
+
+msgid "Pan West"
+msgstr "Desplazatu mendebaldera"
+
 msgid "Background _Jobs"
 msgstr "Atzeko planoko lanak"
 
@@ -5617,6 +5629,9 @@ msgid "Delete All"
 msgstr "Ezabatu guztiak"
 
 msgid "Copy Centre _Location"
+msgstr "Kopiatu erdiko kokalekua"
+
+msgid "Copy Centre Location"
 msgstr "Kopiatu erdiko kokalekua"
 
 msgid "_Flush Map Cache"

@@ -2671,7 +2671,7 @@ msgid "_Open MBTiles Files"
 msgstr ""
 
 msgid "Flush Map Cache"
-msgstr ""
+msgstr "Vider le cache des cartes"
 
 msgid "Default engine:"
 msgstr "Moteur par défaut :"
@@ -5368,6 +5368,18 @@ msgstr "Déplacer vers le _Sud"
 msgid "Pan _West"
 msgstr "Déplacer vers l'_Ouest"
 
+msgid "Pan North"
+msgstr "Déplacer vers le Nord"
+
+msgid "Pan East"
+msgstr "Déplacer vers l'Est"
+
+msgid "Pan South"
+msgstr "Déplacer vers le Sud"
+
+msgid "Pan West"
+msgstr "Déplacer vers l'Ouest"
+
 msgid "Background _Jobs"
 msgstr "Tâches de fond"
 
@@ -5380,8 +5392,8 @@ msgstr ""
 msgid "Cu_t"
 msgstr "Co_uper"
 
-msgid "Delete All"
-msgstr "Tout effacer"
+msgid "Delete All Layers"
+msgstr "Tout effacer Calques"
 
 msgid "Copy Centre _Location"
 msgstr ""

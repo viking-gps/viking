@@ -2642,7 +2642,7 @@ msgid "_Open MBTiles Files"
 msgstr ""
 
 msgid "Flush Map Cache"
-msgstr ""
+msgstr "Térkép-gyorsítótár kiürítése"
 
 msgid "Default engine:"
 msgstr ""
@@ -5306,6 +5306,18 @@ msgstr "Mozgatás _dél felé"
 
 msgid "Pan _West"
 msgstr "Mozgatás _nyugat felé"
+
+msgid "Pan North"
+msgstr "Mozgatás észak felé"
+
+msgid "Pan East"
+msgstr "Mozgatás kelet felé"
+
+msgid "Pan South"
+msgstr "Mozgatás dél felé"
+
+msgid "Pan West"
+msgstr "Mozgatás nyugat felé"
 
 msgid "Background _Jobs"
 msgstr "_Háttérmunkák"

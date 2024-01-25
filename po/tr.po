@@ -5257,6 +5257,18 @@ msgstr "Güneye _Kaydır"
 msgid "Pan _West"
 msgstr "Batıya _Kaydır"
 
+msgid "Pan North"
+msgstr "Kuzeye Kaydır"
+
+msgid "Pan East"
+msgstr "Doğuya Kaydır"
+
+msgid "Pan South"
+msgstr "Güneye Kaydır"
+
+msgid "Pan West"
+msgstr "Batıya Kaydır"
+
 msgid "Background _Jobs"
 msgstr ""
 

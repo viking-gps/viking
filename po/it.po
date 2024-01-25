@@ -2654,7 +2654,7 @@ msgid "_Open MBTiles Files"
 msgstr ""
 
 msgid "Flush Map Cache"
-msgstr ""
+msgstr "Aggiorna la cache della mappe"
 
 msgid "Default engine:"
 msgstr ""
@@ -5326,6 +5326,18 @@ msgstr "Pan _Sud"
 
 msgid "Pan _West"
 msgstr "Pan Ovest (_W)"
+
+msgid "Pan North"
+msgstr "Pan Nord"
+
+msgid "Pan East"
+msgstr "Pan Est"
+
+msgid "Pan South"
+msgstr "Pan Sud"
+
+msgid "Pan West"
+msgstr "Pan Ovest"
 
 msgid "Background _Jobs"
 msgstr "_Lavori in background"

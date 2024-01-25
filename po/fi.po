@@ -2652,7 +2652,7 @@ msgid "_Open MBTiles Files"
 msgstr ""
 
 msgid "Flush Map Cache"
-msgstr ""
+msgstr "Tyhjennä karttavälimuisti"
 
 msgid "Default engine:"
 msgstr ""
@@ -5324,6 +5324,18 @@ msgstr "Vieri_tä etelään"
 
 msgid "Pan _West"
 msgstr "Vieritä _länteen"
+
+msgid "Pan North"
+msgstr "Vieritä pohjoiseen"
+
+msgid "Pan East"
+msgstr "Vieritä itään"
+
+msgid "Pan South"
+msgstr "Vieritä etelään"
+
+msgid "Pan West"
+msgstr "Vieritä länteen"
 
 msgid "Background _Jobs"
 msgstr "Ta_ustatyöt"

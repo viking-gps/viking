@@ -2644,7 +2644,7 @@ msgid "_Open MBTiles Files"
 msgstr ""
 
 msgid "Flush Map Cache"
-msgstr ""
+msgstr "Vaciar caché de mapas"
 
 msgid "Default engine:"
 msgstr ""
@@ -5307,6 +5307,18 @@ msgid "Pan _South"
 msgstr "Girar hacia el Sur"
 
 msgid "Pan _West"
+msgstr "Girar hacia el Oeste"
+
+msgid "Pan North"
+msgstr "Girar hacia el Norte"
+
+msgid "Pan East"
+msgstr "Girar hacia el Este"
+
+msgid "Pan South"
+msgstr "Girar hacia el Sur"
+
+msgid "Pan West"
 msgstr "Girar hacia el Oeste"
 
 msgid "Background _Jobs"

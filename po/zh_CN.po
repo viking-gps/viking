@@ -5329,6 +5329,18 @@ msgstr "平移往南"
 msgid "Pan _West"
 msgstr "平移往西"
 
+msgid "Pan North"
+msgstr "平移往北"
+
+msgid "Pan East"
+msgstr "平移往东"
+
+msgid "Pan South"
+msgstr "平移往南"
+
+msgid "Pan West"
+msgstr "平移往西"
+
 msgid "Background _Jobs"
 msgstr "后台任务(_J)"
 
@@ -5346,6 +5358,9 @@ msgstr "删除全部"
 
 msgid "Copy Centre _Location"
 msgstr "复制居中位置(_L)"
+
+msgid "Copy Centre Location"
+msgstr "复制居中位置"
 
 msgid "_Flush Map Cache"
 msgstr "清理地图缓存(_F)"

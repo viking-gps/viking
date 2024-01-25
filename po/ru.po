@@ -5451,6 +5451,18 @@ msgstr "Сдвинуть к югу"
 msgid "Pan _West"
 msgstr "Сдвинуть к западу"
 
+msgid "Pan North"
+msgstr "Сдвинуть к северу"
+
+msgid "Pan East"
+msgstr "Сдвинуть к востоку"
+
+msgid "Pan South"
+msgstr "Сдвинуть к югу"
+
+msgid "Pan West"
+msgstr "Сдвинуть к западу"
+
 msgid "Background _Jobs"
 msgstr "Фоновые задачи"
 
@@ -5468,6 +5480,9 @@ msgstr "Удалить все"
 
 msgid "Copy Centre _Location"
 msgstr "Копировать центр _местоположения"
+
+msgid "Copy Centre Location"
+msgstr "Копировать центр местоположения"
 
 msgid "_Flush Map Cache"
 msgstr "Опустошить кэш карт"

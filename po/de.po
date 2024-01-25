@@ -5439,6 +5439,18 @@ msgstr "Richtung _Süd"
 msgid "Pan _West"
 msgstr "Richtung _West"
 
+msgid "Pan North"
+msgstr "Richtung Nord"
+
+msgid "Pan East"
+msgstr "Richtung Ost"
+
+msgid "Pan South"
+msgstr "Richtung Süd"
+
+msgid "Pan West"
+msgstr "Richtung West"
+
 msgid "Background _Jobs"
 msgstr "Hintergrund_aufträge"
 
@@ -5455,6 +5467,9 @@ msgid "Delete All"
 msgstr "_Alle löschen"
 
 msgid "Copy Centre _Location"
+msgstr "Kopiere Koordinaten der aktue_llen Position"
+
+msgid "Copy Centre Location"
 msgstr "Kopiere Koordinaten der aktue_llen Position"
 
 msgid "_Flush Map Cache"
