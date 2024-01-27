@@ -3731,6 +3731,7 @@ static void draw_zoom_cb ( GtkAction *a, VikWindow *vw )
     case -4: vik_viewport_zoom_out ( vw->viking_vvp ); break;
     case -1: vik_viewport_set_zoom ( vw->viking_vvp, 0.5 ); break;
     case -2: vik_viewport_set_zoom ( vw->viking_vvp, 0.25 ); break;
+    case 0: vik_viewport_set_zoom ( vw->viking_vvp, a_vik_get_default_zoom() ); break;
     default: vik_viewport_set_zoom ( vw->viking_vvp, what );
   }
   draw_update ( vw );
@@ -6449,6 +6450,7 @@ static GtkActionEntry entries[] = {
 
   // Mainly for keyboard but can be added to toolbar (so not in menus - hence no menu accelerators)
   { "Zoom-3",    GTK_STOCK_ZOOM_IN,      N_("Zoom In"),                 "<control>plus",         N_("Zoom In"),            (GCallback)draw_zoom_cb },
+  { "Zoom0",     GTK_STOCK_ZOOM_100,     N_("Zoom Default"),            "<control>0",            N_("Zoom Default"),       (GCallback)draw_zoom_cb },
 };
 
 static GtkActionEntry debug_entries[] = {
