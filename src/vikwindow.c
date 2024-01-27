@@ -6418,7 +6418,7 @@ static GtkActionEntry entries[] = {
   { "Refresh",   GTK_STOCK_REFRESH,      N_("_Refresh"),                      "F5",         N_("Refresh any maps displayed"),               (GCallback)draw_refresh_cb       },
   { "SetHLColor",GTK_STOCK_SELECT_COLOR, N_("Set _Highlight Color..."),       NULL,         N_("Set Highlight Color"),                      (GCallback)set_highlight_color },
   { "SetBGColor",GTK_STOCK_SELECT_COLOR, N_("Set Bac_kground Color..."),      NULL,         N_("Set Background Color"),                     (GCallback)set_bg_color },
-  { "ZoomIn",    GTK_STOCK_ZOOM_IN,      N_("Zoom _In"),                  "<control>plus",  N_("Zoom In"),                                  (GCallback)draw_zoom_cb },
+  { "ZoomIn",    GTK_STOCK_ZOOM_IN,      N_("Zoom _In"),                  "<control>equal", N_("Zoom In"),                                  (GCallback)draw_zoom_cb },
   { "ZoomOut",   GTK_STOCK_ZOOM_OUT,     N_("Zoom _Out"),                 "<control>minus", N_("Zoom Out"),                                 (GCallback)draw_zoom_cb },
   { "ZoomTo",    GTK_STOCK_ZOOM_FIT,     N_("Zoom _To..."),               "<control>Z",     N_("Zoom To"),                                  (GCallback)zoom_to_cb },
   { "PanNorth",  GTK_STOCK_GO_UP,        N_("Pan _North"),                "<control>Up",    N_("Pan North"),                                (GCallback)draw_pan_cb },
