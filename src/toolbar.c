@@ -1010,6 +1010,46 @@ static void tb_editor_available_items_deleted_cb(GtkTreeModel *model, GtkTreePat
 	tb_editor_write_markup(tbw);
 }
 
+static gboolean
+tooltip_cb (GtkWidget  *widget,
+            gint        x,
+            gint        y,
+            gboolean    keyboard_tip,
+            GtkTooltip *tooltip,
+            VikToolbar *vtb)
+{
+	GtkTreeIter iter;
+	GtkTreeView *tree_view = GTK_TREE_VIEW(widget);
+	GtkTreeModel *model = gtk_tree_view_get_model(tree_view);
+	GtkTreePath *path = NULL;
+	const gchar *tiptext = NULL;
+
+	if (!gtk_tree_view_get_tooltip_context (tree_view, &x, &y,
+	                                        keyboard_tip,
+	                                        &model, &path, &iter))
+		return FALSE;
+
+	gchar *action_name;
+	gtk_tree_model_get(model, &iter, TB_EDITOR_COL_ACTION, &action_name, -1);
+
+	if (action_name) {
+		GtkAction *action = get_action(vtb, action_name);
+		if (action)
+			tiptext = gtk_action_get_tooltip(action);
+	}
+
+	gboolean ret = tiptext ? TRUE : FALSE;
+	if (tiptext) {
+		gtk_tooltip_set_text(tooltip, tiptext);
+		gtk_tree_view_set_tooltip_row(tree_view, tooltip, path);
+	}
+
+	g_free(action_name);
+	gtk_tree_path_free(path);
+
+	return ret;
+}
+
 
 static TBEditorWidget *tb_editor_create_dialog(VikToolbar *vtb, GtkWindow *parent, GtkWidget *toolbar, GtkWidget *vbox, GtkWidget *menu_hbox, ReloadCB reload_cb, gpointer user_data)
 {
@@ -1115,6 +1155,11 @@ static TBEditorWidget *tb_editor_create_dialog(VikToolbar *vtb, GtkWindow *paren
 	g_signal_connect(tree_used, "drag-motion",
 		G_CALLBACK(tb_editor_drag_motion_cb), tbw);
 
+	g_object_set(tree_available, "has-tooltip", TRUE, NULL);
+	g_signal_connect(tree_available, "query-tooltip", G_CALLBACK(tooltip_cb), vtb);
+
+	g_object_set(tree_used, "has-tooltip", TRUE, NULL);
+	g_signal_connect(tree_used, "query-tooltip", G_CALLBACK(tooltip_cb), vtb);
 
 	button_add = ui_button_new_with_image(GTK_STOCK_GO_FORWARD, NULL);
 	button_remove = ui_button_new_with_image(GTK_STOCK_GO_BACK, NULL);
