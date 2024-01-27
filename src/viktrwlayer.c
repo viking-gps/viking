@@ -10472,6 +10472,10 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       if ( vtl->wpwin ) {
         vtl->wpwin_wpt = vtl->current_wp;
         vtl->wpwin = vik_trw_layer_wpwin_show ( VIK_GTK_WINDOW_FROM_LAYER(vtl), vtl->wpwin, vtl->wpwin_wpt->name, vtl, vtl->wpwin_wpt, vtl->coord_mode, FALSE );
+      } else {
+        if ( !(event->state & GDK_CONTROL_MASK) ) {
+          vik_viewport_draw_popup ( vvp, (gchar*)vik_layer_get_name(VIK_LAYER(vtl)), event->x, event->y );
+        }
       }
 
       // Selection change only (no change to the layer)
@@ -10522,6 +10526,13 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       // Selection change only (no change to the layer)
       vik_layer_redraw ( VIK_LAYER(vtl) );
       trw_layer_graph_draw_tp ( vtl );
+
+      if ( vtl->current_tp_track && !(event->state & GDK_CONTROL_MASK) ) {
+        gchar *msg = g_strdup_printf ( "%s\n%s", vik_layer_get_name(VIK_LAYER(vtl)), vtl->current_tp_track->name );
+        vik_viewport_draw_popup ( vvp, msg, event->x, event->y );
+        g_free ( msg );
+      }
+
       return TRUE;
     }
   }
@@ -10558,6 +10569,13 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
       // Selection change only (no change to the layer)
       vik_layer_redraw ( VIK_LAYER(vtl) );
       trw_layer_graph_draw_tp ( vtl );
+
+      if ( vtl->current_tp_track && !(event->state & GDK_CONTROL_MASK) ) {
+        gchar *msg = g_strdup_printf ( "%s\n%s", vik_layer_get_name(VIK_LAYER(vtl)), vtl->current_tp_track->name );
+        vik_viewport_draw_popup ( vvp, msg, event->x, event->y );
+        g_free ( msg );
+      }
+
       return TRUE;
     }
   }
