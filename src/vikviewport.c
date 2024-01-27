@@ -126,6 +126,13 @@ struct _VikViewport {
   GdkPixmap *snapshot_buffer;
 #endif
   gboolean half_drawn;
+
+  cairo_t *popup_crt;
+  cairo_surface_t *popup_surf;
+  gchar *popup_msg;
+  gint popup_x;
+  gint popup_y;
+  gint popup_delay;
 };
 
 static gdouble
@@ -185,6 +192,7 @@ VikViewport *vik_viewport_new ()
 #define VIK_SETTINGS_VIEW_HISTORY_SIZE "viewport_history_size"
 #define VIK_SETTINGS_VIEW_HISTORY_DIFF_DIST "viewport_history_diff_dist"
 #define VIK_SETTINGS_VIEW_SCALE "viewport_scale"
+#define VIK_SETTINGS_VIEW_POPUP_DELAY "viewport_popup_delay"
 
 // Hacky method to enable to return a scale value
 // Mostly for places in code, such as initializers, where they have no knowledge of any vvp in use.
@@ -278,6 +286,9 @@ vik_viewport_init ( VikViewport *vvp )
   vvp->centers_radius = 500;
   if ( a_settings_get_integer ( VIK_SETTINGS_VIEW_HISTORY_DIFF_DIST, &tmp ) )
     vvp->centers_radius = tmp;
+  vvp->popup_delay = 200;
+  if ( a_settings_get_integer ( VIK_SETTINGS_VIEW_POPUP_DELAY, &tmp ) )
+    vvp->popup_delay = tmp;
 
   vvp->draw_scale = a_vik_get_startup_show_scale();
   vvp->draw_centermark = a_vik_get_startup_show_centermark();
@@ -984,6 +995,97 @@ void vik_viewport_set_draw_highlight ( VikViewport *vvp, gboolean draw_highlight
 gboolean vik_viewport_get_draw_highlight ( VikViewport *vvp )
 {
   return vvp->draw_highlight;
+}
+
+static gboolean remove_popup_cb ( VikViewport *vvp )
+{
+  // Strangely using ui_cr_clear () is worse than destroying/recreating
+  //  as it give a background redraw blip!
+  //ui_cr_clear ( vvp->popup_crt );
+  if ( vvp->popup_crt )
+    cairo_destroy ( vvp->popup_crt );
+  vvp->popup_crt = NULL;
+  if ( vvp->popup_surf )
+    cairo_surface_destroy ( vvp->popup_surf );
+  vvp->popup_surf = NULL;
+
+  gtk_widget_queue_draw ( GTK_WIDGET(vvp) );
+  return FALSE;
+}
+
+static gboolean draw_popup ( VikViewport *vvp )
+{
+#if GTK_CHECK_VERSION (3,0,0)
+  guint time = a_vik_get_viewport_popup_time();
+  if ( time == 0 )
+    return FALSE;
+
+  GdkWindow *gw = gtk_widget_get_window ( GTK_WIDGET(vvp) );
+  if ( vvp->popup_surf )
+      cairo_surface_destroy ( vvp->popup_surf );
+  vvp->popup_surf = gdk_window_create_similar_surface ( gw, CAIRO_CONTENT_COLOR_ALPHA, vvp->width, vvp->height );
+
+  if ( vvp->popup_crt )
+      cairo_destroy ( vvp->popup_crt );
+  vvp->popup_crt = gdk_cairo_create ( gw );
+
+  PangoLayout *pl = gtk_widget_create_pango_layout ( GTK_WIDGET(vvp), NULL );
+  pango_layout_set_text ( pl, vvp->popup_msg, -1 );
+  pango_layout_set_font_description ( pl, gtk_widget_get_style(GTK_WIDGET(vvp))->font_desc );
+  gint wd, hd;
+  pango_layout_get_pixel_size ( pl, &wd, &hd );
+
+  // Rudimentary intelligent positioning given overall (current) viewport size
+  // Including moving a little away from mousepoint
+  //  (popup x,y was stored against a potentially older viewport size)
+  gint posx = vvp->popup_x + (15*vvp->scale);
+  gint posy = vvp->popup_y + (15*vvp->scale);
+  if ( posx + wd > vvp->width )
+    posx = MIN(vvp->popup_x,vvp->width) - (15*vvp->scale) - wd;
+  if ( posy + hd > vvp->height )
+    posy = MIN(vvp->popup_y,vvp->height) - (15*vvp->scale) - hd;
+
+  ui_cr_label_with_bg ( vvp->popup_crt, posx, posy, wd, hd, pl );
+
+  g_object_unref ( pl );
+  g_free ( vvp->popup_msg );
+  vvp->popup_msg = NULL;
+
+  (void)g_timeout_add ( time, (GSourceFunc)remove_popup_cb, vvp );
+#endif
+  return FALSE;
+}
+
+/**
+ * vik_viewport_draw_popup:
+ * @vvp: The #VikViewport to draw on
+ * @msg: The string to display
+ * @x:   The x pixel position to draw the popup at.
+ *       NB If G_MININT is used then instead the previous position will be used
+ * @y:   The y pixel position to draw the popup at
+ *       NB If G_MININT is used then instead the previous position will be used
+ *
+ * Draws a text filled popup at the requested position
+ * The position is adjusted if the text would go outside the #VikViewport
+ *
+ */
+void vik_viewport_draw_popup ( VikViewport *vvp, gchar *msg, gint x, gint y )
+{
+  if ( vvp->popup_msg )
+    g_free ( vvp->popup_msg );
+  vvp->popup_msg = g_strdup ( msg );
+  // Optionally retain previous values
+  if ( x != G_MININT )
+    vvp->popup_x = x;
+  if ( y != G_MININT )
+    vvp->popup_y = y;
+
+  // Due to potential viewport resize
+  //  (i.e. when a track is first selected and the bottom graph gets created
+  //   and causes the viewport to be redrawn) means any popup gets removed.
+  // Thus ATM use a simple delay - so hopefully is drawn after any auto resizing,
+  //  as otherwise haven't figured out a way to be notified to draw this.
+  (void)g_timeout_add ( vvp->popup_delay, (GSourceFunc)draw_popup, vvp );
 }
 
 /**

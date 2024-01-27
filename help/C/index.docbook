@@ -5335,6 +5335,14 @@ Accept: */*
 	    </para>
 	  </listitem>
 	  <listitem>
+	    <para>viewport_popup_delay=200</para>
+	    <para>In milliseconds</para>
+	    <para>
+	      Viking should show a popup with the name of the current track selected.
+              If it is not shown (perhaps you have a slowish machine), try increasing this value.
+	    </para>
+	  </listitem>
+	  <listitem>
 	    <para>external_diary_program=<ulink url="https://rednotebook.sourceforge.io/">rednotebook</ulink></para>
 	    <para>Or in Windows it uses <filename>C:/Progra~1/Rednotebook/rednotebook.exe</filename> - This string value must use Unix separators and not have spaces.</para>
 	  </listitem>

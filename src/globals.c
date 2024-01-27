@@ -157,6 +157,9 @@ static gchar * params_pos_type[] = {N_("None"), N_("Bottom"), N_("Middle"), N_("
 static VikLayerParamData rcnt_files_default ( void ) { return VIK_LPD_INT(10); }
 static VikLayerParamData rlr_lbl_pos_default ( void ) { return VIK_LPD_UINT(VIK_POSITIONAL_MIDDLE); }
 
+static VikLayerParamScale params_disp_time[] = { { 0, 5000, 100, 0} };
+static VikLayerParamData disp_time_default ( void ) { return VIK_LPD_INT(1500); }
+
 static VikLayerParam prefs_advanced[] = {
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "save_file_reference_mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Save File Reference Mode:"), VIK_LAYER_WIDGET_COMBOBOX, params_vik_fileref, NULL,
     N_("When saving a Viking .vik file, this determines how the directory paths of filenames are written."), NULL, NULL, NULL },
@@ -178,6 +181,8 @@ static VikLayerParam prefs_advanced[] = {
     N_("Select trackpoint from mouse over graph on main display"), vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "warn_unsaved_changes_on_exit", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Warn Unsaved Changes on Exit:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "select_newly_created_layer", VIK_LAYER_PARAM_BOOLEAN, VIK_LAYER_GROUP_NONE, N_("Select Newly Created Layer:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("Automatically select the newly created layer"), vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_ADVANCED_NAMESPACE "viewport_popup_display_time", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Time(in ms) Popup is Shown on Viewport:"), VIK_LAYER_WIDGET_SPINBUTTON, params_disp_time, NULL,
+    N_("Use a value of 0 to disable showing a popup"), disp_time_default, NULL, NULL },
 };
 
 static gchar * params_startup_methods[] = {N_("Home Location"), N_("Last Location"), N_("Specified File"), N_("Auto Location"), NULL};
@@ -417,6 +422,11 @@ gboolean a_vik_get_warn_unsaved_changes_on_exit ( )
 gboolean a_vik_get_select_newly_created_layer ( )
 {
   return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "select_newly_created_layer")->b;
+}
+
+guint a_vik_get_viewport_popup_time ( )
+{
+  return a_preferences_get(VIKING_PREFERENCES_ADVANCED_NAMESPACE "viewport_popup_display_time")->u;
 }
 
 gint a_vik_get_recent_number_files ( )
