@@ -1603,17 +1603,6 @@ static gboolean key_press_event( VikWindow *vw, GdkEventKey *event, gpointer dat
 	map_download = TRUE;
 	map_download_only_new = FALSE;
   }
-  // Standard Ctrl+KP+ / Ctrl+KP- to zoom in/out respectively
-  else if ( event->keyval == GDK_KEY_KP_Add && modifiers == GDK_CONTROL_MASK ) {
-    vik_viewport_zoom_in ( vw->viking_vvp );
-    draw_update(vw);
-    return TRUE; // handled keypress
-  }
-  else if ( event->keyval == GDK_KEY_KP_Subtract && modifiers == GDK_CONTROL_MASK ) {
-    vik_viewport_zoom_out ( vw->viking_vvp );
-    draw_update(vw);
-    return TRUE; // handled keypress
-  }
   else if ( event->keyval == GDK_KEY_p && !modifiers ) {
     vw->current_tool = TOOL_PAN;
     action_activate_current_tool ( vw );
@@ -3727,8 +3716,12 @@ static void draw_zoom_cb ( GtkAction *a, VikWindow *vw )
 
   switch (what)
   {
-    case -3: vik_viewport_zoom_in ( vw->viking_vvp ); break;
-    case -4: vik_viewport_zoom_out ( vw->viking_vvp ); break;
+    case -3:
+    case -5:
+      vik_viewport_zoom_in ( vw->viking_vvp ); break;
+    case -4:
+    case -6:
+      vik_viewport_zoom_out ( vw->viking_vvp ); break;
     case -1: vik_viewport_set_zoom ( vw->viking_vvp, 0.5 ); break;
     case -2: vik_viewport_set_zoom ( vw->viking_vvp, 0.25 ); break;
     case 0: vik_viewport_set_zoom ( vw->viking_vvp, a_vik_get_default_zoom() ); break;
@@ -6450,6 +6443,8 @@ static GtkActionEntry entries[] = {
 
   // Mainly for keyboard but can be added to toolbar (so not in menus - hence no menu accelerators)
   { "Zoom-3",    GTK_STOCK_ZOOM_IN,      N_("Zoom In"),                 "<control>plus",         N_("Zoom In"),            (GCallback)draw_zoom_cb },
+  { "Zoom-5",    GTK_STOCK_ZOOM_IN,      N_("Zoom In"),                 "<control>KP_Add",       N_("Zoom In"),            (GCallback)draw_zoom_cb },
+  { "Zoom-6",    GTK_STOCK_ZOOM_OUT,     N_("Zoom Out"),                "<control>KP_Subtract",  N_("Zoom Out"),           (GCallback)draw_zoom_cb },
   { "Zoom0",     GTK_STOCK_ZOOM_100,     N_("Zoom Default"),            "<control>0",            N_("Zoom Default"),       (GCallback)draw_zoom_cb },
 };
 

@@ -138,6 +138,8 @@ static const char *menu_xml =
 	"    </menu>"
 	"  </menubar>"
 	"  <accelerator action='Zoom-3'/>"
+	"  <accelerator action='Zoom-5'/>"
+	"  <accelerator action='Zoom-6'/>"
 	"  <accelerator action='Zoom0'/>"
 	"</ui>"
 ;
