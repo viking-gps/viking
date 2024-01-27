@@ -6446,6 +6446,9 @@ static GtkActionEntry entries[] = {
   { "News",      GTK_STOCK_FILE,         N_("_News"),                         NULL,         N_("News"),                                     (GCallback)help_news_cb },
   { "About",     GTK_STOCK_ABOUT,        N_("_About"),                        NULL,         N_("About"),                                    (GCallback)help_about_cb },
   { "MapsInfo",  GTK_STOCK_INFO,         N_("_Maps Information"),             NULL,         N_("Maps Information"),                         (GCallback)help_maps_info_cb },
+
+  // Mainly for keyboard but can be added to toolbar (so not in menus - hence no menu accelerators)
+  { "Zoom-3",    GTK_STOCK_ZOOM_IN,      N_("Zoom In"),                 "<control>plus",         N_("Zoom In"),            (GCallback)draw_zoom_cb },
 };
 
 static GtkActionEntry debug_entries[] = {

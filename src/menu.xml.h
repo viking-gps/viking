@@ -137,6 +137,7 @@ static const char *menu_xml =
 	"      <menuitem action='MapsInfo'/>"
 	"    </menu>"
 	"  </menubar>"
+	"  <accelerator action='Zoom-3'/>"
 	"</ui>"
 ;
 
