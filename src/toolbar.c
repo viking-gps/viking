@@ -57,7 +57,7 @@ struct _VikToolbar {
   GtkActionGroup *group_toggles;
   GtkActionGroup *group_tools;
   GtkActionGroup *group_modes;
-  GSList *list_of_actions;
+  GHashTable *hash_of_actions;
   GSList *list_of_toggles;
   GSList *list_of_tools;
   GSList *list_of_modes;
@@ -73,7 +73,7 @@ static void vik_toolbar_init (VikToolbar *vtb)
 {
 	vtb->widget = NULL;
 	vtb->merge_id = 0;
-	vtb->list_of_actions = NULL;
+	vtb->hash_of_actions = g_hash_table_new ( g_str_hash, g_str_equal );
 	vtb->list_of_toggles = NULL;
 	vtb->list_of_tools = NULL;
 	vtb->list_of_modes = NULL;
@@ -294,7 +294,20 @@ void toolbar_action_entry_register(VikToolbar *vtb, GtkActionEntry *action)
 {
 	g_return_if_fail(VIK_IS_TOOLBAR(vtb));
 	g_return_if_fail(action != NULL);
-	vtb->list_of_actions = g_slist_append(vtb->list_of_actions, action);
+	// As now have multiple invocators of the same callback (e.g. various ways to action Zoom In/Out)
+	//  don't want toolbar list to contain these multiple entries, so only add unique invocations.
+	// Since various action.callbacks are 'overloaded' - i.e. uses the action.name in the callback,
+	//  can't rely on unique callbacks - instead use the tooltip as being the unique indicator.
+	// And so change to storing in a hash to hopefully make the lookup before deciding to add not too slow
+	GtkActionEntry *an_action = NULL;
+	const gchar *tooltip = NULL;
+	if (action->tooltip) {
+		an_action = g_hash_table_lookup(vtb->hash_of_actions, action->tooltip);
+		if (an_action)
+			tooltip = an_action->tooltip;
+	}
+	if (!tooltip)
+		g_hash_table_insert(vtb->hash_of_actions, (gchar*)action->tooltip, action);
 }
 
 static void configure_cb (GtkWidget *widget, gpointer user_data)
@@ -526,14 +539,17 @@ void toolbar_init (VikToolbar *vtb,
 	vtb->group_actions = gtk_action_group_new("MainToolbar");
 	gtk_action_group_set_translation_domain(vtb->group_actions, GETTEXT_PACKAGE);
 	GtkActionEntry *actions = NULL;
-	GSList *gl;
 	gint nn = 0;
-	foreach_slist(gl, vtb->list_of_actions) {
-		GtkActionEntry *action = gl->data;
+	GHashTableIter iter;
+	gpointer key, value;
+	g_hash_table_iter_init( &iter, vtb->hash_of_actions);
+	while ( g_hash_table_iter_next(&iter, &key, &value) ) {
+		GtkActionEntry *action = (GtkActionEntry*)value;
 		actions = g_renew(GtkActionEntry, actions, nn+1);
 		actions[nn] = *action;
 		nn++;
 	}
+
 	gtk_action_group_add_actions(vtb->group_actions, actions, nn, user_data);
 	gtk_ui_manager_insert_action_group(vtb->uim, vtb->group_actions, 0);
 	g_free ( actions );
@@ -542,6 +558,7 @@ void toolbar_init (VikToolbar *vtb,
 	gtk_action_group_set_translation_domain(vtb->group_toggles, GETTEXT_PACKAGE);
 	GtkToggleActionEntry *toggle_actions = NULL;
 	nn = 0;
+	GSList *gl;
 	foreach_slist(gl, vtb->list_of_toggles) {
 		GtkToggleActionEntry *action = gl->data;
 		toggle_actions = g_renew(GtkToggleActionEntry, toggle_actions, nn+1);
@@ -635,7 +652,7 @@ void vik_toolbar_finalize ( VikToolbar *vtb )
 	g_object_unref(vtb->group_toggles);
 	g_object_unref(vtb->group_modes);
 
-	g_slist_free(vtb->list_of_actions);
+	g_hash_table_destroy(vtb->hash_of_actions);
 	g_slist_free(vtb->list_of_tools);
 	g_slist_free(vtb->list_of_toggles);
 	g_slist_free(vtb->list_of_modes);
