@@ -463,8 +463,8 @@ Then there are shortcuts specific to &appname; to switch projection modes, zoom 
 <listitem><para><keycap>Ctrl+Right</keycap> Pan the viewport East</para></listitem>
 <listitem><para><keycap>Ctrl+Down</keycap> Pan the viewport South</para></listitem>
 <listitem><para><keycap>Ctrl+Left</keycap> Pan the viewport West</para></listitem>
-<listitem><para><keycap>Ctrl+Keypad+</keycap> Zoom In</para></listitem>
-<listitem><para><keycap>Ctrl+Keypad-</keycap> Zoom Out</para></listitem>
+<listitem><para><keycap>Ctrl+Keypad+</keycap>, <keycap>Ctrl++</keycap> or <keycap>Ctrl+=</keycap> for Zoom In</para></listitem>
+<listitem><para><keycap>Ctrl+Keypad-</keycap> or <keycap>Ctrl+-</keycap> for Zoom Out</para></listitem>
 <listitem><para><keycap>Ctrl+0</keycap> Restore default zoom</para></listitem>
 </itemizedlist>
 <important><para>These work irrespective of the <xref linkend="tools"/> mode selected</para></important>
@@ -478,7 +478,7 @@ For other combinations see the menu entry themselves.
 
 <section>
 <title>Keyboard Configuration</title>
-<para>Keyboard configuration is supported by the standard GTK+ way of changing shortcuts for menu entries.</para>
+<para>Keyboard configuration is supported by the standard GTK+ (v2/v3) way of changing shortcuts for menu entries.</para>
 <para>Hover over the menu option with the mouse pointer and press the keyboard shortcut you want to bind it to.</para>
 <para>To delete a keyboard assignment, press <keycap>Backspace</keycap> whilst over the menu entry.</para>
 <note>
