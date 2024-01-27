@@ -174,7 +174,6 @@ struct _VikTrwLayerWpwin {
   GtkWidget *hasGeotagCB;
   GtkWidget *consistentGeotagCB;
   GtkWidget *direction_sb;
-  GtkWidget *direction_hb;
   GtkWidget *direction_ref;
   GtkListStore *store;
   GtkWidget *crsentry;
@@ -313,47 +312,94 @@ VikTrwLayerWpwin *vik_trw_layer_wpwin_show ( GtkWindow *parent, VikTrwLayerWpwin
 
     ww->parent = parent;
     ww->dialog = dialog;
-
     ww->tabs = gtk_notebook_new();
-    GtkWidget *basic = gtk_vbox_new ( FALSE, 0 );
 
-    GtkWidget *namelabel = gtk_label_new (_("Name:"));
-    GtkWidget *namehb = gtk_hbox_new ( FALSE, 0 );
-    ww->nameshowcb = gtk_check_button_new_with_label ( _("Show Name") );
-    gtk_box_pack_start ( GTK_BOX(namehb), namelabel, TRUE, TRUE, 0 );
-    gtk_box_pack_start ( GTK_BOX(namehb), ww->nameshowcb, TRUE, TRUE, 0 );
-    gtk_box_pack_start ( GTK_BOX(basic), namehb, FALSE, FALSE, 0 );
+    guint cnt_prop = 0;
+    GPtrArray *bas_labels_array = g_ptr_array_new ();
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Show Name")) );
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Name:")) );
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Latitude:")) );
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Longitude:")) );
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Altitude:")) );
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Time:")) );
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Comment:")) );
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Description:")) );
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Source:")) );
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Type:")) );
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Image:")) );
+#ifdef VIK_CONFIG_GEOTAG
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Geotag:")) );
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Image Direction:")) );
+    //g_ptr_array_add ( bas_labels_array, g_strdup(_("Image Direction:")) );
+#endif
+    g_ptr_array_add ( bas_labels_array, g_strdup(_("Symbol:")) );
+    g_ptr_array_add ( bas_labels_array, NULL );
+    guint bsize = bas_labels_array->len - 1; // As appending the NULL counts towards the length
+
+    gchar **bas_labels_str = (gchar**)g_ptr_array_free ( bas_labels_array, FALSE );
+    GtkWidget *bas_content_prop[bsize];
+
+    ww->nameshowcb = gtk_check_button_new();
+    bas_content_prop[cnt_prop++] = ww->nameshowcb;
+
     // Name is now always changeable
     ww->nameentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
     g_signal_connect_swapped ( ww->nameentry, "activate", G_CALLBACK(a_dialog_response_accept), GTK_DIALOG(dialog) );
-    gtk_box_pack_start (GTK_BOX(basic), ww->nameentry, FALSE, FALSE, 0);
+    bas_content_prop[cnt_prop++] = ww->nameentry;
 
-    GtkWidget *latlabel = gtk_label_new (_("Latitude:"));
     ww->latentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+    bas_content_prop[cnt_prop++] = ww->latentry;
 
-    GtkWidget *lonlabel = gtk_label_new (_("Longitude:"));
     ww->lonentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+    bas_content_prop[cnt_prop++] = ww->lonentry;
 
-    GtkWidget *altlabel = gtk_label_new (_("Altitude:"));
     ww->altentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+    bas_content_prop[cnt_prop++] = ww->altentry;
 
-    ww->commentlabel = gtk_link_button_new_with_label ( "", _("Comment:") );
+    ww->timevaluebutton = gtk_button_new();
+    gtk_button_set_relief ( GTK_BUTTON(ww->timevaluebutton), GTK_RELIEF_NONE );
+    bas_content_prop[cnt_prop++] = ww->timevaluebutton;
+    g_signal_connect ( G_OBJECT(ww->timevaluebutton), "button-release-event", G_CALLBACK(time_edit_click), edit_wp );
+
     ww->commententry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+    bas_content_prop[cnt_prop++] = ww->commententry;
 
-    ww->descriptionlabel = gtk_link_button_new_with_label ( "", _("Description:") );
     ww->descriptionentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+    bas_content_prop[cnt_prop++] = ww->descriptionentry;
 
-    ww->sourcelabel = gtk_link_button_new_with_label ( "", _("Source:") );
     ww->sourceentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+    bas_content_prop[cnt_prop++] = ww->sourceentry;
 
-    GtkWidget *typelabel = gtk_label_new (_("Type:"));
     ww->typeentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+    bas_content_prop[cnt_prop++] = ww->typeentry;
 
-    ww->imagelabel = gtk_link_button_new_with_label ( "", _("Image:") );
     ww->imageentry = vik_file_entry_new (GTK_FILE_CHOOSER_ACTION_OPEN, VF_FILTER_IMAGE, NULL, NULL);
+    bas_content_prop[cnt_prop++] = ww->imageentry;
+
+#ifdef VIK_CONFIG_GEOTAG
+    // Geotag Info [readonly]
+    GtkWidget *geotag_hb = gtk_hbox_new ( FALSE, 0 ); // RENAME
+    ww->hasGeotagCB = gtk_check_button_new_with_label ( _("Has Geotag") );
+    gtk_widget_set_sensitive ( ww->hasGeotagCB, FALSE );
+    gtk_box_pack_start (GTK_BOX(geotag_hb), ww->hasGeotagCB, FALSE, FALSE, 0);
+
+    ww->consistentGeotagCB = gtk_check_button_new_with_label ( _("Consistent Position") );
+    gtk_widget_set_sensitive ( ww->consistentGeotagCB, FALSE );
+    gtk_box_pack_start (GTK_BOX(geotag_hb), ww->consistentGeotagCB, FALSE, FALSE, 0);
+
+    bas_content_prop[cnt_prop++] = geotag_hb;
+
+    GtkWidget *direction_hb = gtk_hbox_new ( FALSE, 0 );
+    ww->direction_sb = gtk_spin_button_new ( (GtkAdjustment*)gtk_adjustment_new (0, 0.0, 359.9, 5.0, 1, 0 ), 1, 1 );
+
+    ww->direction_ref = gtk_button_new ();
+    gtk_box_pack_start (GTK_BOX(direction_hb), ww->direction_ref, FALSE, FALSE, 0);
+    gtk_box_pack_start (GTK_BOX(direction_hb), ww->direction_sb, TRUE, TRUE, 0);
+
+    bas_content_prop[cnt_prop++] = direction_hb;
+#endif
 
     GtkCellRenderer *r;
-    GtkWidget *symbollabel = gtk_label_new (_("Symbol:"));
     GtkListStore *store = a_garmin_get_sym_liststore();
     ww->store = store;
     ww->symbolentry = gtk_combo_box_new_with_model(GTK_TREE_MODEL(store));
@@ -368,147 +414,107 @@ VikTrwLayerWpwin *vik_trw_layer_wpwin_show ( GtkWindow *parent, VikTrwLayerWpwin
     r = gtk_cell_renderer_text_new ();
     gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (ww->symbolentry), r, FALSE);
     gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (ww->symbolentry), r, "text", 2, NULL);
+    bas_content_prop[cnt_prop++] = ww->symbolentry;
 
-#ifdef VIK_CONFIG_GEOTAG
-    // Geotag Info [readonly]
-    ww->hasGeotagCB = gtk_check_button_new_with_label ( _("Has Geotag") );
-    gtk_widget_set_sensitive ( ww->hasGeotagCB, FALSE );
-
-    ww->consistentGeotagCB = gtk_check_button_new_with_label ( _("Consistent Position") );
-    gtk_widget_set_sensitive ( ww->consistentGeotagCB, FALSE );
-
-    GtkWidget *direction_label = gtk_label_new ( _("Image Direction:") );
-    ww->direction_hb = gtk_hbox_new ( FALSE, 0 );
-    gtk_box_pack_start (GTK_BOX(ww->direction_hb), direction_label, FALSE, FALSE, 0);
-    ww->direction_sb = gtk_spin_button_new ( (GtkAdjustment*)gtk_adjustment_new (0, 0.0, 359.9, 5.0, 1, 0 ), 1, 1 );
-
-    ww->direction_ref = gtk_button_new ();
-    gtk_box_pack_start (GTK_BOX(ww->direction_hb), ww->direction_ref, TRUE, FALSE, 0);    
-#endif
-
-    GtkWidget *timelabel = gtk_label_new ( _("Time:") );
-    ww->timevaluebutton = gtk_button_new();
-    gtk_button_set_relief ( GTK_BUTTON(ww->timevaluebutton), GTK_RELIEF_NONE );
-
-    g_signal_connect ( G_OBJECT(ww->timevaluebutton), "button-release-event", G_CALLBACK(time_edit_click), edit_wp );
-
-    gtk_box_pack_start (GTK_BOX(basic), latlabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->latentry, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), lonlabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->lonentry, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), timelabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->timevaluebutton, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), altlabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->altentry, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->commentlabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->commententry, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->descriptionlabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->descriptionentry, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->sourcelabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->sourceentry, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), typelabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->typeentry, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->imagelabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), ww->imageentry, FALSE, FALSE, 0);
-
-    if ( ww->hasGeotagCB ) {
-      GtkWidget *hbox =  gtk_hbox_new ( FALSE, 0 );
-      gtk_box_pack_start (GTK_BOX(hbox), ww->hasGeotagCB, FALSE, FALSE, 0);
-      gtk_box_pack_start (GTK_BOX(hbox), ww->consistentGeotagCB, FALSE, FALSE, 0);
-      gtk_box_pack_start (GTK_BOX(basic), hbox, FALSE, FALSE, 0);
+    //GtkWidget *btab = ui_create_table ( cnt_prop, bas_labels_str, bas_content_prop, NULL, 1 );
+    GtkTable *btab = GTK_TABLE(gtk_table_new (bsize, 2, FALSE));
+    gtk_table_set_col_spacing ( btab, 0, 10 );
+    for ( guint ii=0; ii<bsize; ii++ ) {
+      // Hardcode track URL widgets
+      // NB these all come before optional geotag ones, so index number doesn't change
+      switch (ii) {
+      case 6:  ww->commentlabel = ui_attach_to_table ( btab, ii, bas_labels_str[ii], bas_content_prop[ii], wp->comment, TRUE, 1, TRUE ); break;
+      case 7:  ww->descriptionlabel = ui_attach_to_table ( btab, ii, bas_labels_str[ii], bas_content_prop[ii], wp->description, TRUE, 1, TRUE ); break;
+      case 8:  ww->sourcelabel = ui_attach_to_table ( btab, ii, bas_labels_str[ii], bas_content_prop[ii], wp->source, TRUE, 1, TRUE ); break;
+      case 10: ww->imagelabel = ui_attach_to_table ( btab, ii, bas_labels_str[ii], bas_content_prop[ii], wp->image, TRUE, 1, TRUE ); break;
+      default:
+        (void)ui_attach_to_table ( btab, ii, bas_labels_str[ii], bas_content_prop[ii], NULL, TRUE, 1, FALSE ); break;
+      }
     }
-    if ( ww->direction_hb )
-      gtk_box_pack_start (GTK_BOX(basic), ww->direction_hb, FALSE, FALSE, 0);
-    if ( ww->direction_sb )
-      gtk_box_pack_start (GTK_BOX(basic), ww->direction_sb, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), symbollabel, FALSE, FALSE, 0);
-    gtk_box_pack_start (GTK_BOX(basic), GTK_WIDGET(ww->symbolentry), FALSE, FALSE, 0);
-
-    // 'Extra' level of Waypoint properties
-    GtkWidget *extra = gtk_vbox_new ( FALSE, 0 );
-
-    GtkWidget *crslabel = gtk_label_new ( _("Course:") );
-    ww->crsentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
-
-    gtk_box_pack_start ( GTK_BOX(extra), crslabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->crsentry, FALSE, FALSE, 0 );
 
     char tmp_lab[64];
     g_snprintf ( tmp_lab, sizeof(tmp_lab), _("Speed: (%s)"), vu_speed_units_text(speed_units) );
-    GtkWidget *speedlabel = gtk_label_new ( tmp_lab );
+
+    GPtrArray *ext_labels_array = g_ptr_array_new ();
+    g_ptr_array_add ( ext_labels_array, g_strdup(_("Course:")) );
+    g_ptr_array_add ( ext_labels_array, g_strdup(tmp_lab) ); // Speed
+    g_ptr_array_add ( ext_labels_array, g_strdup(_("Magnetic Variance:")) );
+    g_ptr_array_add ( ext_labels_array, g_strdup(_("Geoid Height:")) );
+    g_ptr_array_add ( ext_labels_array, g_strdup(_("URL:")) );
+    g_ptr_array_add ( ext_labels_array, g_strdup(_("URL name:")) );
+    g_ptr_array_add ( ext_labels_array, g_strdup(_("Fix Mode:")) );
+    g_ptr_array_add ( ext_labels_array, g_strdup(_("Satellites:")) );
+    g_ptr_array_add ( ext_labels_array, g_strdup(_("HDOP:")) );
+    g_ptr_array_add ( ext_labels_array, g_strdup(_("VDOP:")) );
+    g_ptr_array_add ( ext_labels_array, g_strdup(_("PDOP:")) );
+    g_ptr_array_add ( ext_labels_array, g_strdup(_("Age of DGPS Data:")) );
+    g_ptr_array_add ( ext_labels_array, g_strdup(_("DGPS Station Id:")) );
+    g_snprintf ( tmp_lab, sizeof(tmp_lab), _("Proximity Alarm: (%s)"), vu_height_units_text(height_units) );
+    g_ptr_array_add ( ext_labels_array, g_strdup(_(tmp_lab)) );
+    g_ptr_array_add ( ext_labels_array, NULL );
+    guint esize = ext_labels_array->len - 1; // As appending the NULL counts towards the length
+
+    gchar **ext_labels_str = (gchar**)g_ptr_array_free ( ext_labels_array, FALSE );
+
+    cnt_prop = 0;
+    GtkWidget *ext_content_prop[esize];
+
+    ww->crsentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+    ext_content_prop[cnt_prop++] = ww->crsentry;
+
     ww->speedentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+    ext_content_prop[cnt_prop++] = ww->speedentry;
 
-    gtk_box_pack_start ( GTK_BOX(extra), speedlabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->speedentry, FALSE, FALSE, 0 );
-
-    GtkWidget *magvarlabel = gtk_label_new ( _("Magnetic Variance:") );
     ww->magvarvalue = ui_label_new_selectable ( NULL ); // NB No edit ATM
-    gtk_box_pack_start ( GTK_BOX(extra), magvarlabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->magvarvalue, FALSE, FALSE, 0 );
+    ext_content_prop[cnt_prop++] = ww->magvarvalue;
 
-    GtkWidget *geoidhgtlabel = gtk_label_new ( _("Geoid Height:") );
     ww->geoidhgtentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
-    gtk_box_pack_start ( GTK_BOX(extra), geoidhgtlabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->geoidhgtentry, FALSE, FALSE, 0 );
+    ext_content_prop[cnt_prop++] = ww->geoidhgtentry;
 
-    ww->urlbutton = gtk_link_button_new_with_label ( "", _("URL:") );
     ww->urlentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
-    GtkWidget *urlnamelabel = gtk_label_new (_("URL Name:"));
     ww->urlnameentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
 
-    gtk_box_pack_start ( GTK_BOX(extra), ww->urlbutton, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->urlentry, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), urlnamelabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->urlnameentry, FALSE, FALSE, 0 );
+    ext_content_prop[cnt_prop++] = ww->urlentry;
+    ext_content_prop[cnt_prop++] = ww->urlnameentry;
 
-    // Combine fix & satellites into one line??
-    GtkWidget *fixlabel = gtk_label_new ( _("Fix Mode:") );
     ww->fixvalue = ui_label_new_selectable ( NULL ); // NB No edit ATM
-    gtk_box_pack_start ( GTK_BOX(extra), fixlabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->fixvalue, FALSE, FALSE, 0 );
+    ext_content_prop[cnt_prop++] = ww->fixvalue;
 
-    GtkWidget *satlabel = gtk_label_new ( _("Satellites:") );
     ww->satvalue = ui_label_new_selectable ( NULL ); // NB No edit ATM
-    gtk_box_pack_start ( GTK_BOX(extra), satlabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->satvalue, FALSE, FALSE, 0 );
+    ext_content_prop[cnt_prop++] = ww->satvalue;
 
-    GtkWidget *hdoplabel = gtk_label_new ( _("HDOP:") );
     ww->hdopvalue = ui_label_new_selectable ( NULL ); // NB No edit ATM
-    gtk_box_pack_start ( GTK_BOX(extra), hdoplabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->hdopvalue, FALSE, FALSE, 0 );
+    ext_content_prop[cnt_prop++] = ww->hdopvalue;
 
-    GtkWidget *vdoplabel = gtk_label_new ( _("VDOP:") );
     ww->vdopvalue = ui_label_new_selectable ( NULL ); // NB No edit ATM
-    gtk_box_pack_start ( GTK_BOX(extra), vdoplabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->vdopvalue, FALSE, FALSE, 0 );
+    ext_content_prop[cnt_prop++] = ww->vdopvalue;
 
-    GtkWidget *pdoplabel = gtk_label_new ( _("PDOP:") );
     ww->pdopvalue = ui_label_new_selectable ( NULL ); // NB No edit ATM
-    gtk_box_pack_start ( GTK_BOX(extra), pdoplabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->pdopvalue, FALSE, FALSE, 0 );
+    ext_content_prop[cnt_prop++] = ww->pdopvalue;
 
-    GtkWidget *agedlabel = gtk_label_new ( _("Age of DGPS Data:") );
     ww->agedvalue = ui_label_new_selectable ( NULL ); // NB No edit ATM
-    gtk_box_pack_start ( GTK_BOX(extra), agedlabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->agedvalue, FALSE, FALSE, 0 );
+    ext_content_prop[cnt_prop++] = ww->agedvalue;
 
-    GtkWidget *dgpsidlabel = gtk_label_new ( _("DGPS Station Id:") );
     ww->dgpsidvalue = ui_label_new_selectable ( NULL ); // NB No edit ATM
-    gtk_box_pack_start ( GTK_BOX(extra), dgpsidlabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->dgpsidvalue, FALSE, FALSE, 0 );
+    ext_content_prop[cnt_prop++] = ww->dgpsidvalue;
 
     // Enable edit of some Extension values
-    g_snprintf ( tmp_lab, sizeof(tmp_lab), _("Proximity Alarm: (%s)"), vu_height_units_text(height_units) );
-    GtkWidget *prxlabel = gtk_label_new ( tmp_lab );
     ww->prxentry = ui_entry_new ( NULL, GTK_ENTRY_ICON_SECONDARY );
+    ext_content_prop[cnt_prop++] = ww->prxentry;
 
-    gtk_box_pack_start ( GTK_BOX(extra), prxlabel, FALSE, FALSE, 0 );
-    gtk_box_pack_start ( GTK_BOX(extra), ww->prxentry, FALSE, FALSE, 0 );
+    GtkTable *etab = GTK_TABLE(gtk_table_new (esize, 2, FALSE));
+    gtk_table_set_col_spacing ( etab, 0, 10 );
+    for ( guint ii=0; ii<esize; ii++ )
+      // Hardcode track URL widget
+      if (ii == 4)
+        ww->urlbutton = ui_attach_to_table ( etab, ii, ext_labels_str[ii], ext_content_prop[ii], wp->url, TRUE, 1, TRUE );
+      else
+        (void)ui_attach_to_table ( etab, ii, ext_labels_str[ii], ext_content_prop[ii], NULL, TRUE, 1, FALSE );
 
     gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
 
-    gtk_notebook_append_page ( GTK_NOTEBOOK(ww->tabs), GTK_WIDGET(basic), gtk_label_new(_("Basic")) );
-    gtk_notebook_append_page ( GTK_NOTEBOOK(ww->tabs), GTK_WIDGET(extra), gtk_label_new(_("Extra")) );
+    gtk_notebook_append_page ( GTK_NOTEBOOK(ww->tabs), GTK_WIDGET(btab), gtk_label_new(_("Basic")) );
+    gtk_notebook_append_page ( GTK_NOTEBOOK(ww->tabs), GTK_WIDGET(etab), gtk_label_new(_("Extra")) );
 
     ww->extsw = gtk_scrolled_window_new ( NULL, NULL );
     gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(ww->extsw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
@@ -521,6 +527,9 @@ VikTrwLayerWpwin *vik_trw_layer_wpwin_show ( GtkWindow *parent, VikTrwLayerWpwin
     gtk_notebook_append_page ( GTK_NOTEBOOK(ww->tabs), ww->extsw, gtk_label_new(_("GPX Extensions")) );
 
     gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), GTK_WIDGET(ww->tabs), FALSE, FALSE, 0);
+
+    g_strfreev ( ext_labels_str );
+    g_strfreev ( bas_labels_str );
   }
 
   gchar *alt;
