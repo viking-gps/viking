@@ -795,6 +795,7 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
       if ( g_strcmp0(wp->comment, str) ) {
         if ( wp->comment || (str && strlen(str)) ) {
           vik_waypoint_set_comment ( wp, str );
+          set_button_url ( ww->commentlabel, wp->comment );
           changed = TRUE;
         }
       }
@@ -802,6 +803,7 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
       if ( g_strcmp0(wp->description, str) ) {
         if ( wp->description || (str && strlen(str)) ) {
           vik_waypoint_set_description ( wp, str );
+          set_button_url ( ww->descriptionlabel, wp->description );
           changed = TRUE;
         }
       }
@@ -809,6 +811,7 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
       if ( g_strcmp0(wp->image, str) ) {
         if ( wp->image || (str && strlen(str)) ) {
           vik_waypoint_set_image ( wp, str );
+          set_button_url ( ww->imagelabel, wp->image );
           changed = TRUE;
         }
       }
@@ -816,6 +819,7 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
       if ( g_strcmp0(wp->source, str) ) {
         if ( wp->source || (str && strlen(str)) ) {
           vik_waypoint_set_source ( wp, str );
+          set_button_url ( ww->sourcelabel, wp->source );
           changed = TRUE;
         }
       }
@@ -906,6 +910,7 @@ static void trw_layer_wpwin_response ( VikTrwLayerWpwin *ww, gint response )
       if ( g_strcmp0(wp->url, str) ) {
         if ( wp->url || (str && strlen(str)) ) {
           vik_waypoint_set_url ( wp, str );
+          set_button_url ( ww->urlbutton, wp->url );
           changed = TRUE;
         }
       }
