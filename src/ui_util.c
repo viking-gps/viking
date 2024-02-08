@@ -548,24 +548,24 @@ GtkWidget *ui_spin_button_new ( GtkAdjustment *adjustment,
  *
  * Returns: The created widget
  */
-GtkWidget *ui_attach_to_table ( GtkTable *table, int i, char *mylabel, GtkWidget *content, gchar *value_potentialURL, gboolean embolden )
+GtkWidget *ui_attach_to_table ( GtkTable *table, int i, char *mylabel, GtkWidget *content, gchar *value_potentialURL, gboolean embolden, guint spacing, gboolean forceURLs )
 {
   // Settings so the text positioning only moves around vertically when the dialog is resized
   // This also gives more room to see the text e.g. for track comment fields
   GtkWidget *ww = NULL;
-  gboolean isURL = FALSE;
+  gboolean isURL = forceURLs;
 
   if ( value_potentialURL ) {
-    gchar *scheme = g_uri_parse_scheme ( value_potentialURL );
-    if ( scheme )
-      isURL = TRUE;
-    g_free ( scheme );
+	  gchar *scheme = g_uri_parse_scheme ( value_potentialURL );
+	  if ( scheme )
+		  isURL = TRUE;
+	  g_free ( scheme );
   }
 
   if ( isURL ) {
-    // NB apparently no control over label positioning & markup
-    //  when in a link button :(
-    ww = gtk_link_button_new_with_label ( value_potentialURL, _(mylabel) );
+	  // NB apparently no control over label positioning & markup
+	  //  when in a link button :(
+	  ww = gtk_link_button_new_with_label ( value_potentialURL ? value_potentialURL : "", _(mylabel) );
   } else {
     gchar *text = NULL;
     ww = gtk_label_new ( NULL );
@@ -577,20 +577,36 @@ GtkWidget *ui_attach_to_table ( GtkTable *table, int i, char *mylabel, GtkWidget
     gtk_misc_set_alignment ( GTK_MISC(ww), 1, 0.5 ); // Position text centrally in vertical plane
     g_free ( text );
   }
-  gtk_table_attach ( table, ww, 0, 1, i, i+1, GTK_FILL, GTK_SHRINK, 0, 0 );
+  gtk_table_attach ( table, ww, 0, 1, i, i+1, GTK_FILL, GTK_SHRINK, spacing, spacing );
   if ( GTK_IS_MISC(content) ) {
     gtk_misc_set_alignment ( GTK_MISC(content), 0, 0.5 );
   }
   if ( GTK_IS_COLOR_BUTTON(content) || GTK_IS_COMBO_BOX(content) )
     // Buttons compressed - otherwise look weird (to me) if vertically massive
-    gtk_table_attach ( table, content, 1, 2, i, i+1, GTK_FILL, GTK_SHRINK, 0, 5 );
+    gtk_table_attach ( table, content, 1, 2, i, i+1, GTK_FILL, GTK_SHRINK, spacing, 5 );
   else {
      // Expand for comments + descriptions / labels
-     gtk_table_attach_defaults ( table, content, 1, 2, i, i+1 );
+     //gtk_table_attach_defaults ( table, content, 1, 2, i, i+1 );
+     gtk_table_attach ( table, content, 1, 2, i, i+1, GTK_EXPAND | GTK_FILL, GTK_EXPAND | GTK_FILL, spacing, spacing );
      if ( GTK_IS_LABEL(content) )
        gtk_widget_set_can_focus ( content, FALSE ); // Prevent notebook auto selecting it
   }
   return ww;
+}
+
+/**
+ * ui_create_table:
+ *
+ * Returns: The created widget
+ */
+GtkWidget *ui_create_table ( int cnt, char *labels[], GtkWidget *contents[], gchar *value_potentialURL[], guint spacing )
+{
+	GtkTable *table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
+	gtk_table_set_col_spacing ( table, 0, 10 );
+	for ( guint i=0; i<cnt; i++ )
+		(void)ui_attach_to_table ( table, i, labels[i], contents[i], value_potentialURL ? value_potentialURL[i] : NULL, TRUE, spacing, FALSE );
+
+	return GTK_WIDGET (table);
 }
 
 /**

@@ -38,7 +38,7 @@ static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[], 
 	hide_widgets = NULL;
 
 	for ( guint ii=0; ii<cnt; ii++ ) {
-		GtkWidget *ww = ui_attach_to_table ( table, ii, labels[ii], contents[ii], value_potentialURL[ii], TRUE );
+		GtkWidget *ww = ui_attach_to_table ( table, ii, labels[ii], contents[ii], value_potentialURL[ii], TRUE, 1, FALSE );
 		if ( hideable[ii] ) {
 			hide_widgets = g_list_prepend ( hide_widgets, contents[ii] );
 			hide_widgets = g_list_prepend ( hide_widgets, ww );

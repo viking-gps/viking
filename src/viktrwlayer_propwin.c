@@ -3177,16 +3177,6 @@ static GtkWidget *create_graph_page ( PropWidgets *widgets,
   return vbox;
 }
 
-static GtkWidget *create_table (int cnt, char *labels[], GtkWidget *contents[], gchar *value_potentialURL[] )
-{
-  GtkTable *table = GTK_TABLE(gtk_table_new (cnt, 2, FALSE));
-  gtk_table_set_col_spacing (table, 0, 10);
-  for (guint i=0; i<cnt; i++)
-    (void)ui_attach_to_table ( table, i, labels[i], contents[i], value_potentialURL[i], TRUE );
-
-  return GTK_WIDGET (table);
-}
-
 static GtkWidget *create_table_from_arrays ( GPtrArray *paw, GPtrArray *pat )
 {
   g_return_val_if_fail ( paw->len == pat->len, NULL );
@@ -3194,7 +3184,7 @@ static GtkWidget *create_table_from_arrays ( GPtrArray *paw, GPtrArray *pat )
   GtkTable *table = GTK_TABLE(gtk_table_new(paw->len, 2, FALSE));
   gtk_table_set_col_spacing (table, 0, 10);
   for ( guint ii=0; ii < paw->len; ii++ )
-    (void)ui_attach_to_table ( table, ii, g_ptr_array_index(pat, ii), g_ptr_array_index(paw, ii), NULL, FALSE );
+    (void)ui_attach_to_table ( table, ii, g_ptr_array_index(pat, ii), g_ptr_array_index(paw, ii), NULL, FALSE, 0, FALSE );
 
   return GTK_WIDGET (table);
 }
@@ -3202,7 +3192,7 @@ static GtkWidget *create_table_from_arrays ( GPtrArray *paw, GPtrArray *pat )
 static void attach_to_table_extra ( GtkWidget *table, gchar *text, int ii, char *mylabel )
 {
   GtkWidget *wgt = ui_label_new_selectable ( text );
-  (void)ui_attach_to_table ( GTK_TABLE(table), ii, mylabel, wgt, NULL, FALSE );
+  (void)ui_attach_to_table ( GTK_TABLE(table), ii, mylabel, wgt, NULL, FALSE, 0, FALSE );
 }
 
 #define SPLIT_COLS 5
@@ -3919,8 +3909,8 @@ void vik_trw_layer_propwin_run ( GtkWindow *parent,
    gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new(tr->max_number_dist_labels, 0, 100, 1, 1, 0)), 1, 0 );
   gtk_widget_set_tooltip_text ( GTK_WIDGET(widgets->w_number_distlabels), _("Maximum number of distance labels to be shown") );
 
-  GtkWidget *table = create_table ( cnt_prop, label_texts, content_prop, label_text_value_maybe_URLs );
-  GtkWidget *table_draw = create_table ( cnt_draw, draw_texts, content_draw, draw_text_value_is_URLs );
+  GtkWidget *table = ui_create_table ( cnt_prop, label_texts, content_prop, label_text_value_maybe_URLs, 0 );
+  GtkWidget *table_draw = ui_create_table ( cnt_draw, draw_texts, content_draw, draw_text_value_is_URLs, 0 );
   GtkWidget *props = gtk_notebook_new();
   gtk_notebook_append_page ( GTK_NOTEBOOK(props), table, gtk_label_new(_("General")));
   gtk_notebook_append_page ( GTK_NOTEBOOK(props), table_draw, gtk_label_new(_("Drawing")));

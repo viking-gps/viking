@@ -42,7 +42,8 @@ void ui_entry_set_text ( GtkWidget *widget, const gchar *str );
 GtkWidget *ui_spin_button_new ( GtkAdjustment *adjustment,
                                 gdouble climb_rate,
                                 guint digits );
-GtkWidget *ui_attach_to_table ( GtkTable *table, int i, char *mylabel, GtkWidget *content, gchar *value_potentialURL, gboolean embolden );
+GtkWidget *ui_attach_to_table ( GtkTable *table, int i, char *mylabel, GtkWidget *content, gchar *value_potentialURL, gboolean embolden, guint spacing, gboolean forceURLs );
+GtkWidget *ui_create_table ( int cnt, char *labels[], GtkWidget *contents[], gchar *value_potentialURL[], guint spacing );
 
 GdkPixbuf *ui_pixbuf_new ( GdkColor *color, guint width, guint height );
 GdkPixbuf *ui_pixbuf_set_alpha ( GdkPixbuf *pixbuf, guint8 alpha );
