@@ -15,6 +15,7 @@
 #include "gpspoint.h"
 #include "file.h"
 #include "modules.h"
+#include "toolbar.h"
 
 int main(int argc, char *argv[])
 {
@@ -34,15 +35,17 @@ int main(int argc, char *argv[])
   a_layer_defaults_init ();
   a_download_init();
   modules_init();
+  a_toolbar_init();
 
   int result = 0;
 
   // Seems to work without an $DISPLAY
   // Also get lots of warnings about no actual drawing GCs available
   // but for file processing this seems to be good enough
+  VikWindow *vw = vik_window_new_window();
   VikLoadType_t lt;
   VikAggregateLayer* agg = vik_aggregate_layer_new ();
-  VikViewport* vp = vik_viewport_new ();
+  VikViewport* vp = vik_window_viewport(vw);
 
   lt = a_file_load_stream ( stdin, NULL, agg, vp, NULL, TRUE, FALSE, NULL, "NotUsedName" );
   if ( lt < LOAD_TYPE_VIK_FAILURE_NON_FATAL )
@@ -52,6 +55,7 @@ int main(int argc, char *argv[])
 
   g_object_unref ( agg );
 
+  a_toolbar_uninit ();
   a_download_uninit();
   vik_trwlayer_uninit ();
   a_layer_defaults_uninit ();
