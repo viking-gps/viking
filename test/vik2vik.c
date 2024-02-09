@@ -42,10 +42,14 @@ int main(int argc, char *argv[])
   // Seems to work without an $DISPLAY
   // Also get lots of warnings about no actual drawing GCs available
   // but for file processing this seems to be good enough
-  VikWindow *vw = vik_window_new_window();
   VikLoadType_t lt;
   VikAggregateLayer* agg = vik_aggregate_layer_new ();
+#if GTK_CHECK_VERSION (3,0,0)
+  VikWindow *vw = vik_window_new_window();
   VikViewport* vp = vik_window_viewport(vw);
+#else
+  VikViewport* vp = vik_viewport_new ();
+#endif
 
   lt = a_file_load_stream ( stdin, NULL, agg, vp, NULL, TRUE, FALSE, NULL, "NotUsedName" );
   if ( lt < LOAD_TYPE_VIK_FAILURE_NON_FATAL )
