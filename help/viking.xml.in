@@ -257,7 +257,11 @@ and docbook-xsl in your Build-Depends control field.
   <listitem><para>Waymarked Trails Skating = 704</para></listitem><!--maps.xml-->
   <listitem><para>Waymarked Trails Winter = 706</para></listitem><!--maps.xml-->
 </itemizedlist>
-        </listitem>
+<para>
+  The current list of available Maps and their Id, including the built in ones listed above plus any additional ones added by extended configuration,
+can be viewed in the main program by going to <menuchoice><guimenu>Help</guimenu><guisubmenu>Maps Information</guisubmenu></menuchoice>
+</para>
+</listitem>
       </varlistentry>
       <varlistentry>
         <term><option>-c</option></term>
