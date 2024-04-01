@@ -5950,7 +5950,7 @@ static gchar* draw_image_filename ( VikWindow *vw, img_generation_t img_gen, gdo
     // A directory
     // For some reason this method is only written to work in UTM...
     if ( vik_viewport_get_coord_mode(vw->viking_vvp) != VIK_COORD_UTM ) {
-      a_dialog_error_msg ( GTK_WINDOW(vw), _("You must be in UTM mode to use this feature") );
+      g_critical ("Should only be called in UTM mode");
       return fn;
     }
 
@@ -5973,6 +5973,14 @@ static gchar* draw_image_filename ( VikWindow *vw, img_generation_t img_gen, gdo
 
 static void draw_to_image_file ( VikWindow *vw, img_generation_t img_gen )
 {
+  // Ensure don't bother getting image settings, when we can't apply them
+  if ( img_gen == VW_GEN_DIRECTORY_OF_IMAGES ) {
+    if ( vik_viewport_get_coord_mode(vw->viking_vvp) != VIK_COORD_UTM ) {
+      a_dialog_error_msg ( GTK_WINDOW(vw), _("You must be in UTM mode to use this feature") );
+      return;
+    }
+  }
+
   /* todo: default for answers inside VikWindow or static (thruout instance) */
   GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Save to Image File"), GTK_WINDOW(vw),
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
