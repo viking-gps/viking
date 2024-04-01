@@ -1924,7 +1924,7 @@ gboolean vik_viewport_is_one_zone ( VikViewport *vvp )
 
 void vik_viewport_draw_layout ( VikViewport *vvp, GdkGC *gc, gint x, gint y, PangoLayout *layout, GdkColor *gcolor )
 {
-  if ( x > -100 && x < vvp->width + 100 && y > -100 && y < vvp->height + 100 ) {
+  if ( x > -VIK_VIEWPORT_LAYOUT_MAX && x < vvp->width + VIK_VIEWPORT_LAYOUT_MAX && y > -VIK_VIEWPORT_LAYOUT_MAX && y < vvp->height + VIK_VIEWPORT_LAYOUT_MAX ) {
 #if GTK_CHECK_VERSION (3,0,0)
     if ( gcolor )
       gdk_cairo_set_source_color ( gc, gcolor );

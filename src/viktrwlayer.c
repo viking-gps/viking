@@ -2892,32 +2892,41 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
       else
         label_y = y - dp->vtl->wp_size - height - 2;
 
-      /* if highlight mode on, then draw background text in highlight colour */
-      if ( dp->highlight ) {
-        GdkColor hcolor = vik_viewport_get_highlight_gdkcolor(dp->vp);
+      // Cater for 'longer' waypoint names, to ensure background is always shown correctly
+      //  as otherwise vik_viewport_draw_rectangle() will not draw it if too big -ve offset
+      //  hence perform adjustment here, including reducing the width as necessary
+      gint lx_bkgr = (label_x > 0) ? label_x - 1 : 0;
+      gint width_bkgr = (label_x > 0) ? width + 2 : width + 1 - abs(label_x);
+
+      // Ensure background drawing is congruent with text layout limits
+      if (label_x > -VIK_VIEWPORT_LAYOUT_MAX ) {
+        // if highlight mode on, then draw background text in highlight colour
+        if ( dp->highlight ) {
+          GdkColor hcolor = vik_viewport_get_highlight_gdkcolor(dp->vp);
 #if GTK_CHECK_VERSION (3,0,0)
-        if ( dp->vtl->wpbgand ) {
-          GdkRGBA bg = { hcolor.red / 65535.0, hcolor.blue / 65535.0, hcolor.green / 65535.0, 0.5 };
-          gdk_cairo_set_source_rgba ( dp->vtl->waypoint_bg_gc, &bg );
-          vik_viewport_draw_rectangle ( dp->vp, vik_viewport_get_gc_highlight (dp->vp), TRUE, label_x - 1, label_y-1,width+2,height+2, NULL );
-        }
-        else
+          if ( dp->vtl->wpbgand ) {
+            GdkRGBA bg = { hcolor.red / 65535.0, hcolor.blue / 65535.0, hcolor.green / 65535.0, 0.5 };
+            gdk_cairo_set_source_rgba ( dp->vtl->waypoint_bg_gc, &bg );
+            vik_viewport_draw_rectangle ( dp->vp, vik_viewport_get_gc_highlight (dp->vp), TRUE, lx_bkgr, label_y-1, width_bkgr, height+2, NULL );
+          }
+          else
 #endif
-        vik_viewport_draw_rectangle ( dp->vp, vik_viewport_get_gc_highlight (dp->vp), TRUE, label_x - 1, label_y-1,width+2,height+2, &hcolor );
-      }
-      else {
+          vik_viewport_draw_rectangle ( dp->vp, vik_viewport_get_gc_highlight (dp->vp), TRUE, lx_bkgr, label_y-1, width_bkgr, height+2, &hcolor );
+        }
+        else {
 #if GTK_CHECK_VERSION (3,0,0)
-        if ( dp->vtl->wpbgand ) {
-          GdkRGBA bg = { dp->vtl->waypoint_bg_color.red / 65535.0,
-                         dp->vtl->waypoint_bg_color.blue / 65535.0,
-                         dp->vtl->waypoint_bg_color.green / 65535.0,
-                         0.5 };
-          gdk_cairo_set_source_rgba ( dp->vtl->waypoint_bg_gc, &bg );
-          vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, label_x - 1, label_y-1,width+2,height+2, NULL );
-        }
-        else
+          if ( dp->vtl->wpbgand ) {
+            GdkRGBA bg = { dp->vtl->waypoint_bg_color.red / 65535.0,
+                           dp->vtl->waypoint_bg_color.blue / 65535.0,
+                           dp->vtl->waypoint_bg_color.green / 65535.0,
+                           0.5 };
+            gdk_cairo_set_source_rgba ( dp->vtl->waypoint_bg_gc, &bg );
+            vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, lx_bkgr, label_y-1, width_bkgr, height+2, NULL );
+          }
+          else
 #endif
-        vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, label_x - 1, label_y-1,width+2,height+2, &dp->vtl->waypoint_bg_color );
+          vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_bg_gc, TRUE, lx_bkgr, label_y-1, width_bkgr, height+2, &dp->vtl->waypoint_bg_color );
+        }
       }
       vik_viewport_draw_layout ( dp->vp, dp->vtl->waypoint_text_gc, label_x, label_y, dp->vtl->wplabellayout, &dp->vtl->waypoint_text_color );
     }
