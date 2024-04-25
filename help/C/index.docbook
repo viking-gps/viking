@@ -506,7 +506,7 @@ Q. When planning a <emphasis>route</emphasis> what difference does it make if it
 </para>
 <para>
 A. One difference is in how a GPS device navigates following the route or track.
-The capability, the options and data on a particular device also effect how the navigation is performed.
+The capability, the options and data on a particular device also affect how the navigation is performed.
 Often the how a device actually works doesn't seem to be formally documented by the manufacturer (and can be firmware dependent too).
 Web searches can reveal people's experiences with specific devices on blogs and various forums.
 For some devices it will attempt to navigate between route points, which may then suggest various roads and tracks between the points using an internal routing algorithm with some kind of transport profile.
@@ -1112,14 +1112,14 @@ Also see <xref linkend="trw_tools"/> for use in conjunction with this layer.
 This layer has many configurable properties split into several parts:
 </para>
 <section><title>Waypoints</title>
-  <para>Options that effect the drawing of waypoints.</para>
+  <para>Options that affect the drawing of waypoints.</para>
 </section>
 <section><title>Tracks</title>
-  <para>Basic options that effect the drawing of tracks and routes.</para>
+  <para>Basic options that affect the drawing of tracks and routes.</para>
 </section>
 <section><title>Tracks Advanced</title>
-  <para>More detailed options that effect the drawing and processing of tracks and routes.</para>
-  <para>Options that effect the processing of tracks and routes are:</para>
+  <para>More detailed options that affect the drawing and processing of tracks and routes.</para>
+  <para>Options that affect the processing of tracks and routes are:</para>
   <variablelist>
     <varlistentry>
       <term><guilabel>Apply DEM Automatically</guilabel></term>
@@ -3207,7 +3207,7 @@ You can use the scroll wheel, the middle-click, the middle-click+drag to zoom, c
 <keycap>Middle-click</keycap> and drag: pan
 </para>
 <para>
-Also see <xref linkend="prefs_advanced"/> for options that effect the scrolling behaviour.
+Also see <xref linkend="prefs_advanced"/> for options that affect the scrolling behaviour.
 </para>
 <para>
   When any of the primary window tools is active (Select, Pan, Zoom or Ruler), the viewport can be moved by pressing the arrow keys: <keycap>Up</keycap>, <keycap>Left</keycap>, <keycap>Right</keycap> and <keycap>Down</keycap>.
@@ -3882,7 +3882,7 @@ The location of fonts for use with Mapnik. Normally it is best to simply use the
 </section>
 
 <section id="prefs_startup" xreflabel="Startup Preferences"><title>Startup</title>
-<para>Naturally since these preferences effect the startup, the values will not be used until &appname; is restarted.</para>
+<para>Naturally since these preferences affect the startup, the values will not be used until &appname; is restarted.</para>
 <section><title>Restore Window Setup</title>
 <para>When this is enabled, the main window size and layout (such as whether the statusbar or layers panel are shown) is restored to the values from last use.</para>
 </section>
