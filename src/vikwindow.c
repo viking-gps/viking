@@ -1994,9 +1994,8 @@ static void vik_window_pan_move (VikWindow *vw, GdkEventMotion *event)
     vw->pan_move = TRUE;
     vw->pan_x = new_pan_x;
     vw->pan_y = new_pan_y;
-    if ( vw->pending_draw_id )
-      g_source_remove ( vw->pending_draw_id );
-    vw->pending_draw_id = g_timeout_add ( vw->move_scroll_timeout, (GSourceFunc)pending_draw_timeout, vw );
+    if ( ! vw->pending_draw_id )
+      vw->pending_draw_id = g_timeout_add ( vw->move_scroll_timeout, (GSourceFunc)pending_draw_timeout, vw );
   }
 }
 
@@ -2267,9 +2266,8 @@ static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
 
     // Note using a shorter timeout compared to the other instance at the end of this function
     //  since one path to get here is via touch-pad scrolls which would be generating many events
-    if ( vw->pending_draw_id )
-      g_source_remove ( vw->pending_draw_id );
-    vw->pending_draw_id = g_timeout_add ( vw->move_scroll_timeout, (GSourceFunc)pending_draw_timeout, vw );
+    if ( ! vw->pending_draw_id )
+        vw->pending_draw_id = g_timeout_add ( vw->move_scroll_timeout, (GSourceFunc)pending_draw_timeout, vw );
 
     return TRUE;
   }
@@ -2310,9 +2308,8 @@ static gboolean draw_scroll (VikWindow *vw, GdkEventScroll *event)
   // If a pending draw, remove it and create a new one
   //  thus avoiding intermediary screen redraws when transiting through several
   //  zoom levels in quick succession, as typical when scroll zooming.
-  if ( vw->pending_draw_id )
-    g_source_remove ( vw->pending_draw_id );
-  vw->pending_draw_id = g_timeout_add ( vw->zoom_scroll_timeout, (GSourceFunc)pending_draw_timeout, vw );
+  if ( ! vw->pending_draw_id )
+    vw->pending_draw_id = g_timeout_add ( vw->zoom_scroll_timeout, (GSourceFunc)pending_draw_timeout, vw );
 
   return TRUE;
 }
