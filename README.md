@@ -8,8 +8,21 @@ see real-time GPS position, Geotag Images,
 control items, upload/download OSM Traces and more.
 It is written mainly in C with some C++ and uses the GTK+3 toolkit.
 
-Website: https://viking.sf.net/
+## Support
 
+Primary website:
+https://viking.sf.net/
+
+About:
+https://sourceforge.net/p/viking/wikiallura/Main_Page/
+
+Forums:
+https://sourceforge.net/p/viking/discussion/general/
+
+Other:
+https://github.com/viking-gps/viking/issues
+
+https://www.reddit.com/r/viking_gps/
 
 ## Obtaining Viking
 
