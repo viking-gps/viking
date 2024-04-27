@@ -6585,35 +6585,6 @@ static void window_create_ui( VikWindow *window )
     gtk_action_group_add_toggle_actions ( action_group, toggle_debug, G_N_ELEMENTS(toggle_debug), window );
   }
 
-  gchar *devicelabel = NULL;
-  if ( a_settings_get_string(VIK_SETTINGS_WIN_FILE_MOUNT, &devicelabel) ) {
-    // It would be more logical to put in the File menu;
-    //  but ATM this gets appended to the existing menu,
-    //  so for now seems perhaps better to put in the Help
-    if ( gtk_ui_manager_add_ui_from_string ( uim,
-                                             "<ui><menubar name='MainMenu'><menu action='Help'>"
-                                             "<menuitem action='Mount'/>"
-                                             "<menuitem action='Unmount'/>"
-                                             "<menuitem action='MountInfo'/>"
-                                             "</menu></menubar></ui>",
-         -1, NULL ) ) {
-      // Provided for very basic use, so ATM strings delibrately not marked for i18n
-      gchar *mlabel = g_strdup_printf ( "_Mount Device: %s", devicelabel );
-      gchar *ulabel = g_strdup_printf ( "_Unmount Device: %s", devicelabel );
-      gchar *ilabel = g_strdup_printf ( "Mount Device _Info: %s", devicelabel );
-      GtkActionEntry AMentries[] = {
-        { "Mount",     GTK_STOCK_HARDDISK,   mlabel, NULL, "Mount this device",   (GCallback)try_mount_cb },
-        { "Unmount",   GTK_STOCK_DISCONNECT, ulabel, NULL, "Umount this device",  (GCallback)try_unmount_cb },
-        { "MountInfo", GTK_STOCK_INFO,       ilabel, NULL, "Mounted device info", (GCallback)try_mount_info_cb },
-      };
-      gtk_action_group_add_actions ( action_group, AMentries, G_N_ELEMENTS(AMentries), window );
-      g_free ( mlabel );
-      g_free ( ulabel );
-      g_free ( ilabel );
-    }
-  }
-  g_free ( devicelabel );
-
   for ( i=0; i < G_N_ELEMENTS (entries); i++ ) {
     if ( entries[i].callback )
       toolbar_action_entry_register ( window->viking_vtb, &entries[i] );
@@ -6759,6 +6730,39 @@ static void window_create_ui( VikWindow *window )
       g_object_set(action, "sensitive", FALSE, NULL);
     }
   }
+
+  gchar *devicelabel = NULL;
+  if ( a_settings_get_string(VIK_SETTINGS_WIN_FILE_MOUNT, &devicelabel) ) {
+    if ( gtk_ui_manager_add_ui_from_string ( uim,
+                                             "<ui>"
+                                               "<menubar name='MainMenu'>"
+                                                 "<menu action='Tools'>"
+                                                   "<menu action='Device'>"
+                                                     "<menuitem action='Mount'/>"
+                                                     "<menuitem action='Unmount'/>"
+                                                     "<menuitem action='MountInfo'/>"
+                                                   "</menu>"
+                                                 "</menu>"
+                                               "</menubar>"
+                                             "</ui>",
+         -1, NULL ) ) {
+      // Provided for very basic use, so ATM tooltip strings deliberately not marked for i18n
+      gchar *mlabel = g_strdup_printf ( "_Mount Device: %s", devicelabel );
+      gchar *ulabel = g_strdup_printf ( "_Unmount Device: %s", devicelabel );
+      gchar *ilabel = g_strdup_printf ( "Mount Device _Info: %s", devicelabel );
+      GtkActionEntry AMentries[] = {
+        { "Device",    GTK_STOCK_HARDDISK,   ("_Device"), NULL, NULL, NULL },
+        { "Mount",     GTK_STOCK_MEDIA_PLAY, mlabel, NULL, "Mount this device",   (GCallback)try_mount_cb },
+        { "Unmount",   GTK_STOCK_MEDIA_STOP, ulabel, NULL, "Unmount this device", (GCallback)try_unmount_cb },
+        { "MountInfo", GTK_STOCK_INFO,       ilabel, NULL, "Mounted device info", (GCallback)try_mount_info_cb },
+      };
+      gtk_action_group_add_actions ( action_group, AMentries, G_N_ELEMENTS(AMentries), window );
+      g_free ( mlabel );
+      g_free ( ulabel );
+      g_free ( ilabel );
+    }
+  }
+  g_free ( devicelabel );
 
   // This is done last so we don't need to track the value of mid anymore
   vik_ext_tools_add_action_items ( window, window->uim, action_group, mid );
