@@ -9,7 +9,6 @@ static const char *toolbar_xml =
 "      <toolitem name='Open' action='Open'/>"
 "      <toolitem name='Save' action='Save'/>"
 "      <toolitem name='Print' action='Print'/>"
-"      <toolitem name='Exit' action='Exit'/>"
 "      <separator/>"
 "      <toolitem action='FullScreen'/>"
 "      <toolitem action='ViewSidePanel'/>"
