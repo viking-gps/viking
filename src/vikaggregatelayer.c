@@ -284,6 +284,7 @@ struct _VikAggregateLayer {
   guint zoom_level;
   gboolean draw_grid;
   guint zoom_level_prev;
+  gboolean zoom_level_chgd;
 
   gboolean on[CP_NUM];
   guint8 alpha[CP_NUM];
@@ -2247,8 +2248,8 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
   //   on particularly initial file loads)
   // Also don't try to find new ones when the zoom level has changed
   //  and discount the number of unreachable tiles
-  gboolean zoom_level_chgd = (ct->val->zoom_level_prev != ct->val->zoom_level);
-  if ( zoom_level_chgd )
+  ct->val->zoom_level_chgd = (ct->val->zoom_level_prev != ct->val->zoom_level);
+  if ( ct->val->zoom_level_chgd )
     ct->val->zoom_level_prev = ct->val->zoom_level;
   guint sz = 0;
   if ( tiles_unreachable )
@@ -2327,7 +2328,7 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
     tracks_processed = tracks_processed + ct->num_of_tracks;
   }
 
-  if ( (ct->val->num_prev[BASIC] > sz) && ct->val->on[TNEW] && !zoom_level_chgd ) {
+  if ( (ct->val->num_prev[BASIC] > sz) && ct->val->on[TNEW] && !ct->val->zoom_level_chgd ) {
     // Determine difference in latest tiles vs prev
     // Could be slow, but seems not too bad
     GHashTableIter iter;
@@ -3514,28 +3515,35 @@ static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val )
                                params_tile_area_levels[map_utils_mpp_to_scale(val->zoom_level)], val->num_tiles[BASIC] );
       // Changes only shown after initial calculation
       //  mainly for the idea to prevent showing that everything has initially changed (e.g. on file load)
-      if ( (val->num_calcs > 1) && val->num_tiles[TNEW] )
-        g_string_append_printf ( gs, _(" (%+d)"), val->num_tiles[TNEW] );
+      // Further, only show changes if same zoom level is maintained
+      if ( !val->zoom_level_chgd )
+        if ( (val->num_calcs > 1) && val->num_tiles[TNEW] )
+          g_string_append_printf ( gs, _(" (%+d)"), val->num_tiles[TNEW] );
 
       g_string_append_printf ( gs, _("\nMax Square %d"), val->max_square );
-      if ( (val->num_calcs > 1) && (val->max_square != val->max_square_prev) )
-        g_string_append_printf ( gs, " (%+d)", (val->max_square-val->max_square_prev) );
+      if ( !val->zoom_level_chgd )
+        if ( (val->num_calcs > 1) && (val->max_square != val->max_square_prev) )
+          g_string_append_printf ( gs, " (%+d)", (val->max_square-val->max_square_prev) );
 
       g_string_append_printf ( gs, _("\nContiguous count %d"), val->num_tiles[CONTIG] );
-      if ( (val->num_calcs > 1) && (val->num_tiles[CONTIG] != val->num_prev[CONTIG]) )
-        g_string_append_printf ( gs, " (%+d)", (val->num_tiles[CONTIG]-val->num_prev[CONTIG]) );
+      if ( !val->zoom_level_chgd )
+        if ( (val->num_calcs > 1) && (val->num_tiles[CONTIG] != val->num_prev[CONTIG]) )
+          g_string_append_printf ( gs, " (%+d)", (val->num_tiles[CONTIG]-val->num_prev[CONTIG]) );
 
       g_string_append_printf ( gs, _("\nCluster size %d"), val->num_tiles[CLUSTER] );
-      if ( (val->num_calcs > 1) && (val->num_tiles[CLUSTER] != val->num_prev[CLUSTER]) )
-        g_string_append_printf ( gs, " (%+d)", (val->num_tiles[CLUSTER]-val->num_prev[CLUSTER]) );
+      if ( !val->zoom_level_chgd )
+        if ( (val->num_calcs > 1) && (val->num_tiles[CLUSTER] != val->num_prev[CLUSTER]) )
+          g_string_append_printf ( gs, " (%+d)", (val->num_tiles[CLUSTER]-val->num_prev[CLUSTER]) );
 
       g_string_append_printf ( gs, _("\nConsecutive north/south %d"), val->ns_size );
-      if ( (val->num_calcs > 1) && (val->ns_size != val->ns_size_prev) )
-        g_string_append_printf ( gs, " (%+d)", (val->ns_size-val->ns_size_prev) );
+      if ( !val->zoom_level_chgd )
+        if ( (val->num_calcs > 1) && (val->ns_size != val->ns_size_prev) )
+          g_string_append_printf ( gs, " (%+d)", (val->ns_size-val->ns_size_prev) );
 
       g_string_append_printf ( gs, _("\nConsecutive east/west %d"), val->ew_size );
-      if ( (val->num_calcs > 1) && (val->ew_size != val->ew_size_prev) )
-        g_string_append_printf ( gs, " (%+d)", (val->ew_size-val->ew_size_prev) );
+      if ( !val->zoom_level_chgd )
+        if ( (val->num_calcs > 1) && (val->ew_size != val->ew_size_prev) )
+          g_string_append_printf ( gs, " (%+d)", (val->ew_size-val->ew_size_prev) );
     }
   }
   g_snprintf ( tmp_buf, sizeof(tmp_buf), "%s", gs->str );
