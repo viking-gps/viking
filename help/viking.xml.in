@@ -233,7 +233,9 @@ and docbook-xsl in your Build-Depends control field.
         <listitem>
           <para>Add a map layer by specifying the map id. The value needs to match one of the internal ids or an id from the maps configuration extension (see below).
           Specifying a value of 0 will use the map layer default.
-          Specifying any negative value e.g. -2 will not show a map (overriding the GUI preference that automatically adds one at startup)</para>
+          Specifying any negative value e.g. -2 will not show a map (overriding the GUI preference that automatically adds one at startup)
+Note that --map cannot currently be used to add multiple layers. Only the final --map will be used.	  
+   </para>
 <para>Internal Map Ids:</para>
 <itemizedlist>
   <!-- Alphabetically sorted -->
