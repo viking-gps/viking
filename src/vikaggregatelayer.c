@@ -53,7 +53,7 @@ static gboolean aggregate_layer_selected_viewport_menu ( VikAggregateLayer *val,
 static void tac_calculate ( VikAggregateLayer *val );
 static void hm_calculate ( VikAggregateLayer *val );
 
-static gchar *params_tile_area_levels[] = { "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", NULL };
+static gchar *params_tile_area_levels[] = { "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", NULL };
 static gchar *params_tac_time_ranges[] = { N_("All Time"), "1", "2", "3", "5", "7", "10", "15", "20", "25", NULL };
 
 static VikLayerParamData tac_time_to_internal ( VikLayerParamData value )
@@ -96,7 +96,7 @@ static VikLayerParamData color_default ( void ) {
   VikLayerParamData data; gdk_color_parse ( "orange", &data.c ); return data;
 }
 static VikLayerParamData alpha_default ( void ) { return VIK_LPD_UINT ( 100 ); }
-static VikLayerParamData tile_area_level_default ( void ) { return VIK_LPD_UINT ( 3 ); }
+static VikLayerParamData tile_area_level_default ( void ) { return VIK_LPD_UINT ( 4 ); }
 
 static VikLayerParamData color_default_max_sqr ( void ) {
   VikLayerParamData data; gdk_color_parse ( "purple", &data.c ); return data;
@@ -281,9 +281,9 @@ struct _VikAggregateLayer {
 
   // Tracks Area Coverage
   gboolean calculating;
-  guint zoom_level;
+  gdouble zoom_level;
   gboolean draw_grid;
-  guint zoom_level_prev;
+  gdouble zoom_level_prev;
   gboolean zoom_level_chgd;
 
   gboolean on[CP_NUM];
@@ -560,8 +560,11 @@ static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetP
       break;
     case PARAM_TILE_AREA_LEVEL:
       if ( vlsp->data.u <= G_N_ELEMENTS(params_tile_area_levels) ) {
-        guint old = val->zoom_level;
-        val->zoom_level = pow ( 2, vlsp->data.u );
+        gdouble old = val->zoom_level;
+        if ( vlsp->data.u == 0 )
+          val->zoom_level = 0.5;
+        else
+          val->zoom_level = pow ( 2, vlsp->data.u - 1 );
         // Ensure when 'apply' button is clicked the TAC is recalculated for the new area value
         if ( val->zoom_level != old ) {
           tac_apply ( val, vlsp );
@@ -627,7 +630,7 @@ static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, gui
     case PARAM_LINES_ON: rv.b = val->on[LINES]; break;
     case PARAM_LINES_ALPHA: rv.u = val->alpha[LINES]; break;
     case PARAM_LINES_COLOR: rv.c = val->color[LINES]; break;
-    case PARAM_TILE_AREA_LEVEL: rv.u = map_utils_mpp_to_scale ( val->zoom_level ); break;
+    case PARAM_TILE_AREA_LEVEL: rv.u = map_utils_mpp_to_scale ( val->zoom_level ) + 1; break;
     case PARAM_TAC_TIME_RANGE: rv.u = val->tac_time_range; break;
     case PARAM_HM_ALPHA: rv.u = val->hm_alpha; break;
     case PARAM_HM_STAMP_FACTOR: rv.u = val->hm_stamp_factor; break;
@@ -2899,7 +2902,7 @@ static void tac_increase_cb ( menu_array_values values )
 static void tac_decrease_cb ( menu_array_values values )
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
-  if ( val->zoom_level > 1.1 )
+  if ( val->zoom_level > 0.9 )
     val->zoom_level = val->zoom_level / 2;
   if ( val->on[BASIC] )
     if ( !val->calculating )
@@ -3512,7 +3515,7 @@ static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val )
       g_string_append ( gs, _("\nTAC: Calculating") );
     } else {
       g_string_append_printf ( gs, _("\nTAC: Area Level %s\nTotal tiles %d"),
-                               params_tile_area_levels[map_utils_mpp_to_scale(val->zoom_level)], val->num_tiles[BASIC] );
+                               params_tile_area_levels[map_utils_mpp_to_scale(val->zoom_level)+1], val->num_tiles[BASIC] );
       // Changes only shown after initial calculation
       //  mainly for the idea to prevent showing that everything has initially changed (e.g. on file load)
       // Further, only show changes if same zoom level is maintained
