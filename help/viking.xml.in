@@ -126,92 +126,11 @@ and docbook-xsl in your Build-Depends control field.
 
   <refsect1>
     <title>FILES</title>
-    <para>
-      The User Configuration File Location directory is <filename>~/.viking</filename> for versions up to v1.8.
-      For new installs it is <filename>~/.config/viking</filename> from v1.9 onwards.
-      If the legacy location exists then Viking will use that in preference to the new location.
-    </para>
-    <para>
-      NB The User Configuration File Location can be overridden for the current session by explicitly setting the configuration directory via the <emphasis>--config-dir</emphasis> command line option.
-    </para>
-    <variablelist>
-      <varlistentry>
-        <term>Configuration: <filename>maps.xml</filename></term>
-        <listitem>
-          <para>File containing definition of map sources.</para>
-          <para>See previous section for details.</para>
-       </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>Configuration: <filename>goto_tools.xml</filename></term>
-        <listitem>
-          <para>File containing definition of "Go-to" services.</para>
-          <para>See previous section for details.</para>
-       </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>Configuration: <filename>external_tools.xml</filename></term>
-        <listitem>
-          <para>File containing definition of external tools.</para>
-          <para>See previous section for details.</para>
-       </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>Configuration: <filename>datasources.xml</filename></term>
-        <listitem>
-          <para>File containing definition of remote file datasources.</para>
-          <para>See previous section for details.</para>
-       </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>Configuration: <filename>routing.xml</filename></term>
-        <listitem>
-          <para>File containing definition of routing sources.</para>
-          <para>See previous section for details.</para>
-       </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>Configuration: <filename>viking.prefs</filename></term>
-        <listitem>
-          <para>Preferences for &dhpackage;.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>Configuration: <filename>viking_layer_defaults.ini</filename></term>
-        <listitem>
-          <para>Layer default values for &dhpackage;.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>Configuration: <filename>viking.ini</filename></term>
-        <listitem>
-          <para>Values for &dhpackage; automatically saved between sessions.</para>
-          <para>Not generally intended to be manually edited.</para>
-	  <para>However some finer control of default internal values can be set.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>Configuration: <filename>keys.rc</filename></term>
-        <listitem>
-          <para>File containing short cut key accelerators.</para>
-          <para>This is in the standard GTK Accelerator map format.</para>
-       </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>Up to v1.8 <filename>~/.viking-maps/</filename></term>
-        <term>v1.9 onwards <filename>~/.cache/viking/</filename></term>
-        <listitem>
-          <para>Default location of the map cache of tiles downloaded or created by &dhpackage;.</para>
-          <para>If the legacy location exists then Viking will use that in preference.</para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-
-	<para>Extension files (&extfiles;)
-	are also searched in <filename>/etc/viking</filename> and
-	<filename>/usr/share/viking</filename> directories (or related in your system).</para>
-
+    <xi:include href="C/userconfig.xml" xmlns:xi="http://www.w3.org/2001/XInclude">
+      <xi:fallback><para><emphasis>WARNING: MISSING XINCLUDE userconfig.xml</emphasis></para></xi:fallback>
+    </xi:include>
   </refsect1>
+
   <refsect1>
     <title>ENVIRONMENT</title>
 

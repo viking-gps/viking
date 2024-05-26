@@ -21,7 +21,8 @@ HELP_EXTRA = legal.xml \
     georef_layer.xml \
     mapnik_rendering_layer.xml \
     recommends.xml \
-    refsynopsis.xml
+    refsynopsis.xml \
+    userconfig.xml
 HELP_MEDIA = \
     figures/Aggregate_heatmap.png \
     figures/Aggregate_statistics.png \
@@ -81,5 +82,5 @@ CLEANFILES+=$(MANPAGES)
 XSLTPROC=@XSLTPROC@ --nonet --xinclude
 
 # man pages now shares some detail with main Help
-%.1: %.xml C/refsynopsis.xml C/commandline_details.xml C/extending.xml
+%.1: %.xml C/refsynopsis.xml C/commandline_details.xml C/extending.xml C/userconfig.xml
 	$(XSLTPROC) -o $@ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<
