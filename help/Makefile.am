@@ -13,12 +13,14 @@ HELP_FILES = index.docbook
 HELP_EXTRA = legal.xml \
     attribution.xml \
     commandline.xml \
+    commandline_details.xml \
     edit_view_menus.xml \
     dem_layer.xml \
     geoclue_layer.xml \
     georef_layer.xml \
     mapnik_rendering_layer.xml \
-    recommends.xml
+    recommends.xml \
+    refsynopsis.xml
 HELP_MEDIA = \
     figures/Aggregate_heatmap.png \
     figures/Aggregate_statistics.png \
@@ -75,7 +77,8 @@ CLEANFILES=
 MANPAGES=viking.1
 man_MANS = $(MANPAGES)
 CLEANFILES+=$(MANPAGES)
-XSLTPROC=@XSLTPROC@ --nonet
+XSLTPROC=@XSLTPROC@ --nonet --xinclude
 
-%.1: %.xml
+# man pages now shares some detail with main Help
+%.1: %.xml C/refsynopsis.xml C/commandline_details.xml
 	$(XSLTPROC) -o $@ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<

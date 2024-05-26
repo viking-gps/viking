@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+   [
+    <!ENTITY appname          "Viking">
+    <!ENTITY dhpackage        "viking">
+   ]
+>
+<!-- Shared between man page and main Help -->
+<section id="commandline"><title>Details</title>
+
+<table frame='all'><title>File Reference</title>
+<tgroup cols='2' align='left' colsep='1' rowsep='1'>
+<thead>
+<row>
+  <entry>Values</entry>
+  <entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+ <entry>file(s)</entry>
+ <entry>Read the specified files in sequence left to right</entry>
+</row>
+<row>
+ <entry>-</entry>
+ <entry>Read input from standard in. No other files should be specified</entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+<para><!-- Force an empty paragraph in an attempt to make man output easier to see --></para>
+<para>
+Note that the ordering of files can be important depending on their file type.
+Subsequent non Viking project files are loaded into the previous Viking project, with the files being processed left to right.
+Some examples:
+</para>
+<itemizedlist>
+<listitem><para><literal>viking file1.gpx file2.gpx file3.gpx</literal></para><para> Here all GPX files are loaded into a new &appname; project in one window.</para></listitem>
+<listitem><para><literal>viking file1.vik file2.vik</literal></para><para> Each &appname; project file is opened in a new window.</para></listitem>
+<listitem><para><literal>viking file1.vik file2.gpx file3.gpx</literal></para><para> The GPX files are loaded into the &appname; project in one window.</para></listitem>
+<listitem><para><literal>viking file2.gpx file3.gpx file1.vik</literal></para><para> The GPX files are loaded into a new &appname; project in a one window and the &appname; project is loaded seperately in a seperate window.</para></listitem>
+</itemizedlist>
+
+<table frame='all'><title>Command Line Reference</title>
+<tgroup cols='3' align='left' colsep='1' rowsep='1'>
+<thead>
+<row>
+  <entry>Short Option</entry>
+  <entry>Long Option</entry>
+  <entry>Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+ <entry>-h</entry>
+  <entry>--help</entry>
+  <entry>Show the command line options and then exit.</entry>
+</row>
+<row>
+  <entry>-V</entry>
+  <entry>--verbose</entry>
+  <entry>Run in verbose mode. Some information about what &appname; is doing is shown in stdout.</entry>
+</row>
+<row>
+  <entry>-d</entry>
+  <entry>--debug</entry>
+  <entry>Run in debug mode. Even more information about what &appname; is doing is shown in stdout.
+This also enables some extra information features in the GUI itself, primarily of interest to developers.
+  </entry>
+</row>
+<row>
+  <entry>-v</entry>
+  <entry>--version</entry>
+  <entry>Show the version and then exit.</entry>
+</row>
+<row>
+  <entry>N/A</entry>
+  <entry>--latitude</entry>
+  <entry>Set the initial position to the specified latitude in decimal degrees.</entry>
+</row>
+<row>
+  <entry>N/A</entry>
+  <entry>--longitude</entry>
+  <entry>Set the initial position to the specified longitude in decimal degrees.</entry>
+</row>
+<row>
+  <entry>-z</entry>
+  <entry>--zoom</entry>
+  <entry>Set the initial zoom level. The value is the OSM zoom level (0 - 22).</entry>
+</row>
+<row>
+  <entry>-m</entry>
+  <entry>--map</entry>
+  <entry>Add a map layer by specifying the map id. The value needs to match one of the internal ids or an id from the <xref linkend='map_source'/>.
+  Specifying a value of 0 will use the map layer default.
+  Specifying any negative value e.g. -2 will not show a map (overriding the GUI preference that automatically adds one at startup)</entry>
+</row>
+<row>
+  <entry>-e</entry>
+  <entry>--external</entry>
+  <entry>The files specified on the command line will be loaded in as <emphasis>external files</emphasis> as per the External reference:<xref linkend='open_external'/> method.
+  Applies to GPX, FIT, KML or TCX types, thus has no effect on .vik files.</entry>
+</row>
+<row>
+  <entry>-c</entry>
+  <entry>--config-dir</entry>
+  <entry>Use an alternate location (which will be created if it does not exist) for the configuration directory.
+  This is useful for using/trying specific configuration values for a particular session without changing ones normal settings.
+  </entry>
+</row>
+<row>
+  <entry>-r</entry>
+  <entry>--running-instance</entry>
+  <entry>Opens the specified files in an already running instance of &appname;. If no instance is available than the files will not be opened.
+  Positional and map option parameters are not used or passed on to the running instance.
+    <note><para>This option is not available on <trademark>Windows</trademark></para></note>
+  </entry>
+</row>
+</tbody>
+</tgroup>
+</table>
+
+<para>Internal Map Ids:</para>
+<itemizedlist>
+  <!-- Alphabetically sorted -->
+  <listitem><para>4UMaps = 801</para></listitem><!--maps.xml-->
+  <listitem><para>Bing Aerial = 212</para></listitem><!--map_ids.h-->
+  <listitem><para>Blue Marble = 15</para></listitem><!--map_ids.h-->
+  <listitem><para>CalTopo = 29</para></listitem><!--maps.xml-->
+  <listitem><para>CyclOSM = 65</para></listitem><!--maps.xml-->
+  <listitem><para>pnvkarte Public Transport = 101</para></listitem><!--maps.xml-->
+  <listitem><para>OpenSeaMap = 600</para></listitem><!--maps.xml.h-->
+  <listitem><para>OpenTopo = 901 (current default)</para></listitem><!--map_ids.h-->
+  <listitem><para>OSM Cycle = 17</para></listitem><!--map_ids.h-->
+  <listitem><para>OSM Humanitarian = 22</para></listitem><!--map_ids.h-->
+  <listitem><para>OSM Mapnik = 13</para></listitem><!--map_ids.h-->
+  <listitem><para>OSM Transport = 20</para></listitem><!--map_ids.h-->
+  <listitem><para>OSM GPS Traces = 33</para></listitem><!--maps.xml-->
+  <listitem><para>Waymarked Trails Cycling = 702</para></listitem><!--maps.xml-->
+  <listitem><para>Waymarked Trails Hiking = 701</para></listitem><!--maps.xml-->
+  <listitem><para>Waymarked Trails MTB = 703</para></listitem><!--maps.xml-->
+  <listitem><para>Waymarked Trails Riding = 705</para></listitem><!--maps.xml-->
+  <listitem><para>Waymarked Trails Skating = 704</para></listitem><!--maps.xml-->
+  <listitem><para>Waymarked Trails Winter = 706</para></listitem><!--maps.xml-->
+</itemizedlist>
+
+<para>
+  The current list of available Maps and their Id, including the built in ones listed above plus any additional ones added by extended configuration,
+can be viewed in the main program by going to <menuchoice><guimenu>Help</guimenu><guisubmenu>Maps Information</guisubmenu></menuchoice>
+</para>
+
+<para>
+An example to open at a specified location with an OSM Mapnik map layer:
+<screen>viking --latitude 51.4 --longitude -1.3 --zoom 12 --map 13</screen>
+If a file is also specified on the command line, the command line location and zoom parameters will take precedence.
+</para>
+
+<para>
+  Viking supports <ulink url="https://tools.ietf.org/html/rfc5870">RFC5870</ulink>, the 'geo' URI scheme.
+  Every 'file' on the command line is checked to see if in fact it is a geo URI.
+  Thus the above example in geo URI format is:
+<screen>viking geo:51.4,-1.3?z=12 --map 13</screen>
+</para>
+
+<note>
+<para>
+As a special combination when both <emphasis>-V and -d</emphasis> are both enabled at the same time, &appname; will not delete some of the temporary files created during the program run.
+This is especially useful to monitor results of download requests (which need to be interpreted) if they suddenly start failing, as the file will have often more detailed information about the failure mode.
+</para>
+</note>
+
+<para>
+&appname; being a GTK+ program means some options are processed by GTK+ itself such as --display. Use the following to find out what they are for your system:
+<screen>viking --help-gtk</screen>
+</para>
+
+</section>
