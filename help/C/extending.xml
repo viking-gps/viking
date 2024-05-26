@@ -1,0 +1,529 @@
+<?xml version="1.0"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd"
+   [
+    <!ENTITY appname          "Viking">
+    <!ENTITY dhpackage        "viking">
+    <!ENTITY extfiles    "<filename>maps.xml</filename>, <filename>goto_tools.xml</filename>, <filename>datasources.xml</filename>, <filename>external_tools.xml</filename>, <filename>routing.xml</filename>">
+   ]
+>
+<!-- Shared between man page and main Help -->
+<section id="extend_viking" xreflabel="Extending Viking"><title>Extending &appname;</title>
+  <para><!-- Force an empty paragraph in an attempt to make man output easier to see --></para>
+  <section>
+    <title>Overview</title>
+      <para><!-- Force an empty paragraph in an attempt to make man output easier to see --></para>
+      <para>Currently, &appname; has some extension points based on configuration files. The file format is heavily inspired by the GtkBuilder file format: you specify the class of the GObject to build and set its properties. Technically, it is a XML file containing a "objects" root element. Inside this element, you set a collection of "object".</para>
+      <para>Here is an example:
+<programlisting><![CDATA[
+<objects>
+  <object class="ClassName">
+    <property name="property_name1">Property value</property>
+    <property name="property_name2">Property value</property>
+  </object>
+  ...
+<objects>
+]]>
+</programlisting>
+</para>
+      <para>
+        You can find more examples as installed on your system and in the documentation part of the distribution.
+        Typically these will be installed into one of the $XDG_DATA_DIR locations, such as <filename>/usr/share/viking/</filename> or <filename>C:\Program Files\Viking\data</filename> depending on the Operating System.
+      </para>
+      <para>
+	It is also possible to override the internal defaults e.g. to update any parameters should they change over time,
+	by adding the values into your configuration file.
+	When you define object group that already exists (and for Maps this means by a repeated Id key, but you may have to examine the source code to work out what the relevant Id values are) then you need to define all the other keys as well, otherwise they will be reset to the defaults.
+      </para>
+      <para></para>
+  </section>
+      <section id="map_source" xreflabel="Map Source Extensions">
+        <title>Map Sources</title>
+        <para>It is possible to add new map sources. The file is <filename>maps.xml</filename> placed in your <xref linkend="config_file_loc"/>.</para>
+        <para>
+          An example of the file is in the distribution <filename>doc/examples/maps.xml</filename>.
+          Further examples and values are online in the <ulink url="https://sourceforge.net/p/viking/wikiallura/Maps/">Maps Wiki</ulink>
+        </para>
+
+        <para>The <classname>VikSlippyMapSource</classname> allows declaration of any map source working like OpenStreetMap. It supports the following properties:
+          <variablelist>
+            <varlistentry>
+              <term>id</term>
+              <listitem><para>this is an integer and should be unique as it used to identify the map source</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>name</term>
+              <listitem><para>a string (should be unique) that is used for the OSM style cache directory name when the Map Cache directory is the default (<filename>~/.viking-maps</filename>)</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the map's source selection dialog</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>hostname</term>
+              <listitem><para>the server's hostname (eg. "tile.openstreetmap.org")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url</term>
+              <listitem>
+		<para>the parameterised address of the tile, in the spirit of C printf format, with 3 "%d" fields for Z, X and Y (in that order) (eg. "/%d/%d/%d.png")</para>
+		<note>
+		  <para>The full parameterised address can just be put in the URL field and the hostname field doesn't need specifying.</para>
+		  <para>e.g. "https://tile.openstreetmap.org/%d/%d/%d.png"</para>
+		</note>
+	      </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>user-agent (optional)</term>
+              <listitem>
+                <para>Override the default user-agent used in the HTTP request.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>custom-http-headers (optional)</term>
+              <listitem>
+                <para>Custom HTTP headers to be added to the download request. The default is none.</para>
+                <para>Multiple headers can be specified by separating each part with an '\n'.</para>
+                <para>The header allows of substitutions of values of the positional Z, X and Y (in that order) values, as per the <emphasis>url</emphasis> option above. Using multiple and/or different ordered values can be acheived via printf() positional argument specifiers. For example:</para>
+                <para><literal>DNT: 1\nLine2: %d %d %d\nReordered: %3$d %1$d %2$d</literal></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>copyright (optional)</term>
+              <listitem><para>The copyright of the map source.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>license (optional)</term>
+              <listitem><para>The license of the map source.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>license-url (optional)</term>
+              <listitem><para>The URL of the license of the map source.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-min (optional)</term>
+              <listitem><para>The minimum Tiled Web Map zoom value supported by the tile server. The Default is 0 if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>zoom-max (optional)</term>
+              <listitem>
+                 <para>The maximum Tiled Web Map zoom value supported by the tile server. The Default is 18 if not specified.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-min (optional)</term>
+              <listitem><para>The minimum latitude value in degrees supported by the tile server. The Default is -90 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-max (optional)</term>
+              <listitem><para>The maximum latitude value in degrees supported by the tile server. The Default is 90 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-min (optional)</term>
+              <listitem><para>The minimum longitude value in degrees supported by the tile server. The Default is -180 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-max (optional)</term>
+              <listitem><para>The maximum longitude value in degrees supported by the tile server. The Default is 180 degrees if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>file-extension (optional)</term>
+              <listitem>
+                <para>The file extension of the files on disk. The default is <emphasis>.png</emphasis></para>
+                <para>If the tile source URL ends in something other than .png, then this parameter will need to match it.</para>
+                <para>This can also be useful in reading a tileset from other software which may name tiles in an alternative form,
+                      e.g. for Mobile Atlas creator it names them <emphasis>.png.tile</emphasis></para>
+                <note><para>The file types actually usable are those supported by GDK Pixbuf Library, which includes at least PNG and JPEG.</para></note>
+                <note><para>Remember to include the beginning <emphasis>'.'</emphasis> when specifying this parameter.</para></note>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>use-direct-file-access (optional)</term>
+              <listitem>
+                <para>Only use files on disk. The default is <emphasis>FALSE</emphasis></para>
+                <para>This can also be useful for tilesets already on disk as it will avoid attempting to download any tiles.</para>
+                <para>Thus with this type the <emphasis>hostname</emphasis> and <emphasis>url</emphasis> parameters are not necessary and are ignored.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>offset-x (optional)</term>
+              <listitem>
+                <para>The offset of the map in the x plane (towards east) in metres. The default is 0.0 if not specified.</para>
+                <para>Use negative numbers to adjust in a westerly direction.</para>
+                <para>Typical usage would be aligning differing maps, e.g. aerial imagery may be offset from cadastral maps.</para>
+                <para>Currently this is a single value that applies to all zoom levels.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>offset-y (optional)</term>
+              <listitem>
+                <para>The offset of the map in the y plane (towards north) in metres. The default is 0.0 if not specified.</para>
+                <para>Use negative numbers to adjust in a southerly direction.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>switch-xy (optional)</term>
+              <listitem>
+                <para>Swap the X,Y values around in the URL parameterised ordering.</para>
+                <para>The default is false.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>check-file-server-time (optional)</term>
+              <listitem>
+                <para>Sends the timestamp of the tile to the server, so the server can decide whether it should send a new tile or not.</para>
+                <para>The default is true.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>use-etag (optional)</term>
+              <listitem>
+                <para>Use and compare the <ulink url="https://en.wikipedia.org/wiki/HTTP_ETag">ETag</ulink> value in determining whether to download a newer tile. The default is false.</para>
+                <para>The ETag value is stored in a separate file in the same directory as the tile to enable checking the value across multiple runs of the program.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>referer (optional)</term>
+              <listitem><para>A URL to serve as referrer for the HTTP request (eg. "http://hostname/")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term>
+              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>tilesize-x (optional)</term>
+              <listitem><para>The tile x size. The default is 256 pixels if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>tilesize-y (optional)</term>
+              <listitem><para>The tile y size. The default is 256 pixels if not specified.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>scale (optional)</term>
+              <listitem>
+		<para>The tile scale. The scale is 1 if not specified.</para>
+                <note><para>Use a value of 2 to represent high res tiles.
+		Don't change the tilesize as the internal display size is still based on 256 pixels.
+		</para></note>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+        <para></para>
+        <para>The <classname>VikTmsMapSource</classname> allows declaration of any TMS service. A TMS (Tile Map Service) is defined in <ulink url="https://wiki.osgeo.org/wiki/Tile_Map_Service_Specification">Tile Map Service Specification</ulink>. The configuration supports the following properties (as per <classname>VikSlippyMapSource</classname> above):</para>
+        <para>
+          <simplelist>
+              <member>id</member>
+              <member>label</member>
+              <member>hostname</member>
+              <member>url</member>
+              <member>custom-http-headers (optional)</member>
+              <member>copyright (optional)</member>
+              <member>license (optional)</member>
+              <member>license-url (optional)</member>
+              <member>check-file-server-time (optional)</member>
+              <member>follow-location (optional)</member>
+              <member>referer (optional)</member>
+              <member>user-agent (optional)</member>
+              <member>zoom-min (optional)</member>
+              <member>zoom-max (optional)</member>
+              <member>lat-min (optional)</member>
+              <member>lat-max (optional)</member>
+              <member>lon-min (optional)</member>
+              <member>lon-max (optional)</member>
+              <member>file-extension (optional)</member>
+              <member>scale (optional)</member>
+              <member>tilesize-x (optional)</member>
+              <member>tilesize-y (optional)</member>
+              <member>offset-x (optional)</member>
+              <member>offset-y (optional)</member>
+          </simplelist>
+        </para>
+        <para></para>
+        <para>The <classname>VikWmscMapSource</classname> allows declaration of any WMS or WMS-C service. A WMS (Web Map Service) is defined in <ulink url="https://wiki.osgeo.org/wiki/WMS_Tile_Caching">WMS Tile Caching</ulink>. The configuration supports the following properties (as per <classname>VikSlippyMapSource</classname> above):</para>
+        <para>
+          <simplelist>
+              <member>id</member>
+              <member>label</member>
+              <member>hostname</member>
+              <member>url</member>
+              <member>custom-http-headers (optional)</member>
+              <member>copyright (optional)</member>
+              <member>license (optional)</member>
+              <member>license-url (optional)</member>
+              <member>check-file-server-time (optional)</member>
+              <member>follow-location (optional)</member>
+              <member>referer (optional)</member>
+              <member>user-agent (optional)</member>
+              <member>zoom-min (optional)</member>
+              <member>zoom-max (optional)</member>
+              <member>lat-min (optional)</member>
+              <member>lat-max (optional)</member>
+              <member>lon-min (optional)</member>
+              <member>lon-max (optional)</member>
+              <member>file-extension (optional)</member>
+              <member>scale (optional)</member>
+              <member>tilesize-x (optional)</member>
+              <member>tilesize-y (optional)</member>
+              <member>offset-x (optional)</member>
+              <member>offset-y (optional)</member>
+          </simplelist>
+        </para>
+      </section>
+
+      <section id="search_provider">
+        <title>Go-to Search Engines</title>
+        <para>It is possible to add new new search engines for the "Go-To" feature. The file is <filename>goto_tools.xml</filename> placed in your <xref linkend="config_file_loc"/>.</para>
+        <para>An example of the file in the distribution <filename>doc/examples/goto_tools.xml</filename>.</para>
+        <para>Currently, there is a single object class available: <classname>VikGotoXmlTool</classname>. This feature allows one to declare any search engine using a XML format as result.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the <guilabel>Go-To</guilabel> dialog</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-format</term>
+              <listitem><para>the parameterised address of the query, in the spirit of C <function>printf</function> format, with a single "%s" field (replaced by the query string)</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-path</term>
+              <listitem><para>XML path of the latitude (eg. <literal>/root/parent/elem</literal>)</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lat-attr (optional)</term>
+              <listitem><para>name of the attribute (of previous element) containing the latitude</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-path</term>
+              <listitem><para>XML path of the longitude (eg. <literal>/root/parent/elem</literal>)</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>lon-attr (optional)</term>
+              <listitem><para>name of the attribute (of previous element) containing the longiude</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>referer (optional)</term>
+              <listitem><para>A URL to serve as referer for the HTTP request (eg. "http://hostname/")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term>
+              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>user-agent (optional)</term>
+              <listitem>
+                <para>Override the default user-agent used in the HTTP request.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>custom-http-headers (optional)</term>
+              <listitem>
+                <para>Custom HTTP headers to be added to the HTTP request. The default is none.</para>
+                <para>Note that unlike custom-http-headers for Tile download requests, it does not perform any value substitions in this string.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+        <para>As a facility (or readability) it is possible to set both path and attribute name in a single property, like an XPath expression. To do so, simply set both info in lat-path (or lon-path) in the following format: <literal>/root/parent/elem@attribute</literal>.</para>
+      </section>
+
+      <section>
+        <title>External Tools</title>
+        <para>It is possible to add new external tools. The file is <filename>external_tools.xml</filename> placed in your <xref linkend="config_file_loc"/>.</para>
+        <para>An example of the file in the distribution <filename>doc/examples/external_tools.xml</filename>.</para>
+        <para>The <classname>VikWebtoolCenter</classname> allows one to declare any Webtool using a logic based on center coordinates and zoom level value.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the menu entry</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url</term>
+              <listitem><para>the parametrized URL to open, in the spirit of C printf format, with 2 "%s" and a "%d" fields for X, Y and Z (zoom level) (eg. "http://hostname/?lat=%s&amp;lon=%s&amp;zoom=%d")</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+        <para>The <classname>VikWebtoolBounds</classname> allows one to declare any Webtool using a logic based on bounds coordinates.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the menu entry</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url</term>
+              <listitem><para>the parametrized address of the tile, in the spirit of C printf format, with 4 "%s" fields for left, right, bottom and top (eg. "http://hostname:8111/load_and_zoom?left=%s&amp;right=%s&amp;bottom=%s&amp;top=%s")</para></listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+      </section>
+      
+      <section>
+        <title>Routing Engines</title>
+        <para>It is possible to declare new routing engines. The file is <filename>routing.xml</filename> placed in your <xref linkend="config_file_loc"/>.</para>
+        <para>An example of the file in the distribution <filename>doc/examples/routing.xml</filename>.</para>
+        <para>The <classname>VikRoutingWebEngine</classname> allows one to declare a routing engine available via HTTP.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>id</term>
+              <listitem><para>a string, should be unique as it used to identify the routing engine</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the menu entry</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>format</term>
+              <listitem>
+		<para>The <application>GPSBabel</application> format code to interpret the service response. By default a GPX response is expected and processed internally. However if the service returns a different format then <application>GPSBabel</application> is used to transform the text into something that &appname; can understand. Only formats that <application>GPSBabel</application> supports can be used: e.g. <emphasis>gtrnctr</emphasis> (for Garmin Training Center .tcx files), etc...</para>
+		<para>Use <command>gpsbabel --help</command> on the command line to find out the supported file types and their codes to process them.</para>
+		<para>Some format codes are handled natively by &appname; such as <emphasis>gpx</emphasis> and <emphasis>kml</emphasis>.</para>
+		<para>A special format code of <emphasis>viking-geojson-osrm</emphasis> is available for handling responses by <ulink url="http://project-osrm.org/">OSRM</ulink> route servers.</para>
+	      </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-base</term>
+              <listitem><para>the base URL of the web service (eg. "http://hostname/service?")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-start-ll</term>
+              <listitem><para>the part of the URL setting the starting point location, parameterised in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;start=%s,%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-stop-ll</term>
+              <listitem><para>the part of the URL setting the end point location, parameterised in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;stop=%s,%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-via-ll (optional)</term>
+              <listitem><para>the part of the URL setting via point location, parameterised in the spirit of C printf format, with 2 "%s" for coordinates (eg. "&amp;via=%s,%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-start-dir (optional)</term>
+              <listitem><para>the part of the URL setting the starting point location for direction based routing, parameterised in the spirit of C printf format, with one "%s" for direction (eg. "&amp;start=%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-stop-dir (optional)</term>
+              <listitem><para>the part of the URL setting the end point location for direction based routing, parameterised in the spirit of C printf format, with one "%s" for direction (eg. "&amp;stop=%s")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url-ll-lat-first (optional)</term>
+              <listitem><para>The ordering of the lat/long terms in the Start, Stop and Via URL settings. By default this is TRUE.</para>
+	      <para>For instance using Brouter services, the URL uses a pair of values which is longitude and then latitude. Thus setting this value to FALSE ensures the value substitution is performed in the necessary order.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>referer (optional)</term>
+              <listitem><para>A URL to serve as referer for the HTTP request (eg. "http://hostname/")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term>
+              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>user-agent (optional)</term>
+              <listitem>
+                <para>Override the default user-agent used in the HTTP request.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>custom-http-headers (optional)</term>
+              <listitem>
+                <para>Custom HTTP headers to be added to the HTTP request. The default is none.</para>
+                <para>Note that unlike custom-http-headers for Tile download requests, it does not perform any value substitutions in this string.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+      </section>
+      
+      <section>
+        <title>Remote File Datasources</title>
+        <para>It is possible to add web references expected to return a file which can then be opened directly or converted via GPSBabel.</para>
+        <para>The file is <filename>datasources.xml</filename> placed in your <xref linkend="config_file_loc"/>.</para>
+        <para>An example of the file is in the source distribution <filename>doc/examples/datasources.xml</filename>.</para>
+        <para>The <classname>VikWebtoolDatasource</classname> allows one to declare any URL using logic based on coordinates.</para>
+        <para>The related properties are:
+          <variablelist>
+            <varlistentry>
+              <term>label</term>
+              <listitem><para>the text displayed in the menu entry</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url</term>
+              <listitem>
+                <para>the parameterised URL to open in the spirit of C printf format, with up to 9 "%s" values. e.g. <literal>http://hostname/getfile?lat=%s&amp;lon=%s</literal></para>
+                <para>The order and meaning of these parameters is given by the url_format_code below</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>url_format_code</term>
+              <listitem>
+                <para>A string describing the parameterised URL substitution parameters, each character represents how to translate each term.</para>
+                <para>B = Bottom of the current view i.e. minimum latitude</para>
+                <para>L = Left of the current view i.e. minimum longitude</para>
+                <para>T = Top of the current view i.e. maximum latitude</para>
+                <para>R = Right of the current view i.e. maximum longitude</para>
+                <para>A = center lAtitude of the current view</para>
+                <para>O = center lOngitude of the current view</para>
+                <para>Z = OSM Zoom value of the current view. See <ulink url="https://wiki.openstreetmap.org/wiki/Zoom_levels">Zoom Levels</ulink></para>
+                <para>P = selected Point's latitude</para>
+                <para>N = selected poiNt's longitude</para>
+                <para>S = A user specified input string requested from the user via a dialog box</para>
+                <para>Thus for the url example above then the format code should be <emphasis>AO</emphasis></para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>file_type</term>
+              <listitem>
+                <para>This value is passed on for the -i parameter in interfacing with GPSBabel.</para>
+                <para>If it is not defined then the returned file is interpreted internally as a GPX file.</para>
+                <para>Possible values such as 'kml', 'mapsource' etc.. can be used. See <ulink url="https://www.gpsbabel.org/capabilities.html">GPSBabel File Formats</ulink> for the full list.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>babel_filter_args</term>
+              <listitem>
+                <para>This value is passed on for the filter arguments interfacing with GPSBabel.</para>
+                <para>E.g. "-x nuketypes,routes" can be used to filter all routes from the results.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>input_label</term>
+              <listitem>
+                <para>This value is used when requesting input from the user.</para>
+                <para>It is the label of the text input box.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>referer (optional)</term>
+              <listitem><para>A URL to serve as referrer for the HTTP request (eg. "http://hostname/")</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>follow-location (optional)</term>
+              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>user-agent (optional)</term>
+              <listitem>
+                <para>Override the default user-agent used in the HTTP request.</para>
+              </listitem>
+            </varlistentry>
+            <varlistentry>
+              <term>custom-http-headers (optional)</term>
+              <listitem>
+                <para>Custom HTTP headers to be added to the HTTP request. The default is none.</para>
+              </listitem>
+            </varlistentry>
+          </variablelist>
+        </para>
+      </section>
+
+      <section>
+        <title>System Extension File Locations</title>
+        <para>Note that, on <trademark>UNIX</trademark> like systems, the extension files (&extfiles;) are also searched in <filename>/etc/viking</filename> and <filename>/usr/share/viking</filename> directories (or related in your system).</para>
+        <para>The <envar>$XDG_DATA_DIRS</envar> environment variable can be used to change these directories.</para>
+        <para>The <envar>$XDG_DATA_HOME</envar> environment variable is also used (if set) to look for these extension files.</para>
+      </section>
+</section>

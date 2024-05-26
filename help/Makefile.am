@@ -15,6 +15,7 @@ HELP_EXTRA = legal.xml \
     commandline.xml \
     commandline_details.xml \
     edit_view_menus.xml \
+    extending.xml \
     dem_layer.xml \
     geoclue_layer.xml \
     georef_layer.xml \
@@ -80,5 +81,5 @@ CLEANFILES+=$(MANPAGES)
 XSLTPROC=@XSLTPROC@ --nonet --xinclude
 
 # man pages now shares some detail with main Help
-%.1: %.xml C/refsynopsis.xml C/commandline_details.xml
+%.1: %.xml C/refsynopsis.xml C/commandline_details.xml C/extending.xml
 	$(XSLTPROC) -o $@ http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<
