@@ -108,6 +108,11 @@ a cutting at 60s/km or equivalent (in other units) has been set*/
 #define VIK_GPS_MODE_DGPS	4
 #define VIK_GPS_MODE_PPS 	5	/* military signal used */
 
+
+// This won't overflow for lat/lon ranges (i.e. up to 180)
+//  and for typical precision requests (up to 6 decimal places)
+#define ROUND_TO_DECIMAL_PLACES(x,d) ((floor(((x)*pow(10,d))+.5))/pow(10,d))
+
 /* Some command line options */
 extern gboolean vik_debug;
 extern gboolean vik_verbose;

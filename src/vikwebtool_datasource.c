@@ -27,7 +27,7 @@
 #include "vikwebtool_datasource.h"
 #include <ctype.h>
 #include <string.h>
-
+#include <math.h>
 #include <glib.h>
 #include <glib/gi18n.h>
 
@@ -506,6 +506,10 @@ static gchar *webtool_datasource_get_url ( VikWebtool *self, VikWindow *vw )
 	gchar smaxlat[COORDS_STR_BUFFER_SIZE];
 	vik_viewport_get_min_max_lat_lon ( viewport, &min_lat, &max_lat, &min_lon, &max_lon );
 
+	min_lon = ROUND_TO_DECIMAL_PLACES ( min_lon, 6 );
+	max_lon = ROUND_TO_DECIMAL_PLACES ( max_lon, 6 );
+	min_lat = ROUND_TO_DECIMAL_PLACES ( min_lat, 6 );
+	max_lat = ROUND_TO_DECIMAL_PLACES ( max_lat, 6 );
 	// Cannot simply use g_strdup_printf and gdouble due to locale.
 	// As we compute an URL, we have to think in C locale.
 	// Furthermore ensure decimal output (never scientific notation)
@@ -518,6 +522,9 @@ static gchar *webtool_datasource_get_url ( VikWebtool *self, VikWindow *vw )
 	const VikCoord *coord = vik_viewport_get_center ( viewport );
 	struct LatLon ll;
 	vik_coord_to_latlon ( coord, &ll );
+
+	ll.lat = ROUND_TO_DECIMAL_PLACES ( ll.lat, 6 );
+	ll.lon = ROUND_TO_DECIMAL_PLACES ( ll.lon, 6 );
 
 	gchar scenterlat[COORDS_STR_BUFFER_SIZE];
 	gchar scenterlon[COORDS_STR_BUFFER_SIZE];

@@ -26,6 +26,7 @@
 
 #include "vikwebtoolformat.h"
 
+#include <math.h>
 #include <string.h>
 #include <glib.h>
 
@@ -204,6 +205,10 @@ static gchar *webtool_format_get_url_at_position ( VikWebtool *self, VikWindow *
 	gchar smaxlat[COORDS_STR_BUFFER_SIZE];
 	vik_viewport_get_min_max_lat_lon ( viewport, &min_lat, &max_lat, &min_lon, &max_lon );
 
+	min_lon = ROUND_TO_DECIMAL_PLACES ( min_lon, 6 );
+	max_lon = ROUND_TO_DECIMAL_PLACES ( max_lon, 6 );
+	min_lat = ROUND_TO_DECIMAL_PLACES ( min_lat, 6 );
+	max_lat = ROUND_TO_DECIMAL_PLACES ( max_lat, 6 );
 	// Cannot simply use g_strdup_printf and gdouble due to locale.
 	// As we compute an URL, we have to think in C locale.
 	// Furthermore ensure decimal output (never scientific notation)
@@ -217,6 +222,8 @@ static gchar *webtool_format_get_url_at_position ( VikWebtool *self, VikWindow *
 	struct LatLon ll;
 	vik_coord_to_latlon ( coord, &ll );
 
+	ll.lat = ROUND_TO_DECIMAL_PLACES ( ll.lat, 6 );
+	ll.lon = ROUND_TO_DECIMAL_PLACES ( ll.lon, 6 );
 	gchar scenterlat[COORDS_STR_BUFFER_SIZE];
 	gchar scenterlon[COORDS_STR_BUFFER_SIZE];
 	a_coords_dtostr_buffer ( ll.lat, scenterlat );
@@ -231,6 +238,8 @@ static gchar *webtool_format_get_url_at_position ( VikWebtool *self, VikWindow *
 		// No position supplied so might as well use the center
 		vik_coord_to_latlon ( coord, &llpt );
 
+	llpt.lat = ROUND_TO_DECIMAL_PLACES ( llpt.lat, 6 );
+	llpt.lon = ROUND_TO_DECIMAL_PLACES ( llpt.lon, 6 );
 	gchar spointlat[COORDS_STR_BUFFER_SIZE];
 	gchar spointlon[COORDS_STR_BUFFER_SIZE];
 	a_coords_dtostr_buffer ( llpt.lat, spointlat );

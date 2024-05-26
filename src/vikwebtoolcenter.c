@@ -26,7 +26,7 @@
 #include "vikwebtoolcenter.h"
 
 #include <string.h>
-
+#include <math.h>
 #include <glib.h>
 #include <glib/gi18n.h>
 
@@ -188,6 +188,9 @@ static gchar *webtool_center_get_url_at_position ( VikWebtool *self, VikWindow *
   // zoom - ideally x & y factors need to be the same otherwise use the default
   if ( vik_viewport_get_xmpp ( viewport ) == vik_viewport_get_ympp ( viewport ) )
     zoom = vik_webtool_center_mpp_to_zoom ( self, vik_viewport_get_zoom ( viewport ) );
+
+  ll.lat = ROUND_TO_DECIMAL_PLACES ( ll.lat, 6 );
+  ll.lon = ROUND_TO_DECIMAL_PLACES ( ll.lon, 6 );
 
   // Cannot simply use g_strdup_printf and gdouble due to locale.
   // As we compute an URL, we have to think in C locale.

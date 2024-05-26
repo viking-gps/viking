@@ -27,7 +27,7 @@
 #include "vikwebtoolbounds.h"
 
 #include <string.h>
-
+#include <math.h>
 #include <glib.h>
 #include <glib/gi18n.h>
 
@@ -171,6 +171,10 @@ static gchar *webtool_bounds_get_url ( VikWebtool *self, VikWindow *vwindow )
   gchar smaxlat[COORDS_STR_BUFFER_SIZE];
   vik_viewport_get_min_max_lat_lon ( viewport, &min_lat, &max_lat, &min_lon, &max_lon );
 
+  min_lon = ROUND_TO_DECIMAL_PLACES ( min_lon, 6 );
+  max_lon = ROUND_TO_DECIMAL_PLACES ( max_lon, 6 );
+  min_lat = ROUND_TO_DECIMAL_PLACES ( min_lat, 6 );
+  max_lat = ROUND_TO_DECIMAL_PLACES ( max_lat, 6 );
   // Cannot simply use g_strdup_printf and gdouble due to locale.
   // As we compute an URL, we have to think in C locale.
   // Furthermore ensure decimal output (never scientific notation)
