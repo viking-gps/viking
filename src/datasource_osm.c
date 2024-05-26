@@ -101,19 +101,19 @@ static void datasource_osm_get_process_options ( datasource_osm_widgets_t *widge
 {
   int page = 0;
   gdouble min_lat, max_lat, min_lon, max_lon;
-  gchar sminlon[G_ASCII_DTOSTR_BUF_SIZE];
-  gchar smaxlon[G_ASCII_DTOSTR_BUF_SIZE];
-  gchar sminlat[G_ASCII_DTOSTR_BUF_SIZE];
-  gchar smaxlat[G_ASCII_DTOSTR_BUF_SIZE];
+  gchar sminlon[COORDS_STR_BUFFER_SIZE];
+  gchar smaxlon[COORDS_STR_BUFFER_SIZE];
+  gchar sminlat[COORDS_STR_BUFFER_SIZE];
+  gchar smaxlat[COORDS_STR_BUFFER_SIZE];
 
   /* get Viewport bounding box */
   vik_viewport_get_min_max_lat_lon ( widgets->vvp, &min_lat, &max_lat, &min_lon, &max_lon );
 
   /* Convert as LANG=C double representation */
-  g_ascii_dtostr (sminlon, G_ASCII_DTOSTR_BUF_SIZE, min_lon);
-  g_ascii_dtostr (smaxlon, G_ASCII_DTOSTR_BUF_SIZE, max_lon);
-  g_ascii_dtostr (sminlat, G_ASCII_DTOSTR_BUF_SIZE, min_lat);
-  g_ascii_dtostr (smaxlat, G_ASCII_DTOSTR_BUF_SIZE, max_lat);
+  a_coords_dtostr_buffer ( min_lon, sminlon );
+  a_coords_dtostr_buffer ( max_lon, smaxlon );
+  a_coords_dtostr_buffer ( min_lat, sminlat );
+  a_coords_dtostr_buffer ( max_lat, smaxlat );
 
   /* Retrieve the specified page number */
   last_page_number = gtk_spin_button_get_value(GTK_SPIN_BUTTON(widgets->page_number));

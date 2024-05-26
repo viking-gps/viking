@@ -173,7 +173,7 @@ static gchar *webtool_center_get_url_at_position ( VikWebtool *self, VikWindow *
   VikViewport *viewport = vik_window_viewport ( vwindow );
   guint8 zoom = 17;
   struct LatLon ll;
-  gchar strlat[G_ASCII_DTOSTR_BUF_SIZE], strlon[G_ASCII_DTOSTR_BUF_SIZE];
+  gchar strlat[COORDS_STR_BUFFER_SIZE], strlon[COORDS_STR_BUFFER_SIZE];
 
   // Coords
   // Use the provided position otherwise use center of the viewport
@@ -191,8 +191,9 @@ static gchar *webtool_center_get_url_at_position ( VikWebtool *self, VikWindow *
 
   // Cannot simply use g_strdup_printf and gdouble due to locale.
   // As we compute an URL, we have to think in C locale.
-  g_ascii_dtostr (strlat, G_ASCII_DTOSTR_BUF_SIZE, ll.lat);
-  g_ascii_dtostr (strlon, G_ASCII_DTOSTR_BUF_SIZE, ll.lon);
+  // Furthermore ensure decimal output (never scientific notation)
+  a_coords_dtostr_buffer ( ll.lat, strlat );
+  a_coords_dtostr_buffer ( ll.lon, strlon );
 
   return g_strdup_printf ( priv->url, strlat, strlon, zoom );
 }

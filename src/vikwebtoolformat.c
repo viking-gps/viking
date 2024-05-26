@@ -198,28 +198,29 @@ static gchar *webtool_format_get_url_at_position ( VikWebtool *self, VikWindow *
 
 	// Get top left and bottom right lat/lon pairs from the viewport
 	gdouble min_lat, max_lat, min_lon, max_lon;
-	gchar sminlon[G_ASCII_DTOSTR_BUF_SIZE];
-	gchar smaxlon[G_ASCII_DTOSTR_BUF_SIZE];
-	gchar sminlat[G_ASCII_DTOSTR_BUF_SIZE];
-	gchar smaxlat[G_ASCII_DTOSTR_BUF_SIZE];
+	gchar sminlon[COORDS_STR_BUFFER_SIZE];
+	gchar smaxlon[COORDS_STR_BUFFER_SIZE];
+	gchar sminlat[COORDS_STR_BUFFER_SIZE];
+	gchar smaxlat[COORDS_STR_BUFFER_SIZE];
 	vik_viewport_get_min_max_lat_lon ( viewport, &min_lat, &max_lat, &min_lon, &max_lon );
 
 	// Cannot simply use g_strdup_printf and gdouble due to locale.
 	// As we compute an URL, we have to think in C locale.
-	g_ascii_dtostr (sminlon, G_ASCII_DTOSTR_BUF_SIZE, min_lon);
-	g_ascii_dtostr (smaxlon, G_ASCII_DTOSTR_BUF_SIZE, max_lon);
-	g_ascii_dtostr (sminlat, G_ASCII_DTOSTR_BUF_SIZE, min_lat);
-	g_ascii_dtostr (smaxlat, G_ASCII_DTOSTR_BUF_SIZE, max_lat);
+	// Furthermore ensure decimal output (never scientific notation)
+	a_coords_dtostr_buffer ( min_lon, sminlon );
+	a_coords_dtostr_buffer ( max_lon, smaxlon );
+	a_coords_dtostr_buffer ( min_lat, sminlat );
+	a_coords_dtostr_buffer ( max_lat, smaxlat );
 
 	// Center values
 	const VikCoord *coord = vik_viewport_get_center ( viewport );
 	struct LatLon ll;
 	vik_coord_to_latlon ( coord, &ll );
 
-	gchar scenterlat[G_ASCII_DTOSTR_BUF_SIZE];
-	gchar scenterlon[G_ASCII_DTOSTR_BUF_SIZE];
-	g_ascii_dtostr (scenterlat, G_ASCII_DTOSTR_BUF_SIZE, ll.lat);
-	g_ascii_dtostr (scenterlon, G_ASCII_DTOSTR_BUF_SIZE, ll.lon);
+	gchar scenterlat[COORDS_STR_BUFFER_SIZE];
+	gchar scenterlon[COORDS_STR_BUFFER_SIZE];
+	a_coords_dtostr_buffer ( ll.lat, scenterlat );
+	a_coords_dtostr_buffer ( ll.lon, scenterlon );
 
 	struct LatLon llpt;
 	llpt.lat = 0.0;
@@ -230,10 +231,10 @@ static gchar *webtool_format_get_url_at_position ( VikWebtool *self, VikWindow *
 		// No position supplied so might as well use the center
 		vik_coord_to_latlon ( coord, &llpt );
 
-	gchar spointlat[G_ASCII_DTOSTR_BUF_SIZE];
-	gchar spointlon[G_ASCII_DTOSTR_BUF_SIZE];
-	g_ascii_dtostr (spointlat, G_ASCII_DTOSTR_BUF_SIZE, llpt.lat);
-	g_ascii_dtostr (spointlon, G_ASCII_DTOSTR_BUF_SIZE, llpt.lon);
+	gchar spointlat[COORDS_STR_BUFFER_SIZE];
+	gchar spointlon[COORDS_STR_BUFFER_SIZE];
+	a_coords_dtostr_buffer ( llpt.lat, spointlat );
+	a_coords_dtostr_buffer ( llpt.lon, spointlon );
 
 	guint8 zoom = 17; // A zoomed in default
 	// zoom - ideally x & y factors need to be the same otherwise use the default

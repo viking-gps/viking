@@ -519,15 +519,15 @@ _get_uri( VikMapSourceDefault *self, MapCoord *src )
 	gdouble miny = -((gdouble)(src->y + 1) * 180 / VIK_GZ(17) * socalled_mpp * 2 - 90);
 	gdouble maxy = -((gdouble)(src->y) * 180 / VIK_GZ(17) * socalled_mpp * 2 - 90);
 
-	gchar sminx[G_ASCII_DTOSTR_BUF_SIZE];
-	gchar smaxx[G_ASCII_DTOSTR_BUF_SIZE];
-	gchar sminy[G_ASCII_DTOSTR_BUF_SIZE];
-	gchar smaxy[G_ASCII_DTOSTR_BUF_SIZE];
+	gchar sminx[COORDS_STR_BUFFER_SIZE];
+	gchar smaxx[COORDS_STR_BUFFER_SIZE];
+	gchar sminy[COORDS_STR_BUFFER_SIZE];
+	gchar smaxy[COORDS_STR_BUFFER_SIZE];
 
-	g_ascii_dtostr (sminx, G_ASCII_DTOSTR_BUF_SIZE, minx);
-	g_ascii_dtostr (smaxx, G_ASCII_DTOSTR_BUF_SIZE, maxx);
-	g_ascii_dtostr (sminy, G_ASCII_DTOSTR_BUF_SIZE, miny);
-	g_ascii_dtostr (smaxy, G_ASCII_DTOSTR_BUF_SIZE, maxy);
+	a_coords_dtostr_buffer ( minx, sminx );
+	a_coords_dtostr_buffer ( maxx, smaxx );
+	a_coords_dtostr_buffer ( miny, sminy );
+	a_coords_dtostr_buffer ( maxy, smaxy );
 
 	if ( !priv->url )
 		return NULL;

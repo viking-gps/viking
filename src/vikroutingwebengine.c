@@ -467,21 +467,21 @@ vik_routing_web_engine_get_download_options ( VikRoutingEngine *self )
 static gchar *
 substitute_latlon ( const gchar *fmt, struct LatLon ll )
 {
-	gchar lat[G_ASCII_DTOSTR_BUF_SIZE], lon[G_ASCII_DTOSTR_BUF_SIZE];
-	gchar *substituted = g_strdup_printf(fmt,
-                          g_ascii_dtostr (lat, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) ll.lat),
-                          g_ascii_dtostr (lon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) ll.lon));
-	return substituted;
+  gchar lat[COORDS_STR_BUFFER_SIZE], lon[COORDS_STR_BUFFER_SIZE];
+  a_coords_dtostr_buffer ( ll.lat, lat );
+  a_coords_dtostr_buffer ( ll.lon, lon );
+  gchar *substituted = g_strdup_printf( fmt, lat, lon );
+  return substituted;
 }
 
 static gchar *
 substitute_lonlat ( const gchar *fmt, struct LatLon ll )
 {
-	gchar lat[G_ASCII_DTOSTR_BUF_SIZE], lon[G_ASCII_DTOSTR_BUF_SIZE];
-	gchar *substituted = g_strdup_printf(fmt,
-                          g_ascii_dtostr (lon, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) ll.lon),
-                          g_ascii_dtostr (lat, G_ASCII_DTOSTR_BUF_SIZE, (gdouble) ll.lat));
-	return substituted;
+  gchar lat[COORDS_STR_BUFFER_SIZE], lon[COORDS_STR_BUFFER_SIZE];
+  a_coords_dtostr_buffer ( ll.lat, lat );
+  a_coords_dtostr_buffer ( ll.lon, lon );
+  gchar *substituted = g_strdup_printf( fmt, lon, lat );
+  return substituted;
 }
 
 static gchar *
