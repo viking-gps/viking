@@ -112,6 +112,7 @@ VikLayerInterface vik_geoclue_layer_interface = {
   VIK_MENU_ITEM_ALL,
 
   (VikLayerFuncCreate)                  geoclue_layer_create,
+  (VikLayerFuncGetNewName)              NULL,
   (VikLayerFuncRealize)                 geoclue_layer_realize,
   (VikLayerFuncPostRead)                geoclue_layer_post_read,
   (VikLayerFuncFree)                    geoclue_layer_free,

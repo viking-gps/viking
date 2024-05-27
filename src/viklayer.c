@@ -257,6 +257,13 @@ const gchar *vik_layer_get_name ( VikLayer *l )
   return l->name;
 }
 
+gchar *layer_get_new_name ( VikLayer *l )
+{
+  if ( vik_layer_interfaces[l->type]->get_new_name )
+    return vik_layer_interfaces[l->type]->get_new_name ( l );
+  return NULL;
+}
+
 gdouble vik_layer_get_timestamp ( VikLayer *vl )
 {
   if ( vik_layer_interfaces[vl->type]->get_timestamp )
@@ -275,10 +282,17 @@ VikLayer *vik_layer_create ( VikLayerTypeEnum type, VikViewport *vp, gboolean in
 
   if ( interactive )
   {
-    if ( vik_layer_properties ( new_layer, vp, FALSE ) )
-      /* We translate the name here */
-      /* in order to avoid translating name set by user */
-      vik_layer_rename ( VIK_LAYER(new_layer), _(vik_layer_interfaces[type]->name) );
+    if ( vik_layer_properties ( new_layer, vp, FALSE ) ) {
+      gchar *new_name = layer_get_new_name ( new_layer );
+      if ( new_name ) {
+        vik_layer_rename ( VIK_LAYER(new_layer), new_name );
+        g_free ( new_name );
+      }
+      else
+        /* We translate the name here */
+        /* in order to avoid translating name set by user */
+        vik_layer_rename ( VIK_LAYER(new_layer), _(vik_layer_interfaces[type]->name) );
+    }
     else
     {
       g_object_unref ( G_OBJECT(new_layer) ); /* cancel that */

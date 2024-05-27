@@ -294,6 +294,7 @@ VikLayerInterface vik_dem_layer_interface = {
   VIK_MENU_ITEM_ALL,
 
   (VikLayerFuncCreate)                  dem_layer_create,
+  (VikLayerFuncGetNewName)              NULL,
   (VikLayerFuncRealize)                 NULL,
   (VikLayerFuncPostRead)                dem_layer_post_read,
   (VikLayerFuncFree)                    dem_layer_free,

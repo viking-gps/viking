@@ -102,6 +102,7 @@ static VikLayerParamData maps_layer_get_param ( VikMapsLayer *vml, guint16 id, g
 static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values );
 static void maps_layer_draw ( VikMapsLayer *vml, VikViewport *vvp );
 static VikMapsLayer *maps_layer_new ( VikViewport *vvp );
+static gchar* maps_layer_get_new_name ( VikLayer *vl );
 static void maps_layer_free ( VikMapsLayer *vml );
 static VikLayerToolFuncStatus maps_layer_download_release ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp );
 static VikLayerToolFuncStatus maps_layer_download_click ( VikMapsLayer *vml, GdkEventButton *event, VikViewport *vvp );
@@ -245,6 +246,7 @@ VikLayerInterface vik_maps_layer_interface = {
   VIK_MENU_ITEM_ALL,
 
   (VikLayerFuncCreate)                  maps_layer_new,
+  (VikLayerFuncGetNewName)              maps_layer_get_new_name,
   (VikLayerFuncRealize)                 NULL,
   (VikLayerFuncPostRead)                maps_layer_post_read,
   (VikLayerFuncFree)                    maps_layer_free,
@@ -956,6 +958,13 @@ static void maps_layer_free ( VikMapsLayer *vml )
     }
   }
 #endif
+}
+
+static gchar* maps_layer_get_new_name ( VikLayer *vl )
+{
+  VikMapsLayer *vml = VIK_MAPS_LAYER(vl);
+  gchar *nname = g_strdup_printf ( "%s", vik_maps_layer_get_map_label(vml) );
+  return nname;
 }
 
 #ifdef HAVE_SQLITE3_H

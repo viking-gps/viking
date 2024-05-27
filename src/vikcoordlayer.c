@@ -80,6 +80,7 @@ VikLayerInterface vik_coord_layer_interface = {
   VIK_MENU_ITEM_ALL,
 
   (VikLayerFuncCreate)                  coord_layer_create,
+  (VikLayerFuncGetNewName)              NULL,
   (VikLayerFuncRealize)                 NULL,
   (VikLayerFuncPostRead)                coord_layer_post_read,
   (VikLayerFuncFree)                    coord_layer_free,

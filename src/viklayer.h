@@ -116,6 +116,9 @@ struct _VikToolInterface {
 /* Create a new layer of a certain type. Should be filled with defaults */
 typedef VikLayer *    (*VikLayerFuncCreate)                (VikViewport *);
 
+/* Use for dynamic control of default name during layer creation */
+typedef gchar*        (*VikLayerFuncGetNewName)            (VikLayer *); // Return a newly allocated string,
+
 /* normally only needed for layers with sublayers. This is called when they
  * are added to the treeview so they can add sublayers to the treeview. */
 typedef void          (*VikLayerFuncRealize)               (VikLayer *,VikTreeview *,GtkTreeIter *);
@@ -221,6 +224,7 @@ struct _VikLayerInterface {
   VikStdLayerMenuItem               menu_items_selection;
 
   VikLayerFuncCreate                create;
+  VikLayerFuncGetNewName            get_new_name;
   VikLayerFuncRealize               realize;
   VikLayerFuncPostRead              post_read;
   VikLayerFuncFree                  free;

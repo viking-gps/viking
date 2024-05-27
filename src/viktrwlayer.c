@@ -892,6 +892,7 @@ VikLayerInterface vik_trw_layer_interface = {
   VIK_MENU_ITEM_ALL,
 
   (VikLayerFuncCreate)                  trw_layer_create,
+  (VikLayerFuncGetNewName)              NULL,
   (VikLayerFuncRealize)                 trw_layer_realize,
   (VikLayerFuncPostRead)                trw_layer_post_read,
   (VikLayerFuncFree)                    trw_layer_free,

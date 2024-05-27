@@ -150,6 +150,7 @@ VikLayerInterface vik_mapnik_layer_interface = {
 	VIK_MENU_ITEM_ALL,
 
 	(VikLayerFuncCreate)                  mapnik_layer_create,
+	(VikLayerFuncGetNewName)              NULL,
 	(VikLayerFuncRealize)                 NULL,
 	(VikLayerFuncPostRead)                mapnik_layer_post_read,
 	(VikLayerFuncFree)                    mapnik_layer_free,

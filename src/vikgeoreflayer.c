@@ -118,6 +118,7 @@ VikLayerInterface vik_georef_layer_interface = {
   VIK_MENU_ITEM_ALL,
 
   (VikLayerFuncCreate)                  georef_layer_create,
+  (VikLayerFuncGetNewName)              NULL,
   (VikLayerFuncRealize)                 NULL,
   (VikLayerFuncPostRead)                georef_layer_load_image,
   (VikLayerFuncFree)                    georef_layer_free,
