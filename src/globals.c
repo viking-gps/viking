@@ -67,8 +67,8 @@ static gchar * params_units_distance[] = {N_("Kilometres"), N_("Miles"), N_("Nau
 static gchar * params_units_speed[] = {N_("km/h"), N_("mph"), N_("m/s"), N_("knots"), N_("s/km"), N_("min/km"), N_("s/mi"), N_("min/mi"), NULL};
 static gchar * params_units_height[] = {N_("Metres"), N_("Feet"), NULL};
 static gchar * params_units_temp[] = {N_("Celsius"), N_("Fahrenheit"), NULL};
-static VikLayerParamScale params_scales_lat[] = { {-90.0, 90.0, 0.05, 2} };
-static VikLayerParamScale params_scales_long[] = { {-180.0, 180.0, 0.05, 2} };
+static VikLayerParamScale params_scales_lat[] = { {-90.0, 90.0, 0.05, 6} };
+static VikLayerParamScale params_scales_long[] = { {-180.0, 180.0, 0.05, 6} };
 // c.f. vikwindow.c create_zoom_menu_all_levels()
 // However since properties are statically constructed and currently no method to attach a handler like zoom_changed()
 //  we'll simply create all possible zoom values here as well
