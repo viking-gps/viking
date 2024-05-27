@@ -753,7 +753,11 @@ VikAggregateLayer *vik_aggregate_layer_new (VikViewport *vvp)
 
 gboolean is_base_layer_type ( VikLayer *vl )
 {
+#ifdef HAVE_LIBMAPNIK
+  return ( vl->type == VIK_LAYER_MAPS || vl->type == VIK_LAYER_DEM || vl->type == VIK_LAYER_GEOREF || vl->type == VIK_LAYER_MAPNIK);
+#else
   return ( vl->type == VIK_LAYER_MAPS || vl->type == VIK_LAYER_DEM || vl->type == VIK_LAYER_GEOREF );
+#endif
 }
 
 /**
