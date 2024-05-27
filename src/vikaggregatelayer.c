@@ -751,7 +751,22 @@ VikAggregateLayer *vik_aggregate_layer_new (VikViewport *vvp)
   return val;
 }
 
-void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, GtkTreeIter *replace_iter )
+gboolean is_base_layer_type ( VikLayer *vl )
+{
+  return ( vl->type == VIK_LAYER_MAPS || vl->type == VIK_LAYER_DEM || vl->type == VIK_LAYER_GEOREF );
+}
+
+/**
+ * vik_aggregate_layer_insert_layer:
+ * @val:       The #VikAggregate layer into which the new layer is added
+ * @l:         The #VikLayer to be inserted
+ * @crt_layer: The currently selected #VikLayer - maybe NULL - against which the inserted layer is added
+ * @allow_reordering: Mainly for actual 'adding' layers, whereas for drag/drop insertion don't want to reorder.
+ *
+ * Inserts a layer, above or below the currently selected layer (if specified) depending on the layer types
+ *  and whether allow_reordering is on.
+ */
+void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, VikLayer *crt_layer, gboolean allow_reordering )
 {
   GtkTreeIter iter;
   VikLayer *vl = VIK_LAYER(val);
@@ -759,13 +774,21 @@ void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, Gtk
   // By default layers are inserted above the selected layer
   gboolean put_above = TRUE;
 
-  // These types are 'base' types in that you what other information on top
-  if ( l->type == VIK_LAYER_MAPS || l->type == VIK_LAYER_DEM || l->type == VIK_LAYER_GEOREF )
-    put_above = FALSE;
+  if ( allow_reordering ) {
+    // These types are 'base' types in that you what other information on top
+    if ( is_base_layer_type(l) ) {
+      put_above = FALSE;
+      // However if current layer itself is a base type,
+      //  then put above that one
+      if ( crt_layer && is_base_layer_type(crt_layer) )
+         put_above = TRUE;
+    }
+  }
 
   if ( vl->realized )
   {
-    vik_treeview_insert_layer ( vl->vt, &(vl->iter), &iter, l->name, val, put_above, l, l->type, l->type, replace_iter, vik_layer_get_timestamp(l) );
+    vik_treeview_insert_layer ( vl->vt, &(vl->iter), &iter, l->name, val, put_above, l, l->type, l->type,
+                                crt_layer ? &(crt_layer->iter) : NULL, vik_layer_get_timestamp(l) );
     if ( ! l->visible )
       vik_treeview_item_set_visible ( vl->vt, &iter, FALSE );
     vik_layer_realize ( l, vl->vt, &iter );
@@ -774,8 +797,8 @@ void vik_aggregate_layer_insert_layer ( VikAggregateLayer *val, VikLayer *l, Gtk
       vik_treeview_expand ( vl->vt, &(vl->iter) );
   }
 
-  if (replace_iter) {
-    GList *theone = g_list_find ( val->children, vik_treeview_item_get_pointer ( vl->vt, replace_iter ) );
+  if ( crt_layer ) {
+    GList *theone = g_list_find ( val->children, vik_treeview_item_get_pointer ( vl->vt, &(crt_layer->iter) ) );
     if ( put_above )
       val->children = g_list_insert ( val->children, l, g_list_position(val->children,theone)+1 );
     else
@@ -805,15 +828,42 @@ void vik_aggregate_layer_add_layer ( VikAggregateLayer *val, VikLayer *l, gboole
   // By default layers go to the top
   gboolean put_above = TRUE;
 
+  gint highpos = -1;
+  GtkTreeIter lyr_iter;
+
   if ( allow_reordering ) {
     // These types are 'base' types in that you what other information on top
-    if ( l->type == VIK_LAYER_MAPS || l->type == VIK_LAYER_DEM || l->type == VIK_LAYER_GEOREF )
+    if ( is_base_layer_type(l) ) {
       put_above = FALSE;
+
+      // Place above highest found other base types (that are in this aggregate layer);
+      //  otherwise gets put last
+      GList *gl = val->children;
+      gint position = 0;
+      while ( gl ) {
+        VikLayer *lyr = VIK_LAYER ( gl->data );
+        if ( is_base_layer_type(lyr) ) {
+          if ( position > highpos ) {
+            highpos = position;
+            lyr_iter = lyr->iter;
+          }
+        }
+        gl = g_list_next ( gl );
+        position++;
+      }
+    }
   }
 
   if ( vl->realized )
   {
-    vik_treeview_add_layer ( vl->vt, &(vl->iter), &iter, l->name, val, put_above, l, l->type, l->type, vik_layer_get_timestamp(l) );
+    if ( put_above )
+      vik_treeview_add_layer ( vl->vt, &(vl->iter), &iter, l->name, val, put_above, l, l->type, l->type, vik_layer_get_timestamp(l) );
+    else {
+      if ( highpos > -1 )
+        vik_treeview_insert_layer ( vl->vt, &(vl->iter), &iter, l->name, val, TRUE, l, l->type, l->type, &lyr_iter, vik_layer_get_timestamp(l) );
+      else
+        vik_treeview_add_layer ( vl->vt, &(vl->iter), &iter, l->name, val, put_above, l, l->type, l->type, vik_layer_get_timestamp(l) );
+    }
     if ( ! l->visible )
       vik_treeview_item_set_visible ( vl->vt, &iter, FALSE );
     vik_layer_realize ( l, vl->vt, &iter );
@@ -824,8 +874,12 @@ void vik_aggregate_layer_add_layer ( VikAggregateLayer *val, VikLayer *l, gboole
 
   if ( put_above )
     val->children = g_list_append ( val->children, l );
-  else
-    val->children = g_list_prepend ( val->children, l );
+  else {
+    if ( highpos > -1 )
+      val->children = g_list_insert ( val->children, l, highpos + 1 );
+    else
+      val->children = g_list_prepend ( val->children, l );
+  }
 
   g_signal_connect_swapped ( G_OBJECT(l), "update", G_CALLBACK(vik_layer_emit_update_secondary), val );
 }
@@ -3485,9 +3539,10 @@ static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikA
   vik_aggregate_layer_delete(val_src, src_item_iter);
 
   if (target_exists) {
-    vik_aggregate_layer_insert_layer(val_dest, vl, &dest_iter);
+    VikLayer *dst_vl = vik_treeview_item_get_pointer(vt, &dest_iter);
+    vik_aggregate_layer_insert_layer(val_dest, vl, dst_vl, FALSE);
   } else {
-    vik_aggregate_layer_insert_layer(val_dest, vl, NULL); /* append */
+    vik_aggregate_layer_insert_layer(val_dest, vl, NULL, FALSE); /* append */
   }
   g_free(dp);
 }

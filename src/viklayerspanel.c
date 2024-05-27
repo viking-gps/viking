@@ -1051,47 +1051,48 @@ gboolean vik_layers_panel_new_layer ( VikLayersPanel *vlp, VikLayerTypeEnum type
 void vik_layers_panel_add_layer ( VikLayersPanel *vlp, VikLayer *l )
 {
   GtkTreeIter iter;
-  GtkTreeIter *replace_iter = NULL;
 
   /* could be something different so we have to do this */
   vik_layer_change_coord_mode ( l, vik_viewport_get_coord_mode(vlp->vvp) );
 
   if ( ! vik_treeview_get_selected_iter ( vlp->vt, &iter ) )
+    // When nothing selected - use the top layer
     vik_aggregate_layer_add_layer ( vlp->toplayer, l, TRUE );
   else
   {
+    VikLayer *sltd_vl = NULL;
     VikAggregateLayer *addtoagg;
     if (vik_treeview_item_get_type ( vlp->vt, &iter ) == VIK_TREEVIEW_TYPE_LAYER )
     {
-      if ( IS_VIK_AGGREGATE_LAYER(vik_treeview_item_get_pointer ( vlp->vt, &iter )) )
+      if ( IS_VIK_AGGREGATE_LAYER(vik_treeview_item_get_pointer ( vlp->vt, &iter )) ) {
          addtoagg = VIK_AGGREGATE_LAYER(vik_treeview_item_get_pointer ( vlp->vt, &iter ));
+      }
       else {
-       VikLayer *vl = VIK_LAYER(vik_treeview_item_get_parent ( vlp->vt, &iter ));
-       while ( ! IS_VIK_AGGREGATE_LAYER(vl) ) {
-         iter = vl->iter;
-         vl = VIK_LAYER(vik_treeview_item_get_parent ( vlp->vt, &vl->iter ));
-         g_assert ( vl->realized );
-       }
-       addtoagg = VIK_AGGREGATE_LAYER(vl);
-       replace_iter = &iter;
+        VikLayer *vl = VIK_LAYER(vik_treeview_item_get_parent ( vlp->vt, &iter ));
+        while ( ! IS_VIK_AGGREGATE_LAYER(vl) ) {
+          sltd_vl = vl;
+          vl = VIK_LAYER(vik_treeview_item_get_parent ( vlp->vt, &vl->iter ));
+          g_assert ( vl->realized );
+        }
+        addtoagg = VIK_AGGREGATE_LAYER(vl);
       }
     }
     else
     {
       /* a sublayer is selected, first get its parent (layer), then find the layer's parent (aggr. layer) */
       VikLayer *vl = VIK_LAYER(vik_treeview_item_get_parent ( vlp->vt, &iter ));
-      replace_iter = &(vl->iter);
+      sltd_vl = vl;
       g_assert ( vl->realized );
       VikLayer *grandpa = (vik_treeview_item_get_parent ( vlp->vt, &(vl->iter) ) );
       if (IS_VIK_AGGREGATE_LAYER(grandpa))
         addtoagg = VIK_AGGREGATE_LAYER(grandpa);
       else {
         addtoagg = vlp->toplayer;
-        replace_iter = &grandpa->iter;
+        sltd_vl = grandpa;
       }
     }
-    if ( replace_iter )
-      vik_aggregate_layer_insert_layer ( addtoagg, l, replace_iter );
+    if ( sltd_vl )
+      vik_aggregate_layer_insert_layer ( addtoagg, l, sltd_vl, TRUE );
     else
       vik_aggregate_layer_add_layer ( addtoagg, l, TRUE );
   }
