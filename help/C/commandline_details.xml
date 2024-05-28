@@ -121,29 +121,38 @@ This also enables some extra information features in the GUI itself, primarily o
 </tgroup>
 </table>
 
-<para>Internal Map Ids:</para>
-<itemizedlist>
-  <!-- Alphabetically sorted -->
-  <listitem><para>4UMaps = 801</para></listitem><!--maps.xml-->
-  <listitem><para>Bing Aerial = 212</para></listitem><!--map_ids.h-->
-  <listitem><para>Blue Marble = 15</para></listitem><!--map_ids.h-->
-  <listitem><para>CalTopo = 29</para></listitem><!--maps.xml-->
-  <listitem><para>CyclOSM = 65</para></listitem><!--maps.xml-->
-  <listitem><para>pnvkarte Public Transport = 101</para></listitem><!--maps.xml-->
-  <listitem><para>OpenSeaMap = 600</para></listitem><!--maps.xml.h-->
-  <listitem><para>OpenTopo = 901 (current default)</para></listitem><!--map_ids.h-->
-  <listitem><para>OSM Cycle = 17</para></listitem><!--map_ids.h-->
-  <listitem><para>OSM Humanitarian = 22</para></listitem><!--map_ids.h-->
-  <listitem><para>OSM Mapnik = 13</para></listitem><!--map_ids.h-->
-  <listitem><para>OSM Transport = 20</para></listitem><!--map_ids.h-->
-  <listitem><para>OSM GPS Traces = 33</para></listitem><!--maps.xml-->
-  <listitem><para>Waymarked Trails Cycling = 702</para></listitem><!--maps.xml-->
-  <listitem><para>Waymarked Trails Hiking = 701</para></listitem><!--maps.xml-->
-  <listitem><para>Waymarked Trails MTB = 703</para></listitem><!--maps.xml-->
-  <listitem><para>Waymarked Trails Riding = 705</para></listitem><!--maps.xml-->
-  <listitem><para>Waymarked Trails Skating = 704</para></listitem><!--maps.xml-->
-  <listitem><para>Waymarked Trails Winter = 706</para></listitem><!--maps.xml-->
-</itemizedlist>
+<table frame='all'><title>Internal Map Ids</title>
+<tgroup cols='2' align='left' colsep='1' rowsep='1'>
+<thead>
+<row>
+  <entry>Map</entry>
+  <entry>Id</entry>
+</row>
+</thead>
+<tbody>
+<!-- Alphabetically sorted -->
+<row><entry>4UMaps</entry><entry>801</entry></row><!--maps.xml-->
+<row><entry>Bing Aerial</entry><entry>212</entry></row><!--map_ids.h-->
+<row><entry>Blue Marble</entry><entry>15</entry></row><!--map_ids.h-->
+<row><entry>CalTopo</entry><entry>29</entry></row><!--maps.xml-->
+<row><entry>CyclOSM</entry><entry>65</entry></row><!--maps.xml-->
+<row><entry>pnvkarte Public Transport</entry><entry>101</entry></row><!--maps.xml-->
+<row><entry>OpenSeaMap</entry><entry>600</entry></row><!--maps.xml.h-->
+<row><entry>OpenTopo</entry><entry>901 (current default)</entry></row><!--maps_ids.h-->
+<row><entry>OSM Cycle</entry><entry>17</entry></row><!--maps_ids.h-->
+<row><entry>OSM Humanitarian</entry><entry>22</entry></row><!--maps_ids.h-->
+<row><entry>OSM Mapnik</entry><entry>13</entry></row><!--maps_ids.h-->
+<row><entry>OSM Transport</entry><entry>20</entry></row><!--maps_ids.h-->
+<row><entry>OSM GPS Traces</entry><entry>33</entry></row><!--maps.xml-->
+<row><entry>Waymarked Trails Cycling</entry><entry>702</entry></row><!--maps.xml-->
+<row><entry>Waymarked Trails Hiking</entry><entry>701</entry></row><!--maps.xml-->
+<row><entry>Waymarked Trails MTB</entry><entry>703</entry></row><!--maps.xml-->
+<row><entry>Waymarked Trails Riding</entry><entry>705</entry></row><!--maps.xml-->
+<row><entry>Waymarked Trails Skating</entry><entry>704</entry></row><!--maps.xml-->
+<row><entry>Waymarked Trails Winter</entry><entry>706</entry></row><!--maps.xml-->
+</tbody>
+</tgroup>
+</table>
 
 <para>
   The current list of available Maps and their Id, including the built in ones listed above plus any additional ones added by extended configuration,
