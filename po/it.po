@@ -955,7 +955,7 @@ msgstr "DEM Classe B non corretta: attesa 1"
 msgid "Couldn't map file %s: %s"
 msgstr "Impossibile mappare il file %s: %s"
 
-msgid "Tile age (days):"
+msgid "Maximum tile age (days):"
 msgstr ""
 
 #, c-format

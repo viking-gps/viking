@@ -991,8 +991,8 @@ msgstr "Ezin da aurkitu mapa-fitxategia %s: %s"
 msgid "Could not load DEM from file: %s"
 msgstr "Ezin da kargatu DEM fitxategitik: %s"
 
-msgid "Tile age (days):"
-msgstr "Lauzen adina (egunak):"
+msgid "Maximum tile age (days):"
+msgstr "Gehienezkoa lauzen adina (egunak):"
 
 #, c-format
 msgid "Download error: %s"

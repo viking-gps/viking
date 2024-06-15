@@ -953,8 +953,8 @@ msgstr "Enregistrement DEM Class B incorrect: la valeur devrait être 1"
 msgid "Couldn't map file %s: %s"
 msgstr "Impossible de cartographier le fichier %s : %s"
 
-msgid "Tile age (days):"
-msgstr "Age de la tuile (jours) :"
+msgid "Maximum tile age (days):"
+msgstr "Age maximum de la tuile (jours):"
 
 #, c-format
 msgid "Download error: %s"

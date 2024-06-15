@@ -145,7 +145,7 @@ static VikLayerParamData convert_to_internal ( VikLayerParamData value )
 static VikLayerParamData dtl_default ( void ) { return VIK_LPD_UINT(VIK_CONFIG_DEFAULT_TILE_AGE); }
 
 static VikLayerParam prefs[] = {
-  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "download_tile_age", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Tile age (days):"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[0], NULL, NULL, dtl_default, convert_to_display, convert_to_internal },
+  { VIK_LAYER_NUM_TYPES, VIKING_PREFERENCES_NAMESPACE "download_tile_age", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Maximum tile age (days):"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[0], NULL, NULL, dtl_default, convert_to_display, convert_to_internal },
 };
 
 void a_download_init (void)

@@ -944,7 +944,7 @@ msgstr "Neteisingas DEM B klasės įrašas: sulauktas 1"
 msgid "Couldn't map file %s: %s"
 msgstr "Neįmanoma išdėstyti failo %s: %s"
 
-msgid "Tile age (days):"
+msgid "Maximum tile age (days):"
 msgstr ""
 
 #, c-format

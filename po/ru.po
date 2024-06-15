@@ -973,8 +973,8 @@ msgstr "Неправильная запись DEM Class B: ожидается 1"
 msgid "Couldn't map file %s: %s"
 msgstr "Ошибка загрузки файла %s: %s"
 
-msgid "Tile age (days):"
-msgstr "Срок хранения сегмента (дней):"
+msgid "Maximum tile age (days):"
+msgstr "Максимальный cрок хранения сегмента (дней):"
 
 #, c-format
 msgid "Download error: %s"

@@ -926,7 +926,7 @@ msgstr ""
 msgid "Couldn't map file %s: %s"
 msgstr ""
 
-msgid "Tile age (days):"
+msgid "Maximum tile age (days):"
 msgstr ""
 
 #, c-format

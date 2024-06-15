@@ -944,7 +944,7 @@ msgstr "错误DEM（数字高程模型）B类记录：期望1"
 msgid "Couldn't map file %s: %s"
 msgstr "无法映射文件%s：%s"
 
-msgid "Tile age (days):"
+msgid "Maximum tile age (days):"
 msgstr "瓦片寿命（天）"
 
 #, c-format

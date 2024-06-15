@@ -947,7 +947,7 @@ msgstr "Registro DEM de clase B incorrecto: se esperaba 1"
 msgid "Couldn't map file %s: %s"
 msgstr "No se encuentra el archivo de mapa %s:%s"
 
-msgid "Tile age (days):"
+msgid "Maximum tile age (days):"
 msgstr ""
 
 #, c-format

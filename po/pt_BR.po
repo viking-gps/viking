@@ -941,7 +941,7 @@ msgstr "Registro Classe B Incorreta: 1 esperado"
 msgid "Couldn't map file %s: %s"
 msgstr "Não foi possível mapear o arquivo %s: %s"
 
-msgid "Tile age (days):"
+msgid "Maximum tile age (days):"
 msgstr ""
 
 #, c-format

@@ -946,7 +946,7 @@ msgstr "Hibás DEM Class B rekord: a várt érték: 1"
 msgid "Couldn't map file %s: %s"
 msgstr "A(z) %s fájl nem található: %s"
 
-msgid "Tile age (days):"
+msgid "Maximum tile age (days):"
 msgstr ""
 
 #, c-format

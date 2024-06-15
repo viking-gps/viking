@@ -954,7 +954,7 @@ msgstr "Virheellinen DEM Class B-tietue, odotettiin 1"
 msgid "Couldn't map file %s: %s"
 msgstr "Tiedoston %s kartoittaminen epäonnistui: %s"
 
-msgid "Tile age (days):"
+msgid "Maximum tile age (days):"
 msgstr ""
 
 #, c-format

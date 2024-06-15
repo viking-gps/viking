@@ -968,8 +968,8 @@ msgstr "Špatný DEM Class B záznam: očekávám 1"
 msgid "Couldn't map file %s: %s"
 msgstr "Nelze zpracovat soubor %s: %s"
 
-msgid "Tile age (days):"
-msgstr "Stáří mapových dlaždic (dny):"
+msgid "Maximum tile age (days):"
+msgstr "Maximální stáří mapových dlaždic (dny):"
 
 #, c-format
 msgid "Download error: %s"

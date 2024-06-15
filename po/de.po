@@ -983,8 +983,8 @@ msgstr "Ungültiger Eintrag zu DEM-Klasse B: 1 erwartet"
 msgid "Couldn't map file %s: %s"
 msgstr "Kann Datei %s: %s nicht zeichnen"
 
-msgid "Tile age (days):"
-msgstr "Kachelalter (in Tagen):"
+msgid "Maximum tile age (days):"
+msgstr "Maximales kachelalter (in Tagen):"
 
 #, c-format
 msgid "Download error: %s"

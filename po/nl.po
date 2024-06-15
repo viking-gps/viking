@@ -945,7 +945,7 @@ msgstr "Foute DEM Class B record: verwacht 1"
 msgid "Couldn't map file %s: %s"
 msgstr ""
 
-msgid "Tile age (days):"
+msgid "Maximum tile age (days):"
 msgstr ""
 
 #, c-format
