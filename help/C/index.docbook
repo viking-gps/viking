@@ -506,7 +506,7 @@ Q. When planning a <emphasis>route</emphasis> what difference does it make if it
 <para>
 A. One difference is in how a GPS device navigates following the route or track.
 The capability, the options and data on a particular device also affect how the navigation is performed.
-Often the how a device actually works doesn't seem to be formally documented by the manufacturer (and can be firmware dependent too).
+Often how a device actually works doesn't seem to be formally documented by the manufacturer (and can be firmware dependent too).
 Web searches can reveal people's experiences with specific devices on blogs and various forums.
 For some devices it will attempt to navigate between route points, which may then suggest various roads and tracks between the points using an internal routing algorithm with some kind of transport profile.
 However this is limited to the quality of data available and how well the profile matches ones actual need.
