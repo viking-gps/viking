@@ -46,19 +46,20 @@
 #include "globals.h"
 #include "settings.h"
 
+#if MAPNIK_VERSION < 400000
+#include <mapnik/box2d.hpp>
+#endif
+#if MAPNIK_VERSION >= 300000
+// In Mapnik3 'image_32' has changed names once again
+#define image_32 image_rgba8
+#define raw_data data
+#endif
 #if MAPNIK_VERSION < 200000
 #include <mapnik/envelope.hpp>
 #define image_32 Image32
 #define image_data_32 ImageData32
 #define box2d Envelope
 #define zoom_to_box zoomToBox
-#else
-#include <mapnik/box2d.hpp>
-#if MAPNIK_VERSION >= 300000
-// In Mapnik3 'image_32' has changed names once again
-#define image_32 image_rgba8
-#define raw_data data
-#endif
 #endif
 
 #define MAPNIK_INTERFACE_TYPE            (mapnik_interface_get_type ())
@@ -93,7 +94,11 @@ struct _MapnikInterface {
 G_DEFINE_TYPE (MapnikInterface, mapnik_interface, G_TYPE_OBJECT)
 
 // Can't change prj after init - but ATM only support drawing in Spherical Mercator
+#if MAPNIK_VERSION < 400000
 static mapnik::projection prj( mapnik::MAPNIK_GMERC_PROJ );
+#else
+static mapnik::projection prj( mapnik::MAPNIK_WEBMERCATOR_PROJ );
+#endif
 
 MapnikInterface* mapnik_interface_new ()
 {
@@ -184,8 +189,12 @@ gchar* mapnik_interface_load_map_file ( MapnikInterface* mi,
 		mapnik::load_map(*mi->myMap, filename);
 
 		mi->myMap->resize(width,height);
-		mi->myMap->set_srs ( mapnik::MAPNIK_GMERC_PROJ ); // ONLY WEB MERCATOR output supported ATM
-
+		// ONLY WEB MERCATOR output supported ATM
+#if MAPNIK_VERSION < 400000
+		mi->myMap->set_srs ( mapnik::MAPNIK_GMERC_PROJ );
+#else
+		mi->myMap->set_srs ( mapnik::MAPNIK_WEBMERCATOR_PROJ );
+#endif
 		// IIRC This size is the number of pixels outside the tile to be considered so stuff is shown (i.e. particularly labels)
 		// Only set buffer size if the buffer size isn't explicitly set in the mapnik stylesheet.
 		// Alternatively render a bigger 'virtual' tile and then only use the appropriate subset
