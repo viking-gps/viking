@@ -96,4 +96,4 @@ sed -i s/DHPACKAGE//g vikhelp.md
 # Then dump the entirity of the vikhelp.md into the single Wiki Help page.
 
 # To generate the PDF:
-dblatex index.docbook -o viking.pdf
+dblatex -p style.xsl index.docbook -o viking.pdf
