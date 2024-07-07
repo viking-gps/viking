@@ -71,6 +71,8 @@ typedef struct {
 	GList *temps;      // gdoubles
 	GQueue *gq_start;
 	GQueue *gq_end;
+	gboolean layer_has_been_named;
+	gboolean layer_has_description;
 	XML_Parser parser;
 } xml_data;
 
@@ -837,8 +839,42 @@ static void style_start ( xml_data *xd, const char *el, const char **attr )
 	// else "IconStyle"...
 }
 
+static void doc_name_end ( xml_data *xd, const char *el )
+{
+	// Only do the first encountered name
+	// (hopefully applying to top level document and thus equivalent to the vtl,
+	//  rather than any other documents and/or folders)
+	if ( !xd->layer_has_been_named ) {
+		vik_layer_rename ( VIK_LAYER(xd->vtl), xd->c_cdata->str );
+		xd->layer_has_been_named = TRUE;
+	}
+	end_leaf_tag ( xd );
+}
+
+static void doc_description_end ( xml_data *xd, const char *el )
+{
+	VikTRWMetadata *meta = vik_trw_layer_get_metadata ( xd->vtl );
+	if ( meta ) {
+		// Similar to the above name field;
+		// Only do the first encountered description
+		if ( !xd->layer_has_description ) {
+			g_free (meta->description);
+			meta->description = g_strdup ( xd->c_cdata->str );
+			xd->layer_has_description = TRUE;
+		}
+	}
+	end_leaf_tag ( xd );
+}
+
 static void document_start ( xml_data *xd, const char *el, const char **attr )
 {
+	if ( g_strcmp0 ( el, "name" ) == 0 ) {
+		setup_to_read_leaf_tag ( xd, document_end, doc_name_end );
+	}
+	if ( g_strcmp0 ( el, "description" ) == 0 ) {
+		setup_to_read_leaf_tag ( xd, document_end, doc_description_end );
+	}
+
 	if ( g_strcmp0 ( el, "Placemark" ) == 0 )
 		setup_to_read_next_level_tag ( xd, top_start, top_end, placemark_start, placemark_end );
 
