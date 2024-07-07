@@ -8554,6 +8554,12 @@ static void trw_layer_sort_order_321 ( menu_array_sublayer values )
   trw_layer_sort_order_specified ( vtl, GPOINTER_TO_INT(values[MA_SUBTYPE]), VL_SO_NUMBER_DESCENDING );
 }
 
+static void trw_layer_sort_order_default ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+  trw_layer_sort_order_specified ( vtl, GPOINTER_TO_INT(values[MA_SUBTYPE]), VL_SO_NONE );
+}
+
 /**
  *
  */
@@ -9614,6 +9620,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     GtkWidget *itemsort = vu_menu_add_item ( menu, _("_Sort"), GTK_STOCK_REFRESH, NULL, NULL );
     gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemsort), GTK_WIDGET(submenu_sort) );
 
+    (void)vu_menu_add_item ( submenu_sort, _("Default"), NULL, G_CALLBACK(trw_layer_sort_order_default), data );
     (void)vu_menu_add_item ( submenu_sort, _("Name _Ascending"), GTK_STOCK_SORT_ASCENDING, G_CALLBACK(trw_layer_sort_order_a2z), data );
     (void)vu_menu_add_item ( submenu_sort, _("Name _Descending"), GTK_STOCK_SORT_DESCENDING, G_CALLBACK(trw_layer_sort_order_z2a), data );
     (void)vu_menu_add_item ( submenu_sort, _("Date Ascending"), GTK_STOCK_SORT_ASCENDING, G_CALLBACK(trw_layer_sort_order_timestamp_ascend), data );
@@ -12318,14 +12325,13 @@ static void trw_layer_track_alloc_colors ( VikTrwLayer *vtl )
   }
 
   // Routes
-  ii = 0;
   g_hash_table_iter_init ( &iter, vtl->routes );
 
   while ( g_hash_table_iter_next (&iter, &key, &value) ) {
 
     // Routes get an intermix of reds
     if ( ! VIK_TRACK(value)->has_color ) {
-      if ( ii )
+      if ( GPOINTER_TO_INT(key) % 2 == 1 )
         gdk_color_parse ( "#FF0000" , &(VIK_TRACK(value)->color) ); // Red
       else
         gdk_color_parse ( "#B40916" , &(VIK_TRACK(value)->color) ); // Dark Red
@@ -12333,8 +12339,6 @@ static void trw_layer_track_alloc_colors ( VikTrwLayer *vtl )
     }
 
     trw_layer_update_treeview ( vtl, VIK_TRACK(value), FALSE );
-
-    ii = !ii;
   }
 }
 

@@ -786,6 +786,7 @@ typedef struct _SortTuple
   gchar *name;
   gdouble timestamp;
   guint number;
+  guint uuid;
 } SortTuple;
 
 /**
@@ -797,7 +798,10 @@ static gint sort_tuple_compare ( gconstpointer a, gconstpointer b, gpointer orde
   SortTuple *sb = (SortTuple *)b;
 
   gint answer = -1;
-  if ( GPOINTER_TO_INT(order) < VL_SO_DATE_ASCENDING ) {
+  if ( GPOINTER_TO_INT(order) == VL_SO_NONE ) {
+    answer = (sa->uuid > sb->uuid);
+  }
+  else if ( GPOINTER_TO_INT(order) < VL_SO_DATE_ASCENDING ) {
     // Alphabetical comparison
     // Default ascending order
     answer = g_strcmp0 ( sa->name, sb->name );
@@ -847,10 +851,6 @@ static gint sort_tuple_compare ( gconstpointer a, gconstpointer b, gpointer orde
  */
 void vik_treeview_sort_children ( VikTreeview *vt, GtkTreeIter *parent, vik_layer_sort_order_t order )
 {
-  if ( order == VL_SO_NONE )
-    // Nothing to do
-    return;
-
   GtkTreeModel *model = vt->model;
   GtkTreeIter child;
   if ( !gtk_tree_model_iter_children ( model, &child, parent ) )
@@ -868,6 +868,7 @@ void vik_treeview_sort_children ( VikTreeview *vt, GtkTreeIter *parent, vik_laye
     gtk_tree_model_get ( model, &child, NAME_COLUMN, &(sort_array[ii].name), -1 );
     gtk_tree_model_get ( model, &child, ITEM_TIMESTAMP_COLUMN, &(sort_array[ii].timestamp), -1 );
     gtk_tree_model_get ( model, &child, ITEM_NUMBER_COLUMN, &(sort_array[ii].number), -1 );
+    gtk_tree_model_get ( model, &child, ITEM_POINTER_COLUMN, &(sort_array[ii].uuid), -1 );
     ii++;
   } while ( gtk_tree_model_iter_next (model, &child) );
 
