@@ -65,7 +65,7 @@ static void vik_layer_class_init (VikLayerClass *klass)
   parent_class = g_type_class_peek_parent (klass);
 
   layer_signals[VL_UPDATE_SIGNAL] = g_signal_new ( "update", G_TYPE_FROM_CLASS (klass),
-      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikLayerClass, update), NULL, NULL, 
+      G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION, G_STRUCT_OFFSET (VikLayerClass, update), NULL, NULL,
       g_cclosure_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
   // Register all parameter defaults, early in the start up sequence
@@ -462,7 +462,7 @@ void vik_layer_unmarshall_params ( VikLayer *vl, const guint8 *data, guint datal
       g_debug("%s: %s", __FUNCTION__, params[i].name);
       switch ( params[i].type )
       {
-      case VIK_LAYER_PARAM_STRING: 
+      case VIK_LAYER_PARAM_STRING:
 	s = g_malloc(vlm_size + 1);
 	s[vlm_size]=0;
 	vlm_read(s);
@@ -648,9 +648,9 @@ static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp, gb
 					    vik_layer_interfaces[vl->type]->params_groups_count,
 					    (gpointer) vik_layer_set_param,
 					    NULL,
-					    vl, 
+					    vl,
 					    vp,
-					    (gpointer) vik_layer_interfaces[vl->type]->get_param, 
+					    (gpointer) vik_layer_interfaces[vl->type]->get_param,
 					    vl,
 					    (gpointer) vik_layer_interfaces[vl->type]->change_param,
 					    have_apply,

@@ -167,7 +167,7 @@ VikLayerParam maps_layer_params[] = {
   // NB mode => id - But can't break file format just to rename something better
   { VIK_LAYER_MAPS, "mode", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Map Type:"), VIK_LAYER_WIDGET_COMBOBOX, NULL, NULL, NULL, id_default, NULL, NULL },
   { VIK_LAYER_MAPS, "directory", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Maps Directory:"), VIK_LAYER_WIDGET_FOLDERENTRY, NULL, NULL, NULL, directory_default, NULL, NULL },
-  { VIK_LAYER_MAPS, "cache_type", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Cache Layout:"), VIK_LAYER_WIDGET_COMBOBOX, cache_types, NULL, 
+  { VIK_LAYER_MAPS, "cache_type", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Cache Layout:"), VIK_LAYER_WIDGET_COMBOBOX, cache_types, NULL,
     N_("This determines the tile storage layout on disk"), cache_layout_default, NULL, NULL },
   { VIK_LAYER_MAPS, "cache_expiry_age", VIK_LAYER_PARAM_UINT, VIK_LAYER_GROUP_NONE, N_("Cache Expiry Age:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[1], NULL, NULL, ea_default, ea_convert_to_display, ea_convert_to_internal },
   { VIK_LAYER_MAPS, "mapfile", VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("Map File:"), VIK_LAYER_WIDGET_FILEENTRY, GINT_TO_POINTER(VF_FILTER_MBTILES), NULL,
@@ -2160,7 +2160,7 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
   if ( vik_map_source_is_direct_file_access ( map ) )
     return;
 
-  if ( vik_map_source_coord_to_mapcoord ( map, ul, xzoom, yzoom, &ulm ) 
+  if ( vik_map_source_coord_to_mapcoord ( map, ul, xzoom, yzoom, &ulm )
     && vik_map_source_coord_to_mapcoord ( map, br, xzoom, yzoom, &brm ) )
   {
     MapDownloadInfo *mdi = g_malloc ( sizeof(MapDownloadInfo) );
@@ -2231,14 +2231,14 @@ static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const V
       const gchar *tmp_str;
       gchar *tmp;
 
-      if (redownload) 
+      if (redownload)
       {
         if (redownload == REDOWNLOAD_BAD)
           tmp_str = ngettext("Redownloading up to %d %s map...", "Redownloading up to %d %s maps...", mdi->mapstoget);
         else
           tmp_str = ngettext("Redownloading %d %s map...", "Redownloading %d %s maps...", mdi->mapstoget);
-      } 
-      else 
+      }
+      else
       {
         tmp_str = ngettext("Downloading %d %s map...", "Downloading %d %s maps...", mdi->mapstoget);
       }
@@ -2270,7 +2270,7 @@ static void maps_layer_download_section ( VikMapsLayer *vml, VikViewport *vvp, V
   if ( vik_map_source_is_direct_file_access ( map ) )
     return;
 
-  if (!vik_map_source_coord_to_mapcoord(map, ul, zoom, zoom, &ulm) 
+  if (!vik_map_source_coord_to_mapcoord(map, ul, zoom, zoom, &ulm)
     || !vik_map_source_coord_to_mapcoord(map, br, zoom, zoom, &brm)) {
     g_warning("%s() coord_to_mapcoord() failed", __PRETTY_FUNCTION__);
     return;

@@ -154,7 +154,7 @@ struct _VikDataSourceInterface {
   /*** Manual UI Building ***/
   VikDataSourceInitFunc init_func;
   VikDataSourceCheckExistenceFunc check_existence_func;
-  VikDataSourceAddSetupWidgetsFunc add_setup_widgets_func;      
+  VikDataSourceAddSetupWidgetsFunc add_setup_widgets_func;
   /***                    ***/
 
   VikDataSourceGetProcessOptionsFunc get_process_options_func;

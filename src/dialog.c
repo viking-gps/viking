@@ -478,7 +478,7 @@ gboolean a_dialog_yes_or_no_suppress ( GtkWindow *parent, const gchar *message, 
 static void zoom_spin_changed ( GtkSpinButton *spin, GtkWidget *pass_along[3] )
 {
   if ( gtk_toggle_button_get_active ( GTK_TOGGLE_BUTTON(pass_along[2]) ) )
-    gtk_spin_button_set_value ( 
+    gtk_spin_button_set_value (
         GTK_SPIN_BUTTON(pass_along[GTK_WIDGET(spin) == pass_along[0] ? 1 : 0]),
         gtk_spin_button_get_value ( spin ) );
 }
@@ -565,7 +565,7 @@ static void time_1d_clicked_cb ( GtkButton *button, GtkWidget *spin )
 
 gboolean a_dialog_time_threshold ( GtkWindow *parent, gchar *title_text, gchar *label_text, guint *thr )
 {
-  GtkWidget *dialog = gtk_dialog_new_with_buttons (title_text, 
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (title_text,
                                                   parent,
                                                   GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                   GTK_STOCK_CANCEL,

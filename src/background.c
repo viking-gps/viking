@@ -138,7 +138,7 @@ static void thread_die ( gpointer args[VIK_BG_NUM_ARGS] )
 int a_background_testcancel ( gpointer callbackdata )
 {
   gpointer *args = (gpointer *) callbackdata;
-  if ( stop_all_threads ) 
+  if ( stop_all_threads )
     return -1;
   if ( args && args[0] )
   {

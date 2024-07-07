@@ -62,7 +62,7 @@ static gchar *confdir = NULL;
 static gboolean running_instance = FALSE;
 
 /* Options */
-static GOptionEntry entries[] = 
+static GOptionEntry entries[] =
 {
   { "config-dir", 'c', 0, G_OPTION_ARG_FILENAME, &confdir, N_("Use alternate configuration directory DIR"), N_("DIR") },
   { "debug", 'd', 0, G_OPTION_ARG_NONE, &vik_debug, N_("Enable debug output"), NULL },
@@ -131,7 +131,7 @@ int main( int argc, char *argv[] )
   GError *error = NULL;
   gboolean gui_initialized;
 
-  bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);  
+  bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
   bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
   textdomain (GETTEXT_PACKAGE);
 
@@ -333,7 +333,7 @@ int main( int argc, char *argv[] )
   a_vik_preferences_uninit ();
 
   socket_uninit();
-  
+
 #ifdef G_OS_WIN32
   g_strfreev ( argv );
 #endif

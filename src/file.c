@@ -519,7 +519,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
             VikLayerParamData x;
             line += eq_pos+1;
             if ( params[i].type == VIK_LAYER_PARAM_STRING_LIST ) {
-              GList *l = g_list_append ( g_hash_table_lookup ( string_lists, GINT_TO_POINTER ((gint) i) ), 
+              GList *l = g_list_append ( g_hash_table_lookup ( string_lists, GINT_TO_POINTER ((gint) i) ),
 					 g_strdup(line) );
               g_hash_table_replace ( string_lists, GINT_TO_POINTER ((gint)i), l );
               /* add the value to a list, possibly making a new list.

@@ -54,7 +54,7 @@ static GtkTargetEntry target_table[] = {
  ** functions which send to the clipboard client (we are owner) **
  *****************************************************************/
 
-static void clip_get ( GtkClipboard *c, GtkSelectionData *selection_data, guint info, gpointer p ) 
+static void clip_get ( GtkClipboard *c, GtkSelectionData *selection_data, guint info, gpointer p )
 {
   vik_clipboard_t *vc = p;
   if ( info == 0 ) {
@@ -83,14 +83,14 @@ static void clip_clear ( GtkClipboard *c, gpointer p )
  **************************************************************************/
 
 /* our own data type */
-static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointer p ) 
+static void clip_receive_viking ( GtkClipboard *c, GtkSelectionData *sd, gpointer p )
 {
   VikLayersPanel *vlp = p;
   vik_clipboard_t *vc;
   if (gtk_selection_data_get_length(sd) == -1) {
     g_warning ( _("paste failed") );
     return;
-  } 
+  }
   //  g_print("clip receive: target = %s, type = %s\n", gdk_atom_name(gtk_selection_data_get_target(sd), gdk_atom_name(sd->type));
   //g_assert(!strcmp(gdk_atom_name(gtk_selection_data_get_target(sd)), target_table[0].target));
 
@@ -149,9 +149,8 @@ gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord )
 
   len = strlen(s);
 
-  /* remove non-digits following digits; gets rid of degree symbols or whatever people use, and 
-   * punctuation
-   */
+  // remove non-digits following digits;
+  //  gets rid of degree symbols or whatever people use, and punctuation
   for (i=0; i<len-2; i++) {
     if (g_ascii_isdigit (s[i]) && s[i+1] != '.' && !g_ascii_isdigit (s[i+1])) {
       s[i+1] = ' ';
@@ -244,7 +243,7 @@ gboolean clip_parse_latlon ( const gchar *text, struct LatLon *coord )
   return FALSE;
 }
 
-static void clip_add_wp(VikLayersPanel *vlp, struct LatLon *coord) 
+static void clip_add_wp(VikLayersPanel *vlp, struct LatLon *coord)
 {
   VikCoord vc;
   VikLayer *sel = vik_layers_panel_get_selected ( vlp );
@@ -286,7 +285,7 @@ static void clip_receive_text (GtkClipboard *c, const gchar *text, gpointer p)
   }
 }
 
-static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer p ) 
+static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer p )
 {
   VikLayersPanel *vlp = p;
   gssize len = -1;
@@ -297,7 +296,7 @@ static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer 
 
   if (gtk_selection_data_get_length(sd) == -1) {
     return;
-  } 
+  }
 
   const guchar *data = gtk_selection_data_get_data(sd);
   g_debug ( "%s: RAW data: %s", __FUNCTION__, data );
@@ -316,8 +315,8 @@ static void clip_receive_html ( GtkClipboard *c, GtkSelectionData *sd, gpointer 
   }
   //  g_print("html is %d bytes long: %s\n", gtk_selection_data_get_length(sd), s);
 
-  /* scrape a coordinate pasted from a geocaching.com page: look for a 
-   * telltale tag if possible, and then remove tags 
+  /* scrape a coordinate pasted from a geocaching.com page: look for a
+   * telltale tag if possible, and then remove tags
    */
   if (!(span = g_strstr_len(s, len, "<span id=\"LatLon\">"))) {
     span = s;

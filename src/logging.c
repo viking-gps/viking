@@ -229,7 +229,7 @@ static void response_cb ( GtkDialog *dialog, gint response_id, gpointer ignored 
 		// Delibrate fall through
 	case GTK_RESPONSE_DELETE_EVENT:
 	case GTK_RESPONSE_CLOSE:
-	default:	
+	default:
 		gtk_widget_destroy ( GTK_WIDGET(dialog) );
 		break;
 	}

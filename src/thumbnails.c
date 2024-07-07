@@ -121,7 +121,7 @@ GdkPixbuf *a_thumbnails_scale_pixbuf(GdkPixbuf *src, int max_w, int max_h)
 		float scale = MAX(scale_x, scale_y);
 		int dest_w = w / scale;
 		int dest_h = h / scale;
-		
+
 		return gdk_pixbuf_scale_simple(src,
 						MAX(dest_w, 1),
 						MAX(dest_h, 1),

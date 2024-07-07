@@ -159,7 +159,7 @@ static void get_from_anything ( w_and_interface_t *wi )
     if ( wi->creating_new_layer )
       g_object_unref ( G_OBJECT ( wi->vtl ) );
     gdk_threads_leave();
-  } 
+  }
   else {
     gdk_threads_enter();
     on_complete_process ( wi );
@@ -229,7 +229,7 @@ static void acquire ( VikWindow *vw,
       g_free ( error_str );
       return;
     }
-  }    
+  }
 
   /* BUILD UI & GET OPTIONS IF NECESSARY. */
 

@@ -346,7 +346,7 @@ gboolean a_babel_convert_from_shellcommand ( VikTrwLayer *vt, const char *input_
   int fd_dst;
   gchar *name_dst = NULL;
   gboolean ret = FALSE;
-  gchar **args;  
+  gchar **args;
 
   if ((fd_dst = g_file_open_tmp("tmp-viking.XXXXXX", &name_dst, NULL)) >= 0) {
     g_debug ("%s: temporary file: %s", __FUNCTION__, name_dst);
@@ -532,7 +532,7 @@ gboolean a_babel_convert_to( VikTrwLayer *vt, VikTrack *track, const char *babel
   int fd_src;
   gchar *name_src = NULL;
   gboolean ret = FALSE;
-  gchar *args[64];  
+  gchar *args[64];
 
   if ((fd_src = g_file_open_tmp("tmp-viking.XXXXXX", &name_src, NULL)) >= 0) {
     g_debug ("%s: temporary file: %s", __FUNCTION__, name_src);
@@ -683,7 +683,7 @@ static gboolean load_feature ()
 {
   int i;
   gboolean ret = FALSE;
-  gchar *args[4];  
+  gchar *args[4];
 
   if ( gpsbabel_loc ) {
     i = 0;

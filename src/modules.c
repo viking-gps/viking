@@ -244,7 +244,7 @@ void modules_init()
 #ifdef VIK_CONFIG_BING
   bing_init();
 #endif
-#ifdef VIK_CONFIG_GOOGLE 
+#ifdef VIK_CONFIG_GOOGLE
   google_init();
 #endif
 #ifdef VIK_CONFIG_EXPEDIA

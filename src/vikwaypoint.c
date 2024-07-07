@@ -633,7 +633,7 @@ VikWaypoint *vik_waypoint_unmarshall (const guint8 *data_in, guint datalen)
   vwu_get(new_wp->url);
   vwu_get(new_wp->url_name);
   vwu_get(new_wp->type);
-  vwu_get(new_wp->image); 
+  vwu_get(new_wp->image);
   vwu_get(new_wp->symbol);
   vwu_get(new_wp->extensions);
 

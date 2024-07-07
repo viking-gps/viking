@@ -636,7 +636,7 @@ static VikGeorefLayer *georef_layer_create ( VikViewport *vp )
 static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp, gboolean have_apply )
 {
   // TODO Determine if anything actually changed;
-  // For simplicity 
+  // For simplicity
   gboolean OKed = georef_layer_dialog ( vgl, vp, VIK_GTK_WINDOW_FROM_WIDGET(vp), have_apply );
   if ( OKed )
     vik_window_set_modified ( (VikWindow *)(VIK_GTK_WINDOW_FROM_WIDGET(vp)) );

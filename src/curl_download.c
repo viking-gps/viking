@@ -240,7 +240,7 @@ CURL_download_t curl_download_uri ( const char *uri, FILE *f, DownloadFileOption
     } else if (response == 200 ||  // http: 200 = Ok
                response == 226) {  // ftp:  226 = sucess
       gdouble size;
-      /* verify if curl sends us any data - this is a workaround on using CURLOPT_TIMECONDITION 
+      /* verify if curl sends us any data - this is a workaround on using CURLOPT_TIMECONDITION
          when the server has a (incorrect) time earlier than the time on the file we already have */
       curl_easy_getinfo(curl, CURLINFO_SIZE_DOWNLOAD, &size);
       if (size == 0)

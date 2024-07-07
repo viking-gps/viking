@@ -1864,7 +1864,7 @@ static void draw_dem_gps_speed ( PropWidgets *widgets, GtkWidget *window, cairo_
                             widgets->profile_height,
                             MARGIN_X,
                             widgets->show_dem[PGT_ELEVATION_DISTANCE],
-                            widgets->show_speed[PGT_ELEVATION_DISTANCE] );    
+                            widgets->show_speed[PGT_ELEVATION_DISTANCE] );
 }
 #else
 static void draw_dem_gps_speed ( PropWidgets *widgets, GtkWidget *window, GdkPixmap *pix )
@@ -2245,7 +2245,7 @@ static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets 
 
   if ( is_time_graph(pwgt) )
     draw_time_lines ( window, pl, cr, widgets, rgbaOC, rgbaBC );
-  else    
+  else
     draw_distance_divisions ( window, pl, cr, widgets, a_vik_get_units_distance(), rgbaOC, rgbaBC );
   cairo_stroke ( cr );
 
@@ -2260,7 +2260,7 @@ static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets 
   gdk_rgba_free ( rgbaOC );
 
   // Unknown how to get theme colour in GTK3
-  // Crashes if provide unknown text like  "theme-selected-bg-color"    
+  // Crashes if provide unknown text like  "theme-selected-bg-color"
   gtk_style_context_get ( gsc, gtk_style_context_get_state(gsc), GTK_STYLE_PROPERTY_BACKGROUND_COLOR, &rgbaBC, NULL );
   // Values taken from Adwaita/Adwaita-dark themes - gtk-contained.css / gtk-contained-dark.css
   // @define-color theme_selected_bg_color ...
@@ -2323,7 +2323,7 @@ static void draw_it ( cairo_t *cr, GtkWidget *image, VikTrack *trk, PropWidgets 
 
   if ( is_time_graph(pwgt) )
     draw_time_lines ( window, pl, pix, widgets );
-  else    
+  else
     draw_distance_divisions ( window, pl, pix, widgets, a_vik_get_units_distance() );
 
   const guint height = MARGIN_Y+widgets->profile_height;

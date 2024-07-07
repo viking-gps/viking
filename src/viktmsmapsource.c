@@ -307,7 +307,7 @@ vik_tms_map_source_class_init (VikTmsMapSourceClass *klass)
 	VikMapSourceClass* grandparent_class = VIK_MAP_SOURCE_CLASS (klass);
 	VikMapSourceDefaultClass* parent_class = VIK_MAP_SOURCE_DEFAULT_CLASS (klass);
 	GParamSpec *pspec = NULL;
-		
+
 	object_class->set_property = vik_tms_map_source_set_property;
     object_class->get_property = vik_tms_map_source_get_property;
 

@@ -799,7 +799,7 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     len = unit * ratio;
 
     /* grey background */
-    vik_viewport_draw_line(vvp, vvp->scale_bg_gc, 
+    vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
                            PAD, vvp->height-PAD, PAD + len, vvp->height-PAD, &vvp->scale_bg_color, 3.0*vvp->scale);
     vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
                            PAD, vvp->height-PAD, PAD, vvp->height-PAD-HEIGHT, &vvp->scale_bg_color, 3.0*vvp->scale);
@@ -816,7 +816,7 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
     if (odd%2) {
       int i;
       for (i=1; i<5; i++) {
-        vik_viewport_draw_line(vvp, vvp->scale_bg_gc, 
+        vik_viewport_draw_line(vvp, vvp->scale_bg_gc,
                                PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-(HEIGHT/2), &vvp->black_color, vvp->scale);
         vik_viewport_draw_line(vvp, vvp->black_gc,
                                PAD+i*len/5, vvp->height-PAD, PAD+i*len/5, vvp->height-PAD-(HEIGHT/2), &vvp->black_color, vvp->scale);
@@ -831,7 +831,7 @@ void vik_viewport_draw_scale ( VikViewport *vvp )
       }
     }
 
-    pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL); 
+    pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL);
     pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->font_desc);
 
     switch (dist_units) {
@@ -911,7 +911,7 @@ void vik_viewport_draw_copyright ( VikViewport *vvp )
   }
 
   /* create pango layout */
-  pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL); 
+  pl = gtk_widget_create_pango_layout (GTK_WIDGET(&vvp->drawing_area), NULL);
   pango_layout_set_font_description (pl, gtk_widget_get_style(GTK_WIDGET(&vvp->drawing_area))->font_desc);
   pango_layout_set_alignment ( pl, PANGO_ALIGN_RIGHT );
 
@@ -2052,7 +2052,7 @@ LatLonBBox vik_viewport_get_bbox ( VikViewport *vp )
   return bbox;
 }
 
-void vik_viewport_reset_copyrights ( VikViewport *vp ) 
+void vik_viewport_reset_copyrights ( VikViewport *vp )
 {
   g_return_if_fail ( vp != NULL );
   g_slist_foreach ( vp->copyrights, (GFunc)g_free, NULL );
@@ -2067,7 +2067,7 @@ void vik_viewport_reset_copyrights ( VikViewport *vp )
  *
  * Add a copyright to display on viewport.
  */
-void vik_viewport_add_copyright ( VikViewport *vp, const gchar *copyright ) 
+void vik_viewport_add_copyright ( VikViewport *vp, const gchar *copyright )
 {
   g_return_if_fail ( vp != NULL );
   if ( copyright )

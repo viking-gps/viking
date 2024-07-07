@@ -371,7 +371,7 @@ vik_map_source_default_class_init (VikMapSourceDefaultClass *klass)
                               VIK_TYPE_VIEWPORT_DRAW_MODE,
                               VIK_VIEWPORT_DRAWMODE_UTM,
                               G_PARAM_READWRITE);
-    g_object_class_install_property(object_class, PROP_DRAWMODE, pspec);                                    
+    g_object_class_install_property(object_class, PROP_DRAWMODE, pspec);
 
 	pspec = g_param_spec_string ("copyright",
 	                             "Copyright",

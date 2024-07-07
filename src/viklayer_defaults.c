@@ -261,7 +261,7 @@ static gboolean layer_defaults_save_to_file()
     // if ( error ) {
 	//	g_warning ( "%s: %s", error->message, fn );
 	//	 g_error_free ( error );
-	//  answer = FALSE; 
+	//  answer = FALSE;
 	//	goto tidy;
 	// }
 
@@ -420,7 +420,7 @@ void a_layer_defaults_init()
  */
 void a_layer_defaults_uninit()
 {
-	g_key_file_free ( keyfile );	
+	g_key_file_free ( keyfile );
 	g_ptr_array_foreach ( paramsVD, (GFunc)g_free, NULL );
 	g_ptr_array_free ( paramsVD, TRUE );
 	g_hash_table_destroy ( pointers );

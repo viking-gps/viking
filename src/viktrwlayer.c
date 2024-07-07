@@ -403,7 +403,7 @@ static VikLayerToolFuncStatus tool_edit_trackpoint_click ( VikTrwLayer *vtl, Gdk
 static VikLayerToolFuncStatus tool_edit_trackpoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data );
 static VikLayerToolFuncStatus tool_edit_trackpoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
 static gpointer tool_show_picture_create ( VikWindow *vw, VikViewport *vvp);
-static VikLayerToolFuncStatus tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp ); 
+static VikLayerToolFuncStatus tool_show_picture_click ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static VikLayerToolFuncStatus tool_edit_waypoint_click ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
 static VikLayerToolFuncStatus tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEventMotion *event, gpointer data );
 static VikLayerToolFuncStatus tool_edit_waypoint_release ( VikTrwLayer *vtl, GdkEventButton *event, gpointer data );
@@ -509,7 +509,7 @@ static VikToolInterface trw_layer_tools[] = {
     (VikToolConstructorFunc) tool_edit_create,
     (VikToolDestructorFunc) tool_edit_destroy,
     NULL, NULL,
-    (VikToolMouseFunc) tool_edit_waypoint_click,   
+    (VikToolMouseFunc) tool_edit_waypoint_click,
     (VikToolMouseMoveFunc) tool_edit_waypoint_move,
     (VikToolMouseFunc) tool_edit_waypoint_release,
     (VikToolKeyFunc) NULL,
@@ -1937,7 +1937,7 @@ static guint strcase_hash(gconstpointer v)
       h = (h << 5) - h + *p;
   }
 
-  return h;  
+  return h;
 }
 */
 
@@ -2075,10 +2075,10 @@ static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, Vi
   if ( dp->one_zone )
   {
     gint w2, h2;
-    w2 = dp->xmpp * (dp->width / 2) + 1600 / dp->xmpp; 
+    w2 = dp->xmpp * (dp->width / 2) + 1600 / dp->xmpp;
     h2 = dp->ympp * (dp->height / 2) + 1600 / dp->ympp;
     /* leniency -- for tracks. Obviously for waypoints this SHOULD be a lot smaller */
-    dp->ce1 = dp->center->east_west-w2; 
+    dp->ce1 = dp->center->east_west-w2;
     dp->ce2 = dp->center->east_west+w2;
     dp->cn1 = dp->center->north_south-h2;
     dp->cn2 = dp->center->north_south+h2;
@@ -2721,7 +2721,7 @@ static void trw_layer_draw_track ( const gpointer id, VikTrack *track, struct Dr
 		  vik_viewport_draw_line ( dp->vp, main_gc, oldx, oldy, x, y, &main_gcolor, lt );
 	      }
           }
-          else 
+          else
           {
 	    /*
 	     * If points are the same in display coordinates, don't draw.
@@ -2766,8 +2766,8 @@ static void trw_layer_draw_track_cb ( const gpointer id, VikTrack *track, struct
 static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct DrawingParams *dp )
 {
   if ( wp->visible )
-  if ( (!dp->one_zone && !dp->lat_lon) || ( ( dp->lat_lon || wp->coord.utm_zone == dp->center->utm_zone ) && 
-             wp->coord.east_west < dp->ce2 && wp->coord.east_west > dp->ce1 && 
+  if ( (!dp->one_zone && !dp->lat_lon) || ( ( dp->lat_lon || wp->coord.utm_zone == dp->center->utm_zone ) &&
+             wp->coord.east_west < dp->ce2 && wp->coord.east_west > dp->ce1 &&
              wp->coord.north_south > dp->cn1 && wp->coord.north_south < dp->cn2 ) )
   {
     gint x, y;
@@ -2866,7 +2866,7 @@ static void trw_layer_draw_waypoint ( const gpointer id, VikWaypoint *wp, struct
     // Draw appropriate symbol - either symbol image or simple types
     if ( dp->vtl->wp_draw_symbols && wp->symbol && wp->symbol_pixbuf ) {
       vik_viewport_draw_pixbuf ( dp->vp, wp->symbol_pixbuf, 0, 0, x - gdk_pixbuf_get_width(wp->symbol_pixbuf)/2, y - gdk_pixbuf_get_height(wp->symbol_pixbuf)/2, -1, -1 );
-    } 
+    }
     else if ( wp == dp->vtl->current_wp ) {
       switch ( dp->vtl->wp_symbol ) {
       case WP_SYMBOL_FILLED_SQUARE: vik_viewport_draw_rectangle ( dp->vp, dp->vtl->waypoint_gc, TRUE, x - (dp->vtl->wp_size), y - (dp->vtl->wp_size), dp->vtl->wp_size*2, dp->vtl->wp_size*2, &dp->vtl->waypoint_color ); break;
@@ -3110,7 +3110,7 @@ void vik_trw_layer_draw_highlight_items ( VikTrwLayer *vtl, GHashTable *trks, GH
 static void trw_layer_free_track_gcs ( VikTrwLayer *vtl )
 {
   int i;
-  if ( vtl->track_bg_gc ) 
+  if ( vtl->track_bg_gc )
   {
     ui_gc_unref ( vtl->track_bg_gc );
     vtl->track_bg_gc = NULL;
@@ -3120,7 +3120,7 @@ static void trw_layer_free_track_gcs ( VikTrwLayer *vtl )
     ui_gc_unref ( vtl->track_1color_gc );
     vtl->track_1color_gc = NULL;
   }
-  if ( vtl->current_track_gc ) 
+  if ( vtl->current_track_gc )
   {
     ui_gc_unref ( vtl->current_track_gc );
     vtl->current_track_gc = NULL;
@@ -5125,7 +5125,7 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
 
   (void)vu_menu_add_item ( upload_submenu, _("Upload to _GPS..."), GTK_STOCK_GO_FORWARD, G_CALLBACK(trw_layer_gps_upload), data );
 
-#ifdef VIK_CONFIG_OPENSTREETMAP 
+#ifdef VIK_CONFIG_OPENSTREETMAP
   (void)vu_menu_add_item ( upload_submenu, _("Upload to _OSM..."), GTK_STOCK_GO_UP, G_CALLBACK(trw_layer_osm_traces_upload_cb), data );
 #endif
 
@@ -5159,7 +5159,7 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   if ( item ) {
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
-  }  
+  }
 
   item = a_acquire_trwlayer_track_menu ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)), vlp,
 					 vik_layers_panel_get_viewport(VIK_LAYERS_PANEL(vlp)), vtl );
@@ -5170,7 +5170,7 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
 
   GtkWidget *itemtl = vu_menu_add_item ( menu, _("Track _List..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_track_list_dialog), data );
   gtk_widget_set_sensitive ( itemtl, (gboolean)(g_hash_table_size (vtl->tracks)+g_hash_table_size (vtl->routes)) );
-  GtkWidget *itemwl = vu_menu_add_item ( menu, _("Waypoint _List..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_waypoint_list_dialog), data ); 
+  GtkWidget *itemwl = vu_menu_add_item ( menu, _("Waypoint _List..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_waypoint_list_dialog), data );
   gtk_widget_set_sensitive ( itemwl, (gboolean)(g_hash_table_size (vtl->waypoints)) );
 
   GtkMenu *external_submenu = create_external_submenu ( menu );
@@ -5502,10 +5502,10 @@ static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl
 
     if (type==VIK_TRW_LAYER_SUBLAYER_TRACKS) {
       g_hash_table_foreach ( vtl_src->tracks, (GHFunc)trw_layer_enum_item, &items);
-    } 
+    }
     if (type==VIK_TRW_LAYER_SUBLAYER_WAYPOINTS) {
       g_hash_table_foreach ( vtl_src->waypoints, (GHFunc)trw_layer_enum_item, &items);
-    }    
+    }
     if (type==VIK_TRW_LAYER_SUBLAYER_ROUTES) {
       g_hash_table_foreach ( vtl_src->routes, (GHFunc)trw_layer_enum_item, &items);
     }
@@ -5521,7 +5521,7 @@ static void trw_layer_drag_drop_request ( VikTrwLayer *vtl_src, VikTrwLayer *vtl
       }
       iter = iter->next;
     }
-    if (items) 
+    if (items)
       g_list_free(items);
   } else {
     gpointer ptr = vik_treeview_item_get_pointer ( vt, src_item_iter );
@@ -7145,7 +7145,7 @@ static void trw_layer_edit_trackpoint ( menu_array_sublayer values )
 }
 
 /*************************************
- * merge/split by time routines 
+ * merge/split by time routines
  *************************************/
 
 /* called for each key in track hash table.
@@ -7205,7 +7205,7 @@ static void find_nearby_tracks_by_time (gpointer key, gpointer value, gpointer u
   if ( !orig_trk || !orig_trk->trackpoints )
     return;
 
-  /* outline: 
+  /* outline:
    * detect reasons for not merging, and return
    * if no reason is found not to merge, then do it.
    */
@@ -7738,9 +7738,9 @@ static void trw_layer_split_by_timestamp ( menu_array_sublayer values )
   if ( !trps )
     return;
 
-  if (!a_dialog_time_threshold(VIK_GTK_WINDOW_FROM_LAYER(vtl), 
-			       _("Split Threshold..."), 
-			       _("Split when time between trackpoints exceeds:"), 
+  if (!a_dialog_time_threshold(VIK_GTK_WINDOW_FROM_LAYER(vtl),
+			       _("Split Threshold..."),
+			       _("Split when time between trackpoints exceeds:"),
 			       &thr)) {
     return;
   }
@@ -8444,7 +8444,7 @@ static void vik_trw_layer_uniquify_tracks ( VikTrwLayer *vtl, VikLayersPanel *vl
     if ( ! trk ) {
       // Broken :(
       g_critical("Houston, we've had a problem.");
-      vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO, 
+      vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO,
                                   _("Internal Error in vik_trw_layer_uniquify_tracks") );
       return;
     }
@@ -8740,7 +8740,7 @@ static void vik_trw_layer_uniquify_waypoints ( VikTrwLayer *vtl, VikLayersPanel 
     if ( ! waypoint ) {
       // Broken :(
       g_critical("Houston, we've had a problem.");
-      vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO, 
+      vik_statusbar_set_message ( vik_window_get_statusbar (VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl))), VIK_STATUSBAR_INFO,
                                   _("Internal Error in vik_trw_layer_uniquify_waypoints") );
       return;
     }
@@ -9764,7 +9764,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
       GtkWidget *itemit = vu_menu_add_item ( transform_submenu, _("_Interpolate Times"), NULL, G_CALLBACK(trw_layer_interpolate_times), data );
       gtk_widget_set_tooltip_text ( itemit, _("Reset trackpoint timestamps between the first and last points such that track is traveled at equal speed") );
-    } 
+    }
     GtkWidget *itemro = vu_menu_add_item ( transform_submenu, _("_Rotate..."), NULL, G_CALLBACK(trw_layer_rotate), data );
     gtk_widget_set_tooltip_text ( itemro, _("Shift trackpoints to move the first points to the end") );
 
@@ -9956,7 +9956,7 @@ static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean b
 
     /* DOP / sat values remain at defaults as they do not seem applicable to a dreamt up point */
 
-    // Insert new point into the appropriate trackpoint list, either before or after the current trackpoint as directed   
+    // Insert new point into the appropriate trackpoint list, either before or after the current trackpoint as directed
     VikTrack *trk = vtl->current_tp_track;
     if ( !trk )
       return;
@@ -10894,12 +10894,12 @@ static VikLayerToolFuncStatus tool_edit_waypoint_move ( VikTrwLayer *vtl, GdkEve
         new_coord = wp->coord;
     }
 
-    { 
+    {
       gint x, y;
       vik_viewport_coord_to_screen ( vvp, &new_coord, &x, &y );
 
       marker_moveto ( t, x, y );
-    } 
+    }
     return VIK_LAYER_TOOL_ACK;
   }
   return VIK_LAYER_TOOL_IGNORED;
@@ -11895,7 +11895,7 @@ static VikLayerToolFuncStatus tool_edit_trackpoint_click ( VikTrwLayer *vtl, Gdk
   params.closest_tpl = NULL;
   params.bbox = vik_viewport_get_bbox ( vvp );
 
-  if ( event->button != 1 ) 
+  if ( event->button != 1 )
     return VIK_LAYER_TOOL_IGNORED;
 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
@@ -11915,7 +11915,7 @@ static VikLayerToolFuncStatus tool_edit_trackpoint_click ( VikTrwLayer *vtl, Gdk
     gint x, y;
     vik_viewport_coord_to_screen ( vvp, &(tp->coord), &x, &y );
 
-    if ( current_tr->visible && 
+    if ( current_tr->visible &&
          abs(x - (int)round(event->x)) < (vtl->drawpoints_size*2) &&
          abs(y - (int)round(event->y)) < (vtl->drawpoints_size*2) ) {
       marker_begin_move ( t, event->x, event->y );
@@ -11955,11 +11955,11 @@ static VikLayerToolFuncStatus tool_edit_trackpoint_move ( VikTrwLayer *vtl, GdkE
         new_coord = tp->coord;
     }
     //    VIK_TRACKPOINT(vtl->current_tpl->data)->coord = new_coord;
-    { 
+    {
       gint x, y;
       vik_viewport_coord_to_screen ( vvp, &new_coord, &x, &y );
       marker_moveto ( t, x, y );
-    } 
+    }
 
     return VIK_LAYER_TOOL_ACK;
   }
@@ -11973,7 +11973,7 @@ static VikLayerToolFuncStatus tool_edit_trackpoint_release ( VikTrwLayer *vtl, G
 
   if (!vtl || vtl->vl.type != VIK_LAYER_TRW)
     return VIK_LAYER_TOOL_IGNORED;
-  if ( event->button != 1) 
+  if ( event->button != 1)
     return VIK_LAYER_TOOL_IGNORED;
 
   if ( t->holding ) {
@@ -12199,7 +12199,7 @@ static VikLayerToolFuncStatus tool_show_picture_click ( VikTrwLayer *vtl, GdkEve
 }
 
 /***************************************************************************
- ** End tool code 
+ ** End tool code
  ***************************************************************************/
 
 
@@ -12987,7 +12987,7 @@ static gboolean trw_load_external_layer ( VikTrwLayer *trw )
     // NB Check magic has issues with BOMs
     if ( file_check_magic(ext_f, FILE_XML_MAGIC) ) {
       if ( a_file_check_ext(extfile, ".tcx") )
-        failed = ! a_tcx_read_file_into_layer ( trw, ext_f, extfile );     
+        failed = ! a_tcx_read_file_into_layer ( trw, ext_f, extfile );
       else if ( a_file_check_ext(extfile, ".kml") )
         failed = ! a_kml_read_file ( trw, ext_f, TRUE );
       else {
@@ -12997,7 +12997,7 @@ static gboolean trw_load_external_layer ( VikTrwLayer *trw )
       }
     }
     else if ( a_fit_check_magic(ext_f) ) {
-      failed = ! a_fit_read_file_into_layer ( trw, ext_f, extfile );     
+      failed = ! a_fit_read_file_into_layer ( trw, ext_f, extfile );
     }
     else {
       // Still try GPX as fallback

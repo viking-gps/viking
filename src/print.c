@@ -98,7 +98,7 @@ void a_print(VikWindow *vw, VikViewport *vvp)
 
   data.xres = data.yres = 1; // This forces it to default to a 100% page size
 
-  if (print_settings != NULL) 
+  if (print_settings != NULL)
     gtk_print_operation_set_print_settings (print_oper, print_settings);
 
   g_signal_connect (print_oper, "begin_print", G_CALLBACK (begin_print), &data);
@@ -181,7 +181,7 @@ static void copy_row_from_rgba(guchar *surface_pixels, guchar *pixbuf_pixels, gi
 static void draw_page_cairo(GtkPrintContext *context, PrintData *data)
 {
   cairo_t         *cr;
-  GdkPixbuf       *pixbuf_to_draw; 
+  GdkPixbuf       *pixbuf_to_draw;
   cairo_surface_t *surface;
   guchar          *surface_pixels;
   guchar          *pixbuf_pixels;

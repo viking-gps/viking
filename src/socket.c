@@ -249,7 +249,7 @@ gboolean socket_open_files ( guint argc, gchar **argv, gboolean external )
 	                                &error );
 	GSocketAddress* gsa = get_socket_address ();
 	GSocketConnection *gsc = g_socket_connection_factory_create_connection ( gsock );
-	
+
 	ans = g_socket_connection_connect ( gsc, gsa, NULL, &error );
 	if ( error ) {
 		g_warning ( "%s: %s", __FUNCTION__, error->message );

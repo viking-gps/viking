@@ -139,7 +139,7 @@ gboolean vik_coord_equalish ( const VikCoord *coord1, const VikCoord *coord2 )
            coord1->east_west <= coord2->east_west + TOLERANCE;
 }
 
-static void get_north_west(struct LatLon *center, struct LatLon *dist, struct LatLon *nw) 
+static void get_north_west(struct LatLon *center, struct LatLon *dist, struct LatLon *nw)
 {
   nw->lat = center->lat + dist->lat;
   nw->lon = center->lon - dist->lon;
@@ -151,7 +151,7 @@ static void get_north_west(struct LatLon *center, struct LatLon *dist, struct La
   }
 }
 
-static void get_south_east(struct LatLon *center, struct LatLon *dist, struct LatLon *se) 
+static void get_south_east(struct LatLon *center, struct LatLon *dist, struct LatLon *se)
 {
   se->lat = center->lat - dist->lat;
   se->lon = center->lon + dist->lon;

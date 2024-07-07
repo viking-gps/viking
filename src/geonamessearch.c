@@ -133,7 +133,7 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
 
   GList *geoname_runner = geonames;
   while (geoname_runner)
-  { 
+  {
     geoname = (found_geoname *)geoname_runner->data;
     latlon_string = g_strdup_printf("(%f,%f)", geoname->ll.lat, geoname->ll.lon);
     gtk_tree_store_append(store, &iter, NULL);
@@ -213,7 +213,7 @@ static GList *a_select_geoname_from_list(GtkWindow *parent, GList *geonames, gbo
     }
 
     if (selected_geonames)
-    { 
+    {
       gtk_widget_destroy ( dialog );
       return selected_geonames;
     }

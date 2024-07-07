@@ -135,7 +135,7 @@ static void potential_circumpolar_moon_tooltip ( GtkWidget *widget, int res )
 static gchar *get_time_string ( double JD, int res, const VikCoord* vc, const gchar *tz )
 {
 	gchar *msg = NULL;
-	if ( res == 0 ) 
+	if ( res == 0 )
 		msg = time_string_for_julian ( JD, vc, tz );
 	else
 		// Sun/Moon is circumpolar - so neither rises or sets

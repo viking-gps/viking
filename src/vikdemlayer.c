@@ -891,7 +891,7 @@ static void vik_dem_layer_draw_dem ( VikDEMLayer *vdl, VikViewport *vp, VikDEM *
   if ( dem->horiz_units == VIK_DEM_HORIZ_LL_ARCSECONDS ) {
     VikCoord tmp; /* TODO: don't use coord_load_from_latlon, especially if in latlon drawing mode */
 
-    gdouble max_lat_as, max_lon_as, min_lat_as, min_lon_as;  
+    gdouble max_lat_as, max_lon_as, min_lat_as, min_lon_as;
     gdouble start_lat_as, end_lat_as, start_lon_as, end_lon_as;
 
     gdouble start_lat, end_lat, start_lon, end_lon;
@@ -1288,7 +1288,7 @@ static gchar *srtm_server_url ( gchar *b_url, dem_dir_scheme_type scheme, dem_fi
                                 (intlat >= 0) ? 'N' : 'S',
                                 ABS(intlat),
                                 (intlon >= 0) ? 'E' : 'W',
-                                ABS(intlon) );      
+                                ABS(intlon) );
       break;
     default:
       // NB also file name can be different too
@@ -1382,7 +1382,7 @@ static gchar *srtm_lat_lon_to_dest_fn ( gdouble lat, gdouble lon )
 /* TODO: generalize */
 static void srtm_draw_existence ( VikViewport *vp )
 {
-  gdouble max_lat, max_lon, min_lat, min_lon;  
+  gdouble max_lat, max_lon, min_lat, min_lon;
   gchar buf[strlen(MAPS_CACHE_DIR)+strlen(SRTM_CACHE_TEMPLATE)+30];
   gint i, j;
 
@@ -1451,7 +1451,7 @@ static gchar *dem24k_lat_lon_to_dest_fn ( gdouble lat, gdouble lon )
 /* TODO: generalize */
 static void dem24k_draw_existence ( VikViewport *vp )
 {
-  gdouble max_lat, max_lon, min_lat, min_lon;  
+  gdouble max_lat, max_lon, min_lat, min_lon;
   gchar buf[strlen(MAPS_CACHE_DIR)+40];
   gdouble i, j;
 

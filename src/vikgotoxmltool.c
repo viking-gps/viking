@@ -378,7 +378,7 @@ vik_goto_xml_tool_init ( VikGotoXmlTool *self )
   priv->lon_attr = NULL;
   priv->desc_path = NULL;
   priv->desc_attr = NULL;
-  // 
+  //
   priv->ll.lat = NAN;
   priv->ll.lon = NAN;
   priv->description = NULL;
@@ -527,7 +527,7 @@ _start_element (GMarkupParseContext *context,
 static void
 _text (GMarkupParseContext *context,
        const gchar         *text,
-       gsize                text_len,  
+       gsize                text_len,
        gpointer             user_data,
        GError             **error)
 {
@@ -641,7 +641,7 @@ vik_goto_xml_tool_parse_file_for_latlon(VikGotoTool *self, gchar *filename, stru
   {
     *ll = priv->ll;
   }
-  
+
   if (isnan(priv->ll.lat) || isnan(priv->ll.lat))
     /* At least one coordinate not found */
     return FALSE;

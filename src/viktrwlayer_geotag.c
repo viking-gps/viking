@@ -425,7 +425,7 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 				}
 
 				g_free ( name );
-				
+
 				// Mark for redraw
 				options->redraw = TRUE;
 			}
@@ -435,7 +435,7 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 
 		options->PhotoTime = ConvertToUnixTime ( datetime, EXIF_DATE_FORMAT, options->ov.TimeZoneHours, options->ov.TimeZoneMins, options->ov.time_is_local );
 		g_free ( datetime );
-		
+
 		// Apply any offset
 		options->PhotoTime = options->PhotoTime + options->ov.time_offset;
 
@@ -467,7 +467,7 @@ static void trw_layer_geotag_process ( geotag_options_t *options )
 				gboolean updated_waypoint = FALSE;
 
 				if ( options->ov.overwrite_waypoints ) {
-				
+
 					// Update existing WP
 					// Find a WP with current name
 					gchar *name = NULL;

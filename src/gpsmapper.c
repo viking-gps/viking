@@ -54,7 +54,7 @@ static guint print_rgn_stuff ( const gchar *nm, FILE *f )
   else
   {
     layers=0;
-  } 
+  }
   /* --------------------------------------------- */
 
   if ( len > 11 && strncasecmp(name+len-10,"RGN",3) == 0 &&
@@ -65,7 +65,7 @@ strncasecmp(name+len-4,"0x",2) == 0 )
     fprintf ( f, "\n" );
 
 /* added by oddgeir@oddgeirkvien.com, 2005.02.02 */
-    if (layers) fprintf( f, "%s\n",layers);  
+    if (layers) fprintf( f, "%s\n",layers);
 
     g_free ( name );
 
@@ -79,7 +79,7 @@ strncasecmp(name+len-6,"0x",2) == 0 )
     fprintf ( f, "\n" );
 
 /* added by oddgeir@oddgeirkvien.com, 2005.02.02 */
-    if (layers) fprintf( f, "%s\n",layers);  
+    if (layers) fprintf( f, "%s\n",layers);
 
     g_free ( name );
 
@@ -112,7 +112,7 @@ static void write_trackpoint ( VikTrackpoint *tp, FILE *f )
 {
   static struct LatLon ll;
   gchar *s_lat, *s_lon;
-  vik_coord_to_latlon ( &(tp->coord), &ll ); 
+  vik_coord_to_latlon ( &(tp->coord), &ll );
   s_lat = a_coords_dtostr(ll.lat);
   s_lon = a_coords_dtostr(ll.lon);
   fprintf ( f, "(%s,%s),", s_lat, s_lon );

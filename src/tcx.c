@@ -279,7 +279,7 @@ static void tcx_end ( UserDataT *ud, const char *el )
 				vik_trw_layer_filein_add_waypoint ( c_vtl, c_wp_name, c_wp );
 			} else {
 				g_warning ( "%s: Missing a coordinate value for %s", __FUNCTION__, c_wp_name );
-				vik_waypoint_free ( c_wp ); 
+				vik_waypoint_free ( c_wp );
 			}
 
 			g_free ( c_wp_name );

@@ -145,7 +145,7 @@ GType vik_file_list_get_type (void)
 
   if (!vs_type)
   {
-    static const GTypeInfo vs_info = 
+    static const GTypeInfo vs_info =
     {
       sizeof (VikFileListClass),
       NULL, /* base_init */

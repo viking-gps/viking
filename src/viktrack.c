@@ -1033,7 +1033,7 @@ gdouble *vik_track_make_time_map_for ( const VikTrack *tr, guint16 num_chunks, V
         vals[numpts] = tp->altitude;
       break;
     case TRACK_VALUE_HEART_RATE:
-      if ( tp->heart_rate < 1000 ) 
+      if ( tp->heart_rate < 1000 )
         vals[numpts] = tp->heart_rate;
       break;
     case TRACK_VALUE_CADENCE:
@@ -1417,7 +1417,7 @@ gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks )
             pts[i] = pts[current_chunk];
           break;
         }
-      } 
+      }
       else {
         current_area_under_curve += dist_along_seg * (altitude1 + (altitude2 - altitude1)*dist_along_seg/current_seg_length);
         pts[current_chunk] = current_area_under_curve / chunk_length;
@@ -1559,7 +1559,7 @@ gdouble *vik_track_make_speed_map ( const VikTrack *tr, guint16 num_chunks )
 	index++;
       }
       v[i] = acc_s/acc_t;
-    } 
+    }
     else if (i) {
       v[i] = v[i-1];
     }

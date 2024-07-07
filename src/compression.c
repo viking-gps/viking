@@ -310,7 +310,7 @@ static void *ungzip_file ( gchar *gzip_file, gsize zipped_size, gulong *unzip_si
 	g_output_stream_splice ( memory_output, streamData, 0, NULL, &error );
 	(void)g_output_stream_close ( memory_output, NULL, NULL );
 	bytes = g_memory_output_stream_steal_as_bytes ( G_MEMORY_OUTPUT_STREAM(memory_output) );
-      
+
 	*unzip_size = g_bytes_get_size ( bytes );
 	if ( *unzip_size > 0 )
 		return g_memdup ( g_bytes_get_data(bytes, NULL), *unzip_size );
@@ -425,7 +425,7 @@ gchar* uncompress_xz ( const gchar *name )
 	GOutputStream *gos = g_io_stream_get_output_stream ( G_IO_STREAM(gios) );
 
 	lzma_stream lstrm = LZMA_STREAM_INIT;
-	
+
 	lzma_ret rv = lzma_auto_decoder ( &lstrm, UINT64_MAX, 0 );
 
 	if ( rv != LZMA_OK )
@@ -450,7 +450,7 @@ gchar* uncompress_xz ( const gchar *name )
 
 		// Keep processing with lzma (in decompressor mode)
 		rv = lzma_code ( &lstrm, LZMA_RUN );
-	
+
 		// If successful - write decompressed stream out to the file
 		if ( rv == LZMA_OK || rv == LZMA_STREAM_END ) {
 

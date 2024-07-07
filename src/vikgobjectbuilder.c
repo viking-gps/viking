@@ -2,17 +2,17 @@
 /*
  * viking
  * Copyright (C) 2009, Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
- * 
+ *
  * viking is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation, either version 2 of the License, or
  * (at your option) any later version.
- * 
+ *
  * viking is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -168,7 +168,7 @@ _end_element (GMarkupParseContext *context,
 static void
 _text (GMarkupParseContext *context,
        const gchar         *text,
-       gsize                text_len,  
+       gsize                text_len,
        gpointer             user_data,
        GError             **error)
 {
@@ -179,7 +179,7 @@ _text (GMarkupParseContext *context,
 		if (gtype != 0 && property_name != NULL)
 		{
 			/* parameter value */
-			/* We have to retrieve the expected type of the value 
+			/* We have to retrieve the expected type of the value
 			 * in order to do the correct transformation */
 			GObjectClass *oclass;
 			oclass = g_type_class_ref (gtype);

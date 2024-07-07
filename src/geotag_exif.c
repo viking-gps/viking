@@ -737,7 +737,7 @@ static void convert_to_entry (const char *set_value, gdouble gdvalue, ExifEntry 
 			g_warning (_("Not yet implemented!"));
 			return;
 		}
-		
+
 		if ( use_string )
 			value_p = strtok (NULL, " ");
 
@@ -879,7 +879,7 @@ gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble al
 
 		// Convert result from 1 for success, 0 for failure into our scheme
 		result = !result;
-		
+
 		jpeg_data_unref (jdata);
 	}
 	else {

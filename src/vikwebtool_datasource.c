@@ -184,10 +184,10 @@ typedef struct {
 
 static void ensure_last_user_strings_hash() {
     if ( last_user_strings == NULL ) {
-        last_user_strings = g_hash_table_new_full ( g_str_hash, 
+        last_user_strings = g_hash_table_new_full ( g_str_hash,
                                                     g_str_equal,
                                                     g_free,
-                                                    g_free ); 
+                                                    g_free );
     }
 }
 
@@ -203,8 +203,8 @@ static gchar *get_last_user_string ( const datasource_t *source ) {
 
 static void set_last_user_string ( const datasource_t *source, const gchar *s ) {
     ensure_last_user_strings_hash();
-    g_hash_table_insert ( last_user_strings, 
-                          vik_ext_tool_get_label ( source->self ), 
+    g_hash_table_insert ( last_user_strings,
+                          vik_ext_tool_get_label ( source->self ),
                           g_strdup ( s ) );
 }
 
@@ -374,7 +374,7 @@ static void vik_webtool_datasource_class_init ( VikWebtoolDatasourceClass *klass
 	pspec = g_param_spec_string ("babel_filter_args",
 	                             "The command line filter options to pass to gpsbabel",
 	                             "Set the command line filter options for gpsbabel",
-	                             NULL, // default value 
+	                             NULL, // default value
 	                             G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (gobject_class,
 	                                 PROP_BABEL_FILTER_ARGS,

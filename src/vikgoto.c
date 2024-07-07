@@ -301,7 +301,7 @@ void a_vik_goto ( VikWindow *vw, VikViewport *vvp )
     return;
   }
 
-  dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0, 
+  dialog = gtk_dialog_new_with_buttons ( "", GTK_WINDOW(vw), 0,
                                          GTK_STOCK_FIND, GTK_RESPONSE_ACCEPT,
                                          GTK_STOCK_CLOSE, GTK_RESPONSE_CLOSE,
                                          NULL );
@@ -791,7 +791,7 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
       }
     }
   }
-  
+
  tidy:
   g_mapped_file_unref ( mf );
   (void)util_remove ( tmpname );

@@ -513,7 +513,7 @@ static void datasource_gps_progress ( BabelProgressCode c, gpointer data, acq_di
       int lsb, msb, cnt;
 
       if (strlen(line) > 20) {
-       sscanf(line+17, "%x", &lsb); 
+       sscanf(line+17, "%x", &lsb);
        sscanf(line+20, "%x", &msb);
        cnt = lsb + msb * 256;
        if ( gps_data->progress_type == RTE ) {

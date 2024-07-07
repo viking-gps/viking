@@ -694,7 +694,7 @@ void ui_load_icons ( void )
 			g_error_free ( error );
 			break;
 		}
-		
+
 		int size = gdk_pixbuf_get_height ( pb );
 		// Use a normalized name (i.e. skip the '.png')
 		char *name = g_strdup ( children[ii] );

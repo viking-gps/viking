@@ -232,7 +232,7 @@ static const gchar* geoclue_layer_tooltip ( VikGeoclueLayer *vgl )
 static void geoclue_layer_marshall( VikGeoclueLayer *vgl, guint8 **data, guint *datalen )
 {
 	VikLayer *layer;
-	guint8 *ld; 
+	guint8 *ld;
 	guint ll;
 	GByteArray* b = g_byte_array_new ();
 	guint len;
@@ -265,7 +265,7 @@ static VikGeoclueLayer *geoclue_layer_unmarshall ( guint8 *data, guint len, VikV
 #define alm_next \
 	len -= sizeof(guint) + alm_size; \
 	data += sizeof(guint) + alm_size;
-  
+
 	VikGeoclueLayer *rv = geoclue_layer_new(vvp);
 
 	vik_layer_unmarshall_params ( VIK_LAYER(rv), data+sizeof(guint), alm_size, vvp );

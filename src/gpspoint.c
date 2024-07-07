@@ -378,7 +378,7 @@ gboolean a_gpspoint_read_file(VikTrwLayer *trw, FILE *f, const gchar *dirpath ) 
       current_track->trackpoints = g_list_prepend ( current_track->trackpoints, tp );
     }
 
-    if (line_name) 
+    if (line_name)
       g_free ( line_name );
     line_name = NULL;
     if (line_comment)

@@ -665,7 +665,7 @@ static GdkPixbuf* layer_pixbuf_update ( GdkPixbuf *pixbuf, GdkColor color, guint
   pixbuf = ui_pixbuf_new ( &color, size_x, size_y );
   pixbuf = ui_pixbuf_set_alpha ( pixbuf, alpha );
   return pixbuf;
-}  
+}
 
 VikAggregateLayer *vik_aggregate_layer_create (VikViewport *vp)
 {
@@ -682,7 +682,7 @@ static void aggregate_layer_marshall( VikAggregateLayer *val, guint8 **data, gui
 {
   GList *child = val->children;
   VikLayer *child_layer;
-  guint8 *ld; 
+  guint8 *ld;
   guint ll;
   GByteArray* b = g_byte_array_new ();
   guint len;
@@ -3410,7 +3410,7 @@ guint vik_aggregate_layer_tool ( VikAggregateLayer *val, VikLayerTypeEnum layer_
   }
   return found_rej ? 2 : 1; /* no one wanted to accept the tool call in this layer */
 }
-#endif 
+#endif
 
 VikLayer *vik_aggregate_layer_get_top_visible_layer_of_type ( VikAggregateLayer *val, VikLayerTypeEnum type )
 {

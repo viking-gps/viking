@@ -338,7 +338,7 @@ bstart_element (GMarkupParseContext *context,
 static void
 btext (GMarkupParseContext *context,
        const gchar         *text,
-       gsize                text_len,  
+       gsize                text_len,
        gpointer             user_data,
        GError             **error)
 {

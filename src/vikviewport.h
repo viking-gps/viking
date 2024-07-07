@@ -62,7 +62,7 @@ GType vik_viewport_get_type ();
 /* Viking initialization */
 VikViewport *vik_viewport_new ();
 void vik_viewport_configure_manually ( VikViewport *vvp, gint width, guint height ); /* for off-screen viewports */
-gboolean vik_viewport_configure ( VikViewport *vp ); 
+gboolean vik_viewport_configure ( VikViewport *vp );
 
 
 /* coordinate transformations */
@@ -128,7 +128,7 @@ gboolean vik_viewport_get_half_drawn( VikViewport *vp );
 
 
 /***************************************************************************************************
- *  Drawing-related operations 
+ *  Drawing-related operations
  ***************************************************************************************************/
 
 GdkPixbuf *vik_viewport_get_pixbuf ( VikViewport *vvp, gint ww, gint hh );

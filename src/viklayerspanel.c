@@ -207,7 +207,7 @@ static void calendar_mark_layer_in_month ( VikLayersPanel *vlp,
                                            guint month,
                                            guint day)
 {
-  GHashTable *trks = vik_trw_layer_get_tracks ( vtl ); 
+  GHashTable *trks = vik_trw_layer_get_tracks ( vtl );
   GHashTableIter iter;
   gpointer key, value;
   // Foreach Track
@@ -772,7 +772,7 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   GtkWidget *stats_eventbox = gtk_event_box_new ();
   gtk_container_add ( GTK_CONTAINER(stats_eventbox), vlp->stats_label );
   gtk_widget_show ( vlp->stats_label );
-  g_signal_connect_swapped ( stats_eventbox, "button-press-event", G_CALLBACK(track_tabs_button_press_cb), vlp ); 
+  g_signal_connect_swapped ( stats_eventbox, "button-press-event", G_CALLBACK(track_tabs_button_press_cb), vlp );
   gtk_widget_set_sensitive ( vlp->stats_label, FALSE );
   gtk_notebook_append_page ( GTK_NOTEBOOK(vlp->tabs), vlp->stats_pane, stats_eventbox );
   gtk_notebook_set_tab_reorderable ( GTK_NOTEBOOK(vlp->tabs), vlp->stats_pane, TRUE );
@@ -783,7 +783,7 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   GtkWidget *splits_eventbox = gtk_event_box_new ();
   gtk_container_add ( GTK_CONTAINER(splits_eventbox), vlp->splits_label );
   gtk_widget_show ( vlp->splits_label );
-  g_signal_connect_swapped ( splits_eventbox, "button-press-event", G_CALLBACK(track_tabs_button_press_cb), vlp ); 
+  g_signal_connect_swapped ( splits_eventbox, "button-press-event", G_CALLBACK(track_tabs_button_press_cb), vlp );
   gtk_widget_set_sensitive ( vlp->splits_label, FALSE );
   gtk_notebook_append_page ( GTK_NOTEBOOK(vlp->tabs), vlp->splits_pane, splits_eventbox );
   gtk_notebook_set_tab_reorderable ( GTK_NOTEBOOK(vlp->tabs), vlp->splits_pane, TRUE );

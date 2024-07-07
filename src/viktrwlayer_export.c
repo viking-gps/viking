@@ -110,7 +110,7 @@ static gboolean gpx_export_simplify_layer ( VikTrwLayer *vtl, const gchar *fn, V
       ans = a_babel_convert_to ( vtl, trk, filter, fn, NULL, NULL );
       g_free ( filter );
       if ( ans ) {
-         gchar *msg = g_strdup_printf ( _("Export of GPX file simplified using point limit: %d"), limit ); 
+         gchar *msg = g_strdup_printf ( _("Export of GPX file simplified using point limit: %d"), limit );
          a_dialog_info_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), msg );
          g_free ( msg );
       }

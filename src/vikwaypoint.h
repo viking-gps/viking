@@ -68,7 +68,7 @@ struct _VikWaypoint {
   gdouble image_direction;   /* NAN if data unavailable */
   VikWaypointImageDirectionRef image_direction_ref;
   /* a rather misleading, ugly hack needed for trwlayer's click image.
-   * these are the height at which the thumbnail is being drawn, not the 
+   * these are the height at which the thumbnail is being drawn, not the
    * dimensions of the original image. */
   guint8 image_width;
   guint8 image_height;

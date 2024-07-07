@@ -45,7 +45,7 @@ GType vik_radio_group_get_type (void)
 
   if (!vrg_type)
   {
-    static const GTypeInfo vrg_info = 
+    static const GTypeInfo vrg_info =
     {
       sizeof (VikRadioGroupClass),
       NULL, /* base_init */

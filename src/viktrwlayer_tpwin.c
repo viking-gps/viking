@@ -60,7 +60,7 @@ GType vik_trw_layer_tpwin_get_type (void)
 
   if (!tpwin_type)
   {
-    static const GTypeInfo tpwin_info = 
+    static const GTypeInfo tpwin_info =
     {
       sizeof (VikTrwLayerTpwinClass),
       NULL, /* base_init */

@@ -484,7 +484,7 @@ static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl )
 static void gps_layer_marshall( VikGpsLayer *vgl, guint8 **data, guint *datalen )
 {
   VikLayer *child_layer;
-  guint8 *ld; 
+  guint8 *ld;
   guint ll;
   GByteArray* b = g_byte_array_new ();
   guint len;
@@ -520,7 +520,7 @@ static VikGpsLayer *gps_layer_unmarshall( guint8 *data, guint len, VikViewport *
 #define alm_next \
   len -= sizeof(guint) + alm_size; \
   data += sizeof(guint) + alm_size;
-  
+
   VikGpsLayer *rv = vik_gps_layer_new(vvp);
   VikLayer *child_layer;
   gint i;
@@ -768,7 +768,7 @@ static void vik_gps_layer_post_read ( VikGpsLayer *vgl, VikViewport *vvp, gboole
     trw_layer_calculate_bounds_waypoints ( vgl->trw_children[i] );
     trw_layer_calculate_bounds_tracks ( vgl->trw_children[i] );
   }
-  
+
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   layer_update_indictor_gc ( vgl, vvp );
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
@@ -1272,7 +1272,7 @@ static void gps_download_progress_func(BabelProgressCode c, gpointer data, GpsSe
       int lsb, msb, cnt;
 
       if (strlen(line) > 20) {
-        sscanf(line+17, "%x", &lsb); 
+        sscanf(line+17, "%x", &lsb);
         sscanf(line+20, "%x", &msb);
         cnt = lsb + msb * 256;
         if ( sess->progress_type == RTE ) {
@@ -1329,11 +1329,11 @@ static void gps_upload_progress_func(BabelProgressCode c, gpointer data, GpsSess
 
     process_line_for_gps_info ( line, sess );
 
-    if (strstr(line, "RECORD")) { 
+    if (strstr(line, "RECORD")) {
       int lsb, msb;
 
       if (strlen(line) > 20) {
-        sscanf(line+17, "%x", &lsb); 
+        sscanf(line+17, "%x", &lsb);
         sscanf(line+20, "%x", &msb);
         cnt = lsb + msb * 256;
         //sess->count = 0; ?? wpt, trk and/or rte?? or none
@@ -1409,7 +1409,7 @@ static void gps_comm_thread(GpsSession *sess)
   }
 
   sess->id_status_end = gdk_threads_add_idle ( (GSourceFunc)show_gps_status_end, sess );
-  
+
   if (sess->result) {
     if (sess->ok) {
       /* Do not change the view if we are following the current GPS position */
@@ -1770,8 +1770,8 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
       }
       if (replace ||
           ((cur_timestamp != last_timestamp) &&
-          ((forced || 
-            ((heading < last_heading) && (heading < (last_heading - 3))) || 
+          ((forced ||
+            ((heading < last_heading) && (heading < (last_heading - 3))) ||
             ((heading > last_heading) && (heading > (last_heading + 3))) ||
             (alt && (alt != last_alt)))))) {
         /* TODO: check for new segments */
@@ -1785,7 +1785,7 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
 #endif
         tp->altitude = alt;
         /* speed only available for 3D fix. Check for NAN when use this speed */
-        tp->speed = vgl->realtime_fix.fix.speed;  
+        tp->speed = vgl->realtime_fix.fix.speed;
         tp->course = vgl->realtime_fix.fix.track;
         tp->nsats = vgl->realtime_fix.satellites_used;
         tp->fix_mode = vgl->realtime_fix.fix.mode;

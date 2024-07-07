@@ -241,7 +241,7 @@ static void coord_layer_draw ( VikCoordLayer *vcl, VikViewport *vp )
     return;
   }
 
-  if ( vik_viewport_get_coord_mode(vp) != VIK_COORD_UTM ) 
+  if ( vik_viewport_get_coord_mode(vp) != VIK_COORD_UTM )
   {
     VikCoord left, right, left2, right2;
     gdouble l, r, i, j;
@@ -323,7 +323,7 @@ static void coord_layer_draw ( VikCoordLayer *vcl, VikViewport *vp )
     return;
   }
 
-  if ( vik_viewport_get_coord_mode(vp) == VIK_COORD_UTM ) 
+  if ( vik_viewport_get_coord_mode(vp) == VIK_COORD_UTM )
   {
     const struct UTM *center = (const struct UTM *)vik_viewport_get_center ( vp );
     gdouble xmpp = vik_viewport_get_xmpp ( vp ), ympp = vik_viewport_get_ympp ( vp );

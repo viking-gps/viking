@@ -817,7 +817,7 @@ static void gpx_start(UserDataT *ud, const char *el, const char **attr)
      case tt_wpt_extensions:
      case tt_trk_extensions:
        g_string_erase ( c_ext, 0, -1 ); // clear the buffer
-       break;      
+       break;
      case tt_trk_trkseg_trkpt_extensions:
        g_string_erase ( c_trkpt_ext, 0, -1 ); // clear the buffer
        break;
@@ -1828,7 +1828,7 @@ static void gpx_write_waypoint ( VikWaypoint *wp, GpxWritingContext *context )
     g_free ( tmp );
   }
 
-  if ( wp->symbol ) 
+  if ( wp->symbol )
   {
     tmp = a_gpx_entitize(wp->symbol);
     if ( a_vik_gpx_export_wpt_sym_name ( ) ) {

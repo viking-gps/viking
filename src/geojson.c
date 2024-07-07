@@ -234,7 +234,7 @@ gboolean a_geojson_read_file_OSRM ( VikTrwLayer *vtl, const gchar *filename )
 		// Tidy up beginning and ending brackets
 		ptr = g_strrstr ( str, "]]]" );
 		if ( ptr )
-			memcpy ( ptr, "   ", 3 ); // as above		
+			memcpy ( ptr, "   ", 3 ); // as above
 		ptr = g_strrstr ( str, "[[[" );
 		if ( ptr )
 			memcpy ( ptr, "   ", 3 ); // as above
@@ -268,7 +268,7 @@ gboolean a_geojson_read_file_OSRM ( VikTrwLayer *vtl, const gchar *filename )
 			trk->trackpoints = g_list_reverse ( trk->trackpoints );
             // Potentially could try to be more clever with the name...
 			vik_trw_layer_filein_add_track ( vtl, N_("OSRM Route"), trk );
-		}		
+		}
 		g_strfreev ( coords );
 	}
 	g_object_unref ( jp );

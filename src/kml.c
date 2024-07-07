@@ -614,7 +614,7 @@ static void value_cad_end ( xml_data *xd, const char *el )
 	if ( isnan(val) )
 		ival = VIK_TRKPT_CADENCE_NONE;
 	else
-		ival = round ( val );	
+		ival = round ( val );
 	xd->cads = g_list_prepend ( xd->cads, GUINT_TO_POINTER(ival) );
 	end_leaf_tag ( xd );
 }
@@ -626,7 +626,7 @@ static void value_hr_end ( xml_data *xd, const char *el )
 	if ( isnan(val) )
 		ival = 0;
 	else
-		ival = round ( val );	
+		ival = round ( val );
 	xd->hrs = g_list_prepend ( xd->hrs, GUINT_TO_POINTER(ival) );
 	end_leaf_tag ( xd );
 }
@@ -734,7 +734,7 @@ static void multitrack_start ( xml_data *xd, const char *el, const char **attr )
 {
 	// Ignore ''altitudeMode', 'gx:interpolate'
 	if ( g_strcmp0 ( el, "gx:Track" ) == 0 ) {
-		setup_to_read_next_level_tag ( xd, multitrack_start, multitrack_end, track_start, track_end );		
+		setup_to_read_next_level_tag ( xd, multitrack_start, multitrack_end, track_start, track_end );
 		xd->track = vik_track_new();
 		xd->tracks = g_list_append ( xd->tracks, xd->track );
 	}
@@ -770,7 +770,7 @@ static void placemark_start ( xml_data *xd, const char *el, const char **attr )
 		xd->track = vik_track_new();
 	} else if ( g_strcmp0 ( el, "gx:MultiTrack" ) == 0 ) {
 		setup_to_read_next_level_tag ( xd, placemark_start, placemark_end, multitrack_start, multitrack_end );
-	} 
+	}
 }
 
 static void top_end ( xml_data *xd, const char *el )

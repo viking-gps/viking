@@ -287,7 +287,7 @@ GtkWidget *new_widget ( VikLayerParam *param, VikLayerParamData data, gboolean s
       if ( (param->type == VIK_LAYER_PARAM_PTR && param->widget_data) ) {
         rv = gtk_button_new_with_label ( _(param->widget_data) );
         g_signal_connect ( G_OBJECT(rv), "clicked", G_CALLBACK (vlpd.ptr), param->extra_widget_data );
-      } else if	(param->type == VIK_LAYER_PARAM_PTR_DEFAULT && param->widget_data && show_reset_buttons) {	
+      } else if	(param->type == VIK_LAYER_PARAM_PTR_DEFAULT && param->widget_data && show_reset_buttons) {
         if ( param->extra_widget_data ) {
           // For preferences use a button on each tab - using static extra_widget_data
           rv = gtk_button_new_with_label ( _(param->widget_data) );
@@ -702,15 +702,15 @@ VikLayerParamData *a_uibuilder_run_dialog (  const gchar *dialog_name, GtkWindow
     VikLayerParamData *paramdatas = g_new(VikLayerParamData, params_count);
     if ( a_uibuilder_properties_factory ( dialog_name,
 					  parent,
-					  params, 
-					  params_count, 
-					  groups, 
+					  params,
+					  params_count,
+					  groups,
 					  groups_count,
 					  NULL,
-					  (gpointer) uibuilder_run_setparam, 
-					  paramdatas, 
+					  (gpointer) uibuilder_run_setparam,
+					  paramdatas,
 					  params,
-					  (gpointer) uibuilder_run_getparam, 
+					  (gpointer) uibuilder_run_getparam,
 					  params_defaults,
 					  NULL,
 					  FALSE,

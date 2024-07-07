@@ -33,7 +33,7 @@ G_BEGIN_DECLS
 
 /**
  * BabelProgressCode:
- * @BABEL_DIAG_OUTPUT: a line of diagnostic output is available. The pointer is to a 
+ * @BABEL_DIAG_OUTPUT: a line of diagnostic output is available. The pointer is to a
  *                     NULL-terminated line of diagnostic output from gpsbabel.
  * @BABEL_DONE: gpsbabel finished, or %NULL if no callback is needed.
  *
