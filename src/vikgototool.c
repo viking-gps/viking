@@ -226,7 +226,8 @@ int vik_goto_tool_get_coord ( VikGotoTool *self, VikViewport *vvp, gchar *srch_s
   int ret = 0;  /* OK */
   struct LatLon ll;
 
-  escaped_srch_str = g_uri_escape_string(srch_str, NULL, TRUE);
+  escaped_srch_str = g_uri_escape_string(srch_str, NULL, FALSE);
+  g_debug("%s: '%s' --> '%s'", __FILE__, srch_str, escaped_srch_str);
 
   uri = g_strdup_printf(vik_goto_tool_get_url_format(self), escaped_srch_str);
 
@@ -273,7 +274,8 @@ int vik_goto_tool_get_candidates ( VikGotoTool *self, gchar *srch_str, GList **c
   gchar *escaped_srch_str;
   int ret = 0;  /* OK */
 
-  escaped_srch_str = g_uri_escape_string(srch_str, NULL, TRUE);
+  escaped_srch_str = g_uri_escape_string(srch_str, NULL, FALSE);
+  g_debug("%s: '%s' --> '%s'", __FILE__, srch_str, escaped_srch_str);
 
   uri = g_strdup_printf(vik_goto_tool_get_url_format(self), escaped_srch_str);
 
