@@ -3591,7 +3591,30 @@ gchar* vik_trw_propwin_attach_statistics_table ( GtkWidget *sw, VikTrack *tr, Vi
       g_critical("Houston, we've had a problem. height=%d", height_units);
     }
   }
-  g_ptr_array_add ( paw, ui_label_new_selectable(tmp_buf) );
+
+  // On the Elevation Gain/Loss Widget, show a tooltip of the ratio of height change to distance;
+  //  i.e. the 'hardness' if cycling/running/walking/etc... when going uphill.
+  // ATM Not prefixed tooltip with any words as haven't thought of a suitable succinct phrase
+  //  which should also be suitable for i18n too
+  GtkWidget *wegl = ui_label_new_selectable ( tmp_buf);
+  if ( !isnan(max_alt) ) {
+    // This could also get more complicated if the ratio was other unit mixes
+    //  metres per mile; feet per km
+    //  but less likely - so stick with these options, driven just by the height preference.
+    switch (height_units) {
+    case VIK_UNITS_HEIGHT_METRES:
+      g_snprintf ( tmp_buf, sizeof(tmp_buf), "%.1f", max_alt/tr_len * 1000.0 );
+      break;
+    case VIK_UNITS_HEIGHT_FEET:
+      g_snprintf ( tmp_buf, sizeof(tmp_buf), "%.1f", VIK_METERS_TO_FEET(max_alt)/VIK_METERS_TO_MILES(tr_len) );
+      break;
+    default:
+      g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
+      break;
+    }
+    gtk_widget_set_tooltip_markup ( wegl, tmp_buf );
+  }
+  g_ptr_array_add ( paw, wegl );
 
   gchar *tz = NULL;
   gdouble t1 = NAN;
