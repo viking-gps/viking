@@ -188,7 +188,59 @@ static gboolean goto_search_list_select ( GtkTreeSelection *sel, GtkTreeModel *m
   return TRUE;
 }
 
-static void vik_goto_search_response ( struct VikGotoSearchWinData *data, gint response )
+static void view_selected_foreach_func (GtkTreeModel* model,
+                                        GtkTreePath* path,
+                                        GtkTreeIter* iter,
+                                        gpointer data)
+{
+  (void)goto_search_list_select ( NULL, model, path, TRUE, data );
+  // ------------------------------------------------^^^^
+  // Since this is only used on place already have been to before,
+  //  don't save it again into the list of saved positions
+}
+
+static gchar *search_entry_str = NULL;
+
+// This event happens *before* the selection changes
+static gboolean goto_search_selection_press ( struct VikGotoSearchWinData *vgswd, GdkEventButton *event )
+{
+  // Save the current selected entry
+  GtkTreeSelection *selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW(vgswd->results_view) );
+  GtkTreeModel* model;
+  GtkTreeIter iter;
+  (void)gtk_tree_selection_get_selected ( selection, &model, &iter );
+
+  search_entry_str = gtk_tree_model_get_string_from_iter ( model, &iter );
+
+  return FALSE;
+}
+
+// This event happens *after* the selection changes
+static gboolean goto_search_selection_release ( struct VikGotoSearchWinData *vgswd, GdkEventButton *event )
+{
+  // Thus get the new selection
+  GtkTreeSelection *selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW(vgswd->results_view) );
+  GtkTreeModel* model;
+  GtkTreeIter iter;
+  (void)gtk_tree_selection_get_selected ( selection, &model, &iter );
+  gchar* str = gtk_tree_model_get_string_from_iter ( model, &iter );
+
+  // When selection has changed (the normal case)
+  //  then that is handled by gtk_tree_selection_set_select_function() process
+
+  // But when no change in selection - e.g. user has clicked on entry again
+  // We want to force apply moving the viewport (back) to this entry
+  //   (since the viewport may moved in the meantime)
+  if ( !g_strcmp0(str, search_entry_str) )
+    gtk_tree_selection_selected_foreach ( selection, view_selected_foreach_func, vgswd->vlp );
+
+  g_free ( str );
+  g_free ( search_entry_str );
+  search_entry_str = NULL;
+
+  return FALSE;
+}
+
 static void goto_search_response ( struct VikGotoSearchWinData *data, gint response )
 {
   if ( response == GTK_RESPONSE_ACCEPT )
@@ -364,6 +416,9 @@ void a_vik_goto ( VikWindow *vw, VikViewport *vvp )
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
   g_signal_connect_swapped ( GTK_DIALOG(dialog), "response", G_CALLBACK(goto_search_response), win_data );
 
+  g_signal_connect_swapped ( results_view, "button_release_event", G_CALLBACK(goto_search_selection_release), win_data );
+  g_signal_connect_swapped ( results_view, "button_press_event", G_CALLBACK(goto_search_selection_press), win_data );
+
   gtk_widget_show_all ( dialog );
   // don't show the scroll view until we have something to show
   gtk_widget_hide ( scroll_view );
@@ -467,6 +522,48 @@ static void weak_ref_cb ( gpointer ptr, GObject *obj )
   g_mutex_lock ( stt->mutex );
   stt->alive = FALSE;
   g_mutex_unlock ( stt->mutex );
+}
+
+static gchar *panel_entry_str = NULL;
+
+// This event happens *before* the selection changes
+static gboolean goto_panel_selection_press ( VikGotoPanel *vgp, GdkEventButton *event )
+{
+  // Save the current selected entry
+  GtkTreeSelection *selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW(vgp->results_view) );
+  GtkTreeModel* model;
+  GtkTreeIter iter;
+  (void)gtk_tree_selection_get_selected ( selection, &model, &iter );
+
+  panel_entry_str = gtk_tree_model_get_string_from_iter ( model, &iter );
+
+  return FALSE;
+}
+
+// This event happens *after* the selection changes
+static gboolean goto_panel_selection_release ( VikGotoPanel *vgp, GdkEventButton *event )
+{
+  // Thus get the new selection
+  GtkTreeSelection *selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW(vgp->results_view) );
+  GtkTreeModel* model;
+  GtkTreeIter iter;
+  (void)gtk_tree_selection_get_selected ( selection, &model, &iter );
+  gchar* str = gtk_tree_model_get_string_from_iter ( model, &iter );
+
+  // When selection has changed (the normal case)
+  //  then that is handled by gtk_tree_selection_set_select_function() process
+
+  // But when no change in selection - e.g. user has clicked on entry again
+  // We want to force apply moving the viewport (back) to this entry
+  //   (since the viewport may moved in the meantime)
+  if ( !g_strcmp0(str, panel_entry_str) )
+    gtk_tree_selection_selected_foreach ( selection, view_selected_foreach_func, vgp->vlp );
+
+  g_free ( str );
+  g_free ( panel_entry_str );
+  panel_entry_str = NULL;
+
+  return FALSE;
 }
 
 static void goto_panel_search_clear ( VikGotoPanel *vgp )
@@ -642,6 +739,8 @@ GtkWidget* vik_goto_panel_widget ( VikLayersPanel *vlp )
 
   g_signal_connect_swapped ( vgp->find_button, "clicked", G_CALLBACK(goto_panel_search_response), vgp );
   g_signal_connect_swapped ( clear_button, "clicked", G_CALLBACK(goto_panel_search_clear), vgp );
+  g_signal_connect_swapped ( results_view, "button_release_event", G_CALLBACK(goto_panel_selection_release), vgp );
+  g_signal_connect_swapped ( results_view, "button_press_event", G_CALLBACK(goto_panel_selection_press), vgp );
 
   // Put the entry first so it is auto selected when the tab is entered,
   //  and so one can start typing straight away.
