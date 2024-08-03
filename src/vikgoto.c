@@ -139,7 +139,7 @@ text_changed_cb (GtkEntry   *entry,
  *
  * Returns: %TRUE if a successful lookup
  */
-static gboolean vik_goto_place ( VikViewport *vvp, gchar* name, VikCoord *vcoord )
+static gboolean goto_place ( VikViewport *vvp, gchar* name, VikCoord *vcoord )
 {
   // Ensure last_goto_tool is given a value
   get_provider ();
@@ -154,8 +154,11 @@ static gboolean vik_goto_place ( VikViewport *vvp, gchar* name, VikCoord *vcoord
   return FALSE;
 }
 
-static gboolean vik_goto_search_list_select ( GtkTreeSelection *sel, GtkTreeModel *model, GtkTreePath *path, gboolean path_currently_selected, gpointer pdata )
+// @sel not used - can be NULL
+static gboolean goto_search_list_select ( GtkTreeSelection *sel, GtkTreeModel *model, GtkTreePath *path, gboolean path_currently_selected, gpointer pdata )
 {
+  g_debug ( "%s: pcs=%d", __FUNCTION__, path_currently_selected );
+
   VikLayersPanel *vlp = VIK_LAYERS_PANEL(pdata);
   GtkTreeIter iter;
 
@@ -186,6 +189,7 @@ static gboolean vik_goto_search_list_select ( GtkTreeSelection *sel, GtkTreeMode
 }
 
 static void vik_goto_search_response ( struct VikGotoSearchWinData *data, gint response )
+static void goto_search_response ( struct VikGotoSearchWinData *data, gint response )
 {
   if ( response == GTK_RESPONSE_ACCEPT )
   {
@@ -350,7 +354,7 @@ void a_vik_goto ( VikWindow *vw, VikViewport *vvp )
   win_data->tool_list = tool_list;
 
   GtkTreeSelection *selection = gtk_tree_view_get_selection ( GTK_TREE_VIEW(results_view) );
-  gtk_tree_selection_set_select_function ( selection, vik_goto_search_list_select, win_data->vlp, NULL );
+  gtk_tree_selection_set_select_function ( selection, goto_search_list_select, win_data->vlp, NULL );
 
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), tool_label, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), tool_list, FALSE, FALSE, 5 );
@@ -358,7 +362,7 @@ void a_vik_goto ( VikWindow *vw, VikViewport *vvp )
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), goto_entry, FALSE, FALSE, 5 );
   gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), scroll_view, TRUE, TRUE, 5 );
   gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-  g_signal_connect_swapped ( GTK_DIALOG(dialog), "response", G_CALLBACK(vik_goto_search_response), win_data );
+  g_signal_connect_swapped ( GTK_DIALOG(dialog), "response", G_CALLBACK(goto_search_response), win_data );
 
   gtk_widget_show_all ( dialog );
   // don't show the scroll view until we have something to show
@@ -623,7 +627,7 @@ GtkWidget* vik_goto_panel_widget ( VikLayersPanel *vlp )
   gtk_tree_view_set_model ( vgp->results_view, GTK_TREE_MODEL(vgp->results_store) );
 
   GtkTreeSelection *selection = gtk_tree_view_get_selection ( vgp->results_view );
-  gtk_tree_selection_set_select_function ( selection, vik_goto_search_list_select, vlp, NULL );
+  gtk_tree_selection_set_select_function ( selection, goto_search_list_select, vlp, NULL );
 
   GtkWidget *hb = gtk_hbox_new ( TRUE, 5 );
   vgp->find_button = gtk_button_new_from_stock ( GTK_STOCK_FIND );
@@ -766,7 +770,7 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
       g_debug ( "%s: found city %s", __FUNCTION__, city );
       if ( strcmp ( city, "(Unknown city)" ) != 0 ) {
         VikCoord new_center;
-        if ( vik_goto_place ( vvp, city, &new_center ) ) {
+        if ( goto_place ( vvp, city, &new_center ) ) {
           // Got something
           vik_coord_to_latlon ( &new_center, ll );
           result = 2;
@@ -781,7 +785,7 @@ gint a_vik_goto_where_am_i ( VikViewport *vvp, struct LatLon *ll, gchar **name )
       g_debug ( "%s: found country %s", __FUNCTION__, country );
       if ( strcmp ( country, "(Unknown Country)" ) != 0 ) {
         VikCoord new_center;
-        if ( vik_goto_place ( vvp, country, &new_center ) ) {
+        if ( goto_place ( vvp, country, &new_center ) ) {
           // Finally got something
           vik_coord_to_latlon ( &new_center, ll );
           result = 3;
