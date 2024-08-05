@@ -769,6 +769,7 @@ void vu_command_line ( VikWindow *vw, gdouble latitude, gdouble longitude, gint 
 	if ( !vw )
 		return;
 
+	gboolean need_update = FALSE;
 	VikViewport *vvp = vik_window_viewport(vw);
 
 	if ( !isnan(latitude) && !isnan(longitude) ) {
@@ -777,6 +778,7 @@ void vu_command_line ( VikWindow *vw, gdouble latitude, gdouble longitude, gint 
 			ll.lat = latitude;
 			ll.lon = longitude;
 			vik_viewport_set_center_latlon ( vvp, &ll, TRUE );
+			need_update = TRUE;
 		}
 		else
 			g_warning ( "%s: Invalid lat/lon values %f/%f", __FUNCTION__, latitude, longitude );
@@ -788,6 +790,7 @@ void vu_command_line ( VikWindow *vw, gdouble latitude, gdouble longitude, gint 
 		if ( mpp > 1.0 )
 			mpp = round (mpp);
 		vik_viewport_set_zoom ( vvp, mpp );
+		need_update = TRUE;
 	}
 
 	if ( map_id >= 0 ) {
@@ -816,8 +819,12 @@ void vu_command_line ( VikWindow *vw, gdouble latitude, gdouble longitude, gint 
 			vik_layer_rename ( VIK_LAYER(vml), _("Map") );
 			vik_aggregate_layer_add_layer ( vik_layers_panel_get_top_layer(vik_window_layers_panel(vw)), VIK_LAYER(vml), TRUE );
 			vik_layer_emit_update ( VIK_LAYER(vml), FALSE );
+			need_update = FALSE; // Already done
 		}
 	}
+
+	if ( need_update )
+		vik_window_draw_update ( vw );
 }
 
 /**

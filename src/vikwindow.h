@@ -56,6 +56,8 @@ VikWindow *vik_window_new_window ();
 
 void vik_window_new_window_finish ( VikWindow *vw, gboolean maybe_add_map, gboolean maybe_add_location );
 
+void vik_window_draw_update ( VikWindow *vw );
+
 GtkWidget *vik_window_get_graphs_widget ( VikWindow *vw );
 gpointer vik_window_get_graphs_widgets ( VikWindow *vw );
 void vik_window_set_graphs_widgets ( VikWindow *vw, gpointer gp );

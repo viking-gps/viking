@@ -1788,6 +1788,12 @@ static gboolean draw_sync ( VikWindow *vw )
   return FALSE;
 }
 
+// Use sparingly
+void vik_window_draw_update ( VikWindow *vw )
+{
+  draw_update(vw);
+}
+
 /*
  * Split the status update, as sometimes only need to update the tool part
  *  also on initialization the zoom related stuff is not ready to be used
