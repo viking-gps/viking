@@ -130,7 +130,7 @@
               <term>file-extension (optional)</term>
               <listitem>
                 <para>The file extension of the files on disk. The default is <emphasis>.png</emphasis></para>
-                <para>If the tile source URL ends in something other than .png, then this parameter will need to match it.</para>
+                <para>If the tile source is not a PNG file, then this parameter can be used to specify the naming to give consistent extension filenames on disk.</para>
                 <para>This can also be useful in reading a tileset from other software which may name tiles in an alternative form,
                       e.g. for Mobile Atlas creator it names them <emphasis>.png.tile</emphasis></para>
                 <note><para>The file types actually usable are those supported by GDK Pixbuf Library, which includes at least PNG and JPEG.</para></note>
