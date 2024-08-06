@@ -1698,8 +1698,6 @@ void vik_viewport_draw_line ( VikViewport *vvp, GdkGC *gc, gint x1, gint y1, gin
   //g_print ( "%s: \n", __FUNCTION__ );
   if ( ! ( ( x1 < 0 && x2 < 0 ) || ( y1 < 0 && y2 < 0 ) ||
        ( x1 > vvp->width && x2 > vvp->width ) || ( y1 > vvp->height && y2 > vvp->height ) ) ) {
-    /*** clipping, yeah! ***/
-    a_viewport_clip_line ( &x1, &y1, &x2, &y2 );
 #if GTK_CHECK_VERSION (3,0,0)
     g_return_if_fail ( gc != NULL );
     cairo_set_line_width ( gc, thickness );
@@ -1708,6 +1706,8 @@ void vik_viewport_draw_line ( VikViewport *vvp, GdkGC *gc, gint x1, gint y1, gin
     ui_cr_draw_line ( gc, x1-0.5, y1-0.5, x2-0.5, y2-0.5 );
     cairo_stroke ( gc );
 #else
+    /*** clipping, yeah! ***/
+    a_viewport_clip_line ( &x1, &y1, &x2, &y2 );
     gdk_draw_line ( vvp->scr_buffer, gc, x1, y1, x2, y2);
 #endif
   }
