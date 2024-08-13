@@ -1127,10 +1127,10 @@ void vik_viewport_set_zoom ( VikViewport *vvp, gdouble xympp )
   viewport_clear_surface_tool ( vvp );
 }
 
-/* or could do factor */
-void vik_viewport_zoom_in ( VikViewport *vvp )
+gboolean vik_viewport_zoom_in ( VikViewport *vvp )
 {
-  g_return_if_fail ( vvp != NULL );
+  g_return_val_if_fail ( vvp != NULL, FALSE );
+  gboolean ans = FALSE;
   if ( vvp->xmpp >= (VIK_VIEWPORT_MIN_ZOOM*2) && vvp->ympp >= (VIK_VIEWPORT_MIN_ZOOM*2) )
   {
     vvp->xmpp /= 2;
@@ -1140,13 +1140,16 @@ void vik_viewport_zoom_in ( VikViewport *vvp )
     vvp->ymfactor = mercator_factor ( vvp->ympp, vvp->scale );
 
     viewport_utm_zone_check(vvp);
+    ans = TRUE;
   }
   viewport_clear_surface_tool ( vvp );
+  return ans;
 }
 
-void vik_viewport_zoom_out ( VikViewport *vvp )
+gboolean vik_viewport_zoom_out ( VikViewport *vvp )
 {
-  g_return_if_fail ( vvp != NULL );
+  g_return_val_if_fail ( vvp != NULL, FALSE );
+  gboolean ans = FALSE;
   if ( vvp->xmpp <= (VIK_VIEWPORT_MAX_ZOOM/2) && vvp->ympp <= (VIK_VIEWPORT_MAX_ZOOM/2) )
   {
     vvp->xmpp *= 2;
@@ -1156,8 +1159,10 @@ void vik_viewport_zoom_out ( VikViewport *vvp )
     vvp->ymfactor = mercator_factor ( vvp->ympp, vvp->scale );
 
     viewport_utm_zone_check(vvp);
+    ans = TRUE;
   }
   viewport_clear_surface_tool ( vvp );
+  return ans;
 }
 
 gdouble vik_viewport_get_zoom ( VikViewport *vvp )

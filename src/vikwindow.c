@@ -2174,17 +2174,17 @@ static void scroll_zoom_direction ( VikWindow *vw, GdkScrollDirection direction 
 #if !GTK_CHECK_VERSION (3,0,0)
   if ( a_vik_get_invert_scroll_direction() ) {
     if ( direction == GDK_SCROLL_DOWN )
-     vik_viewport_zoom_in (vw->viking_vvp);
+      (void)vik_viewport_zoom_in (vw->viking_vvp);
     else if ( direction == GDK_SCROLL_UP ) {
-      vik_viewport_zoom_out (vw->viking_vvp);
+      (void)vik_viewport_zoom_out (vw->viking_vvp);
     }
   } else
 #endif
   {
     if ( direction == GDK_SCROLL_UP )
-      vik_viewport_zoom_in (vw->viking_vvp);
+      (void)vik_viewport_zoom_in (vw->viking_vvp);
     else if ( direction == GDK_SCROLL_DOWN ) {
-      vik_viewport_zoom_out (vw->viking_vvp);
+      (void)vik_viewport_zoom_out (vw->viking_vvp);
     }
   }
 }
@@ -2244,9 +2244,9 @@ static void zoom_at_xy ( VikWindow *vw, guint point_x, guint point_y, gboolean s
     scroll_zoom_direction ( vw, direction );
   else {
     if ( event_button == 1 )
-      vik_viewport_zoom_in ( vw->viking_vvp );
+      (void)vik_viewport_zoom_in ( vw->viking_vvp );
     else if ( event_button == 3 )
-      vik_viewport_zoom_out ( vw->viking_vvp );
+      (void)vik_viewport_zoom_out ( vw->viking_vvp );
   }
   vik_viewport_coord_to_screen ( vw->viking_vvp, &coord, &x, &y );
   vik_viewport_set_center_screen ( vw->viking_vvp, center_x + (x - point_x), center_y + (y - point_y) );
@@ -3136,17 +3136,17 @@ static VikLayerToolFuncStatus zoomtool_click (VikLayer *vl, GdkEventButton *even
     // This zoom is on the center position
     vik_viewport_set_center_screen ( te->vw->viking_vvp, center_x, center_y );
     if ( event->button == 1 )
-      vik_viewport_zoom_in (te->vw->viking_vvp);
+      (void)vik_viewport_zoom_in (te->vw->viking_vvp);
     else if ( event->button == 3 )
-      vik_viewport_zoom_out (te->vw->viking_vvp);
+      (void)vik_viewport_zoom_out (te->vw->viking_vvp);
   }
   else if ( modifiers == GDK_CONTROL_MASK ) {
     // This zoom is to recenter on the mouse position
     vik_viewport_set_center_screen ( te->vw->viking_vvp, (gint) event->x, (gint) event->y );
     if ( event->button == 1 )
-      vik_viewport_zoom_in (te->vw->viking_vvp);
+      (void)vik_viewport_zoom_in (te->vw->viking_vvp);
     else if ( event->button == 3 )
-      vik_viewport_zoom_out (te->vw->viking_vvp);
+      (void)vik_viewport_zoom_out (te->vw->viking_vvp);
   }
   else if ( modifiers == GDK_SHIFT_MASK ) {
     // Get start of new zoom bounds
@@ -3252,14 +3252,14 @@ static VikLayerToolFuncStatus zoomtool_release (VikLayer *vl, GdkEventButton *ev
        // Zoom in/out by three if possible
        vik_viewport_set_center_screen ( te->vw->viking_vvp, event->x, event->y );
        if ( event->button == 1 ) {
-          vik_viewport_zoom_in ( te->vw->viking_vvp );
-          vik_viewport_zoom_in ( te->vw->viking_vvp );
-          vik_viewport_zoom_in ( te->vw->viking_vvp );
+          (void)vik_viewport_zoom_in ( te->vw->viking_vvp );
+          (void)vik_viewport_zoom_in ( te->vw->viking_vvp );
+          (void)vik_viewport_zoom_in ( te->vw->viking_vvp );
        }
        else if ( event->button == 3 ) {
-          vik_viewport_zoom_out ( te->vw->viking_vvp );
-          vik_viewport_zoom_out ( te->vw->viking_vvp );
-          vik_viewport_zoom_out ( te->vw->viking_vvp );
+          (void)vik_viewport_zoom_out ( te->vw->viking_vvp );
+          (void)vik_viewport_zoom_out ( te->vw->viking_vvp );
+          (void)vik_viewport_zoom_out ( te->vw->viking_vvp );
        }
      }
   }
@@ -3309,12 +3309,12 @@ static VikLayerToolFuncStatus pantool_click (VikLayer *vl, GdkEventButton *event
     if ( event->button == 1 ) {
       guint modifier = event->state & GDK_SHIFT_MASK;
       if ( modifier )
-        vik_viewport_zoom_out ( vw->viking_vvp );
+        (void)vik_viewport_zoom_out ( vw->viking_vvp );
       else
-        vik_viewport_zoom_in ( vw->viking_vvp );
+        (void)vik_viewport_zoom_in ( vw->viking_vvp );
     }
     else if ( event->button == 3 )
-      vik_viewport_zoom_out ( vw->viking_vvp );
+      (void)vik_viewport_zoom_out ( vw->viking_vvp );
 
     draw_update ( vw );
   }
@@ -3717,19 +3717,27 @@ static void draw_zoom_cb ( GtkAction *a, VikWindow *vw )
     what = atoi(s+4);
   }
 
+  guint zresult = 0;
   switch (what)
   {
     case -3:
     case -5:
-      vik_viewport_zoom_in ( vw->viking_vvp ); break;
+      zresult = vik_viewport_zoom_in ( vw->viking_vvp );
+      if ( !zresult )
+        a_dialog_info_msg ( GTK_WINDOW(vw), _("Maximum zoomed in level reached") );
+      break;
     case -4:
     case -6:
-      vik_viewport_zoom_out ( vw->viking_vvp ); break;
+      zresult = vik_viewport_zoom_out ( vw->viking_vvp );
+      if ( !zresult )
+        a_dialog_info_msg ( GTK_WINDOW(vw), _("Maximum zoomed out level reached.") );
+      break;
     case -1: vik_viewport_set_zoom ( vw->viking_vvp, 0.5 ); break;
     case -2: vik_viewport_set_zoom ( vw->viking_vvp, 0.25 ); break;
     case 0: vik_viewport_set_zoom ( vw->viking_vvp, a_vik_get_default_zoom() ); break;
-    default: vik_viewport_set_zoom ( vw->viking_vvp, what );
+    default: vik_viewport_set_zoom ( vw->viking_vvp, what ); break;
   }
+
   draw_update ( vw );
 }
 

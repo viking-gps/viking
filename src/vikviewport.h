@@ -77,8 +77,8 @@ gdouble vik_viewport_get_ympp ( VikViewport *vvp );
 gdouble vik_viewport_get_xmpp ( VikViewport *vvp );
 void vik_viewport_set_zoom ( VikViewport *vvp, gdouble mpp );
 gdouble vik_viewport_get_zoom ( VikViewport *vvp );
-void vik_viewport_zoom_in ( VikViewport *vvp );
-void vik_viewport_zoom_out ( VikViewport *vvp );
+gboolean vik_viewport_zoom_in ( VikViewport *vvp );
+gboolean vik_viewport_zoom_out ( VikViewport *vvp );
 guint vik_viewport_get_scale ( VikViewport *vvp );
 
 
