@@ -436,6 +436,20 @@ gulong vik_track_get_dup_point_count ( const VikTrack *tr )
   return num;
 }
 
+gulong vik_track_get_tp_num (const VikTrack *tr, const VikTrackpoint *tp)
+{
+  g_return_val_if_fail ( tr, 0 );
+  gulong num = 0;
+  GList *iter = tr->trackpoints;
+  while ( iter ) {
+    num++;
+    if ( VIK_TRACKPOINT(iter->data) == tp )
+      break;
+    iter = iter->next;
+  }
+  return num;
+}
+
 /*
  * Deletes adjacent points that have the same position
  * Returns the number of points that were deleted

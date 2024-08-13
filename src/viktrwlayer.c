@@ -10019,7 +10019,7 @@ static void my_tpwin_set_tp ( VikTrwLayer *vtl )
   // Notional center of a track is simply an average of the bounding box extremities
   struct LatLon center = { (trk->bbox.north+trk->bbox.south)/2, (trk->bbox.east+trk->bbox.west)/2 };
   vik_coord_load_from_latlon ( &vc, vtl->coord_mode, &center );
-  vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tpl, trk->name, vtl->current_tp_track->is_route );
+  vik_trw_layer_tpwin_set_tp ( vtl->tpwin, vtl->current_tp_track, vtl->current_tpl, trk->name, vtl->current_tp_track->is_route );
 }
 
 static void trw_layer_tpwin_response ( VikTrwLayer *vtl, gint response )

@@ -134,6 +134,7 @@ gdouble vik_track_get_length(const VikTrack *tr);
 gdouble vik_track_get_length_including_gaps(const VikTrack *tr);
 gulong vik_track_get_tp_count(const VikTrack *tr);
 guint vik_track_get_segment_count(const VikTrack *tr);
+gulong vik_track_get_tp_num (const VikTrack *tr, const VikTrackpoint *tp);
 VikTrack **vik_track_split_into_segments(VikTrack *tr, guint *ret_len);
 guint vik_track_merge_segments(VikTrack *tr);
 void vik_track_reverse(VikTrack *tr);

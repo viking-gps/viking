@@ -472,6 +472,7 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
 /**
  * vik_trw_layer_tpwin_set_tp:
  * @tpwin:      The Trackpoint Edit Window
+ * @trk:        The #VikTrack the trackpoint is in
  * @tpl:        The #Glist of trackpoints pointing at the current trackpoint
  * @track_name: The name of the track in which the trackpoint belongs
  * @is_route:   Is the track of the trackpoint actually a route?
@@ -479,7 +480,7 @@ void vik_trw_layer_tpwin_set_empty ( VikTrwLayerTpwin *tpwin )
  * Sets the Trackpoint Edit Window to the values of the current trackpoint given in @tpl.
  *
  */
-void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gchar *track_name, gboolean is_route )
+void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, VikTrack *trk, GList *tpl, const gchar *track_name, gboolean is_route )
 {
   static char tmp_str[64];
   static struct LatLon ll;
@@ -490,6 +491,10 @@ void vik_trw_layer_tpwin_set_tp ( VikTrwLayerTpwin *tpwin, GList *tpl, const gch
   else
     gtk_editable_delete_text ( GTK_EDITABLE(tpwin->trkpt_name), 0, -1 );
   gtk_widget_set_sensitive ( tpwin->trkpt_name, TRUE );
+
+  gulong tp_nn = vik_track_get_tp_num ( trk, tp );
+  g_snprintf ( tmp_str, sizeof(tmp_str), "%ld", tp_nn );
+  gtk_widget_set_tooltip_text ( tpwin->trkpt_name, tmp_str );
 
   /* Only can insert if not at the end (otherwise use extend track) */
   gtk_widget_set_sensitive ( tpwin->button_insert, (gboolean) GPOINTER_TO_INT (tpl->next) );
