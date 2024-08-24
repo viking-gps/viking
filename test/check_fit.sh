@@ -10,17 +10,15 @@ LOADFILE=$srcdir/Stonehenge.fit
 count=0
 
 count=`expr $count + 1`
-$(./test_file_load $LOADFILE)
-result=$?
-if [ $result != 0 ]; then
+result=$(./test_file_load $LOADFILE)
+if [ $? != 0 ]; then
   echo "Part $count: result=$result"
   exit 1
 fi
 
 count=`expr $count + 1`
-$(./test_file_load -e $LOADFILE)
-result=$?
-if [ $result != 0 ]; then
+result=$(./test_file_load -e $LOADFILE)
+if [ $? != 0 ]; then
   echo "Part $count: result=$result"
   exit 1
 fi
