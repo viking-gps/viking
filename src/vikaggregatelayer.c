@@ -1384,6 +1384,8 @@ static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoord
 typedef enum {
   MA_VAL = 0,
   MA_VLP,
+  MA_EVX,
+  MA_EVY,
   MA_LAST
 } menu_array_index;
 
@@ -3190,11 +3192,20 @@ static void tac_track_list_cb ( menu_array_values values )
   g_free ( title );
 }
 
+static void val_copy_event_location_cb ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
+  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
+  vik_window_copy_event_location ( vw, GPOINTER_TO_INT(values[MA_EVX]), GPOINTER_TO_INT(values[MA_EVY]) );
+}
+
 static gboolean aggregate_layer_selected_viewport_menu ( VikAggregateLayer *val, GdkEventButton *event, VikViewport *vvp )
 {
   static menu_array_values values;
   values[MA_VAL] = val;
   values[MA_VLP] = NULL;
+  values[MA_EVX] = GINT_TO_POINTER(event->x);
+  values[MA_EVY] = GINT_TO_POINTER(event->y);
 
   if ( event && event->button == 3 ) {
     VikCoord coord;
@@ -3204,6 +3215,8 @@ static gboolean aggregate_layer_selected_viewport_menu ( VikAggregateLayer *val,
     GtkWidget *name = vu_menu_add_item ( menu, VIK_LAYER(val)->name, NULL, NULL, NULL ); // Say which layer this is
     gtk_widget_set_sensitive ( name, FALSE ); // Prevent useless clicking on the name
     (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
+
+    (void)vu_menu_add_item ( menu, _("_Copy Location"), GTK_STOCK_COPY, G_CALLBACK(val_copy_event_location_cb), values );
 
     gboolean available = val->on[BASIC] && !val->calculating;
     GtkMenu *sm = aggregate_build_submenu_tac ( val, menu, values );

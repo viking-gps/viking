@@ -133,6 +133,8 @@ tool_ed_t* tool_edit_create ( VikWindow *vw, VikViewport *vvp );
 void tool_edit_destroy ( tool_ed_t *te );
 void tool_edit_remove_image ( tool_ed_t *te );
 
+gboolean vik_window_copy_event_location ( VikWindow *vw, int x, int y );
+
 gpointer vik_window_get_active_tool_interface ( VikWindow *vw ); // returns VikToolInterface*
 gpointer vik_window_get_active_tool_data ( VikWindow *vw );
 

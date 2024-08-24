@@ -3407,17 +3407,87 @@ static gboolean window_deselect (VikWindow *vw)
   return FALSE;
 }
 
-static gboolean window_show_menu (VikWindow *vw)
+// NB ATM use copy setting for 'CENTRE',
+//  even for other uses - such as at mouse location
+//
+static void copy_location (VikWindow *vw, const VikCoord *coord)
 {
-  VikLayer *vl = vik_layers_panel_get_selected ( vw->viking_vlp );
-  if ( vl )
-    if ( vl->visible )
-      // Act on currently selected item to show menu
-      if ( vw->selected_track || vw->selected_waypoint || vl->type == VIK_LAYER_AGGREGATE )
-        if ( vik_layer_get_interface(vl->type)->show_viewport_menu ) {
-          (void)vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, &vw->select_event, vw->viking_vvp );
-        }
-  vw->show_menu_id = 0;
+  struct UTM utm;
+  gchar *lat = NULL, *lon = NULL;
+
+  vik_coord_to_utm ( coord, &utm );
+
+  gboolean full_format = FALSE;
+  (void)a_settings_get_boolean ( VIK_SETTINGS_WIN_COPY_CENTRE_FULL_FORMAT, &full_format );
+
+  if ( full_format )
+    // Bells & Whistles - may include degrees, minutes and second symbols
+    get_location_strings ( vw, utm, &lat, &lon );
+  else {
+    if ( vik_viewport_get_drawmode ( vw->viking_vvp ) == VIK_VIEWPORT_DRAWMODE_UTM ) {
+      // Reuse lat for the first part (Zone + N or S, and lon for the second part (easting and northing) of a UTM format:
+      //  ZONE[N|S] EASTING NORTHING
+      lat = g_malloc ( 4*sizeof(gchar) );
+      // NB zone is stored in a char but is an actual number
+      g_snprintf ( lat, 4, "%d%c", utm.zone, utm.letter );
+      lon = g_malloc ( 16*sizeof(gchar) );
+      g_snprintf ( lon, 16, "%d %d", (gint)utm.easting, (gint)utm.northing );
+    } else {
+      // Simple x.xx y.yy format
+      struct LatLon ll;
+      a_coords_utm_to_latlon ( &utm, &ll );
+      lat = g_strdup_printf ( "%.6f", ll.lat );
+      lon = g_strdup_printf ( "%.6f", ll.lon );
+    }
+  }
+
+  gchar *msg = g_strdup_printf ( "%s %s", lat, lon );
+  g_free (lat);
+  g_free (lon);
+
+  a_clipboard_copy ( VIK_CLIPBOARD_DATA_TEXT, 0, 0, 0, msg, NULL );
+
+  g_free ( msg );
+}
+
+gboolean vik_window_copy_event_location ( VikWindow *vw, int x, int y )
+{
+  VikCoord coord;
+  vik_viewport_screen_to_coord ( vw->viking_vvp, x, y, &coord );
+  copy_location ( vw, &coord );
+  return TRUE;
+}
+
+static gboolean copy_event_location_cb ( tool_ed_t *te )
+{
+  return vik_window_copy_event_location ( te->vw, te->vw->select_event.x, te->vw->select_event.y );
+}
+
+static void independent_layer_menu ( tool_ed_t *te )
+{
+  GtkMenu *menu = GTK_MENU ( gtk_menu_new () );
+  (void)vu_menu_add_item ( menu, _("_Copy Location"), GTK_STOCK_COPY, G_CALLBACK(copy_event_location_cb), te );
+  gtk_widget_show_all ( GTK_WIDGET(menu) );
+  gtk_menu_popup ( menu, NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time() );
+}
+
+static gboolean window_show_menu ( tool_ed_t *te )
+{
+  VikLayer *vl = vik_layers_panel_get_selected ( te->vw->viking_vlp );
+  if ( vl ) {
+    // Act on currently selected item to show menu
+    if ( vl->visible && (te->vw->selected_track || te->vw->selected_waypoint || vl->type == VIK_LAYER_AGGREGATE) ) {
+      if ( vik_layer_get_interface(vl->type)->show_viewport_menu ) {
+        (void)vik_layer_get_interface(vl->type)->show_viewport_menu ( vl, &te->vw->select_event, te->vw->viking_vvp );
+      }
+    } else {
+      independent_layer_menu ( te );
+    }
+  }
+  else {
+    independent_layer_menu ( te );
+  }
+  te->vw->show_menu_id = 0;
   return FALSE;
 }
 
@@ -3433,6 +3503,7 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
     return VIK_LAYER_TOOL_ACK;
   }
 
+  t->vw->select_event = *event;
   t->vw->select_move = FALSE;
   t->vw->select_pan = FALSE;
   /* Only allow selection on primary button */
@@ -3472,8 +3543,7 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
       }
     }
   }
-  else if ( ( event->button == 3 ) && ( vl && (vl->type == VIK_LAYER_TRW || vl->type == VIK_LAYER_AGGREGATE) ) ) {
-    t->vw->select_event = *event;
+  else if ( ( event->button == 3 ) && vl ) {
     if ( a_vik_get_select_double_click_to_zoom() && !t->vw->show_menu_id ) {
       // Best if slightly longer than the double click time,
       //  otherwise timeout would get removed, only to be recreated again by the second GTK_BUTTON_PRESS
@@ -3481,11 +3551,13 @@ static VikLayerToolFuncStatus selecttool_click (VikLayer *vl, GdkEventButton *ev
       gint dct;
       g_object_get ( G_OBJECT(gs), "gtk-double-click-time", &dct, NULL );
       // Give chance for a double click to occur
-      t->vw->show_menu_id = g_timeout_add ( dct+50, (GSourceFunc)window_show_menu, t->vw );
+      t->vw->show_menu_id = g_timeout_add ( dct+50, (GSourceFunc)window_show_menu, t );
     } else
       // Not using double clicks - so no need to wait and thus apply now
-      (void)window_show_menu ( t->vw );
+      (void)window_show_menu ( t );
   }
+  else
+    (void)window_show_menu ( t );
 
   return VIK_LAYER_TOOL_ACK;
 }
@@ -5442,44 +5514,8 @@ static void mapcache_flush_cb ( GtkAction *a, VikWindow *vw )
 
 static void menu_copy_centre_cb ( GtkAction *a, VikWindow *vw )
 {
-  const VikCoord* coord;
-  struct UTM utm;
-  gchar *lat = NULL, *lon = NULL;
-
-  coord = vik_viewport_get_center ( vw->viking_vvp );
-  vik_coord_to_utm ( coord, &utm );
-
-  gboolean full_format = FALSE;
-  (void)a_settings_get_boolean ( VIK_SETTINGS_WIN_COPY_CENTRE_FULL_FORMAT, &full_format );
-
-  if ( full_format )
-    // Bells & Whistles - may include degrees, minutes and second symbols
-    get_location_strings ( vw, utm, &lat, &lon );
-  else {
-    if ( vik_viewport_get_drawmode ( vw->viking_vvp ) == VIK_VIEWPORT_DRAWMODE_UTM ) {
-      // Reuse lat for the first part (Zone + N or S, and lon for the second part (easting and northing) of a UTM format:
-      //  ZONE[N|S] EASTING NORTHING
-      lat = g_malloc ( 4*sizeof(gchar) );
-      // NB zone is stored in a char but is an actual number
-      g_snprintf ( lat, 4, "%d%c", utm.zone, utm.letter );
-      lon = g_malloc ( 16*sizeof(gchar) );
-      g_snprintf ( lon, 16, "%d %d", (gint)utm.easting, (gint)utm.northing );
-    } else {
-      // Simple x.xx y.yy format
-      struct LatLon ll;
-      a_coords_utm_to_latlon ( &utm, &ll );
-      lat = g_strdup_printf ( "%.6f", ll.lat );
-      lon = g_strdup_printf ( "%.6f", ll.lon );
-    }
-  }
-
-  gchar *msg = g_strdup_printf ( "%s %s", lat, lon );
-  g_free (lat);
-  g_free (lon);
-
-  a_clipboard_copy ( VIK_CLIPBOARD_DATA_TEXT, 0, 0, 0, msg, NULL );
-
-  g_free ( msg );
+  const VikCoord* coord = vik_viewport_get_center ( vw->viking_vvp );
+  copy_location ( vw, coord );
 }
 
 static void layer_defaults_cb ( GtkAction *a, VikWindow *vw )
