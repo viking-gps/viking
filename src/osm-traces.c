@@ -90,6 +90,7 @@ typedef struct _OsmTracesInfo {
   VikTrack *trk;
 } OsmTracesInfo;
 
+#ifdef VIK_CONFIG_OSM_AUTH
 static VikLayerParam prefs[] = {
 #ifdef HAVE_OAUTH_H
   { VIK_LAYER_NUM_TYPES, OSM_ACCESS_BUTTON, VIK_LAYER_PARAM_PTR, VIK_LAYER_GROUP_NONE, N_("Access Token:"), VIK_LAYER_WIDGET_BUTTON, N_("Get New OSM Access Tokens"), NULL, NULL, NULL, NULL, NULL },
@@ -99,6 +100,7 @@ static VikLayerParam prefs[] = {
   { VIK_LAYER_NUM_TYPES, OSM_USERNAME, VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("OSM username:"), VIK_LAYER_WIDGET_ENTRY, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_NUM_TYPES, OSM_PASSWORD, VIK_LAYER_PARAM_STRING, VIK_LAYER_GROUP_NONE, N_("OSM password:"), VIK_LAYER_WIDGET_PASSWORD, NULL, NULL, NULL, NULL, NULL, NULL },
 };
+#endif
 
 /**
  * Free an OsmTracesInfo struct.
@@ -359,6 +361,7 @@ gchar* osm_oauth_sign_url ( const gchar* url, const char *method )
 /* initialisation */
 void osm_traces_init () {
   /* Preferences */
+#ifdef VIK_CONFIG_OSM_AUTH
   a_preferences_register_group ( VIKING_OSM_TRACES_PARAMS_GROUP_KEY, _("OpenStreetMap Traces") );
 
   guint ii = 0;
@@ -381,6 +384,7 @@ void osm_traces_init () {
     a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
     a_preferences_register(&prefs[ii++], tmp, VIKING_OSM_TRACES_PARAMS_GROUP_KEY);
   }
+#endif
 
   login_mutex = vik_mutex_new();
 }

@@ -231,6 +231,25 @@ case $ac_cv_enable_openstreetmap in
 esac
 AM_CONDITIONAL([OPENSTREETMAP], [test x$ac_cv_enable_openstreetmap = xyes])
 
+# OSM Authentication
+# OSM Authentication as of July 2024 requires OAuth 2.0 (OAuth1.0a and HTTP Basic are disabled)
+#  which ATM is not yet available in Viking
+AM_COND_IF([OPENSTREETMAP],
+    [AC_ARG_ENABLE(osm_auth, AS_HELP_STRING([--enable-osm-auth],
+              [enable OSM Authentication Support (default is disable).]),
+              [ac_cv_enable_osm_auth=$enableval],
+              [ac_cv_enable_osm_auth=no])
+       AC_CACHE_CHECK([whether to enable OSM Authentication],
+                 [ac_cv_enable_osm_auth], [ac_cv_enable_osm_auth=yes])],
+    [ac_cv_enable_osm_auth=no]
+)
+case $ac_cv_enable_osm_auth in
+  yes)
+    AC_DEFINE(VIK_CONFIG_OSM_AUTH, [], [OPENSTREETMAP AUTH])
+  ;;
+esac
+AM_CONDITIONAL([OSM_AUTH], [test x$ac_cv_enable_osm_auth = xyes])
+
 # BlueMarble
 AC_ARG_ENABLE(bluemarble, AS_HELP_STRING([--enable-bluemarble],
               [enable BlueMarble stuff (default is enable)]),
@@ -328,12 +347,12 @@ case $ac_cv_enable_dem24k in
 esac
 AM_CONDITIONAL([DEM24K], [test x$ac_cv_enable_dem24k = xyes])
 
-# OAuth
+# OAuth1.0a
 AC_ARG_ENABLE(oauth, AS_HELP_STRING([--enable-oauth],
-              [enable OAuth Support (default is enable).]),
+              [enable OAuth1.0a Support (default is disable).]),
               [ac_cv_enable_oauth=$enableval],
-              [ac_cv_enable_oauth=yes])
-AC_CACHE_CHECK([whether to enable OAuth Support],
+              [ac_cv_enable_oauth=no])
+AC_CACHE_CHECK([whether to enable OAuth1.0a Support],
                [ac_cv_enable_oauth], [ac_cv_enable_oauth=yes])
 case $ac_cv_enable_oauth in
   yes)
@@ -341,7 +360,7 @@ case $ac_cv_enable_oauth in
     AC_CHECK_LIB(oauth, oauth_sign_url2, [], [AC_MSG_ERROR([liboauth is needed but not found.])])
     ;;
 esac
-AM_CONDITIONAL([OAUTH], [test x$ac_cv_enable_oauth = xyes])
+AM_CONDITIONAL([OAUTH1], [test x$ac_cv_enable_oauth = xyes])
 
 # Realtime GPS tracking
 AC_ARG_ENABLE(realtime-gps-tracking, AS_HELP_STRING([--enable-realtime-gps-tracking],
@@ -659,6 +678,7 @@ Google                           : $ac_cv_enable_google
 Terraserver Maps                 : $ac_cv_enable_terraserver
 Expedia Maps                     : $ac_cv_enable_expedia
 Open Street Map                  : $ac_cv_enable_openstreetmap
+OSM Authentication               : $ac_cv_enable_osm_auth
 BlueMarble                       : $ac_cv_enable_bluemarble
 GeoClue Support                  : $ac_cv_enable_geoclue
 Geonames                         : $ac_cv_enable_geonames
@@ -674,7 +694,7 @@ XZ File Support (with liblzma)   : $ac_cv_enable_xz
 MD5 Hash Support (with libnettle): $ac_cv_enable_nettle
 Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik
 Nova (Astronomical Data)         : $ac_cv_enable_nova
-OAuth                            : $ac_cv_enable_oauth
+OAuth1.0a                        : $ac_cv_enable_oauth
 Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}
 Age of tiles (in seconds)        : ${VIK_CONFIG_DEFAULT_TILE_AGE}
 GeoNames user                    : ${VIK_CONFIG_GEONAMES_USERNAME}

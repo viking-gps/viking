@@ -1352,6 +1352,11 @@ However when invoked from here, the results will be stored in this layer (instea
         <para>
           &appname; allows you to edit a track, e.g. remove duplicate points, perhaps remove track points leading to your home and then upload it to OpenStreetMap.
         </para>
+      <note>
+        <para>
+          This functionality is currently disabled since OSM requires OAuth2 for authentication, but OAuth2 is not supported in &appname;.
+        </para>
+      </note>
       </listitem>
     </varlistentry>
   </variablelist>
@@ -3807,6 +3812,11 @@ When no TrackWaypoint Layer is selected (or the layer is invisibile) then the fi
 </section>
 
 <section id="prefs_osm" xreflabel="OpenStreetMap Traces Preferences"><title>OpenStreetMap Traces</title>
+  <note>
+    <para>
+      This functionality is currently disabled since OSM requires OAuth2 for authentication, but OAuth2 is not supported in &appname;.
+    </para>
+  </note>
 <section><title>OAuth Method</title>
 <para>
   Using the <ulink url="https://en.wikipedia.org/wiki/OAuth">OAuth</ulink> method means that your OSM account details are no longer needed to be known by &appname;.
@@ -4350,6 +4360,11 @@ Increasing the page number parameter allows one to request the subsequent sets o
 </formalpara>
 </section>
 <section id="osm_my_dl" xreflabel="OpenStreetMap My Traces Download"><title>Downloading Your Own Traces from OpenStreetMap</title>
+<note>
+  <para>
+    This functionality is currently disabled since OSM requires OAuth2 for authentication, but OAuth2 is not supported in &appname;.
+  </para>
+</note>
 <para>
 It is possible to download any of <emphasis>your personal</emphasis> GPS traces previously uploaded to OpenStreetMap into &appname;.
 </para>

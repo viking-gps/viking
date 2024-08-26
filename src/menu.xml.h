@@ -22,7 +22,9 @@ static const char *menu_xml =
 	"        <menuitem action='AcquireRouting'/>"
 #ifdef VIK_CONFIG_OPENSTREETMAP
 	"        <menuitem action='AcquireOSM'/>"
-	"        <menuitem action='AcquireMyOSM'/>"
+#ifdef VIK_CONFIG_OSM_AUTH
+        "        <menuitem action='AcquireMyOSM'/>"
+#endif
 #endif
 #ifdef VIK_CONFIG_GEOCACHES
 	"        <menuitem action='AcquireGC'/>"

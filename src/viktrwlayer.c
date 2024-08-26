@@ -4962,6 +4962,7 @@ static void trw_layer_visibility_tree ( menu_array_layer values )
 }
 
 #ifdef VIK_CONFIG_OPENSTREETMAP
+#ifdef VIK_CONFIG_OSM_AUTH
 static void trw_layer_osm_traces_upload_cb ( menu_array_layer values )
 {
   osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(values[MA_VTL]), NULL);
@@ -4974,6 +4975,7 @@ static void trw_layer_osm_traces_upload_track_cb ( menu_array_sublayer values )
     osm_traces_upload_viktrwlayer(VIK_TRW_LAYER(values[MA_VTL]), trk);
   }
 }
+#endif
 #endif
 
 static GtkMenu* create_external_submenu ( GtkMenu *menu )
@@ -5126,7 +5128,9 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   (void)vu_menu_add_item ( upload_submenu, _("Upload to _GPS..."), GTK_STOCK_GO_FORWARD, G_CALLBACK(trw_layer_gps_upload), data );
 
 #ifdef VIK_CONFIG_OPENSTREETMAP
+#ifdef VIK_CONFIG_OSM_AUTH
   (void)vu_menu_add_item ( upload_submenu, _("Upload to _OSM..."), GTK_STOCK_GO_UP, G_CALLBACK(trw_layer_osm_traces_upload_cb), data );
+#endif
 #endif
 
   GtkMenu *delete_submenu = GTK_MENU(gtk_menu_new());
@@ -9847,9 +9851,11 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
   // Some things aren't usable with routes
   if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
+    data[MA_MISC] = g_hash_table_lookup ( l->tracks, sublayer );
 #ifdef VIK_CONFIG_OPENSTREETMAP
-    data[MA_MISC] = g_hash_table_lookup ( l->tracks, sublayer);
+#ifdef VIK_CONFIG_OSM_AUTH
     (void)vu_menu_add_item ( upload_submenu, _("Upload to _OSM..."), GTK_STOCK_GO_UP, G_CALLBACK(trw_layer_osm_traces_upload_track_cb), data );
+#endif
 #endif
 
     // Currently filter with functions all use shellcommands and thus don't work in Windows
