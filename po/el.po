@@ -2615,10 +2615,6 @@ msgstr ""
 msgid "Layer Name"
 msgstr "Ονομα επιπέδου"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr ""
-
 msgid "Create _Waypoint"
 msgstr ""
 

@@ -2728,10 +2728,6 @@ msgstr "Маршрутизация"
 msgid "Layer Name"
 msgstr "Имя слоя"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr "удалить данные %s\n"
-
 msgid "Create _Waypoint"
 msgstr "Создать _путевую точку"
 

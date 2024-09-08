@@ -2682,10 +2682,6 @@ msgstr ""
 msgid "Layer Name"
 msgstr "Nom du calque"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr "Suppression des données de %s\n"
-
 msgid "Create _Waypoint"
 msgstr "Créer un _Waypoint"
 

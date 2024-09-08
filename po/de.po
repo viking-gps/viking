@@ -2729,10 +2729,6 @@ msgstr "Routenplaner"
 msgid "Layer Name"
 msgstr "Name der Ebene"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr "Daten von %s löschen\n"
-
 msgid "Create _Waypoint"
 msgstr "_Wegpunkt erzeugen"
 

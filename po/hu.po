@@ -2653,10 +2653,6 @@ msgstr ""
 msgid "Layer Name"
 msgstr "Réteg neve"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr "adatok törlése innen: %s\n"
-
 msgid "Create _Waypoint"
 msgstr ""
 

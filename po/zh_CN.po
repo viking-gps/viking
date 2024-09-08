@@ -2647,10 +2647,6 @@ msgstr "路线"
 msgid "Layer Name"
 msgstr "图层名"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr "从%s删除数据\n"
-
 msgid "Create _Waypoint"
 msgstr "创建路标(_W)"
 

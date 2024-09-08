@@ -2630,10 +2630,6 @@ msgstr ""
 msgid "Layer Name"
 msgstr "Naziv plasti"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr "Izbriši podatke iz %s\n"
-
 msgid "Create _Waypoint"
 msgstr ""
 

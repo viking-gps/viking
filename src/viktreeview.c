@@ -987,7 +987,7 @@ static gboolean vik_treeview_drag_data_received (GtkTreeDragDest *drag_dest, Gtk
 static gboolean vik_treeview_drag_data_delete ( GtkTreeDragSource *drag_source, GtkTreePath *path )
 {
   gchar *s_dest = gtk_tree_path_to_string(path);
-  g_print(_("delete data from %s\n"), s_dest);
+  g_debug("%s:delete data from %s", __FUNCTION__, s_dest);
   g_free(s_dest);
   return FALSE;
 }

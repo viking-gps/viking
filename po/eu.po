@@ -2825,10 +2825,6 @@ msgstr "Bideratzen"
 msgid "Layer Name"
 msgstr "Geruza-izena"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr "ezabatu datuak hemendik %s\n"
-
 msgid "Create _Waypoint"
 msgstr "Sortu _bide-puntua"
 

@@ -2655,10 +2655,6 @@ msgstr ""
 msgid "Layer Name"
 msgstr "Nombre de capa"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr "borrar datos de %s\n"
-
 msgid "Create _Waypoint"
 msgstr ""
 

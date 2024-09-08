@@ -2612,10 +2612,6 @@ msgstr ""
 msgid "Layer Name"
 msgstr "Katman Adı"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr "veri %s silindi\n"
-
 msgid "Create _Waypoint"
 msgstr ""
 

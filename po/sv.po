@@ -2625,10 +2625,6 @@ msgstr ""
 msgid "Layer Name"
 msgstr "Lagernamn"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr "Ta bort data från %s\n"
-
 msgid "Create _Waypoint"
 msgstr ""
 

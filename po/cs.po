@@ -2708,10 +2708,6 @@ msgstr ""
 msgid "Layer Name"
 msgstr "Jméno vrstvy"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr "smazat data z %s\n"
-
 msgid "Create _Waypoint"
 msgstr "Vytvořit míst_o"
 

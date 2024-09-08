@@ -2613,10 +2613,6 @@ msgstr ""
 msgid "Layer Name"
 msgstr "Navn på lag"
 
-#, c-format
-msgid "delete data from %s\n"
-msgstr "slett data fra %s\n"
-
 msgid "Create _Waypoint"
 msgstr ""
 
