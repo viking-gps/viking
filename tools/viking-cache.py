@@ -89,7 +89,7 @@ def osm_to_mbtiles(directory_path, mbtiles_file, **kwargs):
     count = 0
     start_time = time.time()
     msg = ""
-    onlydigits_re = re.compile ('^\d+$')
+    onlydigits_re = re.compile (r'^\d+$')
 
     for zoomDir in getDirs(directory_path):
         digitsz = onlydigits_re.match(zoomDir);
@@ -142,12 +142,12 @@ def vikcache_to_mbtiles(directory_path, mbtiles_file, **kwargs):
     count = 0
     start_time = time.time()
     msg = ""
-    onlydigits_re = re.compile ('^\d+$')
+    onlydigits_re = re.compile (r'^\d+$')
 
     #print ('tileid ' + kwargs.get('tileid'))
     # Need to split tDddsDdzD
     #  note zoom level can be negative hence the '-?' term
-    p = re.compile ('^t'+kwargs.get('tileid')+'s(-?\d+)z\d+$')
+    p = re.compile ('^t'+kwargs.get('tileid')+r's(-?\d+)z\d+$')
     for ff in os.listdir(directory_path):
         # Find only dirs related to this tileset
         m = p.match(ff);
@@ -243,9 +243,9 @@ def mbtiles_to_vikcache(mbtiles_file, directory_path, **kwargs):
 def cache_converter_to_osm (vc_path, target_path, **kwargs):
     msg = ''
     count = 0
-    onlydigits_re = re.compile ('^\d+$')
-    etag_re = re.compile ('\.etag$')
-    path_re = re.compile ('^t'+kwargs.get('tileid')+'s(-?\d+)z\d+$')
+    onlydigits_re = re.compile (r'^\d+$')
+    etag_re = re.compile (r'\.etag$')
+    path_re = re.compile ('^t'+kwargs.get('tileid')+r's(-?\d+)z\d+$')
 
     if not os.path.isdir(target_path):
         os.makedirs(target_path)
@@ -311,7 +311,7 @@ def cache_converter_to_osm (vc_path, target_path, **kwargs):
 def cache_converter_to_viking (osm_path, target_path, **kwargs):
     msg = ''
     count = 0
-    ispng = re.compile ('\.png$')
+    ispng = re.compile (r'\.png$')
 
     if not os.path.isdir(target_path):
         os.makedirs(target_path)
@@ -475,7 +475,7 @@ elif options.__dict__.get('mode') == 'mbtiles2vlc':
         mbtiles_to_vikcache(in_fd, out_fd, **options.__dict__)
 elif options.__dict__.get('mode') == 'vlc2osm':
     # Main forward conversion
-    is_default_re = re.compile ("\.viking-maps\/?$")
+    is_default_re = re.compile (r"\.viking-maps\/?$")
     out_fd2 = is_default_re.search(out_fd)
     if out_fd2:
         # Auto append default tile name to the path
