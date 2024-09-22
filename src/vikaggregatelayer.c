@@ -1625,6 +1625,11 @@ static GList* aggregate_layer_track_create_list ( VikLayer *vl, gpointer user_da
 
   // Get all TRW layers
   GList *layers = NULL;
+
+  // Skip this aggregate when not visible and invisible layers not wanted
+  if ( user_data && !(VIK_LAYER(val)->visible) )
+    return NULL;
+
   layers = vik_aggregate_layer_get_all_layers_of_type ( val, layers, VIK_LAYER_TRW, user_data ? FALSE : TRUE );
 
   // For each TRW layers keep adding the tracks and routes to build a list of all of them

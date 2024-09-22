@@ -1151,7 +1151,7 @@ GtkWidget* vik_trw_layer_analyse_this ( GtkWindow *window,
 	analyse_cb_t *acb = g_malloc0 (sizeof(analyse_cb_t));
 	acb->vw = VIK_WINDOW(window);
 	acb->vl = vl;
-	acb->user_data = user_data;
+	acb->user_data = user_data ? user_data : GINT_TO_POINTER(include_invisible);
 	acb->get_tracks_and_layers_cb = get_tracks_and_layers_cb;
 	acb->on_close_cb = on_close_cb;
 	acb->tracks_and_layers = get_tracks_and_layers_cb ( vl, user_data );
