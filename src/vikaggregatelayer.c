@@ -2972,55 +2972,57 @@ static void tac_decrease_cb ( menu_array_values values )
   vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
 }
 
-static void tac_goto_square_cb ( menu_array_values values )
+typedef enum {
+  MC_SQUARE,
+  MC_EAST_WEST,
+  MC_NORTH_SOUTH,
+} mc_draw_type;
+
+// NB Simply moving to position, keeping current zoom level
+// (i.e. not trying to determine best zoom level to view extents)
+static void reposition_update ( menu_array_values values, mc_draw_type mc_draw  )
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
   VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
   VikViewport *vvp = vik_window_viewport ( vw );
-  // NB Simply moving to position, keeping current zoom level
-  // (i.e. not trying to determine best zoom level to view extents)
   MapCoord mc;
-  mc.x = val->xx + val->max_square/2;
-  mc.y = val->yy + val->max_square/2;
   mc.scale = map_utils_mpp_to_scale ( val->zoom_level );
+  switch ( mc_draw ) {
+  case MC_SQUARE:
+    mc.x = val->xx + val->max_square/2;
+    mc.y = val->yy + val->max_square/2;
+    break;
+  case MC_EAST_WEST:
+    mc.x = val->ew_x - val->ew_size/2;
+    mc.y = val->ew_y;
+    break;
+  case MC_NORTH_SOUTH:
+    mc.x = val->ns_x;
+    mc.y = val->ns_y - val->ns_size/2;
+    break;
+  default:
+    return;
+    break;
+  }
   VikCoord vc;
   map_utils_iTMS_to_center_vikcoord ( &mc, &vc );
   vik_viewport_set_center_coord ( vvp, &vc, TRUE );
   vik_layer_emit_update ( VIK_LAYER(val), FALSE );
+}
+
+static void tac_goto_square_cb ( menu_array_values values )
+{
+  reposition_update ( values, MC_SQUARE );
 }
 
 static void tac_goto_east_west_cb ( menu_array_values values )
 {
-  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
-  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
-  VikViewport *vvp = vik_window_viewport ( vw );
-  // NB Simply moving to position, keeping current zoom level
-  // (i.e. not trying to determine best zoom level to view extents)
-  MapCoord mc;
-  mc.x = val->ew_x - val->ew_size/2;
-  mc.y = val->ew_y;
-  mc.scale = map_utils_mpp_to_scale ( val->zoom_level );
-  VikCoord vc;
-  map_utils_iTMS_to_center_vikcoord ( &mc, &vc );
-  vik_viewport_set_center_coord ( vvp, &vc, TRUE );
-  vik_layer_emit_update ( VIK_LAYER(val), FALSE );
+  reposition_update ( values, MC_EAST_WEST );
 }
 
 static void tac_goto_north_south_cb ( menu_array_values values )
 {
-  VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
-  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val));
-  VikViewport *vvp = vik_window_viewport ( vw );
-  // NB Simply moving to position, keeping current zoom level
-  // (i.e. not trying to determine best zoom level to view extents)
-  MapCoord mc;
-  mc.x = val->ns_x;
-  mc.y = val->ns_y - val->ns_size/2;
-  mc.scale = map_utils_mpp_to_scale ( val->zoom_level );
-  VikCoord vc;
-  map_utils_iTMS_to_center_vikcoord ( &mc, &vc );
-  vik_viewport_set_center_coord ( vvp, &vc, TRUE );
-  vik_layer_emit_update ( VIK_LAYER(val), FALSE );
+  reposition_update ( values, MC_NORTH_SOUTH );
 }
 
 // This shouldn't be called when already running
