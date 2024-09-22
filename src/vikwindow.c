@@ -3447,6 +3447,10 @@ static void copy_location (VikWindow *vw, const VikCoord *coord)
 
   a_clipboard_copy ( VIK_CLIPBOARD_DATA_TEXT, 0, 0, 0, msg, NULL );
 
+  gchar *sb_msg = g_strdup_printf ( _("Copied location: %s"), msg );
+  vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_INFO, sb_msg );
+  g_free ( sb_msg );
+
   g_free ( msg );
 }
 
