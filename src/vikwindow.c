@@ -2700,6 +2700,9 @@ static void draw_ruler(VikViewport *vvp, GdkDrawable *d, GdkGC *gc, const VikCoo
   g_object_unref ( G_OBJECT ( pl ) );
 }
 
+static void tool_resize_drawing_area (tool_ed_t *te, guint thickness, const gchar *color );
+static void tool_redraw_drawing_area_box (tool_ed_t *te, GdkEventMotion *event);
+
 static void ruler_click_normal (VikLayer *vl, GdkEventButton *event, tool_ed_t *s)
 {
   struct LatLon ll;
@@ -2722,6 +2725,15 @@ static void ruler_click_normal (VikLayer *vl, GdkEventButton *event, tool_ed_t *
     else {
       temp = g_strdup_printf ( "%s %s", lat, lon );
       s->has_oldcoord = TRUE;
+
+      // Ensure start off with drawing the compass rose
+#if GTK_CHECK_VERSION (3,0,0)
+      tool_resize_drawing_area ( s, vik_viewport_get_scale(s->vw->viking_vvp), "#000000" );
+      if ( s->gc ) {
+        draw_ruler ( s->vw->viking_vvp, NULL, s->gc, &coord, &coord );
+        gtk_widget_queue_draw ( GTK_WIDGET(s->vw->viking_vvp) );
+      }
+#endif
     }
 
     vik_statusbar_set_message ( s->vw->viking_vs, VIK_STATUSBAR_INFO, temp );
@@ -2751,9 +2763,6 @@ static VikLayerToolFuncStatus ruler_click (VikLayer *vl, GdkEventButton *event, 
   }
   return VIK_LAYER_TOOL_ACK;
 }
-
-static void tool_resize_drawing_area (tool_ed_t *te, guint thickness, const gchar *color );
-static void tool_redraw_drawing_area_box (tool_ed_t *te, GdkEventMotion *event);
 
 static void ruler_move_normal (VikLayer *vl, GdkEventMotion *event, tool_ed_t *s)
 {
