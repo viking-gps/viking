@@ -314,6 +314,16 @@ struct _VikAggregateLayer {
   guint ew_size;
   guint ew_size_prev;
 
+  // Simple extents North/East/South/West
+  gint north_x;
+  gint north_y;
+  gint east_x;
+  gint east_y;
+  gint south_x;
+  gint south_y;
+  gint west_x;
+  gint west_y;
+
   guint8 tac_time_range; // Years
   // Maybe a sparse table would be more efficient
   //  but this seems to work OK at least if all tracks are confined within a not too diverse area
@@ -1814,6 +1824,24 @@ static void check_point ( VikAggregateLayer *val, VikCoord *coord )
   if ( ! is_tile_occupied ( val->tiles, mc.x, mc.y ) ) {
     add_tile ( val->tiles, mc.x, mc.y );
     val->num_tiles[BASIC]++;
+
+    // Monitor north/east/south/west extent here
+    if ( mc.y < val->north_y ) {
+      val->north_x = mc.x;
+      val->north_y = mc.y;
+    }
+    if ( mc.x > val->east_x ) {
+      val->east_x = mc.x;
+      val->east_y = mc.y;
+    }
+    if ( mc.y > val->south_y ) {
+      val->south_x = mc.x;
+      val->south_y = mc.y;
+    }
+    if ( mc.x < val->west_x ) {
+      val->west_x = mc.x;
+      val->west_y = mc.y;
+    }
   }
 }
 
@@ -2337,6 +2365,26 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
 
   tac_unreachable ( ct->val );
 
+  // Set up sensible initial extents to first location
+  if ( ct->tracks_and_layers ) {
+    vik_trw_and_track_t *vtlist = ct->tracks_and_layers->data;
+    VikTrack *trk = vtlist->trk;
+    VikTrackpoint *tpt = vik_track_get_tp_first ( trk );
+    if ( tpt ) {
+      MapCoord mc;
+      if ( map_utils_vikcoord_to_iTMS ( &tpt->coord, ct->val->zoom_level, ct->val->zoom_level, &mc ) ) {
+        ct->val->north_x = mc.x;
+        ct->val->north_y = mc.y;
+        ct->val->east_x = mc.x;
+        ct->val->east_y = mc.y;
+        ct->val->south_x = mc.x;
+        ct->val->south_y = mc.y;
+        ct->val->west_x = mc.x;
+        ct->val->west_y = mc.y;
+      }
+    }
+  }
+
   guint tracks_processed = 0;
   // This is used to prevent the progress going negative or otherwise over 100%
   // It's difficult to get an estimate for the total and track progress of each of these parts
@@ -2439,6 +2487,8 @@ static void tac_clear ( VikAggregateLayer *val )
   // NB val->prev is not cleared at this point as needed for the later comparison
   val->ns_size = 0;
   val->ew_size = 0;
+  // NB North/East/South/West extents only done on calculation with a position
+  // as setting to map x/y tile of 0s not useful
 }
 
 /**
@@ -2976,6 +3026,10 @@ typedef enum {
   MC_SQUARE,
   MC_EAST_WEST,
   MC_NORTH_SOUTH,
+  MC_NORTH,
+  MC_EAST,
+  MC_SOUTH,
+  MC_WEST,
 } mc_draw_type;
 
 // NB Simply moving to position, keeping current zoom level
@@ -3000,6 +3054,22 @@ static void reposition_update ( menu_array_values values, mc_draw_type mc_draw  
     mc.x = val->ns_x;
     mc.y = val->ns_y - val->ns_size/2;
     break;
+  case MC_NORTH:
+    mc.x = val->north_x;
+    mc.y = val->north_y;
+    break;
+  case MC_EAST:
+    mc.x = val->east_x;
+    mc.y = val->east_y;
+    break;
+  case MC_SOUTH:
+    mc.x = val->south_x;
+    mc.y = val->south_y;
+    break;
+  case MC_WEST:
+    mc.x = val->west_x;
+    mc.y = val->west_y;
+    break;
   default:
     return;
     break;
@@ -3023,6 +3093,26 @@ static void tac_goto_east_west_cb ( menu_array_values values )
 static void tac_goto_north_south_cb ( menu_array_values values )
 {
   reposition_update ( values, MC_NORTH_SOUTH );
+}
+
+static void tac_goto_north_cb ( menu_array_values values )
+{
+  reposition_update ( values, MC_NORTH );
+}
+
+static void tac_goto_east_cb ( menu_array_values values )
+{
+  reposition_update ( values, MC_EAST );
+}
+
+static void tac_goto_south_cb ( menu_array_values values )
+{
+  reposition_update ( values, MC_SOUTH );
+}
+
+static void tac_goto_west_cb ( menu_array_values values )
+{
+  reposition_update ( values, MC_WEST );
 }
 
 // This shouldn't be called when already running
@@ -3076,6 +3166,7 @@ static GtkMenu* aggregate_build_submenu_tac ( VikAggregateLayer *val, GtkMenu *m
   GtkMenu *goto_submenu = GTK_MENU(gtk_menu_new());
   GtkWidget *itemg = vu_menu_add_item ( tac_submenu, _("_Goto"), GTK_STOCK_JUMP_TO, NULL, NULL );
   gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemg), GTK_WIDGET(goto_submenu) );
+  gtk_widget_set_sensitive ( itemg, available );
 
   GtkWidget *itemgs = vu_menu_add_item ( goto_submenu, _("_Max Square"), GTK_STOCK_JUMP_TO, G_CALLBACK(tac_goto_square_cb), values );
   gtk_widget_set_sensitive ( itemgs, available && val->on[MAX_SQR] );
@@ -3085,6 +3176,11 @@ static GtkMenu* aggregate_build_submenu_tac ( VikAggregateLayer *val, GtkMenu *m
 
   GtkWidget *itemgns = vu_menu_add_item ( goto_submenu, _("_North/South"), GTK_STOCK_JUMP_TO, G_CALLBACK(tac_goto_north_south_cb), values );
   gtk_widget_set_sensitive ( itemgns, available && val->on[LINES] );
+
+  (void)vu_menu_add_item ( goto_submenu, _("Furthest North"), GTK_STOCK_JUMP_TO, G_CALLBACK(tac_goto_north_cb), values );
+  (void)vu_menu_add_item ( goto_submenu, _("Furthest East"), GTK_STOCK_JUMP_TO, G_CALLBACK(tac_goto_east_cb), values );
+  (void)vu_menu_add_item ( goto_submenu, _("Furthest South"), GTK_STOCK_JUMP_TO, G_CALLBACK(tac_goto_south_cb), values );
+  (void)vu_menu_add_item ( goto_submenu, _("Furthest West"), GTK_STOCK_JUMP_TO, G_CALLBACK(tac_goto_west_cb), values );
 
 #ifdef HAVE_SQLITE3_H
   if ( val->on[BASIC] )
