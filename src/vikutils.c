@@ -454,7 +454,7 @@ void vu_set_auto_features_on_first_run ( void )
 		// Enable auto add map +
 		// Enable IP lookup
 		VikLayerParam *pref_add_map = a_preferences_get_param ( VIKING_PREFERENCES_STARTUP_NAMESPACE "add_default_map_layer" );
-		VikLayerParam *pref_startup_method = a_preferences_get_param ( VIKING_PREFERENCES_STARTUP_NAMESPACE "startup_method" );;
+		VikLayerParam *pref_startup_method = a_preferences_get_param ( VIKING_PREFERENCES_STARTUP_NAMESPACE "startup_method" );
 		if ( !pref_add_map || !pref_startup_method ) {
 			g_critical ( "%s: preference not found", __FUNCTION__ );
 			goto finish;
