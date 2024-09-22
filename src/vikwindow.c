@@ -1861,7 +1861,27 @@ static void scale_graphs_pane ( VikWindow *vw )
 static gboolean window_configure_event ( VikWindow *vw, GdkEventConfigure *event, gpointer user_data )
 {
   static gboolean first = TRUE;
+
+  // ATM tool drawing i.e. ruler drawing (rose or area images) is contained within the tool_ed_t
+  // But a window configure event isn't related to the tool
+  //  and so if the window is resized, the tool image no longer corresponds to the new viewport size
+  // So if the window size changed, simply remove the tool image;
+  //  rather than working out some method to redraw it correctly...
+#if GTK_CHECK_VERSION (3,0,0)
+  int w1, h1, w2, h2;
+  w1 = vik_viewport_get_width ( vw->viking_vvp );
+  h1 = vik_viewport_get_height ( vw->viking_vvp );
+  cairo_surface_t *surface = vik_viewport_surface_tool_get ( vw->viking_vvp );
+  if ( surface ) {
+    w2 = cairo_image_surface_get_width ( surface );
+    h2 = cairo_image_surface_get_height ( surface );
+    if ( w1 != w2 || h1 != h2 )
+      vik_viewport_surface_tool_clear ( vw->viking_vvp );
+  }
+#endif
+
   draw_redraw ( vw );
+
   if ( first ) {
     // This is a hack to initialize the cursor to the corresponding tool
     first = FALSE;

@@ -136,6 +136,7 @@ GdkPixbuf *vik_viewport_get_pixbuf ( VikViewport *vvp, gint ww, gint hh );
 /* Viewport buffer management/drawing to screen */
 cairo_t *vik_viewport_surface_tool_create ( VikViewport *vvp );
 cairo_surface_t *vik_viewport_surface_tool_get ( VikViewport *vvp );
+void vik_viewport_surface_tool_clear ( VikViewport *vvp );
 void vik_viewport_surface_tool_destroy ( VikViewport *vvp );
 #if !GTK_CHECK_VERSION (3,0,0)
 GdkPixmap *vik_viewport_get_pixmap ( VikViewport *vvp ); /* get pointer to drawing buffer */

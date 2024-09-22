@@ -571,8 +571,8 @@ void vik_viewport_surface_tool_destroy ( VikViewport *vvp )
 //  so operations that invalidate the surface i.e.
 // panning (changing the viewport center) and zooming must call this
 // Potentially this could be invoked by a signal mechanism
-//  but ATM only used internally to vikviewport, so direct calling suffices
-static void viewport_clear_surface_tool ( VikViewport *vvp )
+//  but ATM mostly used internally to vikviewport, so direct calling suffices
+void vik_viewport_surface_tool_clear ( VikViewport *vvp )
 {
 #if GTK_CHECK_VERSION (3,0,0)
   if ( vvp->cr_tool )
@@ -1124,7 +1124,7 @@ void vik_viewport_set_zoom ( VikViewport *vvp, gdouble xympp )
 
   if ( vvp->drawmode == VIK_VIEWPORT_DRAWMODE_UTM )
     viewport_utm_zone_check(vvp);
-  viewport_clear_surface_tool ( vvp );
+  vik_viewport_surface_tool_clear ( vvp );
 }
 
 gboolean vik_viewport_zoom_in ( VikViewport *vvp )
@@ -1142,7 +1142,7 @@ gboolean vik_viewport_zoom_in ( VikViewport *vvp )
     viewport_utm_zone_check(vvp);
     ans = TRUE;
   }
-  viewport_clear_surface_tool ( vvp );
+  vik_viewport_surface_tool_clear ( vvp );
   return ans;
 }
 
@@ -1161,7 +1161,7 @@ gboolean vik_viewport_zoom_out ( VikViewport *vvp )
     viewport_utm_zone_check(vvp);
     ans = TRUE;
   }
-  viewport_clear_surface_tool ( vvp );
+  vik_viewport_surface_tool_clear ( vvp );
   return ans;
 }
 
@@ -1428,7 +1428,7 @@ void vik_viewport_set_center_latlon ( VikViewport *vvp, const struct LatLon *ll,
     update_centers ( vvp );
   if ( vvp->coord_mode == VIK_COORD_UTM )
     viewport_utm_zone_check ( vvp );
-  viewport_clear_surface_tool ( vvp );
+  vik_viewport_surface_tool_clear ( vvp );
 }
 
 /**
@@ -1445,7 +1445,7 @@ void vik_viewport_set_center_utm ( VikViewport *vvp, const struct UTM *utm, gboo
     update_centers ( vvp );
   if ( vvp->coord_mode == VIK_COORD_UTM )
     viewport_utm_zone_check ( vvp );
-  viewport_clear_surface_tool ( vvp );
+  vik_viewport_surface_tool_clear ( vvp );
 }
 
 /**
@@ -1462,7 +1462,7 @@ void vik_viewport_set_center_coord ( VikViewport *vvp, const VikCoord *coord, gb
     update_centers ( vvp );
   if ( vvp->coord_mode == VIK_COORD_UTM )
     viewport_utm_zone_check ( vvp );
-  viewport_clear_surface_tool ( vvp );
+  vik_viewport_surface_tool_clear ( vvp );
 }
 
 void vik_viewport_corners_for_zonen ( VikViewport *vvp, int zone, VikCoord *ul, VikCoord *br )
@@ -1525,7 +1525,7 @@ void vik_viewport_set_center_screen ( VikViewport *vvp, int x, int y )
     vik_viewport_screen_to_coord ( vvp, x, y, &tmp );
     vik_viewport_set_center_coord ( vvp, &tmp, FALSE );
   }
-  viewport_clear_surface_tool ( vvp );
+  vik_viewport_surface_tool_clear ( vvp );
 }
 
 gint vik_viewport_get_width( VikViewport *vvp )
