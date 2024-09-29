@@ -2651,7 +2651,8 @@ msgstr ""
 msgid "_Open MBTiles Files"
 msgstr ""
 
-msgid "Flush Map Cache"
+#, fuzzy
+msgid "Flush map memory cache, applies to all map layers"
 msgstr "Tyhjennä karttavälimuisti"
 
 msgid "Default engine:"
@@ -5351,7 +5352,7 @@ msgstr "Poista kaikki"
 msgid "Copy Centre _Location"
 msgstr ""
 
-msgid "_Flush Map Cache"
+msgid "_Flush Map Memory Cache"
 msgstr "_Tyhjennä karttavälimuisti"
 
 msgid "_Set the Default Location"

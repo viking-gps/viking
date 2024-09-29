@@ -2716,7 +2716,7 @@ msgstr ""
 msgid "_Open MBTiles Files"
 msgstr ""
 
-msgid "Flush Map Cache"
+msgid "Flush Map Memory Cache"
 msgstr "Очистить кэш карты"
 
 msgid "Default engine:"
@@ -5480,7 +5480,8 @@ msgstr "Копировать центр _местоположения"
 msgid "Copy Centre Location"
 msgstr "Копировать центр местоположения"
 
-msgid "_Flush Map Cache"
+#, fuzzy
+msgid "Flush map memory cache, applies to all map layers"
 msgstr "Опустошить кэш карт"
 
 msgid "_Set the Default Location"

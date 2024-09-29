@@ -2717,7 +2717,8 @@ msgstr "Herunterladen in den _Vergrößerungsstufen..."
 msgid "_Open MBTiles Files"
 msgstr ""
 
-msgid "Flush Map Cache"
+#, fuzzy
+msgid "Flush map memory cache, applies to all map layers"
 msgstr "Karten-Zwischenspeicher leeren"
 
 msgid "Default engine:"
@@ -5468,7 +5469,7 @@ msgstr "Kopiere Koordinaten der aktue_llen Position"
 msgid "Copy Centre Location"
 msgstr "Kopiere Koordinaten der aktue_llen Position"
 
-msgid "_Flush Map Cache"
+msgid "_Flush Map Memory Cache"
 msgstr "Kartenpu_ffer löschen"
 
 msgid "_Set the Default Location"

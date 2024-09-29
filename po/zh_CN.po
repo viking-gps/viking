@@ -2635,7 +2635,8 @@ msgstr "下载地图在缩放等级(_Z)…"
 msgid "_Open MBTiles Files"
 msgstr ""
 
-msgid "Flush Map Cache"
+#, fuzzy
+msgid "Flush map memory cache, applies to all map layers"
 msgstr "清理地图缓存"
 
 msgid "Default engine:"
@@ -5358,7 +5359,7 @@ msgstr "复制居中位置(_L)"
 msgid "Copy Centre Location"
 msgstr "复制居中位置"
 
-msgid "_Flush Map Cache"
+msgid "_Flush Map Memory Cache"
 msgstr "清理地图缓存(_F)"
 
 msgid "_Set the Default Location"

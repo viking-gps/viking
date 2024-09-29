@@ -2653,7 +2653,8 @@ msgstr ""
 msgid "_Open MBTiles Files"
 msgstr ""
 
-msgid "Flush Map Cache"
+#, fuzzy
+msgid "Flush map memory cache, applies to all map layers"
 msgstr "Aggiorna la cache della mappe"
 
 msgid "Default engine:"
@@ -5353,7 +5354,7 @@ msgstr "Elimina tutto"
 msgid "Copy Centre _Location"
 msgstr ""
 
-msgid "_Flush Map Cache"
+msgid "_Flush Map Memory Cache"
 msgstr "Aggiorna la cache della mappe"
 
 msgid "_Set the Default Location"

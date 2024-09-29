@@ -2980,7 +2980,7 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
 
   // Typical users shouldn't need to use this functionality - so debug only ATM
   if ( vik_debug ) {
-    (void)vu_menu_add_item ( menu, _("Flush Map Cache"), GTK_STOCK_REMOVE, G_CALLBACK(maps_layer_flush), values );
+    (void)vu_menu_add_item ( menu, _("_Flush Map Memory Cache"), GTK_STOCK_REMOVE, G_CALLBACK(maps_layer_flush), values );
   }
 }
 

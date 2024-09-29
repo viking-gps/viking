@@ -2696,7 +2696,8 @@ msgstr "Stáhnout mapy s rozsahem přiblížení"
 msgid "_Open MBTiles Files"
 msgstr ""
 
-msgid "Flush Map Cache"
+#, fuzzy
+msgid "Flush map memory cache, applies to all map layers"
 msgstr "Vymazat mapovou cache"
 
 msgid "Default engine:"
@@ -5429,7 +5430,7 @@ msgstr "S_mazat vše"
 msgid "Copy Centre _Location"
 msgstr ""
 
-msgid "_Flush Map Cache"
+msgid "_Flush Map Memory Cache"
 msgstr "V_ymazat mapovou cache"
 
 msgid "_Set the Default Location"

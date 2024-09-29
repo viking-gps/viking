@@ -2603,7 +2603,7 @@ msgstr ""
 msgid "_Open MBTiles Files"
 msgstr ""
 
-msgid "Flush Map Cache"
+msgid "Flush map memory cache, applies to all map layers"
 msgstr ""
 
 msgid "Default engine:"
@@ -5272,7 +5272,7 @@ msgstr ""
 msgid "Copy Centre _Location"
 msgstr ""
 
-msgid "_Flush Map Cache"
+msgid "_Flush Map Memory Cache"
 msgstr ""
 
 msgid "_Set the Default Location"

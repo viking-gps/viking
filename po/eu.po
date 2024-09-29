@@ -2813,8 +2813,9 @@ msgstr "Deskargatu mapak _Zoom mailetan..."
 msgid "_Open MBTiles Files"
 msgstr "Ireki MBTiles fitxategiak"
 
-msgid "Flush Map Cache"
-msgstr "Garbitu mapen cachea"
+#, fuzzy
+msgid "Flush map memory cache, applies to all map layers"
+msgstr "Garbitu mapen memoriaren cachea"
 
 msgid "Default engine:"
 msgstr "Lehenetsitako motorea:"
@@ -5630,8 +5631,8 @@ msgstr "Kopiatu erdiko kokalekua"
 msgid "Copy Centre Location"
 msgstr "Kopiatu erdiko kokalekua"
 
-msgid "_Flush Map Cache"
-msgstr "_Hustu mapen cache-a"
+msgid "_Flush Map Memory Cache"
+msgstr "_Hustu mapen memoriaren cache-a"
 
 msgid "_Set the Default Location"
 msgstr "_Ezarri lehenetsitako kokalekua"

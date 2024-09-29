@@ -23,7 +23,7 @@
 </listitem>
 </varlistentry>
 <varlistentry>
-<term><guilabel>Flush Map Cache</guilabel></term>
+<term><guilabel>Flush Map Memory Cache</guilabel></term>
 <listitem>
   <para>This will empty the in memory map cache, hence it should reduce the amount of memory that &appname; is using.</para>
 </listitem>

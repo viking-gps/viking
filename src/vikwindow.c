@@ -6520,7 +6520,7 @@ static GtkActionEntry entries[] = {
   { "Delete",    GTK_STOCK_DELETE,       N_("_Delete"),                   "<control>Delete",N_("Remove selected layer"),                    (GCallback)menu_delete_layer_cb  },
   { "DeleteAll", GTK_STOCK_REMOVE,       N_("Delete All"),                    NULL,         N_("Delete All"),                               (GCallback)clear_cb              },
   { "CopyCentre", GTK_STOCK_COPY,        N_("Copy Centre _Location"),     "<control>h",     N_("Copy Centre Location"),                     (GCallback)menu_copy_centre_cb   },
-  { "MapCacheFlush", GTK_STOCK_DISCARD,  N_("_Flush Map Cache"),              NULL,         N_("Flush Map Cache"),                          (GCallback)mapcache_flush_cb     },
+  { "MapCacheFlush", GTK_STOCK_DISCARD,  N_("_Flush Map Memory Cache"),       NULL,         N_("Flush map memory cache, applies to all map layers"), (GCallback)mapcache_flush_cb },
   { "SetDefaultLocation", GTK_STOCK_GO_FORWARD, N_("_Set the Default Location"), NULL, N_("Set the Default Location to the current position"),(GCallback)default_location_cb },
   { "Preferences",GTK_STOCK_PREFERENCES, N_("Prefere_nces"),                  NULL,         N_("Program Preferences"),                      (GCallback)preferences_cb },
   { "PreferencesReset",GTK_STOCK_REFRESH, N_("Preferences Reset All"),        NULL,         N_("Reset All Program Preferences"),            (GCallback)preferences_reset_cb },
