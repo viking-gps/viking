@@ -384,7 +384,7 @@ static void aggregate_layer_class_init ( VikAggregateLayerClass *klass )
         continue;
       if ( sscanf(buf, "%d %d %d", &zz, &xx, &yy) == 3 ) {
         gchar *key = g_strdup_printf ( "%d %d %d", zz, xx, yy );
-        (void)g_hash_table_insert ( tiles_unreachable, key, GUINT_TO_POINTER(0) );
+        (void)g_hash_table_insert ( tiles_unreachable, key, NULL );
       }
       else
         g_warning ( "%s: %s line %d does not contain 3 numbers", __FUNCTION__, fn, line );
@@ -2357,7 +2357,7 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
     gpointer key, value;
     g_hash_table_iter_init ( &iter, ct->val->tiles );
     while ( g_hash_table_iter_next(&iter, &key, &value) )
-      (void)g_hash_table_insert ( ct->val->prev, g_strdup(key), GUINT_TO_POINTER(0) );
+      (void)g_hash_table_insert ( ct->val->prev, g_strdup(key), NULL );
 
     for (gint x = 0; x<CP_NUM; x++ )
       ct->val->num_prev[x] = ct->val->num_tiles[x];
@@ -2454,7 +2454,7 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
     while ( g_hash_table_iter_next(&iter, &key, &value) ) {
       gboolean contained = g_hash_table_contains ( ct->val->prev, key );
       if ( !contained ) {
-        (void)g_hash_table_insert ( ct->val->tiles_new, g_strdup(key), GUINT_TO_POINTER(0) );
+        (void)g_hash_table_insert ( ct->val->tiles_new, g_strdup(key), NULL );
         ct->val->num_tiles[TNEW]++;
       }
     }
