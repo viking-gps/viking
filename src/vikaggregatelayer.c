@@ -359,7 +359,7 @@ struct _VikAggregateLayer {
 };
 
 // Single global
-GHashTable *tiles_unreachable = NULL;
+static GHashTable *tiles_unreachable = NULL;
 
 static GdkColor black_color;
 
