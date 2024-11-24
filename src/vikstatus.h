@@ -26,6 +26,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "vikviewport.h"
+
 G_BEGIN_DECLS
 
 #define VIK_STATUSBAR_TYPE            (vik_statusbar_get_type ())
@@ -60,6 +62,7 @@ typedef enum {
 
 VikStatusbar *vik_statusbar_new ( guint scale );
 void vik_statusbar_set_message ( VikStatusbar *vs, vik_statusbar_type_t field, const gchar *message );
+void vik_statusbar_set_drawmode ( VikStatusbar *vs, VikViewportDrawMode dmode );
 
 G_END_DECLS
 

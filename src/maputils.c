@@ -52,7 +52,7 @@ gint map_utils_mpp_to_scale ( gdouble mpp ) {
 		}
 	}
 	for ( i = 0; i < num_scales_neg; i++ ) {
-		if ( ABS(scale_neg_mpps[i] - mpp) < 0.000001 ) {
+		if ( ABS(scale_neg_mpps[i] - mpp) < 0.005 ) {
 			return -i;
 		}
 	}

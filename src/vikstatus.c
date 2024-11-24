@@ -32,6 +32,7 @@
 #include "vikstatus.h"
 #include "background.h"
 #include "logging.h"
+#include "maputils.h"
 
 enum
 {
@@ -47,6 +48,8 @@ struct _VikStatusbar {
 #endif
   GtkWidget *status[VIK_STATUSBAR_NUM_TYPES];
   gboolean empty[VIK_STATUSBAR_NUM_TYPES];
+  // In order to determine what tooltip to show on the zoom part
+  VikViewportDrawMode vp_draw_mode;
 };
 
 G_DEFINE_TYPE (VikStatusbar, vik_statusbar, GTK_TYPE_HBOX)
@@ -130,7 +133,6 @@ vik_statusbar_init (VikStatusbar *vs)
 
   g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_ZOOM]), "clicked", G_CALLBACK (forward_signal), vs);
   gtk_button_set_relief ( GTK_BUTTON(vs->status[VIK_STATUSBAR_ZOOM]), GTK_RELIEF_NONE );
-  gtk_widget_set_tooltip_text (GTK_WIDGET (vs->status[VIK_STATUSBAR_ZOOM]), _("Current zoom level. Click to select a new one."));
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_ZOOM], FALSE, FALSE, 1);
 
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_POSITION], FALSE, FALSE, 1);
@@ -195,6 +197,18 @@ vik_statusbar_set_message ( VikStatusbar *vs, vik_statusbar_type_t field, const 
     if ( field == VIK_STATUSBAR_ITEMS || field == VIK_STATUSBAR_ZOOM || field == VIK_STATUSBAR_LOG )
     {
       gtk_button_set_label ( GTK_BUTTON(vs->status[field]), message);
+      if ( field == VIK_STATUSBAR_ZOOM  )
+      {
+        if ( vs->vp_draw_mode == VIK_VIEWPORT_DRAWMODE_MERCATOR ||
+             vs->vp_draw_mode == VIK_VIEWPORT_DRAWMODE_LATLON) {
+          gchar *msg = g_strdup_printf ( _("Current OSM zoom level: %d. Click to select a new one."), map_utils_mpp_to_zoom_level(g_ascii_strtod(message, NULL)) );
+          gtk_widget_set_tooltip_text ( GTK_WIDGET (vs->status[VIK_STATUSBAR_ZOOM]), msg );
+          g_free ( msg );
+        }
+        else {
+          gtk_widget_set_tooltip_text ( GTK_WIDGET (vs->status[VIK_STATUSBAR_ZOOM]), _("Current zoom level. Click to select a new one.") );
+        }
+      }
     }
     else if ( field == VIK_STATUSBAR_INFO )
       gtk_label_set_text ( GTK_LABEL(vs->status[field]), message );
@@ -210,4 +224,16 @@ vik_statusbar_set_message ( VikStatusbar *vs, vik_statusbar_type_t field, const 
     gtk_statusbar_push ( gsb, 0, message );
     }
   }
+}
+
+/**
+ * vik_statusbar_set_drawmode:
+ * @vs: the #VikStatusbar itself
+ * @dmode: the new draw mode
+ *
+ **/
+void
+vik_statusbar_set_drawmode ( VikStatusbar *vs, VikViewportDrawMode dmode )
+{
+  vs->vp_draw_mode = dmode;
 }

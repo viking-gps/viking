@@ -29,6 +29,7 @@
 #include "vikgoto.h"
 #include "dems.h"
 #include "mapcache.h"
+#include "maputils.h"
 #include "print.h"
 #include "toolbar.h"
 #include "viklayer_defaults.h"
@@ -808,9 +809,34 @@ static void zoom_changed (GtkMenuShell *menushell,
 }
 
 /**
+ * Set zoom menu entry tooltip,
+ *  according to Draw Mode and text of the menu entry itself (to determine OSM zoom level)
+ */
+static gboolean zoom_menu_tooltip_cb (GtkWidget  *ww,
+                                      gint        x,
+                                      gint        y,
+                                      gboolean    keyboard_tip,
+                                      GtkTooltip *tooltip,
+                                      gpointer    data)
+{
+  VikWindow *vw = VIK_WINDOW(data);
+  VikViewportDrawMode mode = vik_viewport_get_drawmode ( vw->viking_vvp );
+  if ( mode == VIK_VIEWPORT_DRAWMODE_MERCATOR ||
+       mode == VIK_VIEWPORT_DRAWMODE_LATLON ) {
+    gchar *msg = g_strdup_printf ( _("OSM zoom level: %d"),
+                                   map_utils_mpp_to_zoom_level(g_ascii_strtod(gtk_menu_item_get_label(GTK_MENU_ITEM(ww)), NULL)) );
+    gtk_tooltip_set_text ( tooltip, msg );
+    g_free ( msg );
+    return TRUE;
+  }
+  return FALSE;
+}
+
+/**
+ * @vw:  The #VikWindow that it applies to
  * @mpp: The initial zoom level
  */
-static GtkWidget *create_zoom_menu_all_levels ( gdouble mpp )
+static GtkWidget *create_zoom_menu_all_levels ( VikWindow *vw, gdouble mpp )
 {
   GtkWidget *menu = gtk_menu_new ();
   char *itemLabels[] = { "0.031", "0.063", "0.125", "0.25", "0.5", "1", "2", "4", "8", "16", "32", "64", "128", "256", "512", "1024", "2048", "4096", "8192", "16384", "32768" };
@@ -822,6 +848,8 @@ static GtkWidget *create_zoom_menu_all_levels ( gdouble mpp )
       gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
       gtk_widget_show (item);
       g_object_set_data (G_OBJECT (item), "position", GINT_TO_POINTER(i));
+      g_object_set ( G_OBJECT(item), "has-tooltip", TRUE, NULL );
+      g_signal_connect ( G_OBJECT(item), "query-tooltip", G_CALLBACK(zoom_menu_tooltip_cb), vw );
     }
 
   gint active = 5 + round ( log (mpp) / log (2) );
@@ -1346,7 +1374,7 @@ static void vik_window_init ( VikWindow *vw )
   vik_ext_tool_datasources_add_menu_items ( vw, vw->uim );
 
   GtkWidget * zoom_levels = gtk_ui_manager_get_widget (vw->uim, "/MainMenu/View/SetZoom");
-  GtkWidget * zoom_levels_menu = create_zoom_menu_all_levels ( vik_viewport_get_zoom(vw->viking_vvp) );
+  GtkWidget * zoom_levels_menu = create_zoom_menu_all_levels ( vw, vik_viewport_get_zoom(vw->viking_vvp) );
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (zoom_levels), zoom_levels_menu);
   g_signal_connect ( G_OBJECT(zoom_levels_menu), "selection-done", G_CALLBACK(zoom_changed), vw);
   g_signal_connect_swapped ( G_OBJECT(vw->viking_vs), "clicked", G_CALLBACK(zoom_popup_handler), zoom_levels_menu );
