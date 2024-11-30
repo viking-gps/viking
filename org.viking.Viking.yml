@@ -170,6 +170,7 @@ modules:
     cleanup:
       - /include
       - '/lib/*.a'
+      - /bin
 
 #
 # xxd tool required as part of Viking build
