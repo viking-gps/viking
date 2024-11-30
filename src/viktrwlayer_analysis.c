@@ -43,6 +43,7 @@ typedef struct {
 	gint     count;
 	GList    *e_list; // of guints to determine Eddington number
 	// https://en.wikipedia.org/wiki/Arthur_Eddington#Eddington_number_for_cycling
+	GHashTable *active_days; // Count of days activity has occurred on
 } track_stats;
 
 // Early incarnations of the code had facilities to print output for multiple files
@@ -82,6 +83,7 @@ static void reset_me ( track_stats *stats )
 	stats->end_time    = NAN;
 	stats->count       = 0;
 	stats->e_list      = NULL;
+	stats->active_days = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
 }
 
 /**
@@ -211,6 +213,19 @@ static void val_analyse_track ( VikTrack *trk, VikTrwLayer *vtl, gboolean includ
 			tracks_stats[ii].elev_gain += up;
 			tracks_stats[ii].elev_loss += down;
 		}
+	}
+
+	if ( !isnan(t1) ) {
+		// Only consider a simple definition of activity
+		//  i.e. if a track spans 24 hours this won't count each day
+		// Just store first date in hash table to count the days
+		GDate* gdate_start = g_date_new ();
+		g_date_set_time_t ( gdate_start, (time_t)t1 );
+		gchar time_start[32];
+		g_date_strftime ( time_start, sizeof(time_start), "%x", gdate_start );
+		g_date_free ( gdate_start );
+		gchar *storeMe = g_strdup ( time_start );
+		(void)g_hash_table_insert ( tracks_stats[TS_TRACKS].active_days, storeMe, NULL );
 	}
 
 	// Insert into Years data - the track must have a time
@@ -382,12 +397,25 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 		g_snprintf ( tmp_buf, sizeof(tmp_buf), _("No Data") );
 	}
 
+	guint sz = g_hash_table_size ( ts.active_days );
+	if ( sz != 0 ) {
+		gchar *tmsg = g_strdup_printf ( _("Active days: %d"), sz );
+		gtk_widget_set_tooltip_text ( content[cnt], tmsg );
+		g_free ( tmsg );
+	}
+
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 
 	vik_units_distance_t dist_units = a_vik_get_units_distance ();
 	vu_distance_text ( tmp_buf, sizeof(tmp_buf), dist_units, round(ts.length), TRUE, "%.0f", FALSE );
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 
+	if ( sz != 0 ) {
+		vu_distance_text ( tmp_buf, sizeof(tmp_buf), dist_units, ts.length/sz, TRUE, "%.2f", FALSE );
+		gchar *tmsg = g_strdup_printf ( _("Average length per active day: %s"), tmp_buf );
+		gtk_widget_set_tooltip_text ( content[cnt], tmsg );
+		g_free ( tmsg );
+	}
 	vu_distance_text ( tmp_buf, sizeof(tmp_buf), dist_units, ts.length/ts.count, TRUE, "%.2f", FALSE );
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 
@@ -475,6 +503,14 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 	hours   = (gint)floor(avg_dur / (60*60));
 	minutes = (gint)((avg_dur - (hours*60*60)) / 60);
 	g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d:%02d hrs:mins"), hours, minutes );
+	if ( sz != 0 ) {
+		gint avgpd = ts.duration / sz;
+		hours   = (gint)floor(avgpd / (60*60));
+		minutes = (gint)((avgpd - (hours*60*60)) / 60);
+		gchar *tmsg = g_strdup_printf ( _("Duration per active day: %d:%02d hrs:mins"), hours, minutes );
+		gtk_widget_set_tooltip_text ( content[cnt], tmsg );
+		g_free ( tmsg );
+	}
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
 }
 
@@ -603,6 +639,8 @@ static void val_analyse ( GtkWidget *widgets[], GList *tracks_and_layers, gboole
 				g_printf ( "%s: %d: %d %d %5.2f %5.1f %d\n", __FUNCTION__, current_year-yi, tracks_years[yi].count, (gint)tracks_years[yi].max_alt, tracks_years[yi].max_speed, tracks_years[yi].length/1000, (gint)tracks_years[yi].elev_gain );
 		}
 	}
+
+	g_hash_table_destroy ( tracks_stats[TS_TRACKS].active_days );
 }
 
 // Analyse the specified year
