@@ -20,6 +20,9 @@ EXTRA_DIST = \
 	viking.spec \
 	mingw32-viking.spec \
 	mingw64-viking.spec \
+	FLATPAK.md \
+	org.viking.Viking.yml \
+	org.viking.Viking.appdata.xml \
 	$(INTLTOOL)
 
 .PHONY: generate-changelog
