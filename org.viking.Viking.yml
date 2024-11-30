@@ -6,7 +6,7 @@ app-id: org.viking.Viking
 #runtime-version: '22.08'
 #sdk: org.freedesktop.Sdk
 runtime: org.kde.Platform
-runtime-version: '5.15-22.08'
+runtime-version: '5.15-24.08'
 sdk: org.kde.Sdk
 command: viking
 rename-icon: viking
