@@ -23,7 +23,12 @@ EXTRA_DIST = \
 	FLATPAK.md \
 	org.viking.Viking.yml \
 	org.viking.Viking.appdata.xml \
+	viking-128.png \
 	$(INTLTOOL)
+# NB viking-128.png is just a rescaled src/icons/viking.png
+# Yet needed for Flathub
+# ATM Simpler to just embed copy in source control rather than generate
+#  (e.g. via ImageMagick convert - as then need that in the build chain)
 
 .PHONY: generate-changelog
 generate-changelog:
