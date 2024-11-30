@@ -100,15 +100,27 @@ Also see https://docs.flatpak.org/en/latest/index.html
     flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
     #flatpak install flathub org.freedesktop.Platform//22.08 org.freedesktop.Sdk//22.08
-    flatpak install flathub org.kde.Platform//5.15-22.08 org.kde.Sdk//5.15-22.08
+    flatpak install flathub org.kde.Platform
+    flatpak install org.kde.Sdk
+    # The above lists available versions asks which version needed
+    # i.e. either select one as per the build .yml - so ATM: 5.15-24.08
+    # (alternatively the install command can specify exact version as the commented out version above)
+    # (or choose a later/latest version and update build .yml appropriately
+    #  but the build may not work as it's an untested combination)
+
+    # Also need submodules:
+    git submodule add https://github.com/flathub/shared-modules.git
+    # or otherwise 'git clone ...' if not already in a git clone directory
 
 ## Build
 
     #Total clean out in the top level of previous runs:
     #rm -rf .flatpak-builder/ && rm -rf flatpak/ && rm -rf flatpakrepo/
+    #However, latest versions seem better at performing rebuild on dependency changes
+    # so shouldn't need to completely reset as often.
     flatpak-builder flatpak/ org.viking.Viking.yml --force-clean
 
-Clean build takes <1 minute to (re)download sources and about 15 minutes to build (most of it being GTK2) on my machine.
+Clean build takes <1 minute to (re)download sources and about 5 minutes to build on my machine.
 Can rebuild without wiping everything as flatbuilder caches the build, but regularly thinks it doesn't need to rebuild Viking (e.g. not necessarily code changes but build environment things).
 Unfortunately I've not discovered how to force a rebuild of just the Viking part, so have to resort to a wipe all (or '--disable-cache').
 
