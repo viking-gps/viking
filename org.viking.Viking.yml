@@ -132,17 +132,20 @@ modules:
       - '/lib/*.a'
       - /lib/pkgconfig/
      
-# qt, thus needs org.kde.Sdk
+# qt5, thus needs org.kde.Sdk (5.X)
+# NB qt5 version gpsbabel isn't compatible with org.kde.Sdk 6.X
   - name: gpsbabel
 # NB after 1.7 has moved to cmake
 # NB2 1.7 broken build on using --without-libusb
+# NB3 1.8+ have complex Qt6 requirements not in Qt6 SDK Flathub version
     buildsystem: autotools
     config-opts:
     - --without-libusb
     sources:
     - type: git
       url: https://github.com/gpsbabel/gpsbabel.git
-      branch: "gpsbabel_1_6_0"
+      tag: "gpsbabel_1_6_0"
+      commit: f0f20ea4db9b71238ceb72c4838024699181d657
 
 # DO NOT CLEAN THESE AS NEEDED FOR DEPLOYMENT!!
 #   cleanup:
