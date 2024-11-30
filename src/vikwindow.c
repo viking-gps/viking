@@ -1822,18 +1822,29 @@ void vik_window_draw_update ( VikWindow *vw )
   draw_update(vw);
 }
 
+static gchar *old_tool = NULL;
 /*
  * Split the status update, as sometimes only need to update the tool part
  *  also on initialization the zoom related stuff is not ready to be used
  */
 static void draw_status_tool ( VikWindow *vw )
 {
+  gchar *tool_str = NULL;
   if ( vw->current_tool == TOOL_LAYER )
     // Use tooltip rather than the internal name as the tooltip is i8n
-    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_TOOL, vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].radioActionEntry.tooltip );
+    tool_str = (gchar*)vik_layer_get_interface(vw->tool_layer_id)->tools[vw->tool_tool_id].radioActionEntry.tooltip;
   else
-    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_TOOL, _(tool_names[vw->current_tool]) );
+    tool_str = _(tool_names[vw->current_tool]);
+
+  // Attempt to only update if actually changed to prevent the circular redrawing
+  if ( g_strcmp0(old_tool, tool_str) ) {
+    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_TOOL, tool_str );
+    g_free ( old_tool );
+    old_tool = g_strdup ( tool_str );
+  }
 }
+
+static gchar* old_zoom_str = NULL;
 
 static void draw_status ( VikWindow *vw )
 {
@@ -1853,7 +1864,13 @@ static void draw_status ( VikWindow *vw )
   // In GTK3 version if you hover the mouse over the statusbar zoom level
   //  This next statement for unknown reason causes a new 'draw' event
   //  which comes back here and so on continually!
-  vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_ZOOM, zoom_level );
+  // Attempt to only update if actually changed to prevent the circular redrawing
+  if ( g_strcmp0(old_zoom_str, zoom_level) ) {
+    vik_statusbar_set_drawmode ( vw->viking_vs, vik_viewport_get_drawmode(vw->viking_vvp) );
+    vik_statusbar_set_message ( vw->viking_vs, VIK_STATUSBAR_ZOOM, zoom_level );
+    g_free ( old_zoom_str );
+    old_zoom_str = g_strdup ( zoom_level );
+  }
 
   draw_status_tool ( vw );
 }
