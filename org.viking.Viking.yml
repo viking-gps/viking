@@ -39,6 +39,7 @@ modules:
       - aclocal && autoheader && libtoolize --copy && autoconf && automake --gnu --add-missing --copy && ./configure --enable-nss --prefix="${FLATPAK_DEST}" && make && make install
     cleanup:
       - /include
+      - /lib/pkgconfig
       - '/lib/*.a'
 #
 # libzip
@@ -51,8 +52,8 @@ modules:
         sha256: 5d471308cef4c4752bbcf973d9cd37ba4cb53739116c30349d4764ba1410dfc1
     cleanup:
       - /include
-      - /lib/pkgconfig/
-      - /lib/cmake/
+      - /lib/pkgconfig
+      - /lib/cmake
       - '/lib/*.a'
       - '/bin/zip*'
 #
@@ -74,8 +75,8 @@ modules:
         cleanup:
           - /include
           - '/lib/*.a'
-          - /lib/pkgconfig/
-          - /lib/cmake/
+          - /lib/pkgconfig
+          - /lib/cmake
           - '/bin/exi*'
           - '/bin/ipt*'
           - '/bin/xmp*'
@@ -96,7 +97,7 @@ modules:
     cleanup:
       - /include
       - '/lib/*.a'
-      - /lib/pkgconfig/
+      - /lib/pkgconfig
 #
 # GPSD
 #
@@ -117,7 +118,7 @@ modules:
           - python3 setup.py install --prefix="${FLATPAK_DEST}";
         cleanup:
           - /include
-          - '/lib/scons-*'
+          - '/lib/scons*'
           - '/bin/scons*'
 
     buildsystem: simple
@@ -130,7 +131,7 @@ modules:
     cleanup:
       - /include
       - '/lib/*.a'
-      - /lib/pkgconfig/
+      - /lib/pkgconfig
      
 # qt5, thus needs org.kde.Sdk (5.X)
 # NB qt5 version gpsbabel isn't compatible with org.kde.Sdk 6.X
