@@ -41,7 +41,7 @@
 
 static gboolean expedia_coord_to_mapcoord ( const VikCoord *src, gdouble xzoom, gdouble yzoom, MapCoord *dest );
 static void expedia_mapcoord_to_center_coord ( MapCoord *src, VikCoord *dest );
-static int expedia_download ( MapCoord *src, const gchar *dest_fn, void *handle );
+static DownloadResult_t expedia_download ( MapCoord *src, const gchar *dest_fn, void *handle );
 static void * expedia_handle_init ( );
 static void expedia_handle_cleanup ( void *handle );
 
