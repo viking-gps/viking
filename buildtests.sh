@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Currently on my machine all tests takes about 30 minutes
+# Currently on my machine all tests takes about 10 minutes
 
 check_build ()
 {
@@ -15,10 +15,12 @@ check_build ()
     fi
 }
 
+# Options not supported anymore but might work:
+#check_build "--enable-gtk2"
+
 # Check for mostly single build option failures
 # Could check (some) combinations - but too many variants
-#check_build "--disable-geotag --disable-geoclue"
-check_build "--enable-gtk2"
+check_build "--disable-geotag --disable-geoclue"
 check_build "--disable-bing"
 check_build "--disable-google"
 check_build "--enable-terraserver"
