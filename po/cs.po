@@ -46,7 +46,7 @@ msgid "Filter"
 msgstr "Filtrovat"
 
 msgid "GPSBabel:"
-msgstr ""
+msgstr "GPSBabel:"
 
 msgid ""
 "Allow setting the specific instance of GPSBabel. You must restart Viking for "
@@ -54,7 +54,7 @@ msgid ""
 msgstr ""
 
 msgid "Select a file format"
-msgstr ""
+msgstr "Vyberte formát souboru"
 
 msgid "Tracks"
 msgstr "Stopy"
@@ -71,7 +71,7 @@ msgid "%d items"
 msgstr "%d položek"
 
 msgid "Threads:"
-msgstr ""
+msgstr "Vlákna:"
 
 msgid ""
 "Number of threads to use for Mapnik tasks. You need to restart Viking for a "
@@ -88,7 +88,7 @@ msgid "Viking Background Jobs"
 msgstr "Úlohy na pozadí"
 
 msgid "Bing Aerial"
-msgstr ""
+msgstr "Bing letecká"
 
 msgid "Bing"
 msgstr "Bing"
@@ -162,13 +162,13 @@ msgid "Please enter a name for the track."
 msgstr "Zadejte prosím jméno stopy."
 
 msgid "Today"
-msgstr ""
+msgstr "Dnes"
 
 msgid "Question"
-msgstr ""
+msgstr "Otázka"
 
 msgid "Do not show this message again"
-msgstr ""
+msgstr "Tuto zprávu už nezobrazovat"
 
 msgid "\"Yes\" will be applied automatically in the future"
 msgstr ""
@@ -195,7 +195,7 @@ msgid "1 hour"
 msgstr "1 hodina"
 
 msgid "6 hours"
-msgstr ""
+msgstr "6 hodin"
 
 msgid "1 day"
 msgstr "1 den"
@@ -208,6 +208,8 @@ msgid ""
 "2003-2008, Evan Battaglia\n"
 "2008-%s, Viking's contributors"
 msgstr ""
+"2003-2008, Evan Battaglia\n"
+"2008-%s, Viking's contributors"
 
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
 msgstr "Analyzátor, průzkumník a správce GPS a topologických dat."
@@ -323,22 +325,22 @@ msgid "Select the articles you want to add."
 msgstr ""
 
 msgid "city"
-msgstr ""
+msgstr "město"
 
 msgid "edu"
 msgstr ""
 
 msgid "airport"
-msgstr ""
+msgstr "letiště"
 
 msgid "mountain"
 msgstr ""
 
 msgid "forest"
-msgstr ""
+msgstr "les"
 
 msgid "church"
-msgstr ""
+msgstr "kostel"
 
 #, c-format
 msgid "%s command failed: %s"
@@ -349,25 +351,25 @@ msgid "failed to open temporary file: %s"
 msgstr "nelze otevřít dočasný soubor: %s"
 
 msgid "DDD"
-msgstr ""
+msgstr "DDD"
 
 msgid "DMM"
-msgstr ""
+msgstr "DMM"
 
 msgid "DMS"
-msgstr ""
+msgstr "DMS"
 
 msgid "Raw"
-msgstr ""
+msgstr "Raw"
 
 msgid "Kilometres"
-msgstr ""
+msgstr "Kilometry"
 
 msgid "Miles"
-msgstr ""
+msgstr "Míle"
 
 msgid "Nautical Miles"
-msgstr ""
+msgstr "Námořní míle"
 
 #. VIK_UNITS_SPEED_KILOMETRES_PER_HOUR:
 msgid "km/h"
@@ -383,37 +385,37 @@ msgid "knots"
 msgstr "uzly"
 
 msgid "s/km"
-msgstr ""
+msgstr "s/km"
 
 msgid "min/km"
-msgstr ""
+msgstr "min/km"
 
 msgid "s/mi"
-msgstr ""
+msgstr "s/mi"
 
 msgid "min/mi"
-msgstr ""
+msgstr "min/mi"
 
 msgid "Metres"
-msgstr ""
+msgstr "Metry"
 
 msgid "Feet"
-msgstr ""
+msgstr "Stopy"
 
 msgid "Celsius"
-msgstr ""
+msgstr "Celsius"
 
 msgid "Fahrenheit"
-msgstr ""
+msgstr "Fahrenheit"
 
 msgid "Locale"
-msgstr ""
+msgstr "Lokalizace"
 
 msgid "World"
-msgstr ""
+msgstr "Svět"
 
 msgid "UTC"
-msgstr ""
+msgstr "UTC"
 
 msgid "Degree format:"
 msgstr "Formát zobrazení stupňů:"
@@ -428,7 +430,7 @@ msgid "Height units:"
 msgstr "Jednotka výšky:"
 
 msgid "Temperature units:"
-msgstr ""
+msgstr "Jednotka teploty"
 
 msgid "Use large waypoint icons:"
 msgstr "Velké ikony místa:"
@@ -440,7 +442,7 @@ msgid "Default longitude:"
 msgstr "Výchozí zem. délka:"
 
 msgid "Time Display:"
-msgstr ""
+msgstr "Formát času"
 
 msgid ""
 "Display times according to the reference frame. Locale is the user's system "
@@ -517,13 +519,13 @@ msgid "None"
 msgstr "Žádné"
 
 msgid "Bottom"
-msgstr ""
+msgstr "Dole"
 
 msgid "Middle"
-msgstr ""
+msgstr "Uprostřed"
 
 msgid "Top"
-msgstr ""
+msgstr "Nahoře"
 
 msgid "Save File Reference Mode:"
 msgstr "Způsob odkazů na soubory"
