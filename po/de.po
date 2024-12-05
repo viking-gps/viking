@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: viking\n"
 "Report-Msgid-Bugs-To: \n"
-"Last-Translator: Guido Scholz <guido-scholz@gmx.net>\n"
+"Last-Translator: Dr. Peter Netz <Unknown>\n"
 "Language-Team: German <de@li.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -32,6 +32,8 @@ msgid ""
 "Unable to create command\n"
 "Acquire method failed."
 msgstr ""
+"Befehl kann nicht erstellt werden\n"
+"Erfassungsmethode fehlgeschlagen."
 
 msgid "_Filter"
 msgstr "_Filter"
@@ -125,7 +127,7 @@ msgid "Latitude:"
 msgstr "Breitengrad:"
 
 msgid "This can accept extended lat/lon formats"
-msgstr ""
+msgstr "Dies kann erweiterte Breitengrad/Längengrad-Formate akzeptieren"
 
 msgid "Longitude:"
 msgstr "Längengrad:"
@@ -167,13 +169,13 @@ msgid "Today"
 msgstr "Heute"
 
 msgid "Question"
-msgstr ""
+msgstr "Frage"
 
 msgid "Do not show this message again"
-msgstr ""
+msgstr "Diese Meldung nicht mehr anzeigen"
 
 msgid "\"Yes\" will be applied automatically in the future"
-msgstr ""
+msgstr "\"Ja\" wird in Zukunft automatisch angewendet"
 
 msgid "Zoom Factors..."
 msgstr "Vergrößerungsfaktoren …"
@@ -197,7 +199,7 @@ msgid "1 hour"
 msgstr "1 Stunde"
 
 msgid "6 hours"
-msgstr ""
+msgstr "6 Stunden"
 
 msgid "1 day"
 msgstr "1 Tag"
@@ -210,6 +212,8 @@ msgid ""
 "2003-2008, Evan Battaglia\n"
 "2008-%s, Viking's contributors"
 msgstr ""
+"2003-2008, Evan Battaglia\n"
+"2008-%s, Vikings Mitwirkende"
 
 msgid "GPS Data and Topo Analyzer, Explorer, and Manager."
 msgstr "GPS-Daten- und Topo-Analysierer, -Explorer und -Manager."
@@ -320,28 +324,28 @@ msgid "couldn't map temp file"
 msgstr "Aufzeichnen der Zwischendatei fehlgeschlagen"
 
 msgid "Select articles"
-msgstr ""
+msgstr "Artikel auswählen"
 
 msgid "Select the articles you want to add."
-msgstr ""
+msgstr "Wählen Sie die Artikel aus, die Sie hinzufügen möchten."
 
 msgid "city"
-msgstr ""
+msgstr "Stadt"
 
 msgid "edu"
 msgstr ""
 
 msgid "airport"
-msgstr ""
+msgstr "Flughafen"
 
 msgid "mountain"
-msgstr ""
+msgstr "Berg"
 
 msgid "forest"
-msgstr ""
+msgstr "Wald"
 
 msgid "church"
-msgstr ""
+msgstr "Kirche"
 
 #, c-format
 msgid "%s command failed: %s"
@@ -352,13 +356,13 @@ msgid "failed to open temporary file: %s"
 msgstr "Fehler beim Öffnen der Zwischendatei: %s"
 
 msgid "DDD"
-msgstr ""
+msgstr "DDD"
 
 msgid "DMM"
-msgstr ""
+msgstr "DMM"
 
 msgid "DMS"
-msgstr ""
+msgstr "DMS"
 
 msgid "Raw"
 msgstr "Rohdaten"
@@ -386,10 +390,10 @@ msgid "knots"
 msgstr "Knoten"
 
 msgid "s/km"
-msgstr ""
+msgstr "s/km"
 
 msgid "min/km"
-msgstr ""
+msgstr "min/km"
 
 msgid "s/mi"
 msgstr ""
@@ -398,16 +402,16 @@ msgid "min/mi"
 msgstr ""
 
 msgid "Metres"
-msgstr ""
+msgstr "Meter"
 
 msgid "Feet"
 msgstr "Fuß"
 
 msgid "Celsius"
-msgstr ""
+msgstr "Celsius"
 
 msgid "Fahrenheit"
-msgstr ""
+msgstr "Fahrenheit"
 
 msgid "Locale"
 msgstr "Ortszeit"
@@ -431,7 +435,7 @@ msgid "Height units:"
 msgstr "Höheneinheit:"
 
 msgid "Temperature units:"
-msgstr ""
+msgstr "Temperatureinheiten:"
 
 msgid "Use large waypoint icons:"
 msgstr "Benutze große Wegpunktsymbole:"
@@ -478,10 +482,10 @@ msgid "Controls whether the <Track> tag is created"
 msgstr ""
 
 msgid "KML File Export Points:"
-msgstr ""
+msgstr "KML Datei Exportpunkte:"
 
 msgid "Controls whether placemarks are created for every trackpoint"
-msgstr ""
+msgstr "Steuert, ob für jeden Trackpoint Ortsmarken erstellt werden"
 
 msgid "GPX Track Order:"
 msgstr "GPX-Track-Auflistung:"
@@ -525,13 +529,13 @@ msgid "None"
 msgstr "Keine"
 
 msgid "Bottom"
-msgstr ""
+msgstr "Unten"
 
 msgid "Middle"
-msgstr ""
+msgstr "Mitte"
 
 msgid "Top"
-msgstr ""
+msgstr "Oben"
 
 msgid "Save File Reference Mode:"
 msgstr "Datei-Referenz-Modus speichern:"
@@ -567,7 +571,7 @@ msgstr ""
 "steht für alle verfügbaren Dateien."
 
 msgid "Open files in selected layer:"
-msgstr ""
+msgstr "Öffne Dateien in der ausgewählten Ebene:"
 
 msgid "Open files (but not .vik ones) into the selected TrackWaypoint layer."
 msgstr ""
@@ -628,6 +632,9 @@ msgstr ""
 "Die hinzugefügte Standard-Kartenebene wird über die Ebenen-Standards "
 "bestimmt. Verwenden Sie das Menü 'Bearbeiten' -> 'Ebenen-Standards' -> "
 "'Karte...', um den Kartentyp und andere Werte zu ändern."
+
+msgid "Highlight Color:"
+msgstr "Hervorhebungs-Farbe:"
 
 msgid "Show Scale:"
 msgstr "Maßstab anzeigen:"
@@ -803,7 +810,7 @@ msgid "Unable to create waypoint from %s"
 msgstr "Kann keinen Wegpunkt aus %s erzeugen"
 
 msgid "Acquire from GeoJSON"
-msgstr ""
+msgstr "Erfassen von GeoJSON"
 
 msgid "GeoJSON"
 msgstr "GeoJSON"
@@ -894,7 +901,7 @@ msgid "OSM My Traces"
 msgstr "OSM Meine Spuren"
 
 msgid "Email/username:"
-msgstr ""
+msgstr "Email/Benutzername:"
 
 msgid "The email or username used to login to OSM"
 msgstr ""
@@ -1062,7 +1069,7 @@ msgid ""
 msgstr ""
 
 msgid "No Authorization."
-msgstr ""
+msgstr "Keine Autorisierung."
 
 msgid ""
 "OSM Username and Password preferences are not required anymore. You can now "
@@ -1220,7 +1227,7 @@ msgstr "Konnte neue E-Mail nicht anlegen. %s"
 
 #, c-format
 msgid "Items: %d"
-msgstr ""
+msgstr "Objekte: %d"
 
 msgid "Color:"
 msgstr "Farbe:"
@@ -1232,7 +1239,7 @@ msgid "Line Thickness:"
 msgstr "Strichstärke:"
 
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Auf Vorgabewerte zurücksetzen"
 
 msgid "Coordinate"
 msgstr "Koordinate"
@@ -1240,22 +1247,22 @@ msgstr "Koordinate"
 #. NB Not a log level
 #. NB Not a log level
 msgid "Error"
-msgstr ""
+msgstr "Fehler"
 
 msgid "Critical"
-msgstr ""
+msgstr "Kritisch"
 
 msgid "Warning"
-msgstr ""
+msgstr "Warnung"
 
 msgid "Message"
-msgstr ""
+msgstr "Nachricht"
 
 msgid "Info"
-msgstr ""
+msgstr "Info"
 
 msgid "Debug"
-msgstr ""
+msgstr "Debug"
 
 #. No exit on X errors!
 #. mainly to handle out of memory error when requesting large pixbuf from user request
@@ -1268,13 +1275,13 @@ msgid "_Copy Data"
 msgstr "_Kopiere Daten"
 
 msgid "Category"
-msgstr ""
+msgstr "Kategorie"
 
 msgid "Messages"
-msgstr ""
+msgstr "Nachrichten"
 
 msgid "Log"
-msgstr ""
+msgstr "Protokoll"
 
 msgid "Use alternate configuration directory DIR"
 msgstr "Benutzt DIR als alternatives Verzeichnis für die Konfigurationsdateien"
@@ -1303,8 +1310,8 @@ msgstr "Vergrößerungsstufe (OSM). Wert von 0 bis 22"
 msgid "Add a map layer by id value. Use 0 for the default map."
 msgstr ""
 
-msgid "Load files in external mode."
-msgstr ""
+msgid "Load all GPX files in external mode."
+msgstr "Laden Sie alle GPX-Dateien im externen Modus."
 
 #, c-format
 msgid ""
@@ -1314,16 +1321,16 @@ msgid ""
 msgstr ""
 
 msgid "OpenStreetMap (Mapnik)"
-msgstr ""
+msgstr "OpenStreetMap (Mapnik)"
 
 msgid "OpenStreetMap (Cycle)"
 msgstr ""
 
 msgid "OpenStreetMap (Transport)"
-msgstr ""
+msgstr "OpenStreetMap (Transport)"
 
 msgid "OpenStreetMap (Humanitarian)"
-msgstr ""
+msgstr "OpenStreetMap (Humanitär)"
 
 msgid "On Disk OSM Tile Format"
 msgstr "OSM-Kachel-Format auf Festplatte"
@@ -1335,7 +1342,7 @@ msgid "OSM Metatiles"
 msgstr "OSM-Metadateien"
 
 msgid "OpenTopoMap"
-msgstr ""
+msgstr "OpenTopoMap"
 
 msgid "OSM (view)"
 msgstr "OSM (Ansicht)"
@@ -1366,11 +1373,11 @@ msgid "Preferences"
 msgstr "Einstellungen"
 
 msgid "Reset This Tab to Defaults"
-msgstr ""
+msgstr "Diese Registerkarte auf die Standardwerte zurücksetzen"
 
 #, c-format
 msgid "Waypoint%04d"
-msgstr ""
+msgstr "Wegpunkt%04d"
 
 #, c-format
 msgid "Track%03d"
@@ -1460,19 +1467,19 @@ msgid "The file \"%s\" exists, do you wish to overwrite it?"
 msgstr "Soll die bereits existierende Datei \"%s\" überschrieben werden?"
 
 msgid "All Time"
-msgstr ""
+msgstr "Zu jeder Zeit"
 
 msgid "Spectral"
 msgstr ""
 
 msgid "Blue/Purple"
-msgstr ""
+msgstr "Blau/Violett"
 
 msgid "Red/Green"
-msgstr ""
+msgstr "Rot/Grün"
 
 msgid "Yellow/Orange/Red"
-msgstr ""
+msgstr "Gelb/Orange/Rot"
 
 msgid "Tracks Area Coverage"
 msgstr ""
@@ -1484,7 +1491,7 @@ msgid "Tracks Heatmap"
 msgstr ""
 
 msgid "On:"
-msgstr ""
+msgstr "Ein:"
 
 msgid "Alpha:"
 msgstr "Alpha:"
@@ -1526,25 +1533,25 @@ msgid "Tile Area Level:"
 msgstr ""
 
 msgid "Area size. A higher level means a smaller grid."
-msgstr ""
+msgstr "Größe des Bereichs. Eine höhere Stufe bedeutet ein kleineres Raster."
 
 msgid "Within Years:"
-msgstr ""
+msgstr "Innerhalb von Jahren:"
 
 msgid "Only include tracks that are within this time range."
 msgstr ""
 
 msgid "Width Factor:"
-msgstr ""
+msgstr "Breitenfaktor:"
 
 msgid "Note higher values means the heatmap takes longer to generate"
 msgstr ""
 
 msgid "Color Style:"
-msgstr ""
+msgstr "Farbstil:"
 
 msgid "Reset All to Defaults"
-msgstr ""
+msgstr "Alles auf Standardwerte zurücksetzen"
 
 msgid "Aggregate"
 msgstr "Zusammenfassen"
@@ -1565,7 +1572,7 @@ msgstr "%s: Track- und Routenliste"
 
 #, c-format
 msgid "Failed to open %s"
-msgstr ""
+msgstr "Öffnen von %s fehlgeschlagen"
 
 #. Since we can process certain other files with issues (e.g. zip files) just show a warning in the status bar
 #. Not that a user can do much about it... or tells them what this issue is yet...
@@ -1577,7 +1584,7 @@ msgstr "WARNUNG: Probleme beim Laden von %s"
 
 #, c-format
 msgid "Unable to load %s"
-msgstr ""
+msgstr "Nicht möglich %s zu laden"
 
 msgid "Track Area Coverage"
 msgstr ""
@@ -1590,7 +1597,7 @@ msgid "MBTiles file write problem: %s"
 msgstr ""
 
 msgid "Export"
-msgstr ""
+msgstr "Export"
 
 msgid "Creating MBTiles File"
 msgstr ""
@@ -1599,13 +1606,13 @@ msgid "_Tracks Area Coverage"
 msgstr ""
 
 msgid "_Off"
-msgstr ""
+msgstr "_Aus"
 
 msgid "_On"
-msgstr ""
+msgstr "_An"
 
 msgid "_Calculate"
-msgstr ""
+msgstr "_Berechnen"
 
 msgid "_Increase Tile Area"
 msgstr ""
@@ -1614,7 +1621,7 @@ msgid "_Decrease Tile Area"
 msgstr ""
 
 msgid "_Remove"
-msgstr ""
+msgstr "_Entfernen"
 
 msgid "_Export as MBTiles"
 msgstr ""
@@ -1696,10 +1703,10 @@ msgid "_Append File..."
 msgstr ""
 
 msgid "_Export as GPX..."
-msgstr ""
+msgstr "_Export als GPX..."
 
 msgid "Can not delete layer as calculation is in progress"
-msgstr ""
+msgstr "Kann Ebene bei laufender Berechnung nicht löschen"
 
 #. Could have a more complicated tooltip that numbers each type of layers,
 #. but for now a simple overall count
@@ -1710,7 +1717,7 @@ msgstr[0] "Eine Ebene"
 msgstr[1] "%d Ebenen"
 
 msgid "Empty"
-msgstr ""
+msgstr "Leer"
 
 msgid ""
 "\n"
@@ -1731,7 +1738,7 @@ msgid "Nothing to Export!"
 msgstr "Nichts zum Exportieren ausgewählt!"
 
 msgid "Export to GPX"
-msgstr ""
+msgstr "Exportieren nach GPX"
 
 msgid "SRTM Global 90m (3 arcsec)"
 msgstr ""
@@ -1742,8 +1749,14 @@ msgstr "Absolute Höhe"
 msgid "Height gradient"
 msgstr "Höhen-Gradient"
 
+msgid "Download"
+msgstr "Download"
+
+msgid "Files"
+msgstr "Dateien"
+
 msgid "Default"
-msgstr ""
+msgstr "Standard"
 
 msgid "Delineate"
 msgstr ""
@@ -1758,13 +1771,13 @@ msgid "Min Elev Color:"
 msgstr "Min. Höhe Farbe:"
 
 msgid "Color Scheme:"
-msgstr ""
+msgstr "Farbschema:"
 
 msgid "Start Color:"
-msgstr ""
+msgstr "Startfarbe:"
 
 msgid "End Color:"
-msgstr ""
+msgstr "Endfarbe:"
 
 msgid "Type:"
 msgstr "Typ:"
@@ -1837,7 +1850,7 @@ msgid "Accepts various forms of ISO 8601"
 msgstr ""
 
 msgid "Text input time was not understood"
-msgstr ""
+msgstr "Texteingabezeit wurde nicht verstanden"
 
 msgid "Browse..."
 msgstr "_Durchsuchen..."
@@ -1858,10 +1871,10 @@ msgid "XML"
 msgstr "XML"
 
 msgid "MML"
-msgstr ""
+msgstr "MML"
 
 msgid "MSS"
-msgstr ""
+msgstr "MSS"
 
 msgid "Choose file(s)"
 msgstr "Datei(en) auswählen"
@@ -1873,16 +1886,16 @@ msgid "Delete"
 msgstr "Löschen"
 
 msgid "Keep position at center"
-msgstr ""
+msgstr "Position in der Mitte beibehalten"
 
 msgid "Keep position on screen"
-msgstr ""
+msgstr "Position auf dem Bildschirm beibehalten"
 
 msgid "Disable"
 msgstr "Deaktivieren"
 
 msgid "Auto Connect"
-msgstr ""
+msgstr "Automatisch verbinden"
 
 msgid "Automatically connect to GeoClue"
 msgstr ""
@@ -1900,10 +1913,10 @@ msgid "Update Statusbar:"
 msgstr "Statuszeile aktualisieren:"
 
 msgid "Display information in the statusbar on GeoClue updates"
-msgstr ""
+msgstr "Anzeige von Informationen in der Statusleiste über GeoClue-Updates"
 
 msgid "GeoClue"
-msgstr ""
+msgstr "GeoClue"
 
 msgid "Connected"
 msgstr "Verbunden"
@@ -2068,7 +2081,7 @@ msgid "No goto tool available."
 msgstr "Kein \"Gehe zu\"-Werkzeug verfügbar"
 
 msgid "Service request failure."
-msgstr ""
+msgstr "Dienstanforderung fehlgeschlagen."
 
 msgid "goto"
 msgstr "Gehe zu"
@@ -2080,13 +2093,13 @@ msgid "Enter address or place name:"
 msgstr "Adresse oder Namen des Ortes eingeben:"
 
 msgid "No results"
-msgstr ""
+msgstr "Keine Ergebnisse"
 
 msgid "Service request failure"
-msgstr ""
+msgstr "Dienstanforderung fehlgeschlagen"
 
 msgid "Searching..."
-msgstr ""
+msgstr "Suchen..."
 
 #, c-format
 msgid "Goto request on: %s"
@@ -2327,14 +2340,14 @@ msgstr "Neue Ebene"
 
 #, c-format
 msgid "Nothing found up to %s"
-msgstr ""
+msgstr "Nichts gefunden bis zu %s"
 
 #, c-format
 msgid "Nothing found back to %s"
-msgstr ""
+msgstr "Nichts gefunden zurück bis zu %s"
 
 msgid "_Today"
-msgstr ""
+msgstr "_Heute"
 
 msgid "Top Layer"
 msgstr "Oberste Ebene"
@@ -2362,9 +2375,15 @@ msgid ""
 msgstr ""
 
 msgid "Calendar"
-msgstr ""
+msgstr "Kalender"
 
 msgid "Goto"
+msgstr "Gehe zu"
+
+msgid "Stats"
+msgstr "Statistiken"
+
+msgid "Splits"
 msgstr ""
 
 msgid "New name can not be blank."
@@ -2461,7 +2480,7 @@ msgid "Mapnik Rendering must be in Mercator mode"
 msgstr ""
 
 msgid "Mapnik Information"
-msgstr ""
+msgstr "Mapnik Information"
 
 msgid "_Flush Memory Cache"
 msgstr ""
@@ -2632,7 +2651,7 @@ msgid "Source: Not available"
 msgstr "Quelle: Nicht verfügbar"
 
 msgid "Source: file://"
-msgstr ""
+msgstr "Quelle: file://"
 
 #, c-format
 msgid "Source: %s"
@@ -2730,6 +2749,9 @@ msgstr "Routenplaner"
 msgid "Layer Name"
 msgstr "Name der Ebene"
 
+msgid "delete data from %s\n"
+msgstr "Daten von %s löschen\n"
+
 msgid "Create _Waypoint"
 msgstr "_Wegpunkt erzeugen"
 
@@ -2740,13 +2762,13 @@ msgid "Edit _Track"
 msgstr ""
 
 msgid "Edit Track"
-msgstr ""
+msgstr "Bearbeite Track"
 
 msgid "Edit _Route"
 msgstr ""
 
 msgid "Edit Route"
-msgstr ""
+msgstr "Route bearbeiten"
 
 msgid "Route _Finder"
 msgstr "Routen_planer"
@@ -2786,7 +2808,7 @@ msgid "Metadata"
 msgstr "Metadaten"
 
 msgid "Filesystem"
-msgstr ""
+msgstr "Dateisystem"
 
 msgid "Draw by Track"
 msgstr "Von Spur gezeichnet"
@@ -2828,10 +2850,10 @@ msgid "Name Descending"
 msgstr "Name absteigend"
 
 msgid "Number Ascending"
-msgstr ""
+msgstr "Nummer aufsteigend"
 
 msgid "Number Descending"
-msgstr ""
+msgstr "Nummer absteigend"
 
 msgid "No"
 msgstr "Nein"
@@ -2843,10 +2865,10 @@ msgid "No write"
 msgstr "Nicht (über)schreiben"
 
 msgid "1.0"
-msgstr ""
+msgstr "1.0"
 
 msgid "1.1"
-msgstr ""
+msgstr "1.1"
 
 msgid "Draw Labels"
 msgstr "Beschriftungen zeichnen:"
@@ -2931,6 +2953,12 @@ msgstr ""
 msgid "Automatically delete duplicate trackpoints on file load"
 msgstr ""
 
+msgid "Use GPS Speed"
+msgstr "Benutze GPS-Geschwindigkeit"
+
+msgid "Use reported GPS speed values - particularly for maximum speed"
+msgstr ""
+
 msgid "Waypoint Font Size:"
 msgstr "Wegpunkt-Schriftgröße:"
 
@@ -2980,7 +3008,7 @@ msgid "Keywords"
 msgstr "Schlüsselwörter:"
 
 msgid "GPX Version"
-msgstr ""
+msgstr "GPX Version"
 
 msgid "External layer:"
 msgstr "Externe Ebene:"
@@ -2989,6 +3017,9 @@ msgid ""
 "Layer data stored in the Viking file, in an external file, or in an external "
 "file but changes are not written to the file (file only loaded at startup)"
 msgstr ""
+
+msgid "Save layer as:"
+msgstr "Ebene speichern unter:"
 
 msgid "Layer file:"
 msgstr "Ebene datei:"
@@ -3004,7 +3035,7 @@ msgid "miles"
 msgstr "Meilen"
 
 msgid "NM"
-msgstr ""
+msgstr "NM"
 
 #. VIK_UNITS_DISTANCE_KILOMETRES:
 msgid "km"
@@ -3021,11 +3052,11 @@ msgstr "Ende"
 
 #, c-format
 msgid "%s to %s\n"
-msgstr ""
+msgstr "%s bis %s\n"
 
 #, c-format
 msgid " in %d:%02d mins:secs"
-msgstr ""
+msgstr " in %d:%02d mins:secs"
 
 #, c-format
 msgid " in %d:%02d hrs:mins"
@@ -3077,7 +3108,7 @@ msgstr "%s%.1f Meilen %s"
 
 #, c-format
 msgid "%s%.1f NM %s"
-msgstr ""
+msgstr "%s%.1f NM %s"
 
 #, c-format
 msgid "Waypoints: %d"
@@ -3116,6 +3147,9 @@ msgstr "Route als GPX exportieren"
 
 msgid "Export Track as GPX"
 msgstr "Exportiere Spur als GPX"
+
+msgid "Could not launch %s."
+msgstr "Konnte %s nicht starten."
 
 msgid "Find"
 msgstr "Suche"
@@ -3200,7 +3234,7 @@ msgid "Open with External Program_2: %s"
 msgstr "Mit externem Programm_2 öffnen: %s"
 
 msgid "Open with Text Editor"
-msgstr ""
+msgstr "Öffnen mit Texteditor"
 
 msgid "_New"
 msgstr "_Neu"
@@ -3286,7 +3320,7 @@ msgid "Delete Waypoints From _Selection..."
 msgstr "Gewählte Wegpun_kte löschen..."
 
 msgid "Delete Duplicate Waypoints"
-msgstr ""
+msgstr "Lösche doppelte Wegpunkte"
 
 msgid "Waypoint _List..."
 msgstr ""
@@ -3334,10 +3368,10 @@ msgid ""
 msgstr ""
 
 msgid "Rotate"
-msgstr ""
+msgstr "Drehen"
 
 msgid "Shift by N points:"
-msgstr ""
+msgstr "Verschiebung um N Punkte:"
 
 msgid "No DEM layers available, thus no DEM values can be applied."
 msgstr ""
@@ -3503,11 +3537,11 @@ msgstr "Wegpunkte zum Löschen auswählen"
 #, c-format
 msgid "%ld waypoint deleted"
 msgid_plural "%ld waypoints deleted"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%ld Wegpunkt gelöscht"
+msgstr[1] "%ld Wegpunkte gelöscht"
 
 msgid "No duplicates found"
-msgstr ""
+msgstr "Keine Duplikate gefunden"
 
 #, c-format
 msgid "%ld waypoint adjusted"
@@ -3641,7 +3675,7 @@ msgid "_Maximum Speed"
 msgstr "_Maximalgeschwindigkeit"
 
 msgid "_Date"
-msgstr ""
+msgstr "_Datum"
 
 msgid "Maximum _Heart Rate"
 msgstr ""
@@ -3653,16 +3687,16 @@ msgid "Maximum Power"
 msgstr ""
 
 msgid "Minimum Temperature"
-msgstr ""
+msgstr "Minimale Temperatur"
 
 msgid "Maximum Temperature"
-msgstr ""
+msgstr "Maximale Temperatur"
 
 msgid "_Previous point"
-msgstr ""
+msgstr "_Vorheriger Punkt"
 
 msgid "_Next point"
-msgstr ""
+msgstr "_Nächster Punkt"
 
 msgid "Co_mbine"
 msgstr "Ko_mbinieren"
@@ -3771,7 +3805,7 @@ msgid "C_onvert to a Track"
 msgstr "In _GPS-Spur umwandeln"
 
 msgid "Convert to Waypoints"
-msgstr ""
+msgstr "Konvertieren in Wegpunkte"
 
 msgid "_Anonymize Times"
 msgstr "Zeit _anonymisieren"
@@ -3966,7 +4000,7 @@ msgid "Show Gradient-distance graph:"
 msgstr ""
 
 msgid "Show Speed-time graph:"
-msgstr ""
+msgstr "Zeige Geschwindigkeits-Zeit-Diagramm:"
 
 msgid "Show Speed-distance graph:"
 msgstr ""
@@ -3981,7 +4015,7 @@ msgid "Show Cadence graph:"
 msgstr ""
 
 msgid "Show Temperature graph:"
-msgstr ""
+msgstr "Temperaturdiagramm anzeigen:"
 
 msgid "Show Power graph:"
 msgstr ""
@@ -3992,9 +4026,6 @@ msgstr ""
 msgid "Statistics"
 msgstr "Statistiken"
 
-msgid "Splits"
-msgstr ""
-
 msgid "Axis Control"
 msgstr ""
 
@@ -4002,7 +4033,7 @@ msgid "Height Divisions:"
 msgstr ""
 
 msgid "Minimum Height:"
-msgstr ""
+msgstr "Mindesthöhe:"
 
 msgid "_Center View on Route"
 msgstr ""
@@ -4023,10 +4054,10 @@ msgid "_Show"
 msgstr "_Anzeigen"
 
 msgid "_DEM"
-msgstr ""
+msgstr "_DEM"
 
 msgid "_GPS Speed"
-msgstr ""
+msgstr "_GPS Geschwindigkeit"
 
 #. Every graph has two value labels
 #, c-format
@@ -4039,11 +4070,11 @@ msgstr ""
 
 #, c-format
 msgid "%d RPM"
-msgstr ""
+msgstr "%d UPM"
 
 #, c-format
 msgid "%d Watts"
-msgstr ""
+msgstr "%d Watt"
 
 #. Minutes
 msgid "mins"
@@ -4072,28 +4103,30 @@ msgid "Show D_EM"
 msgstr "D_EM Anzeigen"
 
 msgid "Distance"
-msgstr ""
+msgstr "Distanz"
 
 msgid ""
 "Time\n"
 "(m:ss)"
 msgstr ""
+"Zeit\n"
+"(m:ss)"
 
 msgid "Speed"
-msgstr ""
+msgstr "Geschwindigkeit"
 
 #. VIK_UNITS_DISTANCE_KILOMETRES:
 msgid "m"
 msgstr "m"
 
 msgid "ft"
-msgstr ""
+msgstr "ft"
 
 msgid "Gain"
 msgstr ""
 
 msgid "Loss"
-msgstr ""
+msgstr "Verlust"
 
 #, c-format
 msgid "Split %d"
@@ -4151,7 +4184,7 @@ msgstr ""
 
 #, c-format
 msgid "%.1f RPM"
-msgstr ""
+msgstr "%.1f UPM"
 
 msgid "<b>Avg. Cadence:</b>"
 msgstr ""
@@ -4168,10 +4201,13 @@ msgstr ""
 
 #, c-format
 msgid "%.1f%sC / %.1f%sC"
-msgstr ""
+msgstr "%.1f%sC / %.1f%sC"
 
 #, c-format
 msgid "%.1f%sF / %.1f%sF"
+msgstr "%.1f%sF / %.1f%sF"
+
+msgid "<b>Min/Max Temp.:</b>"
 msgstr ""
 
 msgid "<b>Min/Max Temperature:</b>"
@@ -4179,10 +4215,13 @@ msgstr ""
 
 #, c-format
 msgid "%.1f%sC"
-msgstr ""
+msgstr "%.1f%sC"
 
 #, c-format
 msgid "%.1f%sF"
+msgstr "%.1f%sF"
+
+msgid "<b>Avg. Temp.:</b>"
 msgstr ""
 
 msgid "<b>Avg. Temperature:</b>"
@@ -4193,7 +4232,7 @@ msgstr ""
 
 #, c-format
 msgid "%.1f Watts"
-msgstr ""
+msgstr "%.1f Watt"
 
 msgid "<b>Avg. Power:</b>"
 msgstr ""
@@ -4218,10 +4257,10 @@ msgid "Comment:"
 msgstr "Kommentar:"
 
 msgid "Source:"
-msgstr ""
+msgstr "Quelle:"
 
 msgid "Number:"
-msgstr ""
+msgstr "Nummer:"
 
 msgid "Draw Name:"
 msgstr "Namen zeichnen:"
@@ -4248,10 +4287,10 @@ msgid "Maximum number of distance labels to be shown"
 msgstr "Maximal anzuzeigende Anzahl an Entfernungsmarkierungen"
 
 msgid "Drawing"
-msgstr ""
+msgstr "Zeichnung"
 
 msgid "GPX Extensions"
-msgstr ""
+msgstr "GPX-Erweiterungen"
 
 msgid "Properties"
 msgstr "Eigenschaften"
@@ -4281,7 +4320,7 @@ msgid "<b>Track Speed:</b>"
 msgstr "<b>Spur-Geschwindigkeit:</b>"
 
 msgid "<b>Time/Date:</b>"
-msgstr ""
+msgstr "<b>Uhrzeit/Datum:</b>"
 
 msgid "Speed-time"
 msgstr "Geschwindigkeit-Zeit"
@@ -4302,7 +4341,7 @@ msgid "<b>Heart Rate:</b>"
 msgstr ""
 
 msgid "Heart Rate"
-msgstr ""
+msgstr "Herzfrequenz"
 
 msgid "<b>Cadence:</b>"
 msgstr ""
@@ -4311,19 +4350,19 @@ msgid "Cadence"
 msgstr ""
 
 msgid "<b>Temperature:</b>"
-msgstr ""
+msgstr "<b>Temperatur:</b>"
 
 msgid "Temperature"
-msgstr ""
+msgstr "Temperatur"
 
 msgid "<b>Power:</b>"
 msgstr ""
 
 msgid "Power"
-msgstr ""
+msgstr "Leistung"
 
 msgid "Date/Time Edit"
-msgstr ""
+msgstr "Datum/Uhrzeit bearbeiten"
 
 msgid "<b>Name:</b>"
 msgstr "<b>Name:</b>"
@@ -4404,6 +4443,8 @@ msgid ""
 "Distance\n"
 "(miles)"
 msgstr ""
+"Distanz\n"
+"(Meilen)"
 
 msgid ""
 "Distance\n"
@@ -4414,6 +4455,8 @@ msgid ""
 "Distance\n"
 "(km)"
 msgstr ""
+"Distanz\n"
+"(km)"
 
 msgid ""
 "Length\n"
@@ -4463,7 +4506,7 @@ msgid "Symbol"
 msgstr "Symbol"
 
 msgid "True"
-msgstr ""
+msgstr "True"
 
 msgid "Waypoint Properties"
 msgstr "Wegpunkt-Eigenschaften"
@@ -4472,7 +4515,7 @@ msgid "Name:"
 msgstr "Name:"
 
 msgid "Show Name"
-msgstr ""
+msgstr "Name zeigen"
 
 msgid "Altitude:"
 msgstr "Höhe:"
@@ -4488,7 +4531,7 @@ msgid "Has Geotag"
 msgstr "Geotag vorhanden"
 
 msgid "Consistent Position"
-msgstr ""
+msgstr "Konsistente Position"
 
 msgid "Image Direction:"
 msgstr ""
@@ -4497,36 +4540,36 @@ msgid "Time:"
 msgstr "Zeit:"
 
 msgid "Course:"
-msgstr ""
+msgstr "Kurs:"
 
 #, c-format
 msgid "Speed: (%s)"
-msgstr ""
+msgstr "Geschwindigkeit: (%s)"
 
 msgid "Magnetic Variance:"
-msgstr ""
+msgstr "Magnetische Varianz:"
 
 msgid "Geoid Height:"
 msgstr ""
 
 msgid "URL Name:"
-msgstr ""
+msgstr "URL Name:"
 
 #. Combine fix & satellites into one line??
 msgid "Fix Mode:"
 msgstr ""
 
 msgid "Satellites:"
-msgstr ""
+msgstr "Satelliten:"
 
 msgid "HDOP:"
-msgstr ""
+msgstr "HDOP:"
 
 msgid "VDOP:"
-msgstr ""
+msgstr "VDOP:"
 
 msgid "PDOP:"
-msgstr ""
+msgstr "PDOP:"
 
 msgid "Age of DGPS Data:"
 msgstr ""
@@ -4538,7 +4581,7 @@ msgid "Basic"
 msgstr ""
 
 msgid "Extra"
-msgstr ""
+msgstr "Extra"
 
 msgid "Magnetic"
 msgstr "Magnetisch"
@@ -4547,7 +4590,7 @@ msgid "Please enter a name for the waypoint."
 msgstr "Bitte einen Namen für den Wegpunkt eingeben."
 
 msgid "Course value must be between 0 and 360."
-msgstr ""
+msgstr "Der Kurswert muss zwischen 0 und 360 liegen."
 
 #, c-format
 msgid "Failed updating EXIF on %s"
@@ -4602,7 +4645,7 @@ msgstr ""
 "wenn der Kamerazeitstempel falsch war."
 
 msgid "Image Time is Local:"
-msgstr ""
+msgstr "Bild Zeit ist lokal:"
 
 msgid ""
 "The timestamps in the images are in local time (rather than UTC) and so "
@@ -4643,7 +4686,7 @@ msgid "Average Length"
 msgstr "Durchnittslänge"
 
 msgid "Eddington number"
-msgstr ""
+msgstr "Eddington-Zahl"
 
 #. No.4: Extended display only
 msgid "Max Speed"
@@ -4695,7 +4738,7 @@ msgid "%d:%02d hrs:mins"
 msgstr "%d:%02d Stunden:Minuten"
 
 msgid "Year"
-msgstr ""
+msgstr "Jahr"
 
 #, c-format
 msgid ""
@@ -4719,13 +4762,13 @@ msgid "_Track List"
 msgstr ""
 
 msgid "Month"
-msgstr ""
+msgstr "Monat"
 
 msgid "Totals"
-msgstr ""
+msgstr "Summen"
 
 msgid "Years"
-msgstr ""
+msgstr "Jahre"
 
 msgid "Include Invisible Items"
 msgstr "Unsichtbare Elemente mit einbeziehen"
@@ -4834,13 +4877,13 @@ msgid "Please select a GPS data file to open. "
 msgstr "Bitte geben Sie eine GPS-Datendatei zum Öffnen an. "
 
 msgid "Bzip2 File"
-msgstr ""
+msgstr "Bzip2 Datei"
 
 msgid "TCX"
-msgstr ""
+msgstr "TCX"
 
 msgid "Zip File"
-msgstr ""
+msgstr "Zip Datei"
 
 msgid "Viking"
 msgstr "Viking"
@@ -4857,6 +4900,9 @@ msgid ""
 "\n"
 "Do you wish to continue?"
 msgstr ""
+"\n"
+"\n"
+"Möchten Sie fortfahren?"
 
 msgid "Waypoint"
 msgstr "Wegpunkt"
@@ -4901,7 +4947,7 @@ msgid "Default Map"
 msgstr "Standard-Karte"
 
 msgid "Trying to determine location..."
-msgstr ""
+msgstr "Ich versuche, den Standort zu bestimmen..."
 
 #. Create tooltip
 msgid "Select zoom level"
@@ -4937,7 +4983,9 @@ msgstr "%s %s %d ft"
 msgid "%s %s"
 msgstr "%s %s"
 
-#, c-format
+msgid "N"
+msgstr "N"
+
 msgid "%s %s DIFF %s"
 msgstr ""
 
@@ -4952,10 +5000,10 @@ msgstr ""
 #. case VIK_UNITS_DISTANCE_KILOMETRES:
 #, c-format
 msgid "Area: %.3f km * %.3f km = %.3f sq. km"
-msgstr ""
+msgstr "Fläche: %.3f km * %.3f km = %.3f qkm"
 
 msgid "Area approximation not valid at this zoom level"
-msgstr ""
+msgstr "Flächenapproximation bei dieser Zoomstufe nicht gültig"
 
 msgid "_Ruler"
 msgstr "_Messwerkzeug"
@@ -5025,11 +5073,11 @@ msgstr "Konnte ungültige GPX-Datei %s nicht laden."
 
 #, c-format
 msgid "Unable to load malformed TCX file %s"
-msgstr ""
+msgstr "Nicht möglich, fehlerhafte TCX-Datei %s zu laden"
 
 #, c-format
 msgid "Unable to load malformed KML file %s"
-msgstr ""
+msgstr "Nicht möglich, fehlerhafte KML Datei %s zu laden"
 
 #, c-format
 msgid "Unsupported file type for %s"
@@ -5079,14 +5127,14 @@ msgid "Reset all the suppressed messages?"
 msgstr ""
 
 msgid "No messages are being suppressed"
-msgstr ""
+msgstr "Keine Meldungen werden unterdrückt"
 
 msgid "Are you sure you wish to delete all layers?"
 msgstr "Sind Sie sicher, dass Sie alle Ebenen löschen wollen?"
 
 #. Try harder...
 msgid "Generating image file..."
-msgstr ""
+msgstr "Bilddatei erzeugen..."
 
 msgid ""
 "Failed to generate internal image.\n"
@@ -5242,7 +5290,7 @@ msgid "_Single GPX File..."
 msgstr ""
 
 msgid "Export to Single GPX File"
-msgstr ""
+msgstr "Exportieren in einzelne GPX-Datei"
 
 msgid "A_cquire"
 msgstr "_Laden"
@@ -5383,7 +5431,7 @@ msgid "Go to arbitrary UTM coordinate"
 msgstr "Gehe zu beliebiger UTM-Koordinate"
 
 msgid "Go to Today"
-msgstr ""
+msgstr "Zum heutigen Tag gehen"
 
 msgid "Go to today on the calendar"
 msgstr "Gehe zu heute im Kalender"
@@ -5503,7 +5551,7 @@ msgid "_Properties"
 msgstr "Ei_genschaften..."
 
 msgid "Help"
-msgstr ""
+msgstr "Hilfe"
 
 msgid "_About"
 msgstr "_Über"
@@ -5587,7 +5635,7 @@ msgid "Show Track _Graphs"
 msgstr ""
 
 msgid "Show Track Graphs"
-msgstr ""
+msgstr "Trackgrafiken anzeigen"
 
 msgid "Show Status_bar"
 msgstr "Status_leiste anzeigen"
@@ -5617,20 +5665,25 @@ msgid "Show Side Panel Ca_lendar"
 msgstr ""
 
 msgid "Show Side Panel Calendar"
-msgstr ""
+msgstr "Seitenleisten Kalender anzeigen"
 
 msgid "Show Side Panel Tabs"
-msgstr ""
+msgstr "Anzeigen Seitenleiste Tabs"
 
 msgid "Show Side Panel Goto"
 msgstr ""
 
-#, c-format
+msgid "Show Side Panel Statistics"
+msgstr "Anzeigen Seitenleiste Statistiken"
+
+msgid "Show Side Panel Splits"
+msgstr ""
+
 msgid "New _%s Layer"
 msgstr "Neue %s Ebene"
 
 msgid "..."
-msgstr ""
+msgstr "…"
 
 msgid "GPS Data Manager"
 msgstr "GPS-Daten-Manager"
