@@ -232,6 +232,9 @@ static VikLayerParamData plugins_default ( void )
 	if ( g_file_test ( "/usr/lib/mapnik/input", G_FILE_TEST_EXISTS ) )
 		data.s = g_strdup ( "/usr/lib/mapnik/input" );
 	// Current Debian locations
+	//  only try main stream AMD64 architecture
+	else if ( g_file_test ( "/usr/lib/x86_64-linux-gnu/mapnik/4.0/input", G_FILE_TEST_EXISTS ) )
+		data.s = g_strdup ( "/usr/lib/x86_64-linux-gnu/mapnik/4.0/input" );
 	else if ( g_file_test ( "/usr/lib/mapnik/3.1/input", G_FILE_TEST_EXISTS ) )
 		data.s = g_strdup ( "/usr/lib/mapnik/3.1/input" );
 	else if ( g_file_test ( "/usr/lib/mapnik/3.0/input", G_FILE_TEST_EXISTS ) )
