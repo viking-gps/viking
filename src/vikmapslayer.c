@@ -2996,6 +2996,13 @@ void vik_maps_layer_download ( VikMapsLayer *vml, VikViewport *vvp, gboolean onl
   values[MA_VML] = vml;
   values[MA_VVP] = vvp;
 
+  // Don't attempt to download unsupported zoom levels
+  gdouble xzoom = vik_viewport_get_xmpp ( vvp );
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+  guint8 zl = map_utils_mpp_to_zoom_level ( xzoom );
+  if ( zl < vik_map_source_get_zoom_min(map) || zl > vik_map_source_get_zoom_max(map) )
+    return;
+
   if ( only_new )
     // Get only new maps
     maps_layer_download_new_onscreen_maps ( values );
