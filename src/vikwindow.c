@@ -76,6 +76,7 @@ static GObjectClass *parent_class;
 
 static void window_set_filename ( VikWindow *vw, const gchar *filename );
 static const gchar *window_get_filename ( VikWindow *vw );
+static void window_refresh_title ( VikWindow *vw );
 
 static VikWindow *window_new ();
 
@@ -326,6 +327,18 @@ VikStatusbar * vik_window_get_statusbar ( VikWindow *vw )
 const gchar *vik_window_get_filename (VikWindow *vw)
 {
   return vw->filename;
+}
+
+// Potentially could extend to any 'action' command
+// But would need logic to search within ui manager path
+//  so ATM leave for bespoke hardcoded path
+static void reload_sensitivity ( VikWindow *vw, gboolean value )
+{
+  GtkWidget *widget = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/File/Reload" );
+  if ( widget ) {
+    g_object_set ( widget, "sensitive", value, NULL );
+  }
+  toolbar_action_set_sensitive ( vw->viking_vtb, "Reload", value );
 }
 
 /**
@@ -1295,15 +1308,13 @@ static void vik_window_init ( VikWindow *vw )
   vw->viking_vlp = vik_layers_panel_new();
   vik_layers_panel_set_viewport ( vw->viking_vlp, vw->viking_vvp );
   vw->viking_vs = vik_statusbar_new ( vik_viewport_get_scale(vw->viking_vvp) );
-
+  vw->filename = NULL;
   vw->vt = toolbox_create(vw);
   vw->viking_vtb = vik_toolbar_new ();
   window_create_ui(vw);
-  window_set_filename (vw, NULL);
+  window_refresh_title ( vw );
 
   vw->busy_cursor = gdk_cursor_new_for_display ( gtk_widget_get_display(GTK_WIDGET(vw)), GDK_WATCH );
-
-  vw->filename = NULL;
   vw->loaded_type = LOAD_TYPE_READ_FAILURE; //AKA none
   vw->modified = 0;
   vw->only_updating_coord_mode_ui = FALSE;
@@ -4755,6 +4766,8 @@ static void window_set_filename ( VikWindow *vw, const gchar *filename )
     vw->filename = g_strdup(filename);
   }
 
+  reload_sensitivity ( vw, (filename != NULL) );
+
   window_refresh_title ( vw );
 }
 
@@ -5712,6 +5725,12 @@ static void default_location_cb ( GtkAction *a, VikWindow *vw )
   a_preferences_save_to_file();
 }
 
+static void delete_all ( VikWindow *vw )
+{
+  vik_layers_panel_clear ( vw->viking_vlp );
+  window_set_filename ( vw, NULL );
+}
+
 /**
  * Delete All
  */
@@ -5721,12 +5740,43 @@ static void clear_cb ( GtkAction *a, VikWindow *vw )
   VikAggregateLayer *top = vik_layers_panel_get_top_layer(vw->viking_vlp);
   if ( ! vik_aggregate_layer_is_empty(top) ) {
     if ( a_dialog_yes_or_no ( GTK_WINDOW(vw), _("Are you sure you wish to delete all layers?"), NULL ) ) {
-      vik_layers_panel_clear ( vw->viking_vlp );
+      delete_all ( vw );
       vik_window_set_modified ( vw );
-      window_set_filename ( vw, NULL );
       draw_update ( vw );
     }
   }
+}
+
+/**
+ * reload_file:
+ *
+ * ATM Should be enabled even if no 'file modifications';
+ *  as that doesn't include visual settings like the current zoom level, treeview item visibility, etc...
+ *
+ * Returns: %TRUE on success
+ */
+static gboolean reload_file ( GtkAction *a, VikWindow *vw )
+{
+  gboolean rv = FALSE;
+  if ( vw->filename ) {
+    gchar *msg = g_strdup_printf ( _("Any existing changes will be lost.\n Are you sure you wish reload\n%s?"), vw->filename );
+    if ( a_dialog_yes_or_no ( GTK_WINDOW(vw), msg, NULL ) ) {
+      gchar *filename = g_strdup ( vw->filename );
+      if ( g_file_test(filename, G_FILE_TEST_EXISTS) ) {
+        delete_all ( vw );
+        vik_window_open_file ( vw, filename, TRUE, TRUE, TRUE, TRUE, FALSE );
+        vw->modified = 0;
+        rv = TRUE;
+      } else {
+        a_dialog_error_msg_extra ( GTK_WINDOW(vw), _("Unable to reload %s."), filename );
+      }
+      g_free ( filename );
+    }
+    g_free ( msg );
+  } else {
+    a_dialog_info_msg ( GTK_WINDOW(vw), _("Nothing to reload") );
+  }
+  return rv;
 }
 
 static void window_close ( GtkAction *a, VikWindow *vw )
@@ -6527,6 +6577,7 @@ static GtkActionEntry entries[] = {
 #endif
   { "Save",      GTK_STOCK_SAVE,         N_("_Save"),                         "<control>S", N_("Save the file"),                                (GCallback)save_file             },
   { "SaveAs",    GTK_STOCK_SAVE_AS,      N_("Save _As..."),                   "<control><shift>S",  N_("Save the file under different name"),           (GCallback)save_file_as          },
+  { "Reload",    GTK_STOCK_REVERT_TO_SAVED, N_("Reload"),                 NULL,         N_("Reload the Viking file"),                       (GCallback)reload_file },
   { "FileProperties", GTK_STOCK_PROPERTIES, N_("Properties..."),                 NULL,  N_("File Properties"),                              (GCallback)file_properties_cb },
 #ifdef HAVE_ZIP_H
   { "ImportKMZ", GTK_STOCK_CONVERT,      N_("Import KMZ _Map File..."),        NULL,  N_("Import a KMZ file"), (GCallback)import_kmz_file_cb },

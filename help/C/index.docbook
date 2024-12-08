@@ -642,6 +642,15 @@ This will ask for a <emphasis>new name</emphasis> to save as a <emphasis>Viking<
 </para>
 </section>
 
+<section><title>Reload</title>
+<para>
+Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Reload</guisubmenu></menuchoice> menu and optionally on the toolbar.
+</para>
+<para>
+This enables reloading the current <emphasis>Viking</emphasis> file. You will be asked to confirm this action, since any changes will be lost.
+</para>
+</section>
+
 <section><title>Append File</title>
 <para>
 Located on the <menuchoice><guimenu>File</guimenu><guisubmenu>Append File...</guisubmenu></menuchoice> menu only.
