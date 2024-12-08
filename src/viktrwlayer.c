@@ -1057,7 +1057,7 @@ GQueue *vik_trw_layer_get_laps ( VikTrwLayer *vtl )
 void vik_trw_layer_set_laps ( VikTrwLayer *vtl, GQueue *value )
 {
   if ( vtl->laps )
-    g_queue_free ( vtl->laps );
+    g_queue_free_full ( vtl->laps, g_free );
   vtl->laps = value;
 }
 
@@ -2052,7 +2052,7 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
   g_free ( trwlayer->gpx_header );
   g_free ( trwlayer->gpx_extensions );
   if ( trwlayer->laps )
-    g_queue_free ( trwlayer->laps );
+    g_queue_free_full ( trwlayer->laps, g_free );
 }
 
 static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp, gboolean highlight )
