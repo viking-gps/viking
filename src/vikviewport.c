@@ -143,7 +143,7 @@ viewport_utm_zone_width ( VikViewport *vvp )
 
     /* get latitude of screen bottom */
     struct UTM utm = *((struct UTM *)(vik_viewport_get_center ( vvp )));
-    utm.northing -= vvp -> height * vvp -> ympp / 2;
+    utm.northing -= vvp->height * vvp->ympp / 2;
     a_coords_utm_to_latlon ( &utm, &ll );
 
     /* boundary */
