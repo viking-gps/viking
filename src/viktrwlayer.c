@@ -8097,6 +8097,36 @@ static void trw_layer_delete_points_same_time ( menu_array_sublayer values )
 }
 
 /**
+ * trw_layer_delete_all_points:
+ */
+static void trw_layer_delete_all_points ( menu_array_sublayer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+  VikTrack *trk;
+  if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
+    trk = (VikTrack *) g_hash_table_lookup ( vtl->routes, values[MA_SUBLAYER_ID] );
+  else
+    trk = (VikTrack *) g_hash_table_lookup ( vtl->tracks, values[MA_SUBLAYER_ID] );
+
+  if ( !trk )
+    return;
+
+  if ( a_dialog_yes_or_no(VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                          _("Are you sure you want to delete all points from \"%s\"?"), trk->name) ) {
+
+    vik_track_remove_all_points ( trk );
+
+    // Track has been updated so update tps:
+    trw_layer_cancel_tps_of_track ( vtl, trk );
+
+    // ATM don't remove, so it's available if points get subsequently added
+    //close_graphs_of_specific_track_or_type ( vtl, trk, -1 );
+
+    vik_layer_emit_update ( VIK_LAYER(vtl), trw_layer_modified(vtl) );
+  }
+}
+
+/**
  * Insert a point
  */
 static void trw_layer_insert_point_after ( menu_array_sublayer values )
@@ -9737,6 +9767,7 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     gtk_widget_set_sensitive ( itemdsp, (gboolean)GPOINTER_TO_INT(l->current_tpl) );
     (void)vu_menu_add_item ( delete_submenu, _("Delete Points With The Same _Position"), NULL, G_CALLBACK(trw_layer_delete_points_same_position), data);
     (void)vu_menu_add_item ( delete_submenu, _("Delete Points With The Same _Time"), NULL, G_CALLBACK(trw_layer_delete_points_same_time), data );
+    (void)vu_menu_add_item ( delete_submenu, _("Delete All Points"), NULL, G_CALLBACK(trw_layer_delete_all_points), data );
 
     GtkMenu *transform_submenu = GTK_MENU(gtk_menu_new());
     GtkWidget *itemtransform = vu_menu_add_item ( menu, _("_Transform"), GTK_STOCK_CONVERT, NULL, NULL );

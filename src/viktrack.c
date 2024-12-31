@@ -535,6 +535,20 @@ gulong vik_track_remove_same_time_points ( VikTrack *tr )
 }
 
 /**
+ * vik_track_remove_all_points:
+ **/
+void vik_track_remove_all_points ( VikTrack *tr )
+{
+  if ( tr->trackpoints ) {
+    g_list_foreach ( tr->trackpoints, (GFunc)vik_trackpoint_free, NULL );
+    g_list_free ( tr->trackpoints );
+    tr->trackpoints = NULL;
+  }
+
+  vik_track_calculate_bounds ( tr );
+}
+
+/**
  * vik_track_remove_dodgy_first_point:
  * @vt:            The track
  * @speed:         Maximum speed in m/s between points allowed

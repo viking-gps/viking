@@ -1881,6 +1881,15 @@ These options are only enabled when a trackpoint is selected.
         </note>
       </listitem>
     </varlistentry>
+
+    <varlistentry>
+      <term><guilabel>Delete All Points</guilabel></term>
+      <listitem>
+        <para>
+          Removes all track or route points. You will be asked to confirm this action.
+        </para>
+      </listitem>
+    </varlistentry>
   </variablelist>
 </section>
 
