@@ -4011,19 +4011,19 @@ static gboolean trw_layer_selected ( VikTrwLayer *l, gint subtype, gpointer subl
     }
 }
 
-GHashTable *vik_trw_layer_get_tracks ( VikTrwLayer *l )
+GHashTable *vik_trw_layer_get_tracks ( VikTrwLayer *vtl )
 {
-  return l->tracks;
+  return vtl->tracks;
 }
 
-GHashTable *vik_trw_layer_get_routes ( VikTrwLayer *l )
+GHashTable *vik_trw_layer_get_routes ( VikTrwLayer *vtl )
 {
-  return l->routes;
+  return vtl->routes;
 }
 
-GHashTable *vik_trw_layer_get_waypoints ( VikTrwLayer *l )
+GHashTable *vik_trw_layer_get_waypoints ( VikTrwLayer *vtl )
 {
-  return l->waypoints;
+  return vtl->waypoints;
 }
 
 GHashTable *vik_trw_layer_get_tracks_iters ( VikTrwLayer *vtl )
