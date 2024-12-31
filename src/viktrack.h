@@ -138,14 +138,14 @@ gulong vik_track_get_tp_num (const VikTrack *tr, const VikTrackpoint *tp);
 VikTrack **vik_track_split_into_segments(VikTrack *tr, guint *ret_len);
 guint vik_track_merge_segments(VikTrack *tr);
 void vik_track_reverse(VikTrack *tr);
-gdouble vik_track_get_duration(const VikTrack *trk, gboolean include_segments);
+gdouble vik_track_get_duration(const VikTrack *tr, gboolean include_segments);
 
-VikCoord vik_track_get_center ( VikTrack *trk, VikCoordMode cmode );
+VikCoord vik_track_get_center ( VikTrack *tr, VikCoordMode cmode );
 
-gulong vik_track_get_dup_point_count ( const VikTrack *vt );
-gulong vik_track_remove_dup_points ( VikTrack *vt );
-gulong vik_track_get_same_time_point_count ( const VikTrack *vt );
-gulong vik_track_remove_same_time_points ( VikTrack *vt );
+gulong vik_track_get_dup_point_count ( const VikTrack *tr );
+gulong vik_track_remove_dup_points ( VikTrack *tr );
+gulong vik_track_get_same_time_point_count ( const VikTrack *tr );
+gulong vik_track_remove_same_time_points ( VikTrack *tr );
 void vik_track_remove_all_points ( VikTrack *tr );
 
 gboolean vik_track_remove_dodgy_first_point ( VikTrack *vt, guint speed, gboolean recalc_bounds );
@@ -178,7 +178,7 @@ gdouble *vik_track_make_temp_map ( const VikTrack *tr, guint16 num_chunks );
 void vik_track_convert ( VikTrack *tr, VikCoordMode dest_mode );
 gdouble *vik_track_make_elevation_map ( const VikTrack *tr, guint16 num_chunks );
 void vik_track_get_total_elevation_gain(const VikTrack *tr, gdouble *up, gdouble *down);
-VikTrackpoint *vik_track_get_tp_by_dist ( VikTrack *trk, gdouble meters_from_start, gboolean get_next_point, gdouble *tp_metres_from_start );
+VikTrackpoint *vik_track_get_tp_by_dist ( VikTrack *tr, gdouble meters_from_start, gboolean get_next_point, gdouble *tp_metres_from_start );
 VikTrackpoint *vik_track_get_closest_tp_by_percentage_dist ( VikTrack *tr, gdouble reldist, gdouble *meters_from_start );
 VikTrackpoint *vik_track_get_closest_tp_by_percentage_time ( VikTrack *tr, gdouble reldist, gdouble *seconds_from_start );
 VikTrackpoint *vik_track_get_tp_by_max_speed ( const VikTrack *tr, gboolean by_gps_speed );
@@ -205,7 +205,7 @@ gboolean vik_track_get_minmax_alt ( const VikTrack *tr, gdouble *min_alt, gdoubl
 void vik_track_marshall ( VikTrack *tr, guint8 **data, guint *len);
 VikTrack *vik_track_unmarshall (const guint8 *data_in, guint datalen);
 
-void vik_track_calculate_bounds ( VikTrack *trk );
+void vik_track_calculate_bounds ( VikTrack *tr );
 
 void vik_track_anonymize_times ( VikTrack *tr );
 void vik_track_interpolate_times ( VikTrack *tr );

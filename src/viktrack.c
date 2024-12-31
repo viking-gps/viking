@@ -550,7 +550,7 @@ void vik_track_remove_all_points ( VikTrack *tr )
 
 /**
  * vik_track_remove_dodgy_first_point:
- * @vt:            The track
+ * @tr:            The track
  * @speed:         Maximum speed in m/s between points allowed
  * @recalc_bounds: Whether track bounds should be recalculated
  *           (i.e. can be skipped if bounds will get calculated later on)
@@ -565,12 +565,12 @@ void vik_track_remove_all_points ( VikTrack *tr )
  *  rather than a more comprehensive attempt to remove any suspicious points
  *  through-out the track.
  */
-gboolean vik_track_remove_dodgy_first_point ( VikTrack *vt, guint speed, gboolean recalc_bounds )
+gboolean vik_track_remove_dodgy_first_point ( VikTrack *tr, guint speed, gboolean recalc_bounds )
 {
   gboolean deleted = FALSE;
 
-  if ( vt->trackpoints ) {
-    GList *iter = g_list_first ( vt->trackpoints );
+  if ( tr->trackpoints ) {
+    GList *iter = g_list_first ( tr->trackpoints );
     VikTrackpoint *tp1 = VIK_TRACKPOINT(iter->data);
 
     if ( !isnan(tp1->timestamp) ) {
@@ -584,9 +584,9 @@ gboolean vik_track_remove_dodgy_first_point ( VikTrack *vt, guint speed, gboolea
           if ( spd > speed ) {
             deleted = TRUE;
             vik_trackpoint_free ( tp1 );
-            vt->trackpoints = g_list_delete_link ( vt->trackpoints, iter );
+            tr->trackpoints = g_list_delete_link ( tr->trackpoints, iter );
             if ( recalc_bounds )
-              vik_track_calculate_bounds ( vt );
+              vik_track_calculate_bounds ( tr );
 	  }
 	}
       }
@@ -740,31 +740,31 @@ void vik_track_reverse ( VikTrack *tr )
 
 /**
  * vik_track_get_duration:
- * @trk: The track
+ * @tr: The track
  * @segment_gaps: Whether the duration should include gaps between segments
  *
  * Returns: The time in seconds
  *  NB this may be negative particularly if the track has been reversed
  */
-gdouble vik_track_get_duration(const VikTrack *trk, gboolean segment_gaps)
+gdouble vik_track_get_duration(const VikTrack *tr, gboolean segment_gaps)
 {
   gdouble duration = 0;
-  if ( trk->trackpoints ) {
+  if ( tr->trackpoints ) {
     // Ensure times are available
-    if ( !isnan(vik_track_get_tp_first(trk)->timestamp) ) {
+    if ( !isnan(vik_track_get_tp_first(tr)->timestamp) ) {
       // Get trkpt only once - as using vik_track_get_tp_last() iterates whole track each time
       if (segment_gaps) {
         // Simple duration
-        VikTrackpoint *trkpt_last = vik_track_get_tp_last(trk);
+        VikTrackpoint *trkpt_last = vik_track_get_tp_last(tr);
         if ( !isnan(trkpt_last->timestamp) ) {
-          gdouble t1 = vik_track_get_tp_first(trk)->timestamp;
+          gdouble t1 = vik_track_get_tp_first(tr)->timestamp;
           gdouble t2 = trkpt_last->timestamp;
           duration = t2 - t1;
         }
       }
       else {
         // Total within segments
-        GList *iter = trk->trackpoints->next;
+        GList *iter = tr->trackpoints->next;
         while (iter) {
           if ( !isnan(VIK_TRACKPOINT(iter->data)->timestamp) &&
                !isnan(VIK_TRACKPOINT(iter->prev->data)->timestamp) &&
@@ -783,12 +783,12 @@ gdouble vik_track_get_duration(const VikTrack *trk, gboolean segment_gaps)
  * Notional center of a track is simply an average of the bounding box extremities
  * ATM this shouldn't be used if the track has no trackpoints
  */
-VikCoord vik_track_get_center ( VikTrack *trk, VikCoordMode cmode )
+VikCoord vik_track_get_center ( VikTrack *tr, VikCoordMode cmode )
 {
   VikCoord vc = { 0.0, 0.0, 0, 0, cmode };
-  g_return_val_if_fail ( trk->trackpoints, vc );
+  g_return_val_if_fail ( tr->trackpoints, vc );
 
-  struct LatLon center = { (trk->bbox.north+trk->bbox.south)/2, (trk->bbox.east+trk->bbox.west)/2 };
+  struct LatLon center = { (tr->bbox.north+tr->bbox.south)/2, (tr->bbox.east+tr->bbox.west)/2 };
   vik_coord_load_from_latlon ( &vc, cmode, &center );
 
   return vc;
@@ -2158,10 +2158,10 @@ VikTrack *vik_track_unmarshall (const guint8 *data_in, guint datalen)
  *  updating the track's bounds data.
  * This should be called whenever a track's trackpoints are changed
  */
-void vik_track_calculate_bounds ( VikTrack *trk )
+void vik_track_calculate_bounds ( VikTrack *tr )
 {
   GList *tp_iter;
-  tp_iter = trk->trackpoints;
+  tp_iter = tr->trackpoints;
 
   struct LatLon topleft, bottomright, ll;
 
@@ -2183,12 +2183,12 @@ void vik_track_calculate_bounds ( VikTrack *trk )
     tp_iter = tp_iter->next;
   }
 
-  g_debug ( "Bounds of track: '%s' is: %f,%f to: %f,%f", trk->name, topleft.lat, topleft.lon, bottomright.lat, bottomright.lon );
+  g_debug ( "Bounds of track: '%s' is: %f,%f to: %f,%f", tr->name, topleft.lat, topleft.lon, bottomright.lat, bottomright.lon );
 
-  trk->bbox.north = topleft.lat;
-  trk->bbox.east = bottomright.lon;
-  trk->bbox.south = bottomright.lat;
-  trk->bbox.west = topleft.lon;
+  tr->bbox.north = topleft.lat;
+  tr->bbox.east = bottomright.lon;
+  tr->bbox.south = bottomright.lat;
+  tr->bbox.west = topleft.lon;
 }
 
 /**
