@@ -181,11 +181,9 @@ _text (GMarkupParseContext *context,
 			/* parameter value */
 			/* We have to retrieve the expected type of the value
 			 * in order to do the correct transformation */
-			GObjectClass *oclass;
-			oclass = g_type_class_ref (gtype);
-			g_assert (oclass != NULL);
-			GParamSpec *pspec;
-			pspec = g_object_class_find_property (G_OBJECT_CLASS (oclass), property_name);
+			GObjectClass *oclass = g_type_class_ref (gtype);
+			GParamSpec *pspec = g_object_class_find_property (G_OBJECT_CLASS (oclass), property_name);
+			g_type_class_unref ( oclass );
 			if (!pspec)
 			{
 				g_warning ("Unknown property: %s.%s", g_type_name (gtype), property_name);
