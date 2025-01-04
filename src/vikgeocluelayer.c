@@ -363,35 +363,9 @@ static void tracking_draw ( VikGeoclueLayer *vgl, VikViewport *vp )
 
 static void geoclue_layer_draw ( VikGeoclueLayer *vgl, VikViewport *vp )
 {
-	// NB I don't understand this half drawn business
-	// This is just copied from vikgpslayer.c
-	VikLayer *vl;
-	VikLayer *trigger = VIK_LAYER(vik_viewport_get_trigger( vp ));
-
-	vl = VIK_LAYER(vgl->trw);
-	if (vl == trigger) {
-		if ( vik_viewport_get_half_drawn ( vp ) ) {
-			vik_viewport_set_half_drawn ( vp, FALSE );
-			vik_viewport_snapshot_load( vp );
-		} else {
-			vik_viewport_snapshot_save( vp );
-		}
-	}
-	if ( !vik_viewport_get_half_drawn(vp) )
-		vik_layer_draw ( vl, vp );
-
-	if ( vgl->tracking ) {
-		if ( VIK_LAYER(vgl) == trigger ) {
-			if ( vik_viewport_get_half_drawn ( vp ) ) {
-				vik_viewport_set_half_drawn ( vp, FALSE );
-				vik_viewport_snapshot_load ( vp );
-			} else {
-				vik_viewport_snapshot_save ( vp );
-			}
-		}
-		if ( !vik_viewport_get_half_drawn(vp) )
-			tracking_draw ( vgl, vp );
-  }
+	VikLayer *vl = VIK_LAYER(vgl->trw);
+	vik_layer_draw ( vl, vp );
+	tracking_draw ( vgl, vp );
 }
 
 static void gcs_free ( VikGeoclueLayer *vgl )

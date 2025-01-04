@@ -778,33 +778,13 @@ static void gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp )
 {
   gint i;
   VikLayer *vl;
-  VikLayer *trigger = VIK_LAYER(vik_viewport_get_trigger( vp ));
-
   for (i = 0; i < NUM_TRW; i++) {
     vl = VIK_LAYER(vgl->trw_children[i]);
-    if (vl == trigger) {
-      if ( vik_viewport_get_half_drawn ( vp ) ) {
-        vik_viewport_set_half_drawn ( vp, FALSE );
-        vik_viewport_snapshot_load( vp );
-      } else {
-        vik_viewport_snapshot_save( vp );
-      }
-    }
-    if (!vik_viewport_get_half_drawn(vp))
-      vik_layer_draw ( vl, vp );
+    vik_layer_draw ( vl, vp );
   }
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   if (vgl->realtime_tracking) {
-    if (VIK_LAYER(vgl) == trigger) {
-      if ( vik_viewport_get_half_drawn ( vp ) ) {
-        vik_viewport_set_half_drawn ( vp, FALSE );
-        vik_viewport_snapshot_load( vp );
-      } else {
-        vik_viewport_snapshot_save( vp );
-      }
-    }
-    if (!vik_viewport_get_half_drawn(vp))
-      realtime_tracking_draw(vgl, vp);
+    realtime_tracking_draw(vgl, vp);
   }
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
 }

@@ -117,16 +117,6 @@ void vik_viewport_set_drawmode ( VikViewport *vvp, VikViewportDrawMode drawmode 
 VikViewportDrawMode vik_viewport_get_drawmode ( VikViewport *vvp );
    /* Do not forget to update vik_viewport_get_drawmode_name() if you modify VikViewportDrawMode */
 
-
-/* Triggers */
-void vik_viewport_set_trigger ( VikViewport *vp, gpointer trigger );
-gpointer vik_viewport_get_trigger ( VikViewport *vp );
-void vik_viewport_snapshot_save ( VikViewport *vp );
-void vik_viewport_snapshot_load ( VikViewport *vp );
-void vik_viewport_set_half_drawn(VikViewport *vp, gboolean half_drawn);
-gboolean vik_viewport_get_half_drawn( VikViewport *vp );
-
-
 /***************************************************************************************************
  *  Drawing-related operations
  ***************************************************************************************************/

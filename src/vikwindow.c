@@ -259,9 +259,6 @@ struct _VikWindow {
   GtkUIManager *uim;
 
   GThread  *thread;
-  /* half-drawn update */
-  VikLayer *trigger;
-  VikCoord trigger_center;
 
   /* Store at this level for highlighted selection drawing since it applies to the viewport and the layers panel */
   /* Only one of these items can be selected at the same time */
@@ -1886,13 +1883,6 @@ static void draw_status ( VikWindow *vw )
   draw_status_tool ( vw );
 }
 
-void vik_window_set_redraw_trigger(VikLayer *vl)
-{
-  VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vl));
-  if (NULL != vw)
-    vw->trigger = vl;
-}
-
 /**
  * If graphs shown, then scale pane according to saved value
  */
@@ -1968,24 +1958,6 @@ static gboolean window_configure_event ( VikWindow *vw, GdkEventConfigure *event
 
 static void draw_redraw ( VikWindow *vw )
 {
-  VikCoord old_center = vw->trigger_center;
-  vw->trigger_center = *(vik_viewport_get_center(vw->viking_vvp));
-  VikLayer *new_trigger = vw->trigger;
-  vw->trigger = NULL;
-  gpointer gp = vik_viewport_get_trigger ( vw->viking_vvp );
-  VikLayer *old_trigger = NULL;
-  if ( !gp )
-    vik_viewport_set_trigger ( vw->viking_vvp, new_trigger );
-  else
-    old_trigger = VIK_LAYER(gp);
-
-  if ( ! new_trigger )
-    ; /* do nothing -- have to redraw everything. */
-  else if ( (old_trigger != new_trigger) || !vik_coord_equals(&old_center, &vw->trigger_center) || (new_trigger->type == VIK_LAYER_AGGREGATE) )
-    vik_viewport_set_trigger ( vw->viking_vvp, new_trigger ); /* todo: set to half_drawn mode if new trigger is above old */
-  else
-    vik_viewport_set_half_drawn ( vw->viking_vvp, TRUE );
-
   /* actually draw */
   vik_viewport_clear ( vw->viking_vvp);
   // Main layer drawing
@@ -2007,8 +1979,6 @@ static void draw_redraw ( VikWindow *vw )
   vik_viewport_draw_copyright ( vw->viking_vvp );
   vik_viewport_draw_centermark ( vw->viking_vvp );
   vik_viewport_draw_logo ( vw->viking_vvp );
-
-  vik_viewport_set_half_drawn ( vw->viking_vvp, FALSE ); /* just in case. */
 }
 
 gboolean draw_buf_done = TRUE;

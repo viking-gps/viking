@@ -1324,42 +1324,21 @@ static void hm_draw ( VikAggregateLayer *val, VikViewport *vp )
   }
 }
 
-/* Draw the aggregate layer. If vik viewport is in half_drawn mode, this means we are only
- * to draw the layers above and including the trigger layer.
- * To do this we don't draw any layers if in half drawn mode, unless we find the
- * trigger layer, in which case we pull up the saved pixmap, turn off half drawn mode and
- * start drawing layers.
- * Also, if we were never in half drawn mode, we save a snapshot
- * of the pixmap before drawing the trigger layer so we can use it again
- * later.
+/* Draw the aggregate layer.
+ *  (And all layers within it)
+ * Previously there was a concept of 'half drawn', an attempt to only draw layers necessary.
+ * In order to do that, it would attempt to define a 'trigger layer' that would be first one needed to be drawn.
+ *  and then use a saved pixmap (but a GTK2 only feature not imminently feasible in GTK3) for lower layers.
+ * However this meant additional complexity in maintaining the trigger layer reference,
+ *  and so since not relevant for GTK3, it has been removed.
  */
 void vik_aggregate_layer_draw ( VikAggregateLayer *val, VikViewport *vp )
 {
   GList *iter = val->children;
-#if GTK_CHECK_VERSION (3,0,0)
-  // GTK3 Version does not use pixmaps, so no point in trigger layers ATM
   while ( iter ) {
     vik_layer_draw ( VIK_LAYER(iter->data), vp );
     iter = iter->next;
   }
-#else
-  VikLayer *vl;
-  VikLayer *trigger = VIK_LAYER(vik_viewport_get_trigger( vp ));
-  while ( iter ) {
-    vl = VIK_LAYER(iter->data);
-    if ( vl == trigger ) {
-      if ( vik_viewport_get_half_drawn ( vp ) ) {
-        vik_viewport_set_half_drawn ( vp, FALSE );
-        vik_viewport_snapshot_load( vp );
-      } else {
-        vik_viewport_snapshot_save( vp );
-      }
-    }
-    if ( vl->type == VIK_LAYER_AGGREGATE || vl->type == VIK_LAYER_GPS || ! vik_viewport_get_half_drawn( vp ) )
-      vik_layer_draw ( vl, vp );
-    iter = iter->next;
-  }
-#endif
   // Make coverage to be drawn last (i.e. over the top of any maps)
   if ( val->on[BASIC] ) {
     tac_draw ( val, vp );

@@ -120,13 +120,6 @@ struct _VikViewport {
   /* subset of coord types. lat lon can be plotted in 2 ways, google or exp. */
   VikViewportDrawMode drawmode;
 
-  /* trigger stuff */
-  gpointer trigger;
-#if !GTK_CHECK_VERSION (3,0,0)
-  GdkPixmap *snapshot_buffer;
-#endif
-  gboolean half_drawn;
-
   cairo_t *popup_crt;
   cairo_surface_t *popup_surf;
   gchar *popup_msg;
@@ -294,7 +287,6 @@ vik_viewport_init ( VikViewport *vvp )
   vvp->draw_centermark = a_vik_get_startup_show_centermark();
   vvp->draw_highlight = a_vik_get_startup_show_highlight();
 
-  vvp->trigger = NULL;
   vvp->highlight_color = a_vik_get_startup_highlight_color();
 #if GTK_CHECK_VERSION (3,0,0)
   //(void)gdk_color_parse ( DEFAULT_BACKGROUND_COLOR, &(vvp->background_color) );
@@ -307,10 +299,7 @@ vik_viewport_init ( VikViewport *vvp )
   gdk_rgba_free ( rgbaBC );
   */
   //vik_viewport_set_background_color ( vvp, DEFAULT_BACKGROUND_COLOR );
-#else
-  vvp->snapshot_buffer = NULL;
 #endif
-  vvp->half_drawn = FALSE;
 
   // Initiate center history
   update_centers ( vvp );
@@ -488,11 +477,6 @@ void vik_viewport_configure_manually ( VikViewport *vvp, gint width, guint heigh
   if ( vvp->scr_buffer )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );
   vvp->scr_buffer = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), vvp->width, vvp->height, -1 );
-
-  /* TODO trigger: only if this is enabled !!! */
-  if ( vvp->snapshot_buffer )
-    g_object_unref ( G_OBJECT ( vvp->snapshot_buffer ) );
-  vvp->snapshot_buffer = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), vvp->width, vvp->height, -1 );
 #endif
 
   configure_common ( vvp );
@@ -629,13 +613,6 @@ gboolean vik_viewport_configure ( VikViewport *vvp )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );
 
   vvp->scr_buffer = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), vvp->width, vvp->height, -1 );
-
-  /* TODO trigger: only if enabled! */
-  if ( vvp->snapshot_buffer )
-    g_object_unref ( G_OBJECT ( vvp->snapshot_buffer ) );
-
-  vvp->snapshot_buffer = gdk_pixmap_new ( gtk_widget_get_window(GTK_WIDGET(vvp)), vvp->width, vvp->height, -1 );
-  /* TODO trigger */
 #endif
 
   configure_common ( vvp );
@@ -674,8 +651,6 @@ static void viewport_finalize ( GObject *gob )
 #if !GTK_CHECK_VERSION (3,0,0)
   if ( vvp->scr_buffer )
     g_object_unref ( G_OBJECT ( vvp->scr_buffer ) );
-  if ( vvp->snapshot_buffer )
-    g_object_unref ( G_OBJECT ( vvp->snapshot_buffer ) );
 #else
   if ( vvp->crt )
     cairo_destroy ( vvp->crt );
@@ -1954,42 +1929,6 @@ VikViewportDrawMode vik_viewport_get_drawmode ( VikViewport *vvp )
 {
   return vvp->drawmode;
 }
-
-/******** triggering *******/
-void vik_viewport_set_trigger ( VikViewport *vp, gpointer trigger )
-{
-  vp->trigger = trigger;
-}
-
-gpointer vik_viewport_get_trigger ( VikViewport *vp )
-{
-  return vp->trigger;
-}
-
-void vik_viewport_snapshot_save ( VikViewport *vp )
-{
-#if !GTK_CHECK_VERSION (3,0,0)
-  gdk_draw_drawable ( vp->snapshot_buffer, vp->background_gc, vp->scr_buffer, 0, 0, 0, 0, -1, -1 );
-#endif
-}
-
-void vik_viewport_snapshot_load ( VikViewport *vp )
-{
-#if !GTK_CHECK_VERSION (3,0,0)
-  gdk_draw_drawable ( vp->scr_buffer, vp->background_gc, vp->snapshot_buffer, 0, 0, 0, 0, -1, -1 );
-#endif
-}
-
-void vik_viewport_set_half_drawn(VikViewport *vp, gboolean half_drawn)
-{
-  vp->half_drawn = half_drawn;
-}
-
-gboolean vik_viewport_get_half_drawn( VikViewport *vp )
-{
-  return vp->half_drawn;
-}
-
 
 const gchar *vik_viewport_get_drawmode_name(VikViewport *vv, VikViewportDrawMode mode)
  {

@@ -865,7 +865,7 @@ static void layers_item_toggled (VikLayersPanel *vlp, GtkTreeIter *iter)
       vik_layer_layer_toggle_visible ( VIK_LAYER(p) );
       if ( visible )
         vik_layer_configure ( VIK_LAYER(p), vlp->vvp );
-      vik_layer_emit_update_although_invisible ( VIK_LAYER(p) ); /* set trigger for half-drawn */
+      vik_layer_emit_update_although_invisible ( VIK_LAYER(p) );
       break;
     case VIK_TREEVIEW_TYPE_SUBLAYER: {
       VikLayer *vl = VIK_LAYER(vik_treeview_item_get_parent ( vlp->vt, iter ));
@@ -1169,10 +1169,6 @@ void vik_layers_panel_cut_selected ( VikLayersPanel *vlp )
     VikAggregateLayer *parent = vik_treeview_item_get_parent ( vlp->vt, &iter );
     if ( parent )
     {
-      /* reset trigger if trigger deleted */
-      if ( vik_layers_panel_get_selected ( vlp ) == vik_viewport_get_trigger ( vlp->vvp ) )
-        vik_viewport_set_trigger ( vlp->vvp, NULL );
-
       a_clipboard_copy_selected ( vlp );
 
       if (IS_VIK_AGGREGATE_LAYER(parent)) {
@@ -1240,10 +1236,6 @@ void vik_layers_panel_delete_selected ( VikLayersPanel *vlp )
     VikAggregateLayer *parent = vik_treeview_item_get_parent ( vlp->vt, &iter );
     if ( parent )
     {
-      /* reset trigger if trigger deleted */
-      if ( vik_layers_panel_get_selected ( vlp ) == vik_viewport_get_trigger ( vlp->vvp ) )
-        vik_viewport_set_trigger ( vlp->vvp, NULL );
-
       if (IS_VIK_AGGREGATE_LAYER(parent)) {
 
         g_signal_emit ( G_OBJECT(vlp), layers_panel_signals[VLP_DELETE_LAYER_SIGNAL], 0 );

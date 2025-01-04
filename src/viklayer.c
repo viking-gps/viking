@@ -113,8 +113,6 @@ void vik_layer_redraw ( VikLayer *vl )
       // Do nothing
       return;
 
-    vik_window_set_redraw_trigger(vl);
-
     // Only ever draw when there is time to do so
     if ( g_thread_self() != thread ) {
       // Drawing requested from another (background) thread, so handle via the gdk thread method
@@ -138,8 +136,6 @@ void vik_layer_emit_update ( VikLayer *vl, gboolean is_modified )
     if ( !thread )
       // Do nothing
       return;
-
-    vik_window_set_redraw_trigger(vl);
 
     // Notionally the 'refresh' function could be directly connected to the 'update' signal
     // However we then have to manage the lifecycle (creation, copying, removing, etc...)
@@ -170,15 +166,14 @@ void vik_layer_emit_update ( VikLayer *vl, gboolean is_modified )
 
 /**
  * should only be done by VikLayersPanel (hence never used from the background)
- * need to redraw and record trigger when we make a layer invisible.
+ * need to redraw when we make a layer invisible.
  */
 void vik_layer_emit_update_although_invisible ( VikLayer *vl )
 {
-  vik_window_set_redraw_trigger(vl);
   (void)g_idle_add ( (GSourceFunc)idle_draw, vl );
 }
 
-/* doesn't set the trigger. should be done by aggregate layer when child emits update. */
+/* should be done by aggregate layer when child emits update. */
 void vik_layer_emit_update_secondary ( VikLayer *vl )
 {
   if ( vl->visible )
