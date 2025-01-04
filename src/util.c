@@ -177,9 +177,10 @@ gchar* util_write_tmp_file_from_bytes ( const void *buffer, gsize count )
 	GFileIOStream *gios;
 	GError *error = NULL;
 	GFile *gf = g_file_new_tmp ( "vik-tmp.XXXXXX", &gios, &error );
-	gchar *tmpname = g_file_get_path (gf);
-
-	gios = g_file_open_readwrite ( g_file_new_for_path (tmpname), NULL, &error );
+	gchar *tmpname = g_file_get_path ( gf );
+	GFile *file = g_file_new_for_path ( tmpname );
+	gios = g_file_open_readwrite ( file, NULL, &error );
+	g_object_unref ( file );
 	if ( error ) {
 		g_warning ( "%s", error->message );
 		g_error_free ( error );
