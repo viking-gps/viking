@@ -417,6 +417,9 @@ void maps_layer_uninit ()
   vik_mutex_free ( rq_mutex );
   g_hash_table_destroy ( requests );
   rq_mutex = NULL;
+  g_strfreev ( params_maptypes );
+  g_free ( params_maptypes_ids );
+  g_list_free_full ( __map_types, g_object_unref );
 }
 
 /****************************************/
