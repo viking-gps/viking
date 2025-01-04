@@ -334,6 +334,8 @@ int main( int argc, char *argv[] )
 
   socket_uninit();
 
+  a_logging_uninit ();
+
 #ifdef G_OS_WIN32
   g_strfreev ( argv );
 #endif

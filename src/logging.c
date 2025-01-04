@@ -46,6 +46,7 @@ static void msg_t_free ( msg_t *mt )
 {
 	g_free ( mt->level );
 	g_free ( mt->msg );
+	g_free ( mt );
 }
 
 static GList *msgs = NULL; // List of msg_t
@@ -167,6 +168,16 @@ void a_logging_init ()
 #if HAVE_X11_XLIB_H
 	XSetErrorHandler(myXErrorHandler);
 #endif
+}
+
+/**
+ * a_logging_uninit:
+ *
+ * Finalize actions - mainly clear memory
+ */
+void a_logging_uninit ()
+{
+	g_list_free_full ( msgs, (GDestroyNotify)msg_t_free );
 }
 
 /**
