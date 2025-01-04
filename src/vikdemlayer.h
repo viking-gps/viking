@@ -43,6 +43,7 @@ GType vik_dem_layer_get_type ();
 typedef struct _VikDEMLayer VikDEMLayer;
 
 void vik_dem_layer_init ();
+void vik_dem_layer_uninit ();
 
 G_END_DECLS
 

@@ -405,6 +405,11 @@ void vik_dem_layer_init ()
 
 }
 
+void vik_dem_layer_uninit ()
+{
+  g_free ( base_url );
+}
+
 static GdkColor black_color;
 
 // NB Only performed once per program run

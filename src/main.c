@@ -311,6 +311,7 @@ int main( int argc, char *argv[] )
   a_toolbar_uninit ();
   a_background_uninit ();
   maps_layer_uninit ();
+  vik_dem_layer_uninit ();
   a_mapcache_uninit ();
   a_dems_uninit ();
   a_layer_defaults_uninit ();
