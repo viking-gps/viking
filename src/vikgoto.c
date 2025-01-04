@@ -60,7 +60,7 @@ void vik_goto_register ( VikGotoTool *tool )
 
 void vik_goto_unregister_all ()
 {
-  g_list_foreach ( goto_tools_list, (GFunc) g_object_unref, NULL );
+  g_list_free_full ( goto_tools_list, g_object_unref );
 }
 
 gchar * a_vik_goto_get_search_string_for_this_place(VikWindow *vw)

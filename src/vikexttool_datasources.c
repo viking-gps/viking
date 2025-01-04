@@ -42,7 +42,7 @@ void vik_ext_tool_datasources_register ( VikExtTool *tool )
 
 void vik_ext_tool_datasources_unregister_all ()
 {
-	g_list_foreach ( ext_tool_datasources_list, (GFunc) g_object_unref, NULL );
+	g_list_free_full ( ext_tool_datasources_list, g_object_unref );
 }
 
 static void ext_tool_datasources_open_cb ( GtkWidget *widget, VikWindow *vw )

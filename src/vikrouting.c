@@ -205,7 +205,7 @@ vik_routing_register( VikRoutingEngine *engine )
 void
 vik_routing_unregister_all ()
 {
-  g_list_foreach ( routing_engine_list, (GFunc) g_object_unref, NULL );
+  g_list_free_full ( routing_engine_list, g_object_unref );
   g_strfreev ( routing_engine_labels );
   g_strfreev ( routing_engine_ids );
 }

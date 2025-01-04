@@ -42,7 +42,7 @@ void vik_ext_tools_register ( VikExtTool *tool )
 
 void vik_ext_tools_unregister_all ()
 {
-  g_list_foreach ( ext_tools_list, (GFunc) g_object_unref, NULL );
+  g_list_free_full ( ext_tools_list, g_object_unref );
 }
 
 static void ext_tools_open_cb ( GtkWidget *widget, VikWindow *vwindow )
