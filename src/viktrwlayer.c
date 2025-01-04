@@ -841,8 +841,8 @@ static void trw_layer_draw ( VikTrwLayer *l, VikViewport *vvp );
 static void trw_layer_configure ( VikTrwLayer *l, VikViewport *vvp );
 static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mode );
 static gdouble trw_layer_get_timestamp ( VikTrwLayer *vtl );
-static void trw_layer_set_menu_selection ( VikTrwLayer *vtl, guint16 selection );
-static guint16 trw_layer_get_menu_selection ( VikTrwLayer *vtl );
+static void trw_layer_set_menu_selection ( VikTrwLayer *vtl, VikStdLayerMenuItem selection );
+static VikStdLayerMenuItem trw_layer_get_menu_selection ( VikTrwLayer *vtl );
 static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp );
 static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp );
 static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar *newname, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
@@ -12621,14 +12621,14 @@ static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mo
   }
 }
 
-static void trw_layer_set_menu_selection ( VikTrwLayer *vtl, guint16 selection )
+static void trw_layer_set_menu_selection ( VikTrwLayer *vtl, VikStdLayerMenuItem selection )
 {
   vtl->menu_selection = selection;
 }
 
-static guint16 trw_layer_get_menu_selection ( VikTrwLayer *vtl )
+static VikStdLayerMenuItem trw_layer_get_menu_selection ( VikTrwLayer *vtl )
 {
-  return (vtl->menu_selection);
+  return vtl->menu_selection;
 }
 
 /* ----------- Downloading maps along tracks --------------- */

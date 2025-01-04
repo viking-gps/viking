@@ -111,6 +111,15 @@ struct _VikToolInterface {
 /* Parameters (for I/O and Properties) */
 /* --> moved to uibuilder.h */
 
+typedef enum {
+  VIK_MENU_ITEM_PROPERTY=1,
+  VIK_MENU_ITEM_CUT=2,
+  VIK_MENU_ITEM_COPY=4,
+  VIK_MENU_ITEM_PASTE=8,
+  VIK_MENU_ITEM_DELETE=16,
+  VIK_MENU_ITEM_ALL=0xff
+} VikStdLayerMenuItem;
+
 /* layer interface functions */
 
 /* Create a new layer of a certain type. Should be filled with defaults */
@@ -138,8 +147,8 @@ typedef void          (*VikLayerFuncDraw)                  (VikLayer *,VikViewpo
 typedef void          (*VikLayerFuncConfigure)             (VikLayer *,VikViewport *); // 'configure-event' events
 typedef void          (*VikLayerFuncChangeCoordMode)       (VikLayer *,VikCoordMode);
 
-typedef void          (*VikLayerFuncSetMenuItemsSelection)          (VikLayer *,guint16);
-typedef guint16          (*VikLayerFuncGetMenuItemsSelection)          (VikLayer *);
+typedef void                (*VikLayerFuncSetMenuItemsSelection) (VikLayer *,VikStdLayerMenuItem);
+typedef VikStdLayerMenuItem (*VikLayerFuncGetMenuItemsSelection) (VikLayer *);
 
 typedef void          (*VikLayerFuncAddMenuItems)          (VikLayer *,GtkMenu *,gpointer); /* gpointer is a VikLayersPanel */
 typedef gboolean      (*VikLayerFuncSublayerAddMenuItems)  (VikLayer *,GtkMenu *,gpointer, /* first gpointer is a VikLayersPanel */
@@ -192,15 +201,6 @@ typedef double        (*VikLayerFuncGetTimestamp)          (VikLayer *);
 //  i.e. don't call that function from this function as it will get stuck in a infinite loop
 //  useful to hook in a separate redraw
 typedef gboolean      (*VikLayerFuncRefresh)               (VikLayer *);
-
-typedef enum {
-  VIK_MENU_ITEM_PROPERTY=1,
-  VIK_MENU_ITEM_CUT=2,
-  VIK_MENU_ITEM_COPY=4,
-  VIK_MENU_ITEM_PASTE=8,
-  VIK_MENU_ITEM_DELETE=16,
-  VIK_MENU_ITEM_ALL=0xff
-} VikStdLayerMenuItem;
 
 typedef struct _VikLayerInterface VikLayerInterface;
 
@@ -298,8 +298,8 @@ void vik_layer_emit_update ( VikLayer *vl, gboolean is_modified );
 void vik_layer_redraw ( VikLayer *vl );
 
 /* GUI */
-void vik_layer_set_menu_items_selection(VikLayer *l, guint16 selection);
-guint16 vik_layer_get_menu_items_selection(VikLayer *l);
+void vik_layer_set_menu_items_selection(VikLayer *l, VikStdLayerMenuItem selection);
+VikStdLayerMenuItem vik_layer_get_menu_items_selection(VikLayer *l);
 void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp );
 VikLayer *vik_layer_create ( VikLayerTypeEnum type, VikViewport *vp, gboolean interactive );
 gboolean vik_layer_properties ( VikLayer *layer, VikViewport *vp, gboolean have_apply );
