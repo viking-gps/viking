@@ -222,6 +222,7 @@ gboolean socket_init ( VikWindow *vw )
 void socket_uninit (void)
 {
 	if ( service ) {
+		g_socket_listener_close ( (GSocketListener*)service );
 		g_socket_service_stop ( service );
 	}
 }
