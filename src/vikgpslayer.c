@@ -34,13 +34,13 @@
 
 #define GPS_FIXED_NAME "GPS"
 
-static VikGpsLayer *vik_gps_layer_create (VikViewport *vp);
-static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter );
-static void vik_gps_layer_free ( VikGpsLayer *vgl );
-static void vik_gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp );
-static void vik_gps_layer_configure ( VikGpsLayer *vgl, VikViewport *vp );
-static VikGpsLayer *vik_gps_layer_new ( VikViewport *vp );
-static void vik_gps_layer_post_read ( VikGpsLayer *vgl, VikViewport *vp, gboolean from_file );
+static VikGpsLayer *gps_layer_create (VikViewport *vp);
+static void gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter );
+static void gps_layer_free ( VikGpsLayer *vgl );
+static void gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp );
+static void gps_layer_configure ( VikGpsLayer *vgl, VikViewport *vp );
+static VikGpsLayer *gps_layer_new ( VikViewport *vp );
+static void gps_layer_post_read ( VikGpsLayer *vgl, VikViewport *vp, gboolean from_file );
 
 static void gps_layer_marshall( VikGpsLayer *vgl, guint8 **data, guint *len );
 static VikGpsLayer *gps_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );
@@ -272,15 +272,15 @@ VikLayerInterface vik_gps_layer_interface = {
 
   VIK_MENU_ITEM_ALL,
 
-  (VikLayerFuncCreate)                  vik_gps_layer_create,
+  (VikLayerFuncCreate)                  gps_layer_create,
   (VikLayerFuncGetNewName)              NULL,
-  (VikLayerFuncRealize)                 vik_gps_layer_realize,
-  (VikLayerFuncPostRead)                vik_gps_layer_post_read,
-  (VikLayerFuncFree)                    vik_gps_layer_free,
+  (VikLayerFuncRealize)                 gps_layer_realize,
+  (VikLayerFuncPostRead)                gps_layer_post_read,
+  (VikLayerFuncFree)                    gps_layer_free,
 
   (VikLayerFuncProperties)              NULL,
-  (VikLayerFuncDraw)                    vik_gps_layer_draw,
-  (VikLayerFuncConfigure)               vik_gps_layer_configure,
+  (VikLayerFuncDraw)                    gps_layer_draw,
+  (VikLayerFuncConfigure)               gps_layer_configure,
   (VikLayerFuncChangeCoordMode)         gps_layer_change_coord_mode,
 
   (VikLayerFuncGetTimestamp)            NULL,
@@ -442,11 +442,11 @@ GType vik_gps_layer_get_type ()
   return val_type;
 }
 
-static VikGpsLayer *vik_gps_layer_create (VikViewport *vp)
+static VikGpsLayer *gps_layer_create (VikViewport *vp)
 {
   int i;
 
-  VikGpsLayer *rv = vik_gps_layer_new (vp);
+  VikGpsLayer *rv = gps_layer_new (vp);
   vik_layer_rename ( VIK_LAYER(rv), vik_gps_layer_interface.name );
 
   for (i = 0; i < NUM_TRW; i++) {
@@ -521,7 +521,7 @@ static VikGpsLayer *gps_layer_unmarshall( guint8 *data, guint len, VikViewport *
   len -= sizeof(guint) + alm_size; \
   data += sizeof(guint) + alm_size;
 
-  VikGpsLayer *rv = vik_gps_layer_new(vvp);
+  VikGpsLayer *rv = gps_layer_new(vvp);
   VikLayer *child_layer;
   gint i;
 
@@ -728,7 +728,7 @@ static void gcs_create ( VikGpsLayer *vgl, VikViewport *vp )
 }
 #endif
 
-VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
+static VikGpsLayer *gps_layer_new (VikViewport *vp)
 {
   gint i;
   VikGpsLayer *vgl = VIK_GPS_LAYER ( g_object_new ( VIK_GPS_LAYER_TYPE, NULL ) );
@@ -762,7 +762,7 @@ VikGpsLayer *vik_gps_layer_new (VikViewport *vp)
   return vgl;
 }
 
-static void vik_gps_layer_post_read ( VikGpsLayer *vgl, VikViewport *vvp, gboolean from_file )
+static void gps_layer_post_read ( VikGpsLayer *vgl, VikViewport *vvp, gboolean from_file )
 {
   for (guint i = 0; i < NUM_TRW; i++) {
     trw_layer_calculate_bounds_waypoints ( vgl->trw_children[i] );
@@ -774,7 +774,7 @@ static void vik_gps_layer_post_read ( VikGpsLayer *vgl, VikViewport *vvp, gboole
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
 }
 
-static void vik_gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp )
+static void gps_layer_draw ( VikGpsLayer *vgl, VikViewport *vp )
 {
   gint i;
   VikLayer *vl;
@@ -823,7 +823,7 @@ static void gcs_free ( VikGpsLayer *vgl )
 }
 #endif
 
-static void vik_gps_layer_configure ( VikGpsLayer *vgl, VikViewport *vp )
+static void gps_layer_configure ( VikGpsLayer *vgl, VikViewport *vp )
 {
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   gcs_free ( vgl );
@@ -875,7 +875,7 @@ static void disconnect_layer_signal ( VikLayer *vl, VikGpsLayer *vgl )
   }
 }
 
-static void vik_gps_layer_free ( VikGpsLayer *vgl )
+static void gps_layer_free ( VikGpsLayer *vgl )
 {
   g_list_free(vgl->children);
   gint i;
@@ -894,7 +894,7 @@ static void vik_gps_layer_free ( VikGpsLayer *vgl )
   g_free ( vgl->serial_port );
 }
 
-static void vik_gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter )
+static void gps_layer_realize ( VikGpsLayer *vgl, VikTreeview *vt, GtkTreeIter *layer_iter )
 {
   GtkTreeIter iter;
   int ix;
