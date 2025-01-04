@@ -491,6 +491,8 @@ static gdouble tp_percentage_by_time ( VikTrack *tr, VikTrackpoint *trackpoint )
   gdouble pc = NAN;
   if (trackpoint == NULL)
     return pc;
+  if (tr->trackpoints == NULL)
+    return pc;
   gdouble t_start, t_end, t_total;
   t_start = VIK_TRACKPOINT(tr->trackpoints->data)->timestamp;
   t_end = VIK_TRACKPOINT(g_list_last(tr->trackpoints)->data)->timestamp;
@@ -510,6 +512,8 @@ static gdouble tp_percentage_by_distance ( VikTrack *tr, VikTrackpoint *trackpoi
 {
   gdouble pc = NAN;
   if (trackpoint == NULL)
+    return pc;
+  if (tr->trackpoints == NULL)
     return pc;
   // Is it the first trackpoint?
   if (trackpoint == tr->trackpoints->data)
