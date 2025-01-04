@@ -329,7 +329,6 @@ void vik_layer_layer_toggle_visible ( VikLayer *l );
 /* TODO: put in layerspanel */
 GdkPixbuf *vik_layer_load_icon ( VikLayerTypeEnum type );
 
-VikLayer *vik_layer_get_and_reset_trigger();
 void vik_layer_emit_update_secondary ( VikLayer *vl ); /* to be called by aggregate layer only. doesn't set the trigger */
 void vik_layer_emit_update_although_invisible ( VikLayer *vl );
 
