@@ -143,6 +143,7 @@ _set_property (GObject      *object,
 		break;
 
 	case PROP_API_KEY:
+		g_free (priv->api_key);
 		priv->api_key = g_strdup (g_value_get_string (value));
 		break;
 
