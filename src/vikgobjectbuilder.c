@@ -33,10 +33,10 @@
 #include "globals.h"
 
 /* FIXME use private fields */
-GType gtype = 0;
-gchar *property_name = NULL;
-GParameter *parameters = NULL;
-gint nb_parameters = 0;
+static GType gtype = 0;
+static gchar *property_name = NULL;
+static GParameter *parameters = NULL;
+static gint nb_parameters = 0;
 
 /* signals */
 enum
