@@ -392,9 +392,11 @@ gdouble vik_track_get_length(const VikTrack *tr)
     GList *iter = tr->trackpoints->next;
     while (iter)
     {
-      if ( ! VIK_TRACKPOINT(iter->data)->newsegment )
-        len += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
-                                &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+      if ( iter->data ) {
+        if ( ! VIK_TRACKPOINT(iter->data)->newsegment )
+          len += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
+                                  &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+      }
       iter = iter->next;
     }
   }
@@ -409,8 +411,10 @@ gdouble vik_track_get_length_including_gaps(const VikTrack *tr)
     GList *iter = tr->trackpoints->next;
     while (iter)
     {
-      len += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
-                              &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+      if ( iter->data ) {
+        len += vik_coord_diff ( &(VIK_TRACKPOINT(iter->data)->coord),
+                                &(VIK_TRACKPOINT(iter->prev->data)->coord) );
+      }
       iter = iter->next;
     }
   }
