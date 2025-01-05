@@ -199,6 +199,28 @@ static VikLayerParamData gpsd_retry_interval_default ( void )
   return data;
 }
 
+static gchar *modes_string[] = {
+  N_("Not Seen"),
+  N_("No Fix"),
+  N_("2D"),
+  N_("3D"),
+  NULL
+};
+
+static gchar *status_string[] = {
+  N_("Unknown"),
+  N_("GPS"),
+  N_("DGPS"),
+  N_("RTK Fixed"),
+  N_("RTK Float"),
+  N_("Dead Reckoning"),
+  N_("GNSSDR"),
+  N_("Time"),
+  N_("Simulated"),
+  N_("Precise Positioning Service (PPS)"),
+  NULL
+};
+
 #endif
 
 static void reset_cb ( GtkWidget *widget, gpointer ptr )
@@ -357,6 +379,8 @@ struct _VikGpsLayer {
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   VglGpsd *vgpsd;
   gboolean connected_to_gpsd;
+  uint32_t gpsd_mode;
+  uint32_t gpsd_status;
   gboolean realtime_tracking;
   gboolean first_realtime_trackpoint;
   GpsFix realtime_fix;
@@ -468,11 +492,18 @@ static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl )
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   static gchar buf2[256];
   buf2[0] = '\0';
-  if ( vgl->connected_to_gpsd )
-    g_snprintf (buf2, sizeof(buf2), "GPSD:%s:%s %s", vgl->gpsd_host, vgl->gpsd_port, _("Connected"));
+  if ( vgl->connected_to_gpsd ) {
+    static gchar buf3[256];
+    buf3[0] = '\0';
+    if ( vgl->gpsd_mode <= MODE_NO_FIX  )
+      g_snprintf (buf3, sizeof(buf3), "Mode:%s", modes_string[vgl->gpsd_mode]);
+    else if ( vgl->gpsd_mode <= MODE_3D && vgl->gpsd_status <= STATUS_PPS_FIX)
+      g_snprintf (buf3, sizeof(buf3), "Mode:%s Status:%s", modes_string[vgl->gpsd_mode], status_string[vgl->gpsd_status]);
+    g_snprintf (buf2, sizeof(buf2), "GPSD:%s:%s %s %s", vgl->gpsd_host, vgl->gpsd_port, _("Connected"), buf3);
+    g_snprintf (rbuf, sizeof(rbuf), "%s\n%s", buf1, buf2);
+  }
   else
     g_snprintf (buf2, sizeof(buf2), "GPSD:%s:%s %s", vgl->gpsd_host, vgl->gpsd_port, _("Disconnected"));
-
   g_snprintf (rbuf, sizeof(rbuf), "%s\n%s", buf1, buf2);
 #else
   g_snprintf (rbuf, sizeof(rbuf), "%s", buf1);
@@ -1811,6 +1842,9 @@ static void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
     g_warning("%s: receiving GPS data while not in realtime mode", __PRETTY_FUNCTION__);
     return;
   }
+
+  vgl->gpsd_mode = vgpsd->gpsd.fix.mode;
+  vgl->gpsd_status = vgpsd->gpsd.fix.status;
 
   if ((vgpsd->gpsd.fix.mode >= MODE_2D) &&
       !isnan(vgpsd->gpsd.fix.latitude) &&
