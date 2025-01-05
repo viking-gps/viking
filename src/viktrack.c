@@ -2173,6 +2173,14 @@ void vik_track_calculate_bounds ( VikTrack *tr )
   if ( tp_iter ) {
     vik_coord_to_latlon ( &(VIK_TRACKPOINT(tp_iter->data)->coord), &topleft );
     vik_coord_to_latlon ( &(VIK_TRACKPOINT(tp_iter->data)->coord), &bottomright );
+  } else {
+    // Defaults when no trackpoints
+    //  values aren't actively used, but avoids potential use of uninitialised variables
+    // (they are reset when first trkpt set or entire track is set)
+    topleft.lat = NAN;
+    topleft.lon = NAN;
+    bottomright.lat = NAN;
+    bottomright.lon = NAN;
   }
   while ( tp_iter ) {
 
