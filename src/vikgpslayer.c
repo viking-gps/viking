@@ -2094,6 +2094,7 @@ static void rt_gpsd_disconnect(VikGpsLayer *vgl)
   if (vgl->realtime_io_channel) {
     GError *error = NULL;
     g_io_channel_shutdown (vgl->realtime_io_channel, FALSE, &error);
+    g_io_channel_unref (vgl->realtime_io_channel);
     vgl->realtime_io_channel = NULL;
   }
   if (vgl->vgpsd) {
