@@ -1635,6 +1635,19 @@ static void gps_empty_download_cb( gpointer layer_and_vlp[2] )
 }
 
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
+static void gps_empty_realtime (VikGpsLayer *vgl)
+{
+  vik_trw_layer_delete_all_waypoints ( vgl->trw_children[TRW_REALTIME]);
+  if (vgl->connected_to_gpsd && vgl->realtime_tracking && vgl->realtime_track ) {
+    // Empty points, but leave track.
+    if ( vgl->realtime_track )
+      vik_track_remove_all_points ( vgl->realtime_track );
+  }
+  else
+    vik_trw_layer_delete_all_tracks ( vgl->trw_children[TRW_REALTIME]);
+  vik_trw_layer_delete_all_routes ( vgl->trw_children[TRW_REALTIME]);
+}
+
 static void gps_empty_realtime_cb( gpointer layer_and_vlp[2] )
 {
   VikGpsLayer *vgl = (VikGpsLayer *)layer_and_vlp[0];
@@ -1643,9 +1656,7 @@ static void gps_empty_realtime_cb( gpointer layer_and_vlp[2] )
 			      _("Are you sure you want to delete GPS Realtime data?"),
 			      NULL ) )
     return;
-  vik_trw_layer_delete_all_waypoints ( vgl->trw_children[TRW_REALTIME]);
-  vik_trw_layer_delete_all_tracks ( vgl->trw_children[TRW_REALTIME]);
-  vik_trw_layer_delete_all_routes ( vgl->trw_children[TRW_REALTIME]);
+  gps_empty_realtime ( vgl );
 }
 #endif
 
@@ -1664,9 +1675,7 @@ static void gps_empty_all_cb( gpointer layer_and_vlp[2] )
   vik_trw_layer_delete_all_tracks ( vgl->trw_children[TRW_DOWNLOAD]);
   vik_trw_layer_delete_all_routes ( vgl->trw_children[TRW_DOWNLOAD]);
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
-  vik_trw_layer_delete_all_waypoints ( vgl->trw_children[TRW_REALTIME]);
-  vik_trw_layer_delete_all_tracks ( vgl->trw_children[TRW_REALTIME]);
-  vik_trw_layer_delete_all_routes ( vgl->trw_children[TRW_REALTIME]);
+  gps_empty_realtime ( vgl );
 #endif
 }
 
@@ -1757,7 +1766,7 @@ static VikTrackpoint* create_realtime_trackpoint(VikGpsLayer *vgl, gboolean forc
       return NULL;
     }
 
-    if (vgl->realtime_record && vgl->realtime_fix.dirty) {
+    if (vgl->realtime_record && vgl->realtime_track && vgl->realtime_fix.dirty) {
       gboolean replace = FALSE;
       int heading = isnan(vgl->realtime_fix.fix.track) ? 0 : (int)floor(vgl->realtime_fix.fix.track);
       int last_heading = isnan(vgl->last_fix.fix.track) ? 0 : (int)floor(vgl->last_fix.fix.track);
@@ -2020,12 +2029,19 @@ static gboolean rt_gpsd_try_connect(gpointer *data)
   vgl->realtime_fix.fix.speed = vgl->last_fix.fix.speed = NAN;
 
   if (vgl->realtime_record) {
-    VikTrwLayer *vtl = vgl->trw_children[TRW_REALTIME];
-    vgl->realtime_track = vik_track_new();
-    vgl->realtime_track->visible = TRUE;
-    gchar *name = make_track_name(vtl);
-    vik_trw_layer_add_track(vtl, name, vgl->realtime_track);
-    g_free(name);
+    // Reuse existing track if there is one
+    if ( vgl->trw_children[TRW_REALTIME] ) {
+      vgl->realtime_track = vik_trw_layer_get_only_track ( vgl->trw_children[TRW_REALTIME] );
+    }
+    if ( !vgl->realtime_track ) {
+      // Otherwise create one
+      VikTrwLayer *vtl = vgl->trw_children[TRW_REALTIME];
+      vgl->realtime_track = vik_track_new();
+      vgl->realtime_track->has_color = TRUE;
+      gchar *name = make_track_name(vtl);
+      vik_trw_layer_add_track(vtl, name, vgl->realtime_track);
+      g_free(name);
+    }
   }
 
   vgl->connected_to_gpsd = TRUE;
@@ -2111,11 +2127,9 @@ static void rt_gpsd_disconnect(VikGpsLayer *vgl)
     vgl->vgpsd = NULL;
   }
 
-  if (vgl->realtime_record && vgl->realtime_track) {
-    if ((vgl->realtime_track->trackpoints == NULL) || (vgl->realtime_track->trackpoints->next == NULL))
-      vik_trw_layer_delete_track(vgl->trw_children[TRW_REALTIME], vgl->realtime_track);
-    vgl->realtime_track = NULL;
-  }
+  // NB recording track left as is;
+  //  whether any points or not
+
   vgl->connected_to_gpsd = FALSE;
 }
 
