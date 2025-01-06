@@ -779,6 +779,9 @@ VikLoadType_t a_file_load_stream ( FILE *f,
       vik_layer_rename ( VIK_LAYER(vtl), name ? name : a_file_basename ( filename ) );
     }
 
+    if ( !external )
+      vik_trw_layer_set_filename ( vtl, filename );
+
     // In fact both kml & gpx files start the same as they are in xml
     if ( a_file_check_ext ( filename, ".kml" ) && file_check_magic ( f, FILE_XML_MAGIC ) && !external ) {
       if ( ! ( success = a_kml_read_file ( vtl, f, external ) ) ) {

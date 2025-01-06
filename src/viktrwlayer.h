@@ -130,6 +130,7 @@ VikCoordMode vik_trw_layer_get_coord_mode ( VikTrwLayer *vtl );
 
 gboolean vik_trw_layer_uniquify ( VikTrwLayer *vtl, VikLayersPanel *vlp );
 
+void vik_trw_layer_reset ( VikTrwLayer *vtl, VikViewport *vvp );
 void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl );
 void vik_trw_layer_delete_all_tracks ( VikTrwLayer *vtl );
 void vik_trw_layer_delete_all_routes ( VikTrwLayer *vtl );
@@ -188,6 +189,9 @@ gboolean vik_trw_layer_get_routes_visibility ( VikTrwLayer *vtl );
 gboolean vik_trw_layer_get_waypoints_visibility ( VikTrwLayer *vtl );
 
 gboolean vik_trw_layer_get_prefer_gps_speed ( VikTrwLayer *vtl );
+
+void vik_trw_layer_set_filename ( VikTrwLayer *vtl, const gchar* filename );
+const gchar* vik_trw_layer_get_filename ( VikTrwLayer *vtl );
 
 void trw_layer_update_treeview ( VikTrwLayer *vtl, VikTrack *trk, gboolean do_sort );
 

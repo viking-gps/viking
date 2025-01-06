@@ -253,6 +253,11 @@ struct _VikTrwLayer {
   gboolean external_loaded;
   gchar *external_dirpath;
 
+  // Only valid on initial session load of the associated file
+  //  (similar to the external_file capability)
+  //  but this is not currently stored in .vik files
+  gchar *initial_file;
+
 #if GTK_CHECK_VERSION (3,0,0)
   cairo_t *cr; // Reference into vvp - thus do not free this here
 #endif
@@ -2053,6 +2058,8 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
   g_free ( trwlayer->gpx_extensions );
   if ( trwlayer->laps )
     g_queue_free_full ( trwlayer->laps, g_free );
+
+  g_free ( trwlayer->initial_file );
 }
 
 static void init_drawing_params ( struct DrawingParams *dp, VikTrwLayer *vtl, VikViewport *vp, gboolean highlight )
@@ -4986,6 +4993,96 @@ static GtkMenu* create_external_submenu ( GtkMenu *menu )
   return external_submenu;
 }
 
+/**
+ *
+ */
+static void trw_layer_file_reload ( menu_array_layer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+  VikLayersPanel *vlp = VIK_LAYERS_PANEL(values[MA_VLP]);
+  VikWindow *vw = (VikWindow*)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+  VikViewport *vvp = vik_window_viewport(vw);
+
+  gchar* filename = g_strdup ( vtl->initial_file );
+
+  if ( a_dialog_yes_or_no(VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                          _("Are you sure you want to reload the file \"%s\"?"), filename) ) {
+    if ( g_file_test(filename, G_FILE_TEST_EXISTS) ) {
+      vik_trw_layer_reset ( vtl, vvp );
+      VikAggregateLayer *agg = vik_layers_panel_get_top_layer(vlp);
+      // c.f. vik_window_open_file()
+      // This is a reduced version
+      //  mainly to handle GPX, TCX, KML or FIT as could be stored in a TRW layer
+      VikStatusbar *sb = vik_window_get_statusbar ( vw );
+      gchar *msg = NULL;
+      vik_window_set_busy_cursor ( vw );
+      VikLoadType_t lt = a_file_load ( agg, vvp, vtl, filename, FALSE, FALSE, NULL );
+      switch ( lt ) {
+      case LOAD_TYPE_READ_FAILURE:
+      case LOAD_TYPE_GPSBABEL_FAILURE:
+      case LOAD_TYPE_GPX_FAILURE:
+      case LOAD_TYPE_TCX_FAILURE:
+      case LOAD_TYPE_KML_FAILURE:
+      case LOAD_TYPE_FIT_FAILURE:
+        a_dialog_error_msg_extra ( GTK_WINDOW(vw), _("Unable to reload %s."), filename );
+        break;
+      case LOAD_TYPE_VIK_SUCCESS:
+        msg = g_strdup_printf ( _("Reloaded file %s"), a_file_basename(filename) );
+        break;
+      default:
+        // Just warn
+        msg = g_strdup_printf ( _("Reload encountered an issue: internal code %d"), lt );
+        break;
+      }
+
+      vik_window_clear_busy_cursor ( vw );
+
+      if ( msg ) {
+        vik_statusbar_set_message ( sb, VIK_STATUSBAR_INFO, msg );
+        g_free ( msg );
+      }
+
+      // Attempt to maintain currently selected item
+      // The otherwise selected treeview goes away even with this...
+      //vik_window_set_selected_trw_layer ( vw, vtl );
+      //gpointer gw = vik_window_get_graphs_widgets ( vw );
+      //maybe_show_graph ( vw, vtl, gw );
+      VikTreeview *tv = vik_layers_panel_get_treeview ( vlp );
+      vik_treeview_item_select ( tv, &VIK_LAYER(vtl)->iter );
+
+      //vik_layers_panel_emit_update ( vlp, FALSE );
+    } else {
+      a_dialog_error_msg_extra ( GTK_WINDOW(vw), _("Can not access %s."), filename );
+    }
+  }
+
+  g_free ( filename );
+}
+
+/**
+ *
+ */
+static void trw_layer_file_delete ( menu_array_layer values )
+{
+  VikTrwLayer *vtl = VIK_TRW_LAYER(values[MA_VTL]);
+
+  if ( a_dialog_yes_or_no(VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                          _("Are you sure you want to delete the file \"%s\"?"), vtl->initial_file) ) {
+    if ( g_remove ( vtl->initial_file ) ) {
+      a_dialog_info_msg_extra ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                _("Failed to remove file: "), vtl->initial_file );
+    } else {
+      VikWindow *vw = (VikWindow*)(VIK_GTK_WINDOW_FROM_LAYER(vtl));
+      VikStatusbar *sb = vik_window_get_statusbar ( vw );
+      gchar *msg = g_strdup_printf ( _("Deleted file %s"), a_file_basename(vtl->initial_file) );
+      vik_statusbar_set_message ( sb, VIK_STATUSBAR_INFO, msg );
+      g_free ( msg );
+      g_free ( vtl->initial_file );
+      vtl->initial_file = NULL;
+    }
+  }
+}
+
 #define VIK_SETTINGS_EXPORT_GPSMAPPER "export_gpsmapper_option"
 #define VIK_SETTINGS_EXPORT_GPSPOINT "export_gpspoint_option"
 
@@ -5171,6 +5268,14 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
   }
+
+  GtkMenu *file_submenu = GTK_MENU(gtk_menu_new());
+  GtkWidget *itemff = vu_menu_add_item ( menu, _("_File"), GTK_STOCK_FILE, NULL, data );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemff), GTK_WIDGET(file_submenu) );
+  gtk_widget_set_sensitive ( itemff, (gboolean)GPOINTER_TO_INT(vtl->initial_file) );
+
+  vu_menu_add_item ( file_submenu, _("_Reload"), GTK_STOCK_REVERT_TO_SAVED, G_CALLBACK(trw_layer_file_reload), data );
+  vu_menu_add_item ( file_submenu, _("_Delete"), GTK_STOCK_DELETE, G_CALLBACK(trw_layer_file_delete), data );
 
   GtkWidget *itemtl = vu_menu_add_item ( menu, _("Track _List..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_track_list_dialog), data );
   gtk_widget_set_sensitive ( itemtl, (gboolean)(g_hash_table_size (vtl->tracks)+g_hash_table_size (vtl->routes)) );
@@ -5837,6 +5942,51 @@ void vik_trw_layer_delete_all_waypoints ( VikTrwLayer *vtl )
   g_hash_table_remove_all(vtl->waypoints);
 
   vik_layer_emit_update ( VIK_LAYER(vtl), trw_layer_modified(vtl) );
+}
+
+// Slightly different to just delete_all,
+//  as this resets all properties to defaults as well
+void vik_trw_layer_reset ( VikTrwLayer *vtl, VikViewport *vvp )
+{
+  // TODO avoid unnecessary emit layer updates
+  vik_trw_layer_delete_all_waypoints ( vtl );
+  vik_trw_layer_delete_all_tracks ( vtl );
+  vik_trw_layer_delete_all_routes ( vtl );
+
+  g_free ( vtl->initial_file );
+  vtl->initial_file = NULL;
+  g_free ( vtl->external_file );
+  vtl->external_file = NULL;
+
+  g_free ( vtl->external_dirpath );
+  vtl->external_dirpath = NULL;
+
+  vik_trw_metadata_free ( vtl->metadata );
+  vtl->metadata = vik_trw_metadata_new ();
+
+  g_free ( vtl->gpx_header );
+  vtl->gpx_header = NULL;
+  g_free ( vtl->gpx_extensions );
+  vtl->gpx_extensions = NULL;
+
+  if ( vtl->laps )
+    g_queue_clear_full ( vtl->laps, g_free );
+
+  vik_layer_set_defaults ( VIK_LAYER(vtl), vvp );
+
+  highest_wp_number_reset ( vtl );
+
+  // TODO may need to reset image-cache
+}
+
+void vik_trw_layer_set_filename ( VikTrwLayer *vtl, const gchar* filename )
+{
+  vtl->initial_file = g_strdup ( filename );
+}
+
+const gchar* vik_trw_layer_get_filename ( VikTrwLayer *vtl )
+{
+  return vtl->initial_file;
 }
 
 static void trw_layer_delete_all_tracks ( menu_array_layer values )
