@@ -56,6 +56,7 @@ struct _VikLayer {
   gboolean visible;
 
   gboolean realized;
+  // These are only valid when the layer realized:
   VikViewport *vvp;/* simply a reference */
   VikTreeview *vt; /* simply a reference */
   GtkTreeIter iter;
