@@ -457,6 +457,7 @@ static void geoclue_empty_cb ( menu_array_layer values )
 								_("Are you sure you want to delete geoclue data?"),
 								NULL ) )
 		return;
+	vgl->track = NULL;
 	vik_trw_layer_delete_all_waypoints ( vgl->trw );
 	vik_trw_layer_delete_all_tracks ( vgl->trw );
 }
@@ -593,6 +594,16 @@ notify_location ( GClueSimple *simple,
 		  update_all = FALSE;
 	}
 
+	// Create track if necessary
+	if ( vgl->record && vgl->track == NULL ) {
+		VikTrwLayer *vtl = vgl->trw;
+		vgl->track = vik_track_new();
+		vgl->track->has_color = TRUE;
+		gchar *name = make_track_name ( vtl );
+		vik_trw_layer_add_track ( vtl, name, vgl->track );
+		g_free ( name );
+	}
+
 	vgl->trkpt = vgl->record ? create_trackpoint ( vgl, vgl->coord, location ) : NULL;
 	vgl->first_trackpoint = FALSE;
 
@@ -655,14 +666,6 @@ on_simple_ready ( GObject      *source_object,
 	if ( vik_verbose ) {
 		GClueLocation *location = gclue_simple_get_location ( vgl->simple );
 		libgeoclue_print_location ( location );
-	}
-
-	if ( vgl->record ) {
-		VikTrwLayer *vtl = vgl->trw;
-		vgl->track = vik_track_new();
-		gchar *name = make_track_name ( vtl );
-		vik_trw_layer_add_track ( vtl, name, vgl->track );
-		g_free ( name );
 	}
 
 	vgl->first_trackpoint = TRUE;
