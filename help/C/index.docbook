@@ -1486,13 +1486,6 @@ The result is generated in a new Track/Waypoint layer.
 </para>
 </section>
 
-<section><title>Geotag Images</title>
-<para>
-This starts the Geotagging Images dialog using the specific track.
-See <link linkend="geotagging">Geotagging</link> for further detail.
-</para>
-</section>
-
 <section><title>List Tracks or Routes</title>
 <para>
 Opens a new dialog with the list. As described in the Aggregate layer <xref linkend="track_list"/>
