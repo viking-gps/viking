@@ -751,6 +751,13 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
 }
 
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
+static void gc_create_rt ( VikGpsLayer *vgl, VikViewport *vp )
+{
+  vgl->realtime_track_gc = vik_viewport_new_gc_from_color ( vp, &(vgl->indicator_color), 2 );
+}
+
+// Note that realtime_track_gc is NOT created here
+//  and must be done separately in gc_create_rt() above
 static void gcs_create ( VikGpsLayer *vgl, VikViewport *vp )
 {
   vgl->realtime_track_bg_gc = vik_viewport_new_gc ( vp, "grey", 2 );
@@ -839,6 +846,7 @@ static void gps_layer_configure ( VikGpsLayer *vgl, VikViewport *vp )
 #if defined (VIK_CONFIG_REALTIME_GPS_TRACKING) && defined (GPSD_API_MAJOR_VERSION)
   gcs_free ( vgl );
   gcs_create ( vgl, vp );
+  gc_create_rt ( vgl, vp );
 #endif
 }
 
@@ -2160,6 +2168,6 @@ static void layer_update_indictor_gc (VikGpsLayer *vgl, VikViewport *vp)
 {
   if ( vgl->realtime_track_gc )
     ui_gc_unref ( vgl->realtime_track_gc );
-  vgl->realtime_track_gc = vik_viewport_new_gc_from_color ( vp, &(vgl->indicator_color), 2 );
+  gc_create_rt ( vgl, vp );
 }
 #endif /* VIK_CONFIG_REALTIME_GPS_TRACKING */
