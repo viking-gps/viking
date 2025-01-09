@@ -300,6 +300,8 @@ vik_viewport_init ( VikViewport *vvp )
   */
   //vik_viewport_set_background_color ( vvp, DEFAULT_BACKGROUND_COLOR );
 #endif
+  gdk_color_parse ( "grey", &vvp->scale_bg_color );
+  gdk_color_parse ( "black", &vvp->black_color );
 
   // Initiate center history
   update_centers ( vvp );
@@ -443,12 +445,10 @@ void configure_common ( VikViewport *vvp )
   if ( vvp->scale_bg_gc )
     ui_gc_unref ( vvp->scale_bg_gc );
   vvp->scale_bg_gc = vik_viewport_new_gc ( vvp, "grey", 3*vvp->scale );
-  gdk_color_parse ( "grey", &vvp->scale_bg_color );
 
   if ( vvp->black_gc )
     ui_gc_unref ( vvp->black_gc );
   vvp->black_gc = vik_viewport_new_gc ( vvp, "black", vvp->scale );
-  gdk_color_parse ( "black", &vvp->black_color );
 }
 
 /**
