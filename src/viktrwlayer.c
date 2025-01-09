@@ -9871,15 +9871,19 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 
     // Routes don't have times or segments...
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
-      (void)vu_menu_add_item ( combine_submenu, _("_Merge By Time..."), NULL, G_CALLBACK(trw_layer_merge_by_timestamp), data );
+      GtkWidget *itemmt = vu_menu_add_item ( combine_submenu, _("_Merge By Time..."), NULL, G_CALLBACK(trw_layer_merge_by_timestamp), data );
+      gtk_widget_set_sensitive ( itemmt, g_hash_table_size(l->tracks) > 1 );
       (void)vu_menu_add_item ( combine_submenu, _("Merge _Segments"), NULL, G_CALLBACK(trw_layer_merge_by_segment), data );
-      (void)vu_menu_add_item ( combine_submenu, _("Merge _With Other Tracks..."), NULL, G_CALLBACK(trw_layer_merge_with_other), data );
+      GtkWidget *itemmo = vu_menu_add_item ( combine_submenu, _("Merge _With Other Tracks..."), NULL, G_CALLBACK(trw_layer_merge_with_other), data );
+      gtk_widget_set_sensitive ( itemmo, g_hash_table_size(l->tracks) > 1 );
     }
 
-    (void)vu_menu_add_item ( combine_submenu, (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK) ? _("_Append Track...") : _("_Append Route..."),
-                             NULL, G_CALLBACK(trw_layer_append_track), data );
-    (void)vu_menu_add_item ( combine_submenu, (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK) ? _("Append _Route...") : _("Append _Track..."),
-                             NULL, G_CALLBACK(trw_layer_append_other), data );
+    GtkWidget *itematr = vu_menu_add_item ( combine_submenu, (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK) ? _("_Append Track...") : _("_Append Route..."),
+                                            NULL, G_CALLBACK(trw_layer_append_track), data );
+    gtk_widget_set_sensitive ( itematr, (g_hash_table_size(l->tracks) > 1) || (g_hash_table_size(l->routes) > 1) );
+    GtkWidget *itemart = vu_menu_add_item ( combine_submenu, (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK) ? _("Append _Route...") : _("Append _Track..."),
+                                            NULL, G_CALLBACK(trw_layer_append_other), data );
+    gtk_widget_set_sensitive ( itemart, (g_hash_table_size(l->tracks) > 1) || (g_hash_table_size(l->routes) > 1) );
 
     GtkMenu *split_submenu = GTK_MENU(gtk_menu_new());
     GtkWidget *itemsplit = vu_menu_add_item ( menu, _("_Split"), GTK_STOCK_DISCONNECT, NULL, NULL );
