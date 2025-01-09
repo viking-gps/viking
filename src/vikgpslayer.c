@@ -787,12 +787,12 @@ static VikGpsLayer *gps_layer_new (VikViewport *vp)
   vgl->realtime_retry_timer = 0;
   if ( vp ) {
     layer_update_indictor_gc ( vgl, vp );
-    gdk_color_parse ( "grey", &vgl->realtime_track_bg_color );
-    gdk_color_parse ( "red", &vgl->realtime_track_pt1_color );
-    gdk_color_parse ( "green", &vgl->realtime_track_pt2_color );
     gcs_create ( vgl, vp );
   }
   vgl->realtime_track = NULL;
+  gdk_color_parse ( "grey", &vgl->realtime_track_bg_color );
+  gdk_color_parse ( "red", &vgl->realtime_track_pt1_color );
+  gdk_color_parse ( "green", &vgl->realtime_track_pt2_color );
 #endif // VIK_CONFIG_REALTIME_GPS_TRACKING
 
   vik_layer_set_defaults ( VIK_LAYER(vgl), vp );
