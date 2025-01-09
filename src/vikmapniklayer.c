@@ -102,7 +102,7 @@ static VikMapnikLayer *mapnik_layer_new ( VikViewport *vvp );
 static VikMapnikLayer *mapnik_layer_create ( VikViewport *vp );
 static void mapnik_layer_free ( VikMapnikLayer *vml );
 static void mapnik_layer_draw ( VikMapnikLayer *vml, VikViewport *vp );
-static void mapnik_layer_add_menu_items ( VikMapnikLayer *vml, GtkMenu *menu, gpointer vlp );
+static void mapnik_layer_add_menu_items ( VikMapnikLayer *vml, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection );
 
 static gpointer mapnik_feature_create ( VikWindow *vw, VikViewport *vvp)
 {
@@ -1023,7 +1023,7 @@ static void mapnik_layer_about ( menu_array_values values )
 /**
  *
  */
-static void mapnik_layer_add_menu_items ( VikMapnikLayer *vml, GtkMenu *menu, gpointer vlp )
+static void mapnik_layer_add_menu_items ( VikMapnikLayer *vml, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection )
 {
 	static menu_array_values values;
 	values[MA_VML] = vml;

@@ -41,7 +41,7 @@ static VikLayerParamData geoclue_layer_get_param ( VikGeoclueLayer *vgl, guint16
 static const gchar* geoclue_layer_tooltip ( VikGeoclueLayer *vgl );
 
 static void geoclue_layer_change_coord_mode ( VikGeoclueLayer *vgl, VikCoordMode mode );
-static void geoclue_layer_add_menu_items ( VikGeoclueLayer *vtl, GtkMenu *menu, gpointer vlp );
+static void geoclue_layer_add_menu_items ( VikGeoclueLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection );
 
 typedef gpointer menu_array_layer[2];
 static void geoclue_empty_cb ( menu_array_layer values );
@@ -385,7 +385,7 @@ static void geoclue_layer_change_coord_mode ( VikGeoclueLayer *vgl, VikCoordMode
 	vik_layer_change_coord_mode ( VIK_LAYER(vgl->trw), mode );
 }
 
-static void geoclue_layer_add_menu_items ( VikGeoclueLayer *vgl, GtkMenu *menu, gpointer vlp )
+static void geoclue_layer_add_menu_items ( VikGeoclueLayer *vgl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection )
 {
 	static gpointer values[2];
 	GtkWidget *item;

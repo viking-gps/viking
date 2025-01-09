@@ -151,9 +151,9 @@ typedef void          (*VikLayerFuncChangeCoordMode)       (VikLayer *,VikCoordM
 typedef void                (*VikLayerFuncSetMenuItemsSelection) (VikLayer *,VikStdLayerMenuItem);
 typedef VikStdLayerMenuItem (*VikLayerFuncGetMenuItemsSelection) (VikLayer *);
 
-typedef void          (*VikLayerFuncAddMenuItems)          (VikLayer *,GtkMenu *,gpointer); /* gpointer is a VikLayersPanel */
+typedef void          (*VikLayerFuncAddMenuItems)          (VikLayer *,GtkMenu *,gpointer,VikStdLayerMenuItem); /* gpointer is a VikLayersPanel */
 typedef gboolean      (*VikLayerFuncSublayerAddMenuItems)  (VikLayer *,GtkMenu *,gpointer, /* first gpointer is a VikLayersPanel */
-                                                            gint,gpointer,GtkTreeIter *,VikViewport *);
+                                                            gint,gpointer,GtkTreeIter *,VikViewport *,VikStdLayerMenuItem);
 typedef const gchar * (*VikLayerFuncSublayerRenameRequest) (VikLayer *,const gchar *,gpointer,
                                                             gint,VikViewport *,GtkTreeIter *); /* first gpointer is a VikLayersPanel */
 typedef gboolean      (*VikLayerFuncSublayerToggleVisible) (VikLayer *,gint,gpointer);
@@ -301,14 +301,14 @@ void vik_layer_redraw ( VikLayer *vl );
 /* GUI */
 void vik_layer_set_menu_items_selection(VikLayer *l, VikStdLayerMenuItem selection);
 VikStdLayerMenuItem vik_layer_get_menu_items_selection(VikLayer *l);
-void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp );
+void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection );
 VikLayer *vik_layer_create ( VikLayerTypeEnum type, VikViewport *vp, gboolean interactive );
 gboolean vik_layer_properties ( VikLayer *layer, VikViewport *vp, gboolean have_apply );
 
 void vik_layer_realize ( VikLayer *l, VikTreeview *vt, GtkTreeIter * layer_iter );
 void vik_layer_post_read ( VikLayer *layer, VikViewport *vp, gboolean from_file );
 
-gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp );
+gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp, VikStdLayerMenuItem selection );
 
 void      vik_layer_marshall ( VikLayer *vl, guint8 **data, guint *len );
 VikLayer *vik_layer_unmarshall ( const guint8 *data, guint len, VikViewport *vvp );

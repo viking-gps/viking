@@ -561,16 +561,16 @@ VikStdLayerMenuItem vik_layer_get_menu_items_selection(VikLayer *l)
     return(vik_layer_interfaces[l->type]->menu_items_selection);
 }
 
-void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp )
+void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection )
 {
   if ( vik_layer_interfaces[l->type]->add_menu_items )
-    vik_layer_interfaces[l->type]->add_menu_items ( l, menu, vlp );
+    vik_layer_interfaces[l->type]->add_menu_items ( l, menu, vlp, selection );
 }
 
-gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp )
+gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp, VikStdLayerMenuItem selection )
 {
   if ( vik_layer_interfaces[l->type]->sublayer_add_menu_items )
-    return vik_layer_interfaces[l->type]->sublayer_add_menu_items ( l, menu, vlp, subtype, sublayer, iter, vvp );
+    return vik_layer_interfaces[l->type]->sublayer_add_menu_items ( l, menu, vlp, subtype, sublayer, iter, vvp, selection );
   return FALSE;
 }
 

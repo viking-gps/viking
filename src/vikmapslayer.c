@@ -109,7 +109,7 @@ static VikLayerToolFuncStatus maps_layer_download_click ( VikMapsLayer *vml, Gdk
 static gpointer maps_layer_download_create ( VikWindow *vw, VikViewport *vvp );
 static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir );
 static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const VikCoord *ul, const VikCoord *br, gint redownload );
-static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp );
+static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp, VikStdLayerMenuItem selection );
 static guint map_uniq_id_to_index ( guint uniq_id );
 
 
@@ -2948,7 +2948,7 @@ static void maps_layer_flush ( menu_array_values values )
   a_mapcache_flush_type ( vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(vml->maptype)) );
 }
 
-static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp )
+static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp, VikStdLayerMenuItem selection )
 {
   static menu_array_values values;
   values[MA_VML] = vml;

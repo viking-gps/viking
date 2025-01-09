@@ -956,13 +956,12 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
     if ( vik_treeview_item_get_type ( vlp->vt, iter ) == VIK_TREEVIEW_TYPE_LAYER )
     {
       VikLayer *layer = VIK_LAYER(vik_treeview_item_get_pointer ( vlp->vt, iter ));
+      VikStdLayerMenuItem menu_selection = vik_layer_get_menu_items_selection ( layer );
 
       if ( layer->type == VIK_LAYER_AGGREGATE )
         menu = GTK_MENU ( layers_panel_create_popup ( vlp, TRUE ) );
       else
       {
-	VikStdLayerMenuItem menu_selection = vik_layer_get_menu_items_selection(layer);
-
         menu = GTK_MENU ( gtk_menu_new () );
 
 	if (menu_selection & VIK_MENU_ITEM_PROPERTY) {
@@ -986,13 +985,15 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
           (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_DELETE, G_CALLBACK(vik_layers_panel_delete_selected), vlp );
 	}
       }
-      vik_layer_add_menu_items ( layer, menu, vlp );
+      vik_layer_add_menu_items ( layer, menu, vlp, menu_selection );
       gtk_widget_show_all ( GTK_WIDGET(menu) );
     }
     else
     {
+      VikLayer *layer = VIK_LAYER(vik_treeview_item_get_parent ( vlp->vt, iter ));
+      VikStdLayerMenuItem menu_selection = vik_layer_get_menu_items_selection ( layer );
       menu = GTK_MENU ( gtk_menu_new () );
-      if ( ! vik_layer_sublayer_add_menu_items ( vik_treeview_item_get_parent ( vlp->vt, iter ), menu, vlp, vik_treeview_item_get_data ( vlp->vt, iter ), vik_treeview_item_get_pointer ( vlp->vt, iter ), iter, vlp->vvp ) )
+      if ( ! vik_layer_sublayer_add_menu_items(layer, menu, vlp, vik_treeview_item_get_data ( vlp->vt, iter ), vik_treeview_item_get_pointer ( vlp->vt, iter ), iter, vlp->vvp, menu_selection) )
       {
         gtk_widget_destroy ( GTK_WIDGET(menu) );
         return;

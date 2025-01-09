@@ -50,7 +50,7 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
 static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl );
 
 static void gps_layer_change_coord_mode ( VikGpsLayer *vgl, VikCoordMode mode );
-static void gps_layer_add_menu_items( VikGpsLayer *vtl, GtkMenu *menu, gpointer vlp );
+static void gps_layer_add_menu_items( VikGpsLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection );
 
 static void gps_upload_cb( gpointer layer_and_vlp[2] );
 static void gps_download_cb( gpointer layer_and_vlp[2] );
@@ -858,7 +858,7 @@ static void gps_layer_change_coord_mode ( VikGpsLayer *vgl, VikCoordMode mode )
   }
 }
 
-static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer vlp )
+static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection )
 {
   static gpointer pass_along[2];
   pass_along[0] = vgl;

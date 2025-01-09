@@ -848,8 +848,8 @@ static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mo
 static gdouble trw_layer_get_timestamp ( VikTrwLayer *vtl );
 static void trw_layer_set_menu_selection ( VikTrwLayer *vtl, VikStdLayerMenuItem selection );
 static VikStdLayerMenuItem trw_layer_get_menu_selection ( VikTrwLayer *vtl );
-static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp );
-static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp );
+static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection );
+static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp, VikStdLayerMenuItem selection );
 static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar *newname, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
 static gboolean trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, gpointer sublayer );
 static const gchar* trw_layer_layer_tooltip ( VikTrwLayer *vtl );
@@ -5086,7 +5086,7 @@ static void trw_layer_file_delete ( menu_array_layer values )
 #define VIK_SETTINGS_EXPORT_GPSMAPPER "export_gpsmapper_option"
 #define VIK_SETTINGS_EXPORT_GPSPOINT "export_gpspoint_option"
 
-static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp )
+static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection )
 {
   static menu_array_layer data;
   data[MA_VTL] = vtl;
@@ -5233,6 +5233,7 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
   GtkMenu *delete_submenu = GTK_MENU(gtk_menu_new());
   GtkWidget *itemd = vu_menu_add_item ( menu, _("De_lete"), GTK_STOCK_REMOVE, NULL, data );
   gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemd), GTK_WIDGET(delete_submenu) );
+  gtk_widget_set_sensitive ( itemd, selection & VIK_MENU_ITEM_DELETE );
 
   GtkWidget *itemdat = vu_menu_add_item ( delete_submenu, _("Delete All _Tracks"), GTK_STOCK_REMOVE, G_CALLBACK(trw_layer_delete_all_tracks), data );
   gtk_widget_set_sensitive ( itemdat, (gboolean)(g_hash_table_size (vtl->tracks)) );
@@ -9621,7 +9622,7 @@ static void trw_layer_google_route_webpage ( menu_array_sublayer values )
 
 /* vlp can be NULL if necessary - i.e. right-click from a tool */
 /* viewpoint is now available instead */
-static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp )
+static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp, VikStdLayerMenuItem selection )
 {
   static menu_array_sublayer data;
   GtkWidget *item;
@@ -9655,9 +9656,12 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     }
 
     (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
-    (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_CUT, G_CALLBACK(trw_layer_cut_item_cb), data );
-    (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_COPY, G_CALLBACK(trw_layer_copy_item_cb), data );
-    (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_DELETE, G_CALLBACK(trw_layer_delete_item), data );
+    if ( selection & VIK_MENU_ITEM_CUT )
+      (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_CUT, G_CALLBACK(trw_layer_cut_item_cb), data );
+    if ( selection & VIK_MENU_ITEM_COPY )
+      (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_COPY, G_CALLBACK(trw_layer_copy_item_cb), data );
+    if ( selection & VIK_MENU_ITEM_DELETE )
+      (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_DELETE, G_CALLBACK(trw_layer_delete_item), data );
 
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_WAYPOINT )
     {
@@ -9755,8 +9759,10 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     GtkWidget *itemnew = vu_menu_add_item ( menu, _("_New Track"), GTK_STOCK_NEW, G_CALLBACK(trw_layer_edit_track), data );
     // Make it available only when a new track *not* already in progress
     gtk_widget_set_sensitive ( itemnew, ! (gboolean)GPOINTER_TO_INT(l->current_track) );
-    (void)vu_menu_add_item ( menu, _("Delete _All Tracks"), GTK_STOCK_REMOVE, G_CALLBACK(trw_layer_delete_all_tracks), data );
-    (void)vu_menu_add_item ( menu, _("_Delete Tracks From Selection..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_delete_tracks_from_selection), data );
+    if ( selection & VIK_MENU_ITEM_DELETE )
+      (void)vu_menu_add_item ( menu, _("Delete _All Tracks"), GTK_STOCK_REMOVE, G_CALLBACK(trw_layer_delete_all_tracks), data );
+    if ( selection & VIK_MENU_ITEM_DELETE )
+      (void)vu_menu_add_item ( menu, _("_Delete Tracks From Selection..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_delete_tracks_from_selection), data );
 
     GtkMenu *vis_submenu = GTK_MENU(gtk_menu_new());
     GtkWidget *itemvis = vu_menu_add_item ( menu, _("_Visibility"), VIK_ICON_CHECKBOX, NULL, NULL );
@@ -9943,11 +9949,13 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     GtkWidget *itemflat = vu_menu_add_item ( smooth_submenu, _("_Flat"), NULL, G_CALLBACK(trw_layer_missing_elevation_data_flat), data );
     gtk_widget_set_tooltip_text ( itemflat, _("Set unknown elevation values to the last known value") );
 
-    (void)vu_menu_add_item ( transform_submenu, (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK) ? _("C_onvert to a Route") : _("C_onvert to a Track"),
-                             GTK_STOCK_CONVERT, G_CALLBACK(trw_layer_convert_track_route), data );
+    if ( selection & VIK_MENU_ITEM_DELETE )
+      (void)vu_menu_add_item ( transform_submenu, (subtype == VIK_TRW_LAYER_SUBLAYER_TRACK) ? _("C_onvert to a Route") : _("C_onvert to a Track"),
+                               GTK_STOCK_CONVERT, G_CALLBACK(trw_layer_convert_track_route), data );
 
-    (void)vu_menu_add_item ( transform_submenu, _("Convert to Waypoints"),
-                             GTK_STOCK_CONVERT, G_CALLBACK(trw_layer_convert_to_waypoints), data );
+    if ( selection & VIK_MENU_ITEM_DELETE )
+      (void)vu_menu_add_item ( transform_submenu, _("Convert to Waypoints"),
+                               GTK_STOCK_CONVERT, G_CALLBACK(trw_layer_convert_to_waypoints), data );
 
     // Routes don't have timestamps - so these are only available for tracks
     if ( subtype == VIK_TRW_LAYER_SUBLAYER_TRACK ) {
@@ -10864,7 +10872,8 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
                                             track->is_route ? VIK_TRW_LAYER_SUBLAYER_ROUTE : VIK_TRW_LAYER_SUBLAYER_TRACK,
                                             udataU.uuid,
                                             iter,
-                                            vvp );
+                                            vvp,
+                                            VIK_MENU_ITEM_ALL );
       }
       // Using '0' is more reliable for activating submenu items than using 'event->button' anyway.
       gtk_menu_popup ( vtl->track_right_click_menu, NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time() );
@@ -10898,7 +10907,8 @@ static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEve
                                             VIK_TRW_LAYER_SUBLAYER_WAYPOINT,
                                             udata.uuid,
                                             iter,
-                                            vvp );
+                                            vvp,
+                                            VIK_MENU_ITEM_ALL );
       }
       // Using '0' is more reliable for activating submenu items than using 'event->button' anyway.
       gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time() );
@@ -11143,7 +11153,7 @@ static VikLayerToolFuncStatus tool_edit_waypoint_release ( VikTrwLayer *vtl, Gdk
       g_object_ref_sink ( G_OBJECT(vtl->wp_right_click_menu) );
     if ( vtl->current_wp ) {
       vtl->wp_right_click_menu = GTK_MENU ( gtk_menu_new () );
-      trw_layer_sublayer_add_menu_items ( vtl, vtl->wp_right_click_menu, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, vtl->current_wp_id, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_id ), vvp );
+      trw_layer_sublayer_add_menu_items ( vtl, vtl->wp_right_click_menu, NULL, VIK_TRW_LAYER_SUBLAYER_WAYPOINT, vtl->current_wp_id, g_hash_table_lookup ( vtl->waypoints_iters, vtl->current_wp_id ), vvp, VIK_MENU_ITEM_ALL );
       // Using '0' is more reliable for activating submenu items than using 'event->button'.
       // Possibly https://bugzilla.gnome.org/show_bug.cgi?id=695488
       gtk_menu_popup ( vtl->wp_right_click_menu, NULL, NULL, NULL, NULL, 0, gtk_get_current_event_time() );
