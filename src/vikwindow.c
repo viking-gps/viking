@@ -5126,6 +5126,11 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
   if ( ! success || restore_original_filename )
     // Load didn't work or want to keep as the existing Viking project, keep using the original name
     window_set_filename ( vw, original_filename );
+
+  if ( original_filename && success )
+    // Load was into existing project
+    vik_window_set_modified ( vw );
+
   g_free ( original_filename );
 
   if ( last ) {
