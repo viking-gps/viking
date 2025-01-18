@@ -1861,7 +1861,11 @@ static void gpsd_raw_hook(VglGpsd *vgpsd, gchar *data)
   }
 
   vgl->gpsd_mode = vgpsd->gpsd.fix.mode;
+#if GPSD_API_MAJOR_VERSION >= 10
   vgl->gpsd_status = vgpsd->gpsd.fix.status;
+#else
+  vgl->gpsd_status = vgpsd->gpsd.status;
+#endif
 
   if ((vgpsd->gpsd.fix.mode >= MODE_2D) &&
       !isnan(vgpsd->gpsd.fix.latitude) &&
