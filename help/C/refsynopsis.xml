@@ -20,10 +20,7 @@
       </group>
       <sbr/>
       <group choice="opt">
-        <arg choice="plain"><option>--latitude</option> <replaceable>degrees</replaceable></arg>
-      </group>
-      <group choice="opt">
-        <arg choice="plain"><option>--longitude</option> <replaceable>degrees</replaceable></arg>
+        <arg choice="plain"><option>--latitude</option> <replaceable>degrees</replaceable> <option>--longitude</option> <replaceable>degrees</replaceable></arg>
       </group>
       <sbr/>
       <group choice="opt">
