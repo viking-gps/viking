@@ -2381,6 +2381,69 @@ static void maps_layer_redownload_new ( VikMapsLayer *vml )
 }
 
 /**
+ * Remove the file(s) of the specific map tile(s)
+ * This must only be called for cached storage map types
+ */
+static void maps_layer_delete_tiles ( VikMapsLayer *vml )
+{
+  VikMapSource *map = MAPS_LAYER_NTH_TYPE(vml->maptype);
+
+  gdouble xzoom = vml->xmapzoom ? vml->xmapzoom : vik_viewport_get_xmpp ( vml->redownload_vvp );
+  gdouble yzoom = vml->ymapzoom ? vml->ymapzoom : vik_viewport_get_ympp ( vml->redownload_vvp );
+  MapCoord ulm, brm;
+
+  if ( !vik_map_source_coord_to_mapcoord ( map, &(vml->redownload_ul), xzoom, yzoom, &ulm ) )
+    return;
+  if ( !vik_map_source_coord_to_mapcoord ( map, &(vml->redownload_br), xzoom, yzoom, &brm ) )
+    return;
+
+  gint x0 = MIN(ulm.x, brm.x);
+  gint xf = MAX(ulm.x, brm.x);
+  gint y0 = MIN(ulm.y, brm.y);
+  gint yf = MAX(ulm.y, brm.y);
+
+  guint max_path_len = strlen(vml->cache_dir) + 40;
+  gchar *filename = g_malloc ( max_path_len * sizeof(char) );
+
+  MapCoord mcoord = ulm;
+
+  for (gint xx = x0; xx <= xf; xx++) {
+    mcoord.x = xx;
+    for (gint yy = y0; yy <= yf; yy++) {
+      mcoord.y = yy;
+
+      if ( is_in_area (map, mcoord) ) {
+
+        get_filename ( vml->cache_dir,
+                       vml->cache_layout,
+                       vik_map_source_get_uniq_id(map),
+                       vik_map_source_get_name(map),
+                       ulm.scale, ulm.z, xx, yy, filename, max_path_len,
+                       vik_map_source_get_file_extension(map) );
+
+        if ( g_file_test(filename, G_FILE_TEST_EXISTS) ) {
+          if ( g_remove(filename) )
+            g_warning ( "%s failed to remove: %s", __FUNCTION__, filename );
+        }
+
+        // Attempt to remove etag as well if there is one
+        gchar *etagfile = g_strdup_printf ( "%s.etag", filename );
+        if ( g_file_test(etagfile, G_FILE_TEST_EXISTS) )
+          (void)g_remove(etagfile);
+        g_free ( etagfile );
+
+        a_mapcache_remove_all_shrinkfactors ( xx, yy, ulm.z,
+                                              vik_map_source_get_uniq_id(map),
+                                              ulm.scale, vml->filename );
+      }
+    }
+  }
+  g_free ( filename );
+
+  vik_layer_emit_update ( VIK_LAYER(vml), FALSE );
+}
+
+/**
  * Display a simple dialog with information about this particular map tile
  */
 static void maps_layer_tile_info ( VikMapsLayer *vml )
@@ -2527,6 +2590,7 @@ static VikLayerToolFuncStatus maps_layer_download_release ( VikMapsLayer *vml, G
           (void)vu_menu_add_item ( menu, _("Redownload _Bad Map(s)"), GTK_STOCK_ADD, G_CALLBACK(maps_layer_redownload_bad), vml );
           (void)vu_menu_add_item ( menu, _("Redownload _New Map(s)"), GTK_STOCK_REDO, G_CALLBACK(maps_layer_redownload_new), vml );
           (void)vu_menu_add_item ( menu, _("Redownload _All Map(s)"), GTK_STOCK_REFRESH, G_CALLBACK(maps_layer_redownload_all), vml );
+          (void)vu_menu_add_item ( menu, _("_Delete Map Tile(s)"), GTK_STOCK_REMOVE, G_CALLBACK(maps_layer_delete_tiles), vml );
         }
         (void)vu_menu_add_item ( menu, _("_Show Tile Information"), GTK_STOCK_INFO, G_CALLBACK(maps_layer_tile_info), vml );
       }

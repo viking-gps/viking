@@ -3560,6 +3560,13 @@ The possible methods to redownload one or more tiles are:
 </varlistentry>
 </variablelist>
 </para>
+<formalpara><title>Delete Map Tiles</title>
+  <para>
+    This removes this specific cached tile(s) from disk (and memory).
+    Hence allowing fine grained control, which can be useful such as in bypassing the normal tile age cache check
+     (and then induce a download for this tile) to get the latest tile.
+  </para>
+</formalpara>
 <formalpara><title>Map Tile Information</title>
 <para>
 By right clicking on viewport and selecting <guimenu>Show Tile Information</guimenu> you can see the tile properties of this location for the current <xref linkend="Map"/> layer and current zoom level.
