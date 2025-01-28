@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
   // Seems to work without an $DISPLAY
   // Also get lots of warnings about no actual drawing GCs available
   // but for file processing this seems to be good enough
-  VikAggregateLayer* agg = vik_aggregate_layer_new ();
+  VikAggregateLayer* agg = vik_aggregate_layer_new ( NULL );
   VikViewport* vp = vik_viewport_new ();
 
   VikLoadType_t lt = a_file_load ( agg, vp, NULL, argv[1], TRUE, external, NULL );
