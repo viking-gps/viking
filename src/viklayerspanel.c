@@ -659,7 +659,7 @@ static void vik_layers_panel_init ( VikLayersPanel *vlp )
   vlp->hbox = gtk_hbox_new ( TRUE, 2 );
   vlp->vt = vik_treeview_new ( );
 
-  vlp->toplayer = vik_aggregate_layer_new ();
+  vlp->toplayer = vik_aggregate_layer_new ( NULL );
   vik_layer_rename ( VIK_LAYER(vlp->toplayer), _("Top Layer"));
   g_signal_connect_swapped ( G_OBJECT(vlp->toplayer), "update", G_CALLBACK(layers_panel_emit_update), vlp );
 

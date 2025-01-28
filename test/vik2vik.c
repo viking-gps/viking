@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
   // Also get lots of warnings about no actual drawing GCs available
   // but for file processing this seems to be good enough
   VikLoadType_t lt;
-  VikAggregateLayer* agg = vik_aggregate_layer_new ();
+  VikAggregateLayer* agg = vik_aggregate_layer_new ( NULL );
 #if GTK_CHECK_VERSION (3,0,0)
   VikWindow *vw = vik_window_new_window();
   VikViewport* vp = vik_window_viewport(vw);
