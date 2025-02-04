@@ -38,7 +38,7 @@ jobs:
     - name: Run check
       run: xvfb-run make check
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: test-suite-log-${{ matrix.os }}-${{ matrix.libgtk }}
@@ -51,7 +51,7 @@ jobs:
     - name: Run distcheck
       run: make distcheck DISTCHECK_CONFIGURE_FLAGS=${{ matrix.libgtk == 'libgtk2.0-dev' && '--enable-gtk2' || '' }}
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: test-suite-log-${{ matrix.os }}-${{ matrix.libgtk }}

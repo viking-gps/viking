@@ -32,7 +32,7 @@ jobs:
     - name: Build Options
       run: ./autogen.sh --disable-${{ matrix.no-variants }} && make
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       if: failure()
       with:
         name: test-suite-disabled-${{ matrix.no-variants }}.log
