@@ -497,8 +497,11 @@ static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl )
     buf3[0] = '\0';
     if ( vgl->gpsd_mode <= MODE_NO_FIX  )
       g_snprintf (buf3, sizeof(buf3), "Mode:%s", modes_string[vgl->gpsd_mode]);
+// STATUS only available in 'newer' GPSD
+#ifdef STATUS_PPS_FIX
     else if ( vgl->gpsd_mode <= MODE_3D && vgl->gpsd_status <= STATUS_PPS_FIX)
       g_snprintf (buf3, sizeof(buf3), "Mode:%s Status:%s", modes_string[vgl->gpsd_mode], status_string[vgl->gpsd_status]);
+#endif
     g_snprintf (buf2, sizeof(buf2), "GPSD:%s:%s %s %s", vgl->gpsd_host, vgl->gpsd_port, _("Connected"), buf3);
     g_snprintf (rbuf, sizeof(rbuf), "%s\n%s", buf1, buf2);
   }
