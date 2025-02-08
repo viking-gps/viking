@@ -5970,8 +5970,10 @@ void vik_trw_layer_reset ( VikTrwLayer *vtl, VikViewport *vvp )
   g_free ( vtl->gpx_extensions );
   vtl->gpx_extensions = NULL;
 
+#if GLIB_CHECK_VERSION(2,60,0)
   if ( vtl->laps )
     g_queue_clear_full ( vtl->laps, g_free );
+#endif
 
   vik_layer_set_defaults ( VIK_LAYER(vtl), vvp );
 
