@@ -245,7 +245,7 @@ static void flush_matching ( gchar *str )
   //  otherwise where it points to might not be valid anymore when the actual processing occurs
   List *loop = queue_tail;
   List *tmp;
-  gint len = strlen(str);
+  size_t len = strlen(str);
 
   do {
     tmp = loop->next;
