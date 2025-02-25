@@ -139,11 +139,10 @@ static void list_add_entry ( gchar *key )
   if ( queue_tail ) {
     newlist->next = queue_tail->next;
     queue_tail->next = newlist;
-    queue_tail = newlist;
   } else {
     newlist->next = newlist;
-    queue_tail = newlist;
   }
+  queue_tail = newlist;
   queue_count++;
 }
 
