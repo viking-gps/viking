@@ -83,12 +83,14 @@ void a_mapcache_init ()
   cache = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, (GDestroyNotify) cache_item_free );
 }
 
-static void cache_add(gchar *key, GdkPixbuf *pixbuf, mapcache_extra_t extra)
+// Returns whether added or not (i.e. if key already exists - as per g_hash_table_insert() )
+static gboolean cache_add(gchar *key, GdkPixbuf *pixbuf, mapcache_extra_t extra)
 {
   cache_item_t *ci = g_malloc ( sizeof(cache_item_t) );
   ci->pixbuf = pixbuf;
   ci->extra = extra;
-  if ( g_hash_table_insert ( cache, key, ci ) )
+  gboolean added = g_hash_table_insert ( cache, key, ci );
+  if ( added )
   {
     // ATM size of 'extra' data hardly worth trying to count (compared to pixbuf sizes)
     if ( pixbuf ) {
@@ -97,6 +99,7 @@ static void cache_add(gchar *key, GdkPixbuf *pixbuf, mapcache_extra_t extra)
       cache_size += 100;
     }
   }
+  return added;
 }
 
 static void cache_remove(const gchar *key)
@@ -167,26 +170,32 @@ void a_mapcache_add ( GdkPixbuf *pixbuf, mapcache_extra_t extra, gint x, gint y,
 
   if ( pixbuf )
     g_object_ref(pixbuf);
-  cache_add(key, pixbuf, extra);
+  gboolean added = cache_add(key, pixbuf, extra);
 
-  // TODO: that should be done on preference change only...
-  max_cache_size = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "mapcache_size")->u * 1024 * 1024;
+  // Do not add already existing keys into list
+  //  and more importantly in this circumstance 'key' should not be reused
+  //  (since it has been freed by g_hash_table_insert() defined destructors) and so no longer valid
+  if ( added ) {
 
-  if ( cache_size > max_cache_size ) {
-    if ( queue_tail ) {
-      gchar *oldkey = list_shift_add_entry ( key );
-      cache_remove(oldkey);
+    // TODO: that should be done on preference change only...
+    max_cache_size = a_preferences_get(VIKING_PREFERENCES_NAMESPACE "mapcache_size")->u * 1024 * 1024;
 
-      while ( cache_size > max_cache_size &&
-             (queue_tail->next != queue_tail) ) { /* make sure there's more than one thing to delete */
-        oldkey = list_shift ();
+    if ( cache_size > max_cache_size ) {
+      if ( queue_tail ) {
+        gchar *oldkey = list_shift_add_entry ( key );
         cache_remove(oldkey);
+
+        while ( cache_size > max_cache_size &&
+                (queue_tail->next != queue_tail) ) { // make sure there's more than one thing to delete
+          oldkey = list_shift ();
+          cache_remove(oldkey);
+        }
       }
+      // chop off 'start' etc
+    } else {
+      list_add_entry ( key );
+      // business as usual
     }
-    /* chop off 'start' etc */
-  } else {
-    list_add_entry ( key );
-    /* business as usual */
   }
   g_mutex_unlock(mc_mutex);
 
