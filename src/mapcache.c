@@ -22,6 +22,7 @@
 #include "config.h"
 #endif
 
+#include <glib/gprintf.h>
 #include <glib/gi18n.h>
 #include <string.h>
 #include "globals.h"
@@ -111,6 +112,21 @@ static void cache_remove(const gchar *key)
     g_hash_table_remove ( cache, key );
   }
 }
+
+#ifdef MAPCACHE_DEBUG
+static void print_queue()
+{
+  List *loop = queue_tail;
+  guint count = 0;
+  while ( loop ) {
+    g_printf ( "%s: [%d]=%s\n", __FUNCTION__, count, loop->key );
+    loop = loop->next;
+    count++;
+    if ( loop == queue_tail )
+      loop = NULL;
+  }
+}
+#endif
 
 /* returns key from head, adds on newtailkey to tail. */
 static gchar *list_shift_add_entry ( gchar *newtailkey )
@@ -248,6 +264,10 @@ static void flush_matching ( gchar *str )
     g_mutex_unlock(mc_mutex);
     return;
   }
+
+#ifdef MAPCACHE_DEBUG
+  print_queue();
+#endif
 
   // The 'loop' variable must be assigned within the mutex lock section,
   //  otherwise where it points to might not be valid anymore when the actual processing occurs
