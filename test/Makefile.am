@@ -1,4 +1,6 @@
-AM_CFLAGS		= -Wall \
+# Ideally want to use -fsanitize=address and/or -fsanitize=leak too;
+#  but either bugs in Viking or GTK libs not auto cleaning up - means can't use
+AM_CFLAGS	= -Wall -fsanitize=undefined -fstack-protector-all \
 	-I$(top_srcdir)/src \
 	$(PACKAGE_CFLAGS) $(GTK_CFLAGS)
 LDADD           = $(PACKAGE_LIBS) $(GTK_LIBS) @EXPAT_LIBS@ @LIBCURL@ $(top_builddir)/src/icons/libicons.a
