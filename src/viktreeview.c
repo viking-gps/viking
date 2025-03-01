@@ -862,25 +862,15 @@ void vik_treeview_sort_children ( VikTreeview *vt, GtkTreeIter *parent, vik_laye
   SortTuple *sort_array;
   sort_array = g_new ( SortTuple, length );
 
-  gchar *name;
-  gdouble timestamp;
-  guint number;
-  guint uuid;
+  gpointer gp;
   guint ii = 0;
   do {
     sort_array[ii].offset = ii;
-    // Previous method of passing sort_array into gtk_tree_model_get() at least for the final UUID
-    //  caused Valgrind 3-20.0 to claim an 'Invalid write of size 8'
-    // Unclear if it really is an error, however use the temporary variables method instead
-    //  which doesn't flag up any errors
-    gtk_tree_model_get ( model, &child, NAME_COLUMN, &name, -1 );
-    gtk_tree_model_get ( model, &child, ITEM_TIMESTAMP_COLUMN, &timestamp, -1 );
-    gtk_tree_model_get ( model, &child, ITEM_NUMBER_COLUMN, &number, -1 );
-    gtk_tree_model_get ( model, &child, ITEM_POINTER_COLUMN, &uuid, -1 );
-    sort_array[ii].name = name;
-    sort_array[ii].timestamp = timestamp;
-    sort_array[ii].number = number;
-    sort_array[ii].uuid = uuid;
+    gtk_tree_model_get ( model, &child, NAME_COLUMN, &sort_array[ii].name, -1 );
+    gtk_tree_model_get ( model, &child, ITEM_TIMESTAMP_COLUMN, &sort_array[ii].timestamp, -1 );
+    gtk_tree_model_get ( model, &child, ITEM_NUMBER_COLUMN, &sort_array[ii].number, -1 );
+    gtk_tree_model_get ( model, &child, ITEM_POINTER_COLUMN, &gp, -1 );
+    sort_array[ii].uuid = GPOINTER_TO_UINT(gp);
     ii++;
   } while ( gtk_tree_model_iter_next (model, &child) );
 
