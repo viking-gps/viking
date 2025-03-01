@@ -221,8 +221,9 @@ GdkPixbuf *ui_pixbuf_new ( GdkColor *color, guint width, guint height )
 	// Annoyingly the GdkColor.pixel does not give the correct color when passed to gdk_pixbuf_fill (even when alloc'ed)
 	// Here is some magic found to do the conversion
 	// http://www.cs.binghamton.edu/~sgreene/cs360-2011s/topics/gtk+-2.20.1/gtk/gtkcolorbutton.c
+	// Plus additional forcing into (guint32) to ensure no 'runtime error' when using -fsanitize=undefined
 	if ( color ) {
-		guint32 pixel = ((color->red & 0xff00) << 16) |
+		guint32 pixel = ((guint32)(color->red & 0xff00) << (guint32)16) |
 			((color->green & 0xff00) << 8) |
 			(color->blue & 0xff00);
 		gdk_pixbuf_fill ( pixbuf, pixel );
