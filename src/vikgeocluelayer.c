@@ -106,6 +106,7 @@ VikLayerInterface vik_geoclue_layer_interface = {
 
   geoclue_layer_params,
   NUM_PARAMS,
+  0, // Number of VIK_LAYER_NOT_IN_PROPERTIES
   NULL,
   0,
 

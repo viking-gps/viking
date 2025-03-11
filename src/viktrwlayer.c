@@ -891,6 +891,7 @@ VikLayerInterface vik_trw_layer_interface = {
 
   trw_layer_params,
   NUM_PARAMS,
+  3, // Number of VIK_LAYER_NOT_IN_PROPERTIES (the 'visibilty of sublayers')
   params_groups, /* params_groups */
   G_N_ELEMENTS(params_groups),    // number of groups
 

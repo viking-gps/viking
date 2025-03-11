@@ -181,6 +181,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       GtkWindow *parent,
                                       VikLayerParam *params,
                                       guint16 params_count,
+                                      guint16 params_offset,
                                       gchar **groups,
                                       guint8 groups_count,
                                       gboolean (*setparam) (gpointer,gpointer), // AKA VikLayerFuncSetParam in viklayer.h

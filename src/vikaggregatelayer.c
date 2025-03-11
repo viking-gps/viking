@@ -218,6 +218,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
 
   aggregate_layer_params,
   NUM_PARAMS,
+  0, // Number of VIK_LAYER_NOT_IN_PROPERTIES
   params_groups,
   G_N_ELEMENTS(params_groups),
 

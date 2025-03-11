@@ -218,6 +218,7 @@ struct _VikLayerInterface {
   /* for I/O reading to and from .vik files -- params like coordline width, color, etc. */
   VikLayerParam *                   params;
   guint16                           params_count;
+  guint16                           params_offset;
   gchar **                          params_groups;
   guint8                            params_groups_count;
 

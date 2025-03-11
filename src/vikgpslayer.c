@@ -289,6 +289,7 @@ VikLayerInterface vik_gps_layer_interface = {
 
   gps_layer_params,
   NUM_PARAMS,
+  0, // Number of VIK_LAYER_NOT_IN_PROPERTIES
   params_groups,
   sizeof(params_groups)/sizeof(params_groups[0]),
 

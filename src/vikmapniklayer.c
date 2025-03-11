@@ -144,6 +144,7 @@ VikLayerInterface vik_mapnik_layer_interface = {
 
 	mapnik_layer_params,
 	NUM_PARAMS,
+	0, // Number of VIK_LAYER_NOT_IN_PROPERTIES
 	NULL,
 	0,
 

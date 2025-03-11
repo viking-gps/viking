@@ -639,6 +639,7 @@ static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp, gb
 					    VIK_GTK_WINDOW_FROM_WIDGET(vp),
 					    vik_layer_interfaces[vl->type]->params,
 					    vik_layer_interfaces[vl->type]->params_count,
+					    vik_layer_interfaces[vl->type]->params_offset,
 					    vik_layer_interfaces[vl->type]->params_groups,
 					    vik_layer_interfaces[vl->type]->params_groups_count,
 					    (gpointer) vik_layer_set_param,

@@ -240,6 +240,7 @@ VikLayerInterface vik_maps_layer_interface = {
 
   maps_layer_params,
   NUM_PARAMS,
+  0, // Number of VIK_LAYER_NOT_IN_PROPERTIES
   NULL,
   0,
 
@@ -868,8 +869,13 @@ static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values
       GtkWidget *w2 = ww2[PARAM_ONLYMISSING];
       GtkWidget *w3 = ww1[PARAM_AUTODOWNLOAD];
       GtkWidget *w4 = ww2[PARAM_AUTODOWNLOAD];
-      // Depends on autodownload value
-      gboolean missing_sense = sensitive && VIK_MAPS_LAYER(values[UI_CHG_LAYER])->autodownload;
+      // PARAM_ONLYMISSING depends on autodownload value
+      // NB Use existing widget sensitivity, rather than direct map layer value
+      //  as when run for 'layer defaults', there is no actual map layer to get values from
+      // This is OK since params are processed in order,
+      //  and PARAM_ONLYMISSING is after PARAM_AUTODOWNLOAD
+      gboolean missing_sense = sensitive;
+      missing_sense = sensitive && gtk_widget_get_sensitive ( w4 );
       if ( w1 ) gtk_widget_set_sensitive ( w1, missing_sense );
       if ( w2 ) gtk_widget_set_sensitive ( w2, missing_sense );
       if ( w3 ) gtk_widget_set_sensitive ( w3, sensitive );

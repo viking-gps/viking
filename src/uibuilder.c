@@ -466,6 +466,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       GtkWindow *parent,
                                       VikLayerParam *params,
                                       guint16 params_count,
+                                      guint16 params_offset,
                                       gchar **groups,
                                       guint8 groups_count,
                                       gboolean (*setparam) (gpointer,gpointer),
@@ -582,9 +583,17 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
           {
             change_values[j][UI_CHG_LAYER] = pass_along1;
             change_values[j][UI_CHG_PARAM] = &params[i];
-            change_values[j][UI_CHG_PARAM_ID] = GINT_TO_POINTER((gint)i);
             change_values[j][UI_CHG_WIDGETS] = widgets;
             change_values[j][UI_CHG_LABELS] = labels;
+            // Determine whether being called from Layer Properties or Default Layer
+            // ATM redraw is only used if coming from Layer Properties
+            if ( redraw ) {
+              change_values[j][UI_CHG_PARAM_ID] = GINT_TO_POINTER((gint)i);
+            }
+            else {
+              // For Default Layer dialog, need to adjust IDs
+              change_values[j][UI_CHG_PARAM_ID] = GINT_TO_POINTER((gint)(i+params_offset));
+            }
 
             switch ( params[i].widget_type )
             {
@@ -704,6 +713,7 @@ VikLayerParamData *a_uibuilder_run_dialog (  const gchar *dialog_name, GtkWindow
 					  parent,
 					  params,
 					  params_count,
+					  0,
 					  groups,
 					  groups_count,
 					  NULL,
