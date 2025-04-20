@@ -3009,6 +3009,12 @@ This offers a quick way to set all the visibilities of each item within the cont
 </para>
 </section>
 
+<section><title>Delete - Selection</title>
+<para>
+This opens a dialog to select layers from this Aggregate layer to delete.
+</para>
+</section>
+
 <section id="search_date" xreflabel="Search by Date"><title>Search by Date</title>
 <para>
 This opens calendar dialog to select a date to search by within this Aggregate layer.

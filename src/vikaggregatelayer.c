@@ -1545,6 +1545,57 @@ static void aggregate_layer_waypoint_list_dialog ( menu_array_values values )
   g_free ( title );
 }
 
+
+/**
+ *
+ */
+static void aggregate_layer_delete_selection ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
+
+  GList *children = val->children;
+  if ( !children )
+    return;
+
+  GList *all = NULL;
+  GList *iter = val->children;
+  while ( iter ) {
+    VikLayer *vl = VIK_LAYER ( iter->data );
+    generic_list_item_t *li = g_malloc0 (sizeof(generic_list_item_t));
+    li->name = vl->name;
+    li->gp = (gpointer)vl;
+    all = g_list_prepend ( all, li );
+    iter = iter->next;
+  }
+  if ( all )
+    all = g_list_reverse ( all );
+
+  // Get list of items to delete from the user
+  GList *delete_list = a_dialog_select_from_generic_list(VIK_GTK_WINDOW_FROM_LAYER(val),
+                                                         all,
+                                                         TRUE,
+                                                         _("Delete Selection"),
+                                                         _("Select layers to delete"));
+
+  // Note ATM not attempting to detect/protect if a child aggregrate itself is performing TAC
+  gboolean changed = delete_list != NULL;
+  iter = delete_list;
+  while ( iter ) {
+    generic_list_item_t *li = (generic_list_item_t*)iter->data;
+    (void)vik_aggregate_layer_delete_layer ( val, VIK_LAYER(li->gp) );
+    iter = iter->next;
+  }
+  if ( changed ) {
+    vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
+    vik_layers_panel_calendar_update ( values[MA_VLP] );
+    // NB Display is already updated - no need to force a redraw
+  }
+
+  // Freeing the lists themselves (not the contents / what the contents points to)
+  g_list_free_full ( all, g_free );
+  g_list_free ( delete_list );
+}
+
 /**
  *
  */
@@ -3357,6 +3408,12 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   (void)vu_menu_add_item ( menu, _("_Statistics"), GTK_STOCK_INFO, G_CALLBACK(aggregate_layer_analyse), values );
   (void)vu_menu_add_item ( menu, _("Track _List..."), GTK_STOCK_INDEX, G_CALLBACK(aggregate_layer_track_list_dialog), values );
   (void)vu_menu_add_item ( menu, _("_Waypoint List..."), GTK_STOCK_INDEX, G_CALLBACK(aggregate_layer_waypoint_list_dialog), values );
+
+  GtkMenu *submenu_delete = GTK_MENU(gtk_menu_new());
+  GtkWidget *itemdlt = vu_menu_add_item ( menu, _("Delete"), GTK_STOCK_DELETE, NULL, NULL );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemdlt), GTK_WIDGET(submenu_delete) );
+  (void)vu_menu_add_item ( submenu_delete, _("_Selection"), GTK_STOCK_INDEX, G_CALLBACK(aggregate_layer_delete_selection), values );
+  gtk_widget_set_sensitive ( GTK_WIDGET(submenu_delete), !val->calculating ); // Prevent delete if busy
 
   GtkMenu *search_submenu = GTK_MENU(gtk_menu_new());
   GtkWidget *itemsr = vu_menu_add_item ( menu, _("Searc_h"), GTK_STOCK_FIND, NULL, NULL );

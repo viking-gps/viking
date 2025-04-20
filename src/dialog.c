@@ -286,6 +286,111 @@ GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean mul
   return NULL;
 }
 
+// Add the selected item to build up the list of #generic_list_item_t
+static void get_selected_generic_foreach_func (GtkTreeModel *model,
+                                               GtkTreePath *path,
+                                               GtkTreeIter *iter,
+                                               gpointer data)
+{
+  GList **list = data;
+  gchar *name;
+  gpointer gp;
+
+  generic_list_item_t *li = g_malloc0 (sizeof(generic_list_item_t));
+
+  gtk_tree_model_get (model, iter, 0, &name, -1);
+  gtk_tree_model_get (model, iter, 1, &gp, -1);
+
+  li->name = name;
+  li->gp = gp;
+  *list = g_list_prepend(*list, li);
+}
+
+/**
+ * a_dialog_select_from_generic_list:
+ *
+ * List structure is a #generic_list_item_t; both for the input list and returned list
+ * Typically the pointer is envisioned to be a #viklayer;
+ *  however using a pointer allows for other usage
+ */
+GList *a_dialog_select_from_generic_list ( GtkWindow *parent, GList *list, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg )
+{
+  GtkTreeIter iter;
+  GtkCellRenderer *renderer;
+  GtkWidget *view;
+
+  GtkWidget *dialog = gtk_dialog_new_with_buttons (title,
+                                                  parent,
+                                                  GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                  GTK_STOCK_CANCEL,
+                                                  GTK_RESPONSE_REJECT,
+                                                  GTK_STOCK_OK,
+                                                  GTK_RESPONSE_ACCEPT,
+                                                  NULL);
+  // When something is selected then OK
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+  // Default to not apply - as initially nothing is selected!
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
+  GtkListStore *store = gtk_list_store_new ( 2, G_TYPE_STRING, G_TYPE_POINTER );
+
+  GtkWidget *scrolledwindow;
+
+  // Note that multiple entries may have the same name.
+  // ATM no method is provided to otherwise help distingush between them
+  GList *runner = list;
+  while ( runner )
+  {
+    generic_list_item_t *li = runner->data;
+    gtk_list_store_append(store, &iter);
+    gtk_list_store_set(store, &iter, 0, li->name, -1);
+    gtk_list_store_set(store, &iter, 1, li->gp, -1);
+    runner = g_list_next ( runner );
+  }
+
+  view = gtk_tree_view_new();
+  renderer = gtk_cell_renderer_text_new();
+  // Use the column header to display the message text,
+  // this makes the overall widget allocation simple as treeview takes up all the space
+  GtkTreeViewColumn *column;
+  column = gtk_tree_view_column_new_with_attributes ( msg, renderer, "text", 0, NULL );
+  gtk_tree_view_column_set_sort_column_id ( column, 0 );
+  gtk_tree_view_append_column ( GTK_TREE_VIEW (view), column );
+
+  gtk_tree_view_set_model ( GTK_TREE_VIEW(view), GTK_TREE_MODEL(store) );
+  gtk_tree_selection_set_mode ( gtk_tree_view_get_selection(GTK_TREE_VIEW(view) ),
+                                multiple_selection_allowed ? GTK_SELECTION_MULTIPLE : GTK_SELECTION_BROWSE );
+  g_object_unref ( store );
+
+  scrolledwindow = gtk_scrolled_window_new ( NULL, NULL );
+  gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(scrolledwindow), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC );
+  gtk_container_add ( GTK_CONTAINER(scrolledwindow), view );
+
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), scrolledwindow, TRUE, TRUE, 0 );
+  // Ensure a reasonable number of items are shown, but let the width be automatically sized
+  gdouble scale = vik_viewport_get_scale ( NULL );
+  gtk_widget_set_size_request ( dialog, -1, 400*scale );
+
+  gtk_widget_show_all ( dialog );
+
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
+
+  while ( gtk_dialog_run (GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT )
+  {
+    GList *selected = NULL;
+    GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
+    gtk_tree_selection_selected_foreach ( selection, get_selected_generic_foreach_func, &selected );
+    if ( selected )
+    {
+      gtk_widget_destroy ( dialog );
+      return selected;
+    }
+    a_dialog_error_msg ( parent, _("Nothing was selected") );
+  }
+  gtk_widget_destroy ( dialog );
+  return NULL;
+}
+
 gchar *a_dialog_new_track ( GtkWindow *parent, gchar *default_name, gboolean is_route )
 {
   GtkWidget *dialog = gtk_dialog_new_with_buttons ( is_route ? _("Add Route") : _("Add Track"),
