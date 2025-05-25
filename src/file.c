@@ -87,7 +87,12 @@ static gboolean str_starts_with ( const gchar *haystack, const gchar *needle, gu
   return FALSE;
 }
 
-void file_write_layer_param ( FILE *f, const gchar *name, VikLayerParamType type, VikLayerParamData data ) {
+void file_write_layer_param ( FILE *f, const gchar *name, VikLayerParamType type, VikLayerParamData data )
+{
+  // Skip UI only 'parameters'
+  if ( type == VIK_LAYER_PARAM_SPACER )
+    return;
+
       /* string lists are handled differently. We get a GList (that shouldn't
        * be freed) back for get_param and if it is null we shouldn't write
        * anything at all (otherwise we'd read in a list with an empty string,

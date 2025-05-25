@@ -64,6 +64,7 @@ typedef enum {
   VIK_LAYER_WIDGET_COMBOBOX,
   VIK_LAYER_WIDGET_FILELIST,
   VIK_LAYER_WIDGET_BUTTON,
+  VIK_LAYER_WIDGET_SEPARATOR,
 } VikLayerWidgetType;
 
 /* id is index */
@@ -87,6 +88,7 @@ VIK_LAYER_PARAM_COLOR,
 VIK_LAYER_PARAM_STRING_LIST,
 VIK_LAYER_PARAM_PTR, // Not really a 'parameter' but useful to route to extended configuration (e.g. toolbar order)
 VIK_LAYER_PARAM_PTR_DEFAULT, // Specialized 'parameter' for reset button
+VIK_LAYER_PARAM_SPACER, // Not a 'parameter', for UI layout
 } VikLayerParamType;
 
 typedef enum {

@@ -300,6 +300,13 @@ GtkWidget *new_widget ( VikLayerParam *param, VikLayerParamData data, gboolean s
         }
       }
       break;
+    case VIK_LAYER_WIDGET_SEPARATOR:
+      if ( param->type != VIK_LAYER_PARAM_SPACER )
+        g_critical ( "%s: param->type should be VIK_LAYER_PARAM_SPACER but is %d ", __FUNCTION__, param->type );
+#if GTK_CHECK_VERSION (3,0,0)
+      rv = gtk_separator_new ( GTK_ORIENTATION_HORIZONTAL );
+#endif
+      break;
 
     default: break;
   }
@@ -572,9 +579,14 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
 	  } else {
             if ( params[i].widget_type == VIK_LAYER_WIDGET_ENTRY_URL && data.s )
               labels[j] = gtk_link_button_new_with_label ( data.s, _(params[i].title));
+#if GTK_CHECK_VERSION (3,0,0)
+            else if ( params[i].widget_type == VIK_LAYER_WIDGET_SEPARATOR )
+              labels[j] = gtk_separator_new ( GTK_ORIENTATION_VERTICAL );
+#endif
             else
               labels[j] = gtk_label_new(_(params[i].title));
-            gtk_table_attach ( GTK_TABLE(table), labels[j], 0, 1, j, j+1, 0, 0, 0, 0 );
+            gtk_table_attach ( GTK_TABLE(table), labels[j], 0, 1, j, j+1,
+                               params[i].type == VIK_LAYER_PARAM_SPACER ? GTK_FILL : 0, 0, 0, 0 );
             gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL,
                                params[i].type == VIK_LAYER_PARAM_STRING_LIST ? GTK_EXPAND | GTK_FILL : 0, 2, 2 );
 	  }
