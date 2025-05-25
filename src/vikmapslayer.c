@@ -2596,7 +2596,9 @@ static VikLayerToolFuncStatus maps_layer_download_release ( VikMapsLayer *vml, G
           (void)vu_menu_add_item ( menu, _("Redownload _Bad Map(s)"), GTK_STOCK_ADD, G_CALLBACK(maps_layer_redownload_bad), vml );
           (void)vu_menu_add_item ( menu, _("Redownload _New Map(s)"), GTK_STOCK_REDO, G_CALLBACK(maps_layer_redownload_new), vml );
           (void)vu_menu_add_item ( menu, _("Redownload _All Map(s)"), GTK_STOCK_REFRESH, G_CALLBACK(maps_layer_redownload_all), vml );
+          (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
           (void)vu_menu_add_item ( menu, _("_Delete Map Tile(s)"), GTK_STOCK_REMOVE, G_CALLBACK(maps_layer_delete_tiles), vml );
+          (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
         }
         (void)vu_menu_add_item ( menu, _("_Show Tile Information"), GTK_STOCK_INFO, G_CALLBACK(maps_layer_tile_info), vml );
       }
