@@ -80,6 +80,16 @@ static void log_update ()
   G_UNLOCK(window_list);
 }
 
+static void clear_log ()
+{
+	G_LOCK(msg_lock);
+	g_list_free_full ( msgs, (GDestroyNotify)msg_t_free ); msgs = NULL;
+	num_msgs = 0;
+	G_UNLOCK(msg_lock);
+
+	log_update();
+}
+
 static gchar *levels[] =
 	{ ("G_LOG_FLAG_RECURSION"), // NB Not a log level
 	  ("G_LOG_FLAG_FATAL"),     // NB Not a log level
@@ -230,12 +240,7 @@ static void response_cb ( GtkDialog *dialog, gint response_id, gpointer ignored 
 	switch ( response_id ) {
 	case 1:
 		// Clear list
-		G_LOCK(msg_lock);
-		g_list_free_full ( msgs, (GDestroyNotify)msg_t_free ); msgs = NULL;
-		num_msgs = 0;
-		G_UNLOCK(msg_lock);
-
-		log_update();
+		clear_log();
 
 		// Delibrate fall through
 	case GTK_RESPONSE_DELETE_EVENT:
@@ -394,4 +399,13 @@ void a_logging_remove_window ( VikWindow *vw )
 	G_LOCK(window_list);
 	windows_to_update = g_slist_remove ( windows_to_update, vw );
 	G_UNLOCK(window_list);
+}
+
+/**
+ * a_logging_clear_log:
+ *
+ */
+void a_logging_clear_log ()
+{
+	clear_log();
 }

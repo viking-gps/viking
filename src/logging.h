@@ -37,6 +37,8 @@ void a_logging_show_window ();
 void a_logging_add_window ( VikWindow *vw );
 void a_logging_remove_window ( VikWindow *vw );
 
+void a_logging_clear_log ();
+
 G_END_DECLS
 
 #endif

@@ -327,7 +327,7 @@ A right click menu offers controls of the drawing options, a subset of track ope
 </para>
 <para>Left clicking on the number of background processes opens a dialog from which the processes can be inspected and cancelled.</para>
 <para>Left clicking on the number of log messages opens a dialog from which the messages can be viewed, filtered, copied and cleared.
-Newest messages are put at the top of the list.</para>
+Newest messages are put at the top of the list. Middle clicking  on the number of log messages clears the log messages without opening the dialog.</para>
 <para>For convenience, a zoom selector can be opened from the status bar. Simply left-click on the zoom level.</para>
 <figure>
   <title>The zoom selector available from status bar</title>
