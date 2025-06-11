@@ -14,10 +14,6 @@
     // Optionally, uncomment the next line
     // "LIBGL_ALWAYS_INDIRECT" : "1"
   },
-  "runArgs": [
-    "--net",
-    "host"
-  ],
   // Export the DISPLAY variable:
   //  export DISPLAY=$(ip route list default | awk '{print $3}'):0
   // References: https://stackoverflow.com/a/61110604/1288109
