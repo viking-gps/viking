@@ -370,14 +370,14 @@ static void vik_routing_web_engine_class_init ( VikRoutingWebEngineClass *klass 
   /**
    * VikRoutingWebEngine:follow-location:
    *
-   * Specifies the number of retries to follow a redirect while downloading a page.
+   * Specifies the number of retries to follow a redirect while downloading a URL.
    */
   pspec = g_param_spec_long ("follow-location",
                              "Follow location",
-                             "Specifies the number of retries to follow a redirect while downloading a page",
+                             "Specifies the number of retries to follow a redirect while downloading a URL",
                              -1,  // minimum value (unlimited)
                              G_MAXLONG /* maximum value */,
-                             2  /* default value */,
+                             -1,  // default value - automatically follow location with unlimited redirects
                              G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_FOLLOW_LOCATION, pspec);
 
@@ -413,7 +413,7 @@ static void vik_routing_web_engine_init ( VikRoutingWebEngine *self )
 
   /* Options */
   priv->options.referer = NULL;
-  priv->options.follow_location = 0;
+  priv->options.follow_location = -1;
   priv->options.expiry_age = 0;
   priv->options.check_file = NULL;
   priv->options.check_file_server_time = FALSE;

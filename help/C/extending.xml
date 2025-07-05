@@ -188,7 +188,7 @@
             </varlistentry>
             <varlistentry>
               <term>follow-location (optional)</term>
-              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+              <listitem><para>The maximum number of redirects allowed. The default is -1 for an unlimited number of redirects. Use 0 if you do not want to follow redirects.</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>tilesize-x (optional)</term>
@@ -308,7 +308,7 @@
             </varlistentry>
             <varlistentry>
               <term>follow-location (optional)</term>
-              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+              <listitem><para>The maximum number of redirects allowed. The default is -1 for an unlimited number of redirects. Use 0 if you do not want to follow redirects.</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>user-agent (optional)</term>
@@ -419,7 +419,7 @@
             </varlistentry>
             <varlistentry>
               <term>follow-location (optional)</term>
-              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+              <listitem><para>The maximum number of redirects allowed. The default is -1 for an unlimited number of redirects. Use 0 if you do not want to follow redirects.</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>user-agent (optional)</term>
@@ -502,7 +502,7 @@
             </varlistentry>
             <varlistentry>
               <term>follow-location (optional)</term>
-              <listitem><para>The maximum number of redirects allowed. The default is 0, i.e. no redirection. Use -1 for an unlimited number of redirects.</para></listitem>
+              <listitem><para>The maximum number of redirects allowed. The default is -1 for an unlimited number of redirects. Use 0 if you do not want to follow redirects.</para></listitem>
             </varlistentry>
             <varlistentry>
               <term>user-agent (optional)</term>
