@@ -741,13 +741,15 @@ VikLayerParam trw_layer_params[] = {
 
   { VIK_LAYER_TRW, "drawlabels", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Labels"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpfontsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Font Size:"), VIK_LAYER_WIDGET_COMBOBOX, params_font_sizes, NULL, NULL, wpfontsize_default, NULL, NULL },
-  { VIK_LAYER_TRW, "wpcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Waypoint Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, black_color_default, NULL, NULL },
   { VIK_LAYER_TRW, "wptextcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Waypoint Text:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, wptextcolor_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Background:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, wpbgcolor_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpbgand", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Fake BG Color Translucency:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_false_default, NULL, NULL },
-  { VIK_LAYER_TRW, "wpsymbol", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint marker:"), VIK_LAYER_WIDGET_COMBOBOX, params_wpsymbols, NULL, NULL, wpsymbol_default, NULL, NULL },
-  { VIK_LAYER_TRW, "wpsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint size:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[7], NULL, NULL, wpsize_default, NULL, NULL },
+  { VIK_LAYER_TRW, "ignore1", VIK_LAYER_PARAM_SPACER, GROUP_WAYPOINTS, NULL, VIK_LAYER_WIDGET_SEPARATOR, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_TRW, "wpsyms", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Waypoint Symbols:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_TRW, "wpcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Waypoint Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, black_color_default, NULL, NULL },
+  { VIK_LAYER_TRW, "wpsymbol", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Marker:"), VIK_LAYER_WIDGET_COMBOBOX, params_wpsymbols, NULL, NULL, wpsymbol_default, NULL, NULL },
+  { VIK_LAYER_TRW, "wpsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Size:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[7], NULL, NULL, wpsize_default, NULL, NULL },
+  { VIK_LAYER_TRW, "ignore2", VIK_LAYER_PARAM_SPACER, GROUP_WAYPOINTS, NULL, VIK_LAYER_WIDGET_SEPARATOR, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_TRW, "wpprox", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Waypoint Proximity:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("Draw a circle covering the proximity area"), vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpsortorder", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Sort Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_sort_order_wp, NULL, NULL, sort_order_default, NULL, NULL },
 
@@ -801,13 +803,15 @@ enum {
   // Waypoints
   PARAM_DLA,
   PARAM_WPFONTSIZE,
-  PARAM_WPC,
   PARAM_WPTC,
   PARAM_WPBC,
-  PARAM_WPBA,
+  PARAM_WPBT,
+  PARAM_IGNORE1,
+  PARAM_WPSYMS,
+  PARAM_WPC,
   PARAM_WPSYM,
   PARAM_WPSIZE,
-  PARAM_WPSYMS,
+  PARAM_IGNORE2,
   PARAM_WPPROX,
   PARAM_WPSO,
   // WP images
@@ -1523,7 +1527,7 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
         gdk_gc_set_rgb_fg_color(vtl->waypoint_bg_gc, &(vtl->waypoint_bg_color));
 #endif
       break;
-    case PARAM_WPBA:
+    case PARAM_WPBT:
       changed = vik_layer_param_change_boolean ( vlsp->data, &vtl->wpbgand );
 #if !GTK_CHECK_VERSION (3,0,0)
       if ( vtl->waypoint_bg_gc )
@@ -1665,7 +1669,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_WPC: rv.c = vtl->waypoint_color; break;
     case PARAM_WPTC: rv.c = vtl->waypoint_text_color; break;
     case PARAM_WPBC: rv.c = vtl->waypoint_bg_color; break;
-    case PARAM_WPBA: rv.b = vtl->wpbgand; break;
+    case PARAM_WPBT: rv.b = vtl->wpbgand; break;
     case PARAM_WPSYM: rv.u = vtl->wp_symbol; break;
     case PARAM_WPSIZE: rv.u = vtl->wp_size; break;
     case PARAM_WPSYMS: rv.b = vtl->wp_draw_symbols; break;
@@ -1726,8 +1730,8 @@ static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values 
       GtkWidget *w2 = ww2[OFFSET + PARAM_WPTC];
       GtkWidget *w3 = ww1[OFFSET + PARAM_WPBC];
       GtkWidget *w4 = ww2[OFFSET + PARAM_WPBC];
-      GtkWidget *w5 = ww1[OFFSET + PARAM_WPBA];
-      GtkWidget *w6 = ww2[OFFSET + PARAM_WPBA];
+      GtkWidget *w5 = ww1[OFFSET + PARAM_WPBT];
+      GtkWidget *w6 = ww2[OFFSET + PARAM_WPBT];
       GtkWidget *w7 = ww1[OFFSET + PARAM_WPFONTSIZE];
       GtkWidget *w8 = ww2[OFFSET + PARAM_WPFONTSIZE];
       if ( w1 ) gtk_widget_set_sensitive ( w1, vlpd.b );

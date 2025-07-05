@@ -2897,10 +2897,10 @@ msgstr "Arrière-plan :"
 msgid "Fake BG Color Translucency:"
 msgstr "Transparence de la couleur d'arrière-plan :"
 
-msgid "Waypoint marker:"
+msgid "Waypoint Marker:"
 msgstr "Marqueur :"
 
-msgid "Waypoint size:"
+msgid "Waypoint Size:"
 msgstr "Taille :"
 
 msgid "Draw Waypoint Symbols:"

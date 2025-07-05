@@ -2874,10 +2874,10 @@ msgstr "Fonas:"
 msgid "Fake BG Color Translucency:"
 msgstr "Netinkamas fono spalvos skaidrumas:"
 
-msgid "Waypoint marker:"
+msgid "Waypoint Marker:"
 msgstr "Maršruto taško žymeklis:"
 
-msgid "Waypoint size:"
+msgid "Waypoint Size:"
 msgstr "Maršruto taško dydis:"
 
 msgid "Draw Waypoint Symbols:"

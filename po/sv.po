@@ -2839,10 +2839,10 @@ msgstr "Bakgrund:"
 msgid "Fake BG Color Translucency:"
 msgstr ""
 
-msgid "Waypoint marker:"
+msgid "Waypoint Marker:"
 msgstr "Waypoint markör:"
 
-msgid "Waypoint size:"
+msgid "Waypoint Size:"
 msgstr "Waypoint storlek:"
 
 msgid "Draw Waypoint Symbols:"

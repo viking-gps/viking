@@ -3051,10 +3051,10 @@ msgstr "Atzeko planoa:"
 msgid "Fake BG Color Translucency:"
 msgstr "Balizko BG Color gardentasuna:"
 
-msgid "Waypoint marker:"
+msgid "Waypoint Marker:"
 msgstr "Bide-puntuaren markatzailea:"
 
-msgid "Waypoint size:"
+msgid "Waypoint Size:"
 msgstr "Bide-puntuaren tamaina:"
 
 msgid "Draw Waypoint Symbols:"

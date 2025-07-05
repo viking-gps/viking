@@ -2828,10 +2828,10 @@ msgstr "背景:"
 msgid "Fake BG Color Translucency:"
 msgstr ""
 
-msgid "Waypoint marker:"
+msgid "Waypoint Marker:"
 msgstr "航點標簽"
 
-msgid "Waypoint size:"
+msgid "Waypoint Size:"
 msgstr "航點大小"
 
 msgid "Draw Waypoint Symbols:"

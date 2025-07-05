@@ -2868,10 +2868,10 @@ msgstr "Háttér:"
 msgid "Fake BG Color Translucency:"
 msgstr "Hamis háttérszín-átlátszóság:"
 
-msgid "Waypoint marker:"
+msgid "Waypoint Marker:"
 msgstr "Útpont-jelölő:"
 
-msgid "Waypoint size:"
+msgid "Waypoint Size:"
 msgstr "Útpont mérete:"
 
 msgid "Draw Waypoint Symbols:"
