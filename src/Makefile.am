@@ -3,7 +3,7 @@
 
 SUBDIRS = icons
 
-bin_PROGRAMS = viking
+bin_PROGRAMS = viking osm-oauth2-example
 
 noinst_LIBRARIES = \
 	libviking.a

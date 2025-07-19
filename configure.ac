@@ -108,6 +108,7 @@ PKG_CHECK_MODULES(PACKAGE, [
         gio-2.0           >= 2.32
         gdk-pixbuf-2.0    >= 2.26
         json-glib-1.0     >= 0.16
+        rest-1.0          >= 0.9.1
 ])
 
 AC_SUBST(PACKAGE_CFLAGS)
