@@ -101,9 +101,12 @@ static void osm_api_client_class_init(OsmApiClientClass *klass) {
 
 static void
 osm_api_client_init(OsmApiClient *self) {
-    self->token = NULL;
   	/* initialize the object here */
 	OsmApiClientPrivate *priv = osm_api_client_get_instance_private (self);
+
+    priv->token = NULL;
+    priv->oauth2_proxy = NULL;
+    priv->pkce = NULL;
 }
 
 static void
@@ -111,11 +114,14 @@ osm_api_client_finalize (GObject *object)
 {
 	OsmApiClientPrivate *priv = OSM_API_CLIENT_GET_PRIVATE (object);
 
-    g_unref(priv->oauth2_proxy)
+    g_unref(priv->oauth2_proxy);
+    priv->oauth2_proxy = NULL;
+    rest_pkce_code_challenge_free(priv->pkce);
+    priv->pkce = NULL;
 	g_free (priv->token);
 	priv->token = NULL;
 
-	G_OBJECT_CLASS (bing_map_source_parent_class)->finalize (object);
+	G_OBJECT_CLASS (osm_api_client_parent_class)->finalize (object);
 }
 
 gchar *osm_api_client_challenge_start(OsmApiClient *self) {
@@ -131,8 +137,8 @@ gchar *osm_api_client_challenge_start(OsmApiClient *self) {
     #endif
 
     priv->oauth2_proxy = rest_oauth2_proxy_new (OSM_API_AUTH_URL, OSM_API_TOKEN_URL, OSM_API_REDIRECT_URL, OSM_API_OAUTH2_CLIENT_ID, OSM_API_OAUTH2_CLIENT_SECRET, OSM_API_BASE_URL);
-    rest_proxy_add_soup_feature (REST_PROXY (oauth2_proxy), SOUP_SESSION_FEATURE (logger));
-    const gchar *authorize_url = rest_oauth2_proxy_build_authorization_url (oauth2_proxy, rest_pkce_code_challenge_get_challenge (pkce), "openid", &state);
+    rest_proxy_add_soup_feature (REST_PROXY (priv->oauth2_proxy), SOUP_SESSION_FEATURE (logger));
+    const gchar *authorize_url = rest_oauth2_proxy_build_authorization_url (priv->oauth2_proxy, rest_pkce_code_challenge_get_challenge (priv->pkce), "openid", &state);
 
     return authorize_url;
 }
@@ -170,6 +176,7 @@ gchar *osm_api_client_create_request(OsmApiClient *self, const gchar *function) 
 	OsmApiClientPrivate *priv = osm_api_client_get_instance_private (self);
     RestProxy *proxy = REST_PROXY (priv->oauth2_proxy);
     RestProxyCall *call;
+    g_autoptr(GError) error = NULL;
 
     call = rest_proxy_new_call (proxy);
     rest_proxy_call_set_method (call, "GET");

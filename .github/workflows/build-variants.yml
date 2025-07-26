@@ -11,8 +11,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        #             v----------------------- Optional library components -----------------------------------------v  v----------------code features -----------------v
-        no-variants: [bzip2, geoclue, geotag, magic, mapnik, mbtiles, nova, nettle, oauth, realtime-gps-tracking, zip, bing, google, bluemarble, geonames, openstreetmap]
+        #             v----------------------- Optional library components ----------------------------------v  v----------------code features -----------------v
+        no-variants: [bzip2, geoclue, geotag, magic, mapnik, mbtiles, nova, nettle, realtime-gps-tracking, zip, bing, google, bluemarble, geonames, openstreetmap]
 
 # NB specifically limited to single OS variant and default GTK, in order to keep number of runs within reason
 # Thus much more likely to keep within overall compute quota limits for a given time period
