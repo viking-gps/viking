@@ -20,6 +20,9 @@
  */
 
 #include "viking.h"
+
+#include "osm-api-client.h"
+
 #include <glib.h>
 #include <rest/rest.h>
 #include <stdio.h>
