@@ -44,7 +44,7 @@ On Debian Sid, the following packages must be installed before building:
 
 The following packages are needed (they are included by default in Debian Sid, but not in other distributions). They must be installed too:
 
-	$ sudo apt-get install libcurl4-gnutls-dev libglib2.0-dev-bin
+	$ sudo apt-get install libcurl4-gnutls-dev libglib2.0-dev-bin librest-dev
 
 The following packages are also used, but they can each be disabled with configure options, if desired:
 
