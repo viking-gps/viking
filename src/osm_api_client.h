@@ -47,7 +47,7 @@ struct _OsmApiClientClass {
 GType osm_api_client_get_type(void);
 OsmApiClient *osm_api_client_new(void);
 gchar *osm_api_client_challenge_start(OsmApiClient *self);
-gchar *osm_api_client_challenge_finish(OsmApiClient *self, gchar *code);
+void osm_api_client_challenge_finish(OsmApiClient *self, gchar *code);
 gchar *osm_api_client_create_request(OsmApiClient *self, const gchar *function);
 
 // Property accessors
