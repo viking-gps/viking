@@ -21,7 +21,7 @@
 
 #include "viking.h"
 
-#include "osm-api-client.h"
+#include "osm_api_client.h"
 
 #include <glib.h>
 #include <rest/rest.h>
