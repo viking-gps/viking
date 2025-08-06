@@ -30,6 +30,7 @@
 #define MAP_ID_EXPEDIA 5
 
 #define MAP_ID_MAPNIK_RENDER 7
+#define MAP_ID_MAPLIBRE_RENDER 8
 
 // Mostly OSM related - except the Blue Marble value
 #define MAP_ID_OSM_MAPNIK 13

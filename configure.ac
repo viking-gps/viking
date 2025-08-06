@@ -549,6 +549,24 @@ case $ac_cv_enable_nova in
 esac
 AM_CONDITIONAL([NOVA], [test x$ac_cv_enable_nova = xyes])
 
+# TODO: if maplibre, C++20 probably too
+AC_LANG_PUSH([C++])
+CXXFLAGS="$CXXFLAGS -std=c++20"
+AC_CHECK_LIB([stdc++], [main], [], [AC_MSG_ERROR([libstdc++ is needed but not found.])])
+AC_CHECK_LIB([icuuc], [main], [], [AC_MSG_ERROR([libicuuc is needed but not found.])])
+AC_CHECK_LIB([icui18n], [main], [], [AC_MSG_ERROR([libicui18n is needed but not found.])])
+AC_CHECK_LIB([bz2], [main], [], [AC_MSG_ERROR([libbz2 is needed but not found.])])
+AC_CHECK_LIB([png], [main], [], [AC_MSG_ERROR([libpng is needed but not found.])])
+AC_CHECK_LIB([z], [main], [], [AC_MSG_ERROR([libz is needed but not found.])])
+AC_CHECK_LIB([webp], [main], [], [AC_MSG_ERROR([libwepb is needed but not found.])])
+AC_CHECK_LIB([jpeg], [main], [], [AC_MSG_ERROR([libjpeg is needed but not found.])])
+AC_CHECK_LIB([curl], [main], [], [AC_MSG_ERROR([libcurl is needed but not found.])])
+AC_CHECK_LIB([GL], [main], [], [AC_MSG_ERROR([libGL is needed but not found.])])
+AC_CHECK_LIB([EGL], [main], [], [AC_MSG_ERROR([libEGL is needed but not found.])])
+#AC_CHECK_LIB([vulkan_intel], [main], [], [AC_MSG_ERROR([libvulkan_intel is needed but not found.])])
+AC_CHECK_LIB([uv], [main], [], [AC_MSG_ERROR([libuv is needed but not found.])])
+AC_LANG_POP([C++])
+
 # Mapnik rendering layer
 AC_ARG_ENABLE(mapnik, AS_HELP_STRING([--enable-mapnik],
               [enable Mapnik (default is enable)]),
