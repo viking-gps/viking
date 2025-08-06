@@ -249,6 +249,7 @@ ICONS = \
 	vikgeocluelayer.png \
 	vikgeoreflayer.png \
 	vikgpslayer.png \
+	vikmaplibrelayer.png \
 	vikmapslayer.png \
 	vikmapniklayer.png \
 	viktrwlayer.png \
