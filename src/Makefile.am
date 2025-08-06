@@ -5,6 +5,7 @@ SUBDIRS = icons
 
 bin_PROGRAMS = viking
 
+#TODO: if MAPLIBRE
 noinst_LIBRARIES = \
 	libviking.a
 #	libdtoa.a
@@ -235,6 +236,12 @@ libviking_a_SOURCES += \
 	mapnik_interface.cpp mapnik_interface.h
 endif
 
+#TODO: if MAPLIBRE 
+libviking_a_SOURCES += \
+	vikmaplibrelayer.c vikmaplibrelayer.h \
+	maplibre_interface.cpp maplibre_interface.h
+#endif
+
 if GEOCLUE
 libviking_a_SOURCES += \
 	vikgeocluelayer.c vikgeocluelayer.h \
@@ -249,14 +256,48 @@ LDADD += \
 	../windows/installer/pixmaps/viking_icon.o
 endif
 
+LDADD += \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-core.a \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-csscolorparser.a \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-nunicode.a \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-parsedate.a \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-sqlite.a \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/vendor/freetype/libfreetype.a
+
+#	$(top_srcdir)/maplibre-native/build-linux-vulkan/vendor/glslang/glslang/libglslang.a \
+#	$(top_srcdir)/maplibre-native/build-linux-vulkan/vendor/glslang/glslang/libglslang-default-resource-limits.a
+
+#AM_LDFLAGS = \
+#	-L$(top_srcdir)/maplibre-native/build-linux-opengl/ \
+#	-lmbgl-core \
+#	-lmbgl-vendor-csscolorparser \
+#	-lmbgl-vendor-nunicode \
+#	-lmbgl-vendor-parsedate \
+#	-lmbgl-vendor-sqlite
+
+# TODO: rule for building
+# The following mess with linking -- but maplibre has its own
+# versions..?
+#	-L$(top_srcdir)/maplibre-native/build-linux-opengl/vendor/freetype/ \
+#	-L$(top_srcdir)/maplibre-native/build-linux-opengl/vendor/harfbuzz/ \
+#	-lfreetype \
+#	-lharfbuzz
+MAPLIBRE_FLAGS = \
+	-I$(top_srcdir)/maplibre-native/include/ \
+	-I$(top_srcdir)/maplibre-native/vendor/maplibre-native-base/deps/geometry.hpp/include/ \
+	-I$(top_srcdir)/maplibre-native/vendor/maplibre-native-base/include/ \
+	-I$(top_srcdir)/maplibre-native/vendor/maplibre-native-base/deps/variant/include/ \
+	-I$(top_srcdir)/maplibre-native/platform/default/include/
+
 AM_CFLAGS		= -Wall -g -D_GNU_SOURCE \
 	$(PACKAGE_CFLAGS) $(GTK_CFLAGS) \
-	@EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@ @LIBGEOCLUE_CFLAGS@
+	@EXPAT_CFLAGS@ @LIBCURL_CPPFLAGS@ @LIBGEOCLUE_CFLAGS@ $(MAPLIBRE_FLAGS)
 AM_CPPFLAGS		= \
 	$(PACKAGE_CFLAGS) $(GTK_CFLAGS) \
 	-DLOCALEDIR=\""$(datadir)/locale"\" \
 	-DVIKING_DATADIR=\""$(pkgdatadir)"\" \
-	-DVIKING_SYSCONFDIR=\""$(sysconfdir)/$(PACKAGE)"\"
+	-DVIKING_SYSCONFDIR=\""$(sysconfdir)/$(PACKAGE)"\" \
+	$(MAPLIBRE_FLAGS)
 
 @INTLTOOL_DESKTOP_RULE@
 
