@@ -328,12 +328,19 @@ struct _VikAggregateLayer {
   guint8 tac_time_range; // Years
   // Maybe a sparse table would be more efficient
   //  but this seems to work OK at least if all tracks are confined within a not too diverse area
-  GHashTable *tiles;
+  GHashTable *tiles; // The current working set for calculating coverage
   GHashTable *tiles_clust;
 
   // Enable to determine changed tiles (mainly for those added rather than removed)
   GHashTable *prev;
   GHashTable *tiles_new;
+
+  // Cached results from previous calculations
+  //  keep a copy per area level to enable quick redraw of coverage
+  //  especially useful for the calculations with the smallest (and hence more) tiles can take some time.
+  // ATM only just for basic area coverage.
+  //  for other types cluster, square, etc... just have to wait for the recalculation to complete.
+  GHashTable *tiles_cached[G_N_ELEMENTS(params_tile_area_levels)];
 
   // Heatmap
   gboolean hm_calculating;
@@ -759,6 +766,8 @@ VikAggregateLayer *vik_aggregate_layer_new (VikViewport *vvp)
   val->tiles_clust = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
   val->tiles_new = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
   val->prev = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
+  for ( guint xx = 0; xx <= G_N_ELEMENTS(params_tile_area_levels); xx++ )
+    val->tiles_cached[xx] = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
 
   return val;
 }
@@ -1041,6 +1050,12 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
     map_utils_iTMS_to_center_vikcoord ( &ulm, &coord );
     vik_viewport_coord_to_screen ( vvp, &coord, &xx_tmp, &yy_tmp );
 
+    const guint zoom_index = 18 - map_utils_mpp_to_zoom_level ( val->zoom_level );
+    if ( zoom_index > G_N_ELEMENTS(params_tile_area_levels) ) {
+      g_warning ( "%s: zoom_index out of bounds (%d)", __FUNCTION__, zoom_index );
+      return;
+    }
+
     // ceiled so tiles will be maximum size in the case of funky shrinkfactor
     const gint tilesize_ceil = ceil ( tilesize );
     const gint8 xinc = (ulm.x == xmin) ? 1 : -1;
@@ -1077,6 +1092,8 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
     if ( tiles_unreachable )
       val->unreachable_pixbuf = setup_pixbuf ( val->unreachable_pixbuf, width, height );
 
+    // Draw from the cached zl copy.
+
     guint tile_draw_count = 0;
     for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
       yy = base_yy;
@@ -1084,7 +1101,7 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
         ulm.x = x;
         ulm.y = y;
 
-        if ( is_tile_occupied(val->tiles, x, y) ) {
+        if ( is_tile_occupied(val->tiles_cached[zoom_index], x, y) ) {
           //g_printf ( "%s1: %d, %d, %d, %d, %d, %d %0.2f\n", __FUNCTION__, xx, yy, tilesize_ceil, tilesize_ceil, width, height, shrinkfactor );
           if ( !is_big ) {
 
@@ -1098,7 +1115,7 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
 
             gdk_pixbuf_copy_area ( val->pixbuf[BASIC], 0, 0, sizex, sizey, val->full_pixbuf[BASIC], destx, desty );
 
-            if ( val->cont_label && (tile_label(val->tiles, x, y) == val->cont_label) )
+            if ( val->cont_label && (tile_label(val->tiles_cached[zoom_index], x, y) == val->cont_label) )
               gdk_pixbuf_copy_area ( val->pixbuf[CONTIG], 0, 0, sizex, sizey, val->full_pixbuf[CONTIG], destx, desty );
 
             // Cluster drawing
@@ -2358,7 +2375,7 @@ static void tac_unreachable ( VikAggregateLayer *val )
 }
 
 // Fwd declaration
-static void tac_clear ( VikAggregateLayer *val );
+static void tac_clear ( VikAggregateLayer *val, gboolean full );
 
 /**
  *
@@ -2393,11 +2410,12 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
     for (gint x = 0; x<CP_NUM; x++ )
       ct->val->num_prev[x] = ct->val->num_tiles[x];
   }
+
   ct->val->max_square_prev = ct->val->max_square;
   ct->val->ns_size_prev = ct->val->ns_size;
   ct->val->ew_size_prev = ct->val->ew_size;
 
-  tac_clear ( ct->val );
+  tac_clear ( ct->val, FALSE );
 
   tac_unreachable ( ct->val );
 
@@ -2495,6 +2513,19 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
     g_hash_table_remove_all ( ct->val->prev );
   }
 
+  // Copy result into cache per zoom level
+  const guint zoom_index = 18 - map_utils_mpp_to_zoom_level ( ct->val->zoom_level );
+  if ( zoom_index <= G_N_ELEMENTS(params_tile_area_levels) ) {
+    // Reset
+    g_hash_table_remove_all ( ct->val->tiles_cached[zoom_index] );
+    // Copy
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init ( &iter, ct->val->tiles );
+    while ( g_hash_table_iter_next(&iter, &key, &value) )
+      (void)g_hash_table_insert ( ct->val->tiles_cached[zoom_index], g_strdup(key), NULL );
+  }
+
   // Timing for all tile calcs
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
@@ -2509,7 +2540,7 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
 /**
  *
  */
-static void tac_clear ( VikAggregateLayer *val )
+static void tac_clear ( VikAggregateLayer *val, gboolean full )
 {
   val->max_square = 0;
   for (gint x = 0; x<CP_NUM; x++ ) {
@@ -2525,6 +2556,10 @@ static void tac_clear ( VikAggregateLayer *val )
   val->ew_size = 0;
   // NB North/East/South/West extents only done on calculation with a position
   // as setting to map x/y tile of 0s not useful
+
+  if ( full )
+    for ( guint xx = 0; xx <= G_N_ELEMENTS(params_tile_area_levels); xx++ )
+      g_hash_table_remove_all ( val->tiles_cached[xx] ); // No memory to remove ATM
 }
 
 /**
@@ -2768,7 +2803,7 @@ void vik_aggregate_layer_file_load_complete ( VikAggregateLayer *val )
 static void tac_clear_cb ( menu_array_values values )
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
-  tac_clear ( val );
+  tac_clear ( val, TRUE );
   vik_layer_emit_update ( VIK_LAYER(val), FALSE ); // NB update display from background
 }
 
@@ -3043,6 +3078,8 @@ static void tac_increase_cb ( menu_array_values values )
     if ( !val->calculating )
       tac_calculate ( val );
 
+  vik_layer_emit_update ( VIK_LAYER(val), FALSE );
+
   vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
 }
 
@@ -3054,6 +3091,8 @@ static void tac_decrease_cb ( menu_array_values values )
   if ( val->on[BASIC] )
     if ( !val->calculating )
       tac_calculate ( val );
+
+  vik_layer_emit_update ( VIK_LAYER(val), FALSE );
 
   vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
 }
@@ -3466,6 +3505,8 @@ void vik_aggregate_layer_free ( VikAggregateLayer *val )
   g_hash_table_destroy ( val->tiles_clust );
   g_hash_table_destroy ( val->tiles_new );
   g_hash_table_destroy ( val->prev );
+  for ( guint xx = 0; xx <= G_N_ELEMENTS(params_tile_area_levels); xx++ )
+    g_hash_table_destroy ( val->tiles_cached[xx] );
 
   if ( val->hm_pixbuf )
     g_object_unref ( val->hm_pixbuf );
