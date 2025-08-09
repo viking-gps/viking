@@ -29,6 +29,10 @@ G_BEGIN_DECLS
 
 void vik_trw_layer_export ( VikLayer *vl, const gchar *title, const gchar* default_name, VikTrack* trk, VikFileType_t file_type );
 
+void vik_trw_layer_export_gpx_waypoints ( VikTrwLayer *vtl );
+
+void vik_trw_layer_export_separate_gpx ( VikTrwLayer *vtl, trw_subtype_enum subtype );
+
 void vik_trw_layer_export_external_gpx ( VikTrwLayer *vtl, const gchar* external_program );
 
 void vik_trw_layer_export_gpsbabel ( VikLayer *vl, const gchar *title, const gchar* default_name, const gchar* gpx_file_name );

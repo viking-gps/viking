@@ -1527,6 +1527,14 @@ Opens a new dialog with the list. As described in the Aggregate layer <xref link
 <term><guilabel>List Tracks or Routes</guilabel></term>
 <listitem><para>Opens a new dialog with the list. As described in the Aggregate layer <xref linkend="track_list"/></para></listitem>
 </varlistentry>
+<varlistentry>
+<term><guilabel>Export Separate GPX Files...</guilabel></term>
+<listitem><para>
+  Version1.11+: Opens a save dialog to select the output directory. Each individual track or route (that is visible) will be saved as a separate file.
+  This can be useful with some GPS devices that don't seem to handle allowing selection of an individual track or route when multiple exist in a GPX file for navigation purposes.
+  Tracks or routes will be skipped if there is an already existing file with that name.
+</para></listitem>
+</varlistentry>
 </variablelist>
 <para>Also gives other options for handling multiple items:</para>
 <variablelist>
@@ -2135,6 +2143,12 @@ The record of the Google route is stored in the track's comment, so if the comme
 <varlistentry>
 <term><guilabel>List Waypoints</guilabel></term>
 <listitem><para>Opens a new dialog with the list. As described in the Aggregate layer <xref linkend="waypoint_list"/></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Export GPX File...</guilabel></term>
+<listitem><para>
+  Version1.11+: Opens a save dialog to select a filename to save just the visible waypoints of this layer in the GPX format.
+</para></listitem>
 </varlistentry>
 </variablelist>
 <para>Also gives other options for handling multiple items:</para>

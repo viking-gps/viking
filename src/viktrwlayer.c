@@ -4275,6 +4275,23 @@ static void trw_layer_export_gpx ( menu_array_layer values )
   g_free ( auto_save_name );
 }
 
+static void trw_layer_export_gpx_waypoints_only ( menu_array_layer values )
+{
+  vik_trw_layer_export_gpx_waypoints ( VIK_TRW_LAYER(values[MA_VTL]) );
+}
+
+static void trw_layer_export_gpx_separate_routes ( menu_array_layer values )
+{
+  // As explicitly called; do it even if sublayer visibility is off
+  vik_trw_layer_export_separate_gpx ( VIK_TRW_LAYER(values[MA_VTL]), VIK_TRW_LAYER_SUBLAYER_ROUTES );
+}
+
+static void trw_layer_export_gpx_separate_tracks ( menu_array_layer values )
+{
+  // As explicitly called; do it even if sublayer visibility is off
+  vik_trw_layer_export_separate_gpx ( VIK_TRW_LAYER(values[MA_VTL]), VIK_TRW_LAYER_SUBLAYER_TRACKS );
+}
+
 static void trw_layer_export_kml ( menu_array_layer values )
 {
   gchar *auto_save_name = append_file_ext ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])), FILE_TYPE_KML );
@@ -9751,6 +9768,8 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     (void)vu_menu_add_item ( vis_submenu, _("_Hide All Waypoints"), GTK_STOCK_CLEAR, G_CALLBACK(trw_layer_waypoints_visibility_off), data );
     (void)vu_menu_add_item ( vis_submenu, _("_Toggle"), GTK_STOCK_REFRESH, G_CALLBACK(trw_layer_waypoints_visibility_toggle), data );
 
+    (void)vu_menu_add_item ( menu, _("Export GPX File..."), NULL, G_CALLBACK(trw_layer_export_gpx_waypoints_only), data );
+
     (void)vu_menu_add_item ( menu, _("_List Waypoints..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_waypoint_list_dialog), data );
   }
 
@@ -9780,6 +9799,9 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     (void)vu_menu_add_item ( vis_submenu, _("_Toggle"), GTK_STOCK_REFRESH, G_CALLBACK(trw_layer_tracks_visibility_toggle), data );
 
     (void)vu_menu_add_item ( menu, _("_List Tracks..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_track_list_dialog_single), data );
+
+    (void)vu_menu_add_item ( menu, _("_Export Separate GPX Files..."), NULL, G_CALLBACK(trw_layer_export_gpx_separate_tracks), data );
+
     (void)vu_menu_add_item ( menu, _("_Statistics"), GTK_STOCK_INFO, G_CALLBACK(trw_layer_tracks_stats), data );
   }
 
@@ -9808,6 +9830,9 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     (void)vu_menu_add_item ( vis_submenu, _("_Toggle"), GTK_STOCK_REFRESH, G_CALLBACK(trw_layer_routes_visibility_toggle), data );
 
     (void)vu_menu_add_item ( menu, _("_List Routes..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_track_list_dialog_single), data );
+
+    (void)vu_menu_add_item ( menu, _("_Export Separate GPX Files..."), NULL, G_CALLBACK(trw_layer_export_gpx_separate_routes), data );
+
     (void)vu_menu_add_item ( menu, _("_Statistics"), NULL, G_CALLBACK(trw_layer_routes_stats), data );
   }
 
