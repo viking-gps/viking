@@ -174,7 +174,7 @@ typedef VikLayerParamData
 
 typedef void          (*VikLayerFuncChangeParam)           (GtkWidget *, ui_change_values );
 
-typedef gboolean      (*VikLayerFuncReadFileData)          (VikLayer *, FILE *, const gchar *); // gchar* is the directory path. Function should report success or failure
+typedef gboolean      (*VikLayerFuncReadFileData)          (VikLayer *, FILE *, const gchar *, gboolean); // gchar* is the directory path. Function should report success or failure
 typedef void          (*VikLayerFuncWriteFileData)         (VikLayer *, FILE *, const gchar *); // gchar* is the directory path.
 
 /* item manipulation */

@@ -2817,6 +2817,24 @@ Zooming in and out scales the heatmap image appropriately, but the image may get
 <para>If there is an existing heatmap on display then changing these values and selecting <guibutton>Apply</guibutton> will cause the heatmap to be recalculated with the new settings.</para>
 </section>
 
+<section><title>Layer Properties: General</title>
+<para>General options that apply to Aggregate layers.</para>
+<variablelist>
+  <varlistentry>
+    <term>Load External Layers</term>
+    <listitem>
+      <para>
+        Version1.11+: Allows control over whether external layers are automatically loaded when the .vik file is loaded.
+        By default external layers are only loaded when needed for display (primarily via selection on the left hand panel).
+        However, they are not included (until loaded) in various statistics or Track Coverage Area.
+        Thus, this setting ensures they are fully loaded (at the expense of taking the time to process these files);
+        rather than having to manually select them or manually invoke the <guilabel>Load External Layers</guilabel> option.
+      </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+</section>
+
 <section><title>Layer Operations</title>
 <para>
 The following are available on Aggregate Layers:

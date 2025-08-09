@@ -288,6 +288,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
 
   gboolean successful_read = TRUE;
   gint toplayer_number = 0;
+  gboolean auto_load_external = FALSE;
 
   push(&stack);
   stack->under = NULL;
@@ -327,6 +328,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
         stack->data = (gpointer)top;
         params = vik_layer_get_interface(VIK_LAYER(top)->type)->params;
         params_count = vik_layer_get_interface(VIK_LAYER(top)->type)->params_count;
+        auto_load_external = vik_aggregate_layer_get_auto_load_external ( top );
         continue;
       }
       else if ( str_starts_with ( line, "Layer ", 6, TRUE ) )
@@ -395,6 +397,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
             if (VIK_LAYER(stack->under->data)->type == VIK_LAYER_AGGREGATE) {
               vik_aggregate_layer_add_layer ( VIK_AGGREGATE_LAYER(stack->under->data), VIK_LAYER(stack->data), FALSE );
               vik_layer_post_read ( VIK_LAYER(stack->data), vp, TRUE );
+              auto_load_external = vik_aggregate_layer_get_auto_load_external ( VIK_AGGREGATE_LAYER(stack->under->data) );
             }
             else if (VIK_LAYER(stack->under->data)->type == VIK_LAYER_GPS) {
               /* TODO: anything else needs to be done here ? */
@@ -412,7 +415,7 @@ static gboolean file_read ( VikAggregateLayer *top, FILE *f, const gchar *dirpat
         if ( stack->data && vik_layer_get_interface(VIK_LAYER(stack->data)->type)->read_file_data )
         {
           /* must read until hits ~EndLayerData */
-          if ( ! vik_layer_get_interface(VIK_LAYER(stack->data)->type)->read_file_data ( VIK_LAYER(stack->data), f, dirpath ) )
+          if ( ! vik_layer_get_interface(VIK_LAYER(stack->data)->type)->read_file_data ( VIK_LAYER(stack->data), f, dirpath, auto_load_external ) )
             successful_read = FALSE;
         }
         else

@@ -68,6 +68,7 @@ gboolean vik_aggregate_layer_is_empty ( VikAggregateLayer *val );
 const GList *vik_aggregate_layer_get_children ( VikAggregateLayer *val );
 GList *vik_aggregate_layer_get_all_layers_of_type(VikAggregateLayer *val, GList *layers, VikLayerTypeEnum type, gboolean include_invisible);
 guint vik_aggregate_layer_count ( VikAggregateLayer *val );
+gboolean vik_aggregate_layer_get_auto_load_external ( VikAggregateLayer *val );
 
 gboolean vik_aggregate_layer_search_date ( VikAggregateLayer *val, gchar *date_str );
 

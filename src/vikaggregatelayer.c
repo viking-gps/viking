@@ -124,14 +124,21 @@ static gchar * params_styles[] =
     NULL
   };
 
-static gchar *params_groups[] = { N_("Tracks Area Coverage"), N_("TAC Advanced"), N_("Tracks Heatmap") };
-enum { GROUP_TAC, GROUP_TAC_ADV, GROUP_THM };
+static gchar *params_groups[] = { N_("Tracks Area Coverage"),
+                                  N_("TAC Advanced"),
+                                  N_("Tracks Heatmap"),
+                                  N_("General"), };
+enum { GROUP_TAC,
+       GROUP_TAC_ADV,
+       GROUP_THM,
+       GROUP_GEN };
 
 static void aggregate_reset_cb ( GtkWidget *widget, gpointer ptr )
 {
   a_layer_defaults_reset_show ( AGGREGATE_FIXED_NAME, ptr, GROUP_TAC );
   a_layer_defaults_reset_show ( AGGREGATE_FIXED_NAME, ptr, GROUP_TAC_ADV );
   a_layer_defaults_reset_show ( AGGREGATE_FIXED_NAME, ptr, GROUP_THM );
+  a_layer_defaults_reset_show ( AGGREGATE_FIXED_NAME, ptr, GROUP_GEN );
 }
 
 static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(aggregate_reset_cb); }
@@ -172,6 +179,8 @@ VikLayerParam aggregate_layer_params[] = {
   { VIK_LAYER_AGGREGATE, "hm_factor", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Width Factor:"), VIK_LAYER_WIDGET_HSCALE, &params_scales[1], NULL,
     N_("Note higher values means the heatmap takes longer to generate"), width_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "hm_style", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Color Style:"), VIK_LAYER_WIDGET_COMBOBOX, params_styles, NULL, NULL, combo_1st_default, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "auto_load_external", VIK_LAYER_PARAM_BOOLEAN, GROUP_GEN, N_("Load External Layers:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Load External Layers on Viking File Loads"), vik_lpd_false_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
     VIK_LAYER_WIDGET_BUTTON, N_("Reset All to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
@@ -203,6 +212,7 @@ enum {
       PARAM_HM_ALPHA,
       PARAM_HM_STAMP_FACTOR,
       PARAM_HM_STYLE,
+      PARAM_GEN_AUTO_LOAD_EXTERNAL,
       PARAM_RESET,
       NUM_PARAMS
 };
@@ -362,6 +372,9 @@ struct _VikAggregateLayer {
   guint8 hm_stamp_factor;
   guint8 hm_style;
   GdkColor hm_color;
+
+  // General
+  gboolean auto_load_external;
 
   MapCoord rc_menu_mc; // Position of Right Click menu
 };
@@ -619,6 +632,9 @@ static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetP
         if ( !vlsp->is_file_operation )
           hm_apply ( val );
       break;
+    case PARAM_GEN_AUTO_LOAD_EXTERNAL:
+      changed = vik_layer_param_change_boolean ( vlsp->data, &val->auto_load_external );
+      break;
     default: break;
   }
   if ( vik_debug && changed )
@@ -654,6 +670,7 @@ static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, gui
     case PARAM_HM_ALPHA: rv.u = val->hm_alpha; break;
     case PARAM_HM_STAMP_FACTOR: rv.u = val->hm_stamp_factor; break;
     case PARAM_HM_STYLE: rv.u = val->hm_style; break;
+    case PARAM_GEN_AUTO_LOAD_EXTERNAL: rv.b = val->auto_load_external; break;
     case PARAM_RESET: rv.ptr = aggregate_reset_cb; break;
     default: break;
   }
@@ -3819,6 +3836,14 @@ guint vik_aggregate_layer_count ( VikAggregateLayer *val )
     nn = g_list_length (children);
   }
   return nn;
+}
+
+/**
+ *
+ */
+gboolean vik_aggregate_layer_get_auto_load_external ( VikAggregateLayer *val )
+{
+  return val->auto_load_external;
 }
 
 /**

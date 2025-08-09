@@ -876,9 +876,9 @@ static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventMotion *event,
 static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t *t );
 static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static void trw_write_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
-static gboolean trw_read_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
+static gboolean trw_read_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath, gboolean auto_load_external );
 static void trw_write_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
-static gboolean trw_read_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
+static gboolean trw_read_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath, gboolean auto_load );
 static gboolean trw_load_external_layer ( VikTrwLayer *trw );
 static void trw_update_layer_icon ( VikTrwLayer *trw );
 
@@ -13156,10 +13156,10 @@ static void trw_write_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath )
   }
 }
 
-gboolean trw_read_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath )
+gboolean trw_read_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath, gboolean auto_load_external )
 {
   if ( trw->external_layer != VIK_TRW_LAYER_INTERNAL ) {
-    return trw_read_file_external ( trw, f, dirpath );
+    return trw_read_file_external ( trw, f, dirpath, auto_load_external );
   } else {
     return a_gpspoint_read_file( trw, f, dirpath );
   }
@@ -13188,15 +13188,18 @@ static void trw_write_file_external ( VikTrwLayer *trw, FILE *f, const gchar *di
   }
 }
 
-static gboolean trw_read_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath )
+static gboolean trw_read_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath, gboolean auto_load )
 {
   g_assert ( trw != NULL && trw->external_file != NULL && f != NULL );
 
   g_free ( trw->external_dirpath );
   trw->external_dirpath = g_strdup ( dirpath );
 
-  // leave loading to trw_layer_draw function
-  trw->external_loaded = FALSE;
+  if ( auto_load )
+    trw_load_external_layer ( trw );
+  else
+    // leave loading to trw_layer_draw function
+    trw->external_loaded = FALSE;
 
   // read ~EndLayerData
   static char line_buffer[15];
@@ -13217,7 +13220,8 @@ static gboolean trw_load_external_layer ( VikTrwLayer *trw )
   gboolean failed = TRUE;
   FILE *ext_f = g_fopen ( extfile, "r" );
   if ( ext_f ) {
-    vik_window_set_busy_cursor ( vw );
+    if ( vw )
+      vik_window_set_busy_cursor ( vw );
 
     gchar *dirpath = g_path_get_dirname ( extfile );
     // KML, TCX & GPX are all XML
@@ -13244,7 +13248,8 @@ static gboolean trw_load_external_layer ( VikTrwLayer *trw )
     g_free ( dirpath );
     fclose ( ext_f );
 
-    vik_window_clear_busy_cursor ( vw );
+    if ( vw )
+      vik_window_clear_busy_cursor ( vw );
   }
 
   trw->external_loaded = ! failed;
