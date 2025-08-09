@@ -2672,27 +2672,27 @@ static gint hm_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
 {
   VikAggregateLayer *val = ct->val;
 
-  clock_t begin = clock();
+  const clock_t begin = clock();
 
   // Generate a stamp with a size relative to the zoom level
-  unsigned radius = map_utils_mpp_to_zoom_level ( val->hm_zoom ) *
+  const unsigned radius = map_utils_mpp_to_zoom_level ( val->hm_zoom ) *
     (gdouble)val->hm_stamp_factor/(gdouble)width_default().u;
-  unsigned d = 2*radius + 1;
+  const unsigned d = 2*radius + 1;
   float pts[d * d];
   rhomboidal ( pts, d, radius );
   heatmap_stamp_t *stamp = heatmap_stamp_load ( d, d, pts );
   heatmap_t* hm = heatmap_new ( val->hm_width, val->hm_height );
 
-  int ww = val->hm_width;
-  int hh = val->hm_height;
+  const int ww = val->hm_width;
+  const int hh = val->hm_height;
 
   // Only needs calculating once
-  gdouble mf = mercator_factor ( val->hm_zoom, val->hm_scale );
+  const gdouble mf = mercator_factor ( val->hm_zoom, val->hm_scale );
 
   guint tracks_processed = 0;
   for ( GList *tl = ct->tracks_and_layers; tl != NULL; tl = tl->next ) {
-    gdouble percent = (gdouble)tracks_processed/(gdouble)(ct->num_of_tracks);
-    gint res = a_background_thread_progress ( threaddata, percent );
+    const gdouble percent = (gdouble)tracks_processed/(gdouble)(ct->num_of_tracks);
+    const gint res = a_background_thread_progress ( threaddata, percent );
     if ( res != 0 ) return -1;
 
     vik_trw_and_track_t *vtlist = tl->data;
@@ -2719,8 +2719,8 @@ static gint hm_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
   heatmap_stamp_free ( stamp );
 
   // Timing
-  clock_t end = clock();
-  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  const clock_t end = clock();
+  const double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   g_debug ( "%s: %f", __FUNCTION__, time_spent );
 
   ct->val->hm_calculating = FALSE;
