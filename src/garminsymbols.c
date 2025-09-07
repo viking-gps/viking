@@ -389,10 +389,10 @@ static GdkPixbuf *get_wp_sym_from_index ( gint i ) {
   // Ensure data exists to either directly load icon or scale from the other set
   if ( !garmin_syms[i].icon && ( garmin_syms[i].data || garmin_syms[i].data_large) ) {
     if ( a_vik_get_use_large_waypoint_icons() ) {
-      if ( garmin_syms[i].data )
-        garmin_syms[i].icon = ui_get_icon ( garmin_syms[i].data, 30 );
-      else
+      if ( garmin_syms[i].data_large )
         garmin_syms[i].icon = ui_get_icon ( garmin_syms[i].data_large, 30 );
+      else
+        garmin_syms[i].icon = ui_get_icon ( garmin_syms[i].data, 30 );
     }
     else {
       if ( garmin_syms[i].data )
