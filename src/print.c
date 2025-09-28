@@ -107,6 +107,7 @@ void a_print(VikWindow *vw, VikViewport *vvp)
   g_signal_connect (print_oper, "create-custom-widget", G_CALLBACK (create_custom_widget_cb), &data);
 
   gtk_print_operation_set_custom_tab_label (print_oper, _("Image Settings"));
+  gtk_print_operation_set_embed_page_setup (print_oper, TRUE);
 
   res = gtk_print_operation_run (print_oper,
                                  GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG,
@@ -265,6 +266,12 @@ typedef struct
   GtkWidget       *scale_label;
   GtkWidget       *preview;
 } CustomWidgetInfo;
+
+static void update_custom_widget_cb(GtkPrintOperation *operation,
+                                    GtkWidget         *widget,
+                                    GtkPageSetup      *setup,
+                                    GtkPrintSettings  *settings,
+                                    CustomWidgetInfo  *info);
 
 enum
 {
@@ -542,6 +549,7 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   CustomWidgetInfo  *info = g_malloc0(sizeof(CustomWidgetInfo));
   g_signal_connect_swapped (data->operation, _("done"), G_CALLBACK (custom_widgets_cleanup), info);
 
+  g_signal_connect (data->operation, "update-custom-widget", G_CALLBACK (update_custom_widget_cb), info);
 
   info->data = data;
 
@@ -650,4 +658,32 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   set_scale_value(info);
 
   return layout;
+}
+
+// This handles changes from the GTK inbuilt 'Page Setup' tab,
+//  so that we can apply them to our custom Image Settings tab
+// NB ATM haven't found a way to update the 'Page Setup' widgets in reverse.
+//  i.e. for changes made in the custom widget - see page_setup_cb()
+//  although they are applied to the print 'operation' values,
+//  it doesn't result to any update of 'Page Setup' widgets themselves :(
+//  with no obvious way to force an update
+//  (no apparent specific API function, nor access to the widgets signal an update).
+// However, its not that critical as once a user is on the 'Image Settings' tab
+//  with a working 'preview' all the controls are there so get immediate feedback of changes;
+//  and thus unlikely to switch back (and forth) with the Page Setup tab.
+static void update_custom_widget_cb(GtkPrintOperation *operation,
+                                    GtkWidget         *widget,
+                                    GtkPageSetup      *setup,
+                                    GtkPrintSettings  *settings,
+                                    CustomWidgetInfo  *info)
+{
+  if ( vik_verbose )
+    g_debug ( "%s:", __FUNCTION__ );
+
+  // Ensure new values are applied!
+  gtk_print_operation_set_default_page_setup (operation, setup);
+
+  vik_print_preview_set_page_setup (VIK_PRINT_PREVIEW (info->preview), setup);
+
+  update_page_setup (info);
 }
