@@ -45,9 +45,15 @@ static gboolean  vik_print_preview_event            (GtkWidget        *widget,
                                                       GdkEvent         *event,
                                                       VikPrintPreview *preview);
 
+#if GTK_CHECK_VERSION (3,0,0)
+static gboolean  vik_print_preview_draw             (GtkWidget       *widget,
+                                                     cairo_t         *cr,
+                                                     VikPrintPreview *preview);
+#else
 static gboolean  vik_print_preview_expose_event     (GtkWidget        *widget,
                                                       GdkEventExpose   *eevent,
                                                       VikPrintPreview *preview);
+#endif
 
 static gdouble   vik_print_preview_get_scale        (VikPrintPreview *preview);
 
@@ -157,9 +163,15 @@ vik_print_preview_init (VikPrintPreview *preview)
   g_signal_connect (preview->area, "event",
                     G_CALLBACK (vik_print_preview_event),
                     preview);
+#if GTK_CHECK_VERSION (3,0,0)
+  g_signal_connect (preview->area, "draw",
+                    G_CALLBACK (vik_print_preview_draw),
+                    preview);
+#else
   g_signal_connect (preview->area, "expose-event",
                     G_CALLBACK (vik_print_preview_expose_event),
                     preview);
+#endif
 }
 
 
@@ -431,9 +443,15 @@ static GdkPixbuf *get_thumbnail(VikViewport *vvp, gint thumb_width, gint thumb_h
 }
 
 static gboolean
+#if GTK_CHECK_VERSION (3,0,0)
+vik_print_preview_draw (GtkWidget       *widget,
+                        cairo_t         *cr,
+                        VikPrintPreview *preview)
+#else
 vik_print_preview_expose_event (GtkWidget        *widget,
                                  GdkEventExpose   *eevent,
                                  VikPrintPreview *preview)
+#endif
 {
   gdouble  paper_width;
   gdouble  paper_height;
@@ -442,8 +460,9 @@ vik_print_preview_expose_event (GtkWidget        *widget,
   gdouble  top_margin;
   gdouble  bottom_margin;
   gdouble  scale;
-  cairo_t *cr;
-
+#if !GTK_CHECK_VERSION (3,0,0)
+  cairo_t *cr = gdk_cairo_create (gtk_widget_get_window(widget));
+#endif
   paper_width = gtk_page_setup_get_paper_width (preview->page,
                                                 GTK_UNIT_POINTS);
   paper_height = gtk_page_setup_get_paper_height (preview->page,
@@ -453,8 +472,6 @@ vik_print_preview_expose_event (GtkWidget        *widget,
                                        &right_margin,
                                        &top_margin,
                                        &bottom_margin);
-
-  cr = gdk_cairo_create (gtk_widget_get_window(widget));
 
   scale = vik_print_preview_get_scale (preview);
 
@@ -523,7 +540,9 @@ vik_print_preview_expose_event (GtkWidget        *widget,
         }
     }
 
+#if !GTK_CHECK_VERSION (3,0,0)
   cairo_destroy (cr);
+#endif
 
   return FALSE;
 }
