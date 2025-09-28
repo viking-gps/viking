@@ -2,8 +2,6 @@
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
  * Copyright (C) 2003-2005, Evan Battaglia <gtoevan@gmx.net>
- *
- * print.c
  * Copyright (C) 2007, Quy Tonthat <qtonthat@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -108,17 +106,24 @@ void a_print(VikWindow *vw, VikViewport *vvp)
 
   gtk_print_operation_set_custom_tab_label (print_oper, _("Image Settings"));
   gtk_print_operation_set_embed_page_setup (print_oper, TRUE);
+  gtk_print_operation_set_show_progress (print_oper, TRUE);
 
+  GError *error = NULL;
   res = gtk_print_operation_run (print_oper,
                                  GTK_PRINT_OPERATION_ACTION_PRINT_DIALOG,
-                                 GTK_WINDOW (vw), NULL);
+                                 GTK_WINDOW (vw),
+                                 &error);
 
   if (res == GTK_PRINT_OPERATION_RESULT_APPLY) {
     if (print_settings != NULL)
       g_object_unref (print_settings);
     print_settings = g_object_ref (gtk_print_operation_get_print_settings (print_oper));
   }
-
+  else if (res == GTK_PRINT_OPERATION_RESULT_ERROR) {
+    a_dialog_error_msg ( GTK_WINDOW(vw),
+                         error->message );
+    g_error_free ( error );
+  }
   g_object_unref (print_oper);
 }
 
@@ -126,18 +131,18 @@ static void begin_print(GtkPrintOperation *operation,
                         GtkPrintContext   *context,
                         PrintData         *data)
 {
-  // fputs("DEBUG: begin_print() called\n", stderr);
+  if ( vik_verbose )
+    g_debug ( "%s:", __FUNCTION__ );
   gtk_print_operation_set_n_pages (operation, data->num_pages);
   gtk_print_operation_set_use_full_page (operation, data->use_full_page);
-
 }
 
 static void end_print(GtkPrintOperation *operation,
                       GtkPrintContext   *context,
                       PrintData *data)
 {
-  // fputs("DEBUG: end_print() called\n", stderr);
-
+  if ( vik_verbose )
+    g_debug ( "%s:", __FUNCTION__ );
 }
 
 static void copy_row_from_rgb(guchar *surface_pixels, guchar *pixbuf_pixels, gint width)
@@ -224,7 +229,9 @@ static void draw_page_cairo(GtkPrintContext *context, PrintData *data)
   pixbuf_stride = gdk_pixbuf_get_rowstride(pixbuf_to_draw);
   pixbuf_n_channels = gdk_pixbuf_get_n_channels(pixbuf_to_draw);
 
-  // fprintf(stderr, "DEBUG: %s() surface_pixels=%p pixbuf_pixels=%p size=%d surface_width=%d surface_height=%d stride=%d data_height=%d pixmap_stride=%d pixmap_nchannels=%d pixmap_bit_per_Sample=%d\n", __PRETTY_FUNCTION__, surface_pixels, pixbuf_pixels, stride * data->height, cairo_image_surface_get_width(surface), cairo_image_surface_get_height(surface), stride, data->height, gdk_pixbuf_get_rowstride(pixbuf_to_draw), gdk_pixbuf_get_n_channels(pixbuf_to_draw), gdk_pixbuf_get_bits_per_sample(pixbuf_to_draw));
+  if ( vik_verbose )
+    g_debug ( "%s: size=%d surface_width=%d surface_height=%d stride=%d data_height=%d pixbuf_stride=%d pixbuf_nchannels=%d pixbuf_bits_per_sample=%d",
+              __FUNCTION__, stride * data->height, cairo_image_surface_get_width(surface), cairo_image_surface_get_height(surface), stride, data->height, gdk_pixbuf_get_rowstride(pixbuf_to_draw), gdk_pixbuf_get_n_channels(pixbuf_to_draw), gdk_pixbuf_get_bits_per_sample(pixbuf_to_draw) );
 
   /* Assume the pixbuf has 8 bits per channel */
   for (y = 0; y < data->height; y++, surface_pixels += stride, pixbuf_pixels += pixbuf_stride) {
@@ -252,9 +259,9 @@ static void draw_page(GtkPrintOperation *print,
                       gint               page_nr,
                       PrintData         *data)
 {
-  // fprintf(stderr, "DEBUG: draw_page() page_nr=%d\n", page_nr);
+  if ( vik_verbose )
+    g_debug ( "%s: page_nr=%d", __FUNCTION__, page_nr );
   draw_page_cairo(context, data);
-
 }
 
 /*********************** page layout gui *********************/
@@ -307,7 +314,6 @@ static void set_scale_value(CustomWidgetInfo *pinfo)
   gdouble height;
   gdouble ratio, ratio_w, ratio_h;
 
-
   get_page_dimensions (pinfo, &width, &height, GTK_UNIT_INCH);
   ratio_w = 100 * pinfo->data->width / pinfo->data->xres / width;
   ratio_h = 100 * pinfo->data->height / pinfo->data->yres / height;
@@ -344,7 +350,6 @@ static void update_page_setup (CustomWidgetInfo *pinfo)
   if (pinfo->preview)
     vik_print_preview_set_image_offsets (VIK_PRINT_PREVIEW (pinfo->preview),
                                      pinfo->data->offset_x, pinfo->data->offset_y);
-
 }
 
 static void page_setup_cb (GtkWidget *widget, CustomWidgetInfo *info)
@@ -354,6 +359,9 @@ static void page_setup_cb (GtkWidget *widget, CustomWidgetInfo *info)
   GtkPrintSettings  *settings;
   GtkPageSetup      *page_setup;
   GtkWidget         *toplevel;
+
+  if ( vik_verbose )
+    g_debug ( "%s:", __FUNCTION__ );
 
   toplevel = gtk_widget_get_toplevel (widget);
   if (! gtk_widget_is_toplevel (toplevel))
@@ -374,7 +382,6 @@ static void page_setup_cb (GtkWidget *widget, CustomWidgetInfo *info)
                                      page_setup);
 
   update_page_setup (info);
-
 }
 
 static void full_page_toggled_cb (GtkWidget *widget, CustomWidgetInfo *pinfo)
@@ -412,7 +419,6 @@ static void preview_offsets_changed_cb (GtkWidget *widget,
   info->data->offset_y = offset_y;
 
   update_offsets (info);
-
 }
 
 static void get_page_dimensions (CustomWidgetInfo *info,
@@ -436,7 +442,6 @@ static void get_page_dimensions (CustomWidgetInfo *info,
     *page_width -= left_margin + right_margin;
     *page_height -= top_margin + bottom_margin;
   }
-
 }
 
 static void get_max_offsets (CustomWidgetInfo *info,
@@ -545,6 +550,9 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
   GtkWidget    *button;
   GtkWidget    *label;
   GtkPageSetup *setup;
+
+  if ( vik_verbose )
+    g_debug ( "%s:", __FUNCTION__ );
 
   CustomWidgetInfo  *info = g_malloc0(sizeof(CustomWidgetInfo));
   g_signal_connect_swapped (data->operation, _("done"), G_CALLBACK (custom_widgets_cleanup), info);
