@@ -561,10 +561,10 @@ VikStdLayerMenuItem vik_layer_get_menu_items_selection(VikLayer *l)
     return(vik_layer_interfaces[l->type]->menu_items_selection);
 }
 
-void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection )
+void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter )
 {
   if ( vik_layer_interfaces[l->type]->add_menu_items )
-    vik_layer_interfaces[l->type]->add_menu_items ( l, menu, vlp, selection );
+    vik_layer_interfaces[l->type]->add_menu_items ( l, menu, vlp, selection, iter );
 }
 
 gboolean vik_layer_sublayer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp, VikStdLayerMenuItem selection )

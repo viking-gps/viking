@@ -985,7 +985,7 @@ static void layers_popup ( VikLayersPanel *vlp, GtkTreeIter *iter, gint mouse_bu
           (void)vu_menu_add_item ( menu, NULL, GTK_STOCK_DELETE, G_CALLBACK(vik_layers_panel_delete_selected), vlp );
 	}
       }
-      vik_layer_add_menu_items ( layer, menu, vlp, menu_selection );
+      vik_layer_add_menu_items ( layer, menu, vlp, menu_selection, iter );
       gtk_widget_show_all ( GTK_WIDGET(menu) );
     }
     else

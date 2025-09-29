@@ -43,7 +43,7 @@ static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, guint len, V
 static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoordMode mode );
 static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikAggregateLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val );
-static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection );
+static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter );
 static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetParam *vlsp );
 static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, guint16 id, gboolean is_file_operation );
 static void aggregate_layer_change_param ( GtkWidget *widget, ui_change_values values );
@@ -3428,7 +3428,7 @@ static gboolean aggregate_layer_selected_viewport_menu ( VikAggregateLayer *val,
   return FALSE;
 }
 
-static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection )
+static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter )
 {
   // Data to pass on in menu functions
   static menu_array_values values;

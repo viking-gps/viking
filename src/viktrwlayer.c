@@ -283,16 +283,16 @@ static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp );
 typedef enum {
   MA_VTL = 0,
   MA_VLP,
+  MA_TV_ITER,
   MA_SUBTYPE, // OR END for Layer only
   MA_SUBLAYER_ID,
   MA_CONFIRM,
   MA_VVP,
-  MA_TV_ITER,
   MA_MISC,
   MA_LAST,
 } menu_array_index;
 
-typedef gpointer menu_array_layer[2];
+typedef gpointer menu_array_layer[3];
 typedef gpointer menu_array_sublayer[MA_LAST];
 
 static void trw_layer_delete_item ( menu_array_sublayer values );
@@ -852,7 +852,7 @@ static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mo
 static gdouble trw_layer_get_timestamp ( VikTrwLayer *vtl );
 static void trw_layer_set_menu_selection ( VikTrwLayer *vtl, VikStdLayerMenuItem selection );
 static VikStdLayerMenuItem trw_layer_get_menu_selection ( VikTrwLayer *vtl );
-static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection );
+static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter );
 static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp, VikStdLayerMenuItem selection );
 static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar *newname, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
 static gboolean trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, gpointer sublayer );
@@ -5105,14 +5105,156 @@ static void trw_layer_file_delete ( menu_array_layer values )
   }
 }
 
+#define VIK_SETTINGS_TRACK_RENAME_FMT "track_rename_format"
+
+/**
+ * rename_track_or_layer_by_format:
+ *
+ * Suggest new name based on track characteristics.
+ * Applies to either the layer (based on the specified track) or the track itself
+ *
+ * Mainly to address Etrex naming if the track hasn't been reset/auto archived
+ *  - everything is saved under '<first date after reset>'
+ * such that splitting a track recording over multi days can become something like:
+ * 20 DEC 20#1
+ * 20 DEC 20#2 --> But might be on the 30th - so would be nice to be e.g. '30 DEC 20'
+ * 20 DEC 20#3 --> But could be the 2nd Jan the following year - so would be nice to be e.g. '02 JAN 21'
+ *
+ * This intelligence could be put into the split operation,
+ * but for now has to be manually requested
+ */
+void rename_track_or_layer_by_format ( VikTrwLayer *vtl,
+                                       VikTrack *trk,
+                                       VikLayersPanel *vlp,
+                                       GtkTreeIter *iter,
+                                       gpointer sublayer )
+{
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Rename"),
+                                                    VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_CANCEL,
+                                                    GTK_RESPONSE_REJECT,
+                                                    _("Preview"),
+                                                    GTK_RESPONSE_APPLY,
+                                                    GTK_STOCK_OK,
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    NULL );
+
+  GtkWidget *lname = gtk_label_new ( _("Old Name:") );
+  GtkWidget *aname = gtk_label_new ( trk->name );
+
+  // Default - read from settings
+  gchar *dfmt = NULL;
+  if ( ! a_settings_get_string ( VIK_SETTINGS_TRACK_RENAME_FMT, &dfmt ) )
+    dfmt = g_strdup ( "%d %b %y %H:%M" );
+
+  GtkWidget *entry = ui_entry_new ( dfmt, GTK_ENTRY_ICON_SECONDARY );
+  gtk_widget_set_tooltip_text ( entry, _("Transform name using strftime() format") );
+
+  GtkWidget *nname = gtk_label_new ( NULL );
+
+  GtkWidget *hbox_name = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(hbox_name), lname, FALSE, FALSE, 2 );
+  gtk_box_pack_end ( GTK_BOX(hbox_name), aname, TRUE, TRUE, 2 );
+
+  GtkWidget *lfmt = gtk_label_new ( _("Format:") );
+  GtkWidget *hbox_fmt = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(hbox_fmt), lfmt, FALSE, FALSE, 2 );
+  gtk_box_pack_end ( GTK_BOX(hbox_fmt), entry, TRUE, TRUE, 2 );
+
+  GtkWidget *lnn = gtk_label_new ( _("New Name:") );
+  GtkWidget *hbox_new = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(hbox_new), lnn, FALSE, FALSE, 2 );
+  gtk_box_pack_end ( GTK_BOX(hbox_new), nname, TRUE, TRUE, 2 );
+
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_name, TRUE, TRUE, 2 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_fmt, TRUE, TRUE, 2 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_new, TRUE, TRUE, 2 );
+
+  gtk_widget_show_all ( dialog );
+
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
+
+  gint response;
+  do {
+    // Preview...
+    gchar date_buf[128];
+    date_buf[0] = '-'; date_buf[1] = '-'; date_buf[2] = '\0';
+    if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
+      time_t time = round(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp);
+      const gchar *fmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
+      if ( fmt && strlen(fmt) == 0 ) {
+        // Reset if entry is blank
+        gtk_entry_set_text ( GTK_ENTRY(entry), "%d %b %y %H:%M" );
+        fmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
+      }
+      if ( fmt )
+        strftime ( date_buf, sizeof(date_buf), fmt, localtime(&time) );
+    }
+    gtk_label_set_text ( GTK_LABEL(nname), date_buf );
+
+    response = gtk_dialog_run (GTK_DIALOG (dialog));
+
+  } while ( response == GTK_RESPONSE_APPLY );
+
+  if ( response == GTK_RESPONSE_ACCEPT ) {
+    const gchar *newname = gtk_label_get_text(GTK_LABEL(nname));
+    if ( newname && strlen(newname) && g_strcmp0("--", newname) ) {
+
+      if ( sublayer ) {
+        (void)trw_layer_sublayer_rename_request ( vtl,
+                                                  newname,
+                                                  vlp,
+                                                  VIK_TRW_LAYER_SUBLAYER_TRACK,
+                                                  sublayer,
+                                                  iter );
+      }
+      else {
+        vik_layer_rename ( VIK_LAYER(vtl), newname );
+        vik_treeview_item_set_name ( vik_layers_panel_get_treeview(vlp), iter, newname );
+      }
+      // Save format for use next time (even if the same as the default)
+      const gchar *sfmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
+      if ( sfmt )
+        a_settings_set_string ( VIK_SETTINGS_TRACK_RENAME_FMT, sfmt );
+    }
+  }
+
+  gtk_widget_destroy ( dialog );
+}
+
+/**
+ *
+ */
+static void trw_layer_tracks_rename ( menu_array_layer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+
+  GList *gl = g_hash_table_get_values ( vtl->tracks );
+  GList *it = g_list_first ( gl );
+  if ( !it )
+    return;
+  VikTrack *trk = VIK_TRACK(it->data);
+
+  rename_track_or_layer_by_format ( vtl,
+                                    trk,
+                                    VIK_LAYERS_PANEL(values[MA_VLP]),
+                                    values[MA_TV_ITER],
+                                    NULL );
+}
+
 #define VIK_SETTINGS_EXPORT_GPSMAPPER "export_gpsmapper_option"
 #define VIK_SETTINGS_EXPORT_GPSPOINT "export_gpspoint_option"
 
-static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection )
+static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter )
 {
   static menu_array_layer data;
   data[MA_VTL] = vtl;
   data[MA_VLP] = vlp;
+  data[MA_TV_ITER] = iter;
 
   (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
 
@@ -5291,6 +5433,13 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
   }
+
+  GtkMenu *edit_submenu = GTK_MENU(gtk_menu_new());
+  GtkWidget *itemed = vu_menu_add_item ( menu, _("_Edit"), GTK_STOCK_EDIT, NULL, data );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemed), GTK_WIDGET(edit_submenu) );
+
+  GtkWidget *itemrn = vu_menu_add_item ( edit_submenu, _("Rename..."), GTK_STOCK_EDIT, G_CALLBACK(trw_layer_tracks_rename), data );
+  gtk_widget_set_sensitive ( itemrn, (gboolean)(g_hash_table_size (vtl->tracks)) );
 
   GtkMenu *file_submenu = GTK_MENU(gtk_menu_new());
   GtkWidget *itemff = vu_menu_add_item ( menu, _("_File"), GTK_STOCK_FILE, NULL, data );
@@ -6725,21 +6874,9 @@ static void trw_layer_rotate ( menu_array_sublayer values )
 /**
  * trw_layer_track_rename:
  *
- * Suggest new name based on track characteristics.
- *
- * Mainly to address Etrex naming if the track hasn't been reset/auto archived
- *  - everything is saved under '<first date after reset>'
- * such that splitting a track recording over multi days can become something like:
- * 20 DEC 20#1
- * 20 DEC 20#2 --> But might be on the 30th - so would be nice to be e.g. '30 DEC 20'
- * 20 DEC 20#3 --> But could be the 2nd Jan the following year - so would be nice to be e.g. '02 JAN 21'
- *
- * This intelligence could be put into the split operation,
- * but for now has to be manually requested
  */
 static void trw_layer_track_rename ( menu_array_sublayer values )
 {
-#define VIK_SETTINGS_TRACK_RENAME_FMT "track_rename_format"
   VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
   VikTrack *trk;
   if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
@@ -6750,94 +6887,11 @@ static void trw_layer_track_rename ( menu_array_sublayer values )
   if ( !trk )
     return;
 
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Rename"),
-                                                    VIK_GTK_WINDOW_FROM_LAYER(vtl),
-                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                    GTK_STOCK_CANCEL,
-                                                    GTK_RESPONSE_REJECT,
-                                                    _("Preview"),
-                                                    GTK_RESPONSE_APPLY,
-                                                    GTK_STOCK_OK,
-                                                    GTK_RESPONSE_ACCEPT,
-                                                    NULL );
-
-  GtkWidget *lname = gtk_label_new ( _("Old Name:") );
-  GtkWidget *aname = gtk_label_new ( trk->name );
-
-  // Default - read from settings
-  gchar *dfmt = NULL;
-  if ( ! a_settings_get_string ( VIK_SETTINGS_TRACK_RENAME_FMT, &dfmt ) )
-    dfmt = g_strdup ( "%d %b %y %H:%M" );
-
-  GtkWidget *entry = ui_entry_new ( dfmt, GTK_ENTRY_ICON_SECONDARY );
-  gtk_widget_set_tooltip_text ( entry, _("Transform name using strftime() format") );
-
-  GtkWidget *nname = gtk_label_new ( NULL );
-
-  GtkWidget *hbox_name = gtk_hbox_new ( FALSE, 0 );
-  gtk_box_pack_start ( GTK_BOX(hbox_name), lname, FALSE, FALSE, 2 );
-  gtk_box_pack_end ( GTK_BOX(hbox_name), aname, TRUE, TRUE, 2 );
-
-  GtkWidget *lfmt = gtk_label_new ( _("Format:") );
-  GtkWidget *hbox_fmt = gtk_hbox_new ( FALSE, 0 );
-  gtk_box_pack_start ( GTK_BOX(hbox_fmt), lfmt, FALSE, FALSE, 2 );
-  gtk_box_pack_end ( GTK_BOX(hbox_fmt), entry, TRUE, TRUE, 2 );
-
-  GtkWidget *lnn = gtk_label_new ( _("New Name:") );
-  GtkWidget *hbox_new = gtk_hbox_new ( FALSE, 0 );
-  gtk_box_pack_start ( GTK_BOX(hbox_new), lnn, FALSE, FALSE, 2 );
-  gtk_box_pack_end ( GTK_BOX(hbox_new), nname, TRUE, TRUE, 2 );
-
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_name, TRUE, TRUE, 2 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_fmt, TRUE, TRUE, 2 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_new, TRUE, TRUE, 2 );
-
-  gtk_widget_show_all ( dialog );
-
-  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
-  if ( response_w )
-    gtk_widget_grab_focus ( response_w );
-
-  gint response;
-  do {
-    // Preview...
-    gchar date_buf[128];
-    date_buf[0] = '-'; date_buf[1] = '-'; date_buf[2] = '\0';
-    if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
-      time_t time = round(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp);
-      const gchar *fmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
-      if ( fmt && strlen(fmt) == 0 ) {
-        // Reset if entry is blank
-        gtk_entry_set_text ( GTK_ENTRY(entry), "%d %b %y %H:%M" );
-        fmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
-      }
-      if ( fmt )
-        strftime ( date_buf, sizeof(date_buf), fmt, localtime(&time) );
-    }
-    gtk_label_set_text ( GTK_LABEL(nname), date_buf );
-
-    response = gtk_dialog_run (GTK_DIALOG (dialog));
-
-  } while ( response == GTK_RESPONSE_APPLY );
-
-  if ( response == GTK_RESPONSE_ACCEPT ) {
-    const gchar *newname = gtk_label_get_text(GTK_LABEL(nname));
-    if ( newname && strlen(newname) && g_strcmp0("--", newname) ) {
-      (void)trw_layer_sublayer_rename_request ( vtl,
-                                                newname,
-                                                values[MA_VLP],
-                                                MA_SUBTYPE,
-                                                values[MA_SUBLAYER_ID],
-                                                values[MA_TV_ITER] );
-      // Save format for use next time (even if the same as the default)
-      const gchar *sfmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
-      if ( sfmt )
-        a_settings_set_string ( VIK_SETTINGS_TRACK_RENAME_FMT, sfmt );
-    }
-  }
-
-  gtk_widget_destroy ( dialog );
+  rename_track_or_layer_by_format ( vtl,
+                                    trk,
+                                    VIK_LAYERS_PANEL(values[MA_VLP]),
+                                    values[MA_TV_ITER],
+                                    values[MA_SUBLAYER_ID] );
 }
 
 static void trw_layer_extend_track_end ( menu_array_sublayer values )

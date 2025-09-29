@@ -1486,6 +1486,20 @@ The result is generated in a new Track/Waypoint layer.
 </para>
 </section>
 
+<section><title>Edit</title>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>Rename</guilabel></term>
+      <listitem>
+        <para>
+          This opens dialog to rename the layer according a format based on the timestamp of the first track's first trackpoint.
+          This is the same as the track <xref linkend="rename"/> capability, so see that for further details.
+        </para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+</section>
+
 <section><title>List Tracks or Routes</title>
 <para>
 Opens a new dialog with the list. As described in the Aggregate layer <xref linkend="track_list"/>
@@ -2007,7 +2021,7 @@ And don't seem to fit any other category :)
 
     <varlistentry>
       <term><guilabel>Rename</guilabel></term>
-      <listitem>
+      <listitem id="rename" xreflabel="Rename">
         <para>
           Rename a track according using the timestamp of the first point in a <ulink url="https://devhints.io/strftime">strftime format</ulink>.
           Use the <guibutton>Preview</guibutton> button to see what the result of applying this format will be.
