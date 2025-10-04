@@ -8,15 +8,6 @@ bin_PROGRAMS = viking
 noinst_LIBRARIES = \
 	libviking.a
 #	libdtoa.a
-if MAPLIBRE
-noinst_LIBRARIES += \
-	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-core.a \
-	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-csscolorparser.a \
-	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-nunicode.a \
-	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-parsedate.a \
-	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-sqlite.a \
-	$(top_srcdir)/maplibre-native/build-linux-opengl/vendor/freetype/libfreetype.a
-endif
 
 authors.h: $(top_srcdir)/AUTHORS
 	rm -f $@
