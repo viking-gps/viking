@@ -5,10 +5,18 @@ SUBDIRS = icons
 
 bin_PROGRAMS = viking
 
-#TODO: if MAPLIBRE
 noinst_LIBRARIES = \
 	libviking.a
 #	libdtoa.a
+if MAPLIBRE
+noinst_LIBRARIES += \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-core.a \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-csscolorparser.a \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-nunicode.a \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-parsedate.a \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-sqlite.a \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/vendor/freetype/libfreetype.a
+endif
 
 authors.h: $(top_srcdir)/AUTHORS
 	rm -f $@
@@ -236,11 +244,11 @@ libviking_a_SOURCES += \
 	mapnik_interface.cpp mapnik_interface.h
 endif
 
-#TODO: if MAPLIBRE 
+if MAPLIBRE
 libviking_a_SOURCES += \
 	vikmaplibrelayer.c vikmaplibrelayer.h \
 	maplibre_interface.cpp maplibre_interface.h
-#endif
+endif
 
 if GEOCLUE
 libviking_a_SOURCES += \
@@ -256,6 +264,7 @@ LDADD += \
 	../windows/installer/pixmaps/viking_icon.o
 endif
 
+if MAPLIBRE
 LDADD += \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-core.a \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-csscolorparser.a \
@@ -263,6 +272,11 @@ LDADD += \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-parsedate.a \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-sqlite.a \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/vendor/freetype/libfreetype.a
+# Possibly order of LIBS passed to linker not optimal and may fail with 'error adding symbols: DSO missing from command line'
+#  but can be subverted with this:
+AM_LDFLAGS = \
+	-Wl,--copy-dt-needed-entries
+endif
 
 #	$(top_srcdir)/maplibre-native/build-linux-vulkan/vendor/glslang/glslang/libglslang.a \
 #	$(top_srcdir)/maplibre-native/build-linux-vulkan/vendor/glslang/glslang/libglslang-default-resource-limits.a

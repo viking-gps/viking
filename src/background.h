@@ -39,8 +39,9 @@ typedef enum {
 #ifdef HAVE_LIBMAPNIK
   BACKGROUND_POOL_LOCAL_MAPNIK,  // Due to potential issues with multi-threading a separate configurable pool for Mapnik
 #endif
-//TODO: if MAPLIBRE
+#ifdef HAVE_LIBMAPLIBRE
   BACKGROUND_POOL_LOCAL_MAPLIBRE,  // Due to potential issues with multi-threading a separate configurable pool for Maplibre
+#endif
 } Background_Pool_Type;
 
 void a_background_thread ( Background_Pool_Type bp, GtkWindow *parent, const gchar *message, vik_thr_func func, gpointer userdata, vik_thr_free_func userdata_free_func, vik_thr_free_func userdata_cancel_cleanup_func, gint number_items );

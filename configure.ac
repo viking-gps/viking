@@ -549,23 +549,38 @@ case $ac_cv_enable_nova in
 esac
 AM_CONDITIONAL([NOVA], [test x$ac_cv_enable_nova = xyes])
 
-# TODO: if maplibre, C++20 probably too
-AC_LANG_PUSH([C++])
-CXXFLAGS="$CXXFLAGS -std=c++20"
-AC_CHECK_LIB([stdc++], [main], [], [AC_MSG_ERROR([libstdc++ is needed but not found.])])
-AC_CHECK_LIB([icuuc], [main], [], [AC_MSG_ERROR([libicuuc is needed but not found.])])
-AC_CHECK_LIB([icui18n], [main], [], [AC_MSG_ERROR([libicui18n is needed but not found.])])
-AC_CHECK_LIB([bz2], [main], [], [AC_MSG_ERROR([libbz2 is needed but not found.])])
-AC_CHECK_LIB([png], [main], [], [AC_MSG_ERROR([libpng is needed but not found.])])
-AC_CHECK_LIB([z], [main], [], [AC_MSG_ERROR([libz is needed but not found.])])
-AC_CHECK_LIB([webp], [main], [], [AC_MSG_ERROR([libwepb is needed but not found.])])
-AC_CHECK_LIB([jpeg], [main], [], [AC_MSG_ERROR([libjpeg is needed but not found.])])
-AC_CHECK_LIB([curl], [main], [], [AC_MSG_ERROR([libcurl is needed but not found.])])
-AC_CHECK_LIB([GL], [main], [], [AC_MSG_ERROR([libGL is needed but not found.])])
-AC_CHECK_LIB([EGL], [main], [], [AC_MSG_ERROR([libEGL is needed but not found.])])
-#AC_CHECK_LIB([vulkan_intel], [main], [], [AC_MSG_ERROR([libvulkan_intel is needed but not found.])])
-AC_CHECK_LIB([uv], [main], [], [AC_MSG_ERROR([libuv is needed but not found.])])
-AC_LANG_POP([C++])
+
+# NB libz, libcurl & libbz2 already needed by Viking already (but also needed for Maplibre)
+# Thus ATM a combination of diaabling bz2 and enabling maplibre is not prevented by this configure setup
+AC_ARG_ENABLE(maplibre, AS_HELP_STRING([--enable-maplibre],
+              [enable MapLibre (default is enable)]),
+              [ac_cv_enable_maplibre=$enableval],
+              [ac_cv_enable_maplibre=no])
+AC_CACHE_CHECK([whether to enable Maplibre],
+               [ac_cv_enable_maplibre], [ac_cv_enable_maplibre=no])
+case $ac_cv_enable_maplibre in
+  yes)
+    AC_LANG_PUSH([C++])
+    # MapLibre uses C++20 features
+    CXXFLAGS="$CXXFLAGS -std=c++20"
+    AC_CHECK_LIB([stdc++], [main], [], [AC_MSG_ERROR([libstdc++ is needed but not found.])])
+    AC_CHECK_LIB([icuuc], [main], [], [AC_MSG_ERROR([libicuuc is needed but not found.])])
+    AC_CHECK_LIB([icui18n], [main], [], [AC_MSG_ERROR([libicui18n is needed but not found.])])
+    AC_CHECK_LIB([png], [main], [], [AC_MSG_ERROR([libpng is needed but not found.])])
+    AC_CHECK_LIB([webp], [main], [], [AC_MSG_ERROR([libwepb is needed but not found.])])
+    AC_CHECK_LIB([jpeg], [main], [], [AC_MSG_ERROR([libjpeg is needed but not found.])])
+    AC_CHECK_LIB([GL], [main], [], [AC_MSG_ERROR([libGL is needed but not found.])])
+    AC_CHECK_LIB([EGL], [main], [], [AC_MSG_ERROR([libEGL is needed but not found.])])
+    #AC_CHECK_LIB([vulkan_intel], [main], [], [AC_MSG_ERROR([libvulkan_intel is needed but not found.])])
+    # Possibly specific Debian package name for libuv being libuv1 or libuv1t64
+    AC_CHECK_LIB([uv], [main], [], [AC_MSG_ERROR([libuv1 is needed but not found.])])
+    # ATM no 'Maplibre' library detection. See specifics in src/Makefile.am for inclusion
+    #  so manually create standard 'HAVE_<thing>' define here
+    AC_DEFINE(HAVE_LIBMAPLIBRE, 1, [MapLibre capability is enabled])
+    AC_LANG_POP([C++])
+    ;;
+esac
+AM_CONDITIONAL([MAPLIBRE], [test x$ac_cv_enable_maplibre = xyes])
 
 # Mapnik rendering layer
 AC_ARG_ENABLE(mapnik, AS_HELP_STRING([--enable-mapnik],
@@ -579,8 +594,9 @@ case $ac_cv_enable_mapnik in
     # C++
     AC_LANG_PUSH([C++])
     AC_PROG_CXX
-    # Mapnik4 requires C++17. Viking will use C++17 as well.
-    CXXFLAGS="$CXXFLAGS -std=c++17"
+    # Mapnik4 requires C++17.
+    # However as MapLibre above uses C++20, we'll now use that here too (to not override potentially previously set version)
+    CXXFLAGS="$CXXFLAGS -std=c++20"
     # Too difficult to get check working under Windows (extra dependencies needed probably Boost)- so just skip it
     if test "x$ac_cv_enable_windows" = "xno"; then
       AC_CHECK_HEADER([mapnik/map.hpp],[],[AC_MSG_ERROR([mapnik/map.hpp is needed but not found - you will need to install package 'libmapnik-dev' or similar. The feature can be disabled with --disable-mapnik])])
@@ -711,6 +727,7 @@ Zip File Support (with libzip)   : $ac_cv_enable_zip
 XZ File Support (with liblzma)   : $ac_cv_enable_xz
 MD5 Hash Support (with libnettle): $ac_cv_enable_nettle
 Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik
+MapLibre Rendering Support (C++) : $ac_cv_enable_maplibre
 Nova (Astronomical Data)         : $ac_cv_enable_nova
 OAuth1.0a                        : $ac_cv_enable_oauth
 Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}

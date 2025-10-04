@@ -36,7 +36,9 @@ static GThreadPool *thread_pool_local = NULL;
 #ifdef HAVE_LIBMAPNIK
 static GThreadPool *thread_pool_local_mapnik = NULL;
 #endif
+#ifdef HAVE_LIBMAPLIBRE
 static GThreadPool *thread_pool_local_maplibre = NULL;
+#endif
 static gboolean stop_all_threads = FALSE;
 
 // A single store of background items for all Windows
@@ -223,9 +225,10 @@ void a_background_thread ( Background_Pool_Type bp, GtkWindow *parent, const gch
   else if ( bp == BACKGROUND_POOL_LOCAL_MAPNIK )
     g_thread_pool_push( thread_pool_local_mapnik, args, NULL );
 #endif
-//TODO: if MAPLIBRE
+#ifdef HAVE_LIBMAPLIBRE
   else if ( bp == BACKGROUND_POOL_LOCAL_MAPLIBRE )
     g_thread_pool_push( thread_pool_local_maplibre, args, NULL );
+#endif
   else
     g_thread_pool_push( thread_pool_local, args, NULL );
 }
@@ -340,9 +343,9 @@ void a_background_post_init()
   guint mapnik_threads = a_preferences_get("mapnik.background_max_threads_local_mapnik")->u;
   thread_pool_local_mapnik = g_thread_pool_new ( (GFunc) thread_helper, NULL, mapnik_threads, FALSE, NULL );
 #endif
-// TODO: if maplibre
+#ifdef HAVE_LIBMAPLIBRE
   thread_pool_local_maplibre = g_thread_pool_new ( (GFunc) thread_helper, NULL, 1, FALSE, NULL );
-
+#endif
   bgstore = gtk_list_store_new ( N_COLUMNS, G_TYPE_STRING, G_TYPE_DOUBLE, G_TYPE_POINTER );
 }
 
@@ -407,8 +410,9 @@ void a_background_uninit()
 #ifdef HAVE_LIBMAPNIK
   g_thread_pool_free ( thread_pool_local_mapnik, TRUE, FALSE );
 #endif
-  //TODO:if maplibre
+#ifdef HAVE_LIBMAPLIBRE
   g_thread_pool_free ( thread_pool_local_maplibre, TRUE, FALSE );
+#endif
   gtk_list_store_clear ( bgstore );
   g_object_unref ( bgstore );
   bgstore = NULL;

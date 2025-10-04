@@ -1,7 +1,7 @@
 /*
  * viking -- GPS Data and Topo Analyzer, Explorer, and Manager
  *
- * Copyright (c) 2015, Rob Norris <rw_norris@hotmail.com>
+ * Copyright (c) 2025, Matthew Hague <matthewhague@zoho.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -209,7 +209,6 @@ struct _VikMaplibreLayer {
 
 	gboolean loaded;
 	MaplibreInterface* mi;
-	guint rerender_timeout;
 
 	VikCoord rerender_ul;
 	VikCoord rerender_br;
@@ -219,8 +218,6 @@ struct _VikMaplibreLayer {
 
 #define MAPLIBRE_PREFS_GROUP_KEY "maplibre"
 #define MAPLIBRE_PREFS_NAMESPACE "maplibre."
-
-static VikLayerParamData rr_to_default ( void ) { return VIK_LPD_UINT(168); } // One week in hours
 
 static VikLayerParam prefs[] = {
 };
