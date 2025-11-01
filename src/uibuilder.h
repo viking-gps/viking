@@ -150,8 +150,8 @@ typedef struct {
   /* It's dependent on the standard used or the compiler support... */
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L || __GNUC__
 #define VIK_LPD_BOOLEAN(X)     (VikLayerParamData) { .b = (X) }
-#define VIK_LPD_INT(X)         (VikLayerParamData) { .u = (X) }
-#define VIK_LPD_UINT(X)        (VikLayerParamData) { .i = (X) }
+#define VIK_LPD_INT(X)         (VikLayerParamData) { .i = (X) }
+#define VIK_LPD_UINT(X)        (VikLayerParamData) { .u = (X) }
 #define VIK_LPD_COLOR(X,Y,Z,A) (VikLayerParamData) { .c = (GdkColor){ (X), (Y), (Z), (A) } }
 #define VIK_LPD_DOUBLE(X)      (VikLayerParamData) { .d = (X) }
 #define VIK_LPD_PTR(X)         (VikLayerParamData) { .ptr = (X) }
