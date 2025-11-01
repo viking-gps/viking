@@ -43,7 +43,7 @@ static VikAggregateLayer *aggregate_layer_unmarshall( guint8 *data, guint len, V
 static void aggregate_layer_change_coord_mode ( VikAggregateLayer *val, VikCoordMode mode );
 static void aggregate_layer_drag_drop_request ( VikAggregateLayer *val_src, VikAggregateLayer *val_dest, GtkTreeIter *src_item_iter, GtkTreePath *dest_path );
 static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val );
-static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection );
+static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter );
 static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetParam *vlsp );
 static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, guint16 id, gboolean is_file_operation );
 static void aggregate_layer_change_param ( GtkWidget *widget, ui_change_values values );
@@ -124,14 +124,21 @@ static gchar * params_styles[] =
     NULL
   };
 
-static gchar *params_groups[] = { N_("Tracks Area Coverage"), N_("TAC Advanced"), N_("Tracks Heatmap") };
-enum { GROUP_TAC, GROUP_TAC_ADV, GROUP_THM };
+static gchar *params_groups[] = { N_("Tracks Area Coverage"),
+                                  N_("TAC Advanced"),
+                                  N_("Tracks Heatmap"),
+                                  N_("General"), };
+enum { GROUP_TAC,
+       GROUP_TAC_ADV,
+       GROUP_THM,
+       GROUP_GEN };
 
 static void aggregate_reset_cb ( GtkWidget *widget, gpointer ptr )
 {
   a_layer_defaults_reset_show ( AGGREGATE_FIXED_NAME, ptr, GROUP_TAC );
   a_layer_defaults_reset_show ( AGGREGATE_FIXED_NAME, ptr, GROUP_TAC_ADV );
   a_layer_defaults_reset_show ( AGGREGATE_FIXED_NAME, ptr, GROUP_THM );
+  a_layer_defaults_reset_show ( AGGREGATE_FIXED_NAME, ptr, GROUP_GEN );
 }
 
 static VikLayerParamData reset_default ( void ) { return VIK_LPD_PTR(aggregate_reset_cb); }
@@ -172,6 +179,8 @@ VikLayerParam aggregate_layer_params[] = {
   { VIK_LAYER_AGGREGATE, "hm_factor", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Width Factor:"), VIK_LAYER_WIDGET_HSCALE, &params_scales[1], NULL,
     N_("Note higher values means the heatmap takes longer to generate"), width_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "hm_style", VIK_LAYER_PARAM_UINT, GROUP_THM, N_("Color Style:"), VIK_LAYER_WIDGET_COMBOBOX, params_styles, NULL, NULL, combo_1st_default, NULL, NULL },
+  { VIK_LAYER_AGGREGATE, "auto_load_external", VIK_LAYER_PARAM_BOOLEAN, GROUP_GEN, N_("Load External Layers:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL,
+    N_("Load External Layers on Viking File Loads"), vik_lpd_false_default, NULL, NULL },
   { VIK_LAYER_AGGREGATE, "reset", VIK_LAYER_PARAM_PTR_DEFAULT, VIK_LAYER_GROUP_NONE, NULL,
     VIK_LAYER_WIDGET_BUTTON, N_("Reset All to Defaults"), NULL, NULL, reset_default, NULL, NULL },
 };
@@ -203,6 +212,7 @@ enum {
       PARAM_HM_ALPHA,
       PARAM_HM_STAMP_FACTOR,
       PARAM_HM_STYLE,
+      PARAM_GEN_AUTO_LOAD_EXTERNAL,
       PARAM_RESET,
       NUM_PARAMS
 };
@@ -218,6 +228,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
 
   aggregate_layer_params,
   NUM_PARAMS,
+  0, // Number of VIK_LAYER_NOT_IN_PROPERTIES
   params_groups,
   G_N_ELEMENTS(params_groups),
 
@@ -327,12 +338,19 @@ struct _VikAggregateLayer {
   guint8 tac_time_range; // Years
   // Maybe a sparse table would be more efficient
   //  but this seems to work OK at least if all tracks are confined within a not too diverse area
-  GHashTable *tiles;
+  GHashTable *tiles; // The current working set for calculating coverage
   GHashTable *tiles_clust;
 
   // Enable to determine changed tiles (mainly for those added rather than removed)
   GHashTable *prev;
   GHashTable *tiles_new;
+
+  // Cached results from previous calculations
+  //  keep a copy per area level to enable quick redraw of coverage
+  //  especially useful for the calculations with the smallest (and hence more) tiles can take some time.
+  // ATM only just for basic area coverage.
+  //  for other types cluster, square, etc... just have to wait for the recalculation to complete.
+  GHashTable *tiles_cached[G_N_ELEMENTS(params_tile_area_levels)];
 
   // Heatmap
   gboolean hm_calculating;
@@ -354,6 +372,9 @@ struct _VikAggregateLayer {
   guint8 hm_stamp_factor;
   guint8 hm_style;
   GdkColor hm_color;
+
+  // General
+  gboolean auto_load_external;
 
   MapCoord rc_menu_mc; // Position of Right Click menu
 };
@@ -611,6 +632,9 @@ static gboolean aggregate_layer_set_param ( VikAggregateLayer *val, VikLayerSetP
         if ( !vlsp->is_file_operation )
           hm_apply ( val );
       break;
+    case PARAM_GEN_AUTO_LOAD_EXTERNAL:
+      changed = vik_layer_param_change_boolean ( vlsp->data, &val->auto_load_external );
+      break;
     default: break;
   }
   if ( vik_debug && changed )
@@ -646,6 +670,7 @@ static VikLayerParamData aggregate_layer_get_param ( VikAggregateLayer *val, gui
     case PARAM_HM_ALPHA: rv.u = val->hm_alpha; break;
     case PARAM_HM_STAMP_FACTOR: rv.u = val->hm_stamp_factor; break;
     case PARAM_HM_STYLE: rv.u = val->hm_style; break;
+    case PARAM_GEN_AUTO_LOAD_EXTERNAL: rv.b = val->auto_load_external; break;
     case PARAM_RESET: rv.ptr = aggregate_reset_cb; break;
     default: break;
   }
@@ -758,6 +783,8 @@ VikAggregateLayer *vik_aggregate_layer_new (VikViewport *vvp)
   val->tiles_clust = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
   val->tiles_new = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
   val->prev = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
+  for ( guint xx = 0; xx <= G_N_ELEMENTS(params_tile_area_levels); xx++ )
+    val->tiles_cached[xx] = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
 
   return val;
 }
@@ -1040,6 +1067,12 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
     map_utils_iTMS_to_center_vikcoord ( &ulm, &coord );
     vik_viewport_coord_to_screen ( vvp, &coord, &xx_tmp, &yy_tmp );
 
+    const guint zoom_index = 18 - map_utils_mpp_to_zoom_level ( val->zoom_level );
+    if ( zoom_index > G_N_ELEMENTS(params_tile_area_levels) ) {
+      g_warning ( "%s: zoom_index out of bounds (%d)", __FUNCTION__, zoom_index );
+      return;
+    }
+
     // ceiled so tiles will be maximum size in the case of funky shrinkfactor
     const gint tilesize_ceil = ceil ( tilesize );
     const gint8 xinc = (ulm.x == xmin) ? 1 : -1;
@@ -1076,6 +1109,8 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
     if ( tiles_unreachable )
       val->unreachable_pixbuf = setup_pixbuf ( val->unreachable_pixbuf, width, height );
 
+    // Draw from the cached zl copy.
+
     guint tile_draw_count = 0;
     for ( x = ((xinc == 1) ? xmin : xmax); x != xend; x+=xinc ) {
       yy = base_yy;
@@ -1083,7 +1118,7 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
         ulm.x = x;
         ulm.y = y;
 
-        if ( is_tile_occupied(val->tiles, x, y) ) {
+        if ( is_tile_occupied(val->tiles_cached[zoom_index], x, y) ) {
           //g_printf ( "%s1: %d, %d, %d, %d, %d, %d %0.2f\n", __FUNCTION__, xx, yy, tilesize_ceil, tilesize_ceil, width, height, shrinkfactor );
           if ( !is_big ) {
 
@@ -1097,7 +1132,7 @@ static void tac_draw_section ( VikAggregateLayer *val, VikViewport *vvp, VikCoor
 
             gdk_pixbuf_copy_area ( val->pixbuf[BASIC], 0, 0, sizex, sizey, val->full_pixbuf[BASIC], destx, desty );
 
-            if ( val->cont_label && (tile_label(val->tiles, x, y) == val->cont_label) )
+            if ( val->cont_label && (tile_label(val->tiles_cached[zoom_index], x, y) == val->cont_label) )
               gdk_pixbuf_copy_area ( val->pixbuf[CONTIG], 0, 0, sizex, sizey, val->full_pixbuf[CONTIG], destx, desty );
 
             // Cluster drawing
@@ -1542,6 +1577,57 @@ static void aggregate_layer_waypoint_list_dialog ( menu_array_values values )
   gchar *title = g_strdup_printf ( _("%s: Waypoint List"), VIK_LAYER(val)->name );
   vik_trw_layer_waypoint_list_show_dialog ( title, VIK_LAYER(val), NULL, aggregate_layer_waypoint_create_list, TRUE );
   g_free ( title );
+}
+
+
+/**
+ *
+ */
+static void aggregate_layer_delete_selection ( menu_array_values values )
+{
+  VikAggregateLayer *val = VIK_AGGREGATE_LAYER ( values[MA_VAL] );
+
+  GList *children = val->children;
+  if ( !children )
+    return;
+
+  GList *all = NULL;
+  GList *iter = val->children;
+  while ( iter ) {
+    VikLayer *vl = VIK_LAYER ( iter->data );
+    generic_list_item_t *li = g_malloc0 (sizeof(generic_list_item_t));
+    li->name = vl->name;
+    li->gp = (gpointer)vl;
+    all = g_list_prepend ( all, li );
+    iter = iter->next;
+  }
+  if ( all )
+    all = g_list_reverse ( all );
+
+  // Get list of items to delete from the user
+  GList *delete_list = a_dialog_select_from_generic_list(VIK_GTK_WINDOW_FROM_LAYER(val),
+                                                         all,
+                                                         TRUE,
+                                                         _("Delete Selection"),
+                                                         _("Select layers to delete"));
+
+  // Note ATM not attempting to detect/protect if a child aggregrate itself is performing TAC
+  gboolean changed = delete_list != NULL;
+  iter = delete_list;
+  while ( iter ) {
+    generic_list_item_t *li = (generic_list_item_t*)iter->data;
+    (void)vik_aggregate_layer_delete_layer ( val, VIK_LAYER(li->gp) );
+    iter = iter->next;
+  }
+  if ( changed ) {
+    vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
+    vik_layers_panel_calendar_update ( values[MA_VLP] );
+    // NB Display is already updated - no need to force a redraw
+  }
+
+  // Freeing the lists themselves (not the contents / what the contents points to)
+  g_list_free_full ( all, g_free );
+  g_list_free ( delete_list );
 }
 
 /**
@@ -2306,7 +2392,7 @@ static void tac_unreachable ( VikAggregateLayer *val )
 }
 
 // Fwd declaration
-static void tac_clear ( VikAggregateLayer *val );
+static void tac_clear ( VikAggregateLayer *val, gboolean full );
 
 /**
  *
@@ -2341,11 +2427,12 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
     for (gint x = 0; x<CP_NUM; x++ )
       ct->val->num_prev[x] = ct->val->num_tiles[x];
   }
+
   ct->val->max_square_prev = ct->val->max_square;
   ct->val->ns_size_prev = ct->val->ns_size;
   ct->val->ew_size_prev = ct->val->ew_size;
 
-  tac_clear ( ct->val );
+  tac_clear ( ct->val, FALSE );
 
   tac_unreachable ( ct->val );
 
@@ -2443,6 +2530,19 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
     g_hash_table_remove_all ( ct->val->prev );
   }
 
+  // Copy result into cache per zoom level
+  const guint zoom_index = 18 - map_utils_mpp_to_zoom_level ( ct->val->zoom_level );
+  if ( zoom_index <= G_N_ELEMENTS(params_tile_area_levels) ) {
+    // Reset
+    g_hash_table_remove_all ( ct->val->tiles_cached[zoom_index] );
+    // Copy
+    GHashTableIter iter;
+    gpointer key, value;
+    g_hash_table_iter_init ( &iter, ct->val->tiles );
+    while ( g_hash_table_iter_next(&iter, &key, &value) )
+      (void)g_hash_table_insert ( ct->val->tiles_cached[zoom_index], g_strdup(key), NULL );
+  }
+
   // Timing for all tile calcs
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
@@ -2457,7 +2557,7 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
 /**
  *
  */
-static void tac_clear ( VikAggregateLayer *val )
+static void tac_clear ( VikAggregateLayer *val, gboolean full )
 {
   val->max_square = 0;
   for (gint x = 0; x<CP_NUM; x++ ) {
@@ -2473,6 +2573,10 @@ static void tac_clear ( VikAggregateLayer *val )
   val->ew_size = 0;
   // NB North/East/South/West extents only done on calculation with a position
   // as setting to map x/y tile of 0s not useful
+
+  if ( full )
+    for ( guint xx = 0; xx <= G_N_ELEMENTS(params_tile_area_levels); xx++ )
+      g_hash_table_remove_all ( val->tiles_cached[xx] ); // No memory to remove ATM
 }
 
 /**
@@ -2585,27 +2689,27 @@ static gint hm_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
 {
   VikAggregateLayer *val = ct->val;
 
-  clock_t begin = clock();
+  const clock_t begin = clock();
 
   // Generate a stamp with a size relative to the zoom level
-  unsigned radius = map_utils_mpp_to_zoom_level ( val->hm_zoom ) *
+  const unsigned radius = map_utils_mpp_to_zoom_level ( val->hm_zoom ) *
     (gdouble)val->hm_stamp_factor/(gdouble)width_default().u;
-  unsigned d = 2*radius + 1;
+  const unsigned d = 2*radius + 1;
   float pts[d * d];
   rhomboidal ( pts, d, radius );
   heatmap_stamp_t *stamp = heatmap_stamp_load ( d, d, pts );
   heatmap_t* hm = heatmap_new ( val->hm_width, val->hm_height );
 
-  int ww = val->hm_width;
-  int hh = val->hm_height;
+  const int ww = val->hm_width;
+  const int hh = val->hm_height;
 
   // Only needs calculating once
-  gdouble mf = mercator_factor ( val->hm_zoom, val->hm_scale );
+  const gdouble mf = mercator_factor ( val->hm_zoom, val->hm_scale );
 
   guint tracks_processed = 0;
   for ( GList *tl = ct->tracks_and_layers; tl != NULL; tl = tl->next ) {
-    gdouble percent = (gdouble)tracks_processed/(gdouble)(ct->num_of_tracks);
-    gint res = a_background_thread_progress ( threaddata, percent );
+    const gdouble percent = (gdouble)tracks_processed/(gdouble)(ct->num_of_tracks);
+    const gint res = a_background_thread_progress ( threaddata, percent );
     if ( res != 0 ) return -1;
 
     vik_trw_and_track_t *vtlist = tl->data;
@@ -2632,8 +2736,8 @@ static gint hm_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
   heatmap_stamp_free ( stamp );
 
   // Timing
-  clock_t end = clock();
-  double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+  const clock_t end = clock();
+  const double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
   g_debug ( "%s: %f", __FUNCTION__, time_spent );
 
   ct->val->hm_calculating = FALSE;
@@ -2716,7 +2820,7 @@ void vik_aggregate_layer_file_load_complete ( VikAggregateLayer *val )
 static void tac_clear_cb ( menu_array_values values )
 {
   VikAggregateLayer *val = VIK_AGGREGATE_LAYER(values[MA_VAL]);
-  tac_clear ( val );
+  tac_clear ( val, TRUE );
   vik_layer_emit_update ( VIK_LAYER(val), FALSE ); // NB update display from background
 }
 
@@ -2991,6 +3095,8 @@ static void tac_increase_cb ( menu_array_values values )
     if ( !val->calculating )
       tac_calculate ( val );
 
+  vik_layer_emit_update ( VIK_LAYER(val), FALSE );
+
   vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
 }
 
@@ -3002,6 +3108,8 @@ static void tac_decrease_cb ( menu_array_values values )
   if ( val->on[BASIC] )
     if ( !val->calculating )
       tac_calculate ( val );
+
+  vik_layer_emit_update ( VIK_LAYER(val), FALSE );
 
   vik_window_set_modified ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(val)) );
 }
@@ -3320,7 +3428,7 @@ static gboolean aggregate_layer_selected_viewport_menu ( VikAggregateLayer *val,
   return FALSE;
 }
 
-static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection )
+static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter )
 {
   // Data to pass on in menu functions
   static menu_array_values values;
@@ -3356,6 +3464,12 @@ static void aggregate_layer_add_menu_items ( VikAggregateLayer *val, GtkMenu *me
   (void)vu_menu_add_item ( menu, _("_Statistics"), GTK_STOCK_INFO, G_CALLBACK(aggregate_layer_analyse), values );
   (void)vu_menu_add_item ( menu, _("Track _List..."), GTK_STOCK_INDEX, G_CALLBACK(aggregate_layer_track_list_dialog), values );
   (void)vu_menu_add_item ( menu, _("_Waypoint List..."), GTK_STOCK_INDEX, G_CALLBACK(aggregate_layer_waypoint_list_dialog), values );
+
+  GtkMenu *submenu_delete = GTK_MENU(gtk_menu_new());
+  GtkWidget *itemdlt = vu_menu_add_item ( menu, _("Delete"), GTK_STOCK_DELETE, NULL, NULL );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemdlt), GTK_WIDGET(submenu_delete) );
+  (void)vu_menu_add_item ( submenu_delete, _("_Selection"), GTK_STOCK_INDEX, G_CALLBACK(aggregate_layer_delete_selection), values );
+  gtk_widget_set_sensitive ( GTK_WIDGET(submenu_delete), !val->calculating ); // Prevent delete if busy
 
   GtkMenu *search_submenu = GTK_MENU(gtk_menu_new());
   GtkWidget *itemsr = vu_menu_add_item ( menu, _("Searc_h"), GTK_STOCK_FIND, NULL, NULL );
@@ -3408,6 +3522,8 @@ void vik_aggregate_layer_free ( VikAggregateLayer *val )
   g_hash_table_destroy ( val->tiles_clust );
   g_hash_table_destroy ( val->tiles_new );
   g_hash_table_destroy ( val->prev );
+  for ( guint xx = 0; xx <= G_N_ELEMENTS(params_tile_area_levels); xx++ )
+    g_hash_table_destroy ( val->tiles_cached[xx] );
 
   if ( val->hm_pixbuf )
     g_object_unref ( val->hm_pixbuf );
@@ -3720,6 +3836,14 @@ guint vik_aggregate_layer_count ( VikAggregateLayer *val )
     nn = g_list_length (children);
   }
   return nn;
+}
+
+/**
+ *
+ */
+gboolean vik_aggregate_layer_get_auto_load_external ( VikAggregateLayer *val )
+{
+  return val->auto_load_external;
 }
 
 /**

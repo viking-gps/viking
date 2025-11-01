@@ -240,6 +240,161 @@ void vik_trw_layer_export ( VikLayer *vl, const gchar *title, const gchar* defau
 
 
 /**
+ * vik_trw_layer_export_gpx_waypoints:
+ *
+ * Just the waypoints of the layer are saved into a GPX file
+ *
+ */
+void vik_trw_layer_export_gpx_waypoints ( VikTrwLayer *vtl )
+{
+  GtkWidget *file_chooser = gtk_file_chooser_dialog_new ( _("Export Waypoints"),
+                                                          NULL,
+                                                          GTK_FILE_CHOOSER_ACTION_SAVE,
+                                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                                          GTK_STOCK_SAVE, GTK_RESPONSE_ACCEPT,
+                                                          NULL );
+  if ( last_folder_uri )
+    gtk_file_chooser_set_current_folder_uri ( GTK_FILE_CHOOSER(file_chooser), last_folder_uri );
+
+  gchar* default_name = g_strconcat ( vik_layer_get_name(VIK_LAYER(vtl)),
+                                      "_",
+                                      _("Waypoints"),
+                                      ".gpx",
+                                      NULL );
+
+  gtk_file_chooser_set_current_name ( GTK_FILE_CHOOSER(file_chooser), default_name );
+
+  g_free ( default_name );
+
+  gtk_widget_show_all ( file_chooser );
+
+  while ( gtk_dialog_run ( GTK_DIALOG(file_chooser) ) == GTK_RESPONSE_ACCEPT ) {
+    gchar *fn = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_chooser) );
+    if ( g_file_test ( fn, G_FILE_TEST_EXISTS ) == FALSE ||
+         a_dialog_yes_or_no ( GTK_WINDOW(file_chooser), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( fn ) ) ) {
+      g_free ( last_folder_uri );
+      last_folder_uri = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER(file_chooser) );
+
+      vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+
+      GpxWritingOptions options = { FALSE, FALSE, FALSE, FALSE, vik_trw_layer_get_gpx_version(vtl) };
+      FILE *ff = g_fopen ( fn, "w" );
+      if ( ff ) {
+        a_gpx_write_waypoints_file ( vtl, ff, &options );
+        fclose ( ff );
+      } else {
+        g_warning ( "%s: Could not save to %s", __FUNCTION__, fn );
+      }
+
+      vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+    }
+    g_free ( fn );
+    break;
+  }
+
+  gtk_widget_destroy ( file_chooser );
+}
+
+/**
+ * vik_trw_layer_export_seperate_gpx:
+ *
+ * Export each individual track or route as a separate GPX file into the selected directory
+ * Any existing file of the same name will not be overwritten.
+ * Hence works better if the names are unique.
+ * Otherwise only the first one will be written (provided that filename itself doesn't exist already)
+ *
+ */
+void vik_trw_layer_export_separate_gpx ( VikTrwLayer *vtl, trw_subtype_enum subtype )
+{
+  GtkWidget *file_chooser = gtk_file_chooser_dialog_new ( _("Select output directory"),
+                                                          NULL,
+                                                          GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+                                                          GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+                                                          GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+                                                          NULL );
+  if ( last_folder_uri )
+    gtk_file_chooser_set_current_folder_uri ( GTK_FILE_CHOOSER(file_chooser), last_folder_uri );
+
+  gtk_widget_show_all ( file_chooser );
+
+  gboolean all_saved = TRUE;
+
+  while ( gtk_dialog_run ( GTK_DIALOG(file_chooser) ) == GTK_RESPONSE_ACCEPT ) {
+    gchar *folder = gtk_file_chooser_get_filename ( GTK_FILE_CHOOSER(file_chooser) );
+
+    vik_window_set_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+
+    g_free ( last_folder_uri );
+    last_folder_uri = gtk_file_chooser_get_current_folder_uri ( GTK_FILE_CHOOSER(file_chooser) );
+
+    GHashTableIter iter;
+    gpointer key, value;
+
+    switch ( subtype ) {
+    case VIK_TRW_LAYER_SUBLAYER_TRACKS:
+      {
+        g_hash_table_iter_init ( &iter, vik_trw_layer_get_tracks(vtl) );
+        while ( g_hash_table_iter_next(&iter, &key, &value) ) {
+          VikTrack *trk = VIK_TRACK(value);
+          if ( trk->visible ) {
+            gchar *fn = g_strconcat ( folder,
+                                      G_DIR_SEPARATOR_S,
+                                      trk->name,
+                                      a_file_check_ext(trk->name, ".gpx") ? NULL : ".gpx",
+                                      NULL );
+            if ( g_file_test(fn, G_FILE_TEST_EXISTS) ) {
+              g_message ( _("Not overwriting existing file '%s'"), fn );
+              all_saved = FALSE;
+            }
+            else
+              gpx_export ( vtl, fn, VIK_TRACK(value) );
+            g_free ( fn );
+          }
+        }
+      }
+      break;
+    case VIK_TRW_LAYER_SUBLAYER_ROUTES:
+      {
+        g_hash_table_iter_init ( &iter, vik_trw_layer_get_routes(vtl) );
+        while ( g_hash_table_iter_next(&iter, &key, &value) ) {
+          VikTrack *trk = VIK_TRACK(value);
+          if ( trk->visible ) {
+            gchar *fn = g_strconcat ( folder,
+                                      G_DIR_SEPARATOR_S,
+                                      trk->name,
+                                      a_file_check_ext(trk->name, ".gpx") ? NULL : ".gpx",
+                                      NULL );
+            if ( g_file_test(fn, G_FILE_TEST_EXISTS) ) {
+              g_message ( _("Not overwriting existing file '%s'"), fn );
+              all_saved = FALSE;
+            }
+            else
+              gpx_export ( vtl, fn, VIK_TRACK(value) );
+            g_free ( fn );
+          }
+        }
+      }
+      break;
+    default:
+      g_critical ( "%s: Should not use %d", __FUNCTION__, subtype );
+      break;
+    }
+
+    vik_window_clear_busy_cursor ( VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl)) );
+
+    g_free ( folder );
+    break;
+  }
+
+  gtk_widget_destroy ( file_chooser );
+
+  if ( !all_saved )
+    a_dialog_warning_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                           _("Not all sublayers could be saved. Check the main log for details.") );
+}
+
+
+/**
  * Convert the given TRW layer into a temporary GPX file and open it with the specified program
  *
  */

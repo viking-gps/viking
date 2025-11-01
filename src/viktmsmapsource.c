@@ -110,7 +110,7 @@ vik_tms_map_source_init (VikTmsMapSource *self)
   priv->custom_http_headers = NULL;
   priv->options.referer = NULL;
   priv->options.user_agent = NULL;
-  priv->options.follow_location = 0;
+  priv->options.follow_location = -1;
   priv->options.expiry_age = ONE_WEEK_SECS;
   priv->options.check_file = a_check_map_file;
   priv->options.check_file_server_time = TRUE;
@@ -370,7 +370,7 @@ vik_tms_map_source_class_init (VikTmsMapSourceClass *klass)
                                "Specifies the number of retries to follow a redirect while downloading a page",
 	                           -1, // minimum value (unlimited)
                                G_MAXLONG /* maximum value */,
-                               0  /* default value */,
+                               -1, // default value - automatically follow location with unlimited redirects
                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_FOLLOW_LOCATION, pspec);
 

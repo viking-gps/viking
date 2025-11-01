@@ -109,7 +109,7 @@ static VikLayerToolFuncStatus maps_layer_download_click ( VikMapsLayer *vml, Gdk
 static gpointer maps_layer_download_create ( VikWindow *vw, VikViewport *vvp );
 static void maps_layer_set_cache_dir ( VikMapsLayer *vml, const gchar *dir );
 static void start_download_thread ( VikMapsLayer *vml, VikViewport *vvp, const VikCoord *ul, const VikCoord *br, gint redownload );
-static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp, VikStdLayerMenuItem selection );
+static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter );
 static guint map_uniq_id_to_index ( guint uniq_id );
 
 
@@ -240,6 +240,7 @@ VikLayerInterface vik_maps_layer_interface = {
 
   maps_layer_params,
   NUM_PARAMS,
+  0, // Number of VIK_LAYER_NOT_IN_PROPERTIES
   NULL,
   0,
 
@@ -868,8 +869,13 @@ static void maps_layer_change_param ( GtkWidget *widget, ui_change_values values
       GtkWidget *w2 = ww2[PARAM_ONLYMISSING];
       GtkWidget *w3 = ww1[PARAM_AUTODOWNLOAD];
       GtkWidget *w4 = ww2[PARAM_AUTODOWNLOAD];
-      // Depends on autodownload value
-      gboolean missing_sense = sensitive && VIK_MAPS_LAYER(values[UI_CHG_LAYER])->autodownload;
+      // PARAM_ONLYMISSING depends on autodownload value
+      // NB Use existing widget sensitivity, rather than direct map layer value
+      //  as when run for 'layer defaults', there is no actual map layer to get values from
+      // This is OK since params are processed in order,
+      //  and PARAM_ONLYMISSING is after PARAM_AUTODOWNLOAD
+      gboolean missing_sense = sensitive;
+      missing_sense = sensitive && gtk_widget_get_sensitive ( w4 );
       if ( w1 ) gtk_widget_set_sensitive ( w1, missing_sense );
       if ( w2 ) gtk_widget_set_sensitive ( w2, missing_sense );
       if ( w3 ) gtk_widget_set_sensitive ( w3, sensitive );
@@ -2590,7 +2596,9 @@ static VikLayerToolFuncStatus maps_layer_download_release ( VikMapsLayer *vml, G
           (void)vu_menu_add_item ( menu, _("Redownload _Bad Map(s)"), GTK_STOCK_ADD, G_CALLBACK(maps_layer_redownload_bad), vml );
           (void)vu_menu_add_item ( menu, _("Redownload _New Map(s)"), GTK_STOCK_REDO, G_CALLBACK(maps_layer_redownload_new), vml );
           (void)vu_menu_add_item ( menu, _("Redownload _All Map(s)"), GTK_STOCK_REFRESH, G_CALLBACK(maps_layer_redownload_all), vml );
+          (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
           (void)vu_menu_add_item ( menu, _("_Delete Map Tile(s)"), GTK_STOCK_REMOVE, G_CALLBACK(maps_layer_delete_tiles), vml );
+          (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
         }
         (void)vu_menu_add_item ( menu, _("_Show Tile Information"), GTK_STOCK_INFO, G_CALLBACK(maps_layer_tile_info), vml );
       }
@@ -3012,7 +3020,7 @@ static void maps_layer_flush ( menu_array_values values )
   a_mapcache_flush_type ( vik_map_source_get_uniq_id(MAPS_LAYER_NTH_TYPE(vml->maptype)) );
 }
 
-static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp, VikStdLayerMenuItem selection )
+static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLayersPanel *vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter )
 {
   static menu_array_values values;
   values[MA_VML] = vml;

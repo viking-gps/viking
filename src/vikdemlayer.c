@@ -288,6 +288,7 @@ VikLayerInterface vik_dem_layer_interface = {
 
   dem_layer_params,
   NUM_PARAMS,
+  0, // Number of VIK_LAYER_NOT_IN_PROPERTIES
   params_groups,
   G_N_ELEMENTS(params_groups),
 
@@ -1335,7 +1336,7 @@ static void srtm_dem_download_thread ( DEMDownloadParams *p, gpointer threaddata
 
   gchar *user_pass = dem_get_login ( p->vdl );
   // For USGS DEM Server usage, we need to make credentials follow redirects + use cookies                      --vvvv--vvvv
-  DownloadFileOptions options = { FALSE, FALSE, NULL, 10, NULL, NULL, ONE_WEEK_SECS, a_check_map_file, user_pass, TRUE, TRUE, NULL };
+  DownloadFileOptions options = { FALSE, FALSE, NULL, -1, NULL, NULL, ONE_WEEK_SECS, a_check_map_file, user_pass, TRUE, TRUE, NULL };
   DownloadResult_t result = a_http_download_get_url ( src_url, NULL, p->dest, &options, NULL );
   switch ( result ) {
     case DOWNLOAD_PARAMETERS_ERROR:

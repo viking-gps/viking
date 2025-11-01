@@ -2822,25 +2822,25 @@ msgid "Automatically delete duplicate trackpoints on file load"
 msgstr ""
 
 msgid "Waypoint Font Size:"
-msgstr ""
+msgstr "Waypoint Label Font Size:"
 
 msgid "Waypoint Color:"
-msgstr "Waypoint Colour:"
+msgstr "Waypoint Marker Colour:"
 
 msgid "Waypoint Text:"
-msgstr ""
+msgstr "Waypoint Text Colour:"
 
 msgid "Background:"
-msgstr ""
+msgstr "Waypoint Text Background:"
 
 msgid "Fake BG Color Translucency:"
 msgstr "Fake BG Colour Translucency:"
 
-msgid "Waypoint marker:"
-msgstr ""
+msgid "Waypoint Marker:"
+msgstr "Waypoint Marker:"
 
-msgid "Waypoint size:"
-msgstr ""
+msgid "Waypoint Size:"
+msgstr "Waypoint Marker Size:"
 
 msgid "Draw Waypoint Symbols:"
 msgstr ""

@@ -327,7 +327,7 @@ A right click menu offers controls of the drawing options, a subset of track ope
 </para>
 <para>Left clicking on the number of background processes opens a dialog from which the processes can be inspected and cancelled.</para>
 <para>Left clicking on the number of log messages opens a dialog from which the messages can be viewed, filtered, copied and cleared.
-Newest messages are put at the top of the list.</para>
+Newest messages are put at the top of the list. Middle clicking  on the number of log messages clears the log messages without opening the dialog.</para>
 <para>For convenience, a zoom selector can be opened from the status bar. Simply left-click on the zoom level.</para>
 <figure>
   <title>The zoom selector available from status bar</title>
@@ -1486,6 +1486,20 @@ The result is generated in a new Track/Waypoint layer.
 </para>
 </section>
 
+<section><title>Edit</title>
+  <variablelist>
+    <varlistentry>
+      <term><guilabel>Rename</guilabel></term>
+      <listitem>
+        <para>
+          This opens dialog to rename the layer according a format based on the timestamp of the first track's first trackpoint.
+          This is the same as the track <xref linkend="rename"/> capability, so see that for further details.
+        </para>
+      </listitem>
+    </varlistentry>
+  </variablelist>
+</section>
+
 <section><title>List Tracks or Routes</title>
 <para>
 Opens a new dialog with the list. As described in the Aggregate layer <xref linkend="track_list"/>
@@ -1526,6 +1540,14 @@ Opens a new dialog with the list. As described in the Aggregate layer <xref link
 <varlistentry>
 <term><guilabel>List Tracks or Routes</guilabel></term>
 <listitem><para>Opens a new dialog with the list. As described in the Aggregate layer <xref linkend="track_list"/></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Export Separate GPX Files...</guilabel></term>
+<listitem><para>
+  Version1.11+: Opens a save dialog to select the output directory. Each individual track or route (that is visible) will be saved as a separate file.
+  This can be useful with some GPS devices that don't seem to handle allowing selection of an individual track or route when multiple exist in a GPX file for navigation purposes.
+  Tracks or routes will be skipped if there is an already existing file with that name.
+</para></listitem>
 </varlistentry>
 </variablelist>
 <para>Also gives other options for handling multiple items:</para>
@@ -1999,7 +2021,7 @@ And don't seem to fit any other category :)
 
     <varlistentry>
       <term><guilabel>Rename</guilabel></term>
-      <listitem>
+      <listitem id="rename" xreflabel="Rename">
         <para>
           Rename a track according using the timestamp of the first point in a <ulink url="https://devhints.io/strftime">strftime format</ulink>.
           Use the <guibutton>Preview</guibutton> button to see what the result of applying this format will be.
@@ -2135,6 +2157,12 @@ The record of the Google route is stored in the track's comment, so if the comme
 <varlistentry>
 <term><guilabel>List Waypoints</guilabel></term>
 <listitem><para>Opens a new dialog with the list. As described in the Aggregate layer <xref linkend="waypoint_list"/></para></listitem>
+</varlistentry>
+<varlistentry>
+<term><guilabel>Export GPX File...</guilabel></term>
+<listitem><para>
+  Version1.11+: Opens a save dialog to select a filename to save just the visible waypoints of this layer in the GPX format.
+</para></listitem>
 </varlistentry>
 </variablelist>
 <para>Also gives other options for handling multiple items:</para>
@@ -2803,6 +2831,24 @@ Zooming in and out scales the heatmap image appropriately, but the image may get
 <para>If there is an existing heatmap on display then changing these values and selecting <guibutton>Apply</guibutton> will cause the heatmap to be recalculated with the new settings.</para>
 </section>
 
+<section><title>Layer Properties: General</title>
+<para>General options that apply to Aggregate layers.</para>
+<variablelist>
+  <varlistentry>
+    <term>Load External Layers</term>
+    <listitem>
+      <para>
+        Version1.11+: Allows control over whether external layers are automatically loaded when the .vik file is loaded.
+        By default external layers are only loaded when needed for display (primarily via selection on the left hand panel).
+        However, they are not included (until loaded) in various statistics or Track Coverage Area.
+        Thus, this setting ensures they are fully loaded (at the expense of taking the time to process these files);
+        rather than having to manually select them or manually invoke the <guilabel>Load External Layers</guilabel> option.
+      </para>
+    </listitem>
+  </varlistentry>
+</variablelist>
+</section>
+
 <section><title>Layer Operations</title>
 <para>
 The following are available on Aggregate Layers:
@@ -3006,6 +3052,12 @@ This offers a quick way to set all the visibilities of each item within the cont
 <listitem><para>Inverts the visibility status of each item.</para></listitem>
 </varlistentry>
 </variablelist>
+</para>
+</section>
+
+<section><title>Delete - Selection</title>
+<para>
+This opens a dialog to select layers from this Aggregate layer to delete.
 </para>
 </section>
 

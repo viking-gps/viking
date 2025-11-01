@@ -64,6 +64,7 @@ typedef enum {
   VIK_LAYER_WIDGET_COMBOBOX,
   VIK_LAYER_WIDGET_FILELIST,
   VIK_LAYER_WIDGET_BUTTON,
+  VIK_LAYER_WIDGET_SEPARATOR,
 } VikLayerWidgetType;
 
 /* id is index */
@@ -87,6 +88,7 @@ VIK_LAYER_PARAM_COLOR,
 VIK_LAYER_PARAM_STRING_LIST,
 VIK_LAYER_PARAM_PTR, // Not really a 'parameter' but useful to route to extended configuration (e.g. toolbar order)
 VIK_LAYER_PARAM_PTR_DEFAULT, // Specialized 'parameter' for reset button
+VIK_LAYER_PARAM_SPACER, // Not a 'parameter', for UI layout
 } VikLayerParamType;
 
 typedef enum {
@@ -148,8 +150,8 @@ typedef struct {
   /* It's dependent on the standard used or the compiler support... */
 #if defined __STDC_VERSION__ && __STDC_VERSION__ >= 199901L || __GNUC__
 #define VIK_LPD_BOOLEAN(X)     (VikLayerParamData) { .b = (X) }
-#define VIK_LPD_INT(X)         (VikLayerParamData) { .u = (X) }
-#define VIK_LPD_UINT(X)        (VikLayerParamData) { .i = (X) }
+#define VIK_LPD_INT(X)         (VikLayerParamData) { .i = (X) }
+#define VIK_LPD_UINT(X)        (VikLayerParamData) { .u = (X) }
 #define VIK_LPD_COLOR(X,Y,Z,A) (VikLayerParamData) { .c = (GdkColor){ (X), (Y), (Z), (A) } }
 #define VIK_LPD_DOUBLE(X)      (VikLayerParamData) { .d = (X) }
 #define VIK_LPD_PTR(X)         (VikLayerParamData) { .ptr = (X) }
@@ -181,6 +183,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       GtkWindow *parent,
                                       VikLayerParam *params,
                                       guint16 params_count,
+                                      guint16 params_offset,
                                       gchar **groups,
                                       guint8 groups_count,
                                       gboolean (*setparam) (gpointer,gpointer), // AKA VikLayerFuncSetParam in viklayer.h

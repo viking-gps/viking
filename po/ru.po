@@ -2943,10 +2943,10 @@ msgstr "Фон:"
 msgid "Fake BG Color Translucency:"
 msgstr ""
 
-msgid "Waypoint marker:"
+msgid "Waypoint Marker:"
 msgstr "Маркер путевых точек:"
 
-msgid "Waypoint size:"
+msgid "Waypoint Size:"
 msgstr "Размер путевых точек:"
 
 msgid "Draw Waypoint Symbols:"

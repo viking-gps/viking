@@ -151,7 +151,7 @@ typedef void          (*VikLayerFuncChangeCoordMode)       (VikLayer *,VikCoordM
 typedef void                (*VikLayerFuncSetMenuItemsSelection) (VikLayer *,VikStdLayerMenuItem);
 typedef VikStdLayerMenuItem (*VikLayerFuncGetMenuItemsSelection) (VikLayer *);
 
-typedef void          (*VikLayerFuncAddMenuItems)          (VikLayer *,GtkMenu *,gpointer,VikStdLayerMenuItem); /* gpointer is a VikLayersPanel */
+typedef void          (*VikLayerFuncAddMenuItems)          (VikLayer *,GtkMenu *,gpointer,VikStdLayerMenuItem, GtkTreeIter *); /* gpointer is a VikLayersPanel */
 typedef gboolean      (*VikLayerFuncSublayerAddMenuItems)  (VikLayer *,GtkMenu *,gpointer, /* first gpointer is a VikLayersPanel */
                                                             gint,gpointer,GtkTreeIter *,VikViewport *,VikStdLayerMenuItem);
 typedef const gchar * (*VikLayerFuncSublayerRenameRequest) (VikLayer *,const gchar *,gpointer,
@@ -174,7 +174,7 @@ typedef VikLayerParamData
 
 typedef void          (*VikLayerFuncChangeParam)           (GtkWidget *, ui_change_values );
 
-typedef gboolean      (*VikLayerFuncReadFileData)          (VikLayer *, FILE *, const gchar *); // gchar* is the directory path. Function should report success or failure
+typedef gboolean      (*VikLayerFuncReadFileData)          (VikLayer *, FILE *, const gchar *, gboolean); // gchar* is the directory path. Function should report success or failure
 typedef void          (*VikLayerFuncWriteFileData)         (VikLayer *, FILE *, const gchar *); // gchar* is the directory path.
 
 /* item manipulation */
@@ -218,6 +218,7 @@ struct _VikLayerInterface {
   /* for I/O reading to and from .vik files -- params like coordline width, color, etc. */
   VikLayerParam *                   params;
   guint16                           params_count;
+  guint16                           params_offset;
   gchar **                          params_groups;
   guint8                            params_groups_count;
 
@@ -301,7 +302,7 @@ void vik_layer_redraw ( VikLayer *vl );
 /* GUI */
 void vik_layer_set_menu_items_selection(VikLayer *l, VikStdLayerMenuItem selection);
 VikStdLayerMenuItem vik_layer_get_menu_items_selection(VikLayer *l);
-void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection );
+void vik_layer_add_menu_items ( VikLayer *l, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter );
 VikLayer *vik_layer_create ( VikLayerTypeEnum type, VikViewport *vp, gboolean interactive );
 gboolean vik_layer_properties ( VikLayer *layer, VikViewport *vp, gboolean have_apply );
 

@@ -74,6 +74,7 @@ VikLayerInterface vik_coord_layer_interface = {
 
   coord_layer_params,
   NUM_PARAMS,
+  0, // Number of VIK_LAYER_NOT_IN_PROPERTIES
   NULL,
   0,
 

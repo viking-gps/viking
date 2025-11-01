@@ -29,12 +29,15 @@
 // (as returned by the appropriate internal viking track functions)
 typedef struct {
 	gdouble  min_alt;
+	VikTrack* min_alt_trk;
 	gdouble  max_alt;
+	VikTrack* max_alt_trk;
 	gdouble  elev_gain;
 	gdouble  elev_loss;
 	gdouble  length;
 	//gdouble  length_gaps;
 	gdouble  max_speed;
+	VikTrack* max_speed_trk;
 	//gulong   trackpoints;
 	//guint    segments;
 	gint     duration;
@@ -69,21 +72,24 @@ static track_stats tracks_months[12];
  */
 static void reset_me ( track_stats *stats )
 {
-	stats->min_alt     = VIK_VAL_MIN_ALT;
-	stats->max_alt     = VIK_VAL_MAX_ALT;
-	stats->elev_gain   = 0.0;
-	stats->elev_loss   = 0.0;
-	stats->length      = 0.0;
+	stats->min_alt       = VIK_VAL_MIN_ALT;
+	stats->min_alt_trk   = NULL;
+	stats->max_alt       = VIK_VAL_MAX_ALT;
+	stats->max_alt_trk   = NULL;
+	stats->elev_gain     = 0.0;
+	stats->elev_loss     = 0.0;
+	stats->length        = 0.0;
 	//stats->length_gaps = 0.0;
-	stats->max_speed   = 0.0;
+	stats->max_speed     = 0.0;
+	stats->max_speed_trk = NULL;
 	//stats->trackpoints = 0;
 	//stats->segments    = 0;
-	stats->duration    = 0;
-	stats->start_time  = NAN;
-	stats->end_time    = NAN;
-	stats->count       = 0;
-	stats->e_list      = NULL;
-	stats->active_days = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
+	stats->duration      = 0;
+	stats->start_time    = NAN;
+	stats->end_time      = NAN;
+	stats->count         = 0;
+	stats->e_list        = NULL;
+	stats->active_days   = g_hash_table_new_full ( g_str_hash, g_str_equal, g_free, NULL );
 }
 
 /**
@@ -115,7 +121,7 @@ static void val_reset_months ( void )
 
 /**
  * @val_analyse_track:
- * @trk: The track to be analyse
+ * @trk: The track to be analysed
  *
  * Function to collect statistics, using the internal track functions
  */
@@ -194,16 +200,22 @@ static void val_analyse_track ( VikTrack *trk, VikTrwLayer *vtl, gboolean includ
 			tracks_stats[ii].length      += length;
 			//tracks_stats[ii].length_gaps += length_gaps;
 			if ( !isnan(max_speed) )
-				if ( max_speed > tracks_stats[ii].max_speed )
+				if ( max_speed > tracks_stats[ii].max_speed ) {
 					tracks_stats[ii].max_speed = max_speed;
+					tracks_stats[ii].max_speed_trk = trk;
+				}
 		}
 
 		if ( vik_track_get_minmax_alt (trk, &min_alt, &max_alt) ) {
 			for (ii = 0; ii < G_N_ELEMENTS(tracks_stats); ii++) {
-				if ( min_alt < tracks_stats[ii].min_alt )
+				if ( min_alt < tracks_stats[ii].min_alt ) {
 					tracks_stats[ii].min_alt = min_alt;
-				if ( max_alt > tracks_stats[ii].max_alt )
+					tracks_stats[ii].min_alt_trk = trk;
+				}
+				if ( max_alt > tracks_stats[ii].max_alt ) {
 					tracks_stats[ii].max_alt = max_alt;
+					tracks_stats[ii].max_alt_trk = trk;
+				}
 			}
 		}
 
@@ -244,8 +256,10 @@ static void val_analyse_track ( VikTrack *trk, VikTrwLayer *vtl, gboolean includ
 			if ( max_alt > tracks_years[yi].max_alt )
 				tracks_years[yi].max_alt = max_alt;
 			if ( !isnan(max_speed) )
-				 if ( max_speed > tracks_years[yi].max_speed )
-					 tracks_years[yi].max_speed = max_speed;
+				if ( max_speed > tracks_years[yi].max_speed ) {
+					tracks_years[yi].max_speed = max_speed;
+					tracks_years[yi].max_speed_trk = trk;
+				}
 		}
 		g_date_free ( gdate );
 	}
@@ -437,16 +451,22 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 	} else
 		cnt++;
 
+	GtkWidget *maxspd = content[cnt++];
 	vik_units_speed_t speed_units = a_vik_get_units_speed ();
 	g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
 	if ( !isnan(ts.max_speed) )
 		vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, ts.max_speed, TRUE, "%.1f", FALSE );
-	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+	gtk_label_set_text ( GTK_LABEL(maxspd), tmp_buf );
+	if ( ts.max_speed_trk->name )
+		gtk_widget_set_tooltip_text ( maxspd, ts.max_speed_trk->name );
 
 	g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
 	if ( ts.duration > 0 )
 		vu_speed_text ( tmp_buf, sizeof(tmp_buf), speed_units, ts.length/ts.duration, TRUE, "%.1f", FALSE );
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+
+	GtkWidget *minalt = content[cnt++];
+	GtkWidget *maxalt = content[cnt++];
 
 	switch ( a_vik_get_units_height() ) {
 		// Note always round off height value output since sub unit accuracy is overkill
@@ -455,13 +475,13 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d feet"), (int)round(VIK_METERS_TO_FEET(ts.min_alt)) );
 		else
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+		gtk_label_set_text ( GTK_LABEL(minalt), tmp_buf );
 
 		if ( ts.max_alt != VIK_VAL_MAX_ALT )
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d feet"), (int)round(VIK_METERS_TO_FEET(ts.max_alt)) );
 		else
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+		gtk_label_set_text ( GTK_LABEL(maxalt), tmp_buf );
 
 		g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d feet / %d feet"), (int)round(VIK_METERS_TO_FEET(ts.elev_gain)), (int)round(VIK_METERS_TO_FEET(ts.elev_loss)) );
 		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
@@ -473,13 +493,13 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d m"), (int)round(ts.min_alt) );
 		else
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+		gtk_label_set_text ( GTK_LABEL(minalt), tmp_buf );
 
 		if ( ts.max_alt != VIK_VAL_MAX_ALT )
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d m"), (int)round(ts.max_alt) );
 		else
 			g_snprintf ( tmp_buf, sizeof(tmp_buf), "--" );
-		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+		gtk_label_set_text ( GTK_LABEL(maxalt), tmp_buf );
 
 		g_snprintf ( tmp_buf, sizeof(tmp_buf), _("%d m / %d m"), (int)round(ts.elev_gain), (int)round(ts.elev_loss) );
 		gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
@@ -487,6 +507,11 @@ static void table_output ( track_stats ts, GtkWidget *content[], gboolean extend
 		break;
 	}
 	gtk_label_set_text ( GTK_LABEL(content[cnt++]), tmp_buf );
+
+	if ( ts.min_alt_trk->name )
+		gtk_widget_set_tooltip_text ( minalt, ts.min_alt_trk->name );
+	if ( ts.max_alt_trk->name )
+		gtk_widget_set_tooltip_text ( maxalt, ts.max_alt_trk->name );
 
 	gint hours;
 	gint minutes;

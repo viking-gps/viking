@@ -50,7 +50,7 @@ static VikLayerParamData gps_layer_get_param ( VikGpsLayer *vgl, guint16 id, gbo
 static const gchar* gps_layer_tooltip ( VikGpsLayer *vgl );
 
 static void gps_layer_change_coord_mode ( VikGpsLayer *vgl, VikCoordMode mode );
-static void gps_layer_add_menu_items( VikGpsLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection );
+static void gps_layer_add_menu_items( VikGpsLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter );
 
 static void gps_upload_cb( gpointer layer_and_vlp[2] );
 static void gps_download_cb( gpointer layer_and_vlp[2] );
@@ -289,6 +289,7 @@ VikLayerInterface vik_gps_layer_interface = {
 
   gps_layer_params,
   NUM_PARAMS,
+  0, // Number of VIK_LAYER_NOT_IN_PROPERTIES
   params_groups,
   sizeof(params_groups)/sizeof(params_groups[0]),
 
@@ -861,7 +862,7 @@ static void gps_layer_change_coord_mode ( VikGpsLayer *vgl, VikCoordMode mode )
   }
 }
 
-static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection )
+static void gps_layer_add_menu_items( VikGpsLayer *vgl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter )
 {
   static gpointer pass_along[2];
   pass_along[0] = vgl;

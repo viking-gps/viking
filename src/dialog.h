@@ -69,6 +69,13 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
 
 GList *a_dialog_select_from_list ( GtkWindow *parent, GList *names, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg );
 
+typedef struct {
+  gchar *name;
+  gpointer gp;
+} generic_list_item_t;
+
+GList *a_dialog_select_from_generic_list ( GtkWindow *parent, GList *list, gboolean multiple_selection_allowed, const gchar *title, const gchar *msg );
+
 void a_dialog_license ( GtkWindow *parent, const gchar *map, const gchar *license, const gchar *url);
 
 void a_dialog_build_info ( GtkWindow *parent );

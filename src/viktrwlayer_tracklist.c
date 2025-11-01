@@ -623,6 +623,7 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 		// Insert column for the layer name when viewing multi layers
 		column = ui_new_column_text ( _("Layer"), renderer, view, column_runner++ );
 		gtk_tree_view_column_set_expand ( column, TRUE );
+		gtk_tree_view_column_set_reorderable ( column, TRUE );
 		// remember the layer column so we can sort by it later
 		sort_by_column = column;
 	}
@@ -631,12 +632,14 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 
 	column = ui_new_column_text ( _("Name"), renderer, view, column_runner++ );
 	gtk_tree_view_column_set_expand ( column, TRUE );
+	gtk_tree_view_column_set_reorderable ( column, TRUE );
 	if ( !show_layer_names )
 		// remember the name column so we can sort by it later
 		sort_by_column = column;
 
 	if ( !is_only_routes ) {
 		column = ui_new_column_text ( _("Date"), renderer, view, column_runner++ );
+		gtk_tree_view_column_set_reorderable ( column, TRUE );
 		gtk_tree_view_column_set_expand ( column, TRUE );
 	} else
 		column_runner++;
@@ -661,9 +664,11 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 	}
 	// Apply own formatting of the data
 	gtk_tree_view_column_set_cell_data_func ( column, renderer, ui_format_1f_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL);
+	gtk_tree_view_column_set_reorderable ( column, TRUE );
 
 	if ( !is_only_routes ) {
-		(void)ui_new_column_text ( _("Length\n(minutes)"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Length\n(minutes)"), renderer, view, column_runner++ );
+		gtk_tree_view_column_set_reorderable ( column, TRUE );
 
 		gchar *spd_units = vu_speed_units_text ( speed_units );
 
@@ -671,10 +676,12 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 		column = ui_new_column_text ( title, renderer, view, column_runner++ );
 		g_free ( title );
 		gtk_tree_view_column_set_cell_data_func ( column, renderer, vu_format_speed_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
+		gtk_tree_view_column_set_reorderable ( column, TRUE );
 
 		title = g_strdup_printf ( _("Max Speed\n(%s)"), spd_units );
 		column = ui_new_column_text ( title, renderer, view, column_runner++ );
 		gtk_tree_view_column_set_cell_data_func ( column, renderer, vu_format_speed_cell_data_func, GINT_TO_POINTER(column_runner-1), NULL); // Apply own formatting of the data
+		gtk_tree_view_column_set_reorderable ( column, TRUE );
 
 		g_free ( title );
 		g_free ( spd_units );
@@ -682,9 +689,10 @@ static void vik_trw_layer_track_list_internal ( GtkWidget *dialog,
 		column_runner += 3;
 
 	if ( height_units == VIK_UNITS_HEIGHT_FEET )
-		(void)ui_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Max Height\n(Feet)"), renderer, view, column_runner++ );
 	else
-		(void)ui_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
+		column = ui_new_column_text ( _("Max Height\n(Metres)"), renderer, view, column_runner++ );
+	gtk_tree_view_column_set_reorderable ( column, TRUE );
 
 	GtkCellRenderer *renderer_toggle_rt = gtk_cell_renderer_toggle_new ();
 	column = gtk_tree_view_column_new_with_attributes ( _("Route"), renderer_toggle_rt, "active", column_runner, NULL );

@@ -405,10 +405,10 @@ static void vik_webtool_datasource_class_init ( VikWebtoolDatasourceClass *klass
 
 	pspec = g_param_spec_long ("follow-location",
 	                           "Follow location",
-	                           "Specifies the number of retries to follow a redirect while downloading a page",
+	                           "Specifies the number of retries to follow a redirect while downloading a URL",
 	                           -1, // minimum value (unlimited)
 	                           G_MAXLONG, // maximum value
-	                           2, // default value
+	                           -1, // default value - automatically follow location with unlimited redirects
 	                           G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE);
 	g_object_class_install_property (gobject_class, PROP_FOLLOW_LOCATION, pspec);
 
@@ -463,7 +463,7 @@ static void vik_webtool_datasource_init ( VikWebtoolDatasource *self )
     priv->input_label = NULL;
 	priv->user_string = NULL;
 	priv->options.referer = NULL;
-	priv->options.follow_location = 0;
+	priv->options.follow_location = -1;
 	priv->options.expiry_age = 0;
 	priv->options.check_file = NULL;
 	priv->options.check_file_server_time = FALSE;

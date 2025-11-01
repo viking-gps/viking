@@ -2863,10 +2863,10 @@ msgstr ""
 msgid "Fake BG Color Translucency:"
 msgstr ""
 
-msgid "Waypoint marker:"
+msgid "Waypoint Marker:"
 msgstr "Marcador de puntu de vía:"
 
-msgid "Waypoint size:"
+msgid "Waypoint Size:"
 msgstr "Tamañu de puntu de vía:"
 
 msgid "Draw Waypoint Symbols:"

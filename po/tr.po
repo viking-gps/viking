@@ -2826,10 +2826,10 @@ msgstr "Arka Plan:"
 msgid "Fake BG Color Translucency:"
 msgstr ""
 
-msgid "Waypoint marker:"
+msgid "Waypoint Marker:"
 msgstr ""
 
-msgid "Waypoint size:"
+msgid "Waypoint Size:"
 msgstr "Yol işareti boyutu:"
 
 msgid "Draw Waypoint Symbols:"

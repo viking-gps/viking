@@ -2925,10 +2925,10 @@ msgstr "Pozadí:"
 msgid "Fake BG Color Translucency:"
 msgstr "pozadí částečně průhledné:"
 
-msgid "Waypoint marker:"
+msgid "Waypoint Marker:"
 msgstr "Označení místa:"
 
-msgid "Waypoint size:"
+msgid "Waypoint Size:"
 msgstr "Velikost označení:"
 
 msgid "Draw Waypoint Symbols:"

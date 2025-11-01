@@ -45,7 +45,7 @@ static DownloadResult_t expedia_download ( MapCoord *src, const gchar *dest_fn, 
 static void * expedia_handle_init ( );
 static void expedia_handle_cleanup ( void *handle );
 
-static DownloadFileOptions expedia_options = { FALSE, FALSE, NULL, 2, NULL, NULL, 0, a_check_map_file, NULL, FALSE, FALSE, NULL };
+static DownloadFileOptions expedia_options = { FALSE, FALSE, NULL, -1, NULL, NULL, 0, a_check_map_file, NULL, FALSE, FALSE, NULL };
 
 void expedia_init() {
   VikMapsLayer_MapType map_type = { MAP_ID_EXPEDIA, 0, 0, VIK_VIEWPORT_DRAWMODE_EXPEDIA, expedia_coord_to_mapcoord, expedia_mapcoord_to_center_coord, expedia_download, expedia_handle_init, expedia_handle_cleanup };

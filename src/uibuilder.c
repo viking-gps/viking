@@ -127,9 +127,16 @@ static void refresh_widget ( GtkWidget *widget, VikLayerParam *param, VikLayerPa
       }
       break;
     case VIK_LAYER_WIDGET_SPINBUTTON:
-      if ( (param->type == VIK_LAYER_PARAM_DOUBLE || param->type == VIK_LAYER_PARAM_UINT
-           || param->type == VIK_LAYER_PARAM_INT) ) {
-        gdouble init_val = (param->type == VIK_LAYER_PARAM_DOUBLE) ? vlpd.d : (param->type == VIK_LAYER_PARAM_UINT ? vlpd.u : vlpd.i);
+      if ( (param->type == VIK_LAYER_PARAM_DOUBLE
+            || param->type == VIK_LAYER_PARAM_UINT
+            || param->type == VIK_LAYER_PARAM_INT) ) {
+        gdouble init_val = 0.0;
+        if (param->type == VIK_LAYER_PARAM_DOUBLE)
+          init_val = vlpd.d;
+        else if (param->type == VIK_LAYER_PARAM_UINT)
+          init_val = vlpd.u;
+        else
+          init_val = vlpd.i;
         gtk_spin_button_set_value ( GTK_SPIN_BUTTON(widget), init_val );
       }
     break;
@@ -237,7 +244,13 @@ GtkWidget *new_widget ( VikLayerParam *param, VikLayerParamData data, gboolean s
       if ( (param->type == VIK_LAYER_PARAM_DOUBLE || param->type == VIK_LAYER_PARAM_UINT
            || param->type == VIK_LAYER_PARAM_INT)  && param->widget_data )
       {
-        gdouble init_val = (param->type == VIK_LAYER_PARAM_DOUBLE) ? vlpd.d : (param->type == VIK_LAYER_PARAM_UINT ? vlpd.u : vlpd.i);
+        gdouble init_val = 0.0;
+        if (param->type == VIK_LAYER_PARAM_DOUBLE)
+          init_val = vlpd.d;
+        else if (param->type == VIK_LAYER_PARAM_UINT)
+          init_val = vlpd.u;
+        else
+          init_val = vlpd.i;
         VikLayerParamScale *scale = (VikLayerParamScale *) param->widget_data;
         rv = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new( init_val, scale->min, scale->max, scale->step, scale->step, 0 )), scale->step, scale->digits );
       }
@@ -299,6 +312,13 @@ GtkWidget *new_widget ( VikLayerParam *param, VikLayerParamData data, gboolean s
           g_signal_connect ( G_OBJECT(wgt), "clicked", G_CALLBACK (vlpd.ptr), pass_along_getparam );
         }
       }
+      break;
+    case VIK_LAYER_WIDGET_SEPARATOR:
+      if ( param->type != VIK_LAYER_PARAM_SPACER )
+        g_critical ( "%s: param->type should be VIK_LAYER_PARAM_SPACER but is %d ", __FUNCTION__, param->type );
+#if GTK_CHECK_VERSION (3,0,0)
+      rv = gtk_separator_new ( GTK_ORIENTATION_HORIZONTAL );
+#endif
       break;
 
     default: break;
@@ -466,6 +486,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       GtkWindow *parent,
                                       VikLayerParam *params,
                                       guint16 params_count,
+                                      guint16 params_offset,
                                       gchar **groups,
                                       guint8 groups_count,
                                       gboolean (*setparam) (gpointer,gpointer),
@@ -571,9 +592,14 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
 	  } else {
             if ( params[i].widget_type == VIK_LAYER_WIDGET_ENTRY_URL && data.s )
               labels[j] = gtk_link_button_new_with_label ( data.s, _(params[i].title));
+#if GTK_CHECK_VERSION (3,0,0)
+            else if ( params[i].widget_type == VIK_LAYER_WIDGET_SEPARATOR )
+              labels[j] = gtk_separator_new ( GTK_ORIENTATION_VERTICAL );
+#endif
             else
               labels[j] = gtk_label_new(_(params[i].title));
-            gtk_table_attach ( GTK_TABLE(table), labels[j], 0, 1, j, j+1, 0, 0, 0, 0 );
+            gtk_table_attach ( GTK_TABLE(table), labels[j], 0, 1, j, j+1,
+                               params[i].type == VIK_LAYER_PARAM_SPACER ? GTK_FILL : 0, 0, 0, 0 );
             gtk_table_attach ( GTK_TABLE(table), widgets[j], 1, 2, j, j+1, GTK_EXPAND | GTK_FILL,
                                params[i].type == VIK_LAYER_PARAM_STRING_LIST ? GTK_EXPAND | GTK_FILL : 0, 2, 2 );
 	  }
@@ -582,9 +608,17 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
           {
             change_values[j][UI_CHG_LAYER] = pass_along1;
             change_values[j][UI_CHG_PARAM] = &params[i];
-            change_values[j][UI_CHG_PARAM_ID] = GINT_TO_POINTER((gint)i);
             change_values[j][UI_CHG_WIDGETS] = widgets;
             change_values[j][UI_CHG_LABELS] = labels;
+            // Determine whether being called from Layer Properties or Default Layer
+            // ATM redraw is only used if coming from Layer Properties
+            if ( redraw ) {
+              change_values[j][UI_CHG_PARAM_ID] = GINT_TO_POINTER((gint)i);
+            }
+            else {
+              // For Default Layer dialog, need to adjust IDs
+              change_values[j][UI_CHG_PARAM_ID] = GINT_TO_POINTER((gint)(i+params_offset));
+            }
 
             switch ( params[i].widget_type )
             {
@@ -704,6 +738,7 @@ VikLayerParamData *a_uibuilder_run_dialog (  const gchar *dialog_name, GtkWindow
 					  parent,
 					  params,
 					  params_count,
+					  0,
 					  groups,
 					  groups_count,
 					  NULL,

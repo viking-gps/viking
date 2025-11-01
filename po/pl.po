@@ -2836,10 +2836,10 @@ msgstr "Tło:"
 msgid "Fake BG Color Translucency:"
 msgstr ""
 
-msgid "Waypoint marker:"
+msgid "Waypoint Marker:"
 msgstr "Znacznik puktu orientacyjnego:"
 
-msgid "Waypoint size:"
+msgid "Waypoint Size:"
 msgstr "Rozmiar punktu orientacyjnego:"
 
 msgid "Draw Waypoint Symbols:"

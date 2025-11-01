@@ -65,8 +65,6 @@ forward_signal (GObject *object, gpointer user_data)
     // Clicking on the items field will bring up the background jobs window
     if ( item == VIK_STATUSBAR_ITEMS )
       a_background_show_window();
-    else if ( item == VIK_STATUSBAR_LOG )
-      a_logging_show_window();
     else
       g_signal_emit (G_OBJECT (vs),
                      vik_statusbar_signals[CLICKED], 0,
@@ -91,13 +89,20 @@ vik_statusbar_class_init (VikStatusbarClass *klass)
 
 static gboolean button_release_event (GtkWidget* widget, GdkEvent *event, gpointer *user_data)
 {
-  if ( ((GdkEventButton*)event)->button == 2 ) {
-    gint type = GPOINTER_TO_INT (g_object_get_data ( G_OBJECT(widget), "type" ));
+  gint type = GPOINTER_TO_INT (g_object_get_data ( G_OBJECT(widget), "type" ));
+  if ( ((GdkEventButton*)event)->button == 1 ) {
+    if ( type == VIK_STATUSBAR_LOG )
+      a_logging_show_window();
+  }
+  else if ( ((GdkEventButton*)event)->button == 2 ) {
     VikStatusbar *vs = VIK_STATUSBAR (user_data);
     // Middle Click: clear the text
     if ( type == VIK_STATUSBAR_INFO )
       vik_statusbar_set_message ( vs, VIK_STATUSBAR_INFO, "" );
+    else if ( type == VIK_STATUSBAR_LOG )
+      a_logging_clear_log();
   }
+
   // Otherwise carry on with other event handlers
   return FALSE;
 }
@@ -137,7 +142,7 @@ vik_statusbar_init (VikStatusbar *vs)
 
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_POSITION], FALSE, FALSE, 1);
 
-  g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_LOG]), "clicked", G_CALLBACK (forward_signal), vs );
+  g_signal_connect ( G_OBJECT(vs->status[VIK_STATUSBAR_LOG]), "button-release-event", G_CALLBACK (button_release_event), vs);
   gtk_widget_set_tooltip_text (GTK_WIDGET (vs->status[VIK_STATUSBAR_LOG]), _("Current number of log messages. Click to see them."));
   gtk_box_pack_start ( GTK_BOX(vs), vs->status[VIK_STATUSBAR_LOG], FALSE, FALSE, 1 );
 

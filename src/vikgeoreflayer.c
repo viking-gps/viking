@@ -68,7 +68,7 @@ static VikGeorefLayer *georef_layer_create ( VikViewport *vp );
 static void georef_layer_free ( VikGeorefLayer *vgl );
 static gboolean georef_layer_properties ( VikGeorefLayer *vgl, gpointer vp, gboolean have_apply );
 static void georef_layer_draw ( VikGeorefLayer *vgl, VikViewport *vp );
-static void georef_layer_add_menu_items ( VikGeorefLayer *vgl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection );
+static void georef_layer_add_menu_items ( VikGeorefLayer *vgl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter );
 static void georef_layer_set_image ( VikGeorefLayer *vgl, const gchar *image );
 static gboolean georef_layer_dialog ( VikGeorefLayer *vgl, gpointer vp, GtkWindow *w, gboolean have_apply_button );
 static void georef_layer_load_image ( VikGeorefLayer *vgl, VikViewport *vp, gboolean from_file );
@@ -112,6 +112,7 @@ VikLayerInterface vik_georef_layer_interface = {
 
   georef_layer_params,
   NUM_PARAMS,
+  0, // Number of VIK_LAYER_NOT_IN_PROPERTIES
   NULL,
   0,
 
@@ -1246,7 +1247,7 @@ static void georef_layer_goto_center ( gpointer vgl_vlp[2] )
   vik_layers_panel_emit_update ( VIK_LAYERS_PANEL(vgl_vlp[1]), FALSE );
 }
 
-static void georef_layer_add_menu_items ( VikGeorefLayer *vgl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection )
+static void georef_layer_add_menu_items ( VikGeorefLayer *vgl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter )
 {
   static gpointer pass_along[2];
   pass_along[0] = vgl;

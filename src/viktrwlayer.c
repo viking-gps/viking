@@ -283,16 +283,16 @@ static gboolean trw_layer_delete_waypoint ( VikTrwLayer *vtl, VikWaypoint *wp );
 typedef enum {
   MA_VTL = 0,
   MA_VLP,
+  MA_TV_ITER,
   MA_SUBTYPE, // OR END for Layer only
   MA_SUBLAYER_ID,
   MA_CONFIRM,
   MA_VVP,
-  MA_TV_ITER,
   MA_MISC,
   MA_LAST,
 } menu_array_index;
 
-typedef gpointer menu_array_layer[2];
+typedef gpointer menu_array_layer[3];
 typedef gpointer menu_array_sublayer[MA_LAST];
 
 static void trw_layer_delete_item ( menu_array_sublayer values );
@@ -741,13 +741,15 @@ VikLayerParam trw_layer_params[] = {
 
   { VIK_LAYER_TRW, "drawlabels", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Labels"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpfontsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Font Size:"), VIK_LAYER_WIDGET_COMBOBOX, params_font_sizes, NULL, NULL, wpfontsize_default, NULL, NULL },
-  { VIK_LAYER_TRW, "wpcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Waypoint Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, black_color_default, NULL, NULL },
   { VIK_LAYER_TRW, "wptextcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Waypoint Text:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, wptextcolor_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpbgcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Background:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, wpbgcolor_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpbgand", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Fake BG Color Translucency:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_false_default, NULL, NULL },
-  { VIK_LAYER_TRW, "wpsymbol", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint marker:"), VIK_LAYER_WIDGET_COMBOBOX, params_wpsymbols, NULL, NULL, wpsymbol_default, NULL, NULL },
-  { VIK_LAYER_TRW, "wpsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint size:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[7], NULL, NULL, wpsize_default, NULL, NULL },
+  { VIK_LAYER_TRW, "ignore1", VIK_LAYER_PARAM_SPACER, GROUP_WAYPOINTS, NULL, VIK_LAYER_WIDGET_SEPARATOR, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_TRW, "wpsyms", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Waypoint Symbols:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, NULL, vik_lpd_true_default, NULL, NULL },
+  { VIK_LAYER_TRW, "wpcolor", VIK_LAYER_PARAM_COLOR, GROUP_WAYPOINTS, N_("Waypoint Color:"), VIK_LAYER_WIDGET_COLOR, NULL, NULL, NULL, black_color_default, NULL, NULL },
+  { VIK_LAYER_TRW, "wpsymbol", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Marker:"), VIK_LAYER_WIDGET_COMBOBOX, params_wpsymbols, NULL, NULL, wpsymbol_default, NULL, NULL },
+  { VIK_LAYER_TRW, "wpsize", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Size:"), VIK_LAYER_WIDGET_SPINBUTTON, &params_scales[7], NULL, NULL, wpsize_default, NULL, NULL },
+  { VIK_LAYER_TRW, "ignore2", VIK_LAYER_PARAM_SPACER, GROUP_WAYPOINTS, NULL, VIK_LAYER_WIDGET_SEPARATOR, NULL, NULL, NULL, NULL, NULL, NULL },
   { VIK_LAYER_TRW, "wpprox", VIK_LAYER_PARAM_BOOLEAN, GROUP_WAYPOINTS, N_("Draw Waypoint Proximity:"), VIK_LAYER_WIDGET_CHECKBUTTON, NULL, NULL, N_("Draw a circle covering the proximity area"), vik_lpd_true_default, NULL, NULL },
   { VIK_LAYER_TRW, "wpsortorder", VIK_LAYER_PARAM_UINT, GROUP_WAYPOINTS, N_("Waypoint Sort Order:"), VIK_LAYER_WIDGET_COMBOBOX, params_sort_order_wp, NULL, NULL, sort_order_default, NULL, NULL },
 
@@ -801,13 +803,15 @@ enum {
   // Waypoints
   PARAM_DLA,
   PARAM_WPFONTSIZE,
-  PARAM_WPC,
   PARAM_WPTC,
   PARAM_WPBC,
-  PARAM_WPBA,
+  PARAM_WPBT,
+  PARAM_IGNORE1,
+  PARAM_WPSYMS,
+  PARAM_WPC,
   PARAM_WPSYM,
   PARAM_WPSIZE,
-  PARAM_WPSYMS,
+  PARAM_IGNORE2,
   PARAM_WPPROX,
   PARAM_WPSO,
   // WP images
@@ -848,7 +852,7 @@ static void trw_layer_change_coord_mode ( VikTrwLayer *vtl, VikCoordMode dest_mo
 static gdouble trw_layer_get_timestamp ( VikTrwLayer *vtl );
 static void trw_layer_set_menu_selection ( VikTrwLayer *vtl, VikStdLayerMenuItem selection );
 static VikStdLayerMenuItem trw_layer_get_menu_selection ( VikTrwLayer *vtl );
-static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection );
+static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter );
 static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *menu, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter, VikViewport *vvp, VikStdLayerMenuItem selection );
 static const gchar* trw_layer_sublayer_rename_request ( VikTrwLayer *l, const gchar *newname, gpointer vlp, gint subtype, gpointer sublayer, GtkTreeIter *iter );
 static gboolean trw_layer_sublayer_toggle_visible ( VikTrwLayer *l, gint subtype, gpointer sublayer );
@@ -872,9 +876,9 @@ static gboolean trw_layer_select_move ( VikTrwLayer *vtl, GdkEventMotion *event,
 static gboolean trw_layer_select_release ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp, tool_ed_t *t );
 static gboolean trw_layer_show_selected_viewport_menu ( VikTrwLayer *vtl, GdkEventButton *event, VikViewport *vvp );
 static void trw_write_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
-static gboolean trw_read_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
+static gboolean trw_read_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath, gboolean auto_load_external );
 static void trw_write_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
-static gboolean trw_read_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath );
+static gboolean trw_read_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath, gboolean auto_load );
 static gboolean trw_load_external_layer ( VikTrwLayer *trw );
 static void trw_update_layer_icon ( VikTrwLayer *trw );
 
@@ -891,6 +895,7 @@ VikLayerInterface vik_trw_layer_interface = {
 
   trw_layer_params,
   NUM_PARAMS,
+  3, // Number of VIK_LAYER_NOT_IN_PROPERTIES (the 'visibilty of sublayers')
   params_groups, /* params_groups */
   G_N_ELEMENTS(params_groups),    // number of groups
 
@@ -1522,7 +1527,7 @@ static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )
         gdk_gc_set_rgb_fg_color(vtl->waypoint_bg_gc, &(vtl->waypoint_bg_color));
 #endif
       break;
-    case PARAM_WPBA:
+    case PARAM_WPBT:
       changed = vik_layer_param_change_boolean ( vlsp->data, &vtl->wpbgand );
 #if !GTK_CHECK_VERSION (3,0,0)
       if ( vtl->waypoint_bg_gc )
@@ -1664,7 +1669,7 @@ static VikLayerParamData trw_layer_get_param ( VikTrwLayer *vtl, guint16 id, gbo
     case PARAM_WPC: rv.c = vtl->waypoint_color; break;
     case PARAM_WPTC: rv.c = vtl->waypoint_text_color; break;
     case PARAM_WPBC: rv.c = vtl->waypoint_bg_color; break;
-    case PARAM_WPBA: rv.b = vtl->wpbgand; break;
+    case PARAM_WPBT: rv.b = vtl->wpbgand; break;
     case PARAM_WPSYM: rv.u = vtl->wp_symbol; break;
     case PARAM_WPSIZE: rv.u = vtl->wp_size; break;
     case PARAM_WPSYMS: rv.b = vtl->wp_draw_symbols; break;
@@ -1725,8 +1730,8 @@ static void trw_layer_change_param ( GtkWidget *widget, ui_change_values values 
       GtkWidget *w2 = ww2[OFFSET + PARAM_WPTC];
       GtkWidget *w3 = ww1[OFFSET + PARAM_WPBC];
       GtkWidget *w4 = ww2[OFFSET + PARAM_WPBC];
-      GtkWidget *w5 = ww1[OFFSET + PARAM_WPBA];
-      GtkWidget *w6 = ww2[OFFSET + PARAM_WPBA];
+      GtkWidget *w5 = ww1[OFFSET + PARAM_WPBT];
+      GtkWidget *w6 = ww2[OFFSET + PARAM_WPBT];
       GtkWidget *w7 = ww1[OFFSET + PARAM_WPFONTSIZE];
       GtkWidget *w8 = ww2[OFFSET + PARAM_WPFONTSIZE];
       if ( w1 ) gtk_widget_set_sensitive ( w1, vlpd.b );
@@ -4270,6 +4275,23 @@ static void trw_layer_export_gpx ( menu_array_layer values )
   g_free ( auto_save_name );
 }
 
+static void trw_layer_export_gpx_waypoints_only ( menu_array_layer values )
+{
+  vik_trw_layer_export_gpx_waypoints ( VIK_TRW_LAYER(values[MA_VTL]) );
+}
+
+static void trw_layer_export_gpx_separate_routes ( menu_array_layer values )
+{
+  // As explicitly called; do it even if sublayer visibility is off
+  vik_trw_layer_export_separate_gpx ( VIK_TRW_LAYER(values[MA_VTL]), VIK_TRW_LAYER_SUBLAYER_ROUTES );
+}
+
+static void trw_layer_export_gpx_separate_tracks ( menu_array_layer values )
+{
+  // As explicitly called; do it even if sublayer visibility is off
+  vik_trw_layer_export_separate_gpx ( VIK_TRW_LAYER(values[MA_VTL]), VIK_TRW_LAYER_SUBLAYER_TRACKS );
+}
+
 static void trw_layer_export_kml ( menu_array_layer values )
 {
   gchar *auto_save_name = append_file_ext ( vik_layer_get_name(VIK_LAYER(values[MA_VTL])), FILE_TYPE_KML );
@@ -5083,14 +5105,156 @@ static void trw_layer_file_delete ( menu_array_layer values )
   }
 }
 
+#define VIK_SETTINGS_TRACK_RENAME_FMT "track_rename_format"
+
+/**
+ * rename_track_or_layer_by_format:
+ *
+ * Suggest new name based on track characteristics.
+ * Applies to either the layer (based on the specified track) or the track itself
+ *
+ * Mainly to address Etrex naming if the track hasn't been reset/auto archived
+ *  - everything is saved under '<first date after reset>'
+ * such that splitting a track recording over multi days can become something like:
+ * 20 DEC 20#1
+ * 20 DEC 20#2 --> But might be on the 30th - so would be nice to be e.g. '30 DEC 20'
+ * 20 DEC 20#3 --> But could be the 2nd Jan the following year - so would be nice to be e.g. '02 JAN 21'
+ *
+ * This intelligence could be put into the split operation,
+ * but for now has to be manually requested
+ */
+void rename_track_or_layer_by_format ( VikTrwLayer *vtl,
+                                       VikTrack *trk,
+                                       VikLayersPanel *vlp,
+                                       GtkTreeIter *iter,
+                                       gpointer sublayer )
+{
+  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Rename"),
+                                                    VIK_GTK_WINDOW_FROM_LAYER(vtl),
+                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                    GTK_STOCK_CANCEL,
+                                                    GTK_RESPONSE_REJECT,
+                                                    _("Preview"),
+                                                    GTK_RESPONSE_APPLY,
+                                                    GTK_STOCK_OK,
+                                                    GTK_RESPONSE_ACCEPT,
+                                                    NULL );
+
+  GtkWidget *lname = gtk_label_new ( _("Old Name:") );
+  GtkWidget *aname = gtk_label_new ( trk->name );
+
+  // Default - read from settings
+  gchar *dfmt = NULL;
+  if ( ! a_settings_get_string ( VIK_SETTINGS_TRACK_RENAME_FMT, &dfmt ) )
+    dfmt = g_strdup ( "%d %b %y %H:%M" );
+
+  GtkWidget *entry = ui_entry_new ( dfmt, GTK_ENTRY_ICON_SECONDARY );
+  gtk_widget_set_tooltip_text ( entry, _("Transform name using strftime() format") );
+
+  GtkWidget *nname = gtk_label_new ( NULL );
+
+  GtkWidget *hbox_name = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(hbox_name), lname, FALSE, FALSE, 2 );
+  gtk_box_pack_end ( GTK_BOX(hbox_name), aname, TRUE, TRUE, 2 );
+
+  GtkWidget *lfmt = gtk_label_new ( _("Format:") );
+  GtkWidget *hbox_fmt = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(hbox_fmt), lfmt, FALSE, FALSE, 2 );
+  gtk_box_pack_end ( GTK_BOX(hbox_fmt), entry, TRUE, TRUE, 2 );
+
+  GtkWidget *lnn = gtk_label_new ( _("New Name:") );
+  GtkWidget *hbox_new = gtk_hbox_new ( FALSE, 0 );
+  gtk_box_pack_start ( GTK_BOX(hbox_new), lnn, FALSE, FALSE, 2 );
+  gtk_box_pack_end ( GTK_BOX(hbox_new), nname, TRUE, TRUE, 2 );
+
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_name, TRUE, TRUE, 2 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_fmt, TRUE, TRUE, 2 );
+  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_new, TRUE, TRUE, 2 );
+
+  gtk_widget_show_all ( dialog );
+
+  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
+  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
+  if ( response_w )
+    gtk_widget_grab_focus ( response_w );
+
+  gint response;
+  do {
+    // Preview...
+    gchar date_buf[128];
+    date_buf[0] = '-'; date_buf[1] = '-'; date_buf[2] = '\0';
+    if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
+      time_t time = round(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp);
+      const gchar *fmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
+      if ( fmt && strlen(fmt) == 0 ) {
+        // Reset if entry is blank
+        gtk_entry_set_text ( GTK_ENTRY(entry), "%d %b %y %H:%M" );
+        fmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
+      }
+      if ( fmt )
+        strftime ( date_buf, sizeof(date_buf), fmt, localtime(&time) );
+    }
+    gtk_label_set_text ( GTK_LABEL(nname), date_buf );
+
+    response = gtk_dialog_run (GTK_DIALOG (dialog));
+
+  } while ( response == GTK_RESPONSE_APPLY );
+
+  if ( response == GTK_RESPONSE_ACCEPT ) {
+    const gchar *newname = gtk_label_get_text(GTK_LABEL(nname));
+    if ( newname && strlen(newname) && g_strcmp0("--", newname) ) {
+
+      if ( sublayer ) {
+        (void)trw_layer_sublayer_rename_request ( vtl,
+                                                  newname,
+                                                  vlp,
+                                                  VIK_TRW_LAYER_SUBLAYER_TRACK,
+                                                  sublayer,
+                                                  iter );
+      }
+      else {
+        vik_layer_rename ( VIK_LAYER(vtl), newname );
+        vik_treeview_item_set_name ( vik_layers_panel_get_treeview(vlp), iter, newname );
+      }
+      // Save format for use next time (even if the same as the default)
+      const gchar *sfmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
+      if ( sfmt )
+        a_settings_set_string ( VIK_SETTINGS_TRACK_RENAME_FMT, sfmt );
+    }
+  }
+
+  gtk_widget_destroy ( dialog );
+}
+
+/**
+ *
+ */
+static void trw_layer_tracks_rename ( menu_array_layer values )
+{
+  VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
+
+  GList *gl = g_hash_table_get_values ( vtl->tracks );
+  GList *it = g_list_first ( gl );
+  if ( !it )
+    return;
+  VikTrack *trk = VIK_TRACK(it->data);
+
+  rename_track_or_layer_by_format ( vtl,
+                                    trk,
+                                    VIK_LAYERS_PANEL(values[MA_VLP]),
+                                    values[MA_TV_ITER],
+                                    NULL );
+}
+
 #define VIK_SETTINGS_EXPORT_GPSMAPPER "export_gpsmapper_option"
 #define VIK_SETTINGS_EXPORT_GPSPOINT "export_gpspoint_option"
 
-static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection )
+static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer vlp, VikStdLayerMenuItem selection, GtkTreeIter *iter )
 {
   static menu_array_layer data;
   data[MA_VTL] = vtl;
   data[MA_VLP] = vlp;
+  data[MA_TV_ITER] = iter;
 
   (void)vu_menu_add_item ( menu, NULL, NULL, NULL, NULL ); // Just a separator
 
@@ -5269,6 +5433,13 @@ static void trw_layer_add_menu_items ( VikTrwLayer *vtl, GtkMenu *menu, gpointer
     gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
     gtk_widget_show ( item );
   }
+
+  GtkMenu *edit_submenu = GTK_MENU(gtk_menu_new());
+  GtkWidget *itemed = vu_menu_add_item ( menu, _("_Edit"), GTK_STOCK_EDIT, NULL, data );
+  gtk_menu_item_set_submenu ( GTK_MENU_ITEM(itemed), GTK_WIDGET(edit_submenu) );
+
+  GtkWidget *itemrn = vu_menu_add_item ( edit_submenu, _("Rename..."), GTK_STOCK_EDIT, G_CALLBACK(trw_layer_tracks_rename), data );
+  gtk_widget_set_sensitive ( itemrn, (gboolean)(g_hash_table_size (vtl->tracks)) );
 
   GtkMenu *file_submenu = GTK_MENU(gtk_menu_new());
   GtkWidget *itemff = vu_menu_add_item ( menu, _("_File"), GTK_STOCK_FILE, NULL, data );
@@ -6703,21 +6874,9 @@ static void trw_layer_rotate ( menu_array_sublayer values )
 /**
  * trw_layer_track_rename:
  *
- * Suggest new name based on track characteristics.
- *
- * Mainly to address Etrex naming if the track hasn't been reset/auto archived
- *  - everything is saved under '<first date after reset>'
- * such that splitting a track recording over multi days can become something like:
- * 20 DEC 20#1
- * 20 DEC 20#2 --> But might be on the 30th - so would be nice to be e.g. '30 DEC 20'
- * 20 DEC 20#3 --> But could be the 2nd Jan the following year - so would be nice to be e.g. '02 JAN 21'
- *
- * This intelligence could be put into the split operation,
- * but for now has to be manually requested
  */
 static void trw_layer_track_rename ( menu_array_sublayer values )
 {
-#define VIK_SETTINGS_TRACK_RENAME_FMT "track_rename_format"
   VikTrwLayer *vtl = (VikTrwLayer *)values[MA_VTL];
   VikTrack *trk;
   if ( GPOINTER_TO_INT (values[MA_SUBTYPE]) == VIK_TRW_LAYER_SUBLAYER_ROUTE )
@@ -6728,94 +6887,11 @@ static void trw_layer_track_rename ( menu_array_sublayer values )
   if ( !trk )
     return;
 
-  GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Rename"),
-                                                    VIK_GTK_WINDOW_FROM_LAYER(vtl),
-                                                    GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                    GTK_STOCK_CANCEL,
-                                                    GTK_RESPONSE_REJECT,
-                                                    _("Preview"),
-                                                    GTK_RESPONSE_APPLY,
-                                                    GTK_STOCK_OK,
-                                                    GTK_RESPONSE_ACCEPT,
-                                                    NULL );
-
-  GtkWidget *lname = gtk_label_new ( _("Old Name:") );
-  GtkWidget *aname = gtk_label_new ( trk->name );
-
-  // Default - read from settings
-  gchar *dfmt = NULL;
-  if ( ! a_settings_get_string ( VIK_SETTINGS_TRACK_RENAME_FMT, &dfmt ) )
-    dfmt = g_strdup ( "%d %b %y %H:%M" );
-
-  GtkWidget *entry = ui_entry_new ( dfmt, GTK_ENTRY_ICON_SECONDARY );
-  gtk_widget_set_tooltip_text ( entry, _("Transform name using strftime() format") );
-
-  GtkWidget *nname = gtk_label_new ( NULL );
-
-  GtkWidget *hbox_name = gtk_hbox_new ( FALSE, 0 );
-  gtk_box_pack_start ( GTK_BOX(hbox_name), lname, FALSE, FALSE, 2 );
-  gtk_box_pack_end ( GTK_BOX(hbox_name), aname, TRUE, TRUE, 2 );
-
-  GtkWidget *lfmt = gtk_label_new ( _("Format:") );
-  GtkWidget *hbox_fmt = gtk_hbox_new ( FALSE, 0 );
-  gtk_box_pack_start ( GTK_BOX(hbox_fmt), lfmt, FALSE, FALSE, 2 );
-  gtk_box_pack_end ( GTK_BOX(hbox_fmt), entry, TRUE, TRUE, 2 );
-
-  GtkWidget *lnn = gtk_label_new ( _("New Name:") );
-  GtkWidget *hbox_new = gtk_hbox_new ( FALSE, 0 );
-  gtk_box_pack_start ( GTK_BOX(hbox_new), lnn, FALSE, FALSE, 2 );
-  gtk_box_pack_end ( GTK_BOX(hbox_new), nname, TRUE, TRUE, 2 );
-
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_name, TRUE, TRUE, 2 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_fmt, TRUE, TRUE, 2 );
-  gtk_box_pack_start ( GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG(dialog))), hbox_new, TRUE, TRUE, 2 );
-
-  gtk_widget_show_all ( dialog );
-
-  gtk_dialog_set_default_response ( GTK_DIALOG(dialog), GTK_RESPONSE_ACCEPT );
-  GtkWidget *response_w = gtk_dialog_get_widget_for_response ( GTK_DIALOG(dialog), GTK_RESPONSE_REJECT );
-  if ( response_w )
-    gtk_widget_grab_focus ( response_w );
-
-  gint response;
-  do {
-    // Preview...
-    gchar date_buf[128];
-    date_buf[0] = '-'; date_buf[1] = '-'; date_buf[2] = '\0';
-    if ( trk->trackpoints && !isnan(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp) ) {
-      time_t time = round(VIK_TRACKPOINT(trk->trackpoints->data)->timestamp);
-      const gchar *fmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
-      if ( fmt && strlen(fmt) == 0 ) {
-        // Reset if entry is blank
-        gtk_entry_set_text ( GTK_ENTRY(entry), "%d %b %y %H:%M" );
-        fmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
-      }
-      if ( fmt )
-        strftime ( date_buf, sizeof(date_buf), fmt, localtime(&time) );
-    }
-    gtk_label_set_text ( GTK_LABEL(nname), date_buf );
-
-    response = gtk_dialog_run (GTK_DIALOG (dialog));
-
-  } while ( response == GTK_RESPONSE_APPLY );
-
-  if ( response == GTK_RESPONSE_ACCEPT ) {
-    const gchar *newname = gtk_label_get_text(GTK_LABEL(nname));
-    if ( newname && strlen(newname) && g_strcmp0("--", newname) ) {
-      (void)trw_layer_sublayer_rename_request ( vtl,
-                                                newname,
-                                                values[MA_VLP],
-                                                MA_SUBTYPE,
-                                                values[MA_SUBLAYER_ID],
-                                                values[MA_TV_ITER] );
-      // Save format for use next time (even if the same as the default)
-      const gchar *sfmt = gtk_entry_get_text ( GTK_ENTRY(entry) );
-      if ( sfmt )
-        a_settings_set_string ( VIK_SETTINGS_TRACK_RENAME_FMT, sfmt );
-    }
-  }
-
-  gtk_widget_destroy ( dialog );
+  rename_track_or_layer_by_format ( vtl,
+                                    trk,
+                                    VIK_LAYERS_PANEL(values[MA_VLP]),
+                                    values[MA_TV_ITER],
+                                    values[MA_SUBLAYER_ID] );
 }
 
 static void trw_layer_extend_track_end ( menu_array_sublayer values )
@@ -9746,6 +9822,8 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     (void)vu_menu_add_item ( vis_submenu, _("_Hide All Waypoints"), GTK_STOCK_CLEAR, G_CALLBACK(trw_layer_waypoints_visibility_off), data );
     (void)vu_menu_add_item ( vis_submenu, _("_Toggle"), GTK_STOCK_REFRESH, G_CALLBACK(trw_layer_waypoints_visibility_toggle), data );
 
+    (void)vu_menu_add_item ( menu, _("Export GPX File..."), NULL, G_CALLBACK(trw_layer_export_gpx_waypoints_only), data );
+
     (void)vu_menu_add_item ( menu, _("_List Waypoints..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_waypoint_list_dialog), data );
   }
 
@@ -9775,6 +9853,9 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     (void)vu_menu_add_item ( vis_submenu, _("_Toggle"), GTK_STOCK_REFRESH, G_CALLBACK(trw_layer_tracks_visibility_toggle), data );
 
     (void)vu_menu_add_item ( menu, _("_List Tracks..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_track_list_dialog_single), data );
+
+    (void)vu_menu_add_item ( menu, _("_Export Separate GPX Files..."), NULL, G_CALLBACK(trw_layer_export_gpx_separate_tracks), data );
+
     (void)vu_menu_add_item ( menu, _("_Statistics"), GTK_STOCK_INFO, G_CALLBACK(trw_layer_tracks_stats), data );
   }
 
@@ -9803,6 +9884,9 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
     (void)vu_menu_add_item ( vis_submenu, _("_Toggle"), GTK_STOCK_REFRESH, G_CALLBACK(trw_layer_routes_visibility_toggle), data );
 
     (void)vu_menu_add_item ( menu, _("_List Routes..."), GTK_STOCK_INDEX, G_CALLBACK(trw_layer_track_list_dialog_single), data );
+
+    (void)vu_menu_add_item ( menu, _("_Export Separate GPX Files..."), NULL, G_CALLBACK(trw_layer_export_gpx_separate_routes), data );
+
     (void)vu_menu_add_item ( menu, _("_Statistics"), NULL, G_CALLBACK(trw_layer_routes_stats), data );
   }
 
@@ -13126,10 +13210,10 @@ static void trw_write_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath )
   }
 }
 
-gboolean trw_read_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath )
+gboolean trw_read_file ( VikTrwLayer *trw, FILE *f, const gchar *dirpath, gboolean auto_load_external )
 {
   if ( trw->external_layer != VIK_TRW_LAYER_INTERNAL ) {
-    return trw_read_file_external ( trw, f, dirpath );
+    return trw_read_file_external ( trw, f, dirpath, auto_load_external );
   } else {
     return a_gpspoint_read_file( trw, f, dirpath );
   }
@@ -13158,15 +13242,18 @@ static void trw_write_file_external ( VikTrwLayer *trw, FILE *f, const gchar *di
   }
 }
 
-static gboolean trw_read_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath )
+static gboolean trw_read_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath, gboolean auto_load )
 {
   g_assert ( trw != NULL && trw->external_file != NULL && f != NULL );
 
   g_free ( trw->external_dirpath );
   trw->external_dirpath = g_strdup ( dirpath );
 
-  // leave loading to trw_layer_draw function
-  trw->external_loaded = FALSE;
+  if ( auto_load )
+    trw_load_external_layer ( trw );
+  else
+    // leave loading to trw_layer_draw function
+    trw->external_loaded = FALSE;
 
   // read ~EndLayerData
   static char line_buffer[15];
@@ -13187,7 +13274,8 @@ static gboolean trw_load_external_layer ( VikTrwLayer *trw )
   gboolean failed = TRUE;
   FILE *ext_f = g_fopen ( extfile, "r" );
   if ( ext_f ) {
-    vik_window_set_busy_cursor ( vw );
+    if ( vw )
+      vik_window_set_busy_cursor ( vw );
 
     gchar *dirpath = g_path_get_dirname ( extfile );
     // KML, TCX & GPX are all XML
@@ -13214,7 +13302,8 @@ static gboolean trw_load_external_layer ( VikTrwLayer *trw )
     g_free ( dirpath );
     fclose ( ext_f );
 
-    vik_window_clear_busy_cursor ( vw );
+    if ( vw )
+      vik_window_clear_busy_cursor ( vw );
   }
 
   trw->external_loaded = ! failed;

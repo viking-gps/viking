@@ -2829,10 +2829,10 @@ msgstr "Φόντο:"
 msgid "Fake BG Color Translucency:"
 msgstr ""
 
-msgid "Waypoint marker:"
+msgid "Waypoint Marker:"
 msgstr ""
 
-msgid "Waypoint size:"
+msgid "Waypoint Size:"
 msgstr ""
 
 msgid "Draw Waypoint Symbols:"

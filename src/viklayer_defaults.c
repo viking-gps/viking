@@ -148,6 +148,13 @@ static void set_default_data ( VikLayerParamData data, const gchar *group, const
 	}
 }
 
+static void defaults_run_changeparam ( GtkWidget* ww, ui_change_values values )
+{
+	VikLayerParam *vlp = values[UI_CHG_PARAM];
+	if ( vik_layer_get_interface(vlp->layer)->change_param )
+		vik_layer_get_interface(vlp->layer)->change_param(ww, values);
+}
+
 static void defaults_run_setparam ( gpointer index_ptr, guint16 i, VikLayerParamData data, VikLayerParam *params )
 {
 	// Index is only an index into values from this layer
@@ -354,6 +361,7 @@ gboolean a_layer_defaults_show_window ( GtkWindow *parent, const gchar *layernam
 	                                      parent,
 	                                      params,
 	                                      layer_params_count,
+	                                      vik_layer_get_interface(layer)->params_offset,
 	                                      vik_layer_get_interface(layer)->params_groups,
 	                                      vik_layer_get_interface(layer)->params_groups_count,
 	                                      NULL,
@@ -362,7 +370,7 @@ gboolean a_layer_defaults_show_window ( GtkWindow *parent, const gchar *layernam
 	                                      params,
 	                                      defaults_run_getparam,
 	                                      GINT_TO_POINTER ( index ),
-	                                      NULL,
+	                                      defaults_run_changeparam,
 	                                      FALSE,
 	                                      NULL,
 	                                      NULL,

@@ -2268,6 +2268,30 @@ void a_gpx_write_track_file ( VikTrwLayer *vtl, VikTrack *trk, FILE *f, GpxWriti
   gpx_write_footer ( f );
 }
 
+/*
+ * a_gpx_write_waypoints_file:
+ * @vtl:     The #VikTrwLayer (should not be NULL) that contains the waypoints
+ * @f:       The opened #FILE to be written
+ * @options: Possible ways of writing the file data (can be NULL)
+ *
+ */
+void a_gpx_write_waypoints_file ( VikTrwLayer *vtl, FILE *f, GpxWritingOptions *options )
+{
+  g_return_if_fail ( f != NULL );
+  g_return_if_fail ( vtl != NULL );
+
+  GpxWritingContext context = { options, f, NULL, NULL };
+  gpx_write_header ( f, vtl, &context );
+
+  GList *gl = g_hash_table_get_values ( vik_trw_layer_get_waypoints ( vtl ) );
+  for ( GList *iter = g_list_first(gl); iter != NULL; iter = g_list_next(iter) ) {
+    gpx_write_waypoint ( (VikWaypoint*)iter->data, &context );
+  }
+  g_list_free ( gl );
+
+  gpx_write_footer ( f );
+}
+
 /**
  * Common write of a temporary GPX file
  */
