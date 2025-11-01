@@ -127,9 +127,16 @@ static void refresh_widget ( GtkWidget *widget, VikLayerParam *param, VikLayerPa
       }
       break;
     case VIK_LAYER_WIDGET_SPINBUTTON:
-      if ( (param->type == VIK_LAYER_PARAM_DOUBLE || param->type == VIK_LAYER_PARAM_UINT
-           || param->type == VIK_LAYER_PARAM_INT) ) {
-        gdouble init_val = (param->type == VIK_LAYER_PARAM_DOUBLE) ? vlpd.d : (param->type == VIK_LAYER_PARAM_UINT ? vlpd.u : vlpd.i);
+      if ( (param->type == VIK_LAYER_PARAM_DOUBLE
+            || param->type == VIK_LAYER_PARAM_UINT
+            || param->type == VIK_LAYER_PARAM_INT) ) {
+        gdouble init_val = 0.0;
+        if (param->type == VIK_LAYER_PARAM_DOUBLE)
+          init_val = vlpd.d;
+        else if (param->type == VIK_LAYER_PARAM_UINT)
+          init_val = vlpd.u;
+        else
+          init_val = vlpd.i;
         gtk_spin_button_set_value ( GTK_SPIN_BUTTON(widget), init_val );
       }
     break;
@@ -237,7 +244,13 @@ GtkWidget *new_widget ( VikLayerParam *param, VikLayerParamData data, gboolean s
       if ( (param->type == VIK_LAYER_PARAM_DOUBLE || param->type == VIK_LAYER_PARAM_UINT
            || param->type == VIK_LAYER_PARAM_INT)  && param->widget_data )
       {
-        gdouble init_val = (param->type == VIK_LAYER_PARAM_DOUBLE) ? vlpd.d : (param->type == VIK_LAYER_PARAM_UINT ? vlpd.u : vlpd.i);
+        gdouble init_val = 0.0;
+        if (param->type == VIK_LAYER_PARAM_DOUBLE)
+          init_val = vlpd.d;
+        else if (param->type == VIK_LAYER_PARAM_UINT)
+          init_val = vlpd.u;
+        else
+          init_val = vlpd.i;
         VikLayerParamScale *scale = (VikLayerParamScale *) param->widget_data;
         rv = gtk_spin_button_new ( GTK_ADJUSTMENT(gtk_adjustment_new( init_val, scale->min, scale->max, scale->step, scale->step, 0 )), scale->step, scale->digits );
       }
