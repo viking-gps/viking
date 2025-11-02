@@ -77,6 +77,7 @@ popd
 # Specifics for Windows build - i.e. no Mapnik yet
 %{_mingw64_configure}\
   --disable-mapnik \
+  --disable-maplibre \
   --disable-geoclue \
   --enable-windows \
   CFLAGS="-DWINDOWS -DWIN32 -mwindows -DCURL_NO_SSL_VERIFYPEER"

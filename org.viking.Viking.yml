@@ -193,8 +193,9 @@ modules:
     buildsystem: autotools
 # Mapnik is expansive C++ dependencies, but more importantly creating maps generally requires a complex system setup for runtime usage
 #  thus seemingly out of scope for a flatpak app anyway - so disable for now.
+# MapLibre is also complex, so disable too
     config-opts:
-      - --disable-mapnik
+      - --disable-mapnik --disable-maplibre
     sources:
       - type: git
         url: git://git.code.sf.net/p/viking/code

@@ -3,7 +3,7 @@
 
 Viking is a free/open source program to manage GPS data. You can
 import, plot and create tracks, routes and waypoints, show OSM
-and other maps, generate maps (using Mapnik),
+and other maps, generate maps (using Mapnik and/or MapLibre),
 see real-time GPS position, Geotag Images,
 control items, upload/download OSM Traces and more.
 It is written mainly in C with some C++ and uses the GTK+3 toolkit.
@@ -50,9 +50,35 @@ The following packages are also used, but they can each be disabled with configu
 
 	$ sudo apt-get install libsqlite3-dev nettle-dev libmapnik-dev libgeoclue-2-dev libgexiv2-dev libgps-dev libmagic-dev libbz2-dev libzip-dev liboauth-dev libnova-dev liblzma-dev
 
+Currently use of MapLibre is experimental and only built when specified ('--enable-maplibre'); since the dependency chain is somewhat extensive and not automated yet.
+
 ### Actual Build
 
 If you downloaded Viking from Git, you have to:
+
+1. If going to use any of these features:
+   * Flatpak
+   * MapLibre
+     - NB Use of MapLibre is rather large - requiring ~4GB disk space (and thus of course some time to download too) [~3GB itself + ~1GB of it's dependencies]
+
+   Ensure the relevant git submodules (as these are powered via external code) are enabled:
+
+	$ git submodule update --init --recursive --progress
+          (wait some time: 20 minutes++?? - depending on your network speed,
+           as progress on individual submodule clones are not displayed by default [hence the '--progress']
+           otherwise with MapLibre being so massive it will *not* appear to be doing anything)
+
+   Follow guide to build MapLibre - https://maplibre.org/maplibre-native/docs/book/platforms/linux/index.html
+        $ sudo apt-get install cmake <plus all other MapLibre build dependencies (see guide above)>
+        $ cd maplibre-native
+        $ cmake --preset linux-opengl
+        $ cmake --build build-linux-opengl --target mbgl-render
+          Also consider using a suitable '--parallel <N>' option for faster build dependent on CPUs and memory available.
+
+   Note that there other backend options for MapLibre, such as Vulkan - but ATM you'll need to be manually align Viking's Makefile to select the correct library names
+     (there should be some commented out variants to explore enabling)
+
+2. Perform the pre-generation operation:
 
 	$ ./autogen.sh
 
@@ -60,6 +86,7 @@ Next, or if you downloaded a tarball, you have to:
 
 	$ ./configure
 	$ make
+          Consider using '-j' option for faster builds
 
 Check output of "./configure --help" for configuration options.  In
 particular, it is possible to disable some features, like

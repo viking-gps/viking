@@ -102,6 +102,9 @@ typedef enum {
 #ifdef HAVE_LIBMAPNIK
   VIK_LAYER_MAPNIK,
 #endif
+#ifdef HAVE_LIBMAPLIBRE
+  VIK_LAYER_MAPLIBRE,
+#endif
 #ifdef HAVE_LIBGEOCLUE_2
   VIK_LAYER_GEOCLUE,
 #endif

@@ -1,3 +1,6 @@
 [submodule "shared-modules"]
 	path = shared-modules
 	url = https://github.com/flathub/shared-modules.git
+[submodule "maplibre-native"]
+	path = maplibre-native
+	url = https://github.com/maplibre/maplibre-native.git
