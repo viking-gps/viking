@@ -262,7 +262,8 @@ LDADD += \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-nunicode.a \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-parsedate.a \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-sqlite.a \
-	$(top_srcdir)/maplibre-native/build-linux-opengl/vendor/freetype/libfreetype.a
+	$(top_srcdir)/maplibre-native/build-linux-opengl/vendor/freetype/libfreetype.a \
+	$(top_srcdir)/maplibre-native/build-linux-opengl/vendor/maplibre-tile-spec/cpp/libmlt-cpp.a
 
 #	$(top_srcdir)/maplibre-native/build-linux-vulkan/vendor/glslang/glslang/libglslang.a \
 #	$(top_srcdir)/maplibre-native/build-linux-vulkan/vendor/glslang/glslang/libglslang-default-resource-limits.a
