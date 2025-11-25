@@ -168,6 +168,20 @@ void choose_file ( VikFileEntry *vfe )
         gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
         break;
       }
+      case VF_FILTER_JSON: {
+        GtkFileFilter *filter = gtk_file_filter_new ();
+        gtk_file_filter_set_name ( filter, _("JSON") );
+        gtk_file_filter_add_pattern ( filter, "*.json" );
+        gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
+        break;
+      }
+      case VF_FILTER_SQLITE: {
+        GtkFileFilter *filter = gtk_file_filter_new ();
+        gtk_file_filter_set_name ( filter, _("sqlite3") );
+        gtk_file_filter_add_pattern ( filter, "*.sqlite" );
+        gtk_file_chooser_add_filter ( GTK_FILE_CHOOSER(vfe->file_selector), filter );
+        break;
+      }
       default: break;
     }
     if ( vfe->filter_type ) {
