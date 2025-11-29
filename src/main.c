@@ -138,19 +138,19 @@ int main( int argc, char *argv[] )
   gui_initialized = gtk_init_with_args (&argc, &argv, "files+", entries, NULL, &error);
   if (!gui_initialized)
   {
-    /* check if we have an error message */
+    // check if we have an error message
     if (error == NULL)
     {
-      /* no error message, the GUI initialization failed */
-      const gchar *display_name = gdk_get_display_arg_name ();
-      (void)g_fprintf (stderr, "Failed to open display: %s\n", (display_name != NULL) ? display_name : " ");
+      // no error message, not sure this ever happens with current GTK
+      (void)g_fprintf (stderr, "%s: failed to start. Unknown error reason.\n", PACKAGE_NAME);
     }
     else
     {
-      /* yep, there's an error, so print it */
-      (void)g_fprintf (stderr, "Parsing command line options failed: %s\n", error->message);
+      // NB error message about '--display' name is now included in GTK messages,
+      //  so no need to attempt trying to get it ourselves anymore.
+      (void)g_fprintf (stderr, "%s: failed due to: %s\n", PACKAGE_NAME, error->message);
       g_error_free (error);
-      (void)g_fprintf (stderr, "Run \"%s --help\" to see the list of recognized options.\n",argv[0]);
+      (void)g_fprintf (stderr, "Run \"%s --help\" to see the list of recognized options.\n", argv[0]);
     }
     return EXIT_FAILURE;
   }
