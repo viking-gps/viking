@@ -555,7 +555,7 @@ static GtkWidget *create_custom_widget_cb(GtkPrintOperation *operation, PrintDat
     g_debug ( "%s:", __FUNCTION__ );
 
   CustomWidgetInfo  *info = g_malloc0(sizeof(CustomWidgetInfo));
-  g_signal_connect_swapped (data->operation, _("done"), G_CALLBACK (custom_widgets_cleanup), info);
+  g_signal_connect_swapped (data->operation, "done", G_CALLBACK (custom_widgets_cleanup), info);
 
   g_signal_connect (data->operation, "update-custom-widget", G_CALLBACK (update_custom_widget_cb), info);
 
