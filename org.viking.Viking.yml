@@ -48,8 +48,8 @@ modules:
     buildsystem: cmake-ninja
     sources:
       - type: archive
-        url: https://libzip.org/download/libzip-1.11.2.tar.xz
-        sha256: 5d471308cef4c4752bbcf973d9cd37ba4cb53739116c30349d4764ba1410dfc1
+        url: https://libzip.org/download/libzip-1.11.4.tar.xz
+        sha256: 8a247f57d1e3e6f6d11413b12a6f28a9d388de110adc0ec608d893180ed7097b
     cleanup:
       - /include
       - /lib/pkgconfig
@@ -70,8 +70,8 @@ modules:
         builddir: true
         sources:
           - type: archive
-            url: https://github.com/Exiv2/exiv2/archive/refs/tags/v0.28.3.tar.gz
-            sha256: 1315e17d454bf4da3cc0edb857b1d2c143670f3485b537d0f946d9ed31d87b70
+            url: https://github.com/Exiv2/exiv2/archive/refs/tags/v0.28.7.tar.gz
+            sha256: 5e292b02614dbc0cee40fe1116db2f42f63ef6b2ba430c77b614e17b8d61a638
         cleanup:
           - /include
           - '/lib/*.a'
@@ -91,9 +91,12 @@ modules:
       - -Dpython3=false
       - -Dvapi=false
     sources:
+      # NB gexiv v0.15+ is API breaking / changes include path
+      #   so can't use it without refactoring Viking build methods...
+      #   hence stick with v0.14 series.
       - type: archive
-        url: https://download.gnome.org/sources/gexiv2/0.14/gexiv2-0.14.3.tar.xz
-        sha256: 21e64d2c56e9b333d44fef3f2a4b25653d922c419acd972fa96fab695217e2c8
+        url: https://download.gnome.org/sources/gexiv2/0.14/gexiv2-0.14.6.tar.xz
+        sha256: 606c28aaae7b1f3ef5c8eabe5e7dffd7c5a1c866d25b7671fb847fe287a72b8b
     cleanup:
       - /include
       - '/lib/*.a'
@@ -124,8 +127,8 @@ modules:
     buildsystem: simple
     sources:
       - type: archive
-        url: http://download-mirror.savannah.gnu.org/releases/gpsd/gpsd-3.25.tar.xz
-        sha256: 7e5e53e5ab157dce560a2f22e20322ef1136d3ebde99162def833a3306de01e5
+        url: http://download-mirror.savannah.gnu.org/releases/gpsd/gpsd-3.27.tar.xz
+        sha256: aaddd19f7b67fb410178f3f8e27a8b40d434d5921d1c50272ddb3d6b9ca65ea9
     build-commands:
       - scons gpsd{,clients}=no python=no shared=yes prefix="${FLATPAK_DEST}" && scons install
     cleanup:
