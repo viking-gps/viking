@@ -40,7 +40,7 @@ static gchar *viking_dir = NULL;
 void a_set_viking_dir(const gchar * name)
 {
   if ( g_file_test(name, G_FILE_TEST_EXISTS) == FALSE )
-    if ( g_mkdir(name, 0700) != 0 )
+    if ( g_mkdir_with_parents(name, 0700) != 0 )
       g_warning ( "%s: Failed to create directory %s", __FUNCTION__, name );
   viking_dir = g_strdup ( name );
 }
@@ -93,7 +93,7 @@ const gchar *a_get_viking_dir()
   if (!viking_dir) {
     viking_dir = a_get_viking_dir_no_create ();
     if (g_file_test(viking_dir, G_FILE_TEST_EXISTS) == FALSE)
-      if ( g_mkdir(viking_dir, 0755) != 0 )
+      if ( g_mkdir_with_parents(viking_dir, 0755) != 0 )
         g_warning ( "%s: Failed to create directory %s", __FUNCTION__, viking_dir );
   }
   return viking_dir;
