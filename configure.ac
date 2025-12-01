@@ -64,7 +64,7 @@ AC_C_CONST
 AC_TYPE_MODE_T
 
 # Checks for library functions or symbols
-AC_CHECK_FUNCS([floor memset mkdtemp pow realpath sqrt strcasecmp strchr strncasecmp strtol strtoul strptime fmemopen])
+AC_CHECK_FUNCS([memset mkdtemp realpath strcasecmp strchr strncasecmp strtol strtoul strptime fmemopen])
 AC_CHECK_LIB(m, tan)
 AC_CHECK_LIB(z, inflate)
 AC_CHECK_LIB(X11, XSetErrorHandler)
