@@ -553,6 +553,12 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
           tables[current_group] = gtk_table_new ( tab_widget_count, 1, FALSE );
           GtkWidget *sw = gtk_scrolled_window_new ( NULL, NULL );
           gtk_scrolled_window_set_policy ( GTK_SCROLLED_WINDOW(sw), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC );
+
+          // Force scrollbar to *not* overlay the window
+          // (otherwise gets in the way of the checkboxes, +/- spinboxes, etc...)
+#if GTK_CHECK_VERSION (3,0,0)
+          gtk_scrolled_window_set_overlay_scrolling (GTK_SCROLLED_WINDOW(sw), FALSE );
+#endif
           gtk_scrolled_window_add_with_viewport ( GTK_SCROLLED_WINDOW(sw), tables[current_group] );
           // Ensure it doesn't start off too small
           //  as this is a communal code for different dialogs,
