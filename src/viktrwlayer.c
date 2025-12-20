@@ -196,7 +196,7 @@ struct _VikTrwLayer {
   guint16 ct_x1, ct_y1, ct_x2, ct_y2;
   gboolean draw_sync_done;
   gboolean draw_sync_do;
-  GdkCursor *crosshair_cursor;
+  GdkCursor *split_cursor;
 
   VikCoordMode coord_mode;
 
@@ -2052,10 +2052,10 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
   g_free ( trwlayer->external_file );
   g_free ( trwlayer->external_dirpath );
 
-  if ( trwlayer->crosshair_cursor )
+  if ( trwlayer->split_cursor )
   {
-    gdk_cursor_unref ( trwlayer->crosshair_cursor );
-    trwlayer->crosshair_cursor = NULL;
+    gdk_cursor_unref ( trwlayer->split_cursor );
+    trwlayer->split_cursor = NULL;
   }
 
   vik_trw_metadata_free ( trwlayer->metadata );
@@ -3204,7 +3204,7 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
     return rv;
   }
 
-  rv->crosshair_cursor = gdk_cursor_new_for_display ( gtk_widget_get_display(GTK_WIDGET(vp)), GDK_CROSSHAIR );
+  rv->split_cursor = gdk_cursor_new_for_display ( gtk_widget_get_display(GTK_WIDGET(vp)), GDK_CROSSHAIR );
 
   rv->wplabellayout = gtk_widget_create_pango_layout (GTK_WIDGET(vp), NULL);
   pango_layout_set_font_description (rv->wplabellayout, gtk_widget_get_style(GTK_WIDGET(vp))->font_desc);
@@ -11827,7 +11827,7 @@ static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event
   } else if ( event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R ) {
     tool_ed_t *te = data;
     GdkWindow *gdkw = gtk_widget_get_window(GTK_WIDGET(te->vvp));
-    gdk_window_set_cursor ( gdkw, vtl->crosshair_cursor );
+    gdk_window_set_cursor ( gdkw, vtl->split_cursor );
     return TRUE;
   }
 
@@ -12417,7 +12417,7 @@ static gboolean tool_extended_route_finder_key_press ( VikTrwLayer *vtl, GdkEven
   } else if ( event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R ) {
     tool_ed_t *te = data;
     GdkWindow *gdkw = gtk_widget_get_window(GTK_WIDGET(te->vvp));
-    gdk_window_set_cursor ( gdkw, vtl->crosshair_cursor );
+    gdk_window_set_cursor ( gdkw, vtl->split_cursor );
     return TRUE;
   }
 
