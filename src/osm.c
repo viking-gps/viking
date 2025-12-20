@@ -49,15 +49,14 @@ void osm_init () {
                                 "id", MAP_ID_OSM_MAPNIK,
                                 "label", _("OpenStreetMap (Mapnik)"),
                                 "name", "OSM-Mapnik",
-                                "hostname", "tile.openstreetmap.org",
-                                "url", "/%d/%d/%d.png",
+                                "url", "https://tile.openstreetmap.org/%d/%d/%d.png",
                                 "check-file-server-time", FALSE,
                                 "use-etag", TRUE,
                                 "zoom-min", 0,
                                 "zoom-max", 19,
                                 "copyright", "© OpenStreetMap contributors",
                                 "license", "CC-BY-SA",
-                                "license-url", "http://www.openstreetmap.org/copyright",
+                                "license-url", "https://www.openstreetmap.org/copyright",
                                 NULL));
   VikMapSource *cycle_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
@@ -71,37 +70,35 @@ void osm_init () {
                                 "zoom-max", 18,
                                 "copyright", "Tiles courtesy of Andy Allan © OpenStreetMap contributors",
                                 "license", "CC-BY-SA",
-                                "license-url", "http://www.openstreetmap.org/copyright",
+                                "license-url", "https://www.openstreetmap.org/copyright",
                                 NULL));
   VikMapSource *transport_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
                                 "id", MAP_ID_OSM_TRANSPORT,
                                 "label", _("OpenStreetMap (Transport)"),
                                 "name", "OSM-Transport",
-                                "hostname", "tile2.opencyclemap.org",
-                                "url", "/transport/%d/%d/%d.png",
+                                "url", "https://tile2.opencyclemap.org/transport/%d/%d/%d.png",
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
                                 "zoom-min", 0,
                                 "zoom-max", 18,
                                 "copyright", "Tiles courtesy of Andy Allan © OpenStreetMap contributors",
                                 "license", "CC-BY-SA",
-                                "license-url", "http://www.openstreetmap.org/copyright",
+                                "license-url", "https://www.openstreetmap.org/copyright",
                                 NULL));
   VikMapSource *hot_type =
     VIK_MAP_SOURCE(g_object_new(VIK_TYPE_SLIPPY_MAP_SOURCE,
                                 "id", MAP_ID_OSM_HUMANITARIAN,
                                 "name", "OSM-Humanitarian",
                                 "label", _("OpenStreetMap (Humanitarian)"),
-                                "hostname", "c.tile.openstreetmap.fr",
-                                "url", "/hot/%d/%d/%d.png",
+                                "url", "https://c.tile.openstreetmap.fr/hot/%d/%d/%d.png",
                                 "check-file-server-time", TRUE,
                                 "use-etag", FALSE,
                                 "zoom-min", 0,
                                 "zoom-max", 20, // Super detail!!
                                 "copyright", "© OpenStreetMap contributors. Tiles courtesy of Humanitarian OpenStreetMap Team",
                                 "license", "CC-BY-SA",
-                                "license-url", "http://www.openstreetmap.org/copyright",
+                                "license-url", "https://www.openstreetmap.org/copyright",
                                 NULL));
 
   // NB no cache needed for this type!!

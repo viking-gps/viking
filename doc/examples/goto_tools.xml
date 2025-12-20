@@ -3,11 +3,13 @@
   <!-- Latitude and longitude are XML elements -->
   <object class="VikGotoXmlTool">
     <property name="label">Geonames</property>
-    <property name="url-format">http://ws.geonames.org/search?q=%s&amp;maxRows=1&amp;lang=es&amp;style=short</property>
+    <property name="url-format">http://ws.geonames.org/search?q=%s&amp;lang=en&amp;style=short</property>
     <property name="lat-path">/geonames/geoname/lat</property>
     <property name="lon-path">/geonames/geoname/lng</property>
   </object>
   <!-- Latitude and longitude are XML attributes -->
+  <!-- Service no longer active -->
+  <!--
   <object class="VikGotoXmlTool">
     <property name="label">Name finder</property>
     <property name="url-format">http://gazetteer.openstreetmap.org/namefinder/search.xml?find=%s&amp;max=1</property>
@@ -16,10 +18,11 @@
     <property name="lon-path">/searchresults/named</property>
     <property name="lon-attr">lon</property>
   </object>
+  -->
   <!-- Latitude and longitude are XML attributes (XPATH format) -->
   <object class="VikGotoXmlTool">
     <property name="label">Nominatim</property>
-    <property name="url-format">http://nominatim.openstreetmap.org/search?q=%s&amp;format=xml</property>
+    <property name="url-format">https://nominatim.openstreetmap.org/search?q=%s&amp;format=xml</property>
     <property name="lat-path">/searchresults/place@lat</property>
     <property name="lon-path">/searchresults/place@lon</property>
   </object>

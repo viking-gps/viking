@@ -32,6 +32,8 @@
 /* initialisation */
 void geonames_init () {
   // Goto
+  // At time of writing (2025-11-15), use of https fails with CURLE_PEER_FAILED_VERIFICATION (60)
+  //  so left at plain http for now.
   VikGotoXmlTool *geonames = VIK_GOTO_XML_TOOL ( g_object_new ( VIK_GOTO_XML_TOOL_TYPE, "label", "Geonames",
     "url-format", "http://api.geonames.org/search?q=%s&lang=en&style=short&username="VIK_CONFIG_GEONAMES_USERNAME,
     "lat-path", "/geonames/geoname/lat",
@@ -41,4 +43,3 @@ void geonames_init () {
     vik_goto_register ( VIK_GOTO_TOOL ( geonames ) );
     g_object_unref ( geonames );
 }
-

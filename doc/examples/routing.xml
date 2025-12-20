@@ -4,11 +4,11 @@
     <property name="id">google</property>
     <property name="label">Google</property>
     <property name="format">google</property>
-    <property name="url-base">http://maps.google.com/maps?output=js&amp;q=</property>
+    <property name="url-base">https://maps.google.com/maps?output=js&amp;q=</property>
     <property name="url-start-ll">from:%s,%s</property>
     <property name="url-stop-ll">+to:%s,%s</property>
     <property name="url-via-ll"></property>
-    <property name="referer">http://maps.google.com/</property>
+    <property name="referer">https://maps.google.com/</property>
   </object>
   <object class="VikRoutingWebEngine">
     <property name="id">brouterRiver</property>

@@ -32,8 +32,7 @@ void bluemarble_init ()
 							      "id", MAP_ID_BLUE_MARBLE,
 							      "name", "BlueMarble",
 							      "label", "BlueMarble",
-							      "hostname", "s3.amazonaws.com",
-							      "url", "/com.modestmaps.bluemarble/%d-r%3$d-c%2$d.jpg",
+							      "url", "https://s3.amazonaws.com/com.modestmaps.bluemarble/%d-r%3$d-c%2$d.jpg",
 							      "file-extension", ".jpg",
 							      "zoom-min", 0,
 							      "zoom-max", 9,
@@ -41,8 +40,8 @@ void bluemarble_init ()
 							      "license", "NASA Terms of Use",
 							      "license-url", "https://earthobservatory.nasa.gov/Features/BlueMarble/",
 							      NULL));
-  /* Credit/Copyright from: http://earthobservatory.nasa.gov/Features/BlueMarble/ */
-  /* BlueMarble image hosting is courtesy of the Modest Maps project: http://modestmaps.com/ */
+  /* Credit/Copyright from: https://earthobservatory.nasa.gov/Features/BlueMarble/ */
+  /* BlueMarble image hosting is courtesy of the Modest Maps project: https://modestmaps.com/ */
 
   maps_layer_register_map_source (bluemarble_type);
 }

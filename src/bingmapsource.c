@@ -27,7 +27,16 @@
   * http://wiki.openstreetmap.org/wiki/File:Bing_license.pdf
   *
   * Technical details are available here:
-  * http://msdn.microsoft.com/en-us/library/dd877180.aspx
+  * https://learn.microsoft.com/en-us/bingmaps/
+  *
+  *********************************************
+  * Bing Maps for Enterprise is deprecated and has been retired for all free (Basic) account customers.
+  * Replaced by Azure Maps - https://learn.microsoft.com/en-us/azure/azure-maps/
+  *
+  * Although at time of writing (November 2025) aerial imagery tiles still worked,
+  *  but the copyright requests didn't
+  *
+  *********************************************
   */
 
 #ifdef HAVE_CONFIG_H
@@ -46,7 +55,7 @@
 #include "background.h"
 
 /* Format for URL */
-#define URL_ATTR_FMT "http://dev.virtualearth.net/REST/v1/Imagery/Metadata/Aerial/0,0?zl=1&mapVersion=v1&key=%s&include=ImageryProviders&output=xml"
+#define URL_ATTR_FMT "https://dev.virtualearth.net/REST/v1/Imagery/Metadata/Aerial/0,0?zl=1&mapVersion=v1&key=%s&include=ImageryProviders&output=xml"
 
 static gchar *bget_uri ( VikMapSourceDefault *self, MapCoord *src );
 static gchar *bget_hostname ( VikMapSourceDefault *self );

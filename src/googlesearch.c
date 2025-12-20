@@ -23,12 +23,12 @@
 
 #include "googlesearch.h"
 
-#define GOOGLE_GOTO_URL_FMT "http://maps.google.com/maps?q=%s&output=js"
+#define GOOGLE_GOTO_URL_FMT "https://maps.google.com/maps?q=%s&output=js"
 #define GOOGLE_GOTO_PATTERN_1 "{center:{lat:"
 #define GOOGLE_GOTO_PATTERN_2 ",lng:"
 #define GOOGLE_GOTO_NOT_FOUND "not understand the location"
 
-static DownloadFileOptions googlesearch_options = { FALSE, FALSE, "http://maps.google.com/", -1, NULL, NULL, 0, a_check_map_file, NULL, FALSE, FALSE, NULL };
+static DownloadFileOptions googlesearch_options = { FALSE, FALSE, "https://maps.google.com/", -1, NULL, NULL, 0, a_check_map_file, NULL, FALSE, FALSE, NULL };
 
 static void google_goto_tool_finalize ( GObject *gob );
 
