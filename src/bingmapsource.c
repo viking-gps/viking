@@ -497,7 +497,7 @@ _emit_update ( gpointer data )
 static int
 _load_attributions_thread ( BingMapSource *self, gpointer threaddata )
 {
-	_load_attributions ( self );
+	(void)_load_attributions ( self );
 	int result = a_background_thread_progress ( threaddata, 1.0 );
 	if ( result != 0 )
 		return -1; /* Abort thread */
