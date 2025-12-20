@@ -2334,6 +2334,53 @@ gboolean vik_trackpoint_apply_dem_data ( VikTrackpoint *tp )
 }
 
 /**
+ * vik_trackpoint_interpolate:
+ *
+ * Sets values of tp_change, given two other trackpoints
+ *  interpolating / averaging those values for the trackpoint to be modified
+ *
+ * DOES NOT change the lat/lon position of the trackpoint
+ * And ATM DOP and sat values remain as is (e.g. defaults)
+ * Since this is intended for use during manually creating new trackpoints
+ */
+void vik_trackpoint_interpolate ( VikTrackpoint *tp_change, const VikTrackpoint *tp1, const VikTrackpoint *tp2 )
+{
+  // First try getting from DEM if available
+  if ( !vik_trackpoint_apply_dem_data(tp_change) ) {
+    if ( !isnan(tp1->altitude) && !isnan(tp2->altitude) ) {
+      tp_change->altitude = (tp1->altitude + tp2->altitude)/2;
+    }
+  }
+
+  if ( !isnan(tp1->timestamp) && !isnan(tp2->timestamp) ) {
+    // Note here the division is applied to each part, then added
+    // This was to avoid potential overflow issues with potential 32bit times, but it's now always a 64bit double so it doesn't matter anymore
+    tp_change->timestamp = (tp1->timestamp/2) + (tp2->timestamp/2);
+  }
+
+  if ( tp1->speed != NAN && tp2->speed != NAN)
+    tp_change->speed = (tp1->speed + tp2->speed) / 2;
+
+  // TODO - improve interpolation of course, as it may not be correct.
+  //   if courses in degrees are 350 + 020, the mid course more likely to be 005 (not 185)
+  //   [similar applies if value is in radians]
+  if ( tp1->course != NAN && tp2->course != NAN )
+    tp_change->course = (tp1->course + tp2->course)/2;
+
+  if ( tp1->heart_rate != 0 && tp2->heart_rate != 0 )
+    tp_change->heart_rate = (tp1->heart_rate + tp2->heart_rate)/2;
+
+  if ( tp1->cadence != VIK_TRKPT_CADENCE_NONE && tp2->cadence != VIK_TRKPT_CADENCE_NONE )
+    tp_change->cadence = (tp1->cadence + tp2->cadence)/2;
+
+  if ( tp1->temp != NAN && tp2->temp != NAN )
+    tp_change->temp = (tp1->temp + tp2->temp)/2;
+
+  if ( tp1->power != VIK_TRKPT_POWER_NONE && tp2->power != VIK_TRKPT_POWER_NONE )
+    tp_change->power = (tp1->power + tp2->power)/2;
+}
+
+/**
  * vik_track_apply_dem_data_last_trackpoint:
  * Apply DEM data (if available) - to only the last trackpoint
  */
@@ -2549,7 +2596,7 @@ int vik_track_compare_timestamp (const void *x, const void *y)
  * ATM calculate position, altitude and time
  *  i.e. not bothered with course and speed etc...
  */
-static void vik_trackpoint_interpolate ( const VikTrackpoint *tp1, const VikTrackpoint *tp2, gdouble scale, VikTrackpoint *tp )
+static void trackpoint_interpolate ( const VikTrackpoint *tp1, const VikTrackpoint *tp2, gdouble scale, VikTrackpoint *tp )
 {
   struct LatLon ll, ll1, ll2;
   vik_coord_to_latlon ( &(tp1->coord), &ll1 );
@@ -2633,7 +2680,7 @@ GArray *vik_track_speed_splits (const VikTrack *tr, gdouble split_length )
         // Ratio of the distance to the virtual split point, compared to point that is over the split point
         gdouble scale = (split_length - (len - tmp_len)) / tmp_len;
 
-        vik_trackpoint_interpolate ( tp2, tp1, scale, vtp );
+        trackpoint_interpolate ( tp2, tp1, scale, vtp );
 
         VikTrackSpeedSplits_t vtss;
         // Remove the extra bit added by going over distance

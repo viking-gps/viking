@@ -10229,24 +10229,7 @@ static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean b
     vik_coord_load_from_latlon ( &(tp_new->coord), vtl->coord_mode, &ll_new );
 
     /* Now other properties that can be interpolated */
-    tp_new->altitude = (tp_current->altitude + tp_other->altitude) / 2;
-
-    if (!isnan(tp_current->timestamp) && !isnan(tp_other->timestamp)) {
-      /* Note here the division is applied to each part, then added
-	 This was to avoid potential overflow issues with potential 32bit times, but it's now always a 64bit double so it doesn't matter anymore */
-      tp_new->timestamp = (tp_current->timestamp/2) + (tp_other->timestamp/2);
-    }
-
-    if (tp_current->speed != NAN && tp_other->speed != NAN)
-      tp_new->speed = (tp_current->speed + tp_other->speed)/2;
-
-    /* TODO - improve interpolation of course, as it may not be correct.
-       if courses in degrees are 350 + 020, the mid course more likely to be 005 (not 185)
-       [similar applies if value is in radians] */
-    if (tp_current->course != NAN && tp_other->course != NAN)
-      tp_new->course = (tp_current->course + tp_other->course)/2;
-
-    /* DOP / sat values remain at defaults as they do not seem applicable to a dreamt up point */
+    vik_trackpoint_interpolate ( tp_new, tp_current, tp_other );
 
     // Insert new point into the appropriate trackpoint list, either before or after the current trackpoint as directed
     VikTrack *trk = vtl->current_tp_track;
