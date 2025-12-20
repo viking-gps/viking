@@ -234,6 +234,10 @@
 	    <para>trackwaypoint_start_end_distance_diff=100.0</para>
 	  </listitem>
 	  <listitem>
+	    <para>trackwaypoint_tab_default=0</para>
+	    <para>Allows changing the default tab displayed when the layer property dialog is shown.</para>
+	  </listitem>
+	  <listitem>
 	    <para>gps_statusbar_format=GSA</para>
 	    <para>This string is in the Message Format Code</para>
 	  </listitem>

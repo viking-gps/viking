@@ -324,6 +324,7 @@ VikLayerInterface vik_gps_layer_interface = {
   (VikLayerFuncMarshall)		gps_layer_marshall,
   (VikLayerFuncUnmarshall)		gps_layer_unmarshall,
 
+  (VikLayerFuncParamsDefaultGroup)      NULL,
   (VikLayerFuncSetParam)                gps_layer_set_param,
   (VikLayerFuncGetParam)                gps_layer_get_param,
   (VikLayerFuncChangeParam)             NULL,

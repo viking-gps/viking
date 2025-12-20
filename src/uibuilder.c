@@ -489,6 +489,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       guint16 params_offset,
                                       gchar **groups,
                                       guint8 groups_count,
+                                      guint8 groups_default,
                                       gboolean (*setparam) (gpointer,gpointer),
                                       gboolean (*setparam4) (gpointer,guint16,VikLayerParamData,gpointer),
                                       gpointer pass_along1,
@@ -668,6 +669,9 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
 
     gtk_widget_show_all ( dialog );
 
+    if ( notebook )
+      gtk_notebook_set_current_page ( GTK_NOTEBOOK(notebook), groups_default );
+
     gint resp = GTK_RESPONSE_APPLY;
     gint answer = 0;
     while ( resp == GTK_RESPONSE_APPLY || resp == GTK_RESPONSE_NONE ) {
@@ -747,6 +751,7 @@ VikLayerParamData *a_uibuilder_run_dialog (  const gchar *dialog_name, GtkWindow
 					  0,
 					  groups,
 					  groups_count,
+                                          0,
 					  NULL,
 					  (gpointer) uibuilder_run_setparam,
 					  paramdatas,
@@ -796,4 +801,3 @@ static gboolean file_save_cb ( VikFileEntry *vfe, gpointer user_data ) {
   return ( g_file_test ( entry, G_FILE_TEST_EXISTS ) == FALSE ||
            a_dialog_yes_or_no ( VIK_GTK_WINDOW_FROM_WIDGET(vfe), _("The file \"%s\" exists, do you wish to overwrite it?"), a_file_basename ( entry ) ) );
 }
-

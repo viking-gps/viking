@@ -141,6 +141,7 @@ VikLayerInterface vik_geoclue_layer_interface = {
   (VikLayerFuncMarshall)                geoclue_layer_marshall,
   (VikLayerFuncUnmarshall)              geoclue_layer_unmarshall,
 
+  (VikLayerFuncParamsDefaultGroup)      NULL,
   (VikLayerFuncSetParam)                geoclue_layer_set_param,
   (VikLayerFuncGetParam)                geoclue_layer_get_param,
   (VikLayerFuncChangeParam)             NULL,

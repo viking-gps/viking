@@ -179,6 +179,7 @@ VikLayerInterface vik_mapnik_layer_interface = {
 	(VikLayerFuncMarshall)                mapnik_layer_marshall,
 	(VikLayerFuncUnmarshall)              mapnik_layer_unmarshall,
 
+	(VikLayerFuncParamsDefaultGroup)      NULL,
 	(VikLayerFuncSetParam)                mapnik_layer_set_param,
 	(VikLayerFuncGetParam)                mapnik_layer_get_param,
 	(VikLayerFuncChangeParam)             NULL,

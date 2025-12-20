@@ -147,6 +147,7 @@ VikLayerInterface vik_georef_layer_interface = {
   (VikLayerFuncMarshall)		georef_layer_marshall,
   (VikLayerFuncUnmarshall)		georef_layer_unmarshall,
 
+  (VikLayerFuncParamsDefaultGroup)      NULL,
   (VikLayerFuncSetParam)                georef_layer_set_param,
   (VikLayerFuncGetParam)                georef_layer_get_param,
   (VikLayerFuncChangeParam)             NULL,

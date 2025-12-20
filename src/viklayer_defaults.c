@@ -364,6 +364,7 @@ gboolean a_layer_defaults_show_window ( GtkWindow *parent, const gchar *layernam
 	                                      vik_layer_get_interface(layer)->params_offset,
 	                                      vik_layer_get_interface(layer)->params_groups,
 	                                      vik_layer_get_interface(layer)->params_groups_count,
+	                                      0,
 	                                      NULL,
 	                                      (gboolean (*) (gpointer,guint16,VikLayerParamData,gpointer)) defaults_run_setparam,
 	                                      GINT_TO_POINTER ( index ),

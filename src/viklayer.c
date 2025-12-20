@@ -642,6 +642,7 @@ static gboolean vik_layer_properties_factory ( VikLayer *vl, VikViewport *vp, gb
 					    vik_layer_interfaces[vl->type]->params_offset,
 					    vik_layer_interfaces[vl->type]->params_groups,
 					    vik_layer_interfaces[vl->type]->params_groups_count,
+                                            vik_layer_interfaces[vl->type]->default_group ? vik_layer_interfaces[vl->type]->default_group(vl) : 0,
 					    (gpointer) vik_layer_set_param,
 					    NULL,
 					    vl,

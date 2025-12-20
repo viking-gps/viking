@@ -275,6 +275,7 @@ VikLayerInterface vik_maps_layer_interface = {
   (VikLayerFuncMarshall)		maps_layer_marshall,
   (VikLayerFuncUnmarshall)		maps_layer_unmarshall,
 
+  (VikLayerFuncParamsDefaultGroup)      NULL,
   (VikLayerFuncSetParam)                maps_layer_set_param,
   (VikLayerFuncGetParam)                maps_layer_get_param,
   (VikLayerFuncChangeParam)             maps_layer_change_param,

@@ -263,6 +263,7 @@ VikLayerInterface vik_aggregate_layer_interface = {
   (VikLayerFuncMarshall)		aggregate_layer_marshall,
   (VikLayerFuncUnmarshall)		aggregate_layer_unmarshall,
 
+  (VikLayerFuncParamsDefaultGroup)      NULL,
   (VikLayerFuncSetParam)                aggregate_layer_set_param,
   (VikLayerFuncGetParam)                aggregate_layer_get_param,
   (VikLayerFuncChangeParam)             aggregate_layer_change_param,

@@ -186,6 +186,7 @@ gint a_uibuilder_properties_factory ( const gchar *dialog_name,
                                       guint16 params_offset,
                                       gchar **groups,
                                       guint8 groups_count,
+                                      guint8 groups_default, // Preferred starting tab
                                       gboolean (*setparam) (gpointer,gpointer), // AKA VikLayerFuncSetParam in viklayer.h
                                       gboolean (*setparam4) (gpointer,guint16,VikLayerParamData,gpointer), // Fixed 4 Parameter version
                                       gpointer pass_along1, // Possibly VikLayer* or own type for 4 param call used as first parameter

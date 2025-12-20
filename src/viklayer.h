@@ -165,6 +165,8 @@ typedef void          (*VikLayerFuncLayerToggleVisible)    (VikLayer *);
 typedef void          (*VikLayerFuncMarshall)              (VikLayer *, guint8 **, guint *);
 typedef VikLayer *    (*VikLayerFuncUnmarshall)            (guint8 *, guint, VikViewport *);
 
+typedef guint8        (*VikLayerFuncParamsDefaultGroup)    (VikLayer *);
+
 /* returns TRUE if needs to redraw due to changed param */
 typedef gboolean      (*VikLayerFuncSetParam)              (VikLayer *, VikLayerSetParam* );
 
@@ -252,6 +254,8 @@ struct _VikLayerInterface {
 
   VikLayerFuncMarshall              marshall;
   VikLayerFuncUnmarshall            unmarshall;
+
+  VikLayerFuncParamsDefaultGroup    default_group;
 
   /* for I/O */
   VikLayerFuncSetParam              set_param;

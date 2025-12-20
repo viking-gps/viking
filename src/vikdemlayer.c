@@ -323,6 +323,7 @@ VikLayerInterface vik_dem_layer_interface = {
   (VikLayerFuncMarshall)		dem_layer_marshall,
   (VikLayerFuncUnmarshall)		dem_layer_unmarshall,
 
+  (VikLayerFuncParamsDefaultGroup)      NULL,
   (VikLayerFuncSetParam)                dem_layer_set_param,
   (VikLayerFuncGetParam)                dem_layer_get_param,
   (VikLayerFuncChangeParam)             dem_layer_change_param,

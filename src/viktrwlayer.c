@@ -881,6 +881,7 @@ static void trw_write_file_external ( VikTrwLayer *trw, FILE *f, const gchar *di
 static gboolean trw_read_file_external ( VikTrwLayer *trw, FILE *f, const gchar *dirpath, gboolean auto_load );
 static gboolean trw_load_external_layer ( VikTrwLayer *trw );
 static void trw_update_layer_icon ( VikTrwLayer *trw );
+static guint8 trw_layer_default_tab ( void );
 
 /* End Layer Interface function definitions */
 
@@ -929,6 +930,7 @@ VikLayerInterface vik_trw_layer_interface = {
   (VikLayerFuncMarshall)                trw_layer_marshall,
   (VikLayerFuncUnmarshall)              trw_layer_unmarshall,
 
+  (VikLayerFuncParamsDefaultGroup)      trw_layer_default_tab,
   (VikLayerFuncSetParam)                trw_layer_set_param,
   (VikLayerFuncGetParam)                trw_layer_get_param,
   (VikLayerFuncChangeParam)             trw_layer_change_param,
@@ -1369,6 +1371,14 @@ static void trw_layer_free_copied_item ( gint subtype, gpointer item )
   if (item) {
     g_free(item);
   }
+}
+
+static guint8 trw_layer_default_tab ( void )
+{
+  gint tab = 0;
+  if ( a_settings_get_integer ("trackwaypoint_tab_default", &tab) )
+    return tab;
+  return 0;
 }
 
 static gboolean trw_layer_set_param ( VikTrwLayer *vtl, VikLayerSetParam *vlsp )

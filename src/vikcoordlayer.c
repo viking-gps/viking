@@ -109,6 +109,7 @@ VikLayerInterface vik_coord_layer_interface = {
   (VikLayerFuncMarshall)		coord_layer_marshall,
   (VikLayerFuncUnmarshall)		coord_layer_unmarshall,
 
+  (VikLayerFuncParamsDefaultGroup)      NULL,
   (VikLayerFuncSetParam)                coord_layer_set_param,
   (VikLayerFuncGetParam)                coord_layer_get_param,
   (VikLayerFuncChangeParam)             NULL,
