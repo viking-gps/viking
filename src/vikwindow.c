@@ -5736,6 +5736,11 @@ static gboolean reload_file ( GtkAction *a, VikWindow *vw )
   if ( vw->filename ) {
     gchar *msg = g_strdup_printf ( _("Any existing changes will be lost.\n Are you sure you wish reload\n%s?"), vw->filename );
     if ( a_dialog_yes_or_no ( GTK_WINDOW(vw), msg, NULL ) ) {
+
+      // Remove anything currently selected,
+      //  otherwise redraw may attempt to draw things no longer valid
+      (void)vik_window_clear_selected(vw);
+
       gchar *filename = g_strdup ( vw->filename );
       if ( g_file_test(filename, G_FILE_TEST_EXISTS) ) {
         delete_all ( vw );
