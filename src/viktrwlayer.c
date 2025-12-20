@@ -12081,7 +12081,7 @@ static VikLayerToolFuncStatus tool_edit_track_or_route_click_dispatch ( VikTrwLa
     // try to join existing if shift pressed
     if ( event->state & GDK_SHIFT_MASK ) {
       ans = tool_edit_track_or_route_join ( vtl, &params, FALSE );
-    goto my_end;
+      goto my_end;
     } else {
       ans = tool_edit_track_or_route_click ( vtl, event, vvp, FALSE, te );
       goto my_end;
