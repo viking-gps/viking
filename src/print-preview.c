@@ -373,11 +373,31 @@ vik_print_preview_event (GtkWidget        *widget,
   switch (event->type)
     {
     case GDK_BUTTON_PRESS:
-      gdk_pointer_grab (gtk_widget_get_window(widget), FALSE,
-                        (GDK_BUTTON1_MOTION_MASK |
-                         GDK_BUTTON_RELEASE_MASK),
-                        NULL, NULL, event->button.time);
-
+      // Actually > 3.20.0, as set by configure.ac
+      // GDK 3.0 .. 3.20 uses gdk_device_grab(), but we won't bother with that
+#if GTK_CHECK_VERSION (3,0,0)
+      {
+        GdkDisplay *display = gdk_display_get_default ();
+        GdkSeat *seat = gdk_display_get_default_seat ( display );
+        if ( seat ) {
+          (void)gdk_seat_grab ( seat,
+                                gtk_widget_get_window(widget),
+                                GDK_SEAT_CAPABILITY_POINTER,
+                                FALSE,
+                                NULL,
+                                event,
+                                NULL,
+                                NULL );
+        }
+      }
+#else
+      (void)gdk_pointer_grab ( gtk_widget_get_window(widget),
+                               FALSE,
+                               (GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_RELEASE_MASK),
+                               NULL,
+                               NULL,
+                               event->button.time );
+#endif
       orig_offset_x = preview->image_offset_x;
       orig_offset_y = preview->image_offset_y;
 
@@ -408,8 +428,18 @@ vik_print_preview_event (GtkWidget        *widget,
       break;
 
     case GDK_BUTTON_RELEASE:
+#if GTK_CHECK_VERSION (3,0,0)
+      {
+        GdkDisplay *display = gdk_display_get_default ();
+        GdkSeat *seat = gdk_display_get_default_seat ( display );
+        if ( seat ) {
+          gdk_seat_ungrab ( seat );
+        }
+      }
+#else
       gdk_display_pointer_ungrab (gtk_widget_get_display (widget),
                                   event->button.time);
+#endif
       start_x = start_y = 0;
       preview->dragging = FALSE;
 
