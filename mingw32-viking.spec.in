@@ -52,6 +52,11 @@ BuildArch:      noarch
 
 # Currently running makensis in seperate script - so you will need it then
 #Requires:   mingw32-cross-nsis
+# GTK3 theming
+Requires:       adwaita-icon-theme
+
+%_mingw32_package_header_debug
+BuildArch:      noarch
 
 %description
 Viking is a free/open source program to manage GPS data.
@@ -91,11 +96,17 @@ popd
 
 %files -f %{_pkg_name}.lang
 %defattr(-,root,root)
-%doc AUTHORS ChangeLog COPYING NEWS README.md doc/
+%doc AUTHORS ChangeLog COPYING NEWS README.md doc/examples/*xml
 %{_mingw32_bindir}/*%{_pkg_name}.exe
-%{_mingw32_datadir}/applications/%{_pkg_name}.desktop
 %{_mingw32_datadir}/%{_pkg_name}
-%{_mingw32_datadir}/icons/hicolor/*/apps/%{_pkg_name}.*
-%exclude %{_mingw32_datadir}/icons/hicolor/icon-theme.cache
+%dir %{_mingw32_datadir}/applications
+%{_mingw32_datadir}/applications/%{_pkg_name}.desktop
+%dir %{_mingw32_datadir}/icons
+%dir %{_mingw32_datadir}/icons/hicolor
+%dir %{_mingw32_datadir}/icons/hicolor/48x48
+%dir %{_mingw32_datadir}/icons/hicolor/48x48/apps
+%{_mingw32_datadir}/icons/hicolor/48x48/apps/%{_pkg_name}.*
+# Not generated anymore
+#%%exclude %%{_mingw32_datadir}/icons/hicolor/icon-theme.cache
 
 %changelog

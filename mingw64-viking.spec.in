@@ -95,11 +95,22 @@ popd
 
 %files -f %{_pkg_name}.lang
 %defattr(-,root,root)
-%doc AUTHORS ChangeLog COPYING NEWS README.md doc/
+%doc AUTHORS ChangeLog COPYING NEWS README.md doc/examples/*xml
 %{_mingw64_bindir}/*%{_pkg_name}.exe
-%{_mingw64_datadir}/applications/%{_pkg_name}.desktop
 %{_mingw64_datadir}/%{_pkg_name}
-%{_mingw64_datadir}/icons/hicolor/*/apps/%{_pkg_name}.*
-%exclude %{_mingw64_datadir}/icons/hicolor/icon-theme.cache
+%dir %{_mingw64_datadir}/applications
+%{_mingw64_datadir}/applications/%{_pkg_name}.desktop
+%dir %{_mingw64_datadir}/icons
+%dir %{_mingw64_datadir}/icons/hicolor
+%dir %{_mingw64_datadir}/icons/hicolor/48x48
+%dir %{_mingw64_datadir}/icons/hicolor/48x48/apps
+%{_mingw64_datadir}/icons/hicolor/48x48/apps/%{_pkg_name}.*
+# Not generated anymore
+#%%exclude %%{_mingw64_datadir}/icons/hicolor/icon-theme.cache
+# Fix broken language detection
+%dir %{_mingw64_datadir}/locale/jv
+%exclude %{_mingw64_datadir}/locale/jv/LC_MESSAGES
+%dir %{_mingw64_datadir}/locale/ku
+%exclude %{_mingw64_datadir}/locale/ku/LC_MESSAGES
 
 %changelog
