@@ -3411,14 +3411,21 @@ Enable this tool by clicking on the toolbar icon: <guiicon><inlinegraphic filere
 </para>
 <para>
 General track edit/create tool.
-The first left-click will create a new track and you will be asked to enter a name for the track.
-If <keycap>Shift</keycap> is held, a track will be continued from a nearby trackpoint.
-Subsequent left-clicks will add new trackpoints.
-If <keycap>Shift</keycap> is held, the track will be joined to an existing track at the point selected.
-If <keycap>Ctrl</keycap> is held, it will jump the new trackpoint position to a nearby existing trackpoint.
+The first left-click will create a new track and you will be asked to enter a name for the track (unless the Track Creation setting is configured to disable this, see <xref linkend="prefs_advanced"/>).
+It will enter into 'extend track mode', with the virtual track extension shown as a dashed line and display of the distance to the cursor position;
+subsequent left-clicks will add new trackpoints to the end of track.
 </para>
 <para>
-Right click or <keycap>Backspace</keycap>: undo one point.
+If <keycap>Shift</keycap> is held, the track will be joined to an existing track at the point selected.
+When a track is selected but not in 'extend track mode' and <keycap>Shift</keycap> is held,
+the track will be split at the nearby trackpoint and enter into 'extend track mode' from that point.
+</para>
+<para>
+  Alternatively, if <keycap>Ctrl</keycap> is held, a new trackpoint will be inserted into track between the nearest trackpoints.
+  Note that this method is experimental for v1.11 and may not insert the trackpoint at the desired sequence position within the track.
+</para>
+<para>
+Right click or <keycap>Backspace</keycap>: remove the last point at the end of track. i.e. This does not remove the point just added via the insert method.
 </para>
 <para>
 

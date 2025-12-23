@@ -197,6 +197,7 @@ struct _VikTrwLayer {
   gboolean draw_sync_done;
   gboolean draw_sync_do;
   GdkCursor *split_cursor;
+  GdkCursor *insert_cursor;
 
   VikCoordMode coord_mode;
 
@@ -2068,6 +2069,12 @@ static void trw_layer_free ( VikTrwLayer *trwlayer )
     trwlayer->split_cursor = NULL;
   }
 
+  if ( trwlayer->insert_cursor )
+  {
+    gdk_cursor_unref ( trwlayer->insert_cursor );
+    trwlayer->insert_cursor = NULL;
+  }
+
   vik_trw_metadata_free ( trwlayer->metadata );
   g_free ( trwlayer->gpx_header );
   g_free ( trwlayer->gpx_extensions );
@@ -3215,6 +3222,8 @@ static VikTrwLayer* trw_layer_create ( VikViewport *vp )
   }
 
   rv->split_cursor = gdk_cursor_new_for_display ( gtk_widget_get_display(GTK_WIDGET(vp)), GDK_CROSSHAIR );
+  // GDK_PLUS cursor is too similar to crosshair, so go for 'pencil'
+  rv->insert_cursor = gdk_cursor_new_for_display ( gtk_widget_get_display(GTK_WIDGET(vp)), GDK_PENCIL );
 
   rv->wplabellayout = gtk_widget_create_pango_layout (GTK_WIDGET(vp), NULL);
   pango_layout_set_font_description (rv->wplabellayout, gtk_widget_get_style(GTK_WIDGET(vp))->font_desc);
@@ -10207,6 +10216,112 @@ static gboolean trw_layer_sublayer_add_menu_items ( VikTrwLayer *l, GtkMenu *men
 /**
  *
  */
+static void trw_layer_insert_tp_beside_specified_tp_at_position ( VikTrwLayer *vtl, VikViewport *vvp, VikTrack *trk, VikTrackpoint *tp_specified, gboolean is_route, gint x, gint y )
+{
+  VikTrackpoint *tp_new = vik_trackpoint_new();
+  vik_viewport_screen_to_coord ( vvp, x, y, &tp_new->coord );
+
+  gint index = g_list_index ( trk->trackpoints, tp_specified );
+  if ( index > -1 ) {
+    guint len = g_list_length ( trk->trackpoints );
+
+    if ( index < len ) {
+      if ( index > 0 ) {
+        if ( index < (len - 1) ) {
+          VikTrackpoint *tp_prev = g_list_nth_data ( trk->trackpoints, index - 1 );
+          VikTrackpoint *tp_next = g_list_nth_data ( trk->trackpoints, index + 1 );
+
+          // Probably should really try to determine how near the requested point is to the 'line' *between* trackpoints,
+          // but that requires some amount of trigonometry (and not sure quite what the equations to use are yet...)
+
+          // Instead use a sudo method that sort of works, as long as the angles between trackpoints aren't too large
+          //  (e.g. a track turning back on itself, as then this method can't tell where best to put it)
+
+          // Jist of algorithm is based on change in distance of track
+          //  (just over the few revelant trackpoints involved)
+          // % diff of prev->current vs prev->new->nearest
+          //  agaist
+          // % diff current->next vs current->new->next
+          //
+          // X->-->-->-->-[new]->--Y--->--Z
+          //
+          // e.g. for the simple case above, point Y is nearest and with track order XYZ;
+          //  the new point is to go before Y.
+          //
+          // X-<--<--<--<-[new]-<--Y---<--Z
+          //
+          // Whereas, if the track order is ZYX, the new point is to go after Y.
+
+          // Minimum % increase will be the 'best' position for the new point,
+          //  so should avoid placing the point the 'wrong' side of current
+
+          gdouble const prev_distance_original = vik_coord_diff ( &tp_prev->coord, &tp_specified->coord );
+          gdouble const prev_distance_new =
+            vik_coord_diff ( &tp_prev->coord, &tp_new->coord ) +
+            vik_coord_diff ( &tp_new->coord, &tp_specified->coord);
+
+          gdouble const next_distance_original = vik_coord_diff(&tp_specified->coord, &tp_next->coord);
+          gdouble const next_distance_new =
+            vik_coord_diff ( &tp_specified->coord, &tp_new->coord ) +
+            vik_coord_diff ( &tp_new->coord, &tp_next->coord);
+
+          gdouble const pc_prev = prev_distance_new / prev_distance_original;
+          gdouble const pc_next = next_distance_new / next_distance_original;
+
+          if ( pc_prev > pc_next ) {
+            // Next position is the better one
+            index++;
+            vik_trackpoint_interpolate ( tp_new, tp_specified, tp_next );
+          } else {
+            vik_trackpoint_interpolate ( tp_new, tp_prev, tp_specified );
+          }
+        }
+        else {
+          // Otherwise last point.
+          index++;
+          (void)vik_trackpoint_apply_dem_data ( tp_new );
+        }
+      }
+      else if ( len > 1 ) {
+        // First point, but with other points
+        VikTrackpoint *tp_next = g_list_nth_data ( trk->trackpoints, 1 );
+
+        gdouble const diff1 = vik_coord_diff ( &tp_next->coord, &tp_specified->coord );
+        gdouble const diff2 = vik_coord_diff ( &tp_new->coord, &tp_next->coord );
+
+        if (diff2 < diff1) {
+          // Next position is the better one
+          index++;
+          vik_trackpoint_interpolate ( tp_new, tp_specified, tp_next );
+        } else {
+          // First point, so becomes the new track segment
+          tp_specified->newsegment = FALSE;
+          tp_new->newsegment = TRUE;
+          (void)vik_trackpoint_apply_dem_data ( tp_new );
+        }
+      } else {
+        // First and only point
+        // Add point after.
+        index++;
+        (void)vik_trackpoint_apply_dem_data ( tp_new );
+      }
+
+      g_debug ( "%s using index=%d", __FUNCTION__, index );
+
+      if ( index == 0 )
+        tp_new->newsegment = TRUE;
+
+      trk->trackpoints = g_list_insert ( trk->trackpoints, tp_new, index );
+      // Although generally intended for adding/refining points 'inside' a track;
+      //  one might zoom out and add points far off, so need to recalculate
+      vik_track_calculate_bounds ( trk );
+    }
+  }
+}
+
+/**
+ *
+ */
 static void trw_layer_insert_tp_beside_current_tp ( VikTrwLayer *vtl, gboolean before, gboolean is_route )
 {
   // sanity check
@@ -10504,7 +10619,9 @@ typedef struct {
 typedef struct {
   gint x, y;
   gint closest_x, closest_y;
+  gint closest_xy_sqrd;
   guint size;
+  VikTrack *closest_track;
   gpointer closest_track_id;
   VikTrackpoint *closest_tp;
   VikViewport *vvp;
@@ -10556,6 +10673,8 @@ static void waypoint_search_closest_tp ( gpointer id, VikWaypoint *wp, WPSearchP
     }
 }
 
+// 'Fast' simple search, using the size parameter
+//   this only 'works' for small values of size, otherwise use track_search_closest_tp_real()
 static void track_search_closest_tp ( gpointer id, VikTrack *t, TPSearchParams *params )
 {
   GList *tpl = t->trackpoints;
@@ -10579,6 +10698,7 @@ static void track_search_closest_tp ( gpointer id, VikTrack *t, TPSearchParams *
           abs(x - params->x)+abs(y - params->y) < abs(x - params->closest_x)+abs(y - params->closest_y)))
     {
       params->closest_track_id = id;
+      params->closest_track = t;
       params->closest_tp = tp;
       params->closest_tpl = tpl;
       params->closest_x = x;
@@ -10597,11 +10717,49 @@ static VikTrackpoint *closest_tp_in_interval ( VikTrwLayer *vtl, VikViewport *vv
   params.y = y;
   params.size = MAX(5, vtl->drawpoints_size*2);
   params.vvp = vvp;
+  params.closest_track = NULL;
   params.closest_track_id = NULL;
   params.closest_tp = NULL;
   params.bbox = vik_viewport_get_bbox ( params.vvp );
   g_hash_table_foreach ( vtl->tracks, (GHFunc) track_search_closest_tp, &params);
   return params.closest_tp;
+}
+
+// True (flat geometrical) search
+static void track_search_closest_tp_real ( gpointer id, VikTrack *trk, TPSearchParams *params )
+{
+  GList *tpl = trk->trackpoints;
+  VikTrackpoint *tp;
+
+  if ( !trk->visible )
+    return;
+
+  if ( ! BBOX_INTERSECT ( trk->bbox, params->bbox ) )
+    return;
+
+  while (tpl)
+  {
+    gint x, y;
+    tp = VIK_TRACKPOINT(tpl->data);
+
+    vik_viewport_coord_to_screen ( params->vvp, &(tp->coord), &x, &y );
+
+    gint dist_sqrd =
+      ( abs(x - params->x) * abs(x - params->x) ) +
+      ( abs(y - params->y) * abs(y - params->y) );
+
+    if ( (!params->closest_tp) || dist_sqrd < params->closest_xy_sqrd )
+    {
+      params->closest_track_id = id;
+      params->closest_track = trk;
+      params->closest_tp = tp;
+      params->closest_tpl = tpl;
+      params->closest_xy_sqrd = dist_sqrd;
+      params->closest_x = x;
+      params->closest_y = y;
+    }
+    tpl = tpl->next;
+  }
 }
 
 static VikWaypoint *closest_wp_in_interval ( VikTrwLayer *vtl, VikViewport *vvp, gint x, gint y )
@@ -10809,6 +10967,7 @@ static gboolean trw_layer_select_click ( VikTrwLayer *vtl, GdkEventButton *event
   tp_params.vvp = vvp;
   tp_params.x = event->x;
   tp_params.y = event->y;
+  tp_params.closest_track = NULL;
   tp_params.closest_track_id = NULL;
   tp_params.closest_tp = NULL;
   tp_params.closest_tpl = NULL;
@@ -11822,6 +11981,11 @@ static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event
     GdkWindow *gdkw = gtk_widget_get_window(GTK_WIDGET(te->vvp));
     gdk_window_set_cursor ( gdkw, vtl->split_cursor );
     return TRUE;
+  } else if ( event->keyval == GDK_KEY_Control_L || event->keyval == GDK_KEY_Control_R ) {
+    tool_ed_t *te = data;
+    GdkWindow *gdkw = gtk_widget_get_window(GTK_WIDGET(te->vvp));
+    gdk_window_set_cursor ( gdkw, vtl->insert_cursor );
+    return TRUE;
   }
 
   return FALSE;
@@ -11829,7 +11993,8 @@ static gboolean tool_edit_track_key_press ( VikTrwLayer *vtl, GdkEventKey *event
 
 static gboolean tool_edit_track_key_release ( VikTrwLayer *vtl, GdkEventKey *event, gpointer data )
 {
-  if ( event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R ) {
+  if ( event->keyval == GDK_KEY_Shift_L || event->keyval == GDK_KEY_Shift_R ||
+       event->keyval == GDK_KEY_Control_L || event->keyval == GDK_KEY_Control_R ) {
     VikWindow *vw = VIK_WINDOW(VIK_GTK_WINDOW_FROM_LAYER(vtl));
     // this resets to standard tool cursor
     vik_window_clear_busy_cursor ( vw );
@@ -11953,6 +12118,30 @@ static VikLayerToolFuncStatus tool_edit_track_or_route_split ( VikTrwLayer *vtl,
   return VIK_LAYER_TOOL_IGNORED;
 }
 
+static VikLayerToolFuncStatus tool_edit_track_or_route_insert ( VikTrwLayer *vtl, TPSearchParams *params, gboolean is_track )
+{
+  if ( vtl->tracks_visible && is_track )
+    g_hash_table_foreach ( vtl->tracks, (GHFunc)track_search_closest_tp_real, params);
+  else if ( vtl->routes_visible && !is_track )
+    g_hash_table_foreach ( vtl->routes, (GHFunc)track_search_closest_tp_real, params);
+
+  if ( params->closest_tp )
+  {
+    trw_layer_insert_tp_beside_specified_tp_at_position ( vtl,
+                                                          params->vvp,
+                                                          params->closest_track,
+                                                          params->closest_tp,
+                                                          is_track ? VIK_TRW_LAYER_SUBLAYER_TRACK : VIK_TRW_LAYER_SUBLAYER_ROUTE,
+                                                          params->x,
+                                                          params->y );
+
+    vik_layer_emit_update ( VIK_LAYER(vtl), trw_layer_modified(vtl) );
+
+    return VIK_LAYER_TOOL_ACK;
+  }
+  return VIK_LAYER_TOOL_IGNORED;
+}
+
 // attempt to join to a track/route
 // plot a route to join if in route finder tool
 static VikLayerToolFuncStatus tool_edit_track_or_route_join ( VikTrwLayer *vtl, TPSearchParams *params, gboolean in_route_finder )
@@ -12045,6 +12234,7 @@ static VikLayerToolFuncStatus tool_edit_track_or_route_click_dispatch ( VikTrwLa
   params.vvp = vvp;
   params.x = event->x;
   params.y = event->y;
+  params.closest_track = NULL;
   params.closest_track_id = NULL;
   params.closest_tp = NULL;
   params.closest_tpl = NULL;
@@ -12057,6 +12247,9 @@ static VikLayerToolFuncStatus tool_edit_track_or_route_click_dispatch ( VikTrwLa
     // attach to existing if shift pressed
     if ( event->state & GDK_SHIFT_MASK ) {
       ans = tool_edit_track_or_route_split ( vtl, &params, is_track );
+      goto my_end;
+    } else if ( event->state & GDK_CONTROL_MASK ) {
+      ans = tool_edit_track_or_route_insert ( vtl, &params, FALSE );
       goto my_end;
     }
 
@@ -12177,6 +12370,7 @@ static VikLayerToolFuncStatus tool_edit_trackpoint_click ( VikTrwLayer *vtl, Gdk
   params.vvp = vvp;
   params.x = event->x;
   params.y = event->y;
+  params.closest_track = NULL;
   params.closest_track_id = NULL;
   params.closest_tp = NULL;
   params.closest_tpl = NULL;
@@ -12341,6 +12535,7 @@ static VikLayerToolFuncStatus tool_extended_route_finder_click ( VikTrwLayer *vt
       params.vvp = vvp;
       params.x = event->x;
       params.y = event->y;
+      params.closest_track = NULL;
       params.closest_track_id = NULL;
       params.closest_tp = NULL;
       params.closest_tpl = NULL;
@@ -13366,6 +13561,7 @@ static VikLayerToolFuncStatus tool_splitter_click ( VikTrwLayer *vtl, GdkEventBu
   params.vvp = vvp;
   params.x = event->x;
   params.y = event->y;
+  params.closest_track = NULL;
   params.closest_track_id = NULL;
   params.closest_tp = NULL;
   params.closest_tpl = NULL;
