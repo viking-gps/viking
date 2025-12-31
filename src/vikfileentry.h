@@ -51,7 +51,9 @@ typedef enum {
   VF_FILTER_XML,
   VF_FILTER_CARTO,   // MML + MSS
   VF_FILTER_GPX,
-  VF_FILTER_LAST
+  VF_FILTER_LAST,
+  VF_FILTER_JSON,
+  VF_FILTER_SQLITE
 } vf_filter_type;
 
 typedef gboolean (*VikFileEntryFunc) (VikFileEntry *, gpointer);
