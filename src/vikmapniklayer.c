@@ -1110,8 +1110,8 @@ static void mapnik_layer_tile_info ( VikMapnikLayer *vml )
 		g_array_append_val ( array, rendmsg );
 	}
 
-	a_dialog_list (  VIK_GTK_WINDOW_FROM_LAYER(vml), _("Tile Information"), array, 5 );
-	g_array_free ( array, FALSE );
+	a_dialog_list ( VIK_GTK_WINDOW_FROM_LAYER(vml), _("Tile Information"), array, 5 );
+	(void)g_array_free ( array, FALSE );
 
 	g_free ( rendmsg );
 	g_free ( timemsg );

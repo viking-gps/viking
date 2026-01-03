@@ -2550,8 +2550,8 @@ static void maps_layer_tile_info ( VikMapsLayer *vml )
     g_array_append_val ( array, filemsg );
   }
 
-  a_dialog_list (  VIK_GTK_WINDOW_FROM_LAYER(vml), _("Tile Information"), array, 5 );
-  g_array_free ( array, TRUE );
+  a_dialog_list ( VIK_GTK_WINDOW_FROM_LAYER(vml), _("Tile Information"), array, 5 );
+  (void)g_array_free ( array, TRUE );
 
   g_free ( timemsg );
   g_free ( filemsg );
