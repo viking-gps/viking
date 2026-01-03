@@ -3037,7 +3037,10 @@ static void maps_layer_add_menu_items ( VikMapsLayer *vml, GtkMenu *menu, VikLay
     (void)vu_menu_add_item ( menu, _("Download _Missing Onscreen Maps"), GTK_STOCK_ADD, G_CALLBACK(maps_layer_download_missing_onscreen_maps), values );
     (void)vu_menu_add_item ( menu, _("Download _New Onscreen Maps"), GTK_STOCK_REDO, G_CALLBACK(maps_layer_download_new_onscreen_maps), values );
     (void)vu_menu_add_item ( menu, _("Reload _All Onscreen Maps"), GTK_STOCK_REFRESH, G_CALLBACK(maps_layer_redownload_all_onscreen_maps), values );
-    (void)vu_menu_add_item ( menu, _("Download Maps in _Zoom Levels..."), GTK_STOCK_DND_MULTIPLE, G_CALLBACK(maps_layer_download_all), values );
+    GtkWidget *mzl = vu_menu_add_item ( menu, _("Download Maps in _Zoom Levels..."), GTK_STOCK_DND_MULTIPLE, G_CALLBACK(maps_layer_download_all), values );
+    // Specific disallow of OSM bulk downloading [Jan 2026]
+    // https://operations.osmfoundation.org/policies/tiles/
+    gtk_widget_set_sensitive ( mzl, (vik_maps_layer_get_map_type(vml) != MAP_ID_OSM_MAPNIK) );
     (void)vu_menu_add_item ( menu, _("_Toggle Display of Cache Status"), GTK_STOCK_INFO, G_CALLBACK(maps_layer_cache_status_cb), values );
   }
 

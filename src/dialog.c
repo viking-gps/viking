@@ -983,10 +983,8 @@ void a_dialog_about ( GtkWindow *parent )
   g_free(copyright);
 }
 
-gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_map, gchar *zoom_list[], gint default_zoom, gint *selected_map, gint *selected_zoom)
+gboolean a_dialog_map_n_zoom ( GtkWindow *parent, GArray *map_names, gint default_map, gchar *zoom_levels[], gint default_zoom, gint *selected_map, gint *selected_zoom )
 {
-  gchar **s;
-
   GtkWidget *dialog = gtk_dialog_new_with_buttons ( _("Download along track"), parent,
                                                     GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
                                                     GTK_STOCK_OK, GTK_RESPONSE_ACCEPT, GTK_STOCK_CANCEL, GTK_RESPONSE_REJECT, NULL );
@@ -995,13 +993,13 @@ gboolean a_dialog_map_n_zoom(GtkWindow *parent, gchar *mapnames[], gint default_
 
   GtkWidget *map_label = gtk_label_new(_("Map type:"));
   GtkWidget *map_combo = vik_combo_box_text_new();
-  for (s = mapnames; *s; s++)
-    vik_combo_box_text_append (GTK_COMBO_BOX(map_combo), *s);
+  for ( guint i = 0; i < map_names->len; i++ )
+    vik_combo_box_text_append ( GTK_COMBO_BOX(map_combo), g_array_index(map_names,gchar*,i) );
   gtk_combo_box_set_active (GTK_COMBO_BOX(map_combo), default_map);
 
   GtkWidget *zoom_label = gtk_label_new(_("Zoom level:"));
   GtkWidget *zoom_combo = vik_combo_box_text_new();
-  for (s = zoom_list; *s; s++)
+  for ( gchar **s = zoom_levels; *s; s++ )
     vik_combo_box_text_append (GTK_COMBO_BOX(zoom_combo), *s);
   gtk_combo_box_set_active (GTK_COMBO_BOX(zoom_combo), default_zoom);
 

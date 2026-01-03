@@ -60,6 +60,7 @@
 #include "vikexttools.h"
 #include "vikexttool_datasources.h"
 #include "vikrouting.h"
+#include "map_ids.h"
 
 #include <ctype.h>
 #include <gdk/gdkkeysyms.h>
@@ -13249,22 +13250,25 @@ static void trw_layer_download_map_along_track_cb ( menu_array_sublayer values )
     return;
   }
 
-  // Convert from list of vmls to list of names. Allowing the user to select one of them
-  gchar **map_names = g_malloc_n(1 + num_maps, sizeof(gpointer));
-  VikMapsLayer **map_layers = g_malloc_n(1 + num_maps, sizeof(gpointer));
-
-  gchar **np = map_names;
-  VikMapsLayer **lp = map_layers;
-  int i;
-  for (i = 0; i < num_maps; i++) {
+  // Convert from list of vmls to an array of names, allowing the user to select one of them
+  GArray *map_names = g_array_new ( FALSE, TRUE, sizeof(gchar*) );
+  GArray *map_layers = g_array_new ( FALSE, TRUE, sizeof(gpointer) );
+  for ( guint i = 0; i < num_maps; i++ ) {
     vml = (VikMapsLayer *)(vmls->data);
-    *lp++ = vml;
-    *np++ = vik_maps_layer_get_map_label(vml);
+    // Specific disallow of OSM bulk downloading [Jan 2026]
+    // https://operations.osmfoundation.org/policies/tiles/
+    if ( vik_maps_layer_get_map_type(vml) != MAP_ID_OSM_MAPNIK ) {
+      gchar *label = vik_maps_layer_get_map_label(vml);
+      g_array_append_val ( map_names, label );
+      g_array_append_val ( map_layers, vml );
+    }
     vmls = vmls->next;
   }
-  // Mark end of the array lists
-  *lp = NULL;
-  *np = NULL;
+
+  if ( map_names->len == 0 ) {
+    a_dialog_error_msg ( VIK_GTK_WINDOW_FROM_LAYER(vtl), _("No available map with suitable tile downloading policy.") );
+    goto done;
+  }
 
   gdouble cur_zoom = vik_viewport_get_zoom(vvp);
   for (default_zoom = 0; default_zoom < G_N_ELEMENTS(zoom_vals); default_zoom++) {
@@ -13276,16 +13280,14 @@ static void trw_layer_download_map_along_track_cb ( menu_array_sublayer values )
   if (!a_dialog_map_n_zoom(VIK_GTK_WINDOW_FROM_LAYER(vtl), map_names, 0, zoomlist, default_zoom, &selected_map, &selected_zoom))
     goto done;
 
-  vik_track_download_map(trk, map_layers[selected_map], vvp, zoom_vals[selected_zoom]);
+  if ( selected_map >= 0 && selected_zoom >= 0 ) {
+    vik_track_download_map ( trk, g_array_index(map_layers,VikMapsLayer*,selected_map), vvp, zoom_vals[selected_zoom] );
+  }
 
 done:
-  for (i = 0; i < num_maps; i++)
-    g_free(map_names[i]);
-  g_free(map_names);
-  g_free(map_layers);
-
-  g_list_free(vmls);
-
+  (void)g_array_free ( map_names, TRUE );
+  (void)g_array_free ( map_layers, TRUE );
+  g_list_free ( vmls );
 }
 
 /**** lowest waypoint number calculation ***/
