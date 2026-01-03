@@ -181,6 +181,7 @@ static void fit_add_track ( VikTrwLayer *vtl )
 		gchar *tr_name = g_strdup_printf ( _("Track%03d"), unnamed_tracks++ );
 		fit_tr->trackpoints = g_list_reverse ( fit_tr->trackpoints );
 		vik_trw_layer_filein_add_track ( vtl, tr_name, fit_tr );
+		g_free ( tr_name );
 	}
 }
 
