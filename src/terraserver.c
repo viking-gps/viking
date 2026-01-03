@@ -35,4 +35,8 @@ void terraserver_init () {
   maps_layer_register_map_source (map_type_1);
   maps_layer_register_map_source (map_type_2);
   maps_layer_register_map_source (map_type_3);
+
+  g_object_unref ( map_type_1 );
+  g_object_unref ( map_type_2 );
+  g_object_unref ( map_type_3 );
 }

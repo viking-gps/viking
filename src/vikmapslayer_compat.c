@@ -36,4 +36,5 @@ void maps_layer_register_type ( const char *label, guint id, VikMapsLayer_MapTyp
     g_assert(id == map_type->uniq_id);
     VikMapType *object = vik_map_type_new_with_id (*map_type, label);
     maps_layer_register_map_source ( VIK_MAP_SOURCE (object) );
+    g_object_unref ( object );
 }

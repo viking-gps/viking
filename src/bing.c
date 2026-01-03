@@ -42,6 +42,7 @@ void bing_init () {
 	  (bing_map_source_new_with_id (MAP_ID_BING_AERIAL, _("Bing Aerial"), API_KEY));
 
 	maps_layer_register_map_source (bing_aerial);
+	g_object_unref ( bing_aerial );
 
 	// Allow opening web location
 	VikWebtoolCenter *webtool = NULL;

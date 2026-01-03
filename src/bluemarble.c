@@ -44,5 +44,5 @@ void bluemarble_init ()
   /* BlueMarble image hosting is courtesy of the Modest Maps project: https://modestmaps.com/ */
 
   maps_layer_register_map_source (bluemarble_type);
+  g_object_unref ( bluemarble_type );
 }
-
