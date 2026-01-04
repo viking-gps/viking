@@ -259,8 +259,8 @@ Section $(VIKING_SECTION_TITLE) SecViking
     ${EndIf}
     WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayVersion" "${VIKING_VERSION}"
     WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "DisplayIcon" "$INSTDIR\viking_icon.ico"
-    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "HelpLink" "http://sourceforge.net/p/viking/wikiallura"
-    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "URLInfoAbout" "http://sourceforge.net/projects/viking/"
+    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "HelpLink" "https://sourceforge.net/p/viking/wikiallura"
+    WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "URLInfoAbout" "https://sourceforge.net/projects/viking/"
     WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "Publisher" "The Viking developer community"
     WriteRegStr SHCTX "${VIKING_UNINSTALL_KEY}" "Comments" "$(VIKING_UNINSTALL_COMMENTS)"
     WriteRegDWORD SHCTX "${VIKING_UNINSTALL_KEY}" "NoModify" 1
