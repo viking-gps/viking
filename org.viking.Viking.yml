@@ -6,7 +6,7 @@ app-id: org.viking.Viking
 #runtime-version: '22.08'
 #sdk: org.freedesktop.Sdk
 runtime: org.kde.Platform
-runtime-version: '5.15-24.08'
+runtime-version: '5.15-25.08'
 sdk: org.kde.Sdk
 command: viking
 rename-icon: viking
@@ -165,17 +165,21 @@ modules:
 
 #
 # xxd tool required as part of Viking build
-# Found best candidate for standalone component (rather than within Vim)
+# Previous standalone version https://github.com/fancer/xxd is unmaintained
+#  (so use full Vim suite)
 #
-  - name: xxd
+  - name: vim
     buildsystem: simple
     sources:
       - type: git
-        url: https://github.com/fancer/xxd
-        tag: "v1.7"
-        commit: 0a49a7308f365b3b82f26b5d9df2ec00c41eadf0
+        url: https://github.com/vim/vim
+        tag: "v9.1.2050"
+        commit: 6625ba359e33f8223d146f3ae87a880c446b5470
     build-commands:
-      - ./bootstrap.sh && ./configure --prefix="${FLATPAK_DEST}" && make && make install
+      - ./configure --prefix="${FLATPAK_DEST}" --disable-gui && make && make install
+    cleanup:
+      - /share
+      - /bin
 
 # Actual own Viking build here
 #

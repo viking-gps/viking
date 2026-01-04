@@ -33,6 +33,13 @@ Confirm download of required runtime(s)
 
     flatpak run org.viking.Viking
 
+If one uses the 'Auto Location' feature, for the first time your Desktop (Gnome/Unity) should ask you to allow Location permissions for Viking.
+However if there is an error message along the lines of:
+"Failed to connect to service: GDBus.Error:org.freedesktop.portal.Error.NotAllowed: Location services disabled"
+Such as for XFCE desktop, you may need to enable the location service:
+
+     gsettings set org.gnome.system.location enabled true
+
 # Flatpak Limitations
 
 Since Viking is running in a sandbox, some system integration features no longer work properly in a Flatpak runtime.
