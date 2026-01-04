@@ -461,11 +461,18 @@ static GdkPixbuf *get_thumbnail(VikViewport *vvp, gint thumb_width, gint thumb_h
   gint width = vik_viewport_get_width ( vvp );
   gint height = vik_viewport_get_height ( vvp );
 #if GTK_CHECK_VERSION (3,0,0)
-  pixbuf = gdk_pixbuf_get_from_window ( gtk_widget_get_window(GTK_WIDGET(vvp)), 0, 0, width, height );
+  pixbuf = vik_viewport_get_pixbuf (vvp, width, height);
 #else
   GdkDrawable *drawable = GDK_DRAWABLE(vik_viewport_get_pixmap(vvp));
   pixbuf = gdk_pixbuf_get_from_drawable(NULL, drawable, NULL, 0, 0, 0, 0, width, height);
 #endif
+
+  if (!pixbuf) {
+    g_warning("%s: failed to obtain viewport pixbuf for the thumbnail",
+	      __FUNCTION__);
+    return NULL;
+  }
+
   thumbnail = gdk_pixbuf_scale_simple(pixbuf, thumb_width, thumb_height,
                                       GDK_INTERP_BILINEAR);
   g_object_unref(pixbuf);
