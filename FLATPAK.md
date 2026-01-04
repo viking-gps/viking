@@ -37,11 +37,9 @@ Confirm download of required runtime(s)
 
 Since Viking is running in a sandbox, some system integration features no longer work properly in a Flatpak runtime.
 
-1. Help does not work.
-  You may be asked which program to run for the help - normally being _Yelp_, but this is now outside the sandbox and so the reference to the help files doesn't seem to work.
-
 1. Print-Preview does not work.
-  Internally GTK seems to try to invoke _evince_, but this is not available in the sandbox and so fails.
+  GTK internal issue on command line "GtkPrintOperation::create-custom-widget not supported with portal"
+  Unknown how to resolve.
 
 1. Realtime tracking via GPSD does not work.
   The sandbox does not allow the libgps component (that connects to GPSD) to open a socket.

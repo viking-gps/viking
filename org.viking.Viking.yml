@@ -10,6 +10,7 @@ runtime-version: '5.15-24.08'
 sdk: org.kde.Sdk
 command: viking
 rename-icon: viking
+copy-icon: true
 rename-desktop-file: viking.desktop
 finish-args:
   - --share=network
@@ -18,6 +19,13 @@ finish-args:
   - --socket=x11
 # Allow to read/save anywhere (subject to normal permissions)
   - --filesystem=host
+# Common cleanup
+cleanup:
+  - /include
+  - /lib/cmake
+  - /lib/pkgconfig
+  - '/lib/*.a'
+  - '*.la'
 
 modules:
 # Shared modules 'git submodule' - https://github.com/flathub/shared-modules
@@ -37,10 +45,7 @@ modules:
         commit: 07fc30bf6d44f5b431a943452f6083fbaf22bc8f
     build-commands:
       - aclocal && autoheader && libtoolize --copy && autoconf && automake --gnu --add-missing --copy && ./configure --enable-nss --prefix="${FLATPAK_DEST}" && make && make install
-    cleanup:
-      - /include
-      - /lib/pkgconfig
-      - '/lib/*.a'
+
 #
 # libzip
 #
@@ -51,10 +56,6 @@ modules:
         url: https://libzip.org/download/libzip-1.11.4.tar.xz
         sha256: 8a247f57d1e3e6f6d11413b12a6f28a9d388de110adc0ec608d893180ed7097b
     cleanup:
-      - /include
-      - /lib/pkgconfig
-      - /lib/cmake
-      - '/lib/*.a'
       - '/bin/zip*'
 #
 # gexiv2/exiv2 cribbed from GIMP json build
@@ -73,10 +74,6 @@ modules:
             url: https://github.com/Exiv2/exiv2/archive/refs/tags/v0.28.7.tar.gz
             sha256: 5e292b02614dbc0cee40fe1116db2f42f63ef6b2ba430c77b614e17b8d61a638
         cleanup:
-          - /include
-          - '/lib/*.a'
-          - /lib/pkgconfig
-          - /lib/cmake
           - '/bin/exi*'
           - '/bin/ipt*'
           - '/bin/xmp*'
@@ -97,10 +94,6 @@ modules:
       - type: archive
         url: https://download.gnome.org/sources/gexiv2/0.14/gexiv2-0.14.6.tar.xz
         sha256: 606c28aaae7b1f3ef5c8eabe5e7dffd7c5a1c866d25b7671fb847fe287a72b8b
-    cleanup:
-      - /include
-      - '/lib/*.a'
-      - /lib/pkgconfig
 #
 # GPSD
 #
@@ -120,7 +113,6 @@ modules:
         build-commands:
           - python3 setup.py install --prefix="${FLATPAK_DEST}";
         cleanup:
-          - /include
           - '/lib/scons*'
           - '/bin/scons*'
 
@@ -131,10 +123,6 @@ modules:
         sha256: aaddd19f7b67fb410178f3f8e27a8b40d434d5921d1c50272ddb3d6b9ca65ea9
     build-commands:
       - scons gpsd{,clients}=no python=no shared=yes prefix="${FLATPAK_DEST}" && scons install
-    cleanup:
-      - /include
-      - '/lib/*.a'
-      - /lib/pkgconfig
      
 # qt5, thus needs org.kde.Sdk (5.X)
 # NB qt5 version gpsbabel isn't compatible with org.kde.Sdk 6.X
@@ -151,8 +139,9 @@ modules:
       tag: "gpsbabel_1_6_0"
       commit: f0f20ea4db9b71238ceb72c4838024699181d657
 
+    cleanup:
+      - /share
 # DO NOT CLEAN THESE AS NEEDED FOR DEPLOYMENT!!
-#   cleanup:
 #      - /bin
 #      - /lib
 # Otherwise gpsbabel & libgps.so can get removed
@@ -172,8 +161,6 @@ modules:
     build-commands:
       - ./autogen.sh && ./configure --prefix="${FLATPAK_DEST}" && make && make install
     cleanup:
-      - /include
-      - '/lib/*.a'
       - /bin
 
 #
@@ -215,13 +202,9 @@ modules:
     buildsystem: simple
     build-commands:
       - install -D org.viking.Viking.appdata.xml /app/share/metainfo/org.viking.Viking.metainfo.xml
+      - install -Dm644 viking-128.png /app/share/icons/hicolor/128x128/apps/viking.png
     sources:
       - type: file
         path: org.viking.Viking.appdata.xml
-  - name: icons
-    buildsystem: simple
-    build-commands:
-      - install -Dm644 viking-128.png /app/share/icons/hicolor/128x128/apps/viking.png
-    sources:
       - type: file
         path: viking-128.png

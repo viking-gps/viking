@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Copyright 2020 Rob Norris -->
-<component>
+<component type="desktop-application">
   <!-- About this metadata file -->
   <!-- https://www.freedesktop.org/software/appstream/docs/chap-Metadata.html -->
-  <id type="desktop">org.viking.Viking</id>
+  <id>org.viking.Viking</id>
   <launchable type="desktop-id">org.viking.Viking.desktop</launchable>
   <metadata_license>CC0-1.0</metadata_license>
   <name>Viking</name>
   <project_license>GPL-2.0+</project_license>
   <summary>GPS Data Editor and Analyzer</summary>
-  <url type="homepage">http://viking.sf.net</url>
+  <url type="homepage">https://viking.sf.net</url>
   <url type="bugtracker">https://sourceforge.net/p/viking/bugs/</url>
   <url type="help">https://sourceforge.net/p/viking/wikiallura/MasterHelp/</url>
   <url type="translate">https://translations.launchpad.net/viking</url>
+  <url type="vcs-browser">https://sourceforge.net/p/viking/code/ci/master/tree/</url>
+  <developer_name>The Viking Developers</developer_name>
   <description>
     <p>Viking is a free/open source program to manage GPS data.</p>
     <p>Viking includes the following features:</p>
