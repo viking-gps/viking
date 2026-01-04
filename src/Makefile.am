@@ -3,7 +3,7 @@
 
 SUBDIRS = icons
 
-bin_PROGRAMS = viking
+bin_PROGRAMS = viking osm-oauth2-example
 
 noinst_LIBRARIES = \
 	libviking.a
@@ -199,6 +199,7 @@ endif
 if OPENSTREETMAP
 libviking_a_SOURCES += \
 	osm.c osm.h \
+	osm_api_client.c osm_api_client.h \
 	osm-traces.c osm-traces.h \
 	datasource_osm_my_traces.c \
 	datasource_osm.c
