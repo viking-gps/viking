@@ -1,3 +1,60 @@
+Viking 1.11 (2026-01-11)
+New features since 1.10
+* Return to OpenStreetMap (https://openstreet.org) as the Map Default.
+** Raster tiles from https://opentopomap.org is depreciated.
+* Read support of Garmin .FIT files.
+* SF Features#135: Support Georef layer image rotation.
+* SF Features#151: Enable visual status indicator of each tile cache.
+* More support for GPX fields: URL/Link properties.
+* Support reading as much information as read in from invalid GPX files (rather than just giving up).
+* More support for KML properties: snippet, track color, name and description.
+* New TAC analysis for consecutive squares in linear directions.
+* Support daylight times and basic astronomical data using libnova.
+* Support Waypoint proximity alarms.
+* GPX Lap support read only display output in tooltips and a table view.
+* Github #148: Allow horizontal scroll on preferences.
+* GitHub #152: GeoRef Zoomed in image fast redraw.
+* Github #160: Support reading compressed .xz and .gzip files (for any supported Geodata files within).
+* Github #194: Add Reload Viking file from disk.
+* Github #211: Support opening files in existing running instance via command line '-r'.
+* Github #238: Enable a view of all the Map Ids available.
+* Github #241: Improve Waypoint dialog layout.
+* Github #243: Improved keyboard zoom controls, including Ctrl+'0' to restore default zoom.
+* Github #266: Make Adding New Maps Go On Top.
+* Github #307: Enable showing OSM zoom levels in tooltips.
+* Github #339: Change default download setting to follow all redirects. AKA fix use of OSM Mapnik.
+* Github #344: Fix printing on Wayland.
+* Use https by default for most data/configurations.
+* Enable running with an alternate configuration directory as specified (on command line).
+* Aggregate layer: add some analysis by 'active days' to accompany per track statistics.
+* Enable per map layer tile cache expiry age.
+* Enable (this) NEWS to be viewed from within the main program.
+* Enable property 'user-agent' for download requests.
+* Github workflow for CI Testing purposes.
+* C23 compatibility.
+* Many Internal Improvements + Fixes.
+
+Fixes since 1.10
+* SF Bugs#162: Fix rounding issue in test parsing lat/lon on i386.
+* SF Bugs#171: Fix loading large waypoint symbols.
+* Github #149: Fix incorrect limitation of easting input values for UTM.
+* Github #170: Fix auto download of map tiles when 'check-file-server-time' is false.
+* Github #175: Fix ruler drawing may crash program due to uninitialized values.
+* Github #184: Fix MD5 check on MacOS.
+* Github #187: MBTiles file format checks.
+* Github #214: Resolve keyboard shortcut conflicts in Edit menu.
+* Github #240: Fix missing tool-tips for some commands.
+* Github #270: Prevent unnecessary precision in web requests.
+* Github #279: Fix default ordering of items.
+* Github #293: Fix escaping accented characters on URL search.
+* Github #295: Flatpak: Upgrade to the latest KDE runtime 5.15-24-8 (that is congruent with gpsbabel build).
+* Github #306: Avoid requesting maps outside zoom limits on F5 refresh.
+* Github #317: Ensure Default Layers dialog updates widget sensitivities.
+* Github #337: Ensure print preview has GTK3 implementation.
+
+Depreciations since 1.10
+* Depreciate GPSMapper and GPSPoint export options.
+
 Viking 1.10 (2021-11-27)
 New features since 1.9
 * SF Features #11: Add Exit Warning if something modified.

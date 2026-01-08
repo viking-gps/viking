@@ -192,10 +192,10 @@ modules:
     sources:
       - type: git
         url: git://git.code.sf.net/p/viking/code
-        branch: "viking-1.10"
+        branch: "viking-1.11"
 # Local path for testing
 #      - type: archive
-#        path: viking-1.8.zip
+#        path: viking-1.11.zip
 # Unclear how this worked previously as yelp.m4 is only in the Gnome Sdk (not even the freedesktop Sdk! but now using Kde for GPSBabel)
 # so manually copy a version of yelp.m4 into m4/ for use with this flatpak runtime
       - type: file

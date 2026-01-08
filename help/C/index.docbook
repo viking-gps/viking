@@ -3,9 +3,9 @@
 "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd" [
   <!ENTITY appname          "Viking">
   <!ENTITY app "<application>Viking</application>">
-  <!ENTITY appversion   "1.10">
-  <!ENTITY manrevision  "1.10">
-  <!ENTITY date "November 2021">
+  <!ENTITY appversion   "1.11">
+  <!ENTITY manrevision  "1.11">
+  <!ENTITY date "January 2026">
 ]>
 <!-- =============Document Header ============================= -->
 <article id="index" lang="en">
@@ -16,7 +16,7 @@
     </abstract>
 
     <copyright>
-      <year>2020</year>
+      <year>2026</year>
       <holder>Guilhem Bonnefille</holder>
       <holder>Rob Norris</holder>
     </copyright>
