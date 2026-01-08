@@ -12,7 +12,22 @@
 # 'MINGW' and 'DESTINATION' values can be defined to override inbuilt defaults
 # 'GTK2' now needs to be set to install a GTK2 version, otherwise GTK3 by default
 #
-
+# Location of MINGW should be consistent with the *build* environment.
+# i.e. if built directly in a VM then MINGW default will be for the local build environment
+#
+# However if using a chroot style setup (e.g. via osc) then MINGW should be set to that chroot setup
+# so something like, so then need to redirect from the VM to the location/copy on host machine
+# host machine=/var/tmp/build-root/openSUSE_Tumbleweed-x86_64/usr/x86_64-w64-mingw32/sys-root/mingw/bin/
+# but the VM probably won't have direct accees, so need to copy (rather than a symbolic link) into location on the shared folder path
+# host: mkdir  ~/Code/mingw/
+# host: cp -a /var/tmp/build-root/openSUSE_Tumbleweed-x86_64/usr/x86_64-w64-mingw32/sys-root/mingw ~/Code/
+# vm: export MINGW=/media/code/mingw
+# Then also need to ensure dirs for Viking itself: e.g.
+# vm: export VIKING_BIN_DIR=/usr/x86_64-w64-mingw32/sys-root/mingw/bin
+# vm: export VIKING_SHARE_DIR=/usr/x86_64-w64-mingw32/sys-root/mingw/share
+# and finally for not having to work out DLL dependencies
+# vm: export SIMPLE_COPY=YES
+#
 if [ -z "$DESTINATION" ]; then
 	DESTINATION=installer/bin
 fi
@@ -34,12 +49,20 @@ echo MINGW=$MINGW
 
 echo Make language copies
 for x in $(ls ../po/*.gmo); do
-	mkdir -p $DESTINATION/share/locale/$(basename -s .gmo $x)/LC_MESSAGES
+    mkdir -p $DESTINATION/share/locale/$(basename -s .gmo $x)/LC_MESSAGES
+    if [ -z "$VIKING_SHARE_DIR" ]; then
 	cp $MINGW/share/locale/$(basename -s .gmo $x)/LC_MESSAGES/viking.mo $DESTINATION/share/locale/$(basename -s .gmo $x)/LC_MESSAGES/
+    else
+	cp $VIKING_SHARE_DIR/locale/$(basename -s .gmo $x)/LC_MESSAGES/viking.mo $DESTINATION/share/locale/$(basename -s .gmo $x)/LC_MESSAGES/
+    fi
 done
 
 echo Copying Viking
-cp $MINGW_BIN/*viking.exe $DESTINATION/viking.exe
+if [ -z "$VIKING_BIN_DIR" ]; then
+    cp $MINGW_BIN/*viking.exe $DESTINATION/viking.exe
+else
+    cp $VIKING_BIN_DIR/*viking.exe $DESTINATION/viking.exe
+fi
 cp ../COPYING $DESTINATION/COPYING_GPL.txt
 cp ../AUTHORS $DESTINATION/AUTHORS.txt
 cp ../NEWS $DESTINATION/NEWS.txt
@@ -72,81 +95,112 @@ else
 fi
 
 echo Copying Libraries
-# Core libs
-cp $MINGW_BIN/libatk*.dll $DESTINATION
-cp $MINGW_BIN/libcairo*.dll $DESTINATION
-cp $MINGW_BIN/libgcc*.dll $DESTINATION
-cp $MINGW_BIN/libgcrypt*.dll $DESTINATION
-cp $MINGW_BIN/libgdk_pixbuf*.dll $DESTINATION
-cp $MINGW_BIN/libgettext*.dll $DESTINATION
-cp $MINGW_BIN/libgio*.dll $DESTINATION
-cp $MINGW_BIN/libglib*.dll $DESTINATION
-cp $MINGW_BIN/libgmodule*.dll $DESTINATION
-cp $MINGW_BIN/libgnurx*.dll $DESTINATION
-cp $MINGW_BIN/libgobject*.dll $DESTINATION
-cp $MINGW_BIN/libgpg*.dll $DESTINATION
-if [ -n "$GTK2" ]; then
-    cp $MINGW_BIN/libgdk-win32-2*.dll $DESTINATION
-    cp $MINGW_BIN/libgtk-win32-2*.dll $DESTINATION
+if [ -n "$SIMPLE_COPY" ]; then
+    echo "Using simple copy"
+    # Alternative method intended for osc build use
+    # Just copy all dlls; as should only be those as per build setup
+    # Thus in particular don't need to work out dependencies of dependencies (e.g. libcurl)
+    #  as they will be all there... (plus possible build only dlls, but so be it)
+    cp $MINGW_BIN/*.dll $DESTINATION
 else
-    cp $MINGW_BIN/libgailutil-3-*.dll $DESTINATION
-    cp $MINGW_BIN/libgdk-3*.dll $DESTINATION
-    cp $MINGW_BIN/libgtk-3*.dll $DESTINATION
-    cp $MINGW_BIN/libepoxy*.dll $DESTINATION
+    # Core libs
+    cp $MINGW_BIN/libatk*.dll $DESTINATION
+    cp $MINGW_BIN/libcairo*.dll $DESTINATION
+    cp $MINGW_BIN/libgcc*.dll $DESTINATION
+    cp $MINGW_BIN/libgcrypt*.dll $DESTINATION
+    cp $MINGW_BIN/libgdk_pixbuf*.dll $DESTINATION
+    cp $MINGW_BIN/libgettext*.dll $DESTINATION
+    cp $MINGW_BIN/libgio*.dll $DESTINATION
+    cp $MINGW_BIN/libglib*.dll $DESTINATION
+    cp $MINGW_BIN/libgmodule*.dll $DESTINATION
+    cp $MINGW_BIN/libgnurx*.dll $DESTINATION
+    cp $MINGW_BIN/libgobject*.dll $DESTINATION
+    cp $MINGW_BIN/libgpg*.dll $DESTINATION
+    if [ -n "$GTK2" ]; then
+        cp $MINGW_BIN/libgdk-win32-2*.dll $DESTINATION
+        cp $MINGW_BIN/libgtk-win32-2*.dll $DESTINATION
+    else
+        cp $MINGW_BIN/libgailutil-3-*.dll $DESTINATION
+        cp $MINGW_BIN/libgdk-3*.dll $DESTINATION
+        cp $MINGW_BIN/libgtk-3*.dll $DESTINATION
+        cp $MINGW_BIN/libepoxy*.dll $DESTINATION
+    fi
+    cp $MINGW_BIN/libintl*.dll $DESTINATION
+    cp $MINGW_BIN/libffi*.dll $DESTINATION
+    cp $MINGW_BIN/libfontconfig*.dll $DESTINATION
+    cp $MINGW_BIN/libfreetype*.dll $DESTINATION
+    cp $MINGW_BIN/libharfbuzz*.dll $DESTINATION
+    cp $MINGW_BIN/libjasper*.dll $DESTINATION
+    cp $MINGW_BIN/libjpeg*.dll $DESTINATION
+    cp $MINGW_BIN/liblzma*.dll $DESTINATION
+    cp $MINGW_BIN/libpng*.dll $DESTINATION
+    cp $MINGW_BIN/libpango*.dll $DESTINATION
+    cp $MINGW_BIN/libpixman*.dll $DESTINATION
+    cp $MINGW_BIN/libssp*.dll $DESTINATION
+    cp $MINGW_BIN/libtiff*.dll $DESTINATION
+    cp $MINGW_BIN/libxml2*.dll $DESTINATION
+    cp $MINGW_BIN/libz*.dll $DESTINATION
+
+    # Overwrite system supplied libpango with own patched build item for Windows 7 compatibility
+    # See pango-build-move-usp10-before-gdi32.patch
+    #cp /home/build/rpmbuild/BUILD/pango-1.38.1/pango/.libs/libpangowin32-1.0-0.dll $DESTINATION
+
+    # Extras
+    cp $MINGW_BIN/libexpat*.dll $DESTINATION
+    # Curl 7.17+ has quite a few dependencies for SSL support
+    cp $MINGW_BIN/libcurl*.dll $DESTINATION
+    cp $MINGW_BIN/libssh*.dll $DESTINATION
+    cp $MINGW_BIN/libidn*.dll $DESTINATION
+    cp $MINGW_BIN/libnspr*.dll $DESTINATION
+    cp $MINGW_BIN/libplc*.dll $DESTINATION
+    cp $MINGW_BIN/libplds*.dll $DESTINATION
+    cp $MINGW_BIN/nss*.dll $DESTINATION
+    cp $MINGW_BIN/ssl*.dll $DESTINATION
+    cp $MINGW_BIN/softokn*.dll $DESTINATION
+    cp $MINGW_BIN/smime*.dll $DESTINATION
+    cp $MINGW_BIN/freebl*.dll $DESTINATION
+    #
+    cp $MINGW_BIN/libjson-glib*.dll $DESTINATION
+    cp $MINGW_BIN/libexiv2.dll $DESTINATION
+    cp $MINGW_BIN/libgexiv2*.dll $DESTINATION
+    cp $MINGW_BIN/libstdc++*.dll $DESTINATION
+    cp $MINGW_BIN/libbz*.dll $DESTINATION
+    cp $MINGW_BIN/libmagic*.dll $DESTINATION
+    cp $MINGW_BIN/libsqlite3*.dll $DESTINATION
+    cp $MINGW_BIN/libnettle*.dll $DESTINATION
+    cp $MINGW_BIN/libgps*.dll $DESTINATION
+    cp $MINGW_BIN/libwinpthread*.dll $DESTINATION
+    cp $MINGW_BIN/liboauth*.dll $DESTINATION
+    cp $MINGW_BIN/libnova*.dll $DESTINATION
+    cp $MINGW_BIN/liblzma*.dll $DESTINATION
 fi
-cp $MINGW_BIN/libintl*.dll $DESTINATION
-cp $MINGW_BIN/libffi*.dll $DESTINATION
-cp $MINGW_BIN/libfontconfig*.dll $DESTINATION
-cp $MINGW_BIN/libfreetype*.dll $DESTINATION
-cp $MINGW_BIN/libharfbuzz*.dll $DESTINATION
-cp $MINGW_BIN/libjasper*.dll $DESTINATION
-cp $MINGW_BIN/libjpeg*.dll $DESTINATION
-cp $MINGW_BIN/liblzma*.dll $DESTINATION
-cp $MINGW_BIN/libpng*.dll $DESTINATION
-cp $MINGW_BIN/libpango*.dll $DESTINATION
-cp $MINGW_BIN/libpixman*.dll $DESTINATION
-cp $MINGW_BIN/libssp*.dll $DESTINATION
-cp $MINGW_BIN/libtiff*.dll $DESTINATION
-cp $MINGW_BIN/libxml2*.dll $DESTINATION
-cp $MINGW_BIN/libz*.dll $DESTINATION
 
-# Overwrite system supplied libpango with own patched build item for Windows 7 compatibility
-# See pango-build-move-usp10-before-gdi32.patch
-cp /home/build/rpmbuild/BUILD/pango-1.38.1/pango/.libs/libpangowin32-1.0-0.dll $DESTINATION
+#
+# NOTE
+# For Viking v1.11, created own version of libtiff-6 due to reliance on 'jpeg12 functions' not available in libjpeg
+# The generation of this workaround is not automated here
+# (building libtiff myself, removing jpeg capability with '--disable-jpeg')
+# Further detail see Bug: https://bugzilla.opensuse.org/show_bug.cgi?id=1255828
+# Notionally the old mingw libjpeg packages should be disabled (and thus this workaround not needed);
+#  but some how the old libjpeg is still installed in the osc build...
+#
+if [ -n "$LIBTIFF_FIX" ]; then
+    echo "Using libtiff fix"
+    cp -f $LIBTIFF_FIX/libtiff*dll $DESTINATION
+fi
 
-# Extras
-cp $MINGW_BIN/libexpat*.dll $DESTINATION
-# Curl 7.17+ has quite a few dependencies for SSL support
-cp $MINGW_BIN/libcurl*.dll $DESTINATION
-cp $MINGW_BIN/libssh*.dll $DESTINATION
-cp $MINGW_BIN/libidn*.dll $DESTINATION
-cp $MINGW_BIN/libnspr*.dll $DESTINATION
-cp $MINGW_BIN/libplc*.dll $DESTINATION
-cp $MINGW_BIN/libplds*.dll $DESTINATION
-cp $MINGW_BIN/nss*.dll $DESTINATION
-cp $MINGW_BIN/ssl*.dll $DESTINATION
-cp $MINGW_BIN/softokn*.dll $DESTINATION
-cp $MINGW_BIN/smime*.dll $DESTINATION
-cp $MINGW_BIN/freebl*.dll $DESTINATION
+if [ -z "$MAGIC_DIR" ]; then
+    cp $MINGW/share/misc/magic* $DESTINATION
+else
+    cp $MAGIC_DIR/magic* $DESTINATION
+fi
+
 if [ "$HOSTTYPE" == "x86_64" ]; then
 	cp /usr/share/doc/packages/mingw64-libcurl-devel/COPYING $DESTINATION/COPYING_curl.txt
 else
 	cp /usr/share/doc/packages/mingw32-libcurl-devel/COPYING $DESTINATION/COPYING_curl.txt
 fi
-cp $MINGW_BIN/libjson-glib*.dll $DESTINATION
-cp $MINGW_BIN/libexiv2.dll $DESTINATION
-cp $MINGW_BIN/libgexiv2*.dll $DESTINATION
-cp $MINGW_BIN/libstdc++*.dll $DESTINATION
-cp $MINGW_BIN/libbz*.dll $DESTINATION
-cp $MINGW_BIN/libmagic*.dll $DESTINATION
-cp $MINGW/share/misc/magic* $DESTINATION
-cp $MINGW_BIN/libsqlite3*.dll $DESTINATION
-cp $MINGW_BIN/libnettle*.dll $DESTINATION
-cp $MINGW_BIN/libgps*.dll $DESTINATION
-cp $MINGW_BIN/libwinpthread*.dll $DESTINATION
-cp $MINGW_BIN/liboauth*.dll $DESTINATION
-cp $MINGW_BIN/libnova*.dll $DESTINATION
-cp $MINGW_BIN/liblzma*.dll $DESTINATION
+
 
 # Extra GTK stuff required for (default) theme to work in Windows
 if [ -n "$GTK2" ]; then

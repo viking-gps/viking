@@ -4,16 +4,29 @@
 
 ## Using openSUSE Build Service ##
 
-As of December 2023, use of https://openbuildservice.org/ is supported with versions of Viking mirrored there:
+As of December 2023, Viking is available on https://openbuildservice.org/
 
 https://build.opensuse.org/package/show/windows:mingw:win32/mingw32-viking
 
 https://build.opensuse.org/package/show/windows:mingw:win64/mingw64-viking
 
 Thus cross-building is supported using the 'osc' command in varieties of SUSE and other Linuxes
- e.g. Debian (as preferred by this author).
+ e.g. Debian (as preferred by this author) *locally*;
+So https://openbuildservice.org/ might not be used or may get updated some time after the main formal release.
 
 See https://openbuildservice.org/help/manuals/obs-user-guide/ for details on setup and usage of 'osc'.
+Generally it is a case of:
+          1. Ensuring "Setting Up Your Home Project for the First Time".
+          2. Then "Creating a New Package Within Your Home Project".
+
+then e.g.:
+          cd ~/Code/home:$USER/mingw64-viking/
+          osc build --local-package --no-verify
+          # Ideally would want to simply get viking.exe directly from this build environment;
+          #  but as the BUILDROOT gets wiped, and unfortunately osc / obs-build is severely outdated on Debian at time of writing
+          #  and doesn't support '--buildopts=--noclean'
+          # So either install the RPM somewhere, or extract from the RPM:
+          # rpm2cpio mingw64-viking-1.*.rpm | cpio -idv *viking.exe
 
 ATM, although the compiling build can be performed under 'osc', creating the Windows Installer is a little more bespoke;
 and so remains doing under the VM method detailed below.
