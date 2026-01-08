@@ -202,13 +202,21 @@ static void draw_page_cairo(GtkPrintContext *context, PrintData *data)
 
   cr = gtk_print_context_get_cairo_context(context);
 #if GTK_CHECK_VERSION (3,0,0)
-  pixbuf_to_draw = gdk_pixbuf_get_from_window ( gtk_widget_get_window (GTK_WIDGET(data->vvp)),
-                                                0, 0, data->width, data->height );
+  // On Wayland gdk_pixbuf_get_from_window() may be disallowed/return NULL.
+  // Use the viewport's offscreen pixbuf which works on both X11 and Wayland.
+  pixbuf_to_draw = vik_viewport_get_pixbuf (data->vvp, data->width, data->height);
 #else
   pixbuf_to_draw = gdk_pixbuf_get_from_drawable(NULL,
                                GDK_DRAWABLE(vik_viewport_get_pixmap(data->vvp)),
                                NULL, 0, 0, 0, 0, data->width, data->height);
 #endif
+
+  if (!pixbuf_to_draw) {
+    g_warning("%s: failed to obtain viewport pixbuf for printing", __FUNCTION__);
+    // Nothing sensible to draw — return early.
+    return;
+  }
+
   surface = cairo_image_surface_create(CAIRO_FORMAT_RGB24,
                                        data->width, data->height);
 
