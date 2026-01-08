@@ -2466,10 +2466,9 @@ Inbuilt maps include various <ulink url="https://openstreetmap.org/">OpenStreetM
 <itemizedlist>
 <listitem><para>Bing Aerial Maps (&appname; Version1.2+)</para></listitem>
 <listitem>
-<para><ulink url="https://opentopomap.org/about">OpenTopoMap</ulink> - This is the default (&appname; Version1.9+)</para>
-<para>Thank you to the OpenTopoMap team for allowing &appname; to use their tile service as default.</para>
+<para><ulink url="https://opentopomap.org/about">OpenTopoMap</ulink></para>
 </listitem>
-<listitem><para>OpenStreetMap (Mapnik)</para></listitem>
+<listitem><para>OpenStreetMap (Mapnik) - This is the default (&appname; Version1.11+)</para></listitem>
 <listitem><para>OpenStreetMap (Cycle)</para></listitem>
 <listitem><para>OpenStreetMap (Transport) (&appname; Version1.3+)</para></listitem>
 <listitem><para>OpenStreetMap (Humanitarian) (&appname; Version1.5+)</para></listitem>

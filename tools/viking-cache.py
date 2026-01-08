@@ -419,9 +419,9 @@ Here one must specify the output directory name explicitly and set your maps.xml
 
 parser.add_option('-t', '--tileid', dest='tileid',
     action="store",
-    help='''Tile id of Viking map cache to use (901 if not specified as this is Viking's default (OpenTopoMap))''',
+    help='''Tile id of Viking map cache to use (13 if not specified as this is Viking's default (OSM Mapnik))''',
     type='string',
-    default='901')
+    default='13')
 
 parser.add_option('-n', '--nooptimize', dest='nooptimize',
     action="store_true",

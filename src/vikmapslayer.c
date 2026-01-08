@@ -119,7 +119,7 @@ static VikLayerParamScale params_scales[] = {
  { 1, 365, 1, 0 }, /* expiry_age */
 };
 
-static VikLayerParamData id_default ( void ) { return VIK_LPD_UINT ( MAP_ID_OPEN_TOPO_MAP ); }
+static VikLayerParamData id_default ( void ) { return VIK_LPD_UINT ( MAP_ID_OSM_MAPNIK ); }
 static VikLayerParamData directory_default ( void )
 {
   VikLayerParamData data;
