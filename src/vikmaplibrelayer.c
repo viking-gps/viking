@@ -96,6 +96,7 @@ enum {
 static const gchar* maplibre_layer_tooltip ( VikMaplibreLayer *vml );
 static void maplibre_layer_marshall( VikMaplibreLayer *vml, guint8 **data, guint *len );
 static VikMaplibreLayer *maplibre_layer_unmarshall( guint8 *data, guint len, VikViewport *vvp );
+static guint8 maplibre_layer_default_tab ( void );
 static gboolean maplibre_layer_set_param ( VikMaplibreLayer *vml, VikLayerSetParam *vlsp );
 static VikLayerParamData maplibre_layer_get_param ( VikMaplibreLayer *vml, guint16 id, gboolean is_file_operation );
 static VikMaplibreLayer *maplibre_layer_new ( VikViewport *vvp );
@@ -179,6 +180,7 @@ VikLayerInterface vik_maplibre_layer_interface = {
 	(VikLayerFuncMarshall)                maplibre_layer_marshall,
 	(VikLayerFuncUnmarshall)              maplibre_layer_unmarshall,
 
+	(VikLayerFuncParamsDefaultGroup)      maplibre_layer_default_tab,
 	(VikLayerFuncSetParam)                maplibre_layer_set_param,
 	(VikLayerFuncGetParam)                maplibre_layer_get_param,
 	(VikLayerFuncChangeParam)             NULL,
@@ -330,6 +332,12 @@ static VikMaplibreLayer *maplibre_layer_unmarshall( guint8 *data, guint len, Vik
 	VikMaplibreLayer *rv = maplibre_layer_new ( vvp );
 	vik_layer_unmarshall_params ( VIK_LAYER(rv), data, len, vvp );
 	return rv;
+}
+
+
+static guint8 maplibre_layer_default_tab ( void )
+{
+	return 0;
 }
 
 static gboolean maplibre_layer_set_param ( VikMaplibreLayer *vml, VikLayerSetParam *vlsp )
