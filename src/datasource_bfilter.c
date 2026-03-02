@@ -130,7 +130,9 @@ static void datasource_bfilter_compress_get_process_options ( VikLayerParamData 
   // NB units not applicable if relative method used - defaults to Miles when not specified
   po->babelargs = g_strdup ( "-i gpx" );
   po->filename = g_strdup ( input_filename );
-  po->babel_filters = g_strdup_printf ( "-x simplify,crosstrack,error=%-.5f%c", paramdatas[0].d, units );
+  gchar factor_str [COORDS_STR_BUFFER_SIZE];
+  a_coords_dtostr_buffer ( paramdatas[0].d, factor_str );
+  po->babel_filters = g_strdup_printf ( "-x simplify,crosstrack,error=%s%c", factor_str, units );
 
   // Store for subsequent default use
   bfilter_compress_params_defaults[0].d = paramdatas[0].d;
