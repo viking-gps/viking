@@ -36,7 +36,7 @@
 #define MAP_ID_BLUE_MARBLE 15
 #define MAP_ID_OSM_CYCLE 17
 //#define MAP_ID_MAPQUEST_OSM 19 // Tile Service discontinued
-#define MAP_ID_OSM_TRANSPORT 20
+//#define MAP_ID_OSM_TRANSPORT 20 // requires API key
 #define MAP_ID_OSM_ON_DISK 21
 #define MAP_ID_OSM_HUMANITARIAN 22
 #define MAP_ID_MBTILES 23
