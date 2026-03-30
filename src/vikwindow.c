@@ -4275,7 +4275,8 @@ static void tb_view_side_panel_splits_cb ( GtkAction *a, VikWindow *vw )
 static void tb_set_draw_scale ( GtkAction *a, VikWindow *vw )
 {
   gboolean next_state = !vik_viewport_get_draw_scale ( vw->viking_vvp );
-  GtkWidget *check_box = get_show_widget_by_name ( vw, gtk_action_get_name(a) );
+  const gchar *action_name = gtk_action_get_name ( a );
+  GtkWidget *check_box = get_show_widget_by_name ( vw, action_name );
   gboolean menu_state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
   if ( next_state != menu_state )
     gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
@@ -4288,7 +4289,8 @@ static void tb_set_draw_scale ( GtkAction *a, VikWindow *vw )
 static void tb_set_draw_centermark ( GtkAction *a, VikWindow *vw )
 {
   gboolean next_state = !vik_viewport_get_draw_centermark ( vw->viking_vvp );
-  GtkWidget *check_box = get_show_widget_by_name ( vw, gtk_action_get_name(a) );
+  const gchar *action_name = gtk_action_get_name ( a );
+  GtkWidget *check_box = get_show_widget_by_name ( vw, action_name );
   gboolean menu_state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
   if ( next_state != menu_state )
     gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
@@ -4301,7 +4303,8 @@ static void tb_set_draw_centermark ( GtkAction *a, VikWindow *vw )
 static void tb_set_draw_highlight ( GtkAction *a, VikWindow *vw )
 {
   gboolean next_state = !vik_viewport_get_draw_highlight ( vw->viking_vvp );
-  GtkWidget *check_box = get_show_widget_by_name ( vw, gtk_action_get_name(a) );
+  const gchar *action_name = gtk_action_get_name ( a );
+  GtkWidget *check_box = get_show_widget_by_name ( vw, action_name );
   gboolean menu_state = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(check_box) );
   if ( next_state != menu_state )
     gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), next_state );
@@ -5097,19 +5100,19 @@ void vik_window_open_file ( VikWindow *vw, const gchar *filename, gboolean chang
       gboolean ui_state_scale = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(get_show_widget_by_name(vw, "ShowScale")) );
       if ( vp_state_scale != ui_state_scale ) {
         vik_viewport_set_draw_scale ( vw->viking_vvp, !vp_state_scale );
-        toggle_draw_scale ( NULL, vw );
+        gtk_menu_item_activate ( GTK_MENU_ITEM(get_show_widget_by_name ( vw, "ShowScale" )) );
       }
       gboolean vp_state_centermark = vik_viewport_get_draw_centermark ( vw->viking_vvp );
       gboolean ui_state_centermark = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(get_show_widget_by_name(vw, "ShowCenterMark")) );
       if ( vp_state_centermark != ui_state_centermark ) {
         vik_viewport_set_draw_centermark ( vw->viking_vvp, !vp_state_centermark );
-        toggle_draw_centermark ( NULL, vw );
+        gtk_menu_item_activate ( GTK_MENU_ITEM(get_show_widget_by_name ( vw, "ShowCenterMark" )) );
       }
       gboolean vp_state_highlight = vik_viewport_get_draw_highlight ( vw->viking_vvp );
       gboolean ui_state_highlight = gtk_check_menu_item_get_active ( GTK_CHECK_MENU_ITEM(get_show_widget_by_name(vw, "ShowHighlight")) );
       if ( vp_state_highlight != ui_state_highlight ) {
         vik_viewport_set_draw_highlight ( vw->viking_vvp, !vp_state_highlight );
-        toggle_draw_highlight ( NULL, vw );
+        gtk_menu_item_activate ( GTK_MENU_ITEM(get_show_widget_by_name ( vw, "ShowHighlight" )) );
       }
     }
       // NB No break, carry on to redraw
@@ -6417,35 +6420,44 @@ static void window_change_coord_mode_cb ( GtkAction *old_a, GtkAction *a, VikWin
 
 static void toggle_draw_scale ( GtkAction *a, VikWindow *vw )
 {
-  gboolean state = !vik_viewport_get_draw_scale ( vw->viking_vvp );
-  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowScale" );
-  if ( !check_box )
-    return;
-  gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), state );
-  vik_viewport_set_draw_scale ( vw->viking_vvp, state );
-  draw_update ( vw );
+  gboolean next_state = !vik_viewport_get_draw_scale ( vw->viking_vvp );
+  const gchar *action_name = gtk_action_get_name ( a );
+  GtkToggleToolButton *tbutton = (GtkToggleToolButton *)toolbar_get_widget_by_name ( vw->viking_vtb, action_name );
+  if ( tbutton &&
+       next_state != gtk_toggle_tool_button_get_active ( tbutton ) )
+     gtk_toggle_tool_button_set_active ( tbutton, next_state );
+  else {
+     vik_viewport_set_draw_scale ( vw->viking_vvp, next_state );
+     draw_update ( vw );
+  }
 }
 
 static void toggle_draw_centermark ( GtkAction *a, VikWindow *vw )
 {
-  gboolean state = !vik_viewport_get_draw_centermark ( vw->viking_vvp );
-  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowCenterMark" );
-  if ( !check_box )
-    return;
-  gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), state );
-  vik_viewport_set_draw_centermark ( vw->viking_vvp, state );
-  draw_update ( vw );
+  gboolean next_state = !vik_viewport_get_draw_centermark ( vw->viking_vvp );
+  const gchar *action_name = gtk_action_get_name ( a );
+  GtkToggleToolButton *tbutton = (GtkToggleToolButton *)toolbar_get_widget_by_name ( vw->viking_vtb, action_name );
+  if ( tbutton &&
+       next_state != gtk_toggle_tool_button_get_active ( tbutton ) )
+     gtk_toggle_tool_button_set_active ( tbutton, next_state );
+  else {
+     vik_viewport_set_draw_centermark ( vw->viking_vvp, next_state );
+     draw_update ( vw );
+  }
 }
 
 static void toggle_draw_highlight ( GtkAction *a, VikWindow *vw )
 {
-  gboolean state = !vik_viewport_get_draw_highlight ( vw->viking_vvp );
-  GtkWidget *check_box = gtk_ui_manager_get_widget ( vw->uim, "/ui/MainMenu/View/SetShow/ShowHighlight" );
-  if ( !check_box )
-    return;
-  gtk_check_menu_item_set_active ( GTK_CHECK_MENU_ITEM(check_box), state );
-  vik_viewport_set_draw_highlight ( vw->viking_vvp, state );
-  draw_update ( vw );
+  gboolean next_state = !vik_viewport_get_draw_highlight ( vw->viking_vvp );
+  const gchar *action_name = gtk_action_get_name ( a );
+  GtkToggleToolButton *tbutton = (GtkToggleToolButton *)toolbar_get_widget_by_name ( vw->viking_vtb, action_name );
+  if ( tbutton &&
+       next_state != gtk_toggle_tool_button_get_active ( tbutton ) )
+     gtk_toggle_tool_button_set_active ( tbutton, next_state );
+  else {
+     vik_viewport_set_draw_highlight ( vw->viking_vvp, next_state );
+     draw_update ( vw );
+  }
 }
 
 static void set_bg_color ( GtkAction *a, VikWindow *vw )
