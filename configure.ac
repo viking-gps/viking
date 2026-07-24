@@ -512,7 +512,7 @@ AC_CACHE_CHECK([whether to enable MD5 Hash support],
                [ac_cv_enable_nettle], [ac_cv_enable_nettle=yes])
 case $ac_cv_enable_nettle in
   yes)
-    AC_CHECK_HEADER([nettle/md5-compat.h],[],[AC_MSG_ERROR([nettle/md5-compat.h is needed but not found - you will need to install package 'nettle-dev' or similar. The feature can be disabled with --disable-nettle])])
+    AC_CHECK_HEADER([nettle/md5.h],[],[AC_MSG_ERROR([nettle/md5.h is needed but not found - you will need to install package 'nettle-dev' or similar. The feature can be disabled with --disable-nettle])])
     AC_CHECK_LIB([nettle], [main], [],
       if test "$ac_mingw32" = "yes"; then
         [LIBS="-lnettle $LIBS"
