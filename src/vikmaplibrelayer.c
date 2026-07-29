@@ -346,15 +346,30 @@ static gboolean maplibre_layer_set_param ( VikMaplibreLayer *vml, VikLayerSetPar
 	switch ( vlsp->id ) {
 		case PARAM_STYLE_JSON: {
 			gchar* old = g_strdup ( vml->filename_json );
-			maplibre_layer_set_file_json ( vml, vlsp->data.s );
-			changed = g_strcmp0 ( old, vlsp->data.s );
+			// maplibre needs absolute path for style
+			gchar* abs_style = util_make_absolute_filename ( vlsp->data.s, vlsp->dirpath );
+			if ( abs_style ) {
+				maplibre_layer_set_file_json ( vml, abs_style );
+				changed = g_strcmp0 ( old, abs_style );
+				g_free ( abs_style );
+			} else {
+				maplibre_layer_set_file_json ( vml, vlsp->data.s );
+				changed = g_strcmp0 ( old, vlsp->data.s );
+			}
 			g_free ( old );
 			break;
 		}
 		case PARAM_CACHE: {
 			gchar* old = g_strdup ( vml->cache_file );
-			maplibre_layer_set_cache_file ( vml, vlsp->data.s );
-			changed = g_strcmp0 ( old, vlsp->data.s );
+			gchar* abs_cache = util_make_absolute_filename ( vlsp->data.s, vlsp->dirpath );
+			if ( abs_cache ) {
+				maplibre_layer_set_cache_file ( vml, abs_cache );
+				changed = g_strcmp0 ( old, abs_cache );
+				g_free ( abs_cache );
+			} else {
+				maplibre_layer_set_cache_file ( vml, vlsp->data.s );
+				changed = g_strcmp0 ( old, vlsp->data.s );
+			}
 			g_free ( old );
 			break;
 		}
