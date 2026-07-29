@@ -5,7 +5,6 @@ SUBDIRS = icons
 
 bin_PROGRAMS = viking
 
-#TODO: if MAPLIBRE
 noinst_LIBRARIES = \
 	libviking.a
 #	libdtoa.a
@@ -236,11 +235,11 @@ libviking_a_SOURCES += \
 	mapnik_interface.cpp mapnik_interface.h
 endif
 
-#TODO: if MAPLIBRE 
+if MAPLIBRE
 libviking_a_SOURCES += \
 	vikmaplibrelayer.c vikmaplibrelayer.h \
 	maplibre_interface.cpp maplibre_interface.h
-#endif
+endif
 
 if GEOCLUE
 libviking_a_SOURCES += \
@@ -256,6 +255,7 @@ LDADD += \
 	../windows/installer/pixmaps/viking_icon.o
 endif
 
+if MAPLIBRE
 LDADD += \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-core.a \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-csscolorparser.a \
@@ -264,6 +264,7 @@ LDADD += \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/libmbgl-vendor-sqlite.a \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/vendor/freetype/libfreetype.a \
 	$(top_srcdir)/maplibre-native/build-linux-opengl/vendor/maplibre-tile-spec/cpp/libmlt-cpp.a
+endif
 
 #	$(top_srcdir)/maplibre-native/build-linux-vulkan/vendor/glslang/glslang/libglslang.a \
 #	$(top_srcdir)/maplibre-native/build-linux-vulkan/vendor/glslang/glslang/libglslang-default-resource-limits.a
@@ -283,12 +284,14 @@ LDADD += \
 #	-L$(top_srcdir)/maplibre-native/build-linux-opengl/vendor/harfbuzz/ \
 #	-lfreetype \
 #	-lharfbuzz
+if MAPLIBRE
 MAPLIBRE_FLAGS = \
 	-I$(top_srcdir)/maplibre-native/include/ \
 	-I$(top_srcdir)/maplibre-native/vendor/maplibre-native-base/deps/geometry.hpp/include/ \
 	-I$(top_srcdir)/maplibre-native/vendor/maplibre-native-base/include/ \
 	-I$(top_srcdir)/maplibre-native/vendor/maplibre-native-base/deps/variant/include/ \
 	-I$(top_srcdir)/maplibre-native/platform/default/include/
+endif
 
 AM_CFLAGS		= -Wall -g -D_GNU_SOURCE \
 	$(PACKAGE_CFLAGS) $(GTK_CFLAGS) \

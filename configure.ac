@@ -549,23 +549,35 @@ case $ac_cv_enable_nova in
 esac
 AM_CONDITIONAL([NOVA], [test x$ac_cv_enable_nova = xyes])
 
-# TODO: if maplibre, C++20 probably too
-AC_LANG_PUSH([C++])
-CXXFLAGS="$CXXFLAGS -std=c++20"
-AC_CHECK_LIB([stdc++], [main], [], [AC_MSG_ERROR([libstdc++ is needed but not found.])])
-AC_CHECK_LIB([icuuc], [main], [], [AC_MSG_ERROR([libicuuc is needed but not found.])])
-AC_CHECK_LIB([icui18n], [main], [], [AC_MSG_ERROR([libicui18n is needed but not found.])])
-AC_CHECK_LIB([bz2], [main], [], [AC_MSG_ERROR([libbz2 is needed but not found.])])
-AC_CHECK_LIB([png], [main], [], [AC_MSG_ERROR([libpng is needed but not found.])])
-AC_CHECK_LIB([z], [main], [], [AC_MSG_ERROR([libz is needed but not found.])])
-AC_CHECK_LIB([webp], [main], [], [AC_MSG_ERROR([libwepb is needed but not found.])])
-AC_CHECK_LIB([jpeg], [main], [], [AC_MSG_ERROR([libjpeg is needed but not found.])])
-AC_CHECK_LIB([curl], [main], [], [AC_MSG_ERROR([libcurl is needed but not found.])])
-AC_CHECK_LIB([GL], [main], [], [AC_MSG_ERROR([libGL is needed but not found.])])
-AC_CHECK_LIB([EGL], [main], [], [AC_MSG_ERROR([libEGL is needed but not found.])])
-#AC_CHECK_LIB([vulkan_intel], [main], [], [AC_MSG_ERROR([libvulkan_intel is needed but not found.])])
-AC_CHECK_LIB([uv], [main], [], [AC_MSG_ERROR([libuv is needed but not found.])])
-AC_LANG_POP([C++])
+# MapLibre Native rendering layer (vector map rendering)
+AC_ARG_ENABLE(maplibre, AS_HELP_STRING([--enable-maplibre],
+              [enable MapLibre Native vector map rendering support (default is enable)]),
+              [ac_cv_enable_maplibre=$enableval],
+              [ac_cv_enable_maplibre=yes])
+AC_CACHE_CHECK([whether to enable MapLibre Native support],
+               [ac_cv_enable_maplibre], [ac_cv_enable_maplibre=yes])
+case $ac_cv_enable_maplibre in
+  yes)
+    AC_LANG_PUSH([C++])
+    CXXFLAGS="$CXXFLAGS -std=c++20"
+    AC_CHECK_LIB([stdc++], [main], [], [AC_MSG_ERROR([libstdc++ is needed but not found.])])
+    AC_CHECK_LIB([icuuc], [main], [], [AC_MSG_ERROR([libicuuc is needed but not found.])])
+    AC_CHECK_LIB([icui18n], [main], [], [AC_MSG_ERROR([libicui18n is needed but not found.])])
+    AC_CHECK_LIB([bz2], [main], [], [AC_MSG_ERROR([libbz2 is needed but not found.])])
+    AC_CHECK_LIB([png], [main], [], [AC_MSG_ERROR([libpng is needed but not found.])])
+    AC_CHECK_LIB([z], [main], [], [AC_MSG_ERROR([libz is needed but not found.])])
+    AC_CHECK_LIB([webp], [main], [], [AC_MSG_ERROR([libwepb is needed but not found.])])
+    AC_CHECK_LIB([jpeg], [main], [], [AC_MSG_ERROR([libjpeg is needed but not found.])])
+    AC_CHECK_LIB([curl], [main], [], [AC_MSG_ERROR([libcurl is needed but not found.])])
+    AC_CHECK_LIB([GL], [main], [], [AC_MSG_ERROR([libGL is needed but not found.])])
+    AC_CHECK_LIB([EGL], [main], [], [AC_MSG_ERROR([libEGL is needed but not found.])])
+    #AC_CHECK_LIB([vulkan_intel], [main], [], [AC_MSG_ERROR([libvulkan_intel is needed but not found.])])
+    AC_CHECK_LIB([uv], [main], [], [AC_MSG_ERROR([libuv is needed but not found.])])
+    AC_LANG_POP([C++])
+    AC_DEFINE([HAVE_MAPLIBRE], [1], [Define if MapLibre Native support is enabled.])
+    ;;
+esac
+AM_CONDITIONAL([MAPLIBRE], [test x$ac_cv_enable_maplibre = xyes])
 
 # Mapnik rendering layer
 AC_ARG_ENABLE(mapnik, AS_HELP_STRING([--enable-mapnik],
@@ -711,6 +723,7 @@ Zip File Support (with libzip)   : $ac_cv_enable_zip
 XZ File Support (with liblzma)   : $ac_cv_enable_xz
 MD5 Hash Support (with libnettle): $ac_cv_enable_nettle
 Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik
+MapLibre Rendering Support (C++) : $ac_cv_enable_maplibre
 Nova (Astronomical Data)         : $ac_cv_enable_nova
 OAuth1.0a                        : $ac_cv_enable_oauth
 Size of map cache (in memory)    : ${VIK_CONFIG_MAPCACHE_SIZE}
