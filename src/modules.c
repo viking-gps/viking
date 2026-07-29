@@ -62,9 +62,9 @@
 #ifdef HAVE_LIBMAPNIK
 #include "vikmapniklayer.h"
 #endif
-//TODO:if MAPLIBRE
+#ifdef HAVE_MAPLIBRE
 #include "vikmaplibrelayer.h"
-//endif
+#endif
 
 #define VIKING_MAPS_FILE "maps.xml"
 #define VIKING_EXTTOOLS_FILE "external_tools.xml"
@@ -290,9 +290,9 @@ void modules_post_init ()
 #ifdef HAVE_LIBMAPNIK
   vik_mapnik_layer_post_init();
 #endif
-//TODO: IF MAPLIBRE
+#ifdef HAVE_MAPLIBRE
   vik_maplibre_layer_post_init();
-//endif
+#endif
 }
 
 /**
