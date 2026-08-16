@@ -26,9 +26,6 @@ TESTS = check_degrees_conversions.sh \
 if GEOTAG
 TESTS += check_geotag.sh
 endif
-if MD5_HASH
-TESTS += check_md5_hash.sh
-endif
 # Some tests use the test_file_load or vik2vik - which use VikViewport - which means need to use gtk_init()
 #  which essentially means needs a display to work. Thus under some CI circumstances there is no DISPLAY,
 #  so ATM simplest to avoid/skip the following tests
@@ -55,7 +52,6 @@ check_PROGRAMS = degrees_converter \
 	test_parse_latlon \
 	test_babel \
 	test_file_load \
-	test_md5_hash \
 	test_metatile
 
 if GEOTAG
@@ -80,9 +76,6 @@ check_SCRIPTS = check_degrees_conversions.sh \
 	check_remote.sh
 if GEOTAG
 check_SCRIPTS += check_geotag.sh
-endif
-if MD5_HASH
-check_SCRIPTS += check_md5_hash.sh
 endif
 
 # Scripts and the test data that they use
@@ -112,7 +105,6 @@ EXTRA_DIST = check_degrees_conversions.sh \
 	search-result-geonames-viking.xml \
 	search-result-geonames-attr-viking.xml \
 	search-result-nominatim-viking.xml \
-	check_md5_hash.sh \
 	check_metatile.sh \
 	metatile_example/13/0/0/250/220/0.meta \
 	check_geojson_osrm.sh \
@@ -183,11 +175,6 @@ test_parse_latlon_LDADD = \
 
 test_babel_SOURCES = test_babel.c
 test_babel_LDADD = \
-  $(top_builddir)/src/libviking.a \
-  $(LDADD)
-
-test_md5_hash_SOURCES = test_md5_hash.c
-test_md5_hash_LDADD = \
   $(top_builddir)/src/libviking.a \
   $(LDADD)
 

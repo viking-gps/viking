@@ -946,9 +946,6 @@ void a_dialog_about ( GtkWindow *parent )
 #ifdef HAVE_LIBMAPNIK
     "libmapnik",
 #endif
-#ifdef HAVE_LIBNETTLE
-    "libnettle",
-#endif
 #ifdef HAVE_LIBGEOCLUE_2
     "libgeoclue2",
 #endif

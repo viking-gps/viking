@@ -36,7 +36,6 @@ BuildRequires:  mingw32-libbz2-devel
 BuildRequires:  mingw32-file-devel
 BuildRequires:  mingw32-sqlite-devel
 BuildRequires:  mingw32-libzip-devel
-BuildRequires:  mingw32-libnettle-devel
 BuildRequires:  mingw32-libgps-devel
 BuildRequires:  mingw32-liboauth-devel
 BuildRequires:  mingw32-libnova-devel

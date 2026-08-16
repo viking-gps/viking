@@ -503,27 +503,6 @@ case $ac_cv_enable_xz in
 esac
 AM_CONDITIONAL([LIBLZMA], [test x$ac_cv_enable_xz = xyes])
 
-# ATM only for MD5 Hashing which is currently only used for filename of image thumbnails
-AC_ARG_ENABLE(nettle, AS_HELP_STRING([--enable-nettle],
-              [enable MD5 Hash support (default is enable)]),
-              [ac_cv_enable_nettle=$enableval],
-              [ac_cv_enable_nettle=yes])
-AC_CACHE_CHECK([whether to enable MD5 Hash support],
-               [ac_cv_enable_nettle], [ac_cv_enable_nettle=yes])
-case $ac_cv_enable_nettle in
-  yes)
-    AC_CHECK_HEADER([nettle/md5.h],[],[AC_MSG_ERROR([nettle/md5.h is needed but not found - you will need to install package 'nettle-dev' or similar. The feature can be disabled with --disable-nettle])])
-    AC_CHECK_LIB([nettle], [main], [],
-      if test "$ac_mingw32" = "yes"; then
-        [LIBS="-lnettle $LIBS"
-         AC_MSG_WARN([libnettle not found! Forcing it anyway!])]
-      else
-         AC_MSG_ERROR([libnettle is needed but not found.])
-      fi)
-    ;;
-esac
-AM_CONDITIONAL([MD5_HASH], [test x$ac_cv_enable_nettle = xyes])
-
 # libnova for Astronomical data
 AC_ARG_ENABLE(nova, AS_HELP_STRING([--enable-nova],
               [enable Astronomical data support via libnova (default is enable).]),
@@ -691,7 +670,6 @@ File Magic Support               : $ac_cv_enable_magic
 MBTiles Support (SQLite3)        : $ac_cv_enable_mbtiles
 Zip File Support (with libzip)   : $ac_cv_enable_zip
 XZ File Support (with liblzma)   : $ac_cv_enable_xz
-MD5 Hash Support (with libnettle): $ac_cv_enable_nettle
 Mapnik Rendering Support (C++)   : $ac_cv_enable_mapnik
 Nova (Astronomical Data)         : $ac_cv_enable_nova
 OAuth1.0a                        : $ac_cv_enable_oauth

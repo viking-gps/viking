@@ -37,7 +37,6 @@
 #include "viking.h"
 #include "thumbnails.h"
 #include "icons/icons.h"
-#include "md5_hash.h"
 
 #ifdef __CYGWIN__
 #ifdef __CYGWIN_USE_BIG_TYPES__
@@ -158,7 +157,7 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 	int original_width, original_height;
 	const gchar* orientation;
 	GString *to;
-	char *md5, *swidth, *sheight, *ssize, *smtime, *uri;
+	char *swidth, *sheight, *ssize, *smtime, *uri;
 	mode_t old_mask;
 	int name_len;
 	GdkPixbuf *thumb;
@@ -181,13 +180,15 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 
 	path = file_realpath_dup(pathname);
 	uri = g_strconcat("file://", path, NULL);
-	md5 = md5_hash(uri);
+	gchar *md5 = g_compute_checksum_for_string (G_CHECKSUM_MD5, uri, -1);
 	g_free(path);
 
 	to = g_string_new ( thumb_dir );
 	if ( g_mkdir_with_parents(to->str, 0700) != 0 )
 		g_warning ("%s: Failed to mkdir %s", __FUNCTION__, to->str );
 	g_string_append(to, md5);
+	g_debug ( "%s: URI=%s THUMBFILE=%s.png", __FUNCTION__, uri, to->str );
+
 	name_len = to->len + 4; /* Truncate to this length when renaming */
 #ifdef WINDOWS
 	g_string_append_printf(to, ".png.Viking");
@@ -261,13 +262,13 @@ static GdkPixbuf *save_thumbnail(const char *pathname, GdkPixbuf *full)
 GdkPixbuf *a_thumbnails_get(const gchar *pathname)
 {
 	GdkPixbuf *thumb = NULL;
-	char *thumb_path, *md5, *uri, *path;
+	char *thumb_path, *uri, *path;
 	const char *ssize, *smtime;
 	struct stat info;
 
 	path = file_realpath_dup(pathname);
 	uri = g_strconcat("file://", path, NULL);
-	md5 = md5_hash(uri);
+	gchar *md5 = g_compute_checksum_for_string (G_CHECKSUM_MD5, uri, -1);
 	g_free(uri);
 
 	thumb_path = g_strdup_printf("%s%s.png", thumb_dir, md5);
