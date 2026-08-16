@@ -210,6 +210,9 @@ static gboolean layer_defaults_register ( VikLayerTypeEnum type )
         VikLayerParamData paramd = params[i].default_value();
         a_layer_defaults_register ( &params[i], paramd, vik_layer_interfaces[type]->fixed_layer_name );
         answer = TRUE;
+      } else {
+        // Internal check failed (coding error).
+        g_critical ("%s layer parameter %s must have a default value function", vik_layer_interfaces[type]->fixed_layer_name, params[i].name);
       }
     }
   }

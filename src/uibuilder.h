@@ -128,7 +128,7 @@ typedef struct {
   gpointer widget_data;
   gpointer extra_widget_data;
   const gchar *tooltip;
-  VikLayerDefaultFunc default_value;
+  VikLayerDefaultFunc default_value;        // This must not be set to NULL
   VikLayerConvertFunc convert_to_display;
   VikLayerConvertFunc convert_to_internal;
 } VikLayerParam;
