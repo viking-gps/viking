@@ -26,7 +26,8 @@
 #include "config.h"
 #endif
 #ifdef HAVE_LIBNETTLE
-#include <nettle/md5-compat.h>
+#include <nettle/version.h>
+#include <nettle/md5.h>
 #endif
 
 /**
@@ -37,10 +38,14 @@ char *md5_hash(const char *message)
 	char *answer = NULL;
 #ifdef HAVE_LIBNETTLE
 	unsigned char result[16];
-	MD5_CTX ctx;
-	MD5Init ( &ctx );
-	MD5Update ( &ctx, (const unsigned char*)message, strlen(message) );
-	MD5Final ( &result[0], &ctx );
+	struct md5_ctx ctx;
+	md5_init ( &ctx );
+	md5_update ( &ctx, strlen(message), (const unsigned char*)message );
+#if defined(NETTLE_VERSION_MAJOR) && NETTLE_VERSION_MAJOR >= 4
+	md5_digest ( &ctx, &result[0] );
+#else
+	md5_digest ( &ctx, MD5_DIGEST_SIZE, &result[0] );
+#endif
 	/*
 	g_printf ( "%s: of string '%s' is: ", __FUNCTION__, message );
 	for(int i = 0; i < 16; i++)
