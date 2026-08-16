@@ -37,6 +37,7 @@ typedef enum {
 typedef struct {
 	// ColorStyle
 	gchar *color; // Should be aabbggrr in hex
+	gboolean label_vis;
 	//colorModeEnum colorMode;
 	// LineStyle
 	//gdouble width; // Width in pixels - probably should be greater 0...!
@@ -56,7 +57,7 @@ typedef struct {
 	GHashTable *styles; // of AnyStyle
 	gchar *styleName; // Temp holding area before storing in HashTable
 	gchar *color;     // Temp holding area before storing in a style
-	//gdouble width;    // Temp holding area before storing in a style
+	gboolean label_vis; // Temp holding area before storing in a style
 	//gdouble scale;    // Temp holding area before storing in a style
 	gboolean vis;
 	gdouble timestamp; // Waypoints only
@@ -382,6 +383,8 @@ static void add_track ( xml_data *xd )
 			if ( as ) {
 				// Set colour for track
 				track_set_color ( xd->track, as->color );
+				if ( as->label_vis )
+					xd->track->draw_name_mode = TRACK_DRAWNAME_CENTRE;
 				// ATM not going to use the width - since we don't support a per track width
 				//  we only do line width applying to the whole layer
 			}
@@ -802,6 +805,14 @@ static void color_end ( xml_data *xd, const char *el )
 	end_leaf_tag ( xd );
 }
 
+static void label_vis_end ( xml_data *xd, const char *el )
+{
+	xd->label_vis = TRUE;
+	if ( g_strcmp0(xd->c_cdata->str, "0") == 0 )
+		xd->label_vis = FALSE;
+	end_leaf_tag ( xd );
+}
+
 static void linestyle_end ( xml_data *xd, const char *el )
 {
 	if ( g_strcmp0 ( el, "LineStyle" ) == 0 )
@@ -812,7 +823,9 @@ static void linestyle_start ( xml_data *xd, const char *el, const char **attr )
 {
 	if ( g_strcmp0 ( el, "color" ) == 0 )
 		setup_to_read_leaf_tag ( xd, linestyle_end, color_end );
-	// else read "width"...
+	else if ( g_strcmp0 ( el, "gx:labelVisibility" ) == 0 )
+		setup_to_read_leaf_tag ( xd, linestyle_end, label_vis_end );
+	// ATM don't support width (as we use a per layer value; rather than per track)
 }
 
 static void style_end ( xml_data *xd, const char *el )
@@ -823,6 +836,7 @@ static void style_end ( xml_data *xd, const char *el )
 		if ( xd->color ) {
 			AnyStyle *as = g_malloc ( sizeof(AnyStyle) );
 			as->color = g_strdup ( xd->color );
+			as->label_vis = xd->label_vis;
 			//as->width = xd->width;
 			//as->scale = xd->scale;
 			(void)g_hash_table_insert ( xd->styles, g_strdup(xd->styleName), as );
