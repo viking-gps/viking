@@ -2547,7 +2547,10 @@ static gint tac_calculate_thread ( CalculateThreadT *ct, gpointer threaddata )
   // Timing for all tile calcs
   clock_t end = clock();
   double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-  g_debug ( "%s: %f", __FUNCTION__, time_spent );
+  //g_debug ( "%s: %f", __FUNCTION__, time_spent );
+  gchar *msg = g_strdup_printf ( _("TAC calculation took %.3fs"), time_spent );
+  vik_window_statusbar_update ( (VikWindow*)VIK_GTK_WINDOW_FROM_LAYER(ct->val), msg, VIK_STATUSBAR_INFO );
+  g_free ( msg );
 
   ct->val->calculating = FALSE;
   vik_layer_emit_update ( VIK_LAYER(ct->val), FALSE ); // NB update display from background
@@ -3785,6 +3788,7 @@ static const gchar* aggregate_layer_tooltip ( VikAggregateLayer *val )
   if ( val->on[BASIC] ) {
     if ( val->calculating ) {
       g_string_append ( gs, _("\nTAC: Calculating") );
+      g_string_append_printf ( gs, _("\nFor Area Level %s"), params_tile_area_levels[map_utils_mpp_to_scale(val->zoom_level)+1] );
     } else {
       g_string_append_printf ( gs, _("\nTAC: Area Level %s\nTotal tiles %d"),
                                params_tile_area_levels[map_utils_mpp_to_scale(val->zoom_level)+1], val->num_tiles[BASIC] );
