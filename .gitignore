@@ -89,6 +89,7 @@ help/C/*html
 /src/vikenumtypes.h
 /src/vikenumtypes.c
 /src/documenters.h
+/src/osm-oauth2-example
 
 # /src/libjpeg
 /src/libjpeg/*.o
