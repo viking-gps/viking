@@ -53,6 +53,7 @@
 #include "maputils.h"
 #include "bbox.h"
 #include "background.h"
+#include "ui_util.h"
 
 /* Format for URL */
 #define URL_ATTR_FMT "https://dev.virtualearth.net/REST/v1/Imagery/Metadata/Aerial/0,0?zl=1&mapVersion=v1&key=%s&include=ImageryProviders&output=xml"
@@ -233,12 +234,18 @@ bing_map_source_class_init (BingMapSourceClass *klass)
 
 	object_class->finalize = bing_map_source_finalize;
 
+	gchar *assets_path = ui_get_resource_path ( VIK_UI_RESOURCE_ASSETS );
+	g_return_if_fail ( assets_path != NULL );
+
+	gchar *file_path = g_strdup_printf ( "%s/%s", assets_path, "bing_maps.png" );
 	GError *error = NULL;
-	pixbuf = gdk_pixbuf_new_from_resource ( "/org/viking-gps/viking/assets/bing_maps.png", &error );
+	pixbuf = gdk_pixbuf_new_from_resource ( file_path, &error );
 	if ( error ) {
 		g_critical ( "%s: %s", __FUNCTION__, error->message );
 		g_error_free ( error );
 	}
+	g_free ( file_path );
+	g_free ( assets_path );
 }
 
 static gchar *

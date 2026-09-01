@@ -72,6 +72,12 @@ gboolean ui_tree_model_number_tooltip_cb ( GtkWidget    *widget,
                                            GtkTooltip   *tooltip,
                                            GtkTreeModel *tree_model );
 
+typedef enum {
+	VIK_UI_RESOURCE_ASSETS,
+	VIK_UI_RESOURCE_ICONS,
+} VikResourcePathType;
+
+gchar* ui_get_resource_path ( VikResourcePathType resource_path_type );
 void ui_load_icons ( void );
 GdkPixbuf *ui_get_icon ( const gchar *name, guint size );
 

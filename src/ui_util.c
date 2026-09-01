@@ -668,11 +668,36 @@ gboolean ui_tree_model_number_tooltip_cb ( GtkWidget    *widget,
 }
 
 /**
+ * Get the Resource Path for specified type
+ * c.f. icons/icons.gresource.xml
+ * Free returned string after use
+ */
+gchar* ui_get_resource_path ( VikResourcePathType resource_path_type )
+{
+	const gchar *root = "/org/viking-gps/viking";
+	switch ( resource_path_type )
+	{
+	case VIK_UI_RESOURCE_ASSETS:
+		return g_strdup_printf ( "%s/%s", root, "assets" );
+		break;
+	case VIK_UI_RESOURCE_ICONS:
+		return g_strdup_printf ( "%s/%s", root, "icons" );
+		break;
+	default:
+		g_critical ( "%s: unknown resource_path_type=%d", __FUNCTION__, resource_path_type );
+		break;
+	}
+	return NULL;
+}
+
+/**
  * Load Icons using GResource (see icons/icons.gresource.xml)
  */
 void ui_load_icons ( void )
 {
-	const gchar *vikpath = "/org/viking-gps/viking/icons";
+	gchar *vikpath = ui_get_resource_path ( VIK_UI_RESOURCE_ICONS );
+	g_return_if_fail ( vikpath != NULL );
+
 	// Much easier in GTK3
 #if GTK_CHECK_VERSION(3, 14, 0)
 	gtk_icon_theme_add_resource_path ( gtk_icon_theme_get_default(), vikpath );
@@ -708,6 +733,7 @@ void ui_load_icons ( void )
 	}
 	g_strfreev ( children );
 #endif
+	g_free ( vikpath );
 }
 
 GdkPixbuf *ui_get_icon ( const gchar *name, guint size )
