@@ -316,20 +316,25 @@ AC_CACHE_CHECK([whether to enable Geotag Support],
                [ac_cv_enable_geotag], [ac_cv_enable_geotag=yes])
 case $ac_cv_enable_geotag in
   yes)
+    # List of libraries for gexiv2 are as from output:
+    # pkg-config --libs gexiv2-0.16
     AS_IF([test x$with_libexif = xyes],
       AC_CHECK_HEADER([libexif/exif-data.h],[],AC_MSG_ERROR([exif-data.h is needed but not found - you will need to install package 'libexif-dev' or similar]))
       AC_CHECK_LIB(exif,exif_loader_new,, AC_MSG_ERROR([libexif is not found but it has been forcibly required])),
-      # gexiv2.h relies on glib so a simple compile check fails.
-      #AC_CHECK_HEADER([gexiv2/gexiv2.h],,AC_MSG_ERROR([Error msg...]))
-      AC_CHECK_LIB(gexiv2,gexiv2_metadata_new,, AC_MSG_ERROR([libgexiv2 is needed but not found - you will need to install package 'libgexiv2-dev' or similar. The feature can be disabled with --disable-geotag]))
-      )
+      PKG_CHECK_MODULES([GEXIV2],
+                        [gexiv2-0.16],
+                        [AC_CHECK_LIB(gexiv2-0.16,
+                                      gexiv2_metadata_new,
+                                      ,
+                                      AC_MSG_ERROR([libgexiv2-0.16 is needed but not found - you will need to install package 'libgexiv2-dev' or similar. The feature can be disabled with --disable-geotag]),
+                                      [-lgio-2.0 -lgobject-2.0 -lglib-2.0])],
+                        [AC_MSG_ERROR([gexiv2 version needs to be 0.16. Geotagging can be disabled with --disable-geotag])] )
+    )
     AC_DEFINE(VIK_CONFIG_GEOTAG, [], [GEOTAG STUFF])
     ;;
 esac
 AM_CONDITIONAL([GEOTAG], [test x$ac_cv_enable_geotag = xyes])
-AM_CONDITIONAL([GEXIV2], [test x$ac_cv_lib_gexiv2_gexiv2_metadata_new = xyes] )
-# Tested with gexiv2 0.10.2, but probably would work with older versions; may be all of them...
-#AM_COND_IF([GEXIV2], [PKG_CHECK_MODULES([GEXIV2], [gexiv2 >= 0.6.1])])
+AM_CONDITIONAL([GEXIV2], [test x$ac_cv_lib_gexiv2_0_16_gexiv2_metadata_new = xyes] )
 AM_CONDITIONAL([LIBEXIF], [test x$ac_cv_lib_exif_exif_loader_new = xyes] )
 
 AM_CONDITIONAL([HAVEDISPLAY], [test x$DISPLAY != x])
@@ -662,7 +667,7 @@ BlueMarble                       : $ac_cv_enable_bluemarble
 GeoClue Support                  : $ac_cv_enable_geoclue
 Geonames                         : $ac_cv_enable_geonames
 Geocaches Acquire                : $ac_cv_enable_geocaches
-Geotag Support                   : $ac_cv_enable_geotag (libgexiv2=$ac_cv_lib_gexiv2_gexiv2_metadata_new libexif=$ac_cv_lib_exif_exif_loader_new)
+Geotag Support                   : $ac_cv_enable_geotag (libgexiv2=$ac_cv_lib_gexiv2_0_16_gexiv2_metadata_new libexif=$ac_cv_lib_exif_exif_loader_new)
 USGS 24k DEM                     : $ac_cv_enable_dem24k
 Realtime GPS Tracking            : $ac_cv_enable_realtimegpstracking
 bzip2 Support                    : $ac_cv_enable_bzip2

@@ -88,12 +88,9 @@ modules:
       - -Dpython3=false
       - -Dvapi=false
     sources:
-      # NB gexiv v0.15+ is API breaking / changes include path
-      #   so can't use it without refactoring Viking build methods...
-      #   hence stick with v0.14 series.
       - type: archive
-        url: https://download.gnome.org/sources/gexiv2/0.14/gexiv2-0.14.6.tar.xz
-        sha256: 606c28aaae7b1f3ef5c8eabe5e7dffd7c5a1c866d25b7671fb847fe287a72b8b
+        url: https://download.gnome.org/sources/gexiv2/0.16/gexiv2-0.16.2.tar.xz
+        sha256: aad9e240fdffbe85e390f46ee0a567e251baea5c29c3d8690260388683dc8d0a
 #
 # GPSD
 #

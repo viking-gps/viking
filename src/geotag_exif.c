@@ -31,6 +31,10 @@
 #include <string.h>
 #include "geotag_exif.h"
 #include "config.h"
+// Maintain internal version agnostic define usage
+#ifdef HAVE_LIBGEXIV2_0_16
+#define HAVE_LIBGEXIV2 1
+#endif
 #include "globals.h"
 #include "file.h"
 
@@ -73,17 +77,17 @@ static gchar* geotag_get_exif_comment ( GExiv2Metadata *gemd )
 	//
 	// Try various options to create a comment
 	//
-	if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.ImageDescription" ) )
-		return g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.ImageDescription" ) );
+	if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.ImageDescription", NULL ) )
+		return g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.ImageDescription", NULL ) );
 
-	if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.XPComment" ) )
-		return g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.XPComment" ) );
+	if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.XPComment", NULL ) )
+		return g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.XPComment", NULL ) );
 
-	if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.XPSubject" ) )
-		return g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.XPSubject" ) );
+	if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.XPSubject", NULL ) )
+		return g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.XPSubject", NULL ) );
 
-	if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.DateTimeOriginal" ) )
-		return g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.DateTimeOriginal" ) );
+	if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.DateTimeOriginal", NULL ) )
+		return g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.DateTimeOriginal", NULL ) );
 
 	// Otherwise nothing found
 	return NULL;
@@ -230,7 +234,7 @@ struct LatLon a_geotag_get_position ( const gchar *filename )
 		gdouble lat;
 		gdouble lon;
 		gdouble alt;
-		if ( gexiv2_metadata_get_gps_info ( gemd, &lon, &lat, &alt ) ) {
+		if ( gexiv2_metadata_get_gps_info ( gemd, &lon, &lat, &alt, NULL ) ) {
 			ll.lat = lat;
 			ll.lon = lon;
 		}
@@ -282,7 +286,7 @@ VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoor
 		gdouble lat;
 		gdouble lon;
 		gdouble alt;
-		if ( gexiv2_metadata_get_gps_info ( gemd, &lon, &lat, &alt ) ) {
+		if ( gexiv2_metadata_get_gps_info ( gemd, &lon, &lat, &alt, NULL ) ) {
 			struct LatLon ll;
 			ll.lat = lat;
 			ll.lon = lon;
@@ -297,23 +301,23 @@ VikWaypoint* a_geotag_create_waypoint_from_file ( const gchar *filename, VikCoor
 			// Altitude
 			wp->altitude = alt;
 
-			if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.XPTitle" ) )
-				*name = g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.XPTitle" ) );
+			if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.XPTitle", NULL ) )
+				*name = g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.XPTitle", NULL ) );
 			wp->comment = geotag_get_exif_comment ( gemd );
 
 			// Direction
 			VikWaypointImageDirectionRef ref = WP_IMAGE_DIRECTION_REF_TRUE;
-			if ( gexiv2_metadata_has_tag ( gemd, EXIF_GPS_IMGDIR_REF ) ) {
-				gchar* ref_str = gexiv2_metadata_get_tag_interpreted_string(gemd, EXIF_GPS_IMGDIR_REF);
+			if ( gexiv2_metadata_has_tag ( gemd, EXIF_GPS_IMGDIR_REF, NULL ) ) {
+				gchar* ref_str = gexiv2_metadata_get_tag_interpreted_string ( gemd, EXIF_GPS_IMGDIR_REF, NULL );
 				if ( ref_str && g_ascii_strncasecmp ("M", ref_str, 1) == 0 )
 					ref = WP_IMAGE_DIRECTION_REF_MAGNETIC;
 				g_free ( ref_str );
 			}
-			if ( gexiv2_metadata_has_tag ( gemd, EXIF_GPS_IMGDIR ) ) {
+			if ( gexiv2_metadata_has_tag ( gemd, EXIF_GPS_IMGDIR, NULL ) ) {
 				gint nom;
 				gint den;
 				gdouble direction = NAN;
-				if ( gexiv2_metadata_get_exif_tag_rational (gemd, EXIF_GPS_IMGDIR, &nom, &den) )
+				if ( gexiv2_metadata_get_exif_tag_rational (gemd, EXIF_GPS_IMGDIR, &nom, &den, NULL) )
 					if ( den != 0 )
 						direction = (gdouble)nom/(gdouble)den;
 
@@ -430,8 +434,8 @@ VikWaypoint* a_geotag_waypoint_positioned ( const gchar *filename, VikCoord coor
 	GExiv2Metadata *gemd = gexiv2_metadata_new ();
 	if ( gexiv2_metadata_open_path ( gemd, filename, NULL ) ) {
 			wp->comment = geotag_get_exif_comment ( gemd );
-			if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.XPTitle" ) )
-				*name = g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.XPTitle" ) );
+			if ( gexiv2_metadata_has_tag ( gemd, "Exif.Image.XPTitle", NULL ) )
+				*name = g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.XPTitle", NULL ) );
 	}
 	metadata_free ( gemd );
 #else
@@ -480,14 +484,22 @@ gchar* a_geotag_get_exif_date_from_file ( const gchar *filename, gboolean *has_G
 #ifdef HAVE_LIBGEXIV2
 	GExiv2Metadata *gemd = gexiv2_metadata_new ();
 	if ( gexiv2_metadata_open_path ( gemd, filename, NULL ) ) {
-		gdouble lat, lon;
-		*has_GPS_info = ( gexiv2_metadata_get_gps_longitude(gemd,&lon) && gexiv2_metadata_get_gps_latitude(gemd,&lat) );
+		GError *errorLat = NULL;
+		GError *errorLon = NULL;
+		// Don't care what the lat/lon values actually are
+		(void)gexiv2_metadata_get_gps_latitude ( gemd, &errorLat );
+		(void)gexiv2_metadata_get_gps_longitude ( gemd, &errorLon );
+		*has_GPS_info = !( errorLat || errorLon );
+		if ( errorLat )
+			g_error_free ( errorLat );
+		if ( errorLon )
+			g_error_free ( errorLon );
 
 		// Prefer 'Photo' version over 'Image'
-		if ( gexiv2_metadata_has_tag ( gemd, "Exif.Photo.DateTimeOriginal" ) )
-			datetime = g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Photo.DateTimeOriginal" ) );
+		if ( gexiv2_metadata_has_tag ( gemd, "Exif.Photo.DateTimeOriginal", NULL ) )
+			datetime = g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Photo.DateTimeOriginal", NULL ) );
 		else
-			datetime = g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.DateTimeOriginal" ) );
+			datetime = g_strdup ( gexiv2_metadata_get_tag_interpreted_string ( gemd, "Exif.Image.DateTimeOriginal", NULL ) );
 	}
 	metadata_free ( gemd );
 #else
@@ -780,19 +792,18 @@ gint a_geotag_write_exif_gps ( const gchar *filename, VikCoord coord, gdouble al
 		struct LatLon ll;
 		vik_coord_to_latlon ( &coord, &ll );
 		// Use update method if available
-#if GEXIV2_CHECK_VERSION(0,12,1)
-		if ( ! gexiv2_metadata_update_gps_info ( gemd, ll.lon, ll.lat, alt ) ) {
-#else
-		if ( ! gexiv2_metadata_set_gps_info ( gemd, ll.lon, ll.lat, alt ) ) {
+#if GEXIV2_CHECK_VERSION(0,16,0)
+		if ( ! gexiv2_metadata_update_gps_info ( gemd, ll.lon, ll.lat, alt, NULL ) )
 #endif
+		{
 			result = 1; // Failed
 		}
 		else {
 			if ( !isnan(direction) ) {
 				gint nom = (gint)round(direction * 10.0);
-				gboolean set_d = gexiv2_metadata_set_exif_tag_rational ( gemd, EXIF_GPS_IMGDIR, nom, 10 );
+				gboolean set_d = gexiv2_metadata_set_exif_tag_rational ( gemd, EXIF_GPS_IMGDIR, nom, 10, NULL );
 				if ( !set_d ) result = 1; // Failed
-				gboolean set_r = gexiv2_metadata_set_tag_string ( gemd, EXIF_GPS_IMGDIR_REF, direction_ref == WP_IMAGE_DIRECTION_REF_TRUE ? "T" : "M" );
+				gboolean set_r = gexiv2_metadata_set_tag_string ( gemd, EXIF_GPS_IMGDIR_REF, direction_ref == WP_IMAGE_DIRECTION_REF_TRUE ? "T" : "M", NULL );
 				if ( !set_r ) result = 1; // Failed
 			}
 			// Still OK to save - no fails yet

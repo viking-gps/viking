@@ -32,7 +32,7 @@ BuildRequires:  mingw64-json-glib-devel
 BuildRequires:  mingw64-libexpat-devel
 BuildRequires:  mingw64-libcurl-devel
 # Optional libraries
-BuildRequires:  mingw64-libgexiv2-devel
+BuildRequires:  mingw64-libgexiv2-devel >= 0.16
 BuildRequires:  mingw64-libbz2-devel
 BuildRequires:  mingw64-file-devel
 BuildRequires:  mingw64-sqlite-devel
