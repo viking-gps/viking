@@ -5,11 +5,29 @@
 #
 # Licensed under BSD
 #
-import sqlite3, sys, logging, time, os, re
+import sqlite3, sys, logging, time, os, re, math
 
 from optparse import OptionParser
 
 logger = logging.getLogger(__name__)
+
+# Functions from https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
+
+# Lon./lat. to tile numbers
+def deg2num(lat_deg, lon_deg, zoom):
+    lat_rad = math.radians(lat_deg)
+    n = 1 << zoom
+    xtile = int((lon_deg + 180.0) / 360.0 * n)
+    ytile = int((1.0 - math.asinh(math.tan(lat_rad)) / math.pi) / 2.0 * n)
+    return xtile, ytile
+
+# Tile numbers to lon./lat.
+def num2deg(xtile, ytile, zoom):
+    n = 1 << zoom
+    lon_deg = xtile / n * 360.0 - 180.0
+    lat_rad = math.atan(math.sinh(math.pi * (1 - 2 * ytile / n)))
+    lat_deg = math.degrees(lat_rad)
+    return lat_deg, lon_deg
 
 #
 # Functions from mbutil for sqlite DB format and connections
@@ -91,6 +109,12 @@ def osm_to_mbtiles(directory_path, mbtiles_file, **kwargs):
     msg = ""
     onlydigits_re = re.compile (r'^\d+$')
 
+    # Presumed faster to store once, rather than re-reading for each tile processed
+    minlat = kwargs.get('minlat')
+    maxlat = kwargs.get('maxlat')
+    minlon = kwargs.get('minlon')
+    maxlon = kwargs.get('maxlon')
+
     for zoomDir in getDirs(directory_path):
         digitsz = onlydigits_re.match(zoomDir);
         if digitsz:
@@ -101,23 +125,30 @@ def osm_to_mbtiles(directory_path, mbtiles_file, **kwargs):
                     if digitsx:
                         x = int(rowDir)
                         for current_file in os.listdir(os.path.join(directory_path, zoomDir, rowDir)):
-                            file_name, ext = current_file.split('.',1)
-                            f = open(os.path.join(directory_path, zoomDir, rowDir, current_file), 'rb')
-                            file_content = f.read()
-                            f.close()
 
-                            y = flip_y(int(z), int(file_name))
+                            file_name, ext = current_file.split('.',1)
 
                             if (ext == image_format):
-                                cur.execute("""insert into tiles (zoom_level,
-                                    tile_column, tile_row, tile_data) values
-                                    (?, ?, ?, ?);""",
-                                    (z, x, y, sqlite3.Binary(file_content)))
-                                count = count + 1
-                                if (count % 100) == 0:
-                                    for c in msg: sys.stdout.write(chr(8))
-                                    msg = "%s tiles inserted (%d tiles/sec)" % (count, count / (time.time() - start_time))
-                                    sys.stdout.write(msg)
+
+                                #print('xy:'+directory_path+'/'+rowDir+'/'+file_name)
+                                lat, lon = num2deg (x, int(file_name), z)
+
+                                if lat > minlat and lat < maxlat and lon > minlon and lon < maxlon:
+
+                                    f = open(os.path.join(directory_path, zoomDir, rowDir, current_file), 'rb')
+                                    file_content = f.read()
+                                    f.close()
+
+                                    y = flip_y(z, int(file_name))
+                                    cur.execute("""insert into tiles (zoom_level,
+                                        tile_column, tile_row, tile_data) values
+                                        (?, ?, ?, ?);""",
+                                        (z, x, y, sqlite3.Binary(file_content)))
+                                    count = count + 1
+                                    if (count % 100) == 0:
+                                        for c in msg: sys.stdout.write(chr(8))
+                                        msg = "%s tiles inserted (%d tiles/sec)" % (count, count / (time.time() - start_time))
+                                        sys.stdout.write(msg)
 
     msg = "\nTotal tiles inserted %s \n" %(count)
     sys.stdout.write(msg)
@@ -143,6 +174,12 @@ def vikcache_to_mbtiles(directory_path, mbtiles_file, **kwargs):
     start_time = time.time()
     msg = ""
     onlydigits_re = re.compile (r'^\d+$')
+
+    # Presumed faster to store once, rather than re-reading for each file processed
+    minlat = kwargs.get('minlat')
+    maxlat = kwargs.get('maxlat')
+    minlon = kwargs.get('minlon')
+    maxlon = kwargs.get('maxlon')
 
     #print ('tileid ' + kwargs.get('tileid'))
     # Need to split tDddsDdzD
@@ -171,16 +208,19 @@ def vikcache_to_mbtiles(directory_path, mbtiles_file, **kwargs):
                                         m3 = onlydigits_re.match(y);
                                         if m3:
                                             #print('tile:'+directory_path+'/'+ff+'/'+x+'/'+y)
-                                            f = open(os.path.join(directory_path, ff, x, y), 'rb')
-                                            # Viking in xyz so always flip
-                                            y = flip_y(int(z), int(y))
-                                            cur.execute("""insert into tiles (zoom_level,
-                                                         tile_column, tile_row, tile_data) values
-                                                         (?, ?, ?, ?);""",
-                                                         (z, x, y, sqlite3.Binary(f.read())))
-                                            f.close()
-                                            count = count + 1
-                                            if (count % 100) == 0:
+                                            lat, lon = num2deg (int(x), int(y), z)
+                                            if lat > minlat and lat < maxlat and lon > minlon and lon < maxlon:
+                                                f = open(os.path.join(directory_path, ff, x, y), 'rb')
+                                                # Viking in xyz so always flip
+                                                y = flip_y(z, int(y))
+                                                cur.execute("""insert into tiles (zoom_level,
+                                                            tile_column, tile_row, tile_data) values
+                                                             (?, ?, ?, ?);""",
+                                                             (z, x, y, sqlite3.Binary(f.read())))
+                                                f.close()
+                                                count = count + 1
+
+                                            if (count > 0 and count % 100) == 0:
                                                 for c in msg: sys.stdout.write(chr(8))
                                                 msg = "%s tiles inserted (%d tiles/sec)" % (count, count / (time.time() - start_time))
                                                 sys.stdout.write(msg)
@@ -394,6 +434,8 @@ parser = OptionParser(usage="""usage: %prog -m <mode> [options] input output
 
 When either the input or output refers to a Viking legacy cache ('vlc'), is it the root directory of the cache, typically ~/.viking-maps
 
+Advanced options exist to limit extents (lat/lon/zoom) of tiles included in generating an mbtiles file
+
 Examples:
 
 Export Viking's legacy cache files of a map type to an mbtiles file:
@@ -415,6 +457,9 @@ Correspondingly change the Map layer property to use OSM style cache layout in V
 Convert from Viking's Legacy cache format to the more standard OSM layout style for a extension map type:
 $ ./viking-cache.py -m vlc2osm -t 110 -f ~/.viking-maps ~/.viking-maps/StamenWaterColour
 Here one must specify the output directory name explicitly and set your maps.xml file with the name=StamenWaterColour for the id=110 entry
+
+Create an mbtiles file covering just the specified bounds for OSM Mapnik maps (in the OSM cache layout):
+$ ./viking-cache.py -m osm2mbtiles --min-zoom=4 --max-zoom=16 --min-lat=50.77 --max-lat=50.84 --min-lon=-1.1 --max-lon=-1.0 ~/.viking-maps/OSM-Mapnik OSM_Mapnik_Portmouth.mbtiles
 """)
 
 parser.add_option('-t', '--tileid', dest='tileid',
@@ -451,6 +496,30 @@ parser.add_option('', '--min-zoom', dest='minzoom',
     help='''Minimum (OSM) zoom level to use in writing to mbtiles''',
     type='int',
     default=1)
+
+parser.add_option('', '--min-lat', dest='minlat',
+    action="store",
+    help='''Minimum latitude (degrees) in writing to mbtiles''',
+    type='float',
+    default=-90.0)
+
+parser.add_option('', '--max-lat', dest='maxlat',
+    action="store",
+    help='''Maximum latitude (degrees) in writing to mbtiles''',
+    type='float',
+    default=90.0)
+
+parser.add_option('', '--min-lon', dest='minlon',
+    action="store",
+    help='''Minimum longitude (degrees) in writing to mbtiles''',
+    type='float',
+    default=-180.0)
+
+parser.add_option('', '--max-lon', dest='maxlon',
+    action="store",
+    help='''Maximum longitude (degrees) in writing to mbtiles''',
+    type='float',
+    default=180.0)
 
 (options, args) = parser.parse_args()
 
