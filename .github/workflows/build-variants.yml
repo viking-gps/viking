@@ -1,3 +1,7 @@
+# CI runs on Github are of course not an unlimited (free) resource
+# Only a limited number of disabling a single optional parts are tested.
+# Generally testing the various combinations of disabling multiple optional parts isn't feasible.
+#
 name: CI Build Variants
 
 on:
@@ -30,7 +34,8 @@ jobs:
 
 # Should work without the optional library component being installed - but ATM not going bother (de)configuring the OS
     - name: Build Options
-      run: ./autogen.sh --disable-${{ matrix.no-variants }} && make
+      run: ./autogen.sh --disable-geotag --disable-${{ matrix.no-variants }} && make
+      # libgexiv2-dev in current versions of Ubuntu are too old and we are not going to support multiple incompatible versions.
 
     - uses: actions/upload-artifact@v4
       if: failure()

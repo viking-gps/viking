@@ -1,6 +1,7 @@
 # CI runs on Github are of course not an unlimited (free) resource
 # Thus as such, the multiple build time variances (OSs / build configurations / etc...) can not be all be performed
-# Once should try the local 'buildtests.sh' on your host OS that checks some build configurations.
+# Also see the build-variants.yml that checks some build configurations.
+# Furthermore, one can also try the local 'buildtests.sh' on your host OS that checks some build configurations.
 #
 # For the CI, only the 'latest' OS and full options are the primary concern.
 # Any older/other OSs and build combinations are provided as a courtesy;
