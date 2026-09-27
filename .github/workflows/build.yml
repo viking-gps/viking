@@ -58,7 +58,8 @@ jobs:
 # Hence number of tests run is less (since some rely on GTK3 and a DISPLAY - thus are omitted)
 #  than the main check performed above
     - name: Run distcheck
-      run: make distcheck
+      run: make distcheck DISTCHECK_CONFIGURE_FLAGS=--disable-geotag
+      # libgexiv2-dev in current versions of Ubuntu are too old and we are not going to support multiple incompatible versions.
 
     - uses: actions/upload-artifact@v4
       if: failure()
