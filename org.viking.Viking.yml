@@ -146,7 +146,7 @@ modules:
 #
 # libnova
 # Note the v0.16 release does not contain the next moon phase functionality**
-#  **which has issues anyway - see Bug XYZ...
+#  **which has issues anyway - see Bug #23 on Sourceforge
 #
   - name: libnova
     buildsystem: simple
@@ -191,6 +191,8 @@ modules:
         url: git://git.code.sf.net/p/viking/code
         branch: "viking-1.11"
 # Local path for testing
+# Remember to run this to ensure latest zip file creation:
+# make dist
 #      - type: archive
 #        path: viking-1.11.zip
 # Unclear how this worked previously as yelp.m4 is only in the Gnome Sdk (not even the freedesktop Sdk! but now using Kde for GPSBabel)
