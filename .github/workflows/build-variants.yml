@@ -20,7 +20,7 @@ jobs:
 
 # NB specifically limited to single OS variant and default GTK, in order to keep number of runs within reason
 # Thus much more likely to keep within overall compute quota limits for a given time period
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-26.04
 
     steps:
     - uses: actions/checkout@v3
