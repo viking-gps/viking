@@ -88,6 +88,32 @@ struct _BingMapSourcePrivate
 /* The pixbuf to store the logo */
 static GdkPixbuf *pixbuf = NULL;
 
+//
+// Initialisation of the single application wide Bing pixbuf from resource assets
+//
+// c.f. Github Issue #398
+// Avoid complexities of GObject type system init/locks during class initialisation,
+//  especially for parts that don't use even use the private type.
+// Note, one could alternatively perform this at the object *construction* stage
+//  and ensure only performed once with GLib 'Once' facilities: g_once_init_enter() et al.
+// But we can simply call this function explicitly in our own initilization sequence instead.
+//
+void bing_map_source_init_assets (void)
+{
+	gchar *assets_path = ui_get_resource_path ( VIK_UI_RESOURCE_ASSETS );
+	g_return_if_fail ( assets_path != NULL );
+
+	gchar *file_path = g_strdup_printf ( "%s/%s", assets_path, "bing_maps.png" );
+	GError *error = NULL;
+	pixbuf = gdk_pixbuf_new_from_resource ( file_path, &error );
+	if ( error ) {
+		g_critical ( "%s: %s", __FUNCTION__, error->message );
+		g_error_free ( error );
+	}
+	g_free ( file_path );
+	g_free ( assets_path );
+}
+
 G_DEFINE_TYPE_WITH_PRIVATE (BingMapSource, bing_map_source, VIK_TYPE_SLIPPY_MAP_SOURCE)
 #define BING_MAP_SOURCE_GET_PRIVATE(o)  (bing_map_source_get_instance_private (BING_MAP_SOURCE(o)))
 
@@ -233,19 +259,6 @@ bing_map_source_class_init (BingMapSourceClass *klass)
 	g_object_class_install_property (object_class, PROP_API_KEY, pspec);
 
 	object_class->finalize = bing_map_source_finalize;
-
-	gchar *assets_path = ui_get_resource_path ( VIK_UI_RESOURCE_ASSETS );
-	g_return_if_fail ( assets_path != NULL );
-
-	gchar *file_path = g_strdup_printf ( "%s/%s", assets_path, "bing_maps.png" );
-	GError *error = NULL;
-	pixbuf = gdk_pixbuf_new_from_resource ( file_path, &error );
-	if ( error ) {
-		g_critical ( "%s: %s", __FUNCTION__, error->message );
-		g_error_free ( error );
-	}
-	g_free ( file_path );
-	g_free ( assets_path );
 }
 
 static gchar *

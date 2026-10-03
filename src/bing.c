@@ -38,6 +38,9 @@
 
 /* initialisation */
 void bing_init () {
+
+	bing_map_source_init_assets();
+
 	VikMapSource *bing_aerial = VIK_MAP_SOURCE
 	  (bing_map_source_new_with_id (MAP_ID_BING_AERIAL, _("Bing Aerial"), API_KEY));
 

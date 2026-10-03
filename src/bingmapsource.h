@@ -50,6 +50,8 @@ GType bing_map_source_get_type (void) G_GNUC_CONST;
 
 BingMapSource * bing_map_source_new_with_id (guint16 id, const gchar *label, const gchar *key);
 
+void bing_map_source_init_assets (void);
+
 G_END_DECLS
 
 #endif /* _BING_MAP_SOURCE_H_ */
