@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v7
 
 # See at least https://github.com/actions/runner-images/issues/2155
 #  regarding ubuntu default image vs server packages mismatch
