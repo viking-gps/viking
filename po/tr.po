@@ -2155,7 +2155,8 @@ msgstr[1] ""
 #, c-format
 msgid "Downloaded %d waypoint"
 msgid_plural "Downloaded %d waypoints"
-msgstr[0] "Yol işaretleri Yükleniyor %d"
+msgstr[0] ""
+msgstr[1] ""
 
 #, c-format
 msgid "Downloaded %d trackpoint"
@@ -2172,12 +2173,14 @@ msgstr[1] ""
 #, c-format
 msgid "Uploaded %d waypoint"
 msgid_plural "Uploaded %d waypoints"
-msgstr[0] "Yol işaretleri Yükleniyor %d"
+msgstr[0] ""
+msgstr[1] ""
 
 #, c-format
 msgid "Uploaded %d trackpoint"
 msgid_plural "Uploaded %d trackpoints"
-msgstr[0] "Güzergah Yükleniyor %d"
+msgstr[0] ""
+msgstr[1] ""
 
 #, c-format
 msgid "Uploaded %d routepoint"
@@ -2493,16 +2496,19 @@ msgstr ""
 msgid "Redownloading up to %d %s map..."
 msgid_plural "Redownloading up to %d %s maps..."
 msgstr[0] "%d %s Harita yeniden indiriliyor..."
+msgstr[1] "%d %s Harita yeniden indirme..."
 
 #, c-format
 msgid "Redownloading %d %s map..."
 msgid_plural "Redownloading %d %s maps..."
 msgstr[0] "%d %s Harita yeniden indiriliyor..."
+msgstr[1] "%d %s Harita yeniden indirme..."
 
 #, c-format
 msgid "Downloading %d %s map..."
 msgid_plural "Downloading %d %s maps..."
 msgstr[0] "Harita %d %s indiriliyor..."
+msgstr[1] "Harita %d %s indirme..."
 
 msgid "YES"
 msgstr ""

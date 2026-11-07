@@ -27,8 +27,7 @@ BuildRequires:  glib2-devel
 BuildRequires:  gtk3-devel >= 3.22
 BuildRequires:  pkgconfig
 BuildRequires:  gpsd-devel
-BuildRequires:  gettext perl(XML::Parser)
-BuildRequires:  intltool
+BuildRequires:  gettext
 BuildRequires:  libxslt
 BuildRequires:  libgexiv2-devel
 BuildRequires:  libbz2-devel

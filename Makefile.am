@@ -3,11 +3,6 @@ if !WINDOWS
 SUBDIRS += help
 endif
 
-INTLTOOL = \
-	intltool-extract.in \
-	intltool-merge.in \
-	intltool-update.in
-
 full:
 	./autogen.sh
 	make
@@ -24,7 +19,7 @@ EXTRA_DIST = \
 	org.viking.Viking.yml \
 	org.viking.Viking.appdata.xml \
 	viking-128.png \
-	$(INTLTOOL)
+	$(NULL)
 # NB viking-128.png is just a rescaled src/icons/viking.png
 # Yet needed for Flathub
 # ATM Simpler to just embed copy in source control rather than generate
@@ -39,12 +34,6 @@ generate-changelog:
 
 dist-hook: viking.spec generate-changelog
 	cp $(top_builddir)/viking.spec $(distdir)
-
-DISTCLEANFILES = \
-	intltool-extract \
-	intltool-merge \
-	intltool-update \
-	po/.intltool-merge-cache.lock
 
 ACLOCAL_AMFLAGS = -I m4
 

@@ -28,8 +28,6 @@ cleanup:
   - '*.la'
 
 modules:
-# Shared modules 'git submodule' - https://github.com/flathub/shared-modules
-  - shared-modules/intltool/intltool-0.51.json
 #
 # libauth
 # build-command mostly from https://github.com/x42/liboauth/blob/master/.travis.yml
