@@ -2540,6 +2540,7 @@ msgstr[1] ""
 msgid "Downloading %d %s map..."
 msgid_plural "Downloading %d %s maps..."
 msgstr[0] "Downloader %d %s kort..."
+msgstr[1] "Downloader %d %s kort..."
 
 msgid "YES"
 msgstr ""
