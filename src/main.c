@@ -19,6 +19,11 @@
  *
  */
 #include <gmodule.h>
+#include <gio/gio.h>
+#ifdef G_OS_UNIX
+#include <unistd.h>
+#include <gio/gunixoutputstream.h>
+#endif
 
 #ifdef HAVE_CONFIG
 #include "config.h"
@@ -123,6 +128,52 @@ gboolean check_for_geo_uri ( char *argv )
   return FALSE;
 }
 
+/**
+ * Work around gdk-pixbuf 2.44's glycin integration dead-locking
+ * multi-threaded applications (GNOME gdk-pixbuf issue #292).
+ *
+ * Image loads now go through glycin's helper threads, and the first load
+ * registers GObject types/interfaces from them; when that races with the
+ * application's worker threads the process can deadlock and the window
+ * never appears. Loading an image once here, on the main thread before any
+ * worker thread is created, makes all of that registration single-threaded.
+ */
+#ifdef G_OS_UNIX
+static void glycin_prime ( void )
+{
+	GError *error = NULL;
+	gchar *tmpname = NULL;
+
+	static const char svg[] =
+		"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\">"
+		"<rect width=\"4\" height=\"4\"/></svg>";
+
+	gint fd = g_file_open_tmp ( "viking-glycin-prime-XXXXXX.svg", &tmpname, &error );
+	if ( error ) {
+		g_debug ( "%s: %s", __FUNCTION__, error->message );
+		g_error_free ( error );
+		return;
+	}
+
+	if ( write ( fd, svg, sizeof(svg)-1 ) == sizeof(svg)-1 ) {
+		GdkPixbuf *pb = gdk_pixbuf_new_from_file ( tmpname, &error );
+		if ( pb ) {
+			g_object_unref ( pb );
+		} else {
+			g_debug ( "%s: %s", __FUNCTION__, error->message );
+			g_error_free ( error );
+		}
+	}
+
+	close ( fd );
+	g_unlink ( tmpname );
+	g_free ( tmpname );
+
+	// Also pre-register the GIO types glycin uses for its loader streams
+	g_type_ensure ( G_TYPE_UNIX_OUTPUT_STREAM );
+}
+#endif
+
 int main( int argc, char *argv[] )
 {
   VikWindow *first_window;
@@ -154,6 +205,12 @@ int main( int argc, char *argv[] )
     }
     return EXIT_FAILURE;
   }
+
+  // Prime the glycin image loader on the main thread before anything
+  // spawns worker threads (see glycin_prime() comment above)
+#ifdef G_OS_UNIX
+  glycin_prime ();
+#endif
 
   if (vik_version)
   {
