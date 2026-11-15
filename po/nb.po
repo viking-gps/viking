@@ -2099,6 +2099,7 @@ msgstr ""
 msgid "Uploading %d waypoint..."
 msgid_plural "Uploading %d waypoints..."
 msgstr[0] "Laster opp %d waypoint..."
+msgstr[1] "Laster opp %d waypoints..."
 
 #, c-format
 msgid "Uploading %d trackpoint..."
@@ -2504,6 +2505,7 @@ msgstr[1] ""
 msgid "Downloading %d %s map..."
 msgid_plural "Downloading %d %s maps..."
 msgstr[0] "Laster ned %d %s kart..."
+msgstr[1] "Laster ned %d %s kart..."
 
 msgid "YES"
 msgstr ""

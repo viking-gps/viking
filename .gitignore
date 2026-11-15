@@ -21,9 +21,6 @@
 /gtk-doc.make
 /gtk-doc.m4
 /install-sh
-/intltool-extract.in
-/intltool-merge.in
-/intltool-update.in
 /INSTALL
 /missing
 /mkinstalldirs
@@ -138,19 +135,23 @@ src/misc/*.o
 /po/Makefile.in
 /po/Makefile
 /po/*.gmo
+/po/*.gpo
 /po/POTFILES
-/po/.intltool-merge-cache
 /po/stamp-it
+/po/stamp-po
 /po/Makevars.template
 /po/Rules-quot
 /po/boldquot.sed
 /po/en@boldquot.header
 /po/en@quot.header
 /po/insert-header.sin
+/po/insert-header.sed
 /po/quot.sed
 /po/remove-potcdate.sin
+/po/remove-potcdate.sed
 /po/viking/
 /po/viking.pot
+/po/fetch-po
 
 # tools/
 tools/Makefile.in

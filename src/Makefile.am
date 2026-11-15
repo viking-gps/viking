@@ -258,11 +258,12 @@ AM_CPPFLAGS		= \
 	-DVIKING_DATADIR=\""$(pkgdatadir)"\" \
 	-DVIKING_SYSCONFDIR=\""$(sysconfdir)/$(PACKAGE)"\"
 
-@INTLTOOL_DESKTOP_RULE@
-
 desktopdir = $(datadir)/applications
 desktop_in_files = viking.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 EXTRA_DIST += $(desktop_in_files)
+
+$(desktop_DATA): $(desktop_in_files)
+	$(AM_V_GEN) $(MSGFMT) --desktop --template $< -d $(top_srcdir)/po -o $@
 
 CLEANFILES = $(BUILT_SOURCES) $(desktop_DATA)

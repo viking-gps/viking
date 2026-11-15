@@ -1697,7 +1697,7 @@ msgstr ""
 #, c-format
 msgid "One layer"
 msgid_plural "%d layers"
-msgstr[0] "Один слой"
+msgstr[0] "%d слой"
 msgstr[1] "%d слоя"
 msgstr[2] "%d слоёв"
 

@@ -7,12 +7,6 @@ test -n "$srcdir" || srcdir=.
 olddir=`pwd`
 cd "$srcdir"
 
-INTLTOOLIZE=`command -v intltoolize`
-if test -z $INTLTOOLIZE; then
-        echo "*** No intltoolize found, please install the intltool package ***"
-        exit 1
-fi
-
 GTK_DOC=`command -v gtkdocize`
 if test -z $GTK_DOC; then
         echo "*** No gtkdocize found, please install the gtk-doc-tools package ***"
@@ -32,7 +26,7 @@ fi
 
 gtkdocize --copy || exit $?
 autopoint --force || exit $?
-AUTOPOINT='intltoolize --automake --copy' autoreconf --force --install --verbose || exit $?
+autoreconf --force --install --verbose || exit $?
 
 cd "$olddir"
 test -n "$NOCONFIGURE" || "$srcdir/configure" "$@"

@@ -1727,7 +1727,7 @@ msgstr "Ezin da geruza ezabatu kalkultzen ari den bitartean"
 msgid "One layer"
 msgid_plural "%d layers"
 msgstr[0] "Geruza bat"
-msgstr[1] "geruza"
+msgstr[1] "%d geruza"
 
 msgid "Empty"
 msgstr "Hutsa"
