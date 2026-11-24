@@ -69,8 +69,8 @@ static gchar *convert_dec_to_dmm(gdouble dec, gchar pos_c, gchar neg_c)
 {
   gdouble tmp;
   gchar sign_c = ' ';
-  gint val_d;
-  gdouble val_m;
+  gint val_d, carry;
+  gchar val_m[G_ASCII_DTOSTR_BUF_SIZE];
   gchar *result = NULL;
 
   if ( dec > 0 )
@@ -84,12 +84,13 @@ static gchar *convert_dec_to_dmm(gdouble dec, gchar pos_c, gchar neg_c)
   tmp = fabs(dec);
   val_d = (gint)tmp;
 
-  /* Minutes */
-  val_m = (tmp - val_d) * 60;
+  /* Round minutes before carrying into degrees. */
+  g_snprintf ( val_m, sizeof(val_m), "%f", (tmp - val_d) * 60 );
+  carry = g_str_has_prefix ( val_m, "60" );
 
-  /* Format */
-  result = g_strdup_printf ( "%c%d" DEGREE_SYMBOL "%f'",
-                             sign_c, val_d, val_m );
+  /* Skip the leading 6 when the rounded minutes carry. */
+  result = g_strdup_printf ( "%c%d" DEGREE_SYMBOL "%s'",
+                             sign_c, val_d + carry, val_m + carry );
   return result;
 }
 
@@ -111,8 +112,8 @@ static gchar *convert_dec_to_dms(gdouble dec, gchar pos_c, gchar neg_c)
 {
   gdouble tmp;
   gchar sign_c = ' ';
-  gint val_d, val_m;
-  gdouble val_s;
+  gint val_d, val_m, carry;
+  gchar val_s[G_ASCII_DTOSTR_BUF_SIZE];
   gchar *result = NULL;
 
   if ( dec > 0 )
@@ -130,12 +131,14 @@ static gchar *convert_dec_to_dms(gdouble dec, gchar pos_c, gchar neg_c)
   tmp = (tmp - val_d) * 60;
   val_m = (gint)tmp;
 
-  /* Seconds */
-  val_s = (tmp - val_m) * 60;
+  /* Round seconds before splitting the carried minutes into degrees and minutes. */
+  g_snprintf ( val_s, sizeof(val_s), "%.4f", (tmp - val_m) * 60 );
+  carry = g_str_has_prefix ( val_s, "60" );
+  val_m += carry;
 
-  /* Format */
-  result = g_strdup_printf ( "%c%d" DEGREE_SYMBOL "%d'%.4f\"",
-                             sign_c, val_d, val_m, val_s );
+  /* Skip the leading 6 when the rounded seconds carry. */
+  result = g_strdup_printf ( "%c%d" DEGREE_SYMBOL "%d'%s\"",
+                             sign_c, val_d + val_m / 60, val_m % 60, val_s + carry );
   return result;
 }
 
